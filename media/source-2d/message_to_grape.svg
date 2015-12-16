@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 744.09448819 1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="message_to_grape.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;"
+       inkscape:isstock="true">
+      <path
+         id="path4498"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+    <linearGradient
+       id="linearGradient4183"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop4185" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35355339"
+     inkscape:cx="333.77634"
+     inkscape:cy="693.93862"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1594"
+     inkscape:window-height="873"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g4861"
+       transform="translate(2,-201)"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <g
+         transform="matrix(0.96930416,0,0,0.5942764,-200.26376,62.24458)"
+         id="g4176">
+        <rect
+           style="opacity:1;fill:#000000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none"
+           id="rect4136"
+           width="71.979752"
+           height="68.984795"
+           x="340.42142"
+           y="489.70724" />
+        <rect
+           style="opacity:1;fill:#000000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none"
+           id="rect4136-1"
+           width="99.979752"
+           height="21.984795"
+           x="410.40118"
+           y="513.20728" />
+        <rect
+           style="opacity:1;fill:#000000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none"
+           id="rect4136-1-5"
+           width="99.979752"
+           height="21.984795"
+           x="242.44167"
+           y="513.20728" />
+      </g>
+      <g
+         transform="matrix(0.6163639,0,0,0.6163639,-122.32413,60.73614)"
+         style="opacity:0.506"
+         id="g4265">
+        <g
+           id="g4176-6-0"
+           transform="matrix(1.297771,-0.88820814,0.54455677,0.79565807,-308.45214,425.1101)">
+          <rect
+             y="489.70724"
+             x="340.42142"
+             height="68.984795"
+             width="71.979752"
+             id="rect4136-7-9"
+             style="opacity:1;fill:#000000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none" />
+          <rect
+             y="513.20728"
+             x="410.40118"
+             height="21.984795"
+             width="99.979752"
+             id="rect4136-1-8-3"
+             style="opacity:1;fill:#000000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none" />
+          <rect
+             y="513.20728"
+             x="242.44167"
+             height="21.984795"
+             width="99.979752"
+             id="rect4136-1-5-1-9"
+             style="opacity:1;fill:#000000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none" />
+        </g>
+        <g
+           id="g4176-6"
+           transform="matrix(0.41550863,1.516732,-0.92990214,0.25474665,796.55227,-196.59095)">
+          <rect
+             y="489.70724"
+             x="340.42142"
+             height="68.984795"
+             width="71.979752"
+             id="rect4136-7"
+             style="opacity:1;fill:#000000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none" />
+          <rect
+             y="513.20728"
+             x="410.40118"
+             height="21.984795"
+             width="99.979752"
+             id="rect4136-1-8"
+             style="opacity:1;fill:#000000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none" />
+          <rect
+             y="513.20728"
+             x="242.44167"
+             height="21.984795"
+             width="99.979752"
+             id="rect4136-1-5-1"
+             style="opacity:1;fill:#000000;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none" />
+        </g>
+        <text
+           sodipodi:linespacing="125%"
+           id="text4483"
+           y="303.96756"
+           x="664.50751"
+           style="font-style:normal;font-weight:normal;font-size:28.01495552px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           xml:space="preserve"><tspan
+             y="303.96756"
+             x="664.50751"
+             id="tspan4485"
+             sodipodi:role="line">drawing plane (perpindicular to our view)</tspan></text>
+        <rect
+           y="262.22507"
+           x="237.39893"
+           height="6.4896727"
+           width="493.21512"
+           id="rect4487"
+           style="opacity:0.506;fill:#23cc4c;fill-opacity:1;stroke:#000000;stroke-width:1.62241817;stroke-miterlimit:4;stroke-dasharray:1.6224182, 3.2448364;stroke-dashoffset:0;stroke-opacity:1" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path4489"
+           d="M 855.54026,268.71474 C 824.71432,198.95076 719.25713,244.37847 719.25713,244.37847"
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.62241817px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)" />
+      </g>
+      <circle
+         r="130.98589"
+         cy="373.76404"
+         cx="164.59326"
+         id="path4181"
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.83197057;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4201"
+         y="380.56573"
+         x="129.91678"
+         style="font-style:normal;font-weight:normal;font-size:24.65455627px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="380.56573"
+           x="129.91678"
+           id="tspan4203"
+           sodipodi:role="line">plane</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4275"
+         y="537.70557"
+         x="18.354013"
+         style="font-style:normal;font-weight:normal;font-size:16.41109467px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="537.70557"
+           x="18.354013"
+           id="tspan4277"
+           sodipodi:role="line">each point on this circle represents a roll value</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4314"
+         y="562.72913"
+         x="37.87468"
+         style="font-style:normal;font-weight:normal;font-size:15.74294281px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#4e4848;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="562.72913"
+           x="37.87468"
+           id="tspan4316"
+           sodipodi:role="line">(the roll associated with the plane </tspan><tspan
+           id="tspan4318"
+           y="582.40778"
+           x="37.87468"
+           sodipodi:role="line">whose yaw axis intersects that point)</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4338"
+         y="481.23871"
+         x="258.95758"
+         style="font-style:normal;font-weight:normal;font-size:13.19056129px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="481.23871"
+           x="258.95758"
+           id="tspan4340"
+           sodipodi:role="line">(frontal perspective)</tspan></text>
+    </g>
+    <g
+       id="g4844"
+       transform="translate(441.78889,-508.24473)"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <circle
+         r="92.75325"
+         cy="753.86218"
+         cx="159.5"
+         id="path4181-6"
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.29724836;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <circle
+         r="8"
+         cy="691.36218"
+         cx="92"
+         id="path4401"
+         style="opacity:0.506;fill:#23cc4c;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:1, 2;stroke-dashoffset:0;stroke-opacity:1" />
+      <circle
+         r="7"
+         cy="691.36218"
+         cx="227"
+         id="path4403"
+         style="opacity:0.506;fill:#23cc4c;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:1, 2;stroke-dashoffset:0;stroke-opacity:1" />
+      <circle
+         r="7"
+         cy="817.36218"
+         cx="226"
+         id="path4403-3"
+         style="opacity:0.506;fill:#bf0000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:1, 2;stroke-dashoffset:0;stroke-opacity:1" />
+      <circle
+         r="7"
+         cy="818.36218"
+         cx="92"
+         id="path4403-1"
+         style="opacity:0.506;fill:#bf0000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:1, 2;stroke-dashoffset:0;stroke-opacity:1" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4426"
+         y="653.65497"
+         x="315.87759"
+         style="font-style:normal;font-weight:normal;font-size:19.32618332px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="653.65497"
+           x="315.87759"
+           id="tspan4428"
+           sodipodi:role="line">because of the symmetry of the plane, each pair</tspan><tspan
+           id="tspan4432"
+           y="677.81268"
+           x="315.87759"
+           sodipodi:role="line">of points like those colored in this figure are mirror </tspan><tspan
+           id="tspan4440"
+           y="701.9704"
+           x="315.87759"
+           sodipodi:role="line">images of each other, and their renders are also symmetric</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4426-2"
+         y="766.53613"
+         x="287.57935"
+         style="font-style:normal;font-weight:normal;font-size:19.32618332px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           id="tspan4805"
+           y="766.53613"
+           x="287.57935"
+           sodipodi:role="line">thus we only need to sample the renders a 180 degree</tspan><tspan
+           id="tspan4817"
+           y="790.69385"
+           x="287.57935"
+           sodipodi:role="line">interval of roll values ... but make sure to choose the</tspan><tspan
+           id="tspan4838"
+           y="814.85156"
+           x="287.57935"
+           sodipodi:role="line">right one</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4840"
+         y="813.91803"
+         x="381.07117"
+         style="font-style:normal;font-weight:normal;font-size:24.92269897px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="813.91803"
+           x="381.07117"
+           id="tspan4842"
+           sodipodi:role="line">q_q</tspan></text>
+    </g>
+  </g>
+</svg>
