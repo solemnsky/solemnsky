@@ -1,8 +1,8 @@
 #include <iostream>
-
-using namespace std;
+#include "ctrl/ctrl.h"
 
 int main() {
-    cout << "please help me I'm trapped in a binary it's so dark oh god please help" << endl;
+    DemoControl face{};
+    run_sfml(face);
     return 0;
 }
