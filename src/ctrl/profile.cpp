@@ -2,37 +2,19 @@
 #include <numeric>
 #include <algorithm>
 
-
-/**********************************************************************************************************************/
-/* RollingSampler
-/**********************************************************************************************************************/
-
-template<typename T>
-RollingSampler<T>::RollingSampler(int size) : size(size) { }
-
-template<typename T>
-void RollingSampler<T>::clear() {
-    data.clear();
-}
-
-template<typename T>
-void RollingSampler<T>::push(T value) {
-    if (data.size() == size) data.erase(data.end());
-    data.push_back(value);
-}
-
 /**********************************************************************************************************************/
 /* SamplerValue
 /**********************************************************************************************************************/
 
 template<typename T>
-static const T mean(std::vector<T> data) {
-    float sum = std::accumulate(data.begin(), data.end(), 0, [](T x, T y) { return x + y; });
-    return (sum / data.size());
+static const T getMean(std::vector<T> data) {
+    T sum = 0;
+    for (T i : data) sum += i;
+    return (sum / (T) data.size());
 }
 
 template<typename T>
-static const std::pair<T, T> minmax(std::vector<T> data) {
+static const std::pair<T, T> getMinmax(std::vector<T> data) {
     std::pair<T, T> pair(data[0], data[0]);
     for (T i : data) {
         pair.first = std::min(i, pair.first);
@@ -43,10 +25,10 @@ static const std::pair<T, T> minmax(std::vector<T> data) {
 
 template<typename T>
 SamplerValue<T>::SamplerValue(RollingSampler<T> sampler) :
-        minmax(minmax(sampler.data)),
+        minmax(getMinmax(sampler.data)),
         min{minmax.first},
         max{minmax.second},
-        mean{mean(sampler.data)} { }
+        mean{getMean(sampler.data)} { }
 
 template<typename T>
 std::string SamplerValue<T>::printWith(std::function<std::string(T)> show) {
@@ -57,30 +39,34 @@ std::string SamplerValue<T>::printWith(std::function<std::string(T)> show) {
 /* Profiler
 /**********************************************************************************************************************/
 
-Profiler::Profiler(int size) : cycleTime{size}, logicTime{size}, renderTime{size}, renderPrims{size} {
-    cycleTime.push(0), cycleTime.push(0), renderTime.push(0), renderPrims.push(0);
+Profiler::Profiler(int size) :
+        cycleTime{size}, logicTime{size}, renderTime{size}, primCount{size}, size{size} {
+    cycleTime.push(0), cycleTime.push(0), renderTime.push(0), primCount.push(0);
     // for safety
 }
 
-
-static const std::string showFloat(float fl) {
-    return "<float>";
+static const std::string showTime(float fl) {
+    return std::to_string((int) std::round(fl * 1000)) + "ms";
 }
 
-static const std::string showInt(float fl) {
-    return "<int>";
+static const std::string showFps(float fl) {
+    return std::to_string((int) std::round(fl)) + "fps";
+}
+
+static const std::string showInt(int i) {
+    return std::to_string(i);
 }
 
 std::string Profiler::print() {
     SamplerValue<float> cycleValue{cycleTime}, logicValue{logicTime}, renderValue{renderTime};
-    SamplerValue<int> primCount{renderPrims};
+    SamplerValue<int> primValue{primCount};
     return
-            "cycle period: " + cycleValue.printWith(showFloat) +
-            " -> cycle frequency: " + showFloat(1 / cycleValue.mean) +
+            "cycle period: " + cycleValue.printWith(showTime) +
+            " ; cycle frequency: " + showFps(1 / cycleValue.mean) +
             "\n" +
-            "logic delta: " + logicValue.printWith(showFloat) +
-            " ; render delta " + renderValue.printWith(showFloat) +
+            "logic delta: " + logicValue.printWith(showTime) +
+            " ; render delta " + renderValue.printWith(showTime) +
             "\n" +
-            "prim count: " + primCount.printWith(showInt);
+            "prim count: " + primValue.printWith(showInt);
 }
 

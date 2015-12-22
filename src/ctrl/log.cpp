@@ -3,21 +3,20 @@
 #include <sstream>
 #include "log.h"
 
-void app_log(LogLevel level, std::string &contents) {
+void app_log(LogType type, const std::string contents) {
     static std::vector<std::string> prefixes = {
             "INFO:   ",
             "NOTICE: ",
-            "ERROR:  "
-            "........"};
-    static int prefixLength = 9;
+            "ERROR:  ",
+            "        "};
 
     std::stringstream stream(contents);
     std::string line;
-    bool isFirstLine(true);
 
+    bool isFirstLine(true);
     while(std::getline(stream, line, '\n')) {
         if (isFirstLine) {
-            std::cout << prefixes[(int) level] + line + "\n";
+            std::cout << prefixes[(int) type] + line + "\n";
             isFirstLine = false;
         } else {
             std::cout << prefixes[3] + line + "\n";

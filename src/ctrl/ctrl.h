@@ -16,7 +16,6 @@ class Frame {
 private:
     sf::RenderWindow &window;
 
-    sf::Transform parentTransform;
     std::stack<sf::Transform> transformStack;
     std::stack<float> alphaStack;
 
@@ -26,13 +25,15 @@ public:
     Frame(sf::RenderWindow &window);
 
     /**
-     * Resetting / creating parent transform.
+     * Per-frame state management.
      */
+    int primCount;
     void resize();
-    void reset();
+    void beginDraw();
+    void endDraw();
 
     /**
-     * Affine transformation / alpha value stack.
+     * Managing the render state stacks.
      */
     void pushTransform(const sf::Transform transform);
     void popTransform();
@@ -43,9 +44,9 @@ public:
     void withAlphaTransform(const float alpha, const sf::Transform transform, std::function<void()> fn);
 
     /**
-     * Drawing stuff, a fully const wrapper over SFML's Drawable system.
+     * Drawing stuff, a wrapper over SFML's drawing system.
      */
-    void drawCircle(const float radius, const sf::Color color=sf::Color());
+    void drawCircle(const sf::Vector2f pos, const float radius, const sf::Color color=sf::Color());
 };
 
 /**
@@ -53,26 +54,14 @@ public:
  */
 class Control {
 public:
-    virtual void tick(double delta) = 0; // in milliseconds
+    virtual void tick(float delta) = 0; // in milliseconds
     virtual void render(Frame &frame) = 0;
     virtual void handle(sf::Event event) = 0;
 };
 
 /**
- * A demo user interface.
- */
-class DemoControl : public Control {
-private:
-    double time = 0;
-public:
-    void tick(double delta) override;
-    void render(Frame &frame) override;
-    void handle(sf::Event event) override;
-};
-
-/**
  * Run an interface with SFML, praised be.
  */
-void run_sfml(Control &face);
+void runSFML(Control &face);
 
 #endif //SOLEMNSKY_CTRL_CTRL_H

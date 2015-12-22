@@ -7,10 +7,10 @@
 #include <string>
 #include <functional>
 
-enum class LogLevel {
+enum class LogType {
     Info, Notice, Error
 };
 
-void app_log(LogLevel, std::string);
+void app_log(LogType type, const std::string contents);
 
 #endif //SOLEMNSKY_CTRL_LOG_H

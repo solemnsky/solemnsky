@@ -17,15 +17,23 @@ private:
 public:
     RollingSampler(int size);
 
-    std::vector<T> data;
+    std::vector<T> data{};
 
-    void clear();
     void push(T value);
 };
 
 template<typename T>
+RollingSampler<T>::RollingSampler(int size) : size(size) { }
+
+template<typename T>
+void RollingSampler<T>::push(T value) {
+    if (data.size() == size) data.erase(data.begin());
+    data.push_back(value);
+}
+
+template<typename T>
 struct SamplerValue {
-    const std::tuple<T, T> minmax;
+    const std::pair<T, T> minmax;
     const T max;
     const T min;
     const T mean;
@@ -45,12 +53,13 @@ struct SamplerValue {
  */
 class Profiler {
 public:
+    const int size;
     Profiler(int size);
 
     RollingSampler<float> cycleTime;
     RollingSampler<float> logicTime;
     RollingSampler<float> renderTime;
-    RollingSampler<int> renderPrims;
+    RollingSampler<int> primCount;
 
     std::string print();
 };
