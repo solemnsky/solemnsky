@@ -1,37 +1,39 @@
 /**
  * Generally helpful utilities.
  */
-#ifndef SOLEMNSKY_UTIL_H
-#define SOLEMNSKY_UTIL_H
+#ifndef SOLEMNSKY_BASE_UTIL_H
+#define SOLEMNSKY_BASE_UTIL_H
 
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include <functional>
 
 enum class LogType {
-    Info, Notice, Error
+  Info, // you might like to know it
+  Notice, // you should know it
+  Error // you have to know it (buzzfeed articles, etc)
 };
 
 void app_log(LogType type, const std::string contents);
 
 /**
- * Manages an action that becomes momentarily active on regular intervals. (The 'tick' of an analog clock is the analogy
- * that inspires its name.)
+ * Manages an action that becomes momentarily active on regular intervals.
  */
 class Ticker {
 private:
-    bool active = false;
+  bool active = false;
 
 public:
-    float cooldown;
-    float period;
-    Ticker(float period) : period(period), cooldown(period) { }
+  float cooldown;
+  float period;
 
-    bool tick(float delta);
-    void prime();
-    void wait();
+  Ticker(float period) : period(period), cooldown(period) { }
 
-    operator bool();
+  bool tick(float delta);
+  void prime();
+  void wait();
+
+  operator bool();
 };
 
 /**
@@ -39,7 +41,7 @@ public:
  */
 class FromBox2d {
 public:
-    static sf::Vector2f vector(b2Vec2 vec);
+  static sf::Vector2f vector(b2Vec2 vec);
 };
 
-#endif //SOLEMNSKY_UTIL_H
+#endif //SOLEMNSKY_BASE_UTIL_H
