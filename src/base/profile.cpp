@@ -2,9 +2,9 @@
 #include <numeric>
 #include <algorithm>
 
-/**********************************************************************************************************************/
-/* SamplerValue
-/**********************************************************************************************************************/
+/****
+ * SamplerValue
+ */
 
 template<typename T>
 static const T getMean(std::vector<T> data) {
@@ -35,9 +35,9 @@ std::string SamplerValue<T>::printWith(std::function<std::string(T)> show) {
     return show(min) + "->" + show(max) + "~~" + show(mean);
 }
 
-/**********************************************************************************************************************/
-/* Profiler
-/**********************************************************************************************************************/
+/****
+ * Profiler
+ */
 
 Profiler::Profiler(int size) :
         cycleTime{size}, logicTime{size}, renderTime{size}, primCount{size}, size{size} {

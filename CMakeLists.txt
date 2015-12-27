@@ -7,10 +7,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 # source files for executable
 include_directories(src/) # so we can #include "directory/something.h"
 set(SOURCE_FILES src/main.cpp)
-set(SOURCE_FILES ${SOURCE_FILES} src/ctrl/ctrl.h src/ctrl/ctrl.cpp)
-set(SOURCE_FILES ${SOURCE_FILES} src/ctrl/log.h src/ctrl/log.cpp)
-set(SOURCE_FILES ${SOURCE_FILES} src/ctrl/profile.h src/ctrl/profile.cpp)
-set(SOURCE_FILES ${SOURCE_FILES} src/util/util.h src/util/util.cpp)
+set(SOURCE_FILES ${SOURCE_FILES} src/base/ctrl.h src/base/ctrl.cpp)
+set(SOURCE_FILES ${SOURCE_FILES} src/base/profile.h src/base/profile.cpp)
+set(SOURCE_FILES ${SOURCE_FILES} src/base/util.h src/base/util.cpp)
 set(SOURCE_FILES ${SOURCE_FILES} src/engine/engine.h src/engine/engine.cpp)
 
 add_executable(solemnsky ${SOURCE_FILES})

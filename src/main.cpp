@@ -1,5 +1,5 @@
 #include <iostream>
-#include "ctrl/ctrl.h"
+#include "base/ctrl.h"
 #include <Box2D/Box2D.h>
 
 class DemoControl : public Control {
@@ -65,6 +65,7 @@ void DemoControl::renderSystem(Frame &f) {
 
 void DemoControl::render(Frame &f) {
 //    renderPlanet(f, FromBox2d::vector(body->GetPosition()));
+//    f.drawRect(sf::Vector2f(0, 0), sf::Vector2f(1600, 900), sf::Color::Green);
     renderSystem(f);
 }
 

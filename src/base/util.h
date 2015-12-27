@@ -6,6 +6,13 @@
 
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
+#include <functional>
+
+enum class LogType {
+    Info, Notice, Error
+};
+
+void app_log(LogType type, const std::string contents);
 
 /**
  * Manages an action that becomes momentarily active on regular intervals. (The 'tick' of an analog clock is the analogy

@@ -15,21 +15,15 @@ private:
     const int size;
 
 public:
-    RollingSampler(int size);
+    RollingSampler(int size) : size(size) { }
 
     std::vector<T> data{};
 
-    void push(T value);
+    void push(T value) {
+        if (data.size() == size) data.erase(data.begin());
+        data.push_back(value);
+    }
 };
-
-template<typename T>
-RollingSampler<T>::RollingSampler(int size) : size(size) { }
-
-template<typename T>
-void RollingSampler<T>::push(T value) {
-    if (data.size() == size) data.erase(data.begin());
-    data.push_back(value);
-}
 
 template<typename T>
 struct SamplerValue {

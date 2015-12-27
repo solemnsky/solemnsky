@@ -9,20 +9,26 @@
 #include <stack>
 #include <functional>
 
+class Control;
+
 /**
  * Little wrapper around the SFML drawing system, allowing for a simpler design of the methods that use it.
  */
 class Frame {
-private:
-    sf::RenderWindow &window;
+    friend void runSFML(Control &);
 
+private:
     std::stack<sf::Transform> transformStack;
     std::stack<float> alphaStack;
 
-    const sf::Color alphaScaleColor(const sf::Color);
+    sf::Transform windowToFrame;
+    sf::Transform frameToWindow;
 
+    const sf::Color alphaScaleColor(const sf::Color);
 public:
     Frame(sf::RenderWindow &window);
+
+    sf::RenderWindow &window;
 
     /**
      * Per-frame state management.
@@ -46,7 +52,8 @@ public:
     /**
      * Drawing stuff, a wrapper over SFML's drawing system.
      */
-    void drawCircle(const sf::Vector2f pos, const float radius, const sf::Color color=sf::Color());
+    void drawCircle(const sf::Vector2f pos, const float radius, const sf::Color color = sf::Color());
+    void drawRect(const sf::Vector2f topLeft, const sf::Vector2f bottomRight, const sf::Color color = sf::Color());
 };
 
 /**

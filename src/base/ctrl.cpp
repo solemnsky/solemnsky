@@ -1,13 +1,12 @@
 #include <SFML/Graphics.hpp>
-#include "log.h"
 #include <iostream>
 #include "ctrl.h"
 #include "profile.h"
-#include "util/util.h"
+#include "util.h"
 
-/**********************************************************************************************************************/
-/* Frame
-/**********************************************************************************************************************/
+/****
+ * Frame
+ */
 
 const sf::Color Frame::alphaScaleColor(const sf::Color color) {
     sf::Color newColor(color);
@@ -16,19 +15,33 @@ const sf::Color Frame::alphaScaleColor(const sf::Color color) {
 }
 
 Frame::Frame(sf::RenderWindow &window) : window{window} {
+    resize();
 }
 
 void Frame::resize() {
-    auto size = window.getSize();
-    const float viewAspect = (float) size.x / (float) size.y;
+    sf::Vector2u size = window.getSize();
+    float sx(size.x), sy(size.y);
+    const float viewAspect = sx / sy;
     static constexpr float targetAspect = 16.0f / 9.0f;
 
+    // set the view
     sf::View view;
     view.setCenter(800, 450);
-    if (viewAspect > targetAspect) view.setSize(1600 * (viewAspect / targetAspect), 900);
-    else view.setSize(1600, 900 * (targetAspect / viewAspect));
+    if (viewAspect > targetAspect) {
+        view.setSize(1600 * (viewAspect / targetAspect), 900);
+        float scalar = 900 / sy;
+        windowToFrame = sf::Transform().scale(scalar, scalar);
+        windowToFrame.translate(-(sx - (sy * targetAspect)) / 2, 0);
+    }
+    else {
+        view.setSize(1600, 900 * (targetAspect / viewAspect));
+        float scalar = 1600 / sx;
+        windowToFrame = sf::Transform().scale(scalar, scalar);
+        windowToFrame.translate(0, -(sy - (sx / targetAspect)) / 2);
+    }
 
     window.setView(view);
+    frameToWindow = windowToFrame.getInverse();
 }
 
 void Frame::beginDraw() {
@@ -39,7 +52,14 @@ void Frame::beginDraw() {
 }
 
 void Frame::endDraw() {
-    // TODO: draw frame borders
+    sf::Vector2f topLeft = windowToFrame.transformPoint(sf::Vector2f(0, 0));
+    sf::Vector2f bottomRight = windowToFrame.transformPoint(sf::Vector2f(1600, 900));
+
+    sf::Color color = sf::Color(20, 20, 20, 255);
+    drawRect(topLeft, sf::Vector2f(0, 900), color);
+    drawRect(sf::Vector2f(1600, 0), bottomRight, color);
+    drawRect(topLeft, sf::Vector2f(1600, 0), color);
+    drawRect(sf::Vector2f(0, 900), bottomRight, color);
 }
 
 void Frame::pushTransform(const sf::Transform transform) {
@@ -88,19 +108,26 @@ void Frame::drawCircle(const sf::Vector2f pos, const float radius, const sf::Col
     window.draw(circle, transformStack.top());
 }
 
-/**********************************************************************************************************************/
-/* runSFML
-/**********************************************************************************************************************/
+void Frame::drawRect(const sf::Vector2f topLeft, const sf::Vector2f bottomRight, const sf::Color color) {
+    primCount++;
+    sf::RectangleShape rect(bottomRight - topLeft);
+    rect.setPosition(topLeft);
+    rect.setFillColor(alphaScaleColor(color));
+    window.draw(rect, transformStack.top());
+}
 
-static sf::Event transformEvent(sf::RenderWindow &window, const sf::Event event) {
+/****
+ * runSFML
+ */
+
+static sf::Event transformEvent(const sf::Transform trans, const sf::Event event) {
     if (event.type == sf::Event::MouseMoved) {
-        sf::Vector2f pos(event.mouseMove.x, event.mouseMove.y);
-        pos = window.getView().getTransform().transformPoint(pos);
+        sf::Vector2f pos = trans.transformPoint(sf::Vector2f(event.mouseMove.x, event.mouseMove.y));
 
         sf::Event::MouseMoveEvent newMouseMove;
         sf::Event newEvent;
 
-        newMouseMove.x = (int) pos.x, newMouseMove.y = (int) pos.y;
+        newMouseMove.x = (int) std::round(pos.x), newMouseMove.y = (int) std::round(pos.y);
         newEvent.type = sf::Event::MouseMoved;
         newEvent.mouseMove = newMouseMove;
 
@@ -174,7 +201,7 @@ void runSFML(Control &face) {
                 app_log(LogType::Notice, "Caught close signal.");
                 window.close();
             }
-            face.handle(transformEvent(window, event));
+            face.handle(transformEvent(frame.windowToFrame, event));
         }
 
         if (profileTicker.tick(1)) app_log(LogType::Info, profiler.print());
