@@ -9,5 +9,4 @@ void Player::kill() {
 void Player::spawn(const PlaneState state) {
   plane = Plane(engine, state);
 }
-
 }

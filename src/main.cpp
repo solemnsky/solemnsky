@@ -1,7 +1,6 @@
 #include "base/control.h"
-#include "demo/graphics.h"
+#include "demo/demo.h"
 
 int main() {
-  GraphicsDemo ctrl{};
-  runSFML(ctrl);
+  runSFML(std::make_shared<Demo>());
 }

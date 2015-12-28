@@ -142,7 +142,9 @@ static sf::Event transformEvent(const sf::Transform trans,
   return event;
 }
 
-void runSFML(Control &ctrl) {
+void runSFML(std::shared_ptr<Control> ctrl) {
+  optional<std::shared_ptr<Control>> passedOn{};
+
   app_log(LogType::Notice, "Creating window ...");
 
   sf::ContextSettings settings;
@@ -166,6 +168,8 @@ void runSFML(Control &ctrl) {
   sf::Event event;
 
   while (window.isOpen()) {
+    if (ctrl->next) ctrl = ctrl->next;
+
     /*
      * Rendering / Sleeping
      * Here our goal is to update the window display (at the next available screen refresh), and in doing so
@@ -175,7 +179,7 @@ void runSFML(Control &ctrl) {
       frame.resize();
     frame.beginDraw();
     profileClock.restart();
-    ctrl.render(frame);
+    ctrl->render(frame);
     profiler.renderTime.push(profileClock.restart().asSeconds());
     profiler.primCount.push(frame.primCount);
     frame.endDraw();
@@ -194,7 +198,7 @@ void runSFML(Control &ctrl) {
     profileClock.restart();
     rollingTickTime += cycleDelta;
     while (rollingTickTime > tickStep) {
-      ctrl.tick(tickStep);
+      ctrl->tick(tickStep);
       rollingTickTime -= tickStep;
     }
     profiler.logicTime.push(profileClock.restart().asSeconds());
@@ -208,7 +212,7 @@ void runSFML(Control &ctrl) {
         app_log(LogType::Notice, "Caught close signal.");
         window.close();
       }
-      ctrl.handle(transformEvent(frame.windowToFrame, event));
+      ctrl->handle(transformEvent(frame.windowToFrame, event));
     }
 
     if (profileTicker.tick(1)) app_log(LogType::Info, profiler.print());

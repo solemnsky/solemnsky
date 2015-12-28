@@ -17,7 +17,7 @@ public:
   void tick(float delta) override;
   void render(Frame &f) override;
   void handle(sf::Event event) override;
-  optional<Control &> passOn() override;
+//  optional<Control &> passOn() override;
 };
 
 #endif //SOLEMNSKY_GRAPHICS_H

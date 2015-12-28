@@ -14,6 +14,7 @@ set(SOURCE_FILES ${SOURCE_FILES} src/engine/engine.h src/engine/engine.cpp)
 set(SOURCE_FILES ${SOURCE_FILES} src/engine/flight.h src/engine/flight.cpp)
 set(SOURCE_FILES ${SOURCE_FILES} src/engine/physics.h src/engine/physics.cpp)
 set(SOURCE_FILES ${SOURCE_FILES} src/demo/graphics.h src/demo/graphics.cpp)
+set(SOURCE_FILES ${SOURCE_FILES} src/demo/demo.h src/demo/demo.cpp)
 
 add_executable(solemnsky ${SOURCE_FILES})
 

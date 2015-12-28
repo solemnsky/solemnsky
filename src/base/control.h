@@ -9,7 +9,7 @@
 #include <stack>
 #include <functional>
 #include <experimental/optional>
-#include <auto_ptr.h>
+#include <memory>
 
 using std::experimental::optional;
 
@@ -20,7 +20,7 @@ class Control;
  * of the methods that use it.
  */
 class Frame {
-  friend void runSFML(Control &);
+  friend void runSFML(std::shared_ptr<Control> initCtrl);
 
 private:
   std::stack<sf::Transform> transformStack;
@@ -66,17 +66,15 @@ public:
  */
 class Control {
 public:
+  std::shared_ptr<Control> next{nullptr};
   virtual void tick(float delta) = 0; // in milliseconds
   virtual void render(Frame &f) = 0;
   virtual void handle(sf::Event event) = 0;
-
-  virtual optional<std::shared_ptr<Control>> passOn() { return {}; }
-  // TODO: make this work
 };
 
 /**
  * Run a Control with SFML, praised be.
  */
-void runSFML(Control &ctrl);
+void runSFML(std::shared_ptr<Control> ctrl);
 
 #endif //SOLEMNSKY_BASE_CTRL_H
