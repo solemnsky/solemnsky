@@ -1,5 +1,6 @@
 #include <sstream>
 #include <iostream>
+#include <cmath>
 #include "util.h"
 
 void app_log(LogType type, const std::string contents) {
