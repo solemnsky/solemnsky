@@ -4,6 +4,10 @@ project(solemnsky)
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
+# Third party Libraries
+add_subdirectory("thirdparty/Box2D/Box2D")
+add_subdirectory("thirdparty/SFML")
+
 # source files for executable
 set(SOURCE_FILES
   src/main.cpp
@@ -36,17 +40,18 @@ set(SOURCE_FILES
 # Libraries
 SET (LIBRARIES
   # libs: SFML 2.2 and box2d 2.3
-  /home/magneticduck/.nix-profile/lib/libsfml-system.so
-  /home/magneticduck/.nix-profile/lib/libsfml-graphics.so
-  /home/magneticduck/.nix-profile/lib/libsfml-window.so
-  /home/magneticduck/.nix-profile/lib/libBox2D.so
+  sfml-system
+  sfml-graphics
+  sfml-window
+  Box2D
 )
 
 # Paths to headers for inclusion
 SET (INCLUDE_DIRS
   # so we can #include "directory/something.h"
   src/
-  /home/magneticduck/.nix-profile/include/
+  thirdparty/SFML/include/
+  thirdparty/Box2D/Box2D/
 )
 
 add_executable(solemnsky ${SOURCE_FILES})
