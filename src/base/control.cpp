@@ -1,3 +1,4 @@
+#include <cmath>
 #include "profiler.h"
 #include "util.h"
 #include "control.h"

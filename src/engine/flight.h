@@ -9,7 +9,7 @@
 #ifndef SOLEMNSKY_FLIGHT_H
 #define SOLEMNSKY_FLIGHT_H
 
-#include "Box2D/Box2D.h"
+#include <Box2D/Box2D.h>
 #include "physics.h"
 #include "base/util.h"
 

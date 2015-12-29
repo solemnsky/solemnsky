@@ -1,0 +1,6 @@
+[submodule "SFML"]
+	path = thirdparty/SFML
+url=https://github.com/CouleeApps/SFML
+[submodule "thirdparty/Box2D"]
+	path = thirdparty/Box2D
+	url = https://github.com/erincatto/Box2D

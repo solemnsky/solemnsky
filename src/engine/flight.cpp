@@ -1,3 +1,4 @@
+#include <cmath>
 #include "flight.h"
 #include "engine.h"
 
