@@ -8,6 +8,10 @@
 #include <Box2D/Box2D.h>
 #include <functional>
 
+#include <experimental/optional> // for use downstream
+
+using std::experimental::optional;
+
 enum class LogType {
   Info, // you might like to know it
   Notice, // you should know it

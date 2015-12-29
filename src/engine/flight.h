@@ -11,6 +11,7 @@
 
 #include "Box2D/Box2D.h"
 #include "physics.h"
+#include "base/util.h"
 
 namespace sky {
 
@@ -59,22 +60,24 @@ struct PlaneState {
              float rot);
 };
 
-class Engine;
-
 class Plane {
 private:
-  sky::Engine *engine;
-  Physics *physics;
+  sky::Engine &engine;
+  Physics &physics;
 
   b2Body *body;
-
-  PlaneState state;
 
   void writeToBody();
   void readFromBody();
 
 public:
-  Plane(Engine *engine, const PlaneState state);
+  PlaneTuning tuning;
+  optional<PlaneState> state{}; // only when spawned
+
+  Plane(Engine &engine, PlaneTuning tuning);
+
+  void spawn(b2Vec2 pos, float rot);
+  void kill();
 };
 }
 

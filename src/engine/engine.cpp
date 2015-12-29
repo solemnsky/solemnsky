@@ -2,11 +2,20 @@
 
 namespace sky {
 
-void Player::kill() {
-  alive = false;
+void Engine::joinPlane(PID pid, const PlaneTuning tuning) {
+  std::map<int, int> x;
+  x[1] = 1;
+
+  planes[pid] = Plane(*this, tuning);
 }
 
-void Player::spawn(const PlaneState state) {
-  plane = Plane(engine, state);
+void Engine::quitPlane(PID pid) {
+  planes.erase(pid);
 }
+
+Plane *Engine::getPlane(PID pid) {
+  return &planes[pid];
+//  return nullptr;
+}
+
 }

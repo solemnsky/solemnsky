@@ -27,26 +27,19 @@ typedef int PID; // personal ID for elements in the game
 
 class Engine;
 
-class Player {
-public:
-  Engine *engine;
-  bool alive;
-  sky::Plane plane;
-
-  void kill();
-  void spawn(const sky::PlaneState);
-};
-
 /**
  * Top-level manager for our entire game system.
  */
 class Engine {
 private:
+  std::map<PID, Plane> planes;
 
 public:
-  Physics physics;
+  Physics physics{100};
 
-  std::map<PID, Plane> planes;
+  void joinPlane(PID pid, const PlaneTuning tuning);
+  void quitPlane(PID pid);
+  Plane *getPlane(PID pid);
 };
 }
 
