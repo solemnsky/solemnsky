@@ -8,7 +8,7 @@
 #include <Box2D/Box2D.h>
 #include <functional>
 
-// TODO: understand the difference between mine and Boost's
+// TODO: use Boost's optional instead of this
 template<typename T>
 class Optional {
 private:
@@ -20,9 +20,15 @@ public:
 
   Optional() : has{false} { };
 
-  T operator*() { return value[0]; }
+  T operator*() {
+    assert(has);
+    return value[0];
+  }
 
-  T *operator->() { return &value[0]; }
+  T *operator->() {
+    assert(has);
+    return &value[0];
+  }
 
   operator bool() { return has; }
 };
