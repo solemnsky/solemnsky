@@ -1,6 +1,11 @@
-#include "base/control.h"
-#include "demo/demo.h"
+//#include <base/util.h>
+#include <iostream>
+//#include "base/control.h"
+//#include "demo/demo.h"
 
 int main() {
-  runSFML(std::make_shared<Demo>());
+//  app_log(LogType::Notice, "starting");
+  std::cout << "hello world";
+//  runSFML(std::make_shared<Demo>());
+  return 0;
 }
