@@ -77,8 +77,4 @@ public:
   operator bool();
 };
 
-std::string show(float x);
-
-std::string show(int x);
-
 #endif //SOLEMNSKY_BASE_UTIL_H
