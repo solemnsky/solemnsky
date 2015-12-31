@@ -13,7 +13,7 @@ const sf::Color Frame::alphaScaleColor(const sf::Color color) {
   return newColor;
 }
 
-Frame::Frame(sf::RenderWindow &window) : window{window} {
+Frame::Frame(sf::RenderWindow &window) : window(window) {
   resize();
 }
 
@@ -132,7 +132,8 @@ static sf::Event transformEvent(const sf::Transform trans,
     sf::Event::MouseMoveEvent newMouseMove;
     sf::Event newEvent;
 
-    newMouseMove.x = (int) std::round(pos.x), newMouseMove.y = (int) std::round(
+    newMouseMove.x = (int) std::round(
+        pos.x), newMouseMove.y = (int) std::round(
         pos.y);
     newEvent.type = sf::Event::MouseMoved;
     newEvent.mouseMove = newMouseMove;
@@ -144,7 +145,7 @@ static sf::Event transformEvent(const sf::Transform trans,
 }
 
 void runSFML(std::shared_ptr<Control> ctrl) {
-  optional<std::shared_ptr<Control>> passedOn{};
+  Optional<std::shared_ptr<Control>> passedOn{};
 
   app_log(LogType::Notice, "Creating window ...");
 

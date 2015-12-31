@@ -6,7 +6,7 @@ void Engine::joinPlane(PID pid, const PlaneTuning tuning) {
   std::map<int, int> x;
   x[1] = 1;
 
-  planes[pid] = Plane(*this, tuning);
+  planes[pid] = Plane(this, tuning);
 }
 
 void Engine::quitPlane(PID pid) {

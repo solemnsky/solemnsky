@@ -56,14 +56,14 @@ struct PlaneState {
   b2Vec2 leftoverVel{0, 0};
   float speed, throttle;
 
-  PlaneState(Physics &physics, const PlaneTuning tuning, b2Vec2 pos,
+  PlaneState(Physics *physics, const PlaneTuning tuning, b2Vec2 pos,
              float rot);
 };
 
 class Plane {
 private:
-  sky::Engine &engine;
-  Physics &physics;
+  sky::Engine *engine;
+  Physics *physics;
 
   b2Body *body;
 
@@ -72,9 +72,9 @@ private:
 
 public:
   PlaneTuning tuning;
-  optional<PlaneState> state{}; // only when spawned
+  Optional<PlaneState> state{}; // only when spawned
 
-  Plane(Engine &engine, PlaneTuning tuning);
+  Plane(Engine *engine, PlaneTuning tuning);
 
   void spawn(b2Vec2 pos, float rot);
   void kill();

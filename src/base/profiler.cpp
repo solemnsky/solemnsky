@@ -1,5 +1,6 @@
 #include <cmath>
 #include "profiler.h"
+#include "util.h"
 
 /****
  * SamplerValue
@@ -46,15 +47,15 @@ Profiler::Profiler(int size) :
 }
 
 static const std::string showTime(float fl) {
-  return std::to_string((int) std::round(fl * 1000)) + "ms";
+  return show((int) std::round(fl * 1000)) + "ms";
 }
 
 static const std::string showFps(float fl) {
-  return std::to_string((int) std::round(fl)) + "fps";
+  return show((int) std::round(fl)) + "fps";
 }
 
 static const std::string showInt(int i) {
-  return std::to_string(i);
+  return show(i);
 }
 
 std::string Profiler::print() {

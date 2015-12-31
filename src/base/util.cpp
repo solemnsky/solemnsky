@@ -4,11 +4,11 @@
 #include "util.h"
 
 void app_log(LogType type, const std::string contents) {
-  static std::vector<std::string> prefixes = {
-      "INFO:   ",
-      "NOTICE: ",
-      "ERROR:  ",
-      "        "};
+  static std::vector<std::string> prefixes =
+      {"INFO:   ",
+       "NOTICE: ",
+       "ERROR:  ",
+       "        "};
 
   std::stringstream stream(contents);
   std::string line;
@@ -42,7 +42,10 @@ void Ticker::wait() {
 
 Ticker::operator bool() { return active; }
 
-sf::Vector2f FromBox2d::vector(b2Vec2 vec) {
-  return sf::Vector2f(vec.x, vec.y);
+std::string show(float x) {
+  return "<float>";
 }
 
+std::string show(int x) {
+  return "<int>";
+}
