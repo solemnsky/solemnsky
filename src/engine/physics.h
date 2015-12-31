@@ -11,26 +11,38 @@
 #include "base/util.h"
 
 namespace sky {
-
 /**
  * Physics manager, thin and transparent wrapper over Box2D.
  */
 class Physics {
 public:
-  Physics(float scalar) : world(b2Vec2(0, 0)), scalar(scalar),
-                          invScalar(1 / scalar) {
+  struct Settings {
+    const float distanceScalar = 100; // pixels per meters
+    const int velocityIterations = 7;
+    const int positionIterations = 7;
+
+    Settings() { }
+  };
+
+  Physics(float scalar, Settings settings = Settings{})
+      : world(b2Vec2(0, 0)),
+        settings(settings), // a bit too much copying for my taste, oh well
+        invDistanceScalar(1 / settings.distanceScalar) {
+
     app_log(LogType::Notice, "Instantiated physics."); // necessary logging
   }
 
+  const Settings settings;
+  const float invDistanceScalar;
+
   b2World world;
 
-  const float scalar;
-  const float invScalar;
 
   /**
    * Creating stuff.
    */
   b2Body *planeBody(b2Vec2 dims);
+  void tick(const float delta);
 };
 
 }

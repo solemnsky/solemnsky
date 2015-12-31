@@ -12,13 +12,21 @@
 template<typename T>
 class Optional {
 private:
-  T value[]{};
-  bool has;
+  T value[];
+  bool has{false};
 
 public:
-  Optional(T value) : has{true} { this->value[0] = value; }
+  Optional() { }
 
-  Optional() : has{false} { };
+  Optional(T value) {
+    this->value[0] = value;
+    has = true;
+  }
+
+  Optional(const Optional<T> &x) {
+    this->has = x.has;
+    if (has) this->value[0] = x.value[0];
+  }
 
   T operator*() {
     assert(has);
@@ -31,6 +39,12 @@ public:
   }
 
   operator bool() { return has; }
+
+  Optional<T> &operator=(Optional<T> &&x) {
+    this->has = x.has;
+    if (has) this->value[0] = x.value[0];
+    return *this;
+  }
 };
 
 enum class LogType {

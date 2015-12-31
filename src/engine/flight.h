@@ -67,14 +67,22 @@ private:
 
   b2Body *body;
 
+  /*
+   * simulation
+   */
+  friend class Engine;
+
   void writeToBody();
   void readFromBody();
+  void tick(float d);
 
 public:
   PlaneTuning tuning;
   Optional<PlaneState> state{}; // only when spawned
 
-  Plane(Engine *engine, PlaneTuning tuning);
+  explicit Plane(Engine *engine, const PlaneTuning tuning);
+  Plane();
+  // TODO: why does something in the code (box2d?) require a null ctor for Plane??
 
   void spawn(b2Vec2 pos, float rot);
   void kill();
