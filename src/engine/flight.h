@@ -10,7 +10,7 @@
 #define SOLEMNSKY_FLIGHT_H
 
 #include <Box2D/Box2D.h>
-#include "physics.h"
+#include "base/physics.h"
 #include "base/util.h"
 
 namespace sky {
@@ -18,7 +18,7 @@ namespace sky {
 class Engine;
 
 struct PlaneTuning {
-  b2Vec2 hitbox;
+  sf::Vector2f hitbox;
 
   struct {
     float
@@ -49,15 +49,15 @@ struct PlaneTuning {
  * Simple data structure with the state of a player.
  */
 struct PlaneState {
-  b2Vec2 pos, vel;
-  float32 rot, rotvel{0};
+  sf::Vector2f pos, vel;
+  float rot, rotvel{0};
 
   bool stalled{false}, afterburner{false};
-  b2Vec2 leftoverVel{0, 0};
+  sf::Vector2f leftoverVel{0, 0};
   float speed, throttle;
 
-  PlaneState(Physics *physics, const PlaneTuning tuning, b2Vec2 pos,
-             float rot);
+  PlaneState(Physics *physics, const PlaneTuning tuning, const sf::Vector2f pos,
+             const float rot);
 };
 
 class Plane {
@@ -84,7 +84,7 @@ public:
   Plane();
   // TODO: why does something in the code (box2d?) require a null ctor for Plane??
 
-  void spawn(b2Vec2 pos, float rot);
+  void spawn(const sf::Vector2f pos, const float rot);
   void kill();
 };
 }

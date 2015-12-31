@@ -1,3 +1,4 @@
+#include <base/physics.h>
 #include "engine.h"
 
 namespace sky {
@@ -22,5 +23,23 @@ void Engine::tick(float delta) {
     plane.tick(delta);
     plane.writeToBody();
   }
+}
+
+/****
+ * Physics settings.
+ */
+
+Physics::Settings mySettings() {
+  Physics::Settings settings{};
+  settings.velocityIterations = 7; // etc
+  return settings;
+};
+
+Engine::Engine() : physics(mySettings()) {
+  app_log(LogType::Notice, "Starting engine..."); // more important logging
+}
+
+Engine::~Engine() {
+  app_log(LogType::Notice, "Destroying engine...");
 }
 }

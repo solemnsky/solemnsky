@@ -1,4 +1,5 @@
 #include <cmath>
+#include <base/physics.h>
 #include "flight.h"
 #include "engine.h"
 
@@ -9,9 +10,10 @@ namespace sky {
  */
 
 PlaneState::PlaneState(Physics *physics, const PlaneTuning tuning,
-                       b2Vec2 pos, float rot) : pos(pos), rot(rot) {
-  vel = physics->settings.distanceScalar * tuning.flight.maxVelCruise *
-        b2Vec2(std::cos(rot), std::sin(rot));
+                       const sf::Vector2f pos, const float rot)
+    : pos(pos),
+      rot(rot) {
+  vel = tuning.flight.maxVelCruise * sf::Vector2f(std::cos(rot), std::sin(rot));
   throttle = tuning.throttleSize;
   speed = tuning.flight.maxVelCruise;
 }
@@ -22,13 +24,13 @@ PlaneState::PlaneState(Physics *physics, const PlaneTuning tuning,
 
 void Plane::writeToBody() {
   if (state) {
-    if (!body) body = physics->planeBody(tuning.hitbox);
+    if (!body) body = physics->planeBody(physics->toPhysVec(tuning.hitbox));
 
-    body->SetTransform((1 / physics->settings.distanceScalar) * state->pos,
-                       state->rot);
+    body->SetTransform(
+        physics->toPhysVec(state->pos),
+        state->rot);
     body->SetAngularVelocity(state->rotvel);
-    body->SetLinearVelocity(state->vel);
-
+    body->SetLinearVelocity(physics->toPhysVec(state->vel));
   } else {
     if (body) physics->world.DestroyBody(body);
   }
@@ -40,7 +42,7 @@ void Plane::readFromBody() {
 Plane::Plane(Engine *engine, const PlaneTuning tuning) :
     engine(engine), physics(&engine->physics), tuning(tuning) { }
 
-void Plane::spawn(b2Vec2 pos, float rot) {
+void Plane::spawn(const sf::Vector2f pos, const float rot) {
   state = PlaneState(physics, tuning, pos, rot);
 }
 
@@ -49,12 +51,12 @@ void Plane::kill() {
 }
 
 Plane::Plane() : engine(nullptr), physics(nullptr) {
-
+  // this shouldn't exist (see to-do item in header)
 }
 
 void Plane::tick(float d) {
   if (state) {
-
+    // TODO: port physics from Haxe repo
   }
 }
 }

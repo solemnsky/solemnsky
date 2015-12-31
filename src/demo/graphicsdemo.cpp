@@ -1,4 +1,4 @@
-#include "graphics.h"
+#include "graphicsdemo.h"
 
 void GraphicsDemo::renderPlanet(Frame &f, sf::Vector2f center) {
   f.pushTransform(sf::Transform().translate(center).rotate(time * 30));

@@ -1,5 +1,5 @@
 #include "demo.h"
-#include "graphics.h"
+#include "graphicsdemo.h"
 
 void Demo::tick(float delta) {
 }
