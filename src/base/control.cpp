@@ -159,7 +159,7 @@ void runSFML(std::shared_ptr<Control> ctrl) {
 
   Profiler profiler{200};
   Ticker profileTicker{200}, resizeTicker{1};
-//    profileTicker.wait();
+  profileTicker.wait(); // wait 200 cycles before emitting a profile
 
   sf::Clock cycleClock, profileClock;
   const float tickStep = 1 / 60.0f;
@@ -170,6 +170,7 @@ void runSFML(std::shared_ptr<Control> ctrl) {
   sf::Event event;
 
   while (window.isOpen()) {
+    if (ctrl->quitting) window.close();
     if (ctrl->next) ctrl = ctrl->next;
 
     /*
@@ -177,8 +178,9 @@ void runSFML(std::shared_ptr<Control> ctrl) {
      * Here our goal is to update the window display (at the next available screen refresh), and in doing so
      * spend some time before ticking.
      */
-    if (event.type == sf::Event::Resized || resizeTicker.tick(cycleDelta))
+    if (event.type == sf::Event::Resized || resizeTicker.tick(cycleDelta)) {
       frame.resize();
+    }
     frame.beginDraw();
     profileClock.restart();
     ctrl->render(frame);

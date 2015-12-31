@@ -1,5 +1,5 @@
 /**
- * Helper interface / utilities to write our GUI a bit less painfully.
+ *
  */
 #ifndef SOLEMNSKY_BASE_CTRL_H
 #define SOLEMNSKY_BASE_CTRL_H
@@ -9,7 +9,6 @@
 #include <stack>
 #include <functional>
 #include <memory>
-
 
 class Control;
 
@@ -64,8 +63,16 @@ public:
  */
 class Control {
 public:
+  /**
+   * Sending signals to the app loop.
+   */
   std::shared_ptr<Control> next{nullptr};
-  virtual void tick(float delta) = 0; // in milliseconds
+  bool quitting{false};
+
+  /**
+   * Callbacks to integrate into the app loop.
+   */
+  virtual void tick(float delta) = 0;
   virtual void render(Frame &f) = 0;
   virtual void handle(sf::Event event) = 0;
 };

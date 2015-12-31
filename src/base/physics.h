@@ -17,32 +17,36 @@ namespace sky {
 class Physics {
 public:
   struct Settings {
-    const float distanceScalar = 100; // pixels per meters
-    const int velocityIterations = 7;
-    const int positionIterations = 7;
+    float distanceScalar = 100; // pixels per meters
+    int velocityIterations = 7;
+    int positionIterations = 7;
 
     Settings() { }
   };
 
-  Physics(float scalar, Settings settings = Settings{})
+  Physics(Settings settings = Settings{})
       : world(b2Vec2(0, 0)),
-        settings(settings), // a bit too much copying for my taste, oh well
-        invDistanceScalar(1 / settings.distanceScalar) {
-
+        settings(settings) {
     app_log(LogType::Notice, "Instantiated physics."); // necessary logging
   }
 
+  /**
+   * Settings and conversion helpers.
+   */
   const Settings settings;
-  const float invDistanceScalar;
-
-  b2World world;
-
+  sf::Vector2f toGameVec(b2Vec2 vec);
+  b2Vec2 toPhysVec(sf::Vector2f vec);
 
   /**
-   * Creating stuff.
+   * Box2d world.
+   */
+  b2World world;
+
+  /**
+   * Creating physical stuff.
    */
   b2Body *planeBody(b2Vec2 dims);
-  void tick(const float delta);
+  void tick(const float delta); // in seconds
 };
 
 }

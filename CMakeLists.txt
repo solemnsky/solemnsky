@@ -15,11 +15,20 @@ set(SOURCE_FILES
   src/base/control.h
   src/base/control.cpp
 
+        src/base/physics.h
+        src/base/physics.cpp
+
   src/base/profiler.h
   src/base/profiler.cpp
 
   src/base/util.h
   src/base/util.cpp
+
+        src/demo/demo.h
+        src/demo/demo.cpp
+
+        src/demo/graphicsdemo.h
+        src/demo/graphicsdemo.cpp
 
   src/engine/engine.h
   src/engine/engine.cpp
@@ -27,15 +36,8 @@ set(SOURCE_FILES
   src/engine/flight.h
   src/engine/flight.cpp
 
-  src/engine/physics.h
-  src/engine/physics.cpp
-
-  src/demo/graphics.h
-  src/demo/graphics.cpp
-
-  src/demo/demo.h
-  src/demo/demo.cpp
-)
+        src/engine/graphics.cpp
+        src/engine/graphics.h)
 
 #find_package(Boost)
 

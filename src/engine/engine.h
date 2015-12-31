@@ -6,7 +6,7 @@
 #define SOLEMNSKY_ENGINE_ENGINE_H
 
 #include <Box2D/Dynamics/b2World.h>
-#include "physics.h"
+#include "base/physics.h"
 #include "flight.h"
 #include <map>
 
@@ -35,7 +35,7 @@ private:
   std::map<PID, Plane> planes;
 
 public:
-  Physics physics{100};
+  Physics physics;
 
   Engine();
   ~Engine();
