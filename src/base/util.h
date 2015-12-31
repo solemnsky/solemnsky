@@ -12,37 +12,37 @@
 template<typename T>
 class Optional {
 private:
-  T value[];
+  T *value;
   bool has{false};
 
 public:
   Optional() { }
 
   Optional(T value) {
-    this->value[0] = value;
+    this->value = &value;
     has = true;
   }
 
   Optional(const Optional<T> &x) {
     this->has = x.has;
-    if (has) this->value[0] = x.value[0];
+    if (has) this->value = x.value;
   }
 
   T operator*() {
     assert(has);
-    return value[0];
+    return *value;
   }
 
   T *operator->() {
     assert(has);
-    return &value[0];
+    return value;
   }
 
   operator bool() { return has; }
 
   Optional<T> &operator=(Optional<T> &&x) {
     this->has = x.has;
-    if (has) this->value[0] = x.value[0];
+    if (has) this->value = x.value;
     return *this;
   }
 };
