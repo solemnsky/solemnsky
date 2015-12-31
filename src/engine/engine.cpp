@@ -11,8 +11,8 @@ void Engine::quitPlane(PID pid) {
   planes.erase(pid);
 }
 
-Plane *Engine::getPlane(PID pid) {
-  return &planes[pid];
+Plane &Engine::getPlane(PID pid) {
+  return planes[pid];
 }
 
 void Engine::tick(float delta) {

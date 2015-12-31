@@ -42,7 +42,7 @@ public:
 
   void joinPlane(PID pid, const PlaneTuning tuning);
   void quitPlane(PID pid);
-  Plane *getPlane(PID pid);
+  Plane &getPlane(PID pid);
 
   void tick(float delta); // delta in seconds, as always
 };
