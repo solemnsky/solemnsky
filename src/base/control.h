@@ -8,10 +8,8 @@
 #include <vector>
 #include <stack>
 #include <functional>
-#include <experimental/optional>
 #include <memory>
 
-using std::experimental::optional;
 
 class Control;
 

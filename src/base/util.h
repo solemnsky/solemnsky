@@ -8,9 +8,24 @@
 #include <Box2D/Box2D.h>
 #include <functional>
 
-#include <experimental/optional> // for use downstream
+// TODO: understand the difference between mine and Boost's
+template<typename T>
+class Optional {
+private:
+  T value[]{};
+  bool has;
 
-using std::experimental::optional;
+public:
+  Optional(T value) : has{true} { this->value[0] = value; }
+
+  Optional() : has{false} { };
+
+  T operator*() { return value[0]; }
+
+  T *operator->() { return &value[0]; }
+
+  operator bool() { return has; }
+};
 
 enum class LogType {
   Info, // you might like to know it
@@ -34,18 +49,16 @@ public:
   Ticker(float period) : period(period), cooldown(period) { }
 
   bool tick(float delta);
+
   void prime();
+
   void wait();
 
   operator bool();
 };
 
-/**
- * Convert between box2d and SFML types.
- */
-class FromBox2d {
-public:
-  static sf::Vector2f vector(b2Vec2 vec);
-};
+std::string show(float x);
+
+std::string show(int x);
 
 #endif //SOLEMNSKY_BASE_UTIL_H
