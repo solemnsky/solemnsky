@@ -47,15 +47,15 @@ Profiler::Profiler(int size) :
 }
 
 static const std::string showTime(float fl) {
-  return show((int) std::round(fl * 1000)) + "ms";
+  return std::to_string((int) std::round(fl * 1000)) + "ms";
 }
 
 static const std::string showFps(float fl) {
-  return show((int) std::round(fl)) + "fps";
+  return std::to_string((int) std::round(fl)) + "fps";
 }
 
 static const std::string showInt(int i) {
-  return show(i);
+  return std::to_string(i);
 }
 
 std::string Profiler::print() {

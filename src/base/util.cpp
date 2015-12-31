@@ -42,10 +42,3 @@ void Ticker::wait() {
 
 Ticker::operator bool() { return active; }
 
-std::string show(float x) {
-  return "<float>";
-}
-
-std::string show(int x) {
-  return "<int>";
-}
