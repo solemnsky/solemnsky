@@ -10,55 +10,55 @@ add_subdirectory("thirdparty/SFML")
 
 # source files for executable
 set(SOURCE_FILES
-  src/main.cpp
+    src/main.cpp
 
-  src/base/control.h
-  src/base/control.cpp
+    src/base/control.h
+    src/base/control.cpp
 
-        src/base/physics.h
-        src/base/physics.cpp
+    src/base/physics.h
+    src/base/physics.cpp
 
-  src/base/profiler.h
-  src/base/profiler.cpp
+    src/base/profiler.h
+    src/base/profiler.cpp
 
-  src/base/util.h
-  src/base/util.cpp
+    src/base/util.h
+    src/base/util.cpp
 
-        src/demo/demo.h
-        src/demo/demo.cpp
+    src/demo/demo.h
+    src/demo/demo.cpp
 
-        src/demo/graphicsdemo.h
-        src/demo/graphicsdemo.cpp
+    src/demo/graphicsdemo.h
+    src/demo/graphicsdemo.cpp
 
-  src/engine/engine.h
-  src/engine/engine.cpp
+    src/engine/engine.h
+    src/engine/engine.cpp
 
-  src/engine/flight.h
-  src/engine/flight.cpp
+    src/engine/flight.h
+    src/engine/flight.cpp
 
-        src/engine/graphics.cpp
-        src/engine/graphics.h)
+    src/engine/graphics.cpp
+    src/engine/graphics.h)
 
 #find_package(Boost)
 
 # Libraries
 set(LIBRARIES
-  # libs: SFML 2.2 and box2d 2.3
-  sfml-system
-  sfml-graphics
-  sfml-window
-  Box2D
-        #  "${Boost_LIBRARIES}"
-)
+    # libs: SFML 2.2 and box2d 2.3
+    sfml-system
+    sfml-graphics
+    sfml-window
+    Box2D
+    #  "${Boost_LIBRARIES}"
+    )
 
 # Paths to headers for inclusion
 set(INCLUDE_DIRS
-  # so we can #include "directory/something.h"
-  src/
-  thirdparty/SFML/include/
-  thirdparty/Box2D/Box2D/
-        #  "${Boost_INCLUDE_DIRS}"
-)
+    # so we can #include "directory/something.h"
+    src/
+    thirdparty/SFML/include/
+    thirdparty/Box2D/Box2D/
+    #  "${Boost_INCLUDE_DIRS}"
+    )
 
 add_executable(solemnsky ${SOURCE_FILES})
 include_directories(${INCLUDE_DIRS})
