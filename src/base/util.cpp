@@ -42,3 +42,13 @@ void Ticker::wait() {
 
 Ticker::operator bool() { return active; }
 
+/**
+ * If the event is a button action, return whether it was pressed down.
+ */
+Optional<bool> getMouseButtonAction(sf::Event event) {
+  if (event.type == sf::Event::MouseButtonReleased)
+    return {false};
+  if (event.type == sf::Event::MouseButtonPressed)
+    return {true};
+  return {};
+}

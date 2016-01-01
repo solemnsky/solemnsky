@@ -11,7 +11,45 @@ enum class SpriteSheetId {
   BasicPlayer
 };
 
-std::string filepathFromId(const SpriteSheetId id);
+/**
+ * Represents a sprite
+ */
+class SpriteSheet {
+private:
+  const std::string filepath;
+
+  const sf::Vector2i spriteSize;
+  const sf::Vector2i spriteLayout;
+public:
+  const int spriteCount;
+
+  SpriteSheet(std::string filepath,
+              sf::Vector2i spriteSize,
+              sf::Vector2i spriteLayout) :
+      spriteSize(spriteSize),
+      spriteLayout(spriteLayout),
+      filepath(filepath),
+      spriteCount(spriteLayout.x * spriteLayout.y) { }
+
+
+  // a number from 1 to spriteCount
+  void drawAt(Frame &f, const sf::Vector2f pos,
+              const sf::Vector2f dims, const int index) const;
+};
+
+/**
+ * Static record of sprite sheet data that we have in the builtin assets.
+ */
+static const std::vector<SpriteSheet> spriteSheets{
+    {"media/render-3d/test_1/player_200", {200, 200}, {2, 15}}
+};
+
+/**
+ * Indices of various player sheets in 'spriteSheets'.
+ */
+enum class PlayerSheets {
+
+};
 
 }
 

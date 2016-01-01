@@ -120,29 +120,82 @@ void Frame::drawRect(const sf::Vector2f topLeft, const sf::Vector2f bottomRight,
 }
 
 /****
- * runSFML
+ * transformEvent
+ * Fakes a transformation of any potential position-related values on an
+ * event. The fact that these position-related values are all ints makes me
+ * feel like we should make our own event type, just out of respect for
+ * semantics. However, this doesn't realistically do us anything as long as
+ * the window dimensions are less than 1600x900. I suppose I expect to come
+ * back to this sometime in the future when everybody's using 4k displays...
  */
 
 static sf::Event transformEvent(const sf::Transform trans,
                                 const sf::Event event) {
-  if (event.type == sf::Event::MouseMoved) {
-    sf::Vector2f pos = trans.transformPoint(
-        sf::Vector2f(event.mouseMove.x, event.mouseMove.y));
+  const bool mouseMoved(event.type == sf::Event::MouseMoved),
+      mousePressed(event.type == sf::Event::MouseButtonPressed ||
+                   event.type == sf::Event::MouseButtonReleased),
+      mouseSomething(mouseMoved || mousePressed);
 
-    sf::Event::MouseMoveEvent newMouseMove;
+  if (mouseSomething) {
+    sf::Vector2f pos;
+    if (mouseMoved) {
+      pos = trans.transformPoint(
+          sf::Vector2f(event.mouseMove.x, event.mouseMove.y));
+    }
+    if (mousePressed) {
+      pos = trans.transformPoint(
+          sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+    }
+
     sf::Event newEvent;
+    newEvent.type = event.type;
 
-    newMouseMove.x = (int) std::round(
-        pos.x), newMouseMove.y = (int) std::round(
-        pos.y);
-    newEvent.type = sf::Event::MouseMoved;
-    newEvent.mouseMove = newMouseMove;
+    if (mouseMoved) {
+      sf::Event::MouseMoveEvent newMouseMove;
+      newMouseMove.x = (int) std::round(pos.x);
+      newMouseMove.y = (int) std::round(pos.y);
+      newEvent.mouseMove = newMouseMove;
+    }
+    if (mousePressed) {
+      sf::Event::MouseButtonEvent newMouseButton;
+      newMouseButton.x = (int) std::round(pos.x);
+      newMouseButton.y = (int) std::round(pos.y);
+      newMouseButton.button = event.mouseButton.button;
+      newEvent.mouseButton = newMouseButton;
+    }
+
+    // this would be so much cooler in Haskell, trust me
 
     return newEvent;
   }
 
   return event;
 }
+
+/****
+ * WrapControl
+ */
+
+WrapControl::WrapControl(const WrapSettings settings,
+                         std::shared_ptr<Control> ctrl) :
+    settings(settings), ctrl(ctrl) { }
+
+void WrapControl::tick(float delta) {
+  ctrl->tick(settings.timeScale * delta);
+}
+
+void WrapControl::render(Frame &f) {
+  f.withAlphaTransform(settings.alpha, settings.transform,
+                       [&]() { ctrl->render(f); });
+}
+
+void WrapControl::handle(sf::Event event) {
+  ctrl->handle(transformEvent(settings.transform.getInverse(), event));
+}
+
+/****
+ * runSFML
+ */
 
 void runSFML(std::shared_ptr<Control> ctrl) {
   Optional<std::shared_ptr<Control>> passedOn{};
@@ -216,7 +269,9 @@ void runSFML(std::shared_ptr<Control> ctrl) {
         app_log(LogType::Notice, "Caught close signal.");
         window.close();
       }
-      ctrl->handle(transformEvent(frame.windowToFrame, event));
+
+      if (event.type != sf::Event::MouseWheelScrolled) // fk mouse wheels
+        ctrl->handle(transformEvent(frame.windowToFrame, event));
     }
 
     if (profileTicker.tick(1)) app_log(LogType::Info, profiler.print());
