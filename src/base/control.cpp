@@ -182,7 +182,7 @@ void Frame::drawRect(const sf::Vector2f topLeft, const sf::Vector2f bottomRight,
 void runSFML(std::shared_ptr<Control> ctrl) {
   Optional<std::shared_ptr<Control>> passedOn{};
 
-  app_log(LogType::Notice, "Creating window ...");
+  appLog(LogType::Notice, "Creating window ...");
 
   sf::ContextSettings settings;
   settings.antialiasingLevel = 8;
@@ -190,7 +190,7 @@ void runSFML(std::shared_ptr<Control> ctrl) {
                           sf::Style::Default, settings);
   window.setVerticalSyncEnabled(true);
 
-  app_log(LogType::Notice, "Starting application ...");
+  appLog(LogType::Notice, "Starting application ...");
 
   Profiler profiler{200};
   Ticker profileTicker{200}, resizeTicker{1};
@@ -248,7 +248,7 @@ void runSFML(std::shared_ptr<Control> ctrl) {
      */
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed) {
-        app_log(LogType::Notice, "Caught close signal.");
+        appLog(LogType::Notice, "Caught close signal.");
         window.close();
       }
 
@@ -256,9 +256,9 @@ void runSFML(std::shared_ptr<Control> ctrl) {
         ctrl->handle(detail::transformEvent(frame.windowToFrame, event));
     }
 
-    if (profileTicker.tick(1)) app_log(LogType::Info, profiler.print());
+    if (profileTicker.tick(1)) appLog(LogType::Info, profiler.print());
   }
 
-  app_log(LogType::Notice, "Exiting app.");
+  appLog(LogType::Notice, "Exiting app.");
 }
 
