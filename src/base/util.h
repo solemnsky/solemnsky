@@ -65,7 +65,7 @@ enum class LogType {
 /**
  * Logs a pretty little message.
  */
-void app_log(LogType type, const std::string contents);
+void appLog(LogType type, const std::string contents);
 
 /****
  * Manages an action that becomes momentarily active on regular intervals.

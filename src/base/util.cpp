@@ -3,7 +3,7 @@
 #include <cmath>
 #include "util.h"
 
-void app_log(LogType type, const std::string contents) {
+void appLog(LogType type, const std::string contents) {
   static std::vector<std::string> prefixes =
       {"INFO:   ",
        "NOTICE: ",

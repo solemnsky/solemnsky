@@ -36,10 +36,10 @@ Physics::Settings mySettings() {
 };
 
 Engine::Engine() : physics(mySettings()) {
-  app_log(LogType::Notice, "Starting engine..."); // more important logging
+  appLog(LogType::Notice, "Starting engine..."); // more important logging
 }
 
 Engine::~Engine() {
-  app_log(LogType::Notice, "Destroying engine...");
+  appLog(LogType::Notice, "Destroying engine...");
 }
 }
