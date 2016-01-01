@@ -37,7 +37,15 @@ set(SOURCE_FILES
     src/engine/flight.cpp
 
     src/engine/graphics.cpp
-    src/engine/graphics.h)
+    src/engine/graphics.h
+
+    src/demo/enginedemo.cpp
+    src/demo/enginedemo.h
+
+    src/base/ui/button.cpp
+    src/base/ui/button.h
+
+    src/base/ui.h)
 
 #find_package(Boost)
 

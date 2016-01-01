@@ -1,5 +1,6 @@
 /**
- * Generally helpful utilities.
+ * Generally helpful utilities. If any of this starts getting large, it'll be
+ * separated into another file.
  */
 #ifndef SOLEMNSKY_BASE_UTIL_H
 #define SOLEMNSKY_BASE_UTIL_H
@@ -7,6 +8,10 @@
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include <functional>
+
+/****
+ * Optional.
+ */
 
 // TODO: use Boost's optional instead of this
 template<typename T>
@@ -47,17 +52,25 @@ public:
   }
 };
 
+/****
+ * Canonical log messages with some handy formatting.
+ */
+
 enum class LogType {
   Info, // you might like to know it
   Notice, // you should know it
   Error // you have to know it (buzzfeed articles, etc)
 };
 
+/**
+ * Logs a pretty little message.
+ */
 void app_log(LogType type, const std::string contents);
 
-/**
+/****
  * Manages an action that becomes momentarily active on regular intervals.
  */
+
 class Ticker {
 private:
   bool active = false;
@@ -76,5 +89,11 @@ public:
 
   operator bool();
 };
+
+/****
+ * Extract useful information from sf::Events.
+ */
+
+Optional<bool> getMouseButtonAction(sf::Event event);
 
 #endif //SOLEMNSKY_BASE_UTIL_H

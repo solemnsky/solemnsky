@@ -6,7 +6,7 @@ It's possible to build this project on most Windows, OSX, and Linux setups.
 Listed below are the particular setups that we test against.
 
 Windows: install http://nuwen.net/mingw.html -style MinGW, build with CLion.
-OSX: Just Works (tm).
+OSX: Just Works (tm), plus or minus libraries.
 Linux: Should build easily, if you're having problems nix is a sure-fire way 
 to not have problems anymore (see default.nix in top-level).
 
