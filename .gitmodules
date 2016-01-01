@@ -3,4 +3,4 @@
 	url = http://github.com/solemnsky/SFML
 [submodule "thirdparty/Box2D"]
 	path = thirdparty/Box2D
-	url = https://github.com/erincatto/Box2D
+	url = http://github.com/solemnsky/Box2D
