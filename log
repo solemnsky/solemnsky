@@ -1,0 +1,495 @@
+these derivations will be built:
+  /nix/store/fjy6b9a1vngv3p42a0db6fmz3x4384v7-solemnsky.drv
+building path(s) ‘/nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky’
+unpacking sources
+unpacking source archive /nix/store/qdw985nr5133zchkqnc0dmi7w73njj5x-solemnsky
+source root is solemnsky
+patching sources
+configuring
+fixing cmake files...
+cmake flags: -DCMAKE_BUILD_TYPE=Release -DCMAKE_SKIP_BUILD_RPATH=ON -DCMAKE_INSTALL_NAME_DIR=/nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib -DCMAKE_INSTALL_PREFIX=/nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky  
+-- The C compiler identification is GNU 4.9.3
+-- The CXX compiler identification is GNU 4.9.3
+-- Check for working C compiler: /nix/store/4n9yj90rdggqcx34ylbshryg3rf9cqpj-gcc-wrapper-4.9.3/bin/gcc
+-- Check for working C compiler: /nix/store/4n9yj90rdggqcx34ylbshryg3rf9cqpj-gcc-wrapper-4.9.3/bin/gcc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /nix/store/4n9yj90rdggqcx34ylbshryg3rf9cqpj-gcc-wrapper-4.9.3/bin/g++
+-- Check for working CXX compiler: /nix/store/4n9yj90rdggqcx34ylbshryg3rf9cqpj-gcc-wrapper-4.9.3/bin/g++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Warning (dev) at thirdparty/Box2D/Box2D/CMakeLists.txt:25 (add_subdirectory):
+  The source directory
+
+    /tmp/nix-build-solemnsky.drv-0/solemnsky/thirdparty/Box2D/Box2D/HelloWorld
+
+  does not contain a CMakeLists.txt file.
+
+  CMake does not support this case but it used to work accidentally and is
+  being allowed for compatibility.
+
+  Policy CMP0014 is not set: Input directories must have CMakeLists.txt.  Run
+  "cmake --help-policy CMP0014" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found OpenGL: /nix/store/8jkkd2vx5rb7xn50nzzgc8mh0cf61li0-mesa-10.6.8/lib/libGL.so  
+CMake Warning (dev) at thirdparty/Box2D/Box2D/CMakeLists.txt:29 (add_subdirectory):
+  The source directory
+
+    /tmp/nix-build-solemnsky.drv-0/solemnsky/thirdparty/Box2D/Box2D/glew
+
+  does not contain a CMakeLists.txt file.
+
+  CMake does not support this case but it used to work accidentally and is
+  being allowed for compatibility.
+
+  Policy CMP0014 is not set: Input directories must have CMakeLists.txt.  Run
+  "cmake --help-policy CMP0014" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+CMake Warning (dev) at thirdparty/Box2D/Box2D/CMakeLists.txt:30 (add_subdirectory):
+  The source directory
+
+    /tmp/nix-build-solemnsky.drv-0/solemnsky/thirdparty/Box2D/Box2D/glfw
+
+  does not contain a CMakeLists.txt file.
+
+  CMake does not support this case but it used to work accidentally and is
+  being allowed for compatibility.
+
+  Policy CMP0014 is not set: Input directories must have CMakeLists.txt.  Run
+  "cmake --help-policy CMP0014" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+CMake Warning (dev) at thirdparty/Box2D/Box2D/CMakeLists.txt:31 (add_subdirectory):
+  The source directory
+
+    /tmp/nix-build-solemnsky.drv-0/solemnsky/thirdparty/Box2D/Box2D/Testbed
+
+  does not contain a CMakeLists.txt file.
+
+  CMake does not support this case but it used to work accidentally and is
+  being allowed for compatibility.
+
+  Policy CMP0014 is not set: Input directories must have CMakeLists.txt.  Run
+  "cmake --help-policy CMP0014" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Looking for XOpenDisplay in /nix/store/gsc42mc0vqfpl8d078zm07jy5xva7r4w-libX11-1.6.3/lib/libX11.so
+-- Looking for XOpenDisplay in /nix/store/gsc42mc0vqfpl8d078zm07jy5xva7r4w-libX11-1.6.3/lib/libX11.so - found
+-- Looking for gethostbyname
+-- Looking for gethostbyname - found
+-- Looking for connect
+-- Looking for connect - found
+-- Looking for remove
+-- Looking for remove - found
+-- Looking for shmat
+-- Looking for shmat - found
+-- Found X11: /nix/store/gsc42mc0vqfpl8d078zm07jy5xva7r4w-libX11-1.6.3/lib/libX11.so
+-- Found LIBXCB: /nix/store/r3xv21sfbky2pi0x8gypidal63m057f7-libxcb-1.11.1/lib/libxcb.so  
+-- Found XLIB_XCB: /nix/store/gsc42mc0vqfpl8d078zm07jy5xva7r4w-libX11-1.6.3/lib/libX11-xcb.so  
+-- Found LIBXCB_IMAGE: /nix/store/384ifs16rrni5hkpxral9677m18s3lds-xcb-util-image-0.4.0/lib/libxcb-image.so  
+-- Found LIBXCB_RANDR: /nix/store/r3xv21sfbky2pi0x8gypidal63m057f7-libxcb-1.11.1/lib/libxcb-randr.so  
+-- libudev stable: 0
+-- Found UDev: /nix/store/91pfi2hvwcamp0qnicbmvgyf4la9v7xz-eudev-3.1.5/lib/libudev.so
+--    include: /nix/store/91pfi2hvwcamp0qnicbmvgyf4la9v7xz-eudev-3.1.5/include
+-- Found JPEG: /nix/store/snjm74r2g5y72almiq9nwbq8abzxx5r5-libjpeg-turbo-1.4.1/lib/libjpeg.so  
+-- Found OpenAL: /nix/store/qx2jb1b63jlp5yrwhf8gnc7n68cfc64k-openal-soft-1.16.0/lib/libopenal.so  
+-- Found VORBIS: /nix/store/w0p7bn2rzyd4q8haggr5z7pyqh9kmmgk-libvorbis-1.3.5/lib/libvorbis.so  
+-- Found FLAC: /nix/store/8fg0yxyx6l67srjaf6932si74pipvwzb-flac-1.3.1/lib/libFLAC.so  
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /tmp/nix-build-solemnsky.drv-0/solemnsky/build
+building
+make flags: SHELL=/nix/store/xag5ayq906w9zhlxs8wayv4kvpiyqphq-bash-4.3-p42/bin/bash    
+Scanning dependencies of target sfml-system
+[  1%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/Clock.cpp.o
+[  2%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/Err.cpp.o
+[  2%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/Lock.cpp.o
+[  3%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/Mutex.cpp.o
+[  3%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/Sleep.cpp.o
+[  4%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/String.cpp.o
+[  5%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/Thread.cpp.o
+[  5%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/ThreadLocal.cpp.o
+[  6%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/Time.cpp.o
+[  7%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/FileInputStream.cpp.o
+[  7%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/MemoryInputStream.cpp.o
+[  8%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/Unix/ClockImpl.cpp.o
+[  8%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/Unix/MutexImpl.cpp.o
+[  9%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/Unix/SleepImpl.cpp.o
+[ 10%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/Unix/ThreadImpl.cpp.o
+[ 10%] Building CXX object thirdparty/SFML/src/SFML/System/CMakeFiles/sfml-system.dir/Unix/ThreadLocalImpl.cpp.o
+[ 11%] Linking CXX shared library ../../../lib/libsfml-system.so
+[ 11%] Built target sfml-system
+Scanning dependencies of target sfml-window
+[ 12%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Context.cpp.o
+[ 12%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/GlContext.cpp.o
+[ 13%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/GlResource.cpp.o
+[ 13%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Joystick.cpp.o
+[ 14%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/JoystickManager.cpp.o
+[ 15%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Keyboard.cpp.o
+[ 15%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Mouse.cpp.o
+[ 16%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Touch.cpp.o
+[ 17%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Sensor.cpp.o
+[ 17%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/SensorManager.cpp.o
+[ 18%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/VideoMode.cpp.o
+[ 18%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Window.cpp.o
+[ 19%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/WindowImpl.cpp.o
+[ 20%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Unix/Display.cpp.o
+[ 20%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Unix/InputImpl.cpp.o
+[ 21%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Unix/SensorImpl.cpp.o
+[ 22%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Unix/VideoModeImpl.cpp.o
+[ 22%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Unix/WindowImplX11.cpp.o
+[ 23%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Unix/GlxContext.cpp.o
+[ 23%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Unix/GlxExtensions.cpp.o
+[ 24%] Building CXX object thirdparty/SFML/src/SFML/Window/CMakeFiles/sfml-window.dir/Unix/JoystickImpl.cpp.o
+[ 25%] Linking CXX shared library ../../../lib/libsfml-window.so
+[ 25%] Built target sfml-window
+Scanning dependencies of target sfml-graphics
+[ 26%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/BlendMode.cpp.o
+[ 26%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/Color.cpp.o
+[ 27%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/Font.cpp.o
+[ 28%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/Glsl.cpp.o
+[ 28%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/GLCheck.cpp.o
+[ 29%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/GLExtensions.cpp.o
+[ 29%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/Image.cpp.o
+[ 30%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/ImageLoader.cpp.o
+[ 31%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/RenderStates.cpp.o
+[ 31%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/RenderTexture.cpp.o
+[ 32%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/RenderTarget.cpp.o
+[ 33%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/RenderWindow.cpp.o
+[ 33%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/Shader.cpp.o
+[ 34%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/Texture.cpp.o
+[ 34%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/TextureSaver.cpp.o
+[ 35%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/Transform.cpp.o
+[ 36%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/Transformable.cpp.o
+[ 36%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/View.cpp.o
+[ 37%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/Vertex.cpp.o
+[ 38%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/GLLoader.cpp.o
+[ 38%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/Shape.cpp.o
+[ 39%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/CircleShape.cpp.o
+[ 39%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/RectangleShape.cpp.o
+[ 40%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/ConvexShape.cpp.o
+[ 41%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/Sprite.cpp.o
+[ 41%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/Text.cpp.o
+[ 42%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/VertexArray.cpp.o
+[ 43%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/RenderTextureImpl.cpp.o
+[ 43%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/RenderTextureImplFBO.cpp.o
+[ 44%] Building CXX object thirdparty/SFML/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/RenderTextureImplDefault.cpp.o
+[ 44%] Linking CXX shared library ../../../lib/libsfml-graphics.so
+[ 44%] Built target sfml-graphics
+Scanning dependencies of target Box2D
+[ 44%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Joints/b2DistanceJoint.cpp.o
+[ 45%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Joints/b2FrictionJoint.cpp.o
+[ 45%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Joints/b2GearJoint.cpp.o
+[ 46%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Joints/b2Joint.cpp.o
+[ 47%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Joints/b2MotorJoint.cpp.o
+[ 47%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Joints/b2MouseJoint.cpp.o
+[ 48%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Joints/b2PrismaticJoint.cpp.o
+[ 49%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Joints/b2PulleyJoint.cpp.o
+[ 49%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Joints/b2RevoluteJoint.cpp.o
+[ 50%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Joints/b2RopeJoint.cpp.o
+[ 50%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Joints/b2WeldJoint.cpp.o
+[ 51%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Joints/b2WheelJoint.cpp.o
+[ 52%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Contacts/b2CircleContact.cpp.o
+[ 52%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Contacts/b2Contact.cpp.o
+[ 53%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Contacts/b2ContactSolver.cpp.o
+[ 54%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Contacts/b2PolygonAndCircleContact.cpp.o
+[ 54%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Contacts/b2EdgeAndCircleContact.cpp.o
+[ 55%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Contacts/b2EdgeAndPolygonContact.cpp.o
+[ 55%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Contacts/b2ChainAndCircleContact.cpp.o
+[ 56%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Contacts/b2ChainAndPolygonContact.cpp.o
+[ 57%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/Contacts/b2PolygonContact.cpp.o
+[ 57%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/b2Body.cpp.o
+[ 58%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/b2ContactManager.cpp.o
+[ 59%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/b2Fixture.cpp.o
+[ 59%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/b2Island.cpp.o
+[ 60%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/b2World.cpp.o
+[ 60%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Dynamics/b2WorldCallbacks.cpp.o
+[ 61%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Common/b2BlockAllocator.cpp.o
+[ 62%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Common/b2Draw.cpp.o
+[ 62%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Common/b2Math.cpp.o
+[ 63%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Common/b2Settings.cpp.o
+[ 64%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Common/b2StackAllocator.cpp.o
+[ 64%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Common/b2Timer.cpp.o
+[ 65%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Collision/Shapes/b2CircleShape.cpp.o
+[ 65%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Collision/Shapes/b2EdgeShape.cpp.o
+[ 66%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Collision/Shapes/b2ChainShape.cpp.o
+[ 67%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Collision/Shapes/b2PolygonShape.cpp.o
+[ 67%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Collision/b2BroadPhase.cpp.o
+[ 68%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Collision/b2CollideCircle.cpp.o
+[ 69%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Collision/b2CollideEdge.cpp.o
+[ 69%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Collision/b2CollidePolygon.cpp.o
+[ 70%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Collision/b2Collision.cpp.o
+[ 70%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Collision/b2Distance.cpp.o
+[ 71%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Collision/b2DynamicTree.cpp.o
+[ 72%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Collision/b2TimeOfImpact.cpp.o
+[ 72%] Building CXX object thirdparty/Box2D/Box2D/Box2D/CMakeFiles/Box2D.dir/Rope/b2Rope.cpp.o
+[ 73%] Linking CXX static library libBox2D.a
+[ 73%] Built target Box2D
+Scanning dependencies of target solemnsky
+[ 73%] Building CXX object CMakeFiles/solemnsky.dir/src/main.cpp.o
+[ 74%] Building CXX object CMakeFiles/solemnsky.dir/src/base/control.cpp.o
+[ 75%] Building CXX object CMakeFiles/solemnsky.dir/src/base/physics.cpp.o
+[ 75%] Building CXX object CMakeFiles/solemnsky.dir/src/base/profiler.cpp.o
+[ 76%] Building CXX object CMakeFiles/solemnsky.dir/src/base/util.cpp.o
+[ 76%] Building CXX object CMakeFiles/solemnsky.dir/src/demo/demo.cpp.o
+[ 77%] Building CXX object CMakeFiles/solemnsky.dir/src/demo/graphicsdemo.cpp.o
+[ 78%] Building CXX object CMakeFiles/solemnsky.dir/src/engine/engine.cpp.o
+[ 78%] Building CXX object CMakeFiles/solemnsky.dir/src/engine/flight.cpp.o
+[ 79%] Building CXX object CMakeFiles/solemnsky.dir/src/engine/graphics.cpp.o
+[ 80%] Linking CXX executable solemnsky
+[ 80%] Built target solemnsky
+Scanning dependencies of target sfml-network
+[ 81%] Building CXX object thirdparty/SFML/src/SFML/Network/CMakeFiles/sfml-network.dir/Ftp.cpp.o
+[ 82%] Building CXX object thirdparty/SFML/src/SFML/Network/CMakeFiles/sfml-network.dir/Http.cpp.o
+[ 82%] Building CXX object thirdparty/SFML/src/SFML/Network/CMakeFiles/sfml-network.dir/IpAddress.cpp.o
+[ 83%] Building CXX object thirdparty/SFML/src/SFML/Network/CMakeFiles/sfml-network.dir/Packet.cpp.o
+[ 84%] Building CXX object thirdparty/SFML/src/SFML/Network/CMakeFiles/sfml-network.dir/Socket.cpp.o
+[ 84%] Building CXX object thirdparty/SFML/src/SFML/Network/CMakeFiles/sfml-network.dir/SocketSelector.cpp.o
+[ 85%] Building CXX object thirdparty/SFML/src/SFML/Network/CMakeFiles/sfml-network.dir/TcpListener.cpp.o
+[ 85%] Building CXX object thirdparty/SFML/src/SFML/Network/CMakeFiles/sfml-network.dir/TcpSocket.cpp.o
+[ 86%] Building CXX object thirdparty/SFML/src/SFML/Network/CMakeFiles/sfml-network.dir/UdpSocket.cpp.o
+[ 87%] Building CXX object thirdparty/SFML/src/SFML/Network/CMakeFiles/sfml-network.dir/Unix/SocketImpl.cpp.o
+[ 87%] Linking CXX shared library ../../../lib/libsfml-network.so
+[ 87%] Built target sfml-network
+Scanning dependencies of target sfml-audio
+[ 88%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/ALCheck.cpp.o
+[ 88%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/AlResource.cpp.o
+[ 89%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/AudioDevice.cpp.o
+/tmp/nix-build-solemnsky.drv-0/solemnsky/thirdparty/SFML/src/SFML/Audio/AudioDevice.cpp: In static member function 'static int sf::priv::AudioDevice::getFormatFromChannelCount(unsigned int)':
+/tmp/nix-build-solemnsky.drv-0/solemnsky/thirdparty/SFML/src/SFML/Audio/AudioDevice.cpp:128:32: warning: 'auto_ptr' is deprecated (declared at /nix/store/i9nn1fkcy95dzf0hb9wi8gbkid3iw1sa-gcc-4.9.3/include/c++/4.9.3/backward/auto_ptr.h:87) [-Wdeprecated-declarations]
+     std::auto_ptr<AudioDevice> device;
+                                ^
+[ 89%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/Listener.cpp.o
+[ 90%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/Music.cpp.o
+[ 91%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/Sound.cpp.o
+[ 91%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/SoundBuffer.cpp.o
+[ 92%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/SoundBufferRecorder.cpp.o
+[ 93%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/InputSoundFile.cpp.o
+[ 93%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/OutputSoundFile.cpp.o
+[ 94%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/SoundRecorder.cpp.o
+[ 94%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/SoundSource.cpp.o
+[ 95%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/SoundStream.cpp.o
+[ 96%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/SoundFileFactory.cpp.o
+[ 96%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/SoundFileReaderFlac.cpp.o
+[ 97%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/SoundFileReaderOgg.cpp.o
+[ 98%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/SoundFileReaderWav.cpp.o
+[ 98%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/SoundFileWriterFlac.cpp.o
+[ 99%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/SoundFileWriterOgg.cpp.o
+[ 99%] Building CXX object thirdparty/SFML/src/SFML/Audio/CMakeFiles/sfml-audio.dir/SoundFileWriterWav.cpp.o
+[100%] Linking CXX shared library ../../../lib/libsfml-audio.so
+[100%] Built target sfml-audio
+installing
+install flags: install SHELL=/nix/store/xag5ayq906w9zhlxs8wayv4kvpiyqphq-bash-4.3-p42/bin/bash    
+[ 11%] Built target sfml-system
+[ 25%] Built target sfml-window
+[ 44%] Built target sfml-graphics
+[ 73%] Built target Box2D
+[ 80%] Built target solemnsky
+[ 87%] Built target sfml-network
+[100%] Built target sfml-audio
+Install the project...
+-- Install configuration: "Release"
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Box2D.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Collision/b2BroadPhase.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Collision/b2Collision.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Collision/b2Distance.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Collision/b2DynamicTree.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Collision/b2TimeOfImpact.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Collision/Shapes/b2CircleShape.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Collision/Shapes/b2EdgeShape.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Collision/Shapes/b2ChainShape.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Collision/Shapes/b2PolygonShape.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Collision/Shapes/b2Shape.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Common/b2BlockAllocator.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Common/b2Draw.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Common/b2GrowableStack.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Common/b2Math.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Common/b2Settings.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Common/b2StackAllocator.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Common/b2Timer.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/b2Body.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/b2ContactManager.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/b2Fixture.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/b2Island.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/b2TimeStep.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/b2World.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/b2WorldCallbacks.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Contacts/b2CircleContact.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Contacts/b2Contact.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Contacts/b2ContactSolver.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Contacts/b2PolygonAndCircleContact.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Contacts/b2EdgeAndCircleContact.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Contacts/b2EdgeAndPolygonContact.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Contacts/b2ChainAndCircleContact.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Contacts/b2ChainAndPolygonContact.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Contacts/b2PolygonContact.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Joints/b2DistanceJoint.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Joints/b2FrictionJoint.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Joints/b2GearJoint.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Joints/b2Joint.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Joints/b2MotorJoint.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Joints/b2MouseJoint.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Joints/b2PrismaticJoint.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Joints/b2PulleyJoint.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Joints/b2RevoluteJoint.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Joints/b2RopeJoint.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Joints/b2WeldJoint.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Dynamics/Joints/b2WheelJoint.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/include/Box2D/Rope/b2Rope.h
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libBox2D.a
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/Box2D/Box2D-targets.cmake
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/Box2D/Box2D-targets-release.cmake
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/cmake/Box2D/Box2DConfig.cmake
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/cmake/Box2D/UseBox2D.cmake
+-- Up-to-date: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/SoundFileFactory.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/SoundFileFactory.inl
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/SoundStream.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/SoundBufferRecorder.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/Listener.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/InputSoundFile.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/Export.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/SoundFileWriter.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/SoundBuffer.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/Music.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/AlResource.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/SoundSource.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/Sound.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/SoundRecorder.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/OutputSoundFile.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio/SoundFileReader.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/OpenGL.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Audio.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Main.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window/Mouse.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window/ContextSettings.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window/VideoMode.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window/Event.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window/Sensor.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window/Export.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window/WindowStyle.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window/Keyboard.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window/Touch.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window/GlResource.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window/Window.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window/Joystick.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window/WindowHandle.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window/Context.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Window.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/BlendMode.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/PrimitiveType.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/CircleShape.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Drawable.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Image.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Transform.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Sprite.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/RenderStates.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Shader.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Rect.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Vertex.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Export.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Text.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/RectangleShape.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/ConvexShape.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Glyph.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Font.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Glsl.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Transformable.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/VertexArray.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Rect.inl
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Glsl.inl
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/RenderTarget.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/View.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Shape.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Texture.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/Color.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/RenderTexture.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Graphics/RenderWindow.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Network.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Network
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Network/UdpSocket.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Network/Packet.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Network/Http.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Network/SocketSelector.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Network/Socket.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Network/IpAddress.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Network/Export.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Network/TcpListener.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Network/TcpSocket.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Network/SocketHandle.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Network/Ftp.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Sleep.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Vector2.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/FileInputStream.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Utf.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Mutex.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/String.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/ThreadLocal.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/ThreadLocalPtr.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/String.inl
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Export.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Clock.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/ThreadLocalPtr.inl
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Vector3.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Utf.inl
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/MemoryInputStream.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Vector3.inl
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Thread.inl
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Lock.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/NonCopyable.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Thread.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Vector2.inl
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Err.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/Time.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/System/InputStream.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/./include/SFML/Config.hpp
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/share/SFML/license.txt
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/share/SFML/readme.txt
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/share/SFML/cmake/Modules/FindSFML.cmake
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-system.so.2.3.2
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-system.so.2.3
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-system.so
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-window.so.2.3.2
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-window.so.2.3
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-window.so
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-network.so.2.3.2
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-network.so.2.3
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-network.so
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-graphics.so.2.3.2
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-graphics.so.2.3
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-graphics.so
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-audio.so.2.3.2
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-audio.so.2.3
+-- Installing: /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-audio.so
+post-installation fixup
+patching ELF executables and libraries in /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky
+/nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-audio.so.2.3.2
+/nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-network.so.2.3.2
+/nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-system.so.2.3.2
+/nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-window.so.2.3.2
+/nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/libsfml-graphics.so.2.3.2
+gzipping man pages in /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky
+stripping (with flags -S) in /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib 
+strip:/nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/cmake/Box2D/Box2DConfig.cmake: File format not recognized
+strip:/nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/cmake/Box2D/UseBox2D.cmake: File format not recognized
+strip:/nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/Box2D/Box2D-targets-release.cmake: File format not recognized
+strip:/nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky/lib/Box2D/Box2D-targets.cmake: File format not recognized
+patching script interpreter paths in /nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky
+/nix/store/h3gyahx9lqk7m7i9l3ygap8ih3225lfl-solemnsky
