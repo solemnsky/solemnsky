@@ -8,11 +8,11 @@
 
 class Demo : public ui::Control {
 private:
-  Demo() { }
-
-  ui::Button button{sf::FloatRect(0, 0, 500, 500), "what a nice button"};
+  ui::Button button{sf::FloatRect(700, 400, 200, 100), "click to proceed"};
 
 public:
+  Demo() { }
+
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   void handle(sf::Event event) override;

@@ -53,8 +53,8 @@ public:
 
   // some inline synonyms
   inline void drawRect(const sf::FloatRect rect, sf::Color color = {}) {
-    drawRect(sf::Vector2f(rect.top, rect.left),
-             sf::Vector2f(rect.top + rect.height, rect.left + rect.width),
+    drawRect(sf::Vector2f(rect.left, rect.top),
+             sf::Vector2f(rect.left + rect.width, rect.top + rect.height),
              color);
   }
 
@@ -68,6 +68,9 @@ public:
                 const std::string contents, const int size = 24,
                 const sf::Color color = sf::Color::White,
                 const sf::Text::Style style = sf::Text::Regular);
+
+  // text sizes
+  sf::Vector2f textSize(const std::string contents, const int size = 24);
 };
 }
 #endif //SOLEMNSKY_FRAME_H

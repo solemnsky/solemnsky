@@ -26,8 +26,10 @@ public:
   struct Style {
     sf::Color color{sf::Color::Green}, hotColor{sf::Color::Red};
     float hotAnimLength = 0.5;
+    int fontSize = 24;
 
     Style() { }
+
   } style;
 
   sf::FloatRect body;

@@ -3,7 +3,7 @@
 namespace sky {
 
 void Sky::joinPlane(const PID pid, const PlaneTuning tuning) {
-  planes[pid] = Plane(this, tuning);
+//  planes[pid] = Plane(this, tuning);
 }
 
 void Sky::quitPlane(const PID pid) {
@@ -11,7 +11,7 @@ void Sky::quitPlane(const PID pid) {
 }
 
 Plane &Sky::getPlane(const PID pid) {
-  return planes[pid];
+//  return planes[pid];
 }
 
 void Sky::handle(const PID pid, const PlayerInput input) {
