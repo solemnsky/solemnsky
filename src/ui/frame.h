@@ -21,9 +21,10 @@ private:
   std::stack<float> alphaStack;
   const sf::Color alphaScaleColor(const sf::Color);
 
+  sf::Font baseFont;
+
   // used by runSFML
   sf::Transform windowToFrame;
-
   int primCount;
   void beginDraw();
   void endDraw();
@@ -63,6 +64,10 @@ public:
                   const sf::Color color = {});
   void drawRect(const sf::Vector2f topLeft, const sf::Vector2f bottomRight,
                 const sf::Color color = {});
+  void drawText(const sf::Vector2f pos,
+                const std::string contents, const int size = 24,
+                const sf::Color color = sf::Color::White,
+                const sf::Text::Style style = sf::Text::Regular);
 };
 }
 #endif //SOLEMNSKY_FRAME_H

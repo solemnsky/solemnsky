@@ -4,6 +4,7 @@
 #ifndef SOLEMNSKY_GRAPHICS_H_H
 #define SOLEMNSKY_GRAPHICS_H_H
 
+#include <base/resources.h>
 #include "ui/control.h"
 
 namespace sky {
@@ -31,7 +32,6 @@ public:
       filepath(filepath),
       spriteCount(spriteLayout.x * spriteLayout.y) { }
 
-
   // a number from 1 to spriteCount
   void drawAt(ui::Frame &f, const sf::Vector2f pos,
               const sf::Vector2f dims, const int index) const;
@@ -41,7 +41,7 @@ public:
  * Static record of sprite sheet data that we have in the builtin assets.
  */
 static const std::vector<SpriteSheet> spriteSheets{
-    {"media/render-3d/test_1/player_200", {200, 200}, {2, 15}}
+    {getIdPath("render-3d/test_1/player_200.png"), {200, 200}, {2, 15}}
 };
 
 /**

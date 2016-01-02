@@ -25,24 +25,24 @@ struct PlayerInput {
 
 typedef int PID; // personal ID for elements in the game
 
-class Engine;
-
 /**
  * Top-level manager for our entire game system.
  */
-class Engine {
+class Sky {
 private:
   std::map<PID, Plane> planes;
 
 public:
   Physics physics;
 
-  Engine();
-  ~Engine();
+  Sky();
+  ~Sky();
 
-  void joinPlane(PID pid, const PlaneTuning tuning);
-  void quitPlane(PID pid);
-  Plane &getPlane(PID pid);
+  void joinPlane(const PID pid, const PlaneTuning tuning);
+  void quitPlane(const PID pid);
+  Plane &getPlane(const PID pid);
+
+  void handle(const PID pid, const PlayerInput);
 
   void tick(float delta); // delta in seconds, as always
 };

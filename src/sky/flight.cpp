@@ -38,7 +38,7 @@ void Plane::writeToBody() {
 void Plane::readFromBody() {
 }
 
-Plane::Plane(Engine *engine, const PlaneTuning tuning) :
+Plane::Plane(Sky *engine, const PlaneTuning tuning) :
     engine(engine), physics(&engine->physics), tuning(tuning) { }
 
 void Plane::spawn(const sf::Vector2f pos, const float rot) {

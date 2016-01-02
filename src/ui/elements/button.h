@@ -6,6 +6,7 @@
 
 #include "ui/control.h"
 #include "base/util.h"
+#include  <SFML/Graphics/Color.hpp>
 
 namespace ui {
 
@@ -14,11 +15,18 @@ namespace ui {
  */
 class Button : public Control {
 private:
+  float hotAnimState = 0;
+
+  inline float getHeat() { return hotAnimState / style.hotAnimLength; }
+
 public:
   /**
    * Settings
    */
   struct Style {
+    sf::Color color{sf::Color::Green}, hotColor{sf::Color::Red};
+    float hotAnimLength = 0.5;
+
     Style() { }
   } style;
 
@@ -26,7 +34,8 @@ public:
   std::string text; // what the button has to say
 
   Button() = delete;
-  Button(const sf::FloatRect body, Style style = {});
+  Button(const sf::FloatRect body, const std::string text,
+         Button::Style style = {});
 
   /**
    * Control implementation.

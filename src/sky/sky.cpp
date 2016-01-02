@@ -2,19 +2,23 @@
 
 namespace sky {
 
-void Engine::joinPlane(PID pid, const PlaneTuning tuning) {
+void Sky::joinPlane(const PID pid, const PlaneTuning tuning) {
   planes[pid] = Plane(this, tuning);
 }
 
-void Engine::quitPlane(PID pid) {
+void Sky::quitPlane(const PID pid) {
   planes.erase(pid);
 }
 
-Plane &Engine::getPlane(PID pid) {
+Plane &Sky::getPlane(const PID pid) {
   return planes[pid];
 }
 
-void Engine::tick(float delta) {
+void Sky::handle(const PID pid, const PlayerInput input) {
+
+}
+
+void Sky::tick(float delta) {
   physics.tick(delta);
   for (auto elem : planes) {
     Plane &plane = elem.second;
@@ -34,11 +38,12 @@ Physics::Settings mySettings() {
   return settings;
 };
 
-Engine::Engine() : physics(mySettings()) {
-  appLog(LogType::Notice, "Starting engine..."); // more important logging
+Sky::Sky() : physics(mySettings()) {
+  appLog(LogType::Notice, "Opening a new sky."); // very important logging
 }
 
-Engine::~Engine() {
-  appLog(LogType::Notice, "Destroying engine...");
+Sky::~Sky() {
+  appLog(LogType::Notice, "Closing an old sky.");
 }
+
 }

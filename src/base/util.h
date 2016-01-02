@@ -90,10 +90,26 @@ public:
   operator bool();
 };
 
-/****
+/**
  * Extract useful information from sf::Events.
  */
 
 Optional<bool> getMouseButtonAction(sf::Event event);
+
+/**
+ * Clamp values
+ */
+template<typename T>
+T clamp(const T min, const T max, const T x) {
+  if (x > max) return max;
+  if (x < min) return min;
+  return x;
+}
+
+/**
+ * Do stuff with colors.
+ */
+sf::Color mixColors(
+    const sf::Color color1, const sf::Color color2, const float degree);
 
 #endif //SOLEMNSKY_BASE_UTIL_H

@@ -49,7 +49,7 @@ set(SOURCE_FILES
         src/ui/profiler.cpp
 
         src/ui/ui.h
-        )
+        src/base/resources.cpp src/base/resources.h)
 
 
 #find_package(Boost)
