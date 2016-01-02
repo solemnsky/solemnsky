@@ -10,6 +10,8 @@ add_subdirectory("thirdparty/SFML")
 
 # source files for executable
 set(SOURCE_FILES
+        src/main.cpp
+
         src/base/util.h
         src/base/util.cpp
 
@@ -40,13 +42,15 @@ set(SOURCE_FILES
         src/ui/control.h
         src/ui/control.cpp
 
+        src/ui/frame.cpp
+        src/ui/frame.h
+
         src/ui/profiler.h
         src/ui/profiler.cpp
 
         src/ui/ui.h
+        )
 
-        src/main.cpp
-        src/ui/frame.cpp src/ui/frame.h)
 
 #find_package(Boost)
 

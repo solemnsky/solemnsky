@@ -1,8 +1,7 @@
 #include <cmath>
 #include <assert.h>
-#include <base/util.h>
+#include "base/util.h"
 #include "profiler.h"
-#include "util.h"
 #include "control.h"
 
 namespace {
@@ -61,8 +60,6 @@ sf::Event transformEvent(const sf::Transform trans,
 }
 
 namespace ui {
-
-
 
 /****
  * runSFML

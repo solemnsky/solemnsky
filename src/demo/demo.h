@@ -8,7 +8,7 @@
 
 class Demo : public ui::Control {
 private:
-  ui::Button button{};
+  ui::Button button{sf::FloatRect(0, 0, 500, 500)};
 
 public:
   void tick(float delta) override;
