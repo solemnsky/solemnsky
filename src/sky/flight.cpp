@@ -49,10 +49,6 @@ void Plane::kill() {
   state = {};
 }
 
-//Plane::Plane() : engine(nullptr), physics(nullptr) {
-//  // this shouldn't exist (see to-do item in header)
-//}
-
 void Plane::tick(float d) {
   if (state) {
     // the following comment is direct transcript from the haxe repository

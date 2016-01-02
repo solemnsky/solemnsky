@@ -114,7 +114,8 @@ void Frame::withAlphaTransform(
   popTransform(), popAlpha();
 }
 
-void Frame::drawCircle(const sf::Vector2f pos, const float radius,
+void Frame::drawCircle(const sf::Vector2f pos,
+                       const float radius,
                        const sf::Color color) {
   primCount++;
   sf::CircleShape circle(radius);
@@ -123,7 +124,8 @@ void Frame::drawCircle(const sf::Vector2f pos, const float radius,
   window.draw(circle, transformStack.top());
 }
 
-void Frame::drawRect(const sf::Vector2f topLeft, const sf::Vector2f bottomRight,
+void Frame::drawRect(const sf::Vector2f topLeft,
+                     const sf::Vector2f bottomRight,
                      const sf::Color color) {
   primCount++;
   sf::RectangleShape rect(bottomRight - topLeft);
@@ -133,8 +135,10 @@ void Frame::drawRect(const sf::Vector2f topLeft, const sf::Vector2f bottomRight,
 }
 
 void Frame::drawText(const sf::Vector2f pos,
-                     const std::string contents, const int size,
-                     const sf::Color color, const sf::Text::Style style) {
+                     const std::string contents,
+                     const int size,
+                     const sf::Color color,
+                     const sf::Text::Style style) {
   sf::Vector2f pt = transformStack.top().transformPoint(sf::Vector2f(1, 0));
   float transScale = (float) sqrt(pt.x * pt.x + pt.y * pt.y);
   // I wonder if we need some math utils perhaps
@@ -150,6 +154,14 @@ void Frame::drawText(const sf::Vector2f pos,
   window.draw(text, transformStack.top());
 }
 
+void Frame::drawSprite(const sf::Image image,
+                       const sf::Vector2f topLeft,
+                       const sf::Vector2f bottomRight,
+                       const sf::Vector2f topLeftImg,
+                       const sf::Vector2f bottomRightImg) {
+
+}
+
 sf::Vector2f Frame::textSize(const std::string contents, const int size) {
   sf::Text text;
   text.setFont(baseFont);
@@ -158,4 +170,5 @@ sf::Vector2f Frame::textSize(const std::string contents, const int size) {
   const auto bounds = text.getLocalBounds();
   return sf::Vector2f(bounds.width, bounds.height);
 }
+
 }
