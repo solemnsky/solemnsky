@@ -1,10 +1,10 @@
 /**
- * Essential rendering helpers / filepaths to resources.
+ * Essential rendering helpers.
  */
 #ifndef SOLEMNSKY_GRAPHICS_H_H
 #define SOLEMNSKY_GRAPHICS_H_H
 
-#include "base/util.h"
+#include "ui/control.h"
 
 namespace sky {
 enum class SpriteSheetId {
@@ -33,7 +33,7 @@ public:
 
 
   // a number from 1 to spriteCount
-  void drawAt(Frame &f, const sf::Vector2f pos,
+  void drawAt(ui::Frame &f, const sf::Vector2f pos,
               const sf::Vector2f dims, const int index) const;
 };
 
