@@ -5,8 +5,8 @@
 #ifndef SOLEMNSKY_FRAME_H
 #define SOLEMNSKY_FRAME_H
 
-#include <bits/shared_ptr.h>
-#include <bits/stl_stack.h>
+#include <memory>
+#include <stack>
 #include <SFML/Graphics.hpp>
 #include <functional>
 
