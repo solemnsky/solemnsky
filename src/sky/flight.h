@@ -80,9 +80,7 @@ public:
   PlaneTuning tuning;
   Optional<PlaneState> state{}; // only when spawned
 
-  explicit Plane(Sky *engine, const PlaneTuning tuning);
-//  Plane();
-  // TODO: why does something in the code (box2d?) require a null ctor for Plane??
+  Plane(Sky *engine, const PlaneTuning tuning);
 
   void spawn(const sf::Vector2f pos, const float rot);
   void kill();
