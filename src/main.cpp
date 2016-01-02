@@ -3,6 +3,8 @@
 #include "ui/control.h"
 #include "demo/demo.h"
 
-int main() {
+#include <stdio.h>
+
+int main(int, char **) {
   runSFML(std::make_shared<Demo>());
 }
