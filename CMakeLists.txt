@@ -18,8 +18,8 @@ set(SOURCE_FILES
         src/demo/demo.h
         src/demo/demo.cpp
 
-        src/demo/enginedemo.cpp
-        src/demo/enginedemo.h
+        src/demo/skydemo.cpp
+        src/demo/skydemo.h
 
         src/demo/graphicsdemo.h
         src/demo/graphicsdemo.cpp

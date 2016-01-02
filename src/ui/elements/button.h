@@ -19,12 +19,16 @@ private:
 
   inline float getHeat() { return hotAnimState / style.hotAnimLength; }
 
+  sf::FloatRect getBody();
+
 public:
   /**
    * Settings
    */
   struct Style {
     sf::Color color{sf::Color::Green}, hotColor{sf::Color::Red};
+    float width{200}, height{100};
+
     float hotAnimLength = 0.5;
     int fontSize = 24;
 
@@ -32,11 +36,11 @@ public:
 
   } style;
 
-  sf::FloatRect body;
+  sf::Vector2f pos;
   std::string text; // what the button has to say
 
   Button() = delete;
-  Button(const sf::FloatRect body, const std::string text,
+  Button(const sf::Vector2f pos, const std::string text,
          Button::Style style = {});
 
   /**
