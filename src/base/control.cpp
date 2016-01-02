@@ -208,14 +208,6 @@ void runSFML(std::shared_ptr<Control> ctrl) {
     if (ctrl->quitting) window.close();
     if (ctrl->next) ctrl = ctrl->next;
 
-    /*
-     * Rendering / Sleeping
-     * Here our goal is to update the window display (at the next available screen refresh), and in doing so
-     * spend some time before ticking.
-     */
-    if (event.type == sf::Event::Resized || resizeTicker.tick(cycleDelta)) {
-      frame.resize();
-    }
     frame.beginDraw();
     profileClock.restart();
     ctrl->render(frame);
@@ -254,6 +246,15 @@ void runSFML(std::shared_ptr<Control> ctrl) {
 
       if (event.type != sf::Event::MouseWheelScrolled) // fk mouse wheels
         ctrl->handle(detail::transformEvent(frame.windowToFrame, event));
+
+		/*
+		* Rendering / Sleeping
+		* Here our goal is to update the window display (at the next available screen refresh), and in doing so
+		* spend some time before ticking.
+		*/
+		if (event.type == sf::Event::Resized || resizeTicker.tick(cycleDelta)) {
+			frame.resize();
+		}
     }
 
     if (profileTicker.tick(1)) appLog(LogType::Info, profiler.print());
