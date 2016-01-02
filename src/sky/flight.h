@@ -15,7 +15,7 @@
 
 namespace sky {
 
-class Engine;
+class Sky;
 
 struct PlaneTuning {
   sf::Vector2f hitbox;
@@ -62,7 +62,7 @@ struct PlaneState {
 
 class Plane {
 private:
-  sky::Engine *engine;
+  sky::Sky *engine;
   Physics *physics;
 
   b2Body *body;
@@ -70,7 +70,7 @@ private:
   /*
    * simulation
    */
-  friend class Engine;
+  friend class Sky;
 
   void writeToBody();
   void readFromBody();
@@ -80,7 +80,7 @@ public:
   PlaneTuning tuning;
   Optional<PlaneState> state{}; // only when spawned
 
-  explicit Plane(Engine *engine, const PlaneTuning tuning);
+  explicit Plane(Sky *engine, const PlaneTuning tuning);
   Plane();
   // TODO: why does something in the code (box2d?) require a null ctor for Plane??
 

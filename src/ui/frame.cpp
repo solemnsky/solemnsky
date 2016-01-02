@@ -1,4 +1,6 @@
 #include <assert.h>
+#include "base/util.h"
+#include "base/resources.h"
 #include "frame.h"
 
 namespace ui {
@@ -8,7 +10,20 @@ const sf::Color Frame::alphaScaleColor(const sf::Color color) {
   return newColor;
 }
 
-Frame::Frame(sf::RenderWindow &window) : window(window) {
+sf::Font getFont() {
+  // load our font from the media file
+  sf::Font font;
+  if (!font.loadFromFile(getFontPath())) {
+    appLog(LogType::Error, "Was not able to load font!");
+  } else {
+    appLog(LogType::Info, "Loaded font.");
+  }
+  return font;
+}
+
+
+Frame::Frame(sf::RenderWindow &window) : window(window),
+                                         baseFont(getFont()) {
   resize();
 }
 
@@ -115,5 +130,23 @@ void Frame::drawRect(const sf::Vector2f topLeft, const sf::Vector2f bottomRight,
   rect.setPosition(topLeft);
   rect.setFillColor(alphaScaleColor(color));
   window.draw(rect, transformStack.top());
+}
+
+void Frame::drawText(const sf::Vector2f pos,
+                     const std::string contents, const int size,
+                     const sf::Color color, const sf::Text::Style style) {
+  sf::Vector2f pt = transformStack.top().transformPoint(sf::Vector2f(1, 0));
+  float transScale = (float) sqrt(pt.x * pt.x + pt.y * pt.y);
+  // I wonder if we need some math utils perhaps
+
+  primCount++;
+  sf::Text text;
+  text.setFont(baseFont);
+  text.setPosition(pos);
+  text.setString(contents);
+  text.setCharacterSize((unsigned int) std::round(size * transScale));
+  text.setColor(alphaScaleColor(color));
+  text.setStyle(style);
+  window.draw(text, transformStack.top());
 }
 }
