@@ -1,8 +1,8 @@
 /**
- * Manager for performance profiling.
+ * Manager for performance profiling, used by runSFML.
  */
-#ifndef SOLEMNSKY_BASE_PROFILE_H
-#define SOLEMNSKY_BASE_PROFILE_H
+#ifndef SOLEMNSKY_PROFILER_H
+#define SOLEMNSKY_PROFILER_H
 
 #include <vector>
 #include <string>
@@ -58,4 +58,4 @@ public:
   std::string print();
 };
 
-#endif //SOLEMNSKY_BASE_PROFILE_H
+#endif //SOLEMNSKY_PROFILER_H

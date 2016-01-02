@@ -10,7 +10,7 @@
 #define SOLEMNSKY_FLIGHT_H
 
 #include <Box2D/Box2D.h>
-#include "base/physics.h"
+#include "physics.h"
 #include "base/util.h"
 
 namespace sky {

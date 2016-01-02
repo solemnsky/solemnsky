@@ -3,7 +3,7 @@
 void EngineDemo::tick(float delta) {
 }
 
-void EngineDemo::render(Frame &f) {
+void EngineDemo::render(ui::Frame &f) {
 
 }
 

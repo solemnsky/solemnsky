@@ -4,18 +4,18 @@
 #ifndef SOLEMNSKY_GRAPHICS_H
 #define SOLEMNSKY_GRAPHICS_H
 
-#include "base/control.h"
+#include "ui/ui.h"
 
-class GraphicsDemo : public Control {
+class GraphicsDemo : public ui::Control {
   sf::Vector2f mousePos{};
   float time = 0;
 
-  void renderPlanet(Frame &f, sf::Vector2f center);
-  void renderSystem(Frame &f);
+  void renderPlanet(ui::Frame &f, sf::Vector2f center);
+  void renderSystem(ui::Frame &f);
 
 public:
   void tick(float delta) override;
-  void render(Frame &f) override;
+  void render(ui::Frame &f) override;
   void handle(sf::Event event) override;
 //  optional<Control &> passOn() override;
 };

@@ -1,14 +1,14 @@
 /**
- * Central game engine, written to be used as a tool by the game tutorials
- * / clients / servers. Flight mechanics, physics helpers, network utilities...
+ * A sky (a solemn one) and all that it might hold, along with ways to draw it,
+ * serialise it, simulate it, predict it, etc. Large general engine to be used
+ * by the demos / clients / servers.
  */
 #ifndef SOLEMNSKY_ENGINE_ENGINE_H
 #define SOLEMNSKY_ENGINE_ENGINE_H
 
-#include <Box2D/Dynamics/b2World.h>
-#include "base/physics.h"
-#include "flight.h"
 #include <map>
+#include "physics.h"
+#include "flight.h"
 
 namespace sky {
 

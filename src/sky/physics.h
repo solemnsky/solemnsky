@@ -1,4 +1,6 @@
 /**
+ * This represents a physical world, with Box2D at the bottom.
+ *
  * Box2D has a few quirks and sharp edges that are convenient to encapsulate.
  * Keeping track of the distance scalar (Box2D uses values that are sane in the
  * metric system, our game engine uses values in the 1600x900 order of

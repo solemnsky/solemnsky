@@ -4,15 +4,15 @@
 #ifndef SOLEMNSKY_ENGINEDEMO_H
 #define SOLEMNSKY_ENGINEDEMO_H
 
-#include "base/control.h"
-#include "engine/engine.h"
+#include "ui/control.h"
+#include "sky/sky.h"
 
-class EngineDemo : public Control {
+class EngineDemo : public ui::Control {
 private:
   sky::Engine engine;
 public:
   virtual void tick(float delta) override;
-  virtual void render(Frame &f) override;
+  virtual void render(ui::Frame &f) override;
   virtual void handle(sf::Event event) override;
 };
 
