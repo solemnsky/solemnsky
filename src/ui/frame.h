@@ -27,11 +27,8 @@ private:
   // used by runSFML
   sf::Transform windowToFrame;
   int primCount;
-
   void beginDraw();
-
   void endDraw();
-
   void resize();
 
 public:
@@ -42,19 +39,13 @@ public:
   /**
    * Managing the render state stacks. It's like a scene graph but quick.
    */
-  void pushTransform(const sf::Transform transform);
-
+  void pushTransform(const sf::Transform &transform);
   void popTransform();
-
-  void withTransform(const sf::Transform transform, std::function<void()> fn);
-
+  void withTransform(const sf::Transform &transform, std::function<void()> fn);
   void pushAlpha(const float alpha);
-
   void popAlpha();
-
   void withAlpha(const float alpha, std::function<void()> fn);
-
-  void withAlphaTransform(const float alpha, const sf::Transform transform,
+  void withAlphaTransform(const float alpha, const sf::Transform &transform,
                           std::function<void()> fn);
 
   /**
@@ -62,7 +53,7 @@ public:
    */
 
   // some inline synonyms
-  inline void drawRect(const sf::FloatRect rect, sf::Color color = {}) {
+  inline void drawRect(const sf::FloatRect &rect, const sf::Color &color = {}) {
     drawRect(sf::Vector2f(rect.left, rect.top),
              sf::Vector2f(rect.left + rect.width, rect.top + rect.height),
              color);
@@ -70,21 +61,19 @@ public:
 
 
   // non-inline methods
-  void drawCircle(const sf::Vector2f pos, const float radius,
-                  const sf::Color color = {});
+  void drawCircle(const sf::Vector2f &pos, const float radius,
+                  const sf::Color &color = {});
 
-  void drawRect(const sf::Vector2f topLeft, const sf::Vector2f bottomRight,
-                const sf::Color color = {});
+  void drawRect(const sf::Vector2f &topLeft, const sf::Vector2f &bottomRight,
+                const sf::Color &color = {});
 
-  void drawText(const sf::Vector2f pos,
-                const std::string contents, const int size = 24,
-                const sf::Color color = sf::Color::White,
-                const sf::Text::Style style = sf::Text::Regular);
+  void drawText(const sf::Vector2f &pos,
+                const std::string &contents, const int size = 24,
+                const sf::Color &color = sf::Color::White,
+                const sf::Text::Style &style = sf::Text::Regular);
 
-  void drawSprite(const sf::Image image, const sf::Vector2f topLeft,
-                  const sf::Vector2f bottomRight,
-                  const sf::Vector2f topLeftImg,
-                  const sf::Vector2f bottomRightImg);
+  void drawSprite(const sf::Texture &texture, const sf::Vector2f &pos,
+                  const sf::IntRect &portion);
 
   // text sizes
   sf::Vector2f textSize(const std::string contents, const int size = 24);

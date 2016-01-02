@@ -2,9 +2,14 @@
 
 namespace ui {
 
-Button::Button(const sf::FloatRect body, const std::string text,
+sf::FloatRect Button::getBody() {
+  float w(style.width), h(style.height);
+  return {pos.x - (w / 2), pos.y - (h / 2), w, h};
+}
+
+Button::Button(const sf::Vector2f pos, const std::string text,
                Button::Style style) :
-    body(body), text(text), style(style) { }
+    pos(pos), text(text), style(style) { }
 
 void Button::tick(float delta) {
   if (isHot) hotAnimState += delta;
@@ -13,6 +18,7 @@ void Button::tick(float delta) {
 }
 
 void Button::render(Frame &f) {
+  const auto body = getBody();
   f.drawRect(body, mixColors(style.color, style.hotColor, getHeat()));
   const auto size = f.textSize(text);
   f.drawText(
@@ -24,6 +30,7 @@ void Button::render(Frame &f) {
 }
 
 void Button::handle(sf::Event event) {
+  const auto body = getBody();
   if (event.type == sf::Event::MouseMoved) {
     const sf::Vector2f pt(event.mouseMove.x, event.mouseMove.y);
     isHot = body.contains(pt);
@@ -34,6 +41,7 @@ void Button::handle(sf::Event event) {
     isClicked = isHot && *buttonPressed;
   }
 }
+
 
 }
 

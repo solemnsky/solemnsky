@@ -10,12 +10,13 @@ void Sky::quitPlane(const PID pid) {
   planes.erase(pid);
 }
 
-Plane &Sky::getPlane(const PID pid) {
-  return planes.at(pid);
+Plane *Sky::getPlane(const PID pid) {
+  if (planes.find(pid) != planes.end())
+    return &planes.at(pid);
+  else return nullptr;
 }
 
 void Sky::handle(const PID pid, const PlayerInput input) {
-
 }
 
 void Sky::tick(float delta) {

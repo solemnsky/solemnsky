@@ -1,5 +1,5 @@
 #include "demo.h"
-#include "enginedemo.h"
+#include "skydemo.h"
 
 void Demo::tick(float delta) {
   button.tick(delta);
@@ -11,5 +11,5 @@ void Demo::render(ui::Frame &f) {
 
 void Demo::handle(sf::Event event) {
   button.handle(event);
-  if (button.isClicked) next = std::make_shared<EngineDemo>();
+  if (button.isClicked) next = std::make_shared<SkyDemo>();
 }

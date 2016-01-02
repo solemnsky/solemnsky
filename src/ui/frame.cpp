@@ -73,7 +73,7 @@ void Frame::endDraw() {
   drawRect(sf::Vector2f(0, 900), bottomRight, color);
 }
 
-void Frame::pushTransform(const sf::Transform transform) {
+void Frame::pushTransform(const sf::Transform &transform) {
   sf::Transform nextTransform{transformStack.top()};
   nextTransform.combine(transform);
   transformStack.push(nextTransform);
@@ -84,7 +84,7 @@ void Frame::popTransform() {
   transformStack.pop();
 }
 
-void Frame::withTransform(const sf::Transform transform,
+void Frame::withTransform(const sf::Transform &transform,
                           std::function<void()> fn) {
   pushTransform(transform);
   fn();
@@ -107,16 +107,16 @@ void Frame::withAlpha(const float alpha, std::function<void()> fn) {
 }
 
 void Frame::withAlphaTransform(
-    const float alpha, const sf::Transform transform,
+    const float alpha, const sf::Transform &transform,
     std::function<void()> fn) {
   pushAlpha(alpha), pushTransform(transform);
   fn();
   popTransform(), popAlpha();
 }
 
-void Frame::drawCircle(const sf::Vector2f pos,
+void Frame::drawCircle(const sf::Vector2f &pos,
                        const float radius,
-                       const sf::Color color) {
+                       const sf::Color &color) {
   primCount++;
   sf::CircleShape circle(radius);
   circle.setPosition(pos - sf::Vector2f(radius, radius));
@@ -124,9 +124,9 @@ void Frame::drawCircle(const sf::Vector2f pos,
   window.draw(circle, transformStack.top());
 }
 
-void Frame::drawRect(const sf::Vector2f topLeft,
-                     const sf::Vector2f bottomRight,
-                     const sf::Color color) {
+void Frame::drawRect(const sf::Vector2f &topLeft,
+                     const sf::Vector2f &bottomRight,
+                     const sf::Color &color) {
   primCount++;
   sf::RectangleShape rect(bottomRight - topLeft);
   rect.setPosition(topLeft);
@@ -134,11 +134,11 @@ void Frame::drawRect(const sf::Vector2f topLeft,
   window.draw(rect, transformStack.top());
 }
 
-void Frame::drawText(const sf::Vector2f pos,
-                     const std::string contents,
+void Frame::drawText(const sf::Vector2f &pos,
+                     const std::string &contents,
                      const int size,
-                     const sf::Color color,
-                     const sf::Text::Style style) {
+                     const sf::Color &color,
+                     const sf::Text::Style &style) {
   sf::Vector2f pt = transformStack.top().transformPoint(sf::Vector2f(1, 0));
   float transScale = (float) sqrt(pt.x * pt.x + pt.y * pt.y);
   // I wonder if we need some math utils perhaps
@@ -154,12 +154,15 @@ void Frame::drawText(const sf::Vector2f pos,
   window.draw(text, transformStack.top());
 }
 
-void Frame::drawSprite(const sf::Image image,
-                       const sf::Vector2f topLeft,
-                       const sf::Vector2f bottomRight,
-                       const sf::Vector2f topLeftImg,
-                       const sf::Vector2f bottomRightImg) {
-
+void Frame::drawSprite(const sf::Texture &texture,
+                       const sf::Vector2f &pos,
+                       const sf::IntRect &portion) {
+  sf::Sprite sprite;
+  sprite.setTexture(texture);
+  sprite.setPosition(pos);
+//  sprite.setTextureRect(portion);
+//  sprite.setColor(sf::Color(255, 255, 255, (sf::Uint8) (255 * alphaStack.top())));
+  window.draw(sprite, transformStack.top());
 }
 
 sf::Vector2f Frame::textSize(const std::string contents, const int size) {

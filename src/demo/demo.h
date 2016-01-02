@@ -8,7 +8,7 @@
 
 class Demo : public ui::Control {
 private:
-  ui::Button button{sf::FloatRect(700, 400, 200, 100), "click to proceed"};
+  ui::Button button{{800, 450}, "click to proceed"};
 
 public:
   Demo() { }

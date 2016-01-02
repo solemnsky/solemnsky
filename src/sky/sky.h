@@ -40,10 +40,8 @@ public:
 
   void joinPlane(const PID pid, const PlaneTuning tuning);
   void quitPlane(const PID pid);
-  Plane &getPlane(const PID pid);
-
+  Plane *getPlane(const PID pid);
   void handle(const PID pid, const PlayerInput);
-
   void tick(float delta); // delta in seconds, as always
 };
 }
