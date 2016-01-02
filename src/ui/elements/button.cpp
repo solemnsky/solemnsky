@@ -14,7 +14,13 @@ void Button::tick(float delta) {
 
 void Button::render(Frame &f) {
   f.drawRect(body, mixColors(style.color, style.hotColor, getHeat()));
-  f.drawText(sf::Vector2f(0, 0), text);
+  const auto size = f.textSize(text);
+  f.drawText(
+      sf::Vector2f(
+          body.left + (body.width / 2),
+          body.top + (body.height / 2)) - (size * 0.5f),
+      text, style.fontSize
+  );
 }
 
 void Button::handle(sf::Event event) {

@@ -149,4 +149,13 @@ void Frame::drawText(const sf::Vector2f pos,
   text.setStyle(style);
   window.draw(text, transformStack.top());
 }
+
+sf::Vector2f Frame::textSize(const std::string contents, const int size) {
+  sf::Text text;
+  text.setFont(baseFont);
+  text.setString(contents);
+  text.setCharacterSize((unsigned int) size);
+  const auto bounds = text.getLocalBounds();
+  return sf::Vector2f(bounds.width, bounds.height);
+}
 }
