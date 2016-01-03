@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <cmath>
 #include "base/util.h"
 #include "base/resources.h"
 #include "frame.h"
