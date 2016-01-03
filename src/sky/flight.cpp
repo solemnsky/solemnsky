@@ -41,6 +41,8 @@ void Plane::readFromBody() {
 Plane::Plane(Sky *engine, const PlaneTuning tuning) :
     engine(engine), physics(&engine->physics), tuning(tuning) { }
 
+Plane::~Plane() { physics->world.DestroyBody(body); };
+
 void Plane::spawn(const sf::Vector2f pos, const float rot) {
   state = PlaneState(physics, tuning, pos, rot);
 }

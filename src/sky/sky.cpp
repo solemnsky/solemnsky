@@ -8,13 +8,7 @@ Physics::Settings mySettings() {
   return settings;
 };
 
-Sky::Sky() : physics(mySettings()) {
-  appLog(LogType::Notice, "Opening a new sky."); // very important logging
-}
-
-Sky::~Sky() {
-  appLog(LogType::Notice, "Closing an old sky.");
-}
+Sky::Sky() : physics(mySettings()) { }
 
 /****
  * Handling planes.
@@ -52,4 +46,12 @@ void Sky::tick(float delta) {
 }
 
 
+void Sky::render(const sf::Vector2<float> &pos) {
+  // first find our actual viewpoint
+
+
+  for (auto elem : planes) {
+
+  }
+}
 }

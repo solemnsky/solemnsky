@@ -78,9 +78,9 @@ void runSFML(std::shared_ptr<Control> ctrl) {
 
   appLog(LogType::Notice, "Starting application ...");
 
-  Profiler profiler{200};
-  Ticker profileTicker{200}, resizeTicker{1};
-  profileTicker.wait(); // wait 200 cycles before emitting a profile
+  Profiler profiler{100};
+  Ticker profileTicker{500}, resizeTicker{1};
+  profileTicker.wait();
 
   sf::Clock cycleClock, profileClock;
   const float tickStep = 1 / 60.0f;

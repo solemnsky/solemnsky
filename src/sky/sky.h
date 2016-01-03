@@ -36,7 +36,6 @@ public:
   Physics physics;
 
   Sky();
-  ~Sky();
 
   /**
    * Handling planes.
@@ -50,6 +49,7 @@ public:
    */
   void handle(const PID pid, const PlayerInput);
   void tick(float delta); // delta in seconds, as always
+  void render(const sf::Vector2<float> &pos);
 };
 }
 

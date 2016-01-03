@@ -4,14 +4,16 @@
 #ifndef SOLEMNSKY_SKYDEMO_H
 #define SOLEMNSKY_SKYDEMO_H
 
+#include <ui/sheet.h>
 #include "ui/ui.h"
 #include "sky/sky.h"
 
 class SkyDemo : public ui::Control {
 private:
+  const ui::SpriteSheet sheet{Res::PlayerSheet};
   const sf::Texture background;
 
-  sky::Sky sky;
+  sky::Sky sky{};
 
 public:
   SkyDemo();
