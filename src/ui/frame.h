@@ -59,7 +59,6 @@ public:
              color);
   }
 
-
   // non-inline methods
   void drawCircle(const sf::Vector2f &pos, const float radius,
                   const sf::Color &color = {});

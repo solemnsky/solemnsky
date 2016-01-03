@@ -13,6 +13,9 @@ private:
   const ui::SpriteSheet sheet{Res::PlayerSheet};
   const sf::Texture background;
 
+  Ticker animTicker{0.05f};
+  int animVal{0};
+
   sky::Sky sky{};
 
 public:

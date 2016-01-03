@@ -26,8 +26,8 @@ public:
     texture.loadFromFile(filepathTo(resource));
   }
 
-  void drawAt(ui::Frame &f, const sf::Vector2f pos,
-              const sf::Vector2f dims, const int index) const;
+  void drawIndex(ui::Frame &f, const sf::Vector2f pos,
+                 const sf::Vector2f dims, const int index) const;
 };
 }
 
