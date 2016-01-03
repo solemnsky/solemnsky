@@ -54,8 +54,10 @@ void Frame::resize() {
 
 void Frame::beginDraw() {
   primCount = 0;
-  transformStack = (decltype(transformStack)) {{sf::Transform()}};
-  alphaStack = (decltype(alphaStack)) {{1}};
+//  transformStack = (decltype(transformStack)) {{sf::Transform()}};
+//  alphaStack = (decltype(alphaStack)) {{1}};
+  transformStack = std::stack<sf::Transform>({sf::Transform()});
+  alphaStack = std::stack<float>({1});
   window.clear(sf::Color::Black);
 }
 

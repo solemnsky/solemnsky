@@ -95,6 +95,21 @@ void runSFML(std::shared_ptr<Control> ctrl) {
     if (ctrl->next) ctrl = ctrl->next;
 
     /*
+     * Events
+     * Here we process any events that were added to the cue during our
+     * rendering and logic.
+     */
+    while (window.pollEvent(event)) {
+      if (event.type == sf::Event::Closed) {
+        appLog(LogType::Notice, "Caught close signal.");
+        window.close();
+      }
+
+      if (event.type != sf::Event::MouseWheelScrolled) // fk mouse wheels
+        ctrl->handle(transformEvent(frame.windowToFrame, event));
+    }
+
+    /*
      * Rendering / Sleeping
      * Here our goal is to update the window display (at the next available
      * screen refresh), and in doing so spend some time before ticking.
@@ -127,21 +142,6 @@ void runSFML(std::shared_ptr<Control> ctrl) {
       rollingTickTime -= tickStep;
     }
     profiler.logicTime.push(profileClock.restart().asSeconds());
-
-    /*
-     * Events
-     * Here we process any events that were added to the cue during our
-     * rendering and logic.
-     */
-    while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed) {
-        appLog(LogType::Notice, "Caught close signal.");
-        window.close();
-      }
-
-      if (event.type != sf::Event::MouseWheelScrolled) // fk mouse wheels
-        ctrl->handle(transformEvent(frame.windowToFrame, event));
-    }
 
     if (profileTicker.tick(1)) appLog(LogType::Info, profiler.print());
   }
