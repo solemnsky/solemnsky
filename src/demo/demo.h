@@ -8,14 +8,28 @@
 
 class Demo : public ui::Control {
 private:
-  ui::Button button{{800, 450}, "click to proceed"};
+  ui::Button skyButton{{800, 400}, "engine demo"};
+  ui::Button graphicsButton{{800, 500}, "graphics demo"};
 
 public:
-  Demo() { }
+  void tick(float delta) override;
+  void render(ui::Frame &f) override;
+  void handle(sf::Event event) override;
+  void update() override;
+};
+
+class LinkBack : public ui::Control {
+private:
+  std::shared_ptr<ui::Control> underlying;
+  ui::Button backButton{{100, 50}, "go back"};
+
+public:
+  LinkBack(std::shared_ptr<ui::Control> ctrl);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   void handle(sf::Event event) override;
+  void update() override;
 };
 
 #endif //SOLEMNSKY_DEMO_H

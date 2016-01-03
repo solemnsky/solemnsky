@@ -2,6 +2,24 @@
 
 namespace sky {
 
+Physics::Settings mySettings() {
+  Physics::Settings settings{};
+  settings.velocityIterations = 7; // etc
+  return settings;
+};
+
+Sky::Sky() : physics(mySettings()) {
+  appLog(LogType::Notice, "Opening a new sky."); // very important logging
+}
+
+Sky::~Sky() {
+  appLog(LogType::Notice, "Closing an old sky.");
+}
+
+/****
+ * Handling planes.
+ */
+
 void Sky::joinPlane(const PID pid, const PlaneTuning tuning) {
   planes.emplace(std::pair<int, Plane>(pid, Plane(this, tuning)));
 }
@@ -16,6 +34,10 @@ Plane *Sky::getPlane(const PID pid) {
   else return nullptr;
 }
 
+/****
+ * Simulating.
+ */
+
 void Sky::handle(const PID pid, const PlayerInput input) {
 }
 
@@ -29,22 +51,5 @@ void Sky::tick(float delta) {
   }
 }
 
-/****
- * Physics settings.
- */
-
-Physics::Settings mySettings() {
-  Physics::Settings settings{};
-  settings.velocityIterations = 7; // etc
-  return settings;
-};
-
-Sky::Sky() : physics(mySettings()) {
-  appLog(LogType::Notice, "Opening a new sky."); // very important logging
-}
-
-Sky::~Sky() {
-  appLog(LogType::Notice, "Closing an old sky.");
-}
 
 }

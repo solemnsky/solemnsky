@@ -33,6 +33,11 @@ public:
   virtual void tick(float delta) = 0;
   virtual void render(Frame &f) = 0;
   virtual void handle(sf::Event event) = 0;
+
+  virtual void update() { }; // this is called whenever tick or handle are called
+
+  // update() is useful for our UI system; its semantics are 'whenever a Control (potentially a member)
+  // does something to its state'
 };
 
 /**
