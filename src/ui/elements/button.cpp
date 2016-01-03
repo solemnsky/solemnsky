@@ -35,7 +35,7 @@ void Button::handle(sf::Event event) {
     const sf::Vector2f pt(event.mouseMove.x, event.mouseMove.y);
     isHot = body.contains(pt);
   }
-  if (Optional<bool> buttonPressed = getMouseButtonAction(event)) {
+  if (optional < bool > buttonPressed = getMouseButtonAction(event)) {
     const sf::Vector2f pt(event.mouseButton.x, event.mouseButton.y);
     isHot = body.contains(pt);
     isClicked = isHot && *buttonPressed;

@@ -8,49 +8,52 @@
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include <functional>
+#include <boost/optional.hpp>
 
 /****
  * Optional.
  */
 
+using boost::optional;
+
 // TODO: use Boost's optional instead of this
-template<typename T>
-class Optional {
-private:
-  T *value;
-  bool has{false};
-
-public:
-  Optional() { }
-
-  Optional(T value) {
-    this->value = &value;
-    has = true;
-  }
-
-  Optional(const Optional<T> &x) {
-    this->has = x.has;
-    if (has) this->value = x.value;
-  }
-
-  T operator*() {
-    assert(has);
-    return *value;
-  }
-
-  T *operator->() {
-    assert(has);
-    return value;
-  }
-
-  operator bool() { return has; }
-
-  Optional<T> &operator=(Optional<T> &&x) {
-    this->has = x.has;
-    if (has) this->value = x.value;
-    return *this;
-  }
-};
+//template<typename T>
+//class Optional {
+//private:
+//  T *value;
+//  bool has{false};
+//
+//public:
+//  Optional() { }
+//
+//  Optional(T value) {
+//    this->value = &value;
+//    has = true;
+//  }
+//
+//  Optional(const Optional<T> &x) {
+//    this->has = x.has;
+//    if (has) this->value = x.value;
+//  }
+//
+//  T operator*() {
+//    assert(has);
+//    return *value;
+//  }
+//
+//  T *operator->() {
+//    assert(has);
+//    return value;
+//  }
+//
+//  operator bool() { return has; }
+//
+//  Optional<T> &operator=(Optional<T> &&x) {
+//    this->has = x.has;
+//    if (has) this->value = x.value;
+//    return *this;
+//  }
+//};
 
 /****
  * Canonical log messages with some handy formatting.
@@ -94,7 +97,7 @@ public:
  * Extract useful information from sf::Events.
  */
 
-Optional<bool> getMouseButtonAction(sf::Event event);
+optional<bool> getMouseButtonAction(sf::Event event);
 
 /**
  * Clamp values

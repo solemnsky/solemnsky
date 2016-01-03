@@ -42,7 +42,7 @@ void Ticker::wait() {
 
 Ticker::operator bool() { return active; }
 
-Optional<bool> getMouseButtonAction(sf::Event event) {
+optional<bool> getMouseButtonAction(sf::Event event) {
   if (event.type == sf::Event::MouseButtonReleased)
     return {false};
   if (event.type == sf::Event::MouseButtonPressed)
