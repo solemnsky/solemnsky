@@ -9,8 +9,6 @@
 
 class SkyDemo : public ui::Control {
 private:
-  ui::Button button{{100, 50}, "click to go back"};
-
   const sf::Texture background;
 
   sky::Sky sky;

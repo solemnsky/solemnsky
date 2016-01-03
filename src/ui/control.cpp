@@ -105,8 +105,10 @@ void runSFML(std::shared_ptr<Control> ctrl) {
         window.close();
       }
 
-      if (event.type != sf::Event::MouseWheelScrolled) // fk mouse wheels
+      if (event.type != sf::Event::MouseWheelScrolled) { // fk mouse wheels
         ctrl->handle(transformEvent(frame.windowToFrame, event));
+        ctrl->update();
+      }
     }
 
     /*
@@ -141,6 +143,7 @@ void runSFML(std::shared_ptr<Control> ctrl) {
       ctrl->tick(tickStep);
       rollingTickTime -= tickStep;
     }
+    ctrl->update();
     profiler.logicTime.push(profileClock.restart().asSeconds());
 
     if (profileTicker.tick(1)) appLog(LogType::Info, profiler.print());
