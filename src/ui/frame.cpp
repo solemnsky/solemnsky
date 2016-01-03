@@ -13,7 +13,7 @@ const sf::Color Frame::alphaScaleColor(const sf::Color color) {
 sf::Font getFont() {
   // load our font from the media file
   sf::Font font;
-  if (!font.loadFromFile(getFontPath())) {
+  if (!font.loadFromFile(filepathTo(Res::Font))) {
     appLog(LogType::Error, "Was not able to load font!");
   } else {
     appLog(LogType::Info, "Loaded font.");
@@ -162,8 +162,8 @@ void Frame::drawSprite(const sf::Texture &texture,
   sf::Sprite sprite;
   sprite.setTexture(texture);
   sprite.setPosition(pos);
-//  sprite.setTextureRect(portion);
-//  sprite.setColor(sf::Color(255, 255, 255, (sf::Uint8) (255 * alphaStack.top())));
+  sprite.setTextureRect(portion);
+  sprite.setColor(sf::Color(255, 255, 255, (sf::Uint8) (255 * alphaStack.top())));
   window.draw(sprite, transformStack.top());
 }
 

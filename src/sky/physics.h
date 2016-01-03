@@ -28,9 +28,7 @@ public:
 
   Physics(Settings settings = Settings{})
       : world(b2Vec2(0, 0)),
-        settings(settings) {
-    appLog(LogType::Notice, "Instantiated physics."); // necessary logging
-  }
+        settings(settings) { }
 
   /**
    * Settings and conversion helpers.

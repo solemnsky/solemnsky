@@ -81,6 +81,7 @@ public:
   Optional<PlaneState> state{}; // only when spawned
 
   Plane(Sky *engine, const PlaneTuning tuning);
+  ~Plane();
 
   void spawn(const sf::Vector2f pos, const float rot);
   void kill();
