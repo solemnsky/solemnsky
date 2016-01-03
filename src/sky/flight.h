@@ -78,7 +78,7 @@ private:
 
 public:
   PlaneTuning tuning;
-  Optional<PlaneState> state{}; // only when spawned
+  optional<PlaneState> state{}; // only when spawned
 
   Plane(Sky *engine, const PlaneTuning tuning);
   ~Plane();

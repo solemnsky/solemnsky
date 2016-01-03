@@ -52,7 +52,7 @@ set(SOURCE_FILES
         src/base/resources.cpp src/base/resources.h src/ui/sheet.cpp src/ui/sheet.h)
 
 
-#find_package(Boost)
+find_package(Boost)
 
 # Libraries
 set(LIBRARIES
@@ -61,7 +61,7 @@ set(LIBRARIES
         sfml-graphics
         sfml-window
         Box2D
-        #  "${Boost_LIBRARIES}"
+        "${Boost_LIBRARIES}"
         )
 
 # Paths to headers for inclusion
@@ -70,7 +70,7 @@ set(INCLUDE_DIRS
         src/
         thirdparty/SFML/include/
         thirdparty/Box2D/Box2D/
-        #  "${Boost_INCLUDE_DIRS}"
+        "${Boost_INCLUDE_DIRS}"
         )
 
 add_executable(solemnsky ${SOURCE_FILES})

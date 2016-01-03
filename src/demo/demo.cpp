@@ -18,7 +18,8 @@ void Demo::handle(sf::Event event) {
 }
 
 void Demo::update() {
-  if (skyButton.isClicked) next = std::make_shared<LinkBack>(std::make_shared<SkyDemo>());
+  if (skyButton.isClicked)
+    next = std::make_shared<LinkBack>(std::make_shared<SkyDemo>());
   if (graphicsButton.isClicked) next = std::make_shared<LinkBack>(std::make_shared<GraphicsDemo>());
 }
 

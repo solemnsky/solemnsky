@@ -66,7 +66,7 @@ namespace ui {
  */
 
 void runSFML(std::shared_ptr<Control> ctrl) {
-  Optional<std::shared_ptr<Control>> passedOn{};
+  optional <std::shared_ptr<Control>> passedOn{};
 
   appLog(LogType::Notice, "Creating window ...");
 
