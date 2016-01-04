@@ -59,9 +59,13 @@ void Plane::readFromBody() {
 }
 
 Plane::Plane(Sky *engine) :
-    engine(engine), physics(&engine->physics) { }
+    engine(engine), physics(&engine->physics) {
+  if (body)
+    appLog(LogType::Notice, "hm I guess I can't check pointers like "
+        "this");
+}
 
-Plane::~Plane() { physics->world.DestroyBody(body); };
+Plane::~Plane() { if (body) physics->world.DestroyBody(body); };
 
 void Plane::spawn(const sf::Vector2f pos, const float rot,
                   const PlaneTuning &tuning) {
