@@ -21,13 +21,19 @@ void Demo::handle(sf::Event event) {
   physicsButton.handle(event);
 }
 
-void Demo::update() {
-  if (skyButton.isClicked)
+void Demo::signalRead() {
+  if (skyButton.clickSignal)
     next = std::make_shared<LinkBack>(std::make_shared<SkyDemo>());
-  if (graphicsButton.isClicked)
+  if (graphicsButton.clickSignal)
     next = std::make_shared<LinkBack>(std::make_shared<GraphicsDemo>());
-  if (physicsButton.isClicked)
+  if (physicsButton.clickSignal)
     next = std::make_shared<LinkBack>(std::make_shared<PhysDemo>());
+}
+
+void Demo::signalClear() {
+  skyButton.signalClear();
+  graphicsButton.signalClear();
+  physicsButton.signalClear();
 }
 
 LinkBack::LinkBack(std::shared_ptr<ui::Control> ctrl) : underlying(ctrl) { }
@@ -47,7 +53,14 @@ void LinkBack::handle(sf::Event event) {
   backButton.handle(event);
 }
 
-void LinkBack::update() {
-  if (backButton.isClicked) next = std::make_shared<Demo>();
+void LinkBack::signalRead() {
+  underlying->signalRead();
+
+  if (backButton.clickSignal) next = std::make_shared<Demo>();
   if (underlying->next) next = underlying->next;
 }
+
+void LinkBack::signalClear() {
+  underlying->signalClear();
+}
+

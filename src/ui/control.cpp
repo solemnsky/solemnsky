@@ -1,6 +1,6 @@
 #include <cmath>
 #include <assert.h>
-#include "base/util.h"
+#include "base/base.h"
 #include "profiler.h"
 #include "control.h"
 
@@ -79,7 +79,7 @@ void runSFML(std::shared_ptr<Control> ctrl) {
   appLog(LogType::Notice, "Starting application ...");
 
   Profiler profiler{100};
-  Ticker profileTicker{500}, resizeTicker{1};
+  Cooldown profileTicker{500}, resizeTicker{1};
   profileTicker.wait();
 
   sf::Clock cycleClock, profileClock;
@@ -107,7 +107,9 @@ void runSFML(std::shared_ptr<Control> ctrl) {
 
       if (event.type != sf::Event::MouseWheelScrolled) { // fk mouse wheels
         ctrl->handle(transformEvent(frame.windowToFrame, event));
-        ctrl->update();
+
+        ctrl->signalRead();
+        ctrl->signalClear();
       }
     }
 
@@ -143,8 +145,10 @@ void runSFML(std::shared_ptr<Control> ctrl) {
       ctrl->tick(tickStep);
       rollingTickTime -= tickStep;
     }
-    ctrl->update();
     profiler.logicTime.push(profileClock.restart().asSeconds());
+
+    ctrl->signalRead();
+    ctrl->signalClear();
 
     if (profileTicker.tick(1)) appLog(LogType::Info, profiler.print());
   }

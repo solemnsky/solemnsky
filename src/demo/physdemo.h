@@ -18,7 +18,6 @@ public:
   virtual void tick(float delta) override;
   virtual void render(ui::Frame &f) override;
   virtual void handle(sf::Event event) override;
-  virtual void update() override;
 };
 
 #endif //SOLEMNSKY_PHYSDEMO_H

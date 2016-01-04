@@ -16,7 +16,8 @@ public:
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   void handle(sf::Event event) override;
-  void update() override;
+  void signalRead() override;
+  void signalClear() override;
 };
 
 class LinkBack : public ui::Control {
@@ -30,7 +31,8 @@ public:
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   void handle(sf::Event event) override;
-  void update() override;
+  void signalRead() override;
+  void signalClear() override;
 };
 
 #endif //SOLEMNSKY_DEMO_H
