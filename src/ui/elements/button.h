@@ -16,6 +16,7 @@ namespace ui {
 class Button : public Control {
 private:
   float hotAnimState = 0;
+  bool inPreClick{false};
 
   inline float getHeat() { return hotAnimState / style.hotAnimLength; }
 
@@ -26,14 +27,14 @@ public:
    * Settings
    */
   struct Style {
-    sf::Color color{sf::Color::Green}, hotColor{sf::Color::Red};
+    sf::Color color{sf::Color::Green}, hotColor{sf::Color::Red},
+        clickedColor{sf::Color::Blue};
     float width{200}, height{100};
 
     float hotAnimLength = 0.5;
     int fontSize = 24;
 
     Style() { }
-
   } style;
 
   sf::Vector2f pos;

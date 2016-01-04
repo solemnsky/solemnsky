@@ -19,7 +19,9 @@ void Button::tick(float delta) {
 
 void Button::render(Frame &f) {
   const auto body = getBody();
-  f.drawRect(body, mixColors(style.color, style.hotColor, getHeat()));
+  if (!inPreClick) f.drawRect(body, mixColors(style.color, style.hotColor,
+                                              getHeat()));
+  else f.drawRect(body, style.clickedColor);
   const auto size = f.textSize(text);
   f.drawText(
       sf::Vector2f(
@@ -35,13 +37,17 @@ void Button::handle(sf::Event event) {
     const sf::Vector2f pt(event.mouseMove.x, event.mouseMove.y);
     isHot = body.contains(pt);
   }
-  if (optional < bool > buttonPressed = getMouseButtonAction(event)) {
+  if (optional<bool> buttonPressed = getMouseButtonAction(event)) {
     const sf::Vector2f pt(event.mouseButton.x, event.mouseButton.y);
     isHot = body.contains(pt);
-    isClicked = isHot && *buttonPressed;
+
+    if (*buttonPressed) {
+      inPreClick = isHot;
+    } else {
+      inPreClick = false;
+      isClicked = isHot;
+    }
   }
 }
-
-
 }
 
