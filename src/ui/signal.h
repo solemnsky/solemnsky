@@ -28,8 +28,11 @@ struct None {
  * In a tick() somewhere on a button, the user clicks a mouse:
  * > clickSig += {};
  *
- * In an update() somewhere on a GUI, clicks are processed:
+ * In an signalRead() somewhere on a GUI, clicks are processed:
  * > for (auto click : clickSig) { ... process click ... }
+ *
+ * After reading happens, the signals are cleared:
+ * > clickSig.clear();
  */
 template<typename T>
 class Signal {
