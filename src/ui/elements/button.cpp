@@ -9,12 +9,11 @@ sf::FloatRect Button::getBody() {
 
 Button::Button(const sf::Vector2f pos, const std::string text,
                Button::Style style) :
-    pos(pos), text(text), style(style) { }
+    pos(pos), text(text), style(style), hotAnimState(0, 1, 0) { }
 
 void Button::tick(float delta) {
   if (isHot) hotAnimState += delta;
   else hotAnimState -= delta;
-  hotAnimState = clamp(0.0f, style.hotAnimLength, hotAnimState);
 }
 
 void Button::render(Frame &f) {
@@ -45,9 +44,13 @@ void Button::handle(sf::Event event) {
       inPreClick = isHot;
     } else {
       inPreClick = false;
-      isClicked = isHot;
+      if (isHot) clickSignal += {};
     }
   }
+}
+
+void Button::signalClear() {
+  clickSignal.clear();
 }
 }
 

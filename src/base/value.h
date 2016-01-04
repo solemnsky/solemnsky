@@ -7,7 +7,7 @@
 #ifndef SOLEMNSKY_VALUE_H
 #define SOLEMNSKY_VALUE_H
 
-#include "util.h"
+#include <vector>
 
 /****
  * Cooldown values: floats that are used for a 'cooldown' effect, incrementing
@@ -35,6 +35,16 @@ public:
   void wait();
   operator bool();
 };
+
+/**
+ * clamp function
+ */
+template<typename T>
+T clamp(const T min, const T max, const T x) {
+  if (x > max) return max;
+  if (x < min) return min;
+  return x;
+}
 
 /**
  * Clamped values: floats that must stay in a certain range.

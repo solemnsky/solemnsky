@@ -24,4 +24,3 @@ void PhysDemo::render(ui::Frame &f) {
 
 void PhysDemo::handle(sf::Event event) { }
 
-void PhysDemo::update() { }

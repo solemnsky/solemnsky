@@ -38,17 +38,6 @@ void appLog(LogType type, const std::string contents);
 optional<bool> getMouseButtonAction(sf::Event event);
 
 /****
- * Clamp values
- */
-
-template<typename T>
-T clamp(const T min, const T max, const T x) {
-  if (x > max) return max;
-  if (x < min) return min;
-  return x;
-}
-
-/****
  * Do stuff with colors.
  */
 sf::Color mixColors(

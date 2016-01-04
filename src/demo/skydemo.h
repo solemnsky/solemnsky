@@ -16,7 +16,7 @@ private:
   const ui::SpriteSheet sheet;
   const sf::Texture background;
 
-  Ticker animTicker;
+  Cooldown animTicker;
   int animVal;
 
   sky::Sky sky{};

@@ -24,7 +24,6 @@ void appLog(LogType type, const std::string contents) {
   }
 }
 
-
 optional<bool> getMouseButtonAction(sf::Event event) {
   if (event.type == sf::Event::MouseButtonReleased)
     return {false};

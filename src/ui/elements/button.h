@@ -5,8 +5,9 @@
 #define SOLEMNSKY_BUTTON_H
 
 #include "ui/control.h"
-#include "base/util.h"
+#include "base/base.h"
 #include  <SFML/Graphics/Color.hpp>
+#include <ui/signal.h>
 
 namespace ui {
 
@@ -15,7 +16,7 @@ namespace ui {
  */
 class Button : public Control {
 private:
-  float hotAnimState = 0;
+  Clamped hotAnimState;
   bool inPreClick{false};
 
   inline float getHeat() { return hotAnimState / style.hotAnimLength; }
@@ -47,15 +48,16 @@ public:
   /**
    * Control implementation.
    */
-  virtual void tick(float delta) override;
-  virtual void render(Frame &f) override;
-  virtual void handle(sf::Event event) override;
+  void tick(float delta) override;
+  void render(Frame &f) override;
+  void handle(sf::Event event) override;
+  void signalClear() override;
 
   /**
-   * UI status.
+   * Signal.
    */
-  bool isClicked{false};
   bool isHot{false}; // if the mouse is hovering over it
+  ui::Signal<ui::None> clickSignal;
 };
 
 }
