@@ -30,8 +30,8 @@ set(SOURCE_FILES
         src/sky/flight.h
         src/sky/flight.cpp
 
-        src/sky/graphics.cpp
-        src/sky/graphics.h
+        src/sky/render.cpp
+        src/sky/render.h
 
         src/sky/physics.h
         src/sky/physics.cpp

@@ -27,7 +27,7 @@ public:
   };
 
   Physics(Settings settings = Settings{})
-      : world(b2Vec2(0, 0)),
+      : world(b2Vec2(0, -10)),
         settings(settings) { }
 
   /**
