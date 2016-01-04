@@ -13,11 +13,11 @@ class SkyDemo : public ui::Control {
 private:
   sky::RenderMan renderMan;
 
-  const ui::SpriteSheet sheet{Res::PlayerSheet};
+  const ui::SpriteSheet sheet;
   const sf::Texture background;
 
-  Ticker animTicker{0.05f};
-  int animVal{0};
+  Ticker animTicker;
+  int animVal;
 
   sky::Sky sky{};
 

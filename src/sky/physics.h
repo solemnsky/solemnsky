@@ -22,33 +22,37 @@ public:
     float distanceScalar = 100; // pixels per meters
     int velocityIterations = 7;
     int positionIterations = 7;
+    float gravity = 50; // pixels per second^2
 
     Settings() { }
   };
 
-  Physics(Settings settings = Settings{})
-      : world(b2Vec2(0, -10)),
-        settings(settings) { }
+  const Settings settings;
+  sf::Vector2f dims;
+
+  b2World world;
+
+  Physics(sf::Vector2f dims, Settings settings = Settings{});
 
   /**
-   * Settings and conversion helpers.
+   * Conversion methods, bridging the gap between our engine and box2d.
    */
-  const Settings settings;
   sf::Vector2f toGameVec(b2Vec2 vec);
   b2Vec2 toPhysVec(sf::Vector2f vec);
 
   /**
-   * Box2d world.
-   */
-  b2World world;
-
-  /**
    * Creating physical stuff.
    */
-  b2Body *planeBody(b2Vec2 dims);
+  b2Body *createBody(sf::Vector2f pos);
+  b2Fixture *addRectFixture(b2Body *, sf::Vector2f dims);
+
+  b2Body *planeBody(sf::Vector2f dims);
+
+  /**
+   * Simulating.
+   */
   void tick(const float delta); // in seconds
 };
-
 }
 
 #endif //SOLEMNSKY_PHYSICS_H

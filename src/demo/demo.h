@@ -10,6 +10,7 @@ class Demo : public ui::Control {
 private:
   ui::Button skyButton{{800, 400}, "engine demo"};
   ui::Button graphicsButton{{800, 500}, "graphics demo"};
+  ui::Button physicsButton{{800, 600}, "physics demo"};
 
 public:
   void tick(float delta) override;
