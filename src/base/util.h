@@ -115,4 +115,72 @@ T clamp(const T min, const T max, const T x) {
 sf::Color mixColors(
     const sf::Color color1, const sf::Color color2, const float degree);
 
+/**
+ * For some reason sf::Vector has no math utilities, here are some.
+ */
+
+class VecMath {
+public:
+  static float length(const sf::Vector2f &vec);
+  static sf::Vector2f fromAngle(const float angle);
+  static float angle(const sf::Vector2f &vec);
+};
+
+/**
+ * Clamped values are necessary in a lot of places, here's a very simple way
+ * to make them safe.
+ *
+ * If this was an actual library, I'd use a value template and do cool stuff.
+ * It's just for our restricted application though, so this is enough.
+ */
+class Clamped {
+private:
+  float min, max;
+  float value;
+
+public:
+  Clamped() = delete;
+
+  Clamped(float min, float max, float value = 0) :
+      min(min), max(max), value(clamp(min, max, value)) { }
+
+  inline Clamped &operator=(float x) { value = clamp(min, max, x); }
+
+  inline Clamped &operator+=(float x) { value = clamp(min, max, value + x); }
+
+  inline Clamped &operator-=(float x) { value = clamp(min, max, value - x); }
+
+  inline operator float() const { return value; }
+};
+
+/**
+ * Values that switch between a few states are also necessary. Here's my little
+ * way of representing that.
+ */
+class Switched {
+private:
+  std::vector<float> states;
+  float value;
+
+public:
+  Switched(std::vector<float> states, float value = states[0]) :
+      states(states), value(value) { operator=(value); /* confirm validity */ };
+
+  Switched &operator=(float x) {
+    for (float possible : states)
+      if (x == possible) {
+        value = x;
+        return *this;
+      }
+
+    assert(false); // bad value
+  }
+
+  inline operator float() const { return value; }
+};
+
+
+
+
+
 #endif //SOLEMNSKY_BASE_UTIL_H
