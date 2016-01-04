@@ -97,7 +97,7 @@ private:
   sky::Sky *engine;
   Physics *physics;
 
-  b2Body *body;
+  b2Body *body{nullptr};
 
   /*
    * simulation

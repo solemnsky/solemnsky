@@ -7,9 +7,12 @@
 #include <ui/sheet.h>
 #include "ui/ui.h"
 #include "sky/sky.h"
+#include "sky/render.h"
 
 class SkyDemo : public ui::Control {
 private:
+  sky::RenderMan renderMan;
+
   const ui::SpriteSheet sheet{Res::PlayerSheet};
   const sf::Texture background;
 

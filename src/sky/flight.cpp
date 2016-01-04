@@ -43,7 +43,10 @@ void Plane::writeToBody() {
     body->SetAngularVelocity(state->rotvel);
     body->SetLinearVelocity(physics->toPhysVec(state->vel));
   } else {
-    if (body) physics->world.DestroyBody(body);
+    if (body) {
+      physics->world.DestroyBody(body);
+      body = nullptr;
+    }
   }
 }
 
@@ -60,9 +63,6 @@ void Plane::readFromBody() {
 
 Plane::Plane(Sky *engine) :
     engine(engine), physics(&engine->physics) {
-  if (body)
-    appLog(LogType::Notice, "hm I guess I can't check pointers like "
-        "this");
 }
 
 Plane::~Plane() { if (body) physics->world.DestroyBody(body); };

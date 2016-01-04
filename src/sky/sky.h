@@ -12,17 +12,6 @@
 
 namespace sky {
 
-struct PlayerInput {
-  const enum class Action {
-    ThrottleUp, ThrottleDown, Left, Right, Primary, Secondary
-  } action;
-
-  const bool actionState;
-
-  PlayerInput(Action action, bool actionState) : action(action),
-                                                 actionState(actionState) { }
-};
-
 typedef int PID; // personal ID for elements in the game
 
 /**
@@ -47,7 +36,6 @@ public:
   /**
    * Simulating.
    */
-  void handle(const PID pid, const PlayerInput);
   void tick(float delta); // delta in seconds, as always
   void render(const sf::Vector2<float> &pos);
 };

@@ -32,9 +32,6 @@ Plane *Sky::getPlane(const PID pid) {
  * Simulating.
  */
 
-void Sky::handle(const PID pid, const PlayerInput input) {
-}
-
 void Sky::tick(float delta) {
   physics.tick(delta);
   for (auto elem : planes) {
