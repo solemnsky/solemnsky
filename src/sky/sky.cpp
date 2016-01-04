@@ -15,7 +15,7 @@ Sky::Sky() : physics(mySettings()) { }
  */
 
 void Sky::joinPlane(const PID pid, const PlaneTuning tuning) {
-  planes.emplace(std::pair<int, Plane>(pid, Plane(this, tuning)));
+  planes.emplace(std::pair<int, Plane>(pid, Plane(this)));
 }
 
 void Sky::quitPlane(const PID pid) {
@@ -48,10 +48,8 @@ void Sky::tick(float delta) {
 
 void Sky::render(const sf::Vector2<float> &pos) {
   // first find our actual viewpoint
-
-
   for (auto elem : planes) {
-
+    // stub
   }
 }
 }
