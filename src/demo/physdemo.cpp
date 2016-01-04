@@ -10,6 +10,7 @@ PhysDemo::PhysDemo() :
     physics{{1600, 900}, mkSettings()} {
   body = physics.createBody({800, 450});
   physics.addRectFixture(body, {20, 20});
+  body->SetLinearVelocity(physics.toPhysVec({20, 20}));
 }
 
 void PhysDemo::tick(float delta) {

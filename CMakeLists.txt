@@ -12,17 +12,28 @@ add_subdirectory("thirdparty/SFML")
 set(SOURCE_FILES
         src/main.cpp
 
+        src/base/base.h
+
+        src/base/value.cpp
+        src/base/value.h
+
         src/base/util.h
         src/base/util.cpp
+
+        src/base/resources.cpp
+        src/base/resources.h
 
         src/demo/demo.h
         src/demo/demo.cpp
 
-        src/demo/skydemo.cpp
-        src/demo/skydemo.h
-
         src/demo/graphicsdemo.h
         src/demo/graphicsdemo.cpp
+
+        src/demo/physdemo.cpp
+        src/demo/physdemo.h
+
+        src/demo/skydemo.cpp
+        src/demo/skydemo.h
 
         src/sky/sky.h
         src/sky/sky.cpp
@@ -48,8 +59,14 @@ set(SOURCE_FILES
         src/ui/profiler.h
         src/ui/profiler.cpp
 
+        src/ui/sheet.cpp
+        src/ui/sheet.h
+
+        src/ui/signal.cpp
+        src/ui/signal.h
+
         src/ui/ui.h
-        src/base/resources.cpp src/base/resources.h src/ui/sheet.cpp src/ui/sheet.h src/demo/physdemo.cpp src/demo/physdemo.h)
+        )
 
 
 find_package(Boost)

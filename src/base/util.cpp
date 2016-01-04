@@ -24,23 +24,6 @@ void appLog(LogType type, const std::string contents) {
   }
 }
 
-bool Ticker::tick(float delta) {
-  cooldown += delta;
-  float newCooldown = std::fmod(cooldown, period);
-  active = newCooldown != cooldown;
-  cooldown = newCooldown;
-  return active;
-}
-
-void Ticker::prime() {
-  cooldown = period;
-}
-
-void Ticker::wait() {
-  cooldown = 0;
-}
-
-Ticker::operator bool() { return active; }
 
 optional<bool> getMouseButtonAction(sf::Event event) {
   if (event.type == sf::Event::MouseButtonReleased)
