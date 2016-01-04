@@ -163,7 +163,7 @@ private:
   float value;
 
 public:
-  Switched(std::vector<float> states, float value = states[0]) :
+  Switched(std::vector<float> states, float value) :
       states(states), value(value) { operator=(value); /* confirm validity */ };
 
   Switched &operator=(float x) {
@@ -178,9 +178,5 @@ public:
 
   inline operator float() const { return value; }
 };
-
-
-
-
 
 #endif //SOLEMNSKY_BASE_UTIL_H
