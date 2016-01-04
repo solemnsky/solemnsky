@@ -12,6 +12,13 @@ sf::Texture getBackground() {
 SkyDemo::SkyDemo() : background(getBackground()) { }
 
 void SkyDemo::tick(float delta) {
+  Clamped x{0, 1, 0};
+
+  x = 0;
+  x = 2;
+
+  appLog(LogType::Info, std::to_string(x));
+
   if (animTicker.tick(delta)) animVal = (animVal + 1) % sheet.count;
   sky.tick(delta);
 }

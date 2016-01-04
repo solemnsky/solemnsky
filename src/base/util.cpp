@@ -63,3 +63,15 @@ sf::Color mixColors(const sf::Color color1, const sf::Color color2,
                    mix(color1.a, color2.a, degree)
   );
 }
+
+float VecMath::length(const sf::Vector2f &vec) {
+  return (float) sqrt(vec.x * vec.x + vec.y * vec.y);
+}
+
+sf::Vector2f VecMath::fromAngle(const float angle) {
+  return sf::Vector2f(std::cos(angle), std::sin(angle));
+}
+
+float VecMath::angle(const sf::Vector2f &vec) {
+  return std::atan2(vec.y, vec.x);
+}
