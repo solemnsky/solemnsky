@@ -49,7 +49,7 @@ set(SOURCE_FILES
         src/ui/profiler.cpp
 
         src/ui/ui.h
-        src/base/resources.cpp src/base/resources.h src/ui/sheet.cpp src/ui/sheet.h)
+        src/base/resources.cpp src/base/resources.h src/ui/sheet.cpp src/ui/sheet.h src/demo/physdemo.cpp src/demo/physdemo.h)
 
 
 find_package(Boost)

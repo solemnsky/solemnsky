@@ -11,7 +11,10 @@ sf::Texture getBackground() {
 
 SkyDemo::SkyDemo() :
     renderMan(&sky),
-    background(getBackground()) {
+    background(getBackground()),
+    sheet{Res::PlayerSheet},
+    animTicker{0.05f},
+    animVal{0} {
   sky.joinPlane(0, sky::PlaneTuning());
 }
 

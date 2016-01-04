@@ -34,8 +34,7 @@ float PlaneState::velocity() {
 void Plane::writeToBody() {
   if (state) {
     if (!body)
-      body = physics->planeBody(
-          physics->toPhysVec(state->tuning.hitbox));
+      body = physics->planeBody(state->tuning.hitbox);
 
     body->SetTransform(
         physics->toPhysVec(state->pos),
