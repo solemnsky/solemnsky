@@ -1,14 +1,19 @@
 #include <assert.h>
 #include "resources.h"
+#include "util.h"
 
 const static std::vector<ResRecord> data{ // edit this side-by-side with resources.h
-    {"fonts/arial.ttf",                 false},
-    {"render-3d/test_1/player_200.png", true, 200, 200, 2, 15},
-    {"render-2d/placeholder/title.png", false}
+    {"fonts/arial.ttf",
+        ResType::Font,    false},
+    {"render-3d/test_1/player_200.png",
+        ResType::Texture, true, 200, 200, 2, 15},
+    {"render-2d/placeholder/title.png",
+        ResType::Texture, false}
 };
 
 static bool asserted{false}; // make sure we have enough entries in data
-#define ASSERT if (!asserted) { assert(data.size() == (unsigned long long int) Res::LAST); asserted = true; }
+#define ASSERT if (!asserted) \
+{ assert(data.size() == (unsigned long long int) Res::LAST); asserted = true; }
 // TODO: move this check to compile-time? >_>
 
 std::string filepathTo(const Res res) {
@@ -22,3 +27,49 @@ ResRecord recordOf(const Res res) {
   return data[(unsigned long long int) res];
 }
 
+/****
+ * ResMan
+ */
+
+namespace detail {
+
+void ResMan::loadRes() {
+  std::string resCount = std::to_string((int) Res::LAST);
+  std::string progress;
+  appLog(LogType::Notice, "Loading resources ...");
+
+  for (Res res = Res::Font; res < Res::LAST; res = (Res) (((int) res) + 1)) {
+    const ResRecord &record(recordOf(res));
+    progress = " ... (" + std::to_string((int) res + 1) +
+               " of " + resCount + ")";
+
+    switch (record.type) {
+      case ResType::Font: {
+        appLog(LogType::Notice, "Loading font " + record.path + progress);
+        sf::Font font;
+        font.loadFromFile(filepathTo(res));
+        fonts.emplace(std::pair<int, sf::Font>((int) res, font));
+        break;
+      }
+      case ResType::Texture: {
+        appLog(LogType::Notice, "Loading texture " + record.path + progress);
+
+        sf::Texture texture;
+        texture.loadFromFile(filepathTo(res));
+        textures.emplace(std::pair<int, sf::Texture>((int) res, texture));
+      }
+    }
+  }
+
+  appLog(LogType::Info, "Finished loading resources!");
+}
+
+sf::Texture ResMan::recallTexture(Res res) {
+  return sf::Texture();
+}
+
+sf::Font ResMan::recallFont(Res res) {
+  return sf::Font();
+}
+
+}
