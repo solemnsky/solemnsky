@@ -1,0 +1,20 @@
+#include "splash.h"
+#include "base/resources.h"
+
+namespace ui {
+
+void SplashScreen::tick(float delta) {
+  if (screenDrawn) {
+    loadResources(); // this might call more than once but it doesn't reload
+    next = afterLoading;
+  }
+}
+
+void SplashScreen::render(ui::Frame &f) {
+  f.drawText({800, 450}, "loading resources...", 50);
+  screenDrawn = true;
+}
+
+void SplashScreen::handle(sf::Event event) { }
+
+}
