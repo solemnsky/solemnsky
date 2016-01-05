@@ -9,7 +9,7 @@ void SpriteSheet::drawIndex(ui::Frame &f, const sf::Vector2f pos,
 
   f.pushTransform(sf::Transform().translate(pos).
       scale(dims.x / spriteWidth, dims.y / spriteHeight));
-  f.drawSprite(textureFrom(res), {-spriteWidth / 2, -spriteHeight / 2},
+  f.drawSprite(sheet, {-spriteWidth / 2, -spriteHeight / 2},
                sf::IntRect(left, top, record.tileX, record.tileY));
   f.popTransform();
 }

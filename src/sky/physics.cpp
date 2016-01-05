@@ -3,7 +3,7 @@
 namespace sky {
 
 Physics::Physics(sf::Vector2f dims, Settings settings)
-    : world({0, -settings.gravity / settings.distanceScalar}),
+    : world({0, settings.gravity / settings.distanceScalar}),
       dims(dims),
       settings(settings) {
   b2Vec2 b2dims = toPhysVec(dims);
@@ -16,16 +16,16 @@ Physics::Physics(sf::Vector2f dims, Settings settings)
   b2PolygonShape wallShape;
   b2Body *body;
 
-  body = createBody({0, dims.y / 2});
+  body = createBody({0, dims.y / 2}, false);
   addRectFixture(body, {wallWidth / 2, dims.y / 2});
 
-  body = createBody({dims.x, dims.y / 2});
+  body = createBody({dims.x, dims.y / 2}, false);
   addRectFixture(body, {wallWidth / 2, dims.y / 2});
 
-  body = createBody({dims.x / 2, 0});
+  body = createBody({dims.x / 2, 0}, false);
   addRectFixture(body, {dims.x / 2, wallWidth});
 
-  body = createBody({dims.x / 2, dims.y});
+  body = createBody({dims.x / 2, dims.y}, false);
   addRectFixture(body, {dims.x / 2, wallWidth});
 }
 
@@ -38,9 +38,11 @@ b2Vec2 Physics::toPhysVec(sf::Vector2f vec) {
   return (1 / settings.distanceScalar) * b2Vec2(vec.x, vec.y);
 }
 
-b2Body *Physics::createBody(sf::Vector2f pos) {
+b2Body *Physics::createBody(sf::Vector2f pos, bool dynamic) {
   b2BodyDef def;
   def.position = toPhysVec(pos);
+  if (dynamic) def.type = b2BodyType::b2_dynamicBody;
+  else def.type = b2BodyType::b2_staticBody;
   return world.CreateBody(&def);
 }
 
@@ -51,6 +53,7 @@ b2Fixture *Physics::addRectFixture(b2Body *body, sf::Vector2f dims) {
   shape.SetAsBox(bdims.x, bdims.y);
   b2FixtureDef fixture;
   fixture.shape = &shape;
+  fixture.density = 1.0f;
   return body->CreateFixture(&fixture);
 }
 

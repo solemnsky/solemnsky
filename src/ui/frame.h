@@ -68,7 +68,7 @@ public:
   void drawText(const sf::Vector2f &pos,
                 const std::string &contents, const int size = 24,
                 const sf::Color &color = sf::Color::White,
-                const sf::Font &font = fontFrom(Res::Font),
+                const sf::Font &font = fontOf(Res::Font),
                 const sf::Text::Style &style = sf::Text::Regular);
 
   void drawSprite(const sf::Texture &texture, const sf::Vector2f &pos,
@@ -76,7 +76,7 @@ public:
 
   // text sizes
   sf::Vector2f textSize(const std::string contents, const int size,
-                        const sf::Font &font = fontFrom(Res::Font));
+                        const sf::Font &font = fontOf(Res::Font));
 };
 }
 #endif //SOLEMNSKY_FRAME_H
