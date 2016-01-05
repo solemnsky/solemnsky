@@ -62,8 +62,12 @@ void ResMan::loadRes() {
     }
   }
 
-  appLog(LogType::Info, "Finished loading resources!");
-  appLog(LogType::Info, std::to_string(fonts.size()) + " fonts available");
+  appLog(LogType::Info,
+         std::to_string(fonts.size()) + " total fonts available.");
+  appLog(LogType::Info,
+         std::to_string(textures.size()) + " total textures available.");
+  appLog(LogType::Notice, "Finished loading resources.");
+
   initialized = true;
 }
 
@@ -79,7 +83,6 @@ const sf::Texture &ResMan::recallTexture(Res res) {
 
 const sf::Font &ResMan::recallFont(Res res) {
   const ResRecord &record(recordOf(res));
-  appLog(LogType::Info, std::to_string(fonts.size()) + " fonts available");
   if (record.type == ResType::Font)
     return fonts.at((int) res);
   else {
@@ -89,3 +92,11 @@ const sf::Font &ResMan::recallFont(Res res) {
 }
 
 }
+
+void loadResources() { detail::resMan.loadRes(); }
+
+sf::Texture textureFrom(Res res) {
+  return detail::resMan.recallTexture(res);
+}
+
+sf::Font fontFrom(Res res) { return detail::resMan.recallFont(res); }
