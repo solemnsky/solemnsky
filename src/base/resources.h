@@ -67,12 +67,11 @@ static ResMan resMan{};
 
 }
 
-inline void loadResources() { detail::resMan.loadRes(); }
-
-inline sf::Texture textureFrom(Res res) {
-  return detail::resMan.recallTexture(res);
-}
-
-inline sf::Font fontFrom(Res res) { return detail::resMan.recallFont(res); }
+/**
+ * Access the resource manager object.
+ */
+void loadResources();
+sf::Texture textureFrom(Res res);
+sf::Font fontFrom(Res res);
 
 #endif //SOLEMNSKY_RESOURCES_H
