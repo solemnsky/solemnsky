@@ -9,7 +9,8 @@
 
 class PhysDemo : public ui::Control {
 private:
-  b2Body *body;
+  b2Body *rectBody;
+  b2Body *circleBody;
   sky::Physics physics;
 
 public:
