@@ -41,8 +41,8 @@ struct ResRecord {
       tileX(tileX), tileY(tileY), countX(countX), countY(countY) { }
 };
 
-std::string filepathTo(Res res);
-ResRecord recordOf(Res res);
+const std::string filepathTo(Res res);
+const ResRecord &recordOf(const Res res);
 
 /**
  * Access the resource manager object.

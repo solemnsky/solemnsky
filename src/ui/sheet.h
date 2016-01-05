@@ -6,6 +6,7 @@
 
 #include "frame.h"
 #include "base/resources.h"
+#include "base/util.h"
 
 namespace ui {
 class SpriteSheet {
@@ -26,6 +27,7 @@ public:
       sheet(textureOf(resource)),
       tileDim{(float) record.tileX, (float) record.tileY},
       count(record.countX * record.countY) {
+    appLog(LogType::Info, record.path);
   }
 
   void drawIndex(ui::Frame &f, const sf::Vector2f pos,
