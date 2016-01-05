@@ -22,7 +22,7 @@ public:
     float distanceScalar = 100; // pixels per meters
     int velocityIterations = 7;
     int positionIterations = 7;
-    float gravity = 50; // pixels per second^2
+    float gravity = 1000; // pixels per second^2
 
     Settings() { }
   };
