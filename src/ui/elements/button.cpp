@@ -23,7 +23,7 @@ void Button::render(Frame &f) {
     f.drawRect(body, mixColors(style.color, style.hotColor,
                                getHeat()));
   else f.drawRect(body, style.clickedColor);
-  const auto size = f.textSize(text);
+  const auto size = f.textSize(text, 0);
   f.drawText(
       sf::Vector2f(
           body.left + (body.width / 2),

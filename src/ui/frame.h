@@ -9,6 +9,7 @@
 #include <stack>
 #include <SFML/Graphics.hpp>
 #include <functional>
+#include "base/resources.h"
 
 namespace ui {
 class Control;
@@ -21,8 +22,6 @@ private:
   std::stack<float> alphaStack;
 
   const sf::Color alphaScaleColor(const sf::Color);
-
-  sf::Font baseFont;
 
   // used by runSFML
   sf::Transform windowToFrame;
@@ -69,13 +68,15 @@ public:
   void drawText(const sf::Vector2f &pos,
                 const std::string &contents, const int size = 24,
                 const sf::Color &color = sf::Color::White,
+                const sf::Font &font = fontFrom(Res::Font),
                 const sf::Text::Style &style = sf::Text::Regular);
 
   void drawSprite(const sf::Texture &texture, const sf::Vector2f &pos,
                   const sf::IntRect &portion);
 
   // text sizes
-  sf::Vector2f textSize(const std::string contents, const int size = 24);
+  sf::Vector2f textSize(const std::string contents, const int size,
+                        const sf::Font &font = fontFrom(Res::Font));
 };
 }
 #endif //SOLEMNSKY_FRAME_H
