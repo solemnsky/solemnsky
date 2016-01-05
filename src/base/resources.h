@@ -50,7 +50,7 @@ ResRecord recordOf(Res res);
 
 namespace detail {
 
-static class ResMan {
+class ResMan {
 private:
   std::map<int, sf::Texture> textures;
   std::map<int, sf::Font> fonts;
@@ -59,9 +59,11 @@ private:
 public:
   void loadRes();
 
-  const sf::Texture &recallTexture(Res res) const;
-  const sf::Font &recallFont(Res res) const;
-} resMan;
+  const sf::Texture &recallTexture(Res res);
+  const sf::Font &recallFont(Res res);
+};
+
+static ResMan resMan{};
 
 }
 
