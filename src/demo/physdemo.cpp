@@ -8,17 +8,28 @@ sky::Physics::Settings mkSettings() {
 
 PhysDemo::PhysDemo() :
     physics{{1600, 900}, mkSettings()} {
-  body = physics.createBody({800, 450}, true);
-  physics.addRectFixture(body, {20, 20});
-  body->SetLinearVelocity(physics.toPhysVec({20, 20}));
+  rectBody = physics.createBody({800, 450}, true);
+  physics.addRectFixture(rectBody, {20, 20});
+  rectBody->SetTransform(rectBody->GetPosition(), 20);
+
+  circleBody = physics.createBody({800, 500}, true);
+  physics.addCircleFixture(circleBody, 20);
 }
 
 void PhysDemo::tick(float delta) {
+  physics.world.ClearForces();
   physics.tick(delta);
 }
 
 void PhysDemo::render(ui::Frame &f) {
-  f.drawCircle(physics.toGameVec(body->GetPosition()), 20, sf::Color::Red);
+  f.withTransform(
+      sf::Transform()
+          .translate(physics.toGameVec(rectBody->GetPosition()))
+          .rotate(rectBody->GetAngle()),
+      [&]() { f.drawRect({-10, -10, 20, 20}, sf::Color::Red); });
+
+  f.drawCircle(physics.toGameVec(circleBody->GetPosition()), 20,
+               sf::Color::Red);
 }
 
 void PhysDemo::handle(sf::Event event) { }

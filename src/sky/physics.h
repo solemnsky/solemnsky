@@ -22,7 +22,7 @@ public:
     float distanceScalar = 100; // pixels per meters
     int velocityIterations = 7;
     int positionIterations = 7;
-    float gravity = 1000; // pixels per second^2
+    float gravity = 500; // pixels per second^2
 
     Settings() { }
   };
@@ -40,11 +40,16 @@ public:
   sf::Vector2f toGameVec(b2Vec2 vec);
   b2Vec2 toPhysVec(sf::Vector2f vec);
 
+  inline float toGameDistance(float x) { return x * settings.distanceScalar; }
+
+  inline float toPhysDistance(float x) { return x / settings.distanceScalar; }
+
   /**
    * Creating physical stuff.
    */
   b2Body *createBody(sf::Vector2f pos, bool dynamic = false);
   b2Fixture *addRectFixture(b2Body *, sf::Vector2f dims);
+  b2Fixture *addCircleFixture(b2Body *, float rad);
 
   b2Body *planeBody(sf::Vector2f dims);
 

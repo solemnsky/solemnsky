@@ -50,7 +50,18 @@ b2Fixture *Physics::addRectFixture(b2Body *body, sf::Vector2f dims) {
   b2Vec2 bdims = toPhysVec(dims);
 
   b2PolygonShape shape;
-  shape.SetAsBox(bdims.x, bdims.y);
+  shape.SetAsBox(bdims.x / 2, bdims.y / 2);
+  b2FixtureDef fixture;
+  fixture.shape = &shape;
+  fixture.density = 1.0f;
+  return body->CreateFixture(&fixture);
+}
+
+b2Fixture *Physics::addCircleFixture(b2Body *body, float rad) {
+  float brad = toPhysDistance(rad);
+
+  b2CircleShape shape;
+  shape.m_radius = brad;
   b2FixtureDef fixture;
   fixture.shape = &shape;
   fixture.density = 1.0f;
