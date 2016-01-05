@@ -9,7 +9,8 @@ sf::FloatRect Button::getBody() {
 
 Button::Button(const sf::Vector2f pos, const std::string text,
                Button::Style style) :
-    pos(pos), text(text), style(style), hotAnimState(0, 1, 0) { }
+    pos(pos), text(text), style(style),
+    hotAnimState(0, style.hotAnimLength, 0) { }
 
 void Button::tick(float delta) {
   if (isHot) hotAnimState += delta;
@@ -18,15 +19,16 @@ void Button::tick(float delta) {
 
 void Button::render(Frame &f) {
   const auto body = getBody();
-  if (!inPreClick) f.drawRect(body, mixColors(style.color, style.hotColor,
-                                              getHeat()));
+  if (!inPreClick)
+    f.drawRect(body, mixColors(style.color, style.hotColor,
+                               getHeat()));
   else f.drawRect(body, style.clickedColor);
   const auto size = f.textSize(text);
   f.drawText(
       sf::Vector2f(
           body.left + (body.width / 2),
           body.top + (body.height / 2)) - (size * 0.5f),
-      text, style.fontSize
+      text, style.fontSize, style.textColor
   );
 }
 
