@@ -15,13 +15,13 @@ static bool asserted{false}; // make sure we have enough entries in data
 #define ASSERT if (!asserted) { assert(resRecords.size() == (unsigned long long int) Res::LAST); asserted = true; }
 // TODO: move this check to compile-time? >_>
 
-std::string filepathTo(const Res res) {
+const std::string filepathTo(const Res res) {
   ASSERT;
   const ResRecord &record = recordOf(res);
   return "../../media/" + record.path;
 }
 
-ResRecord recordOf(const Res res) {
+const ResRecord &recordOf(const Res res) {
   ASSERT;
   return resRecords[(unsigned long long int) res];
 }

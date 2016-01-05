@@ -23,8 +23,8 @@ void SkyDemo::render(ui::Frame &f) {
 
 void SkyDemo::handle(sf::Event event) {
   if (event.type == sf::Event::KeyPressed) {
-    if (event.key.code == sf::Keyboard::Key::F);
-    sky.getPlane(0)->spawn(sf::Vector2f(200, 200), 0, sky::PlaneTuning());
+    if (event.key.code == sf::Keyboard::Key::F)
+      sky.getPlane(0)->spawn(sf::Vector2f(200, 200), 0, sky::PlaneTuning());
   }
 }
 

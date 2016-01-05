@@ -20,7 +20,7 @@ namespace sky {
 class RenderMan {
 private:
   Sky *sky;
-  const ui::SpriteSheet &sheet;
+  const ui::SpriteSheet sheet;
 
 public:
   RenderMan(Sky *sky);
