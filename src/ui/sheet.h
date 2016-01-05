@@ -11,6 +11,7 @@ namespace ui {
 class SpriteSheet {
 private:
   const sf::Vector2f tileDim;
+  const sf::Texture &sheet;
   const ResRecord record;
   const Res res;
 
@@ -22,6 +23,7 @@ public:
   SpriteSheet(Res resource) :
       record(recordOf(resource)),
       res(res),
+      sheet(textureOf(resource)),
       tileDim{(float) record.tileX, (float) record.tileY},
       count(record.countX * record.countY) {
   }

@@ -16,7 +16,7 @@ void SkyDemo::tick(float delta) {
 }
 
 void SkyDemo::render(ui::Frame &f) {
-  f.drawSprite(textureFrom(Res::TitleScreen),
+  f.drawSprite(textureOf(Res::TitleScreen),
                sf::Vector2f(0, 0), sf::IntRect(0, 0, 1600, 900));
   renderMan.render(f, sf::Vector2f(0, 0));
 }
@@ -24,7 +24,7 @@ void SkyDemo::render(ui::Frame &f) {
 void SkyDemo::handle(sf::Event event) {
   if (event.type == sf::Event::KeyPressed) {
     if (event.key.code == sf::Keyboard::Key::F);
-//      sky.getPlane(0)->spawn(sf::Vector2f(200, 200), 0, sky::PlaneTuning());
+    sky.getPlane(0)->spawn(sf::Vector2f(200, 200), 0, sky::PlaneTuning());
   }
 }
 

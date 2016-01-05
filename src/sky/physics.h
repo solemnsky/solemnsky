@@ -43,7 +43,7 @@ public:
   /**
    * Creating physical stuff.
    */
-  b2Body *createBody(sf::Vector2f pos);
+  b2Body *createBody(sf::Vector2f pos, bool dynamic = false);
   b2Fixture *addRectFixture(b2Body *, sf::Vector2f dims);
 
   b2Body *planeBody(sf::Vector2f dims);

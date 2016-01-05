@@ -8,7 +8,7 @@ sky::Physics::Settings mkSettings() {
 
 PhysDemo::PhysDemo() :
     physics{{1600, 900}, mkSettings()} {
-  body = physics.createBody({800, 450});
+  body = physics.createBody({800, 450}, true);
   physics.addRectFixture(body, {20, 20});
   body->SetLinearVelocity(physics.toPhysVec({20, 20}));
 }
@@ -19,7 +19,6 @@ void PhysDemo::tick(float delta) {
 
 void PhysDemo::render(ui::Frame &f) {
   f.drawCircle(physics.toGameVec(body->GetPosition()), 20, sf::Color::Red);
-//  f.drawCircle({800, 450}, 20, sf::Color::Red);
 }
 
 void PhysDemo::handle(sf::Event event) { }

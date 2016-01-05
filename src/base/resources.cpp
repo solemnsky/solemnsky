@@ -95,8 +95,8 @@ const sf::Font &ResMan::recallFont(Res res) {
 
 void loadResources() { detail::resMan.loadRes(); }
 
-const sf::Texture &textureFrom(Res res) {
+const sf::Texture &textureOf(Res res) {
   return detail::resMan.recallTexture(res);
 }
 
-const sf::Font &fontFrom(Res res) { return detail::resMan.recallFont(res); }
+const sf::Font &fontOf(Res res) { return detail::resMan.recallFont(res); }

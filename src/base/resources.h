@@ -44,8 +44,15 @@ struct ResRecord {
 std::string filepathTo(Res res);
 ResRecord recordOf(Res res);
 
+/**
+ * Access the resource manager object.
+ */
+void loadResources();
+const sf::Texture &textureOf(Res res);
+const sf::Font &fontOf(Res res);
+
 /****
- * Resource caching.
+ * Internal resource manager class.
  */
 
 namespace detail {
@@ -66,12 +73,5 @@ public:
 static ResMan resMan{};
 
 }
-
-/**
- * Access the resource manager object.
- */
-void loadResources();
-const sf::Texture &textureFrom(Res res);
-const sf::Font &fontFrom(Res res);
 
 #endif //SOLEMNSKY_RESOURCES_H
