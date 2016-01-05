@@ -54,12 +54,13 @@ static class ResMan {
 private:
   std::map<int, sf::Texture> textures;
   std::map<int, sf::Font> fonts;
+  bool initialized{false};
 
 public:
   void loadRes();
 
-  sf::Texture recallTexture(Res res);
-  sf::Font recallFont(Res res);
+  const sf::Texture &recallTexture(Res res) const;
+  const sf::Font &recallFont(Res res) const;
 } resMan;
 
 }

@@ -2,7 +2,7 @@
 #include "resources.h"
 #include "util.h"
 
-const static std::vector<ResRecord> data{ // edit this side-by-side with resources.h
+const static std::vector<ResRecord> resRecords{ // edit this side-by-side with resources.h
     {"fonts/arial.ttf",
         ResType::Font,    false},
     {"render-3d/test_1/player_200.png",
@@ -12,8 +12,7 @@ const static std::vector<ResRecord> data{ // edit this side-by-side with resourc
 };
 
 static bool asserted{false}; // make sure we have enough entries in data
-#define ASSERT if (!asserted) \
-{ assert(data.size() == (unsigned long long int) Res::LAST); asserted = true; }
+#define ASSERT if (!asserted) { assert(resRecords.size() == (unsigned long long int) Res::LAST); asserted = true; }
 // TODO: move this check to compile-time? >_>
 
 std::string filepathTo(const Res res) {
@@ -24,7 +23,7 @@ std::string filepathTo(const Res res) {
 
 ResRecord recordOf(const Res res) {
   ASSERT;
-  return data[(unsigned long long int) res];
+  return resRecords[(unsigned long long int) res];
 }
 
 /****
@@ -34,6 +33,8 @@ ResRecord recordOf(const Res res) {
 namespace detail {
 
 void ResMan::loadRes() {
+  if (initialized) return;
+
   std::string resCount = std::to_string((int) Res::LAST);
   std::string progress;
   appLog(LogType::Notice, "Loading resources ...");
@@ -62,14 +63,27 @@ void ResMan::loadRes() {
   }
 
   appLog(LogType::Info, "Finished loading resources!");
+  initialized = true;
 }
 
-sf::Texture ResMan::recallTexture(Res res) {
-  return sf::Texture();
+const sf::Texture &ResMan::recallTexture(Res res) const {
+  const ResRecord &record(recordOf(res));
+  if (record.type == ResType::Texture)
+    return textures.at((int) res);
+  else {
+    appLog(LogType::Error, record.path + " is not a texture.");
+    assert(false); // no need for exceptions, this is practically a syntax error
+  }
 }
 
-sf::Font ResMan::recallFont(Res res) {
-  return sf::Font();
+const sf::Font &ResMan::recallFont(Res res) const {
+  const ResRecord &record(recordOf(res));
+  if (record.type == ResType::Font)
+    return fonts.at((int) res);
+  else {
+    appLog(LogType::Error, record.path + " is not a font");
+    assert(false);
+  }
 }
 
 }

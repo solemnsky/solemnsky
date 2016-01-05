@@ -13,7 +13,6 @@ Switched &Switched::operator=(const float x) {
       return *this;
     }
 
-  appLog(LogType::Error, "Bad assignment to Switched value! This error "
-      "should never pass into release.");
-  assert(false); // bad value
+  appLog(LogType::Error, "Bad assignment to Switched value!");
+  assert(false); // no need for exceptions, this is practically a syntax error
 }

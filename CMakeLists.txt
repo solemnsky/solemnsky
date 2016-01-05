@@ -67,7 +67,7 @@ set(SOURCE_FILES
 
         src/ui/ui.h
         src/base/base.h
-        )
+        src/ui/elements/splash.cpp src/ui/elements/splash.h)
 
 
 find_package(Boost)
