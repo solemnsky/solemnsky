@@ -3,7 +3,7 @@
 namespace sky {
 
 Physics::Physics(sf::Vector2f dims, Settings settings)
-    : world(b2Vec2(0, -settings.gravity / settings.distanceScalar)),
+    : world({0, -settings.gravity / settings.distanceScalar}),
       dims(dims),
       settings(settings) {
   b2Vec2 b2dims = toPhysVec(dims);

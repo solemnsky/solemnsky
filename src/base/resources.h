@@ -71,7 +71,7 @@ static ResMan resMan{};
  * Access the resource manager object.
  */
 void loadResources();
-sf::Texture textureFrom(Res res);
-sf::Font fontFrom(Res res);
+const sf::Texture &textureFrom(Res res);
+const sf::Font &fontFrom(Res res);
 
 #endif //SOLEMNSKY_RESOURCES_H
