@@ -9,33 +9,6 @@
 
 #include <vector>
 
-/****
- * Cooldown values: floats that are used for a 'cooldown' effect, incrementing
- * up a range until they cycle back to 0, at which point some event might occur.
- *
- * > Ticker ticker{1};
- * > ticker.tick(0.5);
- * > print(ticker); // 'false', not active yet
- * > ticker.tick(0.6); // this returns true
- * > print(ticker); // 'true', active until it's ticked again
- * > print(ticker.cooldown); // 1
- */
-class Cooldown {
-private:
-  bool active = false;
-
-public:
-  float cooldown;
-  float period;
-
-  Cooldown(float period) : period(period), cooldown(period) { }
-
-  bool tick(float delta);
-  void prime();
-  void wait();
-  operator bool();
-};
-
 /**
  * clamp function
  */
@@ -45,6 +18,35 @@ T clamp(const T min, const T max, const T x) {
   if (x < min) return min;
   return x;
 }
+
+/****
+ * Cooldown values: floats that are used for a 'cooldown' effect, incrementing
+ * up a range until they cycle back to 0, at which point some event might occur.
+ *
+ * > Cooldown cooldown{1};
+ * > print(cooldown.cool(0.5)); // 'false'
+ * > print(cooldown.cool(0.6)); // 'true'
+ * > cooldown.reset();
+ * > print(cooldown); // 'false', cooldown now at 1
+ */
+class Cooldown {
+public:
+  float cooldown;
+  float period;
+
+  Cooldown(float period) : period(period), cooldown(period) { }
+
+  inline bool cool(float delta) {
+    cooldown = std::max(0.0f, cooldown - delta);
+    return cooldown == 0;
+  };
+
+  inline void reset() { cooldown = period; };
+
+  inline void prime() { cooldown = 0; };
+
+  operator bool() { return cooldown == 0; }
+};
 
 /**
  * Clamped values: floats that must stay in a certain range.
@@ -92,7 +94,7 @@ public:
   Switched(std::vector<float> states, float value) :
       states(states), value(value) { operator=(value); /* confirm validity */ };
 
-  Switched & operator=(const float x);
+  Switched &operator=(const float x);
 
   inline operator float() const { return value; }
 };

@@ -79,8 +79,7 @@ void runSFML(std::shared_ptr<Control> ctrl) {
   appLog(LogType::Notice, "Starting application ...");
 
   Profiler profiler{100};
-  Cooldown profileTicker{500}, resizeTicker{1};
-  profileTicker.wait();
+  Cooldown profileCooldown{500}, resizeCooldown{1};
 
   sf::Clock cycleClock, profileClock;
   const float tickStep = 1 / 60.0f;
@@ -118,7 +117,8 @@ void runSFML(std::shared_ptr<Control> ctrl) {
      * Here our goal is to update the window display (at the next available
      * screen refresh), and in doing so spend some time before ticking.
      */
-    if (event.type == sf::Event::Resized || resizeTicker.tick(cycleDelta)) {
+    if (event.type == sf::Event::Resized || resizeCooldown.cool(cycleDelta)) {
+      resizeCooldown.reset();
       frame.resize();
     }
     frame.beginDraw();
@@ -150,7 +150,10 @@ void runSFML(std::shared_ptr<Control> ctrl) {
     ctrl->signalRead();
     ctrl->signalClear();
 
-    if (profileTicker.tick(1)) appLog(LogType::Info, profiler.print());
+    if (profileCooldown.cool(1)) {
+      appLog(LogType::Info, profiler.print());
+      profileCooldown.reset();
+    }
   }
 
   appLog(LogType::Notice, "Exiting app.");

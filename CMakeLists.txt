@@ -66,7 +66,7 @@ set(SOURCE_FILES
         src/ui/signal.h
 
         src/ui/ui.h
-        src/base/base.h)
+        src/base/base.h src/ui/elements/buttonlist.cpp src/ui/elements/buttonlist.h)
 
 
 find_package(Boost)

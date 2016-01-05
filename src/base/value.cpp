@@ -3,28 +3,6 @@
 #include "util.h"
 
 /**
- * Cooldown.
- */
-
-bool Cooldown::tick(float delta) {
-  cooldown += delta;
-  float newCooldown = std::fmod(cooldown, period);
-  active = newCooldown != cooldown;
-  cooldown = newCooldown;
-  return active;
-}
-
-void Cooldown::prime() {
-  cooldown = period;
-}
-
-void Cooldown::wait() {
-  cooldown = 0;
-}
-
-Cooldown::operator bool() { return active; }
-
-/**
  * Switched.
  */
 

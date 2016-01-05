@@ -19,7 +19,7 @@ SkyDemo::SkyDemo() :
 }
 
 void SkyDemo::tick(float delta) {
-  if (animTicker.tick(delta)) animVal = (animVal + 1) % sheet.count;
+  if (animTicker.cool(delta)) animVal = (animVal + 1) % sheet.count;
   renderMan.tick(delta);
   sky.tick(delta);
 }

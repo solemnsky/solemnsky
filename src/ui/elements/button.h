@@ -28,11 +28,14 @@ public:
    * Settings
    */
   struct Style {
-    sf::Color color{sf::Color::Green}, hotColor{sf::Color::Red},
-        clickedColor{sf::Color::Blue};
+    sf::Color color{132, 173, 181},
+        hotColor{92, 189, 206},
+        clickedColor{63, 208, 234},
+        textColor{255, 255, 255};
+
     float width{200}, height{100};
 
-    float hotAnimLength = 0.5;
+    float hotAnimLength = 0.1;
     int fontSize = 24;
 
     Style() { }
