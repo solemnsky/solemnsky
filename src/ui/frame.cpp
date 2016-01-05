@@ -11,20 +11,7 @@ const sf::Color Frame::alphaScaleColor(const sf::Color color) {
   return newColor;
 }
 
-sf::Font getFont() {
-  // load our font from the media file
-  sf::Font font;
-  if (!font.loadFromFile(filepathTo(Res::Font))) {
-    appLog(LogType::Error, "Was not able to load font!");
-  } else {
-    appLog(LogType::Info, "Loaded font.");
-  }
-  return font;
-}
-
-
-Frame::Frame(sf::RenderWindow &window) : window(window),
-                                         baseFont(getFont()) {
+Frame::Frame(sf::RenderWindow &window) : window(window) {
   resize();
 }
 
@@ -141,6 +128,7 @@ void Frame::drawText(const sf::Vector2f &pos,
                      const std::string &contents,
                      const int size,
                      const sf::Color &color,
+                     const sf::Font &font,
                      const sf::Text::Style &style) {
   sf::Vector2f pt = transformStack.top().transformPoint(sf::Vector2f(1, 0));
   float transScale = (float) sqrt(pt.x * pt.x + pt.y * pt.y);
@@ -148,7 +136,7 @@ void Frame::drawText(const sf::Vector2f &pos,
 
   primCount++;
   sf::Text text;
-  text.setFont(baseFont);
+  text.setFont(font);
   text.setPosition(pos);
   text.setString(contents);
   text.setCharacterSize((unsigned int) std::round(size * transScale));
@@ -168,9 +156,10 @@ void Frame::drawSprite(const sf::Texture &texture,
   window.draw(sprite, transformStack.top());
 }
 
-sf::Vector2f Frame::textSize(const std::string contents, const int size) {
+sf::Vector2f Frame::textSize(const std::string contents, const int size,
+                             const sf::Font &font) {
   sf::Text text;
-  text.setFont(baseFont);
+  text.setFont(font);
   text.setString(contents);
   text.setCharacterSize((unsigned int) size);
   const auto bounds = text.getLocalBounds();

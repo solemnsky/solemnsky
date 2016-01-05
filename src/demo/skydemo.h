@@ -13,9 +13,6 @@ class SkyDemo : public ui::Control {
 private:
   sky::RenderMan renderMan;
 
-  const ui::SpriteSheet sheet;
-  const sf::Texture background;
-
   Cooldown animTicker;
   int animVal;
 

@@ -10,9 +10,9 @@
 namespace ui {
 class SpriteSheet {
 private:
-  sf::Texture texture;
   const sf::Vector2f tileDim;
   const ResRecord record;
+  const Res res;
 
 public:
   const int count;
@@ -21,9 +21,9 @@ public:
 
   SpriteSheet(Res resource) :
       record(recordOf(resource)),
+      res(res),
       tileDim{(float) record.tileX, (float) record.tileY},
       count(record.countX * record.countY) {
-    texture.loadFromFile(filepathTo(resource));
   }
 
   void drawIndex(ui::Frame &f, const sf::Vector2f pos,
