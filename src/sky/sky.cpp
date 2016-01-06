@@ -34,14 +34,13 @@ Plane *Sky::getPlane(const PID pid) {
 
 void Sky::tick(float delta) {
   physics.tick(delta);
-  for (auto elem : planes) {
+  for (auto &elem : planes) {
     Plane &plane = elem.second;
     plane.readFromBody();
     plane.tick(delta);
     plane.writeToBody();
   }
 }
-
 
 void Sky::render(const sf::Vector2<float> &pos) {
   // first find our actual viewpoint

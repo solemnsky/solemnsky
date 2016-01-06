@@ -45,11 +45,12 @@ public:
   inline float toPhysDistance(float x) { return x / settings.distanceScalar; }
 
   /**
-   * Creating physical stuff.
+   * Doing physical stuff.
    */
   b2Body *createBody(sf::Vector2f pos, bool dynamic = false);
   b2Fixture *addRectFixture(b2Body *, sf::Vector2f dims);
   b2Fixture *addCircleFixture(b2Body *, float rad);
+  void rmBody(b2Body *body);
 
   b2Body *planeBody(sf::Vector2f dims);
 

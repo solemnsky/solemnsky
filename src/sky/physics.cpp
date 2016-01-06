@@ -17,16 +17,16 @@ Physics::Physics(sf::Vector2f dims, Settings settings)
   b2Body *body;
 
   body = createBody({0, dims.y / 2}, false);
-  addRectFixture(body, {wallWidth / 2, dims.y / 2});
+  addRectFixture(body, {wallWidth / 2, dims.y});
 
   body = createBody({dims.x, dims.y / 2}, false);
-  addRectFixture(body, {wallWidth / 2, dims.y / 2});
+  addRectFixture(body, {wallWidth / 2, dims.y});
 
   body = createBody({dims.x / 2, 0}, false);
-  addRectFixture(body, {dims.x / 2, wallWidth});
+  addRectFixture(body, {dims.x, wallWidth});
 
   body = createBody({dims.x / 2, dims.y}, false);
-  addRectFixture(body, {dims.x / 2, wallWidth});
+  addRectFixture(body, {dims.x, wallWidth});
 }
 
 sf::Vector2f Physics::toGameVec(b2Vec2 vec) {
@@ -68,12 +68,18 @@ b2Fixture *Physics::addCircleFixture(b2Body *body, float rad) {
   return body->CreateFixture(&fixture);
 }
 
+void Physics::rmBody(b2Body *body) {
+  appLog(LogType::Info, "removing body");
+  if (body == nullptr) return;
+  world.DestroyBody(body);
+  body = nullptr;
+}
+
 b2Body *Physics::planeBody(sf::Vector2f dims) {
-  b2BodyDef planeBodyDef;
-  b2Body *body = world.CreateBody(&planeBodyDef);
+  b2Body *body = createBody({0, 0}, true);
 
   b2Fixture *planeFixture = addRectFixture(body, dims);
-  planeFixture->SetRestitution(0); // etc etc, more settings go here
+//  planeFixture->SetRestitution(0); // etc etc, more settings go here
 
   return body;
 }

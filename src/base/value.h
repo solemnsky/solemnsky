@@ -91,6 +91,8 @@ private:
   float value;
 
 public:
+  Switched() = delete;
+
   Switched(std::vector<float> states, float value) :
       states(states), value(value) { operator=(value); /* confirm validity */ };
 
