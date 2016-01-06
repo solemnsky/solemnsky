@@ -25,7 +25,7 @@ class Sky;
  * There are a lot of values and terms to juggle, documented below.
  */
 struct PlaneTuning {
-  sf::Vector2f hitbox;
+  sf::Vector2f hitbox{200, 200};
 
   /**
    * When we're in a stall, flight is much simpler.
@@ -83,7 +83,7 @@ struct PlaneState {
   bool stalled{false}, afterburner{false};
   sf::Vector2f leftoverVel{0, 0};
   float speed;
-  Clamped throttle;
+  Clamped throttle{0, 1, 0};
 
   PlaneState(Physics *physics, const PlaneTuning tuning, const sf::Vector2f pos,
              const float rot);

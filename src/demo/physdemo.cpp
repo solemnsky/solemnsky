@@ -9,7 +9,8 @@ sky::Physics::Settings mkSettings() {
 PhysDemo::PhysDemo() :
     physics{{1600, 900}, mkSettings()} {
   rectBody = physics.createBody({800, 450}, true);
-  physics.addRectFixture(rectBody, {20, 20});
+  b2Fixture *fix = physics.addRectFixture(rectBody, {20, 20});
+  fix->SetRestitution(1);
 
   circleBody = physics.createBody({800, 500}, true);
   physics.addCircleFixture(circleBody, 20);
@@ -18,7 +19,7 @@ PhysDemo::PhysDemo() :
 }
 
 void PhysDemo::reset() {
-  rectBody->SetTransform(physics.toPhysVec({800, 450}), 20);
+  rectBody->SetTransform(physics.toPhysVec({800, 450}), 45);
   circleBody->SetTransform(physics.toPhysVec({800, 500}), 0);
   rectBody->SetLinearVelocity({0, 0});
   circleBody->SetLinearVelocity({0, 0});
@@ -33,9 +34,9 @@ void PhysDemo::tick(float delta) {
 
 void PhysDemo::render(ui::Frame &f) {
   f.withTransform(
-      sf::Transform()
-          .translate(physics.toGameVec(rectBody->GetPosition()))
-          .rotate(rectBody->GetAngle()),
+      sf::Transform().translate(physics.toGameVec(rectBody->GetPosition())).
+          rotate(rectBody->GetAngle()),
+
       [&]() { f.drawRect({-10, -10, 20, 20}, sf::Color::Red); });
 
   f.drawCircle(physics.toGameVec(circleBody->GetPosition()), 20,

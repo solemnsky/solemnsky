@@ -43,8 +43,7 @@ void Plane::writeToBody() {
     body->SetLinearVelocity(physics->toPhysVec(state->vel));
   } else {
     if (body) {
-      physics->world.DestroyBody(body);
-      body = nullptr;
+      physics->rmBody(body);
     }
   }
 }
@@ -64,15 +63,17 @@ Plane::Plane(Sky *engine) :
     engine(engine), physics(&engine->physics) {
 }
 
-Plane::~Plane() { if (body) physics->world.DestroyBody(body); };
+Plane::~Plane() { physics->rmBody(body); };
 
 void Plane::spawn(const sf::Vector2f pos, const float rot,
                   const PlaneTuning &tuning) {
   state = PlaneState(physics, tuning, pos, rot);
+  writeToBody();
 }
 
 void Plane::kill() {
   state = {};
+  writeToBody();
 }
 
 void Plane::tick(float delta) {
