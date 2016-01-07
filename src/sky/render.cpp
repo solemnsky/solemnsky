@@ -8,7 +8,7 @@ RenderMan::RenderMan(Sky *sky) :
     sheet(Res::PlayerSheet) { }
 
 void RenderMan::render(ui::Frame &f, sf::Vector2f pos) {
-  if (sky::Plane *plane = sky->getPlane(0)) {
+  if (Plane *plane = sky->getPlane(0)) {
     if (auto &state = plane->state) {
       f.pushTransform(
           sf::Transform().translate(state->pos).rotate(state->rot));

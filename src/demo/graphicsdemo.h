@@ -14,6 +14,8 @@ class GraphicsDemo : public ui::Control {
   void renderSystem(ui::Frame &f);
 
 public:
+  GraphicsDemo() { }
+
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   void handle(sf::Event event) override;

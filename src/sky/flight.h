@@ -75,7 +75,7 @@ struct PlaneState {
   /**
    * Tuning.
    */
-  const PlaneTuning tuning;
+  PlaneTuning tuning;
 
   /**
    * Control states.
