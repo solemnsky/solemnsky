@@ -2,7 +2,7 @@
 
 namespace sky {
 
-Physics::Physics(sf::Vector2f dims, Settings settings)
+Physics::Physics(const sf::Vector2f &dims, const Settings &settings)
     : world({0, settings.gravity / settings.distanceScalar}),
       dims(dims),
       settings(settings) {
@@ -38,7 +38,7 @@ b2Vec2 Physics::toPhysVec(sf::Vector2f vec) {
   return (1 / settings.distanceScalar) * b2Vec2(vec.x, vec.y);
 }
 
-b2Body *Physics::createBody(sf::Vector2f pos, bool dynamic) {
+b2Body *Physics::createBody(const sf::Vector2f &pos, bool dynamic) {
   b2BodyDef def;
   def.position = toPhysVec(pos);
   if (dynamic) def.type = b2BodyType::b2_dynamicBody;
@@ -46,7 +46,7 @@ b2Body *Physics::createBody(sf::Vector2f pos, bool dynamic) {
   return world.CreateBody(&def);
 }
 
-b2Fixture *Physics::addRectFixture(b2Body *body, sf::Vector2f dims) {
+b2Fixture *Physics::addRectFixture(b2Body *body, const sf::Vector2f &dims) {
   b2Vec2 bdims = toPhysVec(dims);
 
   b2PolygonShape shape;
@@ -68,14 +68,14 @@ b2Fixture *Physics::addCircleFixture(b2Body *body, float rad) {
   return body->CreateFixture(&fixture);
 }
 
-void Physics::rmBody(b2Body *body) {
+void Physics::clrBody(b2Body *body) {
   appLog(LogType::Info, "removing body");
   if (body == nullptr) return;
   world.DestroyBody(body);
   body = nullptr;
 }
 
-b2Body *Physics::planeBody(sf::Vector2f dims) {
+b2Body *Physics::planeBody(const sf::Vector2f &dims) {
   b2Body *body = createBody({0, 0}, true);
 
   b2Fixture *planeFixture = addRectFixture(body, dims);

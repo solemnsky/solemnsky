@@ -14,18 +14,19 @@ Sky::Sky() : physics({1600, 900}, mySettings()) { }
  * Handling planes.
  */
 
-void Sky::joinPlane(const PID pid, const PlaneTuning tuning) {
-  planes.emplace(std::pair<int, Plane>(pid, Plane(this)));
+Plane &Sky::joinPlane(const PID pid, const PlaneTuning tuning) {
+  planes.emplace(
+      std::pair<int, std::unique_ptr<Plane>>(
+          pid, std::unique_ptr<Plane>(new Plane(this))));
+  return *planes[pid];
 }
 
 void Sky::quitPlane(const PID pid) {
   planes.erase(pid);
 }
 
-Plane *Sky::getPlane(const PID pid) {
-  if (planes.find(pid) != planes.end())
-    return &planes.at(pid);
-  else return nullptr;
+Plane &Sky::getPlane(const PID pid) {
+  if (planes.find(pid) != planes.end()) return *planes[pid];
 }
 
 /****
@@ -35,17 +36,10 @@ Plane *Sky::getPlane(const PID pid) {
 void Sky::tick(float delta) {
   physics.tick(delta);
   for (auto &elem : planes) {
-    Plane &plane = elem.second;
+    Plane &plane = *elem.second;
     plane.readFromBody();
     plane.tick(delta);
     plane.writeToBody();
-  }
-}
-
-void Sky::render(const sf::Vector2<float> &pos) {
-  // first find our actual viewpoint
-  for (auto elem : planes) {
-    // stub
   }
 }
 }

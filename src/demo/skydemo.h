@@ -17,6 +17,7 @@ private:
   int animVal;
 
   sky::Sky sky{};
+  sky::Plane *plane;
 
 public:
   SkyDemo();

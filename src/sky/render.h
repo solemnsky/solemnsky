@@ -1,8 +1,8 @@
 /**
- * Essential rendering helpers, for internal use in sky.
+ * Render state / routine containment, detached and above sky::Sky.
  */
-#ifndef SOLEMNSKY_GRAPHICS_H_H
-#define SOLEMNSKY_GRAPHICS_H_H
+#ifndef SOLEMNSKY_GRAPHICS_H
+#define SOLEMNSKY_GRAPHICS_H
 
 #include <base/resources.h>
 #include "ui/control.h"
@@ -13,10 +13,6 @@
 
 namespace sky {
 
-/**
- * Manages render resources, state, etc, and renders the game of the engine
- * it's linked to.
- */
 class RenderMan {
 private:
   Sky *sky;
@@ -39,4 +35,4 @@ public:
 
 }
 
-#endif //SOLEMNSKY_GRAPHICS_H_H
+#endif //SOLEMNSKY_GRAPHICS_H
