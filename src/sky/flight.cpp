@@ -8,14 +8,21 @@ namespace sky {
  * PlaneState
  */
 
-PlaneState::PlaneState(Physics *physics, const PlaneTuning tuning,
-                       const sf::Vector2f pos, const float rot)
-    : pos(pos),
+PlaneState::PlaneState(Physics *physics, const PlaneTuning &tuning,
+                       const sf::Vector2f &pos, const float rot)
+    : rotCtrl(-1, 1, 0),
+      throtCtrl({-1, 0, 1}, 0),
+      pos(pos),
       rot(rot),
       tuning(tuning),
-      throttle(0, tuning.throttleSize, 0) {
+      throttle(0, tuning.throttleSize, tuning.throttleSize) {
   vel = tuning.flight.cruise * sf::Vector2f(std::cos(rot), std::sin(rot));
-  throttle = tuning.throttleSize;
+  rotvel = 0;
+
+  stalled = false;
+  afterburner = false;
+  leftoverVel = {0, 0};
+
   speed = tuning.flight.cruise;
 }
 
@@ -43,7 +50,7 @@ void Plane::writeToBody() {
     body->SetLinearVelocity(physics->toPhysVec(state->vel));
   } else {
     if (body) {
-      physics->rmBody(body);
+      physics->clrBody(body);
     }
   }
 }
@@ -63,11 +70,11 @@ Plane::Plane(Sky *engine) :
     engine(engine), physics(&engine->physics) {
 }
 
-Plane::~Plane() { physics->rmBody(body); };
+Plane::~Plane() { physics->clrBody(body); };
 
 void Plane::spawn(const sf::Vector2f pos, const float rot,
                   const PlaneTuning &tuning) {
-  state = PlaneState(physics, tuning, pos, rot);
+  state = {PlaneState(physics, tuning, pos, rot)};
   writeToBody();
 }
 
@@ -89,7 +96,7 @@ void Plane::tick(float delta) {
     const float targetRotVel = ((state->stalled) ?
                                 tuning.stall.maxRotVel :
                                 tuning.flight.maxRotVel) * state->rotCtrl;
-    state->rotvel = targetRotVel;
+    state->rotvel = 100; // targetRotVel;
 
     state->afterburner = false; // true afterburner value is set explicitly
     if (state->stalled) {

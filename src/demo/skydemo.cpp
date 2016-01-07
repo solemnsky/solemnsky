@@ -7,7 +7,7 @@ SkyDemo::SkyDemo() :
     renderMan(&sky),
     animTicker{0.05f},
     animVal{0} {
-  sky.joinPlane(0, sky::PlaneTuning());
+  plane = sky.joinPlane(0, sky::PlaneTuning());
 }
 
 void SkyDemo::tick(float delta) {
@@ -22,9 +22,13 @@ void SkyDemo::render(ui::Frame &f) {
 }
 
 void SkyDemo::handle(sf::Event event) {
+  // spawn
   if (event.type == sf::Event::KeyPressed) {
     if (event.key.code == sf::Keyboard::Key::F)
-      sky.getPlane(0)->spawn(sf::Vector2f(200, 200), 0, sky::PlaneTuning());
+      plane->spawn({200, 200}, 0, sky::PlaneTuning());
+  }
+  if (auto &state = plane->state) {
+    state->rotCtrl = 1;
   }
 }
 

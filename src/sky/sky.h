@@ -3,42 +3,39 @@
  * serialise it, simulate it, predict it, etc. Large general engine to be used
  * by the demos / clients / servers.
  */
-#ifndef SOLEMNSKY_ENGINE_ENGINE_H
-#define SOLEMNSKY_ENGINE_ENGINE_H
+#ifndef SOLEMNSKY_SKY_H
+#define SOLEMNSKY_SKY_H
 
 #include <map>
 #include "physics.h"
 #include "flight.h"
+#include <memory>
 
 namespace sky {
 
 typedef int PID; // personal ID for elements in the game
 
-/**
- * Top-level manager for our entire game system.
- */
 class Sky {
 private:
-  std::map<PID, Plane> planes;
+  std::map<PID, std::unique_ptr<Plane>> planes;
 
 public:
-  Physics physics;
-
   Sky();
+
+  Physics physics;
 
   /**
    * Handling planes.
    */
-  void joinPlane(const PID pid, const PlaneTuning tuning);
+  Plane &joinPlane(const PID pid, const PlaneTuning tuning);
   void quitPlane(const PID pid);
-  Plane *getPlane(const PID pid);
+  Plane &getPlane(const PID pid);
 
   /**
    * Simulating.
    */
   void tick(float delta); // delta in seconds, as always
-  void render(const sf::Vector2<float> &pos);
 };
 }
 
-#endif //SOLEMNSKY_ENGINE_ENGINE_H
+#endif //SOLEMNSKY_SKY_H
