@@ -2,7 +2,7 @@
 
 namespace sky {
 
-Physics::Physics(const sf::Vector2f &dims, const Settings &settings)
+Physics::Physics(const sf::Vector2f &dims, const Settings settings)
     : world({0, settings.gravity / settings.distanceScalar}),
       dims(dims),
       settings(settings) {

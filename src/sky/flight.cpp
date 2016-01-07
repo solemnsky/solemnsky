@@ -1,4 +1,5 @@
 #include <cmath>
+
 #include "flight.h"
 #include "sky.h"
 
