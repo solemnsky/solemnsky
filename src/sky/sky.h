@@ -27,9 +27,9 @@ public:
   /**
    * Handling planes.
    */
-  Plane &joinPlane(const PID pid, const PlaneTuning tuning);
+  Plane * joinPlane(const PID pid, const PlaneTuning tuning);
   void quitPlane(const PID pid);
-  Plane &getPlane(const PID pid);
+  Plane * getPlane(const PID pid);
 
   /**
    * Simulating.

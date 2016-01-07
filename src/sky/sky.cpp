@@ -14,19 +14,20 @@ Sky::Sky() : physics({1600, 900}, mySettings()) { }
  * Handling planes.
  */
 
-Plane &Sky::joinPlane(const PID pid, const PlaneTuning tuning) {
+Plane * Sky::joinPlane(const PID pid, const PlaneTuning tuning) {
   planes.emplace(
       std::pair<int, std::unique_ptr<Plane>>(
           pid, std::unique_ptr<Plane>(new Plane(this))));
-  return *planes[pid];
+  return planes[pid].get();
 }
 
 void Sky::quitPlane(const PID pid) {
   planes.erase(pid);
 }
 
-Plane &Sky::getPlane(const PID pid) {
-  if (planes.find(pid) != planes.end()) return *planes[pid];
+Plane * Sky::getPlane(const PID pid) {
+  if (planes.find(pid) != planes.end()) return planes[pid].get();
+  else return nullptr;
 }
 
 /****
