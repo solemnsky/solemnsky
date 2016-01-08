@@ -74,7 +74,6 @@ b2Fixture *Physics::addCircleFixture(b2Body *body, float rad) {
 }
 
 void Physics::clrBody(b2Body *body) {
-  appLog(LogType::Info, "removing body");
   if (body == nullptr) return;
   world.DestroyBody(body);
   body = nullptr;

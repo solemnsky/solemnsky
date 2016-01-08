@@ -14,13 +14,14 @@ Sky::Sky() : physics({1600, 900}, mySettings()) {
 
 Sky::~Sky() {
   LIFE_LOG("Destroying sky.");
+  planes.clear(); // destroy the planes before destroying the physics!
 }
 
 /****
  * Handling planes.
  */
 
-Plane * Sky::joinPlane(const PID pid, const PlaneTuning tuning) {
+Plane *Sky::joinPlane(const PID pid, const PlaneTuning tuning) {
   planes.emplace(
       std::pair<int, std::unique_ptr<Plane>>(
           pid, std::unique_ptr<Plane>(new Plane(this))));
