@@ -19,10 +19,10 @@ namespace sky {
 class Physics {
 public:
   struct Settings {
-    float distanceScalar = 100; // pixels per meters
+    float distanceScalar = 10; // pixels per meters
     int velocityIterations = 7;
     int positionIterations = 7;
-    float gravity = 500; // pixels per second^2
+    float gravity = 200; // pixels per second^2
 
     Settings() { }
   };

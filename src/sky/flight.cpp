@@ -105,27 +105,27 @@ void Plane::tick(float delta) {
                                 tuning.flight.maxRotVel) * state->rotCtrl;
     state->rotvel = targetRotVel;
 
-    state->afterburner = false; // true afterburner value is set explicitly
-    if (state->stalled) {
-      /**
-       * Afterburner.
-       */
-      if (state->throtCtrl == 1) {
-        state->afterburner = true;
-        state->vel +=
-            VecMath::fromAngle(state->rot) * (delta * tuning.stall.thrust);
-      }
-
-      /**
-       * Damp towards terminal velocity.
-       */
-      float excessVel = velocity - tuning.stall.maxVel;
-      float dampingFactor = tuning.stall.maxVel / velocity;
-      if (excessVel > 0)
-        state->vel.y =
-            state->vel.y * dampingFactor *
-            std::pow(tuning.stall.damping, delta);
-    }
+//    state->afterburner = false; // true afterburner value is set explicitly
+//    if (state->stalled) {
+//      /**
+//       * Afterburner.
+//       */
+//      if (state->throtCtrl == 1) {
+//        state->afterburner = true;
+//        state->vel +=
+//            VecMath::fromAngle(state->rot) * (delta * tuning.stall.thrust);
+//      }
+//
+//      /**
+//       * Damp towards terminal velocity.
+//       */
+//      float excessVel = velocity - tuning.stall.maxVel;
+//      float dampingFactor = tuning.stall.maxVel / velocity;
+//      if (excessVel > 0)
+//        state->vel.y =
+//            state->vel.y * dampingFactor *
+//            std::pow(tuning.stall.damping, delta);
+//    }
 
 //    } else { // motion when not stalled
 //
