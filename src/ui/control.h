@@ -32,7 +32,7 @@ public:
    */
   virtual void tick(float delta) = 0;
   virtual void render(Frame &f) = 0;
-  virtual void handle(sf::Event event) = 0;
+  virtual void handle(const sf::Event &event) = 0;
 
   /**
    * Signal framework.

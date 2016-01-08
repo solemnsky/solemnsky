@@ -32,7 +32,7 @@ void Button::render(Frame &f) {
   );
 }
 
-void Button::handle(sf::Event event) {
+void Button::handle(const sf::Event &event) {
   const auto body = getBody();
   if (event.type == sf::Event::MouseMoved) {
     const sf::Vector2f pt(event.mouseMove.x, event.mouseMove.y);

@@ -34,10 +34,10 @@ struct PlaneTuning {
    */
   struct {
     float
-        maxRotVel, // how quickly we can turn, (rad / s)
-        maxVel, // our terminal velocity (px / s)
-        thrust, // thrust acceleration (ps / s^2)
-        damping; // how quickly we approach our terminal velocity
+        maxRotVel = 100, // how quickly we can turn, (deg / s)
+        maxVel = 100, // our terminal velocity (px / s)
+        thrust = 100, // thrust acceleration (ps / s^2)
+        damping = 0.5; // how quickly we approach our terminal velocity
 
     float threshold; // the minimum airspeed that we need to enter flight
   } stall;
@@ -48,9 +48,9 @@ struct PlaneTuning {
    */
   struct {
     float
-        maxRotVel = 1, // maximum velocity of rotation
-        cruise = 300, // max cruise velocity
-        thrustCruise = 400; // max cruise velocity with thrusters engaged
+        maxRotVel = 100,
+        cruise = 300,
+        thrustCruise = 400;
 //
 //    float leftoverVelDamping = 0.7; // rate at which the leftover vel is damped
 //
@@ -78,13 +78,13 @@ struct PlaneState {
   PlaneTuning tuning;
 
   /**
-   * Control states.
+   * Controls. The user can modify this.
    */
   Clamped rotCtrl; // rotation control
   Switched throtCtrl; // throttle control
 
   /**
-   * Physical values and flight mechanics.
+   * Physical values and flight mechanics. The engine modifies these over time.
    */
   sf::Vector2f pos, vel;
   float rot, rotvel;

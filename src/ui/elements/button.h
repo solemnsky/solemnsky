@@ -53,7 +53,7 @@ public:
    */
   void tick(float delta) override;
   void render(Frame &f) override;
-  void handle(sf::Event event) override;
+  void handle(const sf::Event &event) override;
   void signalClear() override;
 
   /**

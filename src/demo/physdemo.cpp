@@ -43,7 +43,7 @@ void PhysDemo::render(ui::Frame &f) {
                sf::Color::Red);
 }
 
-void PhysDemo::handle(sf::Event event) {
+void PhysDemo::handle(const sf::Event &event) {
   if (event.type == sf::Event::KeyPressed) {
     if (event.key.code == sf::Keyboard::Key::F) reset();
   }

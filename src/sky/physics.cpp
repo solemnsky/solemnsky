@@ -58,7 +58,7 @@ b2Fixture *Physics::addRectFixture(b2Body *body, const sf::Vector2f &dims) {
   shape.SetAsBox(bdims.x / 2, bdims.y / 2);
   b2FixtureDef fixture;
   fixture.shape = &shape;
-  fixture.density = 1.0f;
+  fixture.density = 10.0f;
   return body->CreateFixture(&fixture);
 }
 
@@ -69,7 +69,7 @@ b2Fixture *Physics::addCircleFixture(b2Body *body, float rad) {
   shape.m_radius = brad;
   b2FixtureDef fixture;
   fixture.shape = &shape;
-  fixture.density = 1.0f;
+  fixture.density = 10.0f;
   return body->CreateFixture(&fixture);
 }
 
@@ -86,6 +86,18 @@ b2Body *Physics::planeBody(const sf::Vector2f &dims) {
 //  planeFixture->SetRestitution(0); // etc etc, more settings go here
 
   return body;
+}
+
+void Physics::approachRotVel(b2Body *body, float rotVel) {
+  body->ApplyAngularImpulse(
+      (rotVel - body->GetAngularVelocity()) * body->GetMass(), true);
+}
+
+void Physics::approachVel(b2Body *body, const sf::Vector2f &vel) {
+
+  body->ApplyLinearImpulse(
+      body->GetMass() * (toPhysVec(vel) - body->GetLinearVelocity()),
+      {0, 0}, true);
 }
 
 void Physics::tick(const float delta) {
