@@ -46,14 +46,14 @@ void ResMan::loadRes() {
 
     switch (record.type) {
       case ResType::Font: {
-        appLog(LogType::Notice, "Loading font " + record.path + progress);
+        appLog(LogType::Info, "Loading font " + record.path + progress);
         sf::Font font;
         font.loadFromFile(filepathTo(res));
         fonts.emplace(std::pair<int, sf::Font>((int) res, font));
         break;
       }
       case ResType::Texture: {
-        appLog(LogType::Notice, "Loading texture " + record.path + progress);
+        appLog(LogType::Info, "Loading texture " + record.path + progress);
 
         sf::Texture texture;
         texture.loadFromFile(filepathTo(res));
