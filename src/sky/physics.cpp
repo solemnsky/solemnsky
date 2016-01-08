@@ -6,6 +6,7 @@ Physics::Physics(const sf::Vector2f &dims, const Settings settings)
     : world({0, settings.gravity / settings.distanceScalar}),
       dims(dims),
       settings(settings) {
+  LIFE_LOG("Creating physics.");
   b2Vec2 b2dims = toPhysVec(dims);
   float wallWidth = 0.1;
 
@@ -27,6 +28,10 @@ Physics::Physics(const sf::Vector2f &dims, const Settings settings)
 
   body = createBody({dims.x / 2, dims.y}, false);
   addRectFixture(body, {dims.x, wallWidth});
+}
+
+Physics::~Physics() {
+  LIFE_LOG("Destroying physics.");
 }
 
 sf::Vector2f Physics::toGameVec(b2Vec2 vec) {

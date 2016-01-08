@@ -23,13 +23,21 @@ using boost::optional;
 enum class LogType {
   Info, // you might like to know it
   Notice, // you should know it
-  Error // you have to know it (buzzfeed articles, etc)
+  Error, // you have to know it (buzzfeed articles, etc)
+  Debug // exists for debugging
 };
 
 /**
  * Logs a pretty little message.
  */
 void appLog(LogType type, const std::string contents);
+
+/**
+ * Logging that can be conditionally included.
+ */
+
+#define DEBUG_LOG(str) appLog(LogType::Debug, str)
+#define LIFE_LOG(str) appLog(LogType::Debug, str)
 
 /****
  * Extract useful information from sf::Events.

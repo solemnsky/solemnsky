@@ -33,6 +33,7 @@ public:
   b2World world;
 
   Physics(const sf::Vector2f &dims, const Settings settings = {});
+  ~Physics();
 
   /**
    * Conversion methods, bridging the gap between our engine and box2d.
