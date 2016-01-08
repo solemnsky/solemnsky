@@ -10,7 +10,7 @@ PhysDemo::PhysDemo() :
     physics{{1600, 900}, mkSettings()} {
   rectBody = physics.createBody({800, 450}, true);
   b2Fixture *fix = physics.addRectFixture(rectBody, {20, 20});
-  fix->SetRestitution(1);
+  fix->SetRestitution(0);
 
   circleBody = physics.createBody({800, 500}, true);
   physics.addCircleFixture(circleBody, 20);

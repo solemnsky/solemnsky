@@ -46,6 +46,7 @@ b2Vec2 Physics::toPhysVec(sf::Vector2f vec) {
 b2Body *Physics::createBody(const sf::Vector2f &pos, bool dynamic) {
   b2BodyDef def;
   def.position = toPhysVec(pos);
+  def.fixedRotation = false;
   if (dynamic) def.type = b2BodyType::b2_dynamicBody;
   else def.type = b2BodyType::b2_staticBody;
   return world.CreateBody(&def);
@@ -58,7 +59,6 @@ b2Fixture *Physics::addRectFixture(b2Body *body, const sf::Vector2f &dims) {
   shape.SetAsBox(bdims.x / 2, bdims.y / 2);
   b2FixtureDef fixture;
   fixture.shape = &shape;
-  fixture.density = 10.0f;
   return body->CreateFixture(&fixture);
 }
 
@@ -69,7 +69,6 @@ b2Fixture *Physics::addCircleFixture(b2Body *body, float rad) {
   shape.m_radius = brad;
   b2FixtureDef fixture;
   fixture.shape = &shape;
-  fixture.density = 10.0f;
   return body->CreateFixture(&fixture);
 }
 
@@ -89,18 +88,20 @@ b2Body *Physics::planeBody(const sf::Vector2f &dims) {
 }
 
 void Physics::approachRotVel(b2Body *body, float rotVel) {
-  body->ApplyAngularImpulse(
-      (rotVel - body->GetAngularVelocity()) * body->GetMass(), true);
+  body->SetAngularVelocity(rotVel);
+//  body->ApplyAngularImpulse(
+//      (rotVel - body->GetAngularVelocity()) * body->GetMass(), true);
 }
 
 void Physics::approachVel(b2Body *body, const sf::Vector2f &vel) {
-
-  body->ApplyLinearImpulse(
-      body->GetMass() * (toPhysVec(vel) - body->GetLinearVelocity()),
-      {0, 0}, true);
+  body->SetLinearVelocity(toPhysVec(vel));
+//  body->ApplyLinearImpulse(
+//      body->GetMass() * (toPhysVec(vel) - body->GetLinearVelocity()),
+//      {0, 0}, true);
 }
 
 void Physics::tick(const float delta) {
+  world.ClearForces();
   world.Step(delta, settings.velocityIterations, settings.positionIterations);
 }
 
