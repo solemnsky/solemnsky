@@ -8,6 +8,7 @@ void appLog(LogType type, const std::string contents) {
       {"INFO:   ",
        "NOTICE: ",
        "ERROR:  ",
+       "DEBUG:  ",
        "        "};
 
   std::stringstream stream(contents);
@@ -19,7 +20,7 @@ void appLog(LogType type, const std::string contents) {
       std::cout << prefixes[(int) type] + line + "\n";
       isFirstLine = false;
     } else {
-      std::cout << prefixes[3] + line + "\n";
+      std::cout << prefixes[4] + line + "\n";
     }
   }
 }

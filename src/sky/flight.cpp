@@ -68,10 +68,14 @@ void Plane::readFromBody() {
 }
 
 Plane::Plane(Sky *engine) :
-    engine(engine), physics(&engine->physics) {
+    engine(engine), physics(&engine->physics), body(nullptr) {
+  LIFE_LOG("Creating plane.");
 }
 
-Plane::~Plane() { physics->clrBody(body); };
+Plane::~Plane() {
+  kill();
+  LIFE_LOG("Destroying plane.");
+};
 
 void Plane::spawn(const sf::Vector2f pos, const float rot,
                   const PlaneTuning &tuning) {

@@ -8,7 +8,13 @@ Physics::Settings mySettings() {
   return settings;
 };
 
-Sky::Sky() : physics({1600, 900}, mySettings()) { }
+Sky::Sky() : physics({1600, 900}, mySettings()) {
+  LIFE_LOG("Creating sky.");
+}
+
+Sky::~Sky() {
+  LIFE_LOG("Destroying sky.");
+}
 
 /****
  * Handling planes.

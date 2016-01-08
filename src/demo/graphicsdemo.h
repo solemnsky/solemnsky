@@ -1,8 +1,8 @@
 /**
  * Make sure graphics work; we shan't have any embarrassments, yes?
  */
-#ifndef SOLEMNSKY_GRAPHICS_H
-#define SOLEMNSKY_GRAPHICS_H
+#ifndef SOLEMNSKY_GRAPHICSDEMO_H
+#define SOLEMNSKY_GRAPHICSDEMO_H
 
 #include "ui/ui.h"
 
@@ -14,12 +14,10 @@ class GraphicsDemo : public ui::Control {
   void renderSystem(ui::Frame &f);
 
 public:
-  GraphicsDemo() { }
-
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   void handle(sf::Event event) override;
 };
 
-#endif //SOLEMNSKY_GRAPHICS_H
+#endif //SOLEMNSKY_GRAPHICSDEMO_H
 
