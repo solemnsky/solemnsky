@@ -48,7 +48,7 @@ void Plane::writeToBody() {
         physics->toPhysVec(state->pos),
         state->rot);
     physics->approachRotVel(body, state->rotvel);
-    physics->approachVel(body, state->vel);
+//    physics->approachVel(body, state->vel);
   } else {
     if (body) {
       physics->clrBody(body);
