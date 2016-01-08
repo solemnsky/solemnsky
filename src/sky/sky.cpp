@@ -32,7 +32,7 @@ void Sky::quitPlane(const PID pid) {
   planes.erase(pid);
 }
 
-Plane * Sky::getPlane(const PID pid) {
+Plane *Sky::getPlane(const PID pid) {
   if (planes.find(pid) != planes.end()) return planes[pid].get();
   else return nullptr;
 }

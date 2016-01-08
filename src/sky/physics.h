@@ -44,7 +44,7 @@ public:
   float inline toPhysDistance(float x);
 
   /**
-   * Doing physical stuff.
+   * Making physical stuff.
    */
   b2Body *createBody(const sf::Vector2f &pos, bool dynamic = false);
   b2Fixture *addRectFixture(b2Body *body, const sf::Vector2f &dims);
@@ -52,6 +52,12 @@ public:
   void clrBody(b2Body *body);
 
   b2Body *planeBody(const sf::Vector2f &dims);
+
+  /**
+   * Doing physical stuff.
+   */
+  void approachRotVel(b2Body *body, float rotVel);
+  void approachVel(b2Body *body, const sf::Vector2f &vel);
 
   /**
    * Simulating.

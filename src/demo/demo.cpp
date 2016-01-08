@@ -15,7 +15,7 @@ void Demo::render(ui::Frame &f) {
   physicsButton.render(f);
 }
 
-void Demo::handle(sf::Event event) {
+void Demo::handle(const sf::Event &event) {
   skyButton.handle(event);
   graphicsButton.handle(event);
   physicsButton.handle(event);
@@ -48,7 +48,7 @@ void LinkBack::render(ui::Frame &f) {
   backButton.render(f);
 }
 
-void LinkBack::handle(sf::Event event) {
+void LinkBack::handle(const sf::Event &event) {
   underlying->handle(event);
   backButton.handle(event);
 }

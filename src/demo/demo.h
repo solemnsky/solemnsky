@@ -15,7 +15,7 @@ private:
 public:
   void tick(float delta) override;
   void render(ui::Frame &f) override;
-  void handle(sf::Event event) override;
+  void handle(const sf::Event &event) override;
   void signalRead() override;
   void signalClear() override;
 };
@@ -30,7 +30,7 @@ public:
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;
-  void handle(sf::Event event) override;
+  void handle(const sf::Event &event) override;
   void signalRead() override;
   void signalClear() override;
 };

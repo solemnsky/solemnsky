@@ -10,13 +10,13 @@ class GraphicsDemo : public ui::Control {
   sf::Vector2f mousePos{};
   float time = 0;
 
-  void renderPlanet(ui::Frame &f, sf::Vector2f center);
+  void renderPlanet(ui::Frame &f, const sf::Vector2f &center);
   void renderSystem(ui::Frame &f);
 
 public:
   void tick(float delta) override;
   void render(ui::Frame &f) override;
-  void handle(sf::Event event) override;
+  void handle(const sf::Event &event) override;
 };
 
 #endif //SOLEMNSKY_GRAPHICSDEMO_H

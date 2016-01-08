@@ -47,8 +47,8 @@ void Plane::writeToBody() {
     body->SetTransform(
         physics->toPhysVec(state->pos),
         state->rot);
-    body->SetAngularVelocity(state->rotvel);
-    body->SetLinearVelocity(physics->toPhysVec(state->vel));
+    physics->approachRotVel(body, state->rotvel);
+    physics->approachVel(body, state->vel);
   } else {
     if (body) {
       physics->clrBody(body);
@@ -90,6 +90,8 @@ void Plane::kill() {
 
 void Plane::tick(float delta) {
   if (state) {
+    state->stalled = true;
+
     // synonyms
     const PlaneTuning &tuning = state->tuning;
     const float forwardVel(state->forwardVelocity()),
@@ -101,7 +103,7 @@ void Plane::tick(float delta) {
     const float targetRotVel = ((state->stalled) ?
                                 tuning.stall.maxRotVel :
                                 tuning.flight.maxRotVel) * state->rotCtrl;
-    state->rotvel = 100; // targetRotVel;
+    state->rotvel = targetRotVel;
 
     state->afterburner = false; // true afterburner value is set explicitly
     if (state->stalled) {
@@ -124,7 +126,6 @@ void Plane::tick(float delta) {
             state->vel.y * dampingFactor *
             std::pow(tuning.stall.damping, delta);
     }
-
 
 //    } else { // motion when not stalled
 //

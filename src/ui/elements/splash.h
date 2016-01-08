@@ -27,7 +27,7 @@ public:
 
   virtual void tick(float delta) override;
   virtual void render(Frame &f) override;
-  virtual void handle(sf::Event event) override;
+  virtual void handle(const sf::Event &event) override;
 };
 
 }
