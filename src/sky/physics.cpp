@@ -16,18 +16,23 @@ Physics::Physics(const sf::Vector2f &dims, const Settings settings)
   b2BodyDef wallDef;
   b2PolygonShape wallShape;
   b2Body *body;
+  b2Fixture *fixture;
 
   body = createBody({0, dims.y / 2}, false);
-  addRectFixture(body, {wallWidth / 2, dims.y});
+  fixture = addRectFixture(body, {wallWidth / 2, dims.y});
+  fixture->SetDensity(0);
 
   body = createBody({dims.x, dims.y / 2}, false);
   addRectFixture(body, {wallWidth / 2, dims.y});
+  fixture->SetDensity(0);
 
   body = createBody({dims.x / 2, 0}, false);
   addRectFixture(body, {dims.x, wallWidth});
+  fixture->SetDensity(0);
 
   body = createBody({dims.x / 2, dims.y}, false);
   addRectFixture(body, {dims.x, wallWidth});
+  fixture->SetDensity(0);
 }
 
 Physics::~Physics() {
@@ -59,6 +64,7 @@ b2Fixture *Physics::addRectFixture(b2Body *body, const sf::Vector2f &dims) {
   shape.SetAsBox(bdims.x / 2, bdims.y / 2);
   b2FixtureDef fixture;
   fixture.shape = &shape;
+  fixture.density = 1.0f;
   return body->CreateFixture(&fixture);
 }
 
@@ -69,6 +75,7 @@ b2Fixture *Physics::addCircleFixture(b2Body *body, float rad) {
   shape.m_radius = brad;
   b2FixtureDef fixture;
   fixture.shape = &shape;
+  fixture.density = 1.0f;
   return body->CreateFixture(&fixture);
 }
 
@@ -87,17 +94,12 @@ b2Body *Physics::planeBody(const sf::Vector2f &dims) {
   return body;
 }
 
-void Physics::approachRotVel(b2Body *body, float rotVel) {
+void Physics::setRotVel(b2Body *body, float rotVel) {
   body->SetAngularVelocity(rotVel);
-//  body->ApplyAngularImpulse(
-//      (rotVel - body->GetAngularVelocity()) * body->GetMass(), true);
 }
 
-void Physics::approachVel(b2Body *body, const sf::Vector2f &vel) {
+void Physics::setVel(b2Body *body, const sf::Vector2f &vel) {
   body->SetLinearVelocity(toPhysVec(vel));
-//  body->ApplyLinearImpulse(
-//      body->GetMass() * (toPhysVec(vel) - body->GetLinearVelocity()),
-//      {0, 0}, true);
 }
 
 void Physics::tick(const float delta) {

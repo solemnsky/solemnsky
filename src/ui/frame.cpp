@@ -125,7 +125,7 @@ void Frame::drawRect(const sf::Vector2f &topLeft,
 }
 
 void Frame::drawText(const sf::Vector2f &pos,
-                     const std::string &contents,
+                     const std::vector<std::string> &contents,
                      const int size,
                      const sf::Color &color,
                      const sf::Font &font,
@@ -134,15 +134,21 @@ void Frame::drawText(const sf::Vector2f &pos,
   float transScale = (float) sqrt(pt.x * pt.x + pt.y * pt.y);
   // I wonder if we need some math utils perhaps
 
-  primCount++;
-  sf::Text text;
-  text.setFont(font);
-  text.setPosition(pos);
-  text.setString(contents);
-  text.setCharacterSize((unsigned int) std::round(size * transScale));
-  text.setColor(alphaScaleColor(color));
-  text.setStyle(style);
-  window.draw(text, transformStack.top());
+  float yOffset = 0;
+
+  for (const auto &string : contents) {
+    primCount++;
+    sf::Text text;
+    text.setFont(font);
+    text.setPosition(pos + sf::Vector2f(0, yOffset));
+    text.setString(string);
+    text.setCharacterSize((unsigned int) std::round(size * transScale));
+    text.setColor(alphaScaleColor(color));
+    text.setStyle(style);
+    window.draw(text, transformStack.top());
+
+    yOffset += textSize(string, size, font).y;
+  }
 }
 
 void Frame::drawSprite(const sf::Texture &texture,

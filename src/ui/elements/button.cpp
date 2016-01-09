@@ -28,7 +28,7 @@ void Button::render(Frame &f) {
       sf::Vector2f(
           body.left + (body.width / 2),
           body.top + (body.height / 2)) - (size * 0.5f),
-      text, style.fontSize, style.textColor
+      {text}, style.fontSize, style.textColor
   );
 }
 

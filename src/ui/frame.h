@@ -58,6 +58,10 @@ public:
              color);
   }
 
+  inline void drawRect(const sf::Vector2f &dims, const sf::Color &color = {}) {
+    drawRect(-0.5f * dims, 0.5f * dims, color);
+  }
+
   // non-inline methods
   void drawCircle(const sf::Vector2f &pos, const float radius,
                   const sf::Color &color = {});
@@ -66,7 +70,7 @@ public:
                 const sf::Color &color = {});
 
   void drawText(const sf::Vector2f &pos,
-                const std::string &contents, const int size = 24,
+                const std::vector<std::string> &contents, const int size = 24,
                 const sf::Color &color = sf::Color::White,
                 const sf::Font &font = fontOf(Res::Font),
                 const sf::Text::Style &style = sf::Text::Regular);
@@ -75,7 +79,7 @@ public:
                   const sf::IntRect &portion);
 
   // text sizes
-  sf::Vector2f textSize(const std::string contents, const int size,
+  sf::Vector2f textSize(const std::string contents, const int size = 24,
                         const sf::Font &font = fontOf(Res::Font));
 };
 }
