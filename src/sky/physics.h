@@ -19,7 +19,7 @@ namespace sky {
 class Physics {
 public:
   struct Settings {
-    float distanceScalar = 10; // pixels per meters
+    float distanceScalar = 100; // pixels per meters
     int velocityIterations = 7;
     int positionIterations = 7;
     float gravity = 200; // pixels per second^2
@@ -56,8 +56,8 @@ public:
   /**
    * Doing physical stuff.
    */
-  void approachRotVel(b2Body *body, float rotVel);
-  void approachVel(b2Body *body, const sf::Vector2f &vel);
+  void setRotVel(b2Body *body, float rotVel);
+  void setVel(b2Body *body, const sf::Vector2f &vel);
 
   /**
    * Simulating.

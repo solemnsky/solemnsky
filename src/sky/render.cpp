@@ -17,7 +17,7 @@ void RenderMan::render(ui::Frame &f, sf::Vector2f pos) {
       sheet.drawIndex(f, sf::Vector2f(200, 200), 7);
       f.popTransform();
     } else {
-      f.drawText(sf::Vector2f(800, 200), "You're dead, so sorry ...", 40,
+      f.drawText(sf::Vector2f(800, 200), {"You're dead, so sorry ..."}, 40,
                  sf::Color::Black);
     }
   }

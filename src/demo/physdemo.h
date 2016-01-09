@@ -9,8 +9,7 @@
 
 class PhysDemo : public ui::Control {
 private:
-  b2Body *rectBody;
-  b2Body *circleBody;
+  std::vector<b2Body *> bodies;
   sky::Physics physics;
 
 public:
