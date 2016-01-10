@@ -169,7 +169,7 @@ sf::Vector2f Frame::textSize(const std::string contents, const int size,
   text.setString(contents);
   text.setCharacterSize((unsigned int) size);
   const auto bounds = text.getLocalBounds();
-  return sf::Vector2f(bounds.width, bounds.height);
+  return sf::Vector2f(bounds.width, size); // bounds.height);
 }
 
 }

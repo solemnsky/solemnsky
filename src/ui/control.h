@@ -22,6 +22,11 @@ namespace ui {
 class Control {
 public:
   /**
+   * SFML window.
+   */
+  sf::RenderWindow *window;
+
+  /**
    * Signals to the app loop.
    */
   std::shared_ptr<Control> next{nullptr};
