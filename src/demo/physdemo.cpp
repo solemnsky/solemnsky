@@ -10,11 +10,16 @@ PhysDemo::PhysDemo() :
   b2Body *body;
   b2Fixture *fix;
 
-  for (int i = 0; i < 20; ++i) {
+  for (int i = 0; i < 1; ++i) {
     body = physics.createBody({0, 0}, true);
     fix = physics.addRectFixture(body, {40, 40});
     fix->SetRestitution(0.1);
-    fix->SetDensity(1);
+
+    b2MassData data;
+    data.center = {0, 0};
+    data.mass = 100;
+    data.I = 0.01;
+    body->SetMassData(&data);
 
     bodies.push_back(body);
   }
@@ -30,7 +35,7 @@ void PhysDemo::reset() {
 }
 
 void PhysDemo::tick(float delta) {
-  physics.world.ClearForces();
+  for (auto &body : bodies) physics.setRotVel(body, 50);
   physics.tick(delta);
 }
 
@@ -41,14 +46,25 @@ void PhysDemo::render(ui::Frame &f) {
       "s: stop (reach target rest)"
   };
 
-  f.drawText({300, 50}, help, 40);
+//  f.drawText({300, 50}, help, 40);
+
+  f.window.setTitle("physics demo");
 
   for (auto &body : bodies) {
     f.withTransform(
         sf::Transform().translate(physics.toGameVec(body->GetPosition())).
             rotate(body->GetAngle()),
-        [&]() { f.drawRect({40, 40}, sf::Color::Red); });
+        [&]() {
+          f.drawRect({40, 40}, sf::Color::White);
+          f.drawRect({38, 38}, sf::Color::Red);
+        });
   }
+  f.drawText({1300, 700}, {
+      "boundary: " + std::to_string(physics.toPhysDistance(1600)),
+      "size: " + std::to_string(physics.toPhysDistance(40)),
+      "inertia: " + std::to_string(bodies[0]->GetInertia()),
+      "mass: " + std::to_string(bodies[0]->GetMass())
+  }, 30);
 }
 
 void PhysDemo::handle(const sf::Event &event) {
