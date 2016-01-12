@@ -43,18 +43,18 @@ void Plane::writeToBody() {
   if (state) {
     if (!body) {
       body = physics->rectBody(state->tuning.hitbox);
-      body->GetFixtureList()->SetDensity(100);
-      // using impulses to adjust these values when the body is first
-      // created is a bad idea
+      body->SetTransform(
+          physics->toPhysVec(state->pos),
+          physics->toRad(state->rot));
       body->SetAngularVelocity(physics->toRad(state->rot));
       body->SetLinearVelocity(physics->toPhysVec(state->vel));
+    } else {
+      body->SetTransform(
+          physics->toPhysVec(state->pos),
+          physics->toRad(state->rot));
+      physics->approachRotVel(body, state->rotvel);
+      physics->approachVel(body, state->vel);
     }
-
-    body->SetTransform(
-        physics->toPhysVec(state->pos),
-        physics->toRad(state->rot));
-    physics->approachRotVel(body, state->rotvel);
-    physics->approachVel(body, state->vel);
   } else {
     if (body) {
       physics->clrBody(body);
@@ -85,6 +85,7 @@ Plane::~Plane() {
 
 void Plane::spawn(const sf::Vector2f pos, const float rot,
                   const PlaneTuning &tuning) {
+  if (state) kill();
   state = {PlaneState(physics, tuning, pos, rot)};
   writeToBody();
 }
@@ -111,27 +112,27 @@ void Plane::tick(float delta) {
                                 tuning.flight.maxRotVel) * state->rotCtrl;
     state->rotvel = targetRotVel;
 
-//    state->afterburner = false; // true afterburner value is set explicitly
-//    if (state->stalled) {
-//      /**
-//       * Afterburner.
-//       */
-//      if (state->throtCtrl == 1) {
-//        state->afterburner = true;
-//        state->vel +=
-//            VecMath::fromAngle(state->rot) * (delta * tuning.stall.thrust);
-//      }
-//
-//      /**
-//       * Damp towards terminal velocity.
-//       */
-//      float excessVel = velocity - tuning.stall.maxVel;
-//      float dampingFactor = tuning.stall.maxVel / velocity;
-//      if (excessVel > 0)
-//        state->vel.y =
-//            state->vel.y * dampingFactor *
-//            std::pow(tuning.stall.damping, delta);
-//    }
+    state->afterburner = false; // true afterburner value is set explicitly
+    if (state->stalled) {
+      /**
+       * Afterburner.
+       */
+      if (state->throtCtrl == 1) {
+        state->afterburner = true;
+        state->vel +=
+            VecMath::fromAngle(state->rot) * (delta * tuning.stall.thrust);
+      }
+
+      /**
+       * Damp towards terminal velocity.
+       */
+      float excessVel = velocity - tuning.stall.maxVel;
+      float dampingFactor = tuning.stall.maxVel / velocity;
+      if (excessVel > 0)
+        state->vel.y =
+            state->vel.y * dampingFactor *
+            std::pow(tuning.stall.damping, delta);
+    }
 
 //    } else { // motion when not stalled
 //

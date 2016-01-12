@@ -40,8 +40,11 @@ b2Body *Physics::rectBody(sf::Vector2f dims, bool isStatic) {
   return body;
 }
 
-void Physics::clrBody(b2Body *body) {
-  if (body) world.DestroyBody(body);
+void Physics::clrBody(b2Body *&body) {
+  if (body) {
+    world.DestroyBody(body);
+    body = nullptr;
+  }
 }
 
 sf::Vector2f Physics::toGameVec(b2Vec2 vec) {
@@ -79,9 +82,11 @@ void Physics::approachRotVel(b2Body *body, float rotvel) {
 }
 
 void Physics::approachVel(b2Body *body, sf::Vector2f vel) {
+  b2MassData data;
+  body->GetMassData(&data); // this is just the most horrifying API ever
   body->ApplyLinearImpulse(
       body->GetMass() * (toPhysVec(vel) - body->GetLinearVelocity()),
-      {0, 0}, true);
+      data.center + body->GetWorldCenter(), true);
 }
 
 }

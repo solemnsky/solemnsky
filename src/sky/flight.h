@@ -27,7 +27,7 @@ class Sky;
 struct PlaneTuning {
   PlaneTuning() { }
 
-  sf::Vector2f hitbox{100, 100};
+  sf::Vector2f hitbox{120, 70};
 
   /**
    * When we're in a stall, flight is much simpler.
