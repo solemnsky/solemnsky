@@ -1,26 +1,25 @@
 #include "physdemo.h"
 
-sky::Physics::Settings mkSettings() {
-  sky::Physics::Settings settings{};
-  return settings;
-}
-
-PhysDemo::PhysDemo() :
-    physics{{1600, 900}, mkSettings()} {
+PhysDemo::PhysDemo() : world({0, 10}) {
   b2Body *body;
-  b2Fixture *fix;
 
-  for (int i = 0; i < 1; ++i) {
-    body = physics.createBody({0, 0}, true);
-    fix = physics.addRectFixture(body, {40, 40});
-    fix->SetRestitution(0.1);
+  b2BodyDef floorDef;
+  floorDef.type = b2_staticBody;
+  b2PolygonShape floorShape;
+  floorShape.SetAsBox(8, 0.1);
+  body = world.CreateBody(&floorDef);
+  body->CreateFixture(&floorShape, 0);
+  body->SetTransform({8, 9}, 0);
 
-    b2MassData data;
-    data.center = {0, 0};
-    data.mass = 100;
-    data.I = 0.01;
-    body->SetMassData(&data);
+  for (int i = 0; i < 10; ++i) {
+    b2BodyDef def;
+    def.fixedRotation = false;
+    def.type = b2_dynamicBody;
 
+    b2PolygonShape shape;
+    shape.SetAsBox(0.2, 0.2);
+    body = world.CreateBody(&def);
+    body->CreateFixture(&shape, 10.0f);
     bodies.push_back(body);
   }
 
@@ -28,42 +27,41 @@ PhysDemo::PhysDemo() :
 }
 
 void PhysDemo::reset() {
+  int i = 1;
   for (auto &body : bodies) {
-    body->SetTransform(physics.toPhysVec({800, 450}), 45);
+    body->SetTransform({i, 4.5}, 45);
+    body->SetLinearVelocity({0, 0});
     body->SetAngularVelocity(0);
+    i++;
   }
 }
 
 void PhysDemo::tick(float delta) {
-  for (auto &body : bodies) physics.setRotVel(body, 50);
-  physics.tick(delta);
+  world.Step(delta, 8, 3);
+  for (auto &body : bodies) {
+    body->ApplyAngularImpulse((2 - body->GetAngularVelocity()) *
+                              body->GetInertia(), true);
+  }
 }
 
 void PhysDemo::render(ui::Frame &f) {
-  const std::vector<std::string> help{
-      "escape: reset",
-      "r: rotate (reach target rotation, preserve velocity)",
-      "s: stop (reach target rest)"
-  };
-
-//  f.drawText({300, 50}, help, 40);
-
-  f.window.setTitle("physics demo");
-
+  f.drawText({500, 50}, {"if this screws up, I'm going home"}, 30);
   for (auto &body : bodies) {
+    const b2Vec2 &pos = body->GetPosition();
     f.withTransform(
-        sf::Transform().translate(physics.toGameVec(body->GetPosition())).
-            rotate(body->GetAngle()),
+        sf::Transform().translate(pos.x * 100, pos.y * 100).
+            rotate((float) (body->GetAngle() * (180 / 3.1416))),
         [&]() {
           f.drawRect({40, 40}, sf::Color::White);
           f.drawRect({38, 38}, sf::Color::Red);
         });
   }
+
   f.drawText({1300, 700}, {
-      "boundary: " + std::to_string(physics.toPhysDistance(1600)),
-      "size: " + std::to_string(physics.toPhysDistance(40)),
-      "inertia: " + std::to_string(bodies[0]->GetInertia()),
-      "mass: " + std::to_string(bodies[0]->GetMass())
+//      "boundary: " + std::to_string(physics.toPhysDistance(1600)),
+//      "size: " + std::to_string(physics.toPhysDistance(40)),
+//      "inertia: " + std::to_string(bodies[0]->GetInertia()),
+//      "mass: " + std::to_string(bodies[0]->GetMass())
   }, 30);
 }
 
@@ -71,13 +69,13 @@ void PhysDemo::handle(const sf::Event &event) {
   if (event.type == sf::Event::KeyPressed) {
     if (event.key.code == sf::Keyboard::Key::Escape) reset();
     if (event.key.code == sf::Keyboard::Key::R) {
-      for (auto &body : bodies) physics.setRotVel(body, 50);
+//      for (auto &body : bodies) physics.setRotVel(body, 50);
     }
     if (event.key.code == sf::Keyboard::Key::S) {
-      for (auto &body : bodies) {
-        physics.setRotVel(body, 0);
-        physics.setVel(body, {0, 0});
-      }
+//      for (auto &body : bodies) {
+//        physics.setRotVel(body, 0);
+//        physics.setVel(body, {0, 0});
+//      }
     }
   }
 }
