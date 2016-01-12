@@ -23,7 +23,7 @@ void PhysDemo::reset() {
 
 void PhysDemo::tick(float delta) {
   for (auto &body : bodies) {
-    physics.setRotVel(body, (marchingLeft ^ rising) ? -360 : 360);
+    physics.approachRotVel(body, (marchingLeft ^ rising) ? -360 : 360);
     body->SetGravityScale(rising ? -1 : 1);
   }
   physics.tick(delta);

@@ -41,8 +41,8 @@ public:
   b2Body *rectBody(sf::Vector2f dims, bool isStatic = false);
   void clrBody(b2Body *body);
 
-  void setRotVel(b2Body *body, float rotvel);
-  void setVel(b2Body *body, sf::Vector2f vel);
+  void approachRotVel(b2Body *body, float rotvel);
+  void approachVel(b2Body *body, sf::Vector2f vel);
 };
 
 }
