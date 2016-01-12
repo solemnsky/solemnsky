@@ -42,11 +42,11 @@ float PlaneState::velocity() {
 void Plane::writeToBody() {
   if (state) {
     if (!body)
-      body = physics->planeBody(state->tuning.hitbox);
+      body = physics->rectBody(state->tuning.hitbox);
 
     body->SetTransform(
         physics->toPhysVec(state->pos),
-        state->rot);
+        physics->toRad(state->rot));
     physics->setRotVel(body, state->rotvel);
     physics->setVel(body, state->vel);
   } else {

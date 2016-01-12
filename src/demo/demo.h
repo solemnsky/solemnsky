@@ -23,7 +23,7 @@ public:
 class LinkBack : public ui::Control {
 private:
   std::shared_ptr<ui::Control> underlying;
-  ui::Button backButton{{100, 50}, "go back"};
+  ui::Button backButton;
 
 public:
   LinkBack(std::shared_ptr<ui::Control> ctrl);

@@ -37,6 +37,7 @@ public:
 
     float hotAnimLength = 0.1;
     int fontSize = 24;
+    float alpha = 1;
 
     Style() { }
   } style;

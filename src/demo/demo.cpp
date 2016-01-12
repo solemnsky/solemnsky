@@ -36,7 +36,10 @@ void Demo::signalClear() {
   physicsButton.signalClear();
 }
 
-LinkBack::LinkBack(std::shared_ptr<ui::Control> ctrl) : underlying(ctrl) { }
+LinkBack::LinkBack(std::shared_ptr<ui::Control> ctrl) :
+    underlying(ctrl), backButton({100, 50}, "go back") {
+  backButton.style.alpha = 0.5;
+}
 
 void LinkBack::tick(float delta) {
   underlying->tick(delta);

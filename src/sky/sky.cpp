@@ -2,13 +2,7 @@
 
 namespace sky {
 
-Physics::Settings mySettings() {
-  Physics::Settings settings{};
-  settings.velocityIterations = 7; // etc
-  return settings;
-};
-
-Sky::Sky() : physics({1600, 900}, mySettings()) {
+Sky::Sky() : physics() {
   LIFE_LOG("Creating sky.");
 }
 
