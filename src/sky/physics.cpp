@@ -72,13 +72,13 @@ float Physics::toRad(float deg) {
   return deg * factor;
 }
 
-void Physics::setRotVel(b2Body *body, float rotvel) {
+void Physics::approachRotVel(b2Body *body, float rotvel) {
   body->ApplyAngularImpulse(
       body->GetInertia() * (toRad(rotvel) - body->GetAngularVelocity()),
       true);
 }
 
-void Physics::setVel(b2Body *body, sf::Vector2f vel) {
+void Physics::approachVel(b2Body *body, sf::Vector2f vel) {
   body->ApplyLinearImpulse(
       body->GetMass() * (toPhysVec(vel) - body->GetLinearVelocity()),
       {0, 0}, true);

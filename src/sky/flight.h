@@ -27,14 +27,14 @@ class Sky;
 struct PlaneTuning {
   PlaneTuning() { }
 
-  sf::Vector2f hitbox{200, 200};
+  sf::Vector2f hitbox{100, 100};
 
   /**
    * When we're in a stall, flight is much simpler.
    */
   struct {
     float
-        maxRotVel = 100, // how quickly we can turn, (deg / s)
+        maxRotVel = 180, // how quickly we can turn, (deg / s)
         maxVel = 100, // our terminal velocity (px / s)
         thrust = 100, // thrust acceleration (ps / s^2)
         damping = 0.5; // how quickly we approach our terminal velocity

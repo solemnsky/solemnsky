@@ -41,14 +41,20 @@ float PlaneState::velocity() {
 
 void Plane::writeToBody() {
   if (state) {
-    if (!body)
+    if (!body) {
       body = physics->rectBody(state->tuning.hitbox);
+      body->GetFixtureList()->SetDensity(100);
+      // using impulses to adjust these values when the body is first
+      // created is a bad idea
+      body->SetAngularVelocity(physics->toRad(state->rot));
+      body->SetLinearVelocity(physics->toPhysVec(state->vel));
+    }
 
     body->SetTransform(
         physics->toPhysVec(state->pos),
         physics->toRad(state->rot));
-    physics->setRotVel(body, state->rotvel);
-    physics->setVel(body, state->vel);
+    physics->approachRotVel(body, state->rotvel);
+    physics->approachVel(body, state->vel);
   } else {
     if (body) {
       physics->clrBody(body);
@@ -61,8 +67,8 @@ void Plane::readFromBody() {
 
   if (body) {
     state->pos = physics->toGameVec(body->GetPosition());
-    state->rot = body->GetAngle();
-    state->rotvel = body->GetAngularVelocity();
+    state->rot = physics->toDeg(body->GetAngle());
+    state->rotvel = physics->toDeg(body->GetAngularVelocity());
     state->vel = physics->toGameVec(body->GetLinearVelocity());
   }
 }
