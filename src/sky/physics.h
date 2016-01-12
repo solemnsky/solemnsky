@@ -1,5 +1,8 @@
 /**
  * Physics manager, wrapping box2d, making our lives easier in small ways.
+ *
+ * Do you know how many CLion linting errors I get trying to use the Box2D API?
+ * A lot of CLion linting errors, that's how many.
  */
 
 #ifndef SOLEMNSKY_PHYSICS_H
@@ -38,9 +41,14 @@ public:
   /**
    * Managing bodies.
    */
+  // construct a body with a rectangular fixture
   b2Body *rectBody(sf::Vector2f dims, bool isStatic = false);
-  void clrBody(b2Body *body);
 
+  // clear a body pointer
+  void clrBody(b2Body *&body);
+
+  // approach angular / linear velocities with impulses (to participate
+  // in the simulation correctly)
   void approachRotVel(b2Body *body, float rotvel);
   void approachVel(b2Body *body, sf::Vector2f vel);
 };
