@@ -9,13 +9,13 @@
 
 class PhysDemo : public ui::Control {
 private:
+  b2World world;
   std::vector<b2Body *> bodies;
-  sky::Physics physics;
+
+  void reset();
 
 public:
   PhysDemo();
-
-  void reset();
 
   virtual void tick(float delta) override;
   virtual void render(ui::Frame &f) override;
