@@ -14,7 +14,7 @@
 #include <cmath>
 
 /**
- * 'clamping' functions
+ * Useful functions.
  */
 template<typename T>
 T clamp(const T min, const T max, const T x) {
@@ -25,7 +25,27 @@ T clamp(const T min, const T max, const T x) {
 
 template<typename T>
 T cyclicClamp(const T min, const T max, const T x) {
-  return min + std::fmod((x - min), (max - min));
+  if (x > max) return min + std::fmod((x - min), (max - min));
+  if (x < min) return max - cyclicClamp(min, max, (min - x));
+  return x;
+}
+
+template<typename T>
+T sign(const T x) {
+  if (x > 0) return 1;
+  if (x < 0) return -1;
+  return 0;
+}
+
+template<typename T>
+void approach(T &x, const T target, const T amount) {
+  const T msign = sign(x - target);
+  const T naive = x + msign * amount;
+  if (sign(naive - target) != msign) {
+    x = target;
+    return;
+  }
+  x = naive;
 }
 
 /****
@@ -98,7 +118,6 @@ public:
   Cyclic &operator-=(const float x);
 
   inline operator float() const { return value; }
-
 };
 
 /**
@@ -134,7 +153,7 @@ class Angle {
 private:
   float value;
 public:
-  Angle() = delete;
+  inline Angle() : Angle(0) { }
   Angle(const float x);
 
   Angle &operator=(const float x);

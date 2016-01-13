@@ -19,9 +19,11 @@ private:
 
 public:
   const struct Settings {
+    Settings() = default;
+
     int velocityIterations = 8, positionIterations = 3;
     float distanceScale = 100;
-    Settings() = default;
+    float gravity = 600;
   } settings;
 
   Physics();

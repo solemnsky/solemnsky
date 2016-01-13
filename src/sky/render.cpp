@@ -22,12 +22,14 @@ void RenderMan::render(ui::Frame &f, sf::Vector2f pos) {
           sf::Transform().translate(state.pos).rotate(state.rot).
               scale(-1, 1));
 
-      f.drawText({-200, -200}, {std::to_string(pid)});
-
       f.drawRect(-0.5f * hitbox, 0.5f * hitbox, sf::Color::Red);
+
       sheet.drawIndexAtRoll(f, sf::Vector2f(200, 200), animState.roll);
 
       f.popTransform();
+
+      f.drawText(state.pos + (sf::Vector2f) {-100, -100},
+                 {std::to_string(pid)});
     } else {
       f.drawText(sf::Vector2f(800, 200), {"You're dead, so sorry ..."}, 40,
                  sf::Color::Black);

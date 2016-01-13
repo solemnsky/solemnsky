@@ -35,6 +35,59 @@ float PlaneState::velocity() {
 }
 
 /****
+ * PlaneAnimState
+ */
+
+PlaneAnimState::PlaneAnimState() :
+    afterburner(false),
+    roll(0),
+    orientation(false),
+    flipState(0),
+    rollState(0) { }
+
+void PlaneAnimState::tick(Plane *parent, const float delta) {
+  auto &state = parent->state;
+  if (state) {
+    bool newOrientation = Angle(state->rot + 90) > 180;
+    if (state->rotCtrl == 0
+        and newOrientation != orientation
+        and state->stalled) {
+      orientation = newOrientation;
+    }
+
+    approach(flipState,
+             (const float) (orientation ? 1 : 0),
+             2 * delta);
+
+    Angle flipComponent;
+    if (orientation) flipComponent = 90 - flipState * 180;
+    else flipComponent = 90 + flipState * 180;
+
+    bool rolling(false);
+    if (flipState == 0 || flipState == 1) {
+      if (state->rotCtrl == -1) {
+        approach(rollState, -1.0f, 2 * delta);
+        rolling = true;
+      } else if (state->rotCtrl == 1) {
+        approach(rollState, 1.0f, 2 * delta);
+        rolling = true;
+      }
+    }
+    if (!rolling) approach(rollState, 0.0f, 2 * delta);
+
+    const float rollComponent = 30 * rollState;
+
+    roll = flipComponent + rollComponent;
+  }
+}
+
+void PlaneAnimState::reset() {
+  operator=((auto &&) PlaneAnimState()); // using the move operator for no
+  // reason at all except to make everybody know that I've been reading about
+  // the C++11 spec
+}
+
+/****
  * Plane
  */
 
@@ -103,9 +156,8 @@ void Plane::tick(float delta) {
       float excessVel = velocity - tuning.stall.maxVel;
       float dampingFactor = tuning.stall.maxVel / velocity;
       if (excessVel > 0)
-        state->vel.y =
-            state->vel.y * dampingFactor *
-            std::pow(tuning.stall.damping, delta);
+        state->vel =
+            state->vel * dampingFactor * std::pow(tuning.stall.damping, delta);
     }
 
 //    } else { // motion when not stalled
@@ -175,11 +227,7 @@ void Plane::tick(float delta) {
   }
 }
 
-void Plane::tickAnim(float d) {
-  if (state) {
-    animState.roll = 0;
-    animState.afterburner = false;
-  }
+void Plane::tickAnim(float delta) {
 }
 
 Plane::Plane(Sky *engine) :

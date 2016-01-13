@@ -46,7 +46,6 @@ Clamped &Clamped::operator-=(const float x) {
  * templates in other places in the code, which would be bad because ...
  * well, I'm still working on this rationalization.
  */
-
 Cyclic::Cyclic(const float min, const float max) :
     min(min), max(max), value(min) { }
 
@@ -71,7 +70,6 @@ Cyclic &Cyclic::operator-=(const float x) {
 /**
  * Switched.
  */
-
 Switched &Switched::operator=(const float x) {
   for (float possible : states)
     if (x == possible) {
@@ -87,20 +85,20 @@ Switched &Switched::operator=(const float x) {
 /**
  * Angle
  */
-Angle::Angle(const float x) : value(x) { }
+Angle::Angle(const float x) : value(cyclicClamp<float>(0, 360, x)) { }
 
 Angle &Angle::operator=(const float x) {
-  value = std::fmod(360, x);
+  value = cyclicClamp<float>(0, 360, x);
   return *this;
 }
 
 Angle &Angle::operator+=(const float x) {
-  value = std::fmod(360, x + value);
+  value = cyclicClamp<float>(0, 360, x + value);
   return *this;
 }
 
 Angle &Angle::operator-=(const float x) {
-  value = std::fmod(360, x - value);
+  value = cyclicClamp<float>(0, 360, x - value);
   return *this;
 }
 
