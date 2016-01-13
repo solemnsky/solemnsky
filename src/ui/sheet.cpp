@@ -2,7 +2,7 @@
 #include "base/util.h"
 
 namespace ui {
-void SpriteSheet::drawIndex(ui::Frame &f, const sf::Vector2f dims,
+void SpriteSheet::drawIndex(ui::Frame &f, const sf::Vector2f &dims,
                             const int index) const {
   const int yShift(index % record.countY), xShift(index / record.countY);
   const float spriteWidth(record.tileX), spriteHeight(record.tileY);
@@ -15,4 +15,14 @@ void SpriteSheet::drawIndex(ui::Frame &f, const sf::Vector2f dims,
   f.popTransform();
 }
 
+void SpriteSheet::drawIndexAtRoll(ui::Frame &f, const sf::Vector2f &dims,
+                                  const Angle deg) const {
+  if (deg < 180)
+    drawIndex(f, dims, (const int) std::floor(count * deg / 180));
+  else
+    f.withTransform(sf::Transform().scale(1, -1), [&]() {
+      drawIndex(f, dims, (const int) std::floor(count * deg / 180));
+    });
+  // wow much elegant
+}
 }

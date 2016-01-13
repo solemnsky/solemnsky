@@ -27,7 +27,7 @@ public:
   /**
    * Settings
    */
-  struct Style {
+  const struct Style {
     sf::Color color{132, 173, 181},
         hotColor{92, 189, 206},
         clickedColor{63, 208, 234},
@@ -46,8 +46,8 @@ public:
   std::string text; // what the button has to say
 
   Button() = delete;
-  Button(const sf::Vector2f pos, const std::string text,
-         Button::Style style = {});
+  Button(const sf::Vector2f &pos, const std::string &text,
+         const Style &style = {});
 
   /**
    * Control implementation.

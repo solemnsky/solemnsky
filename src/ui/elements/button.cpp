@@ -7,8 +7,8 @@ sf::FloatRect Button::getBody() {
   return {pos.x - (w / 2), pos.y - (h / 2), w, h};
 }
 
-Button::Button(const sf::Vector2f pos, const std::string text,
-               Button::Style style) :
+Button::Button(const sf::Vector2f &pos, const std::string &text,
+               const Style &style) :
     pos(pos), text(text), style(style),
     hotAnimState(0, style.hotAnimLength, 0) { }
 

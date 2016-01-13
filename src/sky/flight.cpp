@@ -21,7 +21,6 @@ PlaneState::PlaneState(Physics *physics, const PlaneTuning &tuning,
   rotvel = 0;
 
   stalled = false;
-  afterburner = false;
   leftoverVel = {0, 0};
 
   speed = tuning.flight.cruise;
@@ -73,33 +72,10 @@ void Plane::readFromBody() {
   }
 }
 
-Plane::Plane(Sky *engine) :
-    engine(engine), physics(&engine->physics), body(nullptr) {
-  LIFE_LOG("Creating plane.");
-}
-
-Plane::~Plane() {
-  kill();
-  LIFE_LOG("Destroying plane.");
-};
-
-void Plane::spawn(const sf::Vector2f pos, const float rot,
-                  const PlaneTuning &tuning) {
-  if (state) kill();
-  state = {PlaneState(physics, tuning, pos, rot)};
-  writeToBody();
-}
-
-void Plane::kill() {
-  state = {};
-  writeToBody();
-}
-
 void Plane::tick(float delta) {
   if (state) {
     state->stalled = true;
 
-    // synonyms
     const PlaneTuning &tuning = state->tuning;
     const float forwardVel(state->forwardVelocity()),
         velocity(state->velocity());
@@ -112,13 +88,11 @@ void Plane::tick(float delta) {
                                 tuning.flight.maxRotVel) * state->rotCtrl;
     state->rotvel = targetRotVel;
 
-    state->afterburner = false; // true afterburner value is set explicitly
     if (state->stalled) {
       /**
        * Afterburner.
        */
       if (state->throtCtrl == 1) {
-        state->afterburner = true;
         state->vel +=
             VecMath::fromAngle(state->rot) * (delta * tuning.stall.thrust);
       }
@@ -200,5 +174,36 @@ void Plane::tick(float delta) {
 
   }
 }
+
+void Plane::tickAnim(float d) {
+  if (state) {
+    animState.roll = 0;
+    animState.afterburner = false;
+  }
+}
+
+Plane::Plane(Sky *engine) :
+    engine(engine), physics(&engine->physics), body(nullptr) {
+  LIFE_LOG("Creating plane.");
+}
+
+Plane::~Plane() {
+  kill();
+  LIFE_LOG("Destroying plane.");
+};
+
+
+void Plane::spawn(const sf::Vector2f pos, const float rot,
+                  const PlaneTuning &tuning) {
+  if (state) kill();
+  state = {PlaneState(physics, tuning, pos, rot)};
+  writeToBody();
+}
+
+void Plane::kill() {
+  state = {};
+  writeToBody();
+}
+
 
 }

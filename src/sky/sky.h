@@ -16,9 +16,6 @@ namespace sky {
 typedef int PID; // personal ID for elements in the game
 
 class Sky {
-private:
-  std::map<PID, std::unique_ptr<Plane>> planes;
-
 public:
   Sky();
   ~Sky();
@@ -26,8 +23,9 @@ public:
   Physics physics;
 
   /**
-   * Handling planes.
+   * Planes.
    */
+  std::map<PID, std::unique_ptr<Plane>> planes;
   Plane *joinPlane(const PID pid, const PlaneTuning tuning);
   void quitPlane(const PID pid);
   Plane *getPlane(const PID pid);

@@ -3,6 +3,72 @@
 #include "util.h"
 
 /**
+ * Cooldown.
+ */
+void Cooldown::reset() { cooldown = period; }
+
+void Cooldown::prime() { cooldown = 0; }
+
+bool Cooldown::cool(const float delta) {
+  cooldown = std::max(0.0f, cooldown - delta);
+  return cooldown == 0;
+}
+
+Cooldown::Cooldown(const float period) : period(period), cooldown(period) { }
+
+/**
+ * Clamped.
+ */
+Clamped::Clamped(const float min, const float max) :
+    min(min), max(max), value(min) { }
+
+Clamped::Clamped(const float min, const float max, const float value) :
+    min(min), max(max), value(clamp(min, max, value)) { }
+
+Clamped &Clamped::operator=(const float x) {
+  value = clamp(min, max, x);
+  return *this;
+}
+
+Clamped &Clamped::operator+=(const float x) {
+  value = clamp(min, max, x + value);
+  return *this;
+}
+
+Clamped &Clamped::operator-=(const float x) {
+  value = clamp(min, max, x - value);
+  return *this;
+}
+
+/**
+ * Cyclic: this code could be combined with Clamped if I were using value
+ * templates, which I'm not, because it would make me use more value
+ * templates in other places in the code, which would be bad because ...
+ * well, I'm still working on this rationalization.
+ */
+
+Cyclic::Cyclic(const float min, const float max) :
+    min(min), max(max), value(min) { }
+
+Cyclic::Cyclic(const float min, const float max, const float value) :
+    min(min), max(max), value(clamp(min, max, value)) { }
+
+Cyclic &Cyclic::operator=(const float x) {
+  value = cyclicClamp(min, max, x);
+  return *this;
+}
+
+Cyclic &Cyclic::operator+=(const float x) {
+  value = cyclicClamp(min, max, x + value);
+  return *this;
+}
+
+Cyclic &Cyclic::operator-=(const float x) {
+  value = cyclicClamp(min, max, x - value);
+  return *this;
+}
+
+/**
  * Switched.
  */
 
@@ -14,5 +80,27 @@ Switched &Switched::operator=(const float x) {
     }
 
   appLog(LogType::Error, "Bad assignment to Switched value!");
-  assert(false); // no need for exceptions, this is practically a syntax error
+  assert(false); // no need for exceptions, this should be
+  // 'practically a compile-time error'
 }
+
+/**
+ * Angle
+ */
+Angle::Angle(const float x) : value(x) { }
+
+Angle &Angle::operator=(const float x) {
+  value = std::fmod(360, x);
+  return *this;
+}
+
+Angle &Angle::operator+=(const float x) {
+  value = std::fmod(360, x + value);
+  return *this;
+}
+
+Angle &Angle::operator-=(const float x) {
+  value = std::fmod(360, x - value);
+  return *this;
+}
+

@@ -4,9 +4,11 @@
 #ifndef SOLEMNSKY_SHEET_H
 #define SOLEMNSKY_SHEET_H
 
+#include <base/value.h>
 #include "frame.h"
 #include "base/resources.h"
 #include "base/util.h"
+#include "base/value.h"
 
 namespace ui {
 class SpriteSheet {
@@ -30,8 +32,10 @@ public:
     appLog(LogType::Info, record.path);
   }
 
-  void drawIndex(ui::Frame &f, const sf::Vector2f dims,
-                 const int index) const;
+  void drawIndex(
+      ui::Frame &f, const sf::Vector2f &dims, const int index) const;
+  void drawIndexAtRoll(
+      ui::Frame &f, const sf::Vector2f &dims, const Angle deg) const;
 };
 }
 

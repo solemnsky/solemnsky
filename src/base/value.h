@@ -1,16 +1,20 @@
 /**
- * Beyond primitives like floats and bools and containers like vectors, there
- * are a series of increasingly complex plain-data values that appear in our
- * game. Certain useful constructs have been made to deal with them here,
- * providing safety and explicit meaning in the code that uses them.
+ * Helper constructs to attach explicit meaning and utilities to floats.
+ *
+ * > float rotationControl{0}; // between -1 and 1
+ * > rotationControl = clamp(-1, 1, newValue);
+ *  vs
+ * > Clamped{-1, 1, 0} rotationControl;
+ * > rotationControl = newValue;
  */
 #ifndef SOLEMNSKY_VALUE_H
 #define SOLEMNSKY_VALUE_H
 
 #include <vector>
+#include <cmath>
 
 /**
- * clamp function
+ * 'clamping' functions
  */
 template<typename T>
 T clamp(const T min, const T max, const T x) {
@@ -19,9 +23,15 @@ T clamp(const T min, const T max, const T x) {
   return x;
 }
 
+template<typename T>
+T cyclicClamp(const T min, const T max, const T x) {
+  return min + std::fmod((x - min), (max - min));
+}
+
 /****
  * Cooldown values: floats that are used for a 'cooldown' effect, incrementing
- * up a range until they cycle back to 0, at which point some event might occur.
+ * up a range until they hit a maximum, at which point they assume a 'true'
+ * conversion to bool. They can be cooled, reset, and primed.
  *
  * > Cooldown cooldown{1};
  * > print(cooldown.cool(0.5)); // 'false'
@@ -34,22 +44,17 @@ public:
   float cooldown;
   float period;
 
-  Cooldown(float period) : period(period), cooldown(period) { }
+  Cooldown(const float period);
+  bool cool(const float delta);
+  void reset();
+  void prime();;
 
-  inline bool cool(float delta) {
-    cooldown = std::max(0.0f, cooldown - delta);
-    return cooldown == 0;
-  };
-
-  inline void reset() { cooldown = period; };
-
-  inline void prime() { cooldown = 0; };
-
-  operator bool() { return cooldown == 0; }
+  inline operator bool() { return cooldown == 0; }
 };
 
 /**
- * Clamped values: floats that must stay in a certain range.
+ * Clamped values: floats that always snap back to a certain range when
+ * assigned.
  *
  * > Clamped x{0, 1};
  * > x = 3;
@@ -65,20 +70,39 @@ private:
 public:
   Clamped() = delete;
 
-  Clamped(float min, float max, float value = 0) :
-      min(min), max(max), value(clamp(min, max, value)) { }
-
-  inline Clamped &operator=(float x) { value = clamp(min, max, x); }
-
-  inline Clamped &operator+=(float x) { value = clamp(min, max, value + x); }
-
-  inline Clamped &operator-=(float x) { value = clamp(min, max, value - x); }
+  Clamped(const float min, const float max);
+  Clamped(const float min, const float max, const float value);
+  Clamped &operator=(const float x);
+  Clamped &operator+=(const float x);
+  Clamped &operator-=(const float x);
 
   inline operator float() const { return value; }
 };
 
 /**
- * Switched values: floats that may assume any of a set of values.
+ * Cyclic values: floats that always cycle back to a certain range when
+ * assigned.
+ */
+class Cyclic {
+private:
+  float min, max;
+  float value;
+public:
+
+  Cyclic() = delete;
+
+  Cyclic(const float min, const float max);
+  Cyclic(const float min, const float max, const float value);
+  Cyclic &operator=(const float x);
+  Cyclic &operator+=(const float x);
+  Cyclic &operator-=(const float x);
+
+  inline operator float() const { return value; }
+
+};
+
+/**
+ * Switched values: floats that may assume one of a set of values.
  *
  * > Switched x{{1, 2, 3}, 1};
  * > x = 1; // okay
@@ -97,6 +121,25 @@ public:
       states(states), value(value) { operator=(value); /* confirm validity */ };
 
   Switched &operator=(const float x);
+
+  inline operator float() const { return value; }
+};
+
+/**
+ * Angle value: represents an angle in degrees. Like a Cyclic but bound to
+ * [0, 360[ by type. SFML doesn't seem to have this and I'm not going to be
+ * using potentially redundant cyclicClamps everywhere...
+ */
+class Angle {
+private:
+  float value;
+public:
+  Angle() = delete;
+  Angle(const float x);
+
+  Angle &operator=(const float x);
+  Angle &operator+=(const float x);
+  Angle &operator-=(const float x);
 
   inline operator float() const { return value; }
 };

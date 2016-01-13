@@ -66,39 +66,53 @@ struct PlaneTuning {
 };
 
 /**
- * Plain data structure with the state of a player.
+ * Plain data structure with all the concrete (useful) game state of a plane.
+ * Only exists when the plane is alive <=> is participating in the game
+ * mechanics.
+ *
+ * This contains things which need to be synced over the network; however it
+ * obviously requires delta compression.
  */
 struct PlaneState {
   PlaneState(Physics *physics, const PlaneTuning &tuning,
              const sf::Vector2f &pos,
              const float rot);
-  /**
-   * Tuning.
-   */
   PlaneTuning tuning;
 
-  /**
-   * Controls. The user can modify this.
-   */
-  Clamped rotCtrl; // rotation control
-  Switched throtCtrl; // throttle control
+  Clamped rotCtrl;
+  Switched throtCtrl;
 
-  /**
-   * Physical values and flight mechanics. The engine modifies these over time.
-   */
-  sf::Vector2f pos, vel;
+  sf::Vector2f pos, vel; // physical values
   float rot, rotvel;
 
-  bool stalled, afterburner;
+  bool stalled; // flight mechanics
   sf::Vector2f leftoverVel;
   float speed;
   Clamped throttle;
 
-  /**
-   * Derived values.
-   */
+
   float forwardVelocity();
   float velocity();
+};
+
+/**
+ * Plain data structure with all the animation state of a plane, alive or not.
+ * This is derived from the PlaneState over time after having been thrust
+ * into existence at the joining of a plane into the sky. It is is not necessary
+ * to sync this over the network.
+ *
+ * Servers obviously don't have to simulate it; the only way for an end user
+ * to cause a modification to this is to render the sky with a RenderMan.
+ */
+struct PlaneAnimState {
+  PlaneAnimState() = default;
+
+  bool afterburner{false};
+
+  Switched orientation{{-1, 1}, 1}; // display
+  Angle roll{0};
+
+  // death animation could also go here, for example
 };
 
 class Plane {
@@ -113,19 +127,29 @@ private:
    */
   friend class Sky;
 
+  friend class RenderMan;
+
   void writeToBody();
   void readFromBody();
   void tick(float d);
+  void tickAnim(float d);
 
 public:
   Plane(Sky *engine);
   ~Plane();
   Plane(Plane &&) = delete;
-  Plane &operator=(Plane &&) = delete; // potentially tied to a b2Body
+  Plane &operator=(Plane &&) = delete;
+  Plane &operator=(const Plane &) = delete;
 
-  /**
-   * End interface.
+  // **you can't copy or move this**
+  // because it carries a b2Body*, which is a bit of a problematic resource.
+  // also it just doesn't make sense to move it; you have the base state
+  // datastructures to access if you want
+
+  /*
+   * End-user API.
    */
+  PlaneAnimState animState{};
   optional<PlaneState> state{}; // exists <=> plane is spawned
 
   void spawn(const sf::Vector2f pos, const float rot, const PlaneTuning &);
