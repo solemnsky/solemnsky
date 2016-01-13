@@ -35,9 +35,9 @@ struct PlaneTuning {
   struct {
     float
         maxRotVel = 180, // how quickly we can turn, (deg / s)
-        maxVel = 100, // our terminal velocity (px / s)
-        thrust = 100, // thrust acceleration (ps / s^2)
-        damping = 0.5; // how quickly we approach our terminal velocity
+        maxVel = 1000, // our terminal velocity (px / s)
+        thrust = 1000, // thrust acceleration (ps / s^2)
+        damping = 0.8; // how quickly we approach our terminal velocity
 
     float threshold; // the minimum airspeed that we need to enter flight
   } stall;
@@ -83,13 +83,13 @@ struct PlaneState {
   Switched throtCtrl;
 
   sf::Vector2f pos, vel; // physical values
-  float rot, rotvel;
+  Angle rot;
+  float rotvel;
 
   bool stalled; // flight mechanics
   sf::Vector2f leftoverVel;
   float speed;
   Clamped throttle;
-
 
   float forwardVelocity();
   float velocity();
@@ -105,14 +105,26 @@ struct PlaneState {
  * to cause a modification to this is to render the sky with a RenderMan.
  */
 struct PlaneAnimState {
-  PlaneAnimState() = default;
+  PlaneAnimState();
 
-  bool afterburner{false};
+  bool afterburner;
+  Angle roll;
+  bool orientation;
+  float flipState;
+  float rollState;
 
-  Switched orientation{{-1, 1}, 1}; // display
-  Angle roll{0};
+  // TODO: death animation someday too
 
-  // death animation could also go here, for example
+  /*
+   * Delegating some management from the Plane it belongs to:
+   */
+private:
+  friend class Plane;
+
+  void tick(Plane *parent, const float delta);
+  void reset();  // when the plane respawns
+  // death is animated in the a normal course of events, but respawning changes
+  // everything anew
 };
 
 class Plane {
@@ -132,7 +144,7 @@ private:
   void writeToBody();
   void readFromBody();
   void tick(float d);
-  void tickAnim(float d);
+  void tickAnim(float delta);
 
 public:
   Plane(Sky *engine);

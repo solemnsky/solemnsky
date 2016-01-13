@@ -1,4 +1,8 @@
 #include <sstream>
+
+#define _USE_MATH_DEFINES
+
+#include <math.h>
 #include <iostream>
 #include <cmath>
 #include "util.h"
@@ -52,7 +56,9 @@ float VecMath::length(const sf::Vector2f &vec) {
 }
 
 sf::Vector2f VecMath::fromAngle(const float angle) {
-  return sf::Vector2f(std::cos(angle), std::sin(angle));
+  constexpr float factor = ((float) M_PI) / 180;
+  const float rad = factor * angle;
+  return sf::Vector2f(std::cos(rad), std::sin(rad));
 }
 
 float VecMath::angle(const sf::Vector2f &vec) {

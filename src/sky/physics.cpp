@@ -2,7 +2,9 @@
 
 namespace sky {
 
-Physics::Physics() : world({0, 10}) {
+Physics::Physics() :
+    world({0, Settings().gravity / Settings().distanceScale}) {
+
   b2Body *body;
 
   // make floor
@@ -21,8 +23,28 @@ Physics::Physics() : world({0, 10}) {
 
 
 void Physics::tick(const float delta) {
+  world.ClearForces();
   world.Step(delta, settings.velocityIterations, settings.positionIterations);
 }
+
+sf::Vector2f Physics::toGameVec(b2Vec2 vec) {
+  return {vec.x * settings.distanceScale,
+          vec.y * settings.distanceScale};
+}
+
+b2Vec2 Physics::toPhysVec(sf::Vector2f vec) {
+  return {vec.x / settings.distanceScale,
+          vec.y / settings.distanceScale};
+}
+
+float Physics::toGameDistance(float x) {
+  return x * settings.distanceScale;
+}
+
+float Physics::toPhysDistance(float x) {
+  return x / settings.distanceScale;
+}
+
 
 b2Body *Physics::rectBody(sf::Vector2f dims, bool isStatic) {
   b2Body *body;
@@ -45,24 +67,6 @@ void Physics::clrBody(b2Body *&body) {
     world.DestroyBody(body);
     body = nullptr;
   }
-}
-
-sf::Vector2f Physics::toGameVec(b2Vec2 vec) {
-  return {vec.x * settings.distanceScale,
-          vec.y * settings.distanceScale};
-}
-
-b2Vec2 Physics::toPhysVec(sf::Vector2f vec) {
-  return {vec.x / settings.distanceScale,
-          vec.y / settings.distanceScale};
-}
-
-float Physics::toGameDistance(float x) {
-  return x * settings.distanceScale;
-}
-
-float Physics::toPhysDistance(float x) {
-  return x / settings.distanceScale;
 }
 
 float Physics::toDeg(float rad) {
