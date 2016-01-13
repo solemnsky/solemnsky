@@ -44,21 +44,23 @@ struct PlaneTuning {
 
   /**
    * When we enter flight, things become significantly more complicated.
-   * TODO: implement
    */
   struct {
     float
         maxRotVel = 100,
         cruise = 300,
         thrustCruise = 400;
-//
-//    float leftoverVelDamping = 0.7; // rate at which the leftover vel is damped
-//
-//    float throttleUp = 1, throttleDown = 1;
-//    float afterburner = 20;
-//    float throttleInfluence = 0.8;
-//
-//    float threshold = 60; // the maximum airspeed that we need to leave flight
+
+    float leftoverVelDamping = 0.7; // rate at which the leftover vel is damped
+
+    float throttleUp = 1, throttleDown = 1;
+    float afterburner = 20;
+    float throttleInfluence = 0.8;
+
+    float speedGravityForce = 200,
+        speedAfterburnForce = 200;
+
+    float threshold = 60; // the maximum airspeed that we need to leave flight
 
   } flight;
 
@@ -86,7 +88,7 @@ struct PlaneState {
   Angle rot;
   float rotvel;
 
-  bool stalled; // flight mechanics
+  bool stalled, afterburner; // flight mechanics
   sf::Vector2f leftoverVel;
   float speed;
   Clamped throttle;
@@ -107,7 +109,6 @@ struct PlaneState {
 struct PlaneAnimState {
   PlaneAnimState();
 
-  bool afterburner;
   Angle roll;
   bool orientation;
   float flipState;
@@ -121,7 +122,7 @@ struct PlaneAnimState {
 private:
   friend class Plane;
 
-  void tick(Plane *parent, const float delta);
+  void tick(class Plane *parent, const float delta);
   void reset();  // when the plane respawns
   // death is animated in the a normal course of events, but respawning changes
   // everything anew
