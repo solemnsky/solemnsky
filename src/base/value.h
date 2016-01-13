@@ -39,9 +39,9 @@ T sign(const T x) {
 
 template<typename T>
 void approach(T &x, const T target, const T amount) {
-  const T msign = sign(x - target);
+  const T msign = sign(target - x);
   const T naive = x + msign * amount;
-  if (sign(naive - target) != msign) {
+  if (sign(target - naive) != msign) {
     x = target;
     return;
   }

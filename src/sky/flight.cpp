@@ -10,17 +10,18 @@ namespace sky {
  */
 
 PlaneState::PlaneState(Physics *physics, const PlaneTuning &tuning,
-                       const sf::Vector2f &pos, const float rot)
-    : rotCtrl(-1, 1, 0),
-      throtCtrl({-1, 0, 1}, 0),
-      pos(pos),
-      rot(rot),
-      tuning(tuning),
-      throttle(0, tuning.throttleSize, tuning.throttleSize) {
+                       const sf::Vector2f &pos, const float rot) :
+    rotCtrl(-1, 1, 0),
+    throtCtrl({-1, 0, 1}, 0),
+    pos(pos),
+    rot(rot),
+    tuning(tuning),
+    throttle(0, tuning.throttleSize, tuning.throttleSize) {
   vel = tuning.flight.cruise * sf::Vector2f(std::cos(rot), std::sin(rot));
   rotvel = 0;
 
   stalled = false;
+  afterburner = false;
   leftoverVel = {0, 0};
 
   speed = tuning.flight.cruise;
@@ -39,7 +40,6 @@ float PlaneState::velocity() {
  */
 
 PlaneAnimState::PlaneAnimState() :
-    afterburner(false),
     roll(0),
     orientation(false),
     flipState(0),
@@ -82,9 +82,9 @@ void PlaneAnimState::tick(Plane *parent, const float delta) {
 }
 
 void PlaneAnimState::reset() {
-  operator=((auto &&) PlaneAnimState()); // using the move operator for no
-  // reason at all except to make everybody know that I've been reading about
-  // the C++11 spec
+  operator=((PlaneAnimState &&) PlaneAnimState()); // using the move operator
+  // for no reason at all except to make everybody know that I've been
+  // reading about the C++11 spec
 }
 
 /****
@@ -106,6 +106,7 @@ void Plane::writeToBody() {
           physics->toRad(state->rot));
       physics->approachRotVel(body, state->rotvel);
       physics->approachVel(body, state->vel);
+      body->SetGravityScale(state->stalled ? 1 : 0);
     }
   } else {
     if (body) {
@@ -141,6 +142,7 @@ void Plane::tick(float delta) {
                                 tuning.flight.maxRotVel) * state->rotCtrl;
     state->rotvel = targetRotVel;
 
+    state->afterburner = false;
     if (state->stalled) {
       /**
        * Afterburner.
@@ -148,6 +150,7 @@ void Plane::tick(float delta) {
       if (state->throtCtrl == 1) {
         state->vel +=
             VecMath::fromAngle(state->rot) * (delta * tuning.stall.thrust);
+        state->afterburner = true;
       }
 
       /**
@@ -158,76 +161,64 @@ void Plane::tick(float delta) {
       if (excessVel > 0)
         state->vel =
             state->vel * dampingFactor * std::pow(tuning.stall.damping, delta);
+
+    } else { // motion when not stalled
+
+      // modify throttle and afterburner according to controls
+      if (state->throtCtrl == 1) state->throttle += delta;
+      if (state->throtCtrl == -1) state->throttle -= delta;
+
+      state->afterburner = (state->throtCtrl == 1) && state->throttle == 1;
+
+      // pick away at leftover velocity
+      state->leftoverVel *= std::pow(tuning.flight.leftoverVelDamping, delta);
+
+      // speed modifiers
+      if (state->speed >
+          state->throttle * tuning.flight.throttleInfluence) {
+        if (state->throttle < tuning.flight.throttleInfluence) {
+          state->speed -= tuning.flight.throttleDown * delta;
+        } else {
+          state->speed -= tuning.flight.throttleUp * delta;
+        }
+      }
+
+      state->speed += sin(state->rot) * tuning.flight.speedGravityForce * delta;
+
+      if (state->afterburner)
+        state->speed += tuning.flight.speedAfterburnForce * delta;
+
+      float targetSpeed = state->speed * tuning.flight.cruise;
+
+      // set velocity, according to target speed, rotation,
+      // and leftoverVel
+      state->vel = targetSpeed * VecMath::fromAngle(state->rot) +
+                   state->leftoverVel;
     }
 
-//    } else { // motion when not stalled
-//
-//      // modify throttle and afterburner according to controls
-//      if (state->throtCtrl == 1) state->throttle += delta;
-//      if (state->throtCtrl == -1) state->throttle -= delta;
-//      state->throttle = clamp(0f, tuning.throttleSize, 0);
-//
-//      state->afterburner = (state->throtCtrl == 1) && state->throttle == 1;
-//
-//      // pick away at leftover velocity
-//      state->leftoverVel *= std::pow(tuning.flight.leftoverVelDamping, delta);
-//
-//      // speed modifiers
-//      if (state->speed >
-//          state->throttle * tuning.velInfluence.throttleInfluence) {
-//        if (state->throttle < tuning.velInfluence.throttleInfluence) {
-//          state->speed -= tuning.velInfluence.throttleDown * delta;
-//        } else {
-//          state->speed -= tuning.velInfluence.throttleUp * delta;
-//        }
-//      }
-//
-//      state.speed +=
-//          sin(state.rot) * tuning.velInfluence.speedGravityForce * (delta /
-//                                                                    1000);
-//      if (state.afterburner)
-//        state.speed += mod.speedAfterburnForce * (delta / 1000);
-//      state.speed = Math.min(state.speed, 1);
-//      state.speed = Math.max(state.speed, 0);
-//
-//      var targetSpeed = state.speed * mod.speed;
-//
-//      // set velocity, according to target speed, rotation,
-//      // and leftoverVel
-//      state.vel = Vector.fromAngle(state.rot)
-//          .mult(targetSpeed)
-//          .add(state.leftoverVel);
-//    }
-//
-//    // stall singularities
-//    if (state.stalled) {
-//      if (forwardVel > mod.exitStallThreshold) {
-//        state.stalled = false;
-//        engine.applyZeroGravity(body);
-//        state.leftoverVel = new Vector(
-//            state.vel.x - forwardVel * Math.cos(state.rot),
-//            state.vel.y - forwardVel * Math.sin(state.rot)
-//        );
-//        state.speed =
-//            forwardVel / mod.speed;
-//        state.throttle =
-//            state.speed / mod.speedThrottleInfluence;
-//      }
-//    } else {
-//      if (forwardVel < mod.enterStallThreshold) {
-//        engine.applyGravity(body);
-//        state.stalled = true;
-//        state.throttle = 1;
-//        state.speed = 0;
-//      }
-//    }
-//
-//        mod.onTick(delta);
+    // stall singularities
+    if (state->stalled) {
+      if (forwardVel > tuning.stall.threshold) {
+        state->stalled = false;
+        state->leftoverVel = state->vel - (forwardVel * VecMath::fromAngle
+            (state->rot));
 
+        state->speed = forwardVel / tuning.flight.cruise;
+        state->throttle = state->speed / tuning.flight.throttleInfluence;
+      }
+    } else {
+      if (forwardVel < tuning.flight.threshold) {
+        state->stalled = true;
+        state->throttle = 1;
+        state->speed = 0;
+      }
+    }
+    state->stalled = true;
   }
 }
 
 void Plane::tickAnim(float delta) {
+  animState.tick(this, delta);
 }
 
 Plane::Plane(Sky *engine) :
@@ -244,6 +235,7 @@ Plane::~Plane() {
 void Plane::spawn(const sf::Vector2f pos, const float rot,
                   const PlaneTuning &tuning) {
   if (state) kill();
+  animState.reset();
   state = {PlaneState(physics, tuning, pos, rot)};
   writeToBody();
 }
