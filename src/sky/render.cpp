@@ -8,15 +8,25 @@ RenderMan::RenderMan(Sky *sky) :
     sheet(Res::PlayerSheet) { }
 
 void RenderMan::render(ui::Frame &f, sf::Vector2f pos) {
-  if (Plane *plane = sky->getPlane(0)) {
-    if (auto &state = plane->state) {
-      const auto &hitbox = state->tuning.hitbox;
+  for (auto &pair : sky->planes) {
+    const int pid = pair.first;
+    const std::unique_ptr<Plane> &plane = pair.second;
+
+    if (plane->state) {
+      PlaneState &state = *plane->state;
+      PlaneAnimState &animState = plane->animState;
+
+      const auto &hitbox = state.tuning.hitbox;
+
       f.pushTransform(
-          sf::Transform().translate(state->pos).rotate(state->rot).
+          sf::Transform().translate(state.pos).rotate(state.rot).
               scale(-1, 1));
-      // TODO: rotation and stuff
+
+      f.drawText({-200, -200}, {std::to_string(pid)});
+
       f.drawRect(-0.5f * hitbox, 0.5f * hitbox, sf::Color::Red);
-      sheet.drawIndex(f, sf::Vector2f(200, 200), 7);
+      sheet.drawIndexAtRoll(f, sf::Vector2f(200, 200), animState.roll);
+
       f.popTransform();
     } else {
       f.drawText(sf::Vector2f(800, 200), {"You're dead, so sorry ..."}, 40,
@@ -26,6 +36,8 @@ void RenderMan::render(ui::Frame &f, sf::Vector2f pos) {
 }
 
 void RenderMan::tick(float delta) {
-
+  for (auto &pair : sky->planes) {
+    pair.second->tickAnim(delta);
+  }
 }
 }

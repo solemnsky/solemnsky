@@ -2,7 +2,7 @@
 
 PhysDemo::PhysDemo() {
   b2Body *body;
-  for (int i = 0; i < 10; ++i) {
+  for (int i = 0; i < 40; ++i) {
     body = physics.rectBody({40, 40});
     body->GetFixtureList()->SetFriction(0.5);
     bodies.push_back(body);
@@ -12,18 +12,18 @@ PhysDemo::PhysDemo() {
 }
 
 void PhysDemo::reset() {
-  int i = 1;
+  float i = 100;
   for (auto &body : bodies) {
-    body->SetTransform(physics.toPhysVec({i * 100, 450}), physics.toRad(45));
+    body->SetTransform(physics.toPhysVec({i, 450}), physics.toRad(45));
     body->SetLinearVelocity({0, 0});
     body->SetAngularVelocity(0);
-    i++;
+    i = cyclicClamp<float>(100, 1500, i + 100);
   }
 }
 
 void PhysDemo::tick(float delta) {
   for (auto &body : bodies) {
-    physics.approachRotVel(body, (marchingLeft ^ rising) ? -360 : 360);
+    physics.approachRotVel(body, (marchingLeft ^ rising) ? -720 : 720);
     body->SetGravityScale(rising ? -1 : 1);
   }
   physics.tick(delta);

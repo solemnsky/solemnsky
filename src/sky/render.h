@@ -28,7 +28,7 @@ public:
   void render(ui::Frame &f, sf::Vector2f pos);
 
   /**
-   * Potentially tick forward some animation state / particles.
+   * Tick forward animation state.
    */
   void tick(float delta);
 };
