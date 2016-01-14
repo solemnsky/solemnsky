@@ -15,6 +15,9 @@ namespace sky {
 
 typedef int PID; // personal ID for elements in the game
 
+/**
+ * Allocated dynamically, per-game (?).
+ */
 class Sky {
 public:
   Sky(const sf::Vector2f &dims);
