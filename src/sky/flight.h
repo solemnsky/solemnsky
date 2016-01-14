@@ -67,6 +67,7 @@ struct PlaneState {
   PlaneState(Physics *physics, const PlaneTuning &tuning,
              const sf::Vector2f &pos,
              const float rot);
+
   PlaneTuning tuning;
 
   Clamped rotCtrl;
@@ -78,7 +79,7 @@ struct PlaneState {
 
   bool stalled, afterburner; // flight mechanics
   sf::Vector2f leftoverVel;
-  float speed;
+  Clamped speed;
   Clamped throttle;
 
   float forwardVelocity();

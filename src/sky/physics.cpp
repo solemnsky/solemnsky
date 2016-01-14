@@ -69,16 +69,6 @@ void Physics::clrBody(b2Body *&body) {
   }
 }
 
-float Physics::toDeg(float rad) {
-  constexpr float factor((const float) (180 / 3.14159));
-  return rad * factor;
-}
-
-float Physics::toRad(float deg) {
-  constexpr float factor((const float) (3.14159 / 180));
-  return deg * factor;
-}
-
 void Physics::approachRotVel(b2Body *body, float rotvel) {
   body->ApplyAngularImpulse(
       body->GetInertia() * (toRad(rotvel) - body->GetAngularVelocity()),

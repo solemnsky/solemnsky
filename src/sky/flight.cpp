@@ -16,19 +16,16 @@ PlaneState::PlaneState(Physics *physics, const PlaneTuning &tuning,
     pos(pos),
     rot(rot),
     tuning(tuning),
-    throttle(0, 1, 1) {
-  vel = tuning.flight.speed * sf::Vector2f(std::cos(rot), std::sin(rot));
-  rotvel = 0;
-
-  stalled = false;
-  afterburner = false;
-  leftoverVel = {0, 0};
-
-  speed = tuning.flight.speed;
-}
+    throttle(0, 1, 1),
+    vel(tuning.flight.speed * VecMath::fromAngle(rot)),
+    rotvel(0),
+    stalled(false),
+    afterburner(false),
+    leftoverVel(0, 0),
+    speed(0, 1, tuning.flight.speedThrottleInfluence) { }
 
 float PlaneState::forwardVelocity() {
-  return (float) (velocity() * sin(rot));
+  return (float) (velocity() * sin(toRad(rot)));
 }
 
 float PlaneState::velocity() {
@@ -97,14 +94,14 @@ void Plane::writeToBody() {
       body = physics->rectBody(state->tuning.hitbox);
       body->SetTransform(
           physics->toPhysVec(state->pos),
-          physics->toRad(state->rot));
-      body->SetAngularVelocity(physics->toRad(state->rot));
+          toRad(state->rot));
+      body->SetAngularVelocity(toRad(state->rot));
       body->SetLinearVelocity(physics->toPhysVec(state->vel));
       body->SetGravityScale(state->stalled ? 1 : 0);
     } else {
       body->SetTransform(
           physics->toPhysVec(state->pos),
-          physics->toRad(state->rot));
+          toRad(state->rot));
       physics->approachRotVel(body, state->rotvel);
       physics->approachVel(body, state->vel);
       body->SetGravityScale(state->stalled ? 1 : 0);
@@ -121,8 +118,8 @@ void Plane::readFromBody() {
 
   if (body) {
     state->pos = physics->toGameVec(body->GetPosition());
-    state->rot = physics->toDeg(body->GetAngle());
-    state->rotvel = physics->toDeg(body->GetAngularVelocity());
+    state->rot = toDeg(body->GetAngle());
+    state->rotvel = toDeg(body->GetAngularVelocity());
     state->vel = physics->toGameVec(body->GetLinearVelocity());
   }
 }
@@ -166,15 +163,17 @@ void Plane::tick(float delta) {
       state->leftoverVel *= std::pow(tuning.flight.damping, delta);
 
       // speed modifiers
+      float speedMod = 0;
       if (state->speed >
           state->throttle * tuning.flight.speedThrottleInfluence) {
         if (state->throttle < tuning.flight.speedThrottleInfluence)
-          state->speed -= tuning.flight.speedThrottleDeaccForce * delta;
-        else state->speed -= tuning.flight.speedThrottleForce * delta;
+          speedMod -= tuning.flight.speedThrottleDeaccForce * delta;
+        else speedMod += tuning.flight.speedThrottleForce * delta;
       }
-      state->speed += sin(state->rot) * tuning.flight.speedGravityForce * delta;
-      state->speed += ((float) state->afterburner) * // definitely readable
+      speedMod += sin(state->rot) * tuning.flight.speedGravityForce * delta;
+      speedMod += ((float) state->afterburner) * // definitely readable
                       tuning.flight.speedAfterburnForce * delta;
+      state->speed += speedMod;
       float targetSpeed = state->speed * tuning.flight.speed;
 
       // set velocity, according to target speed, rotation, and leftoverVel
