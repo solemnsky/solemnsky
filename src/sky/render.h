@@ -18,6 +18,14 @@ private:
   Sky *sky;
   const ui::SpriteSheet sheet;
 
+  /**
+   * Render submethods.
+   */
+  float findView(const float viewWidth,
+                 const float totalWidth,
+                 const float viewTarget) const;
+  void renderPlane(ui::Frame &f, const int pid, Plane &plane);
+
 public:
   RenderMan(Sky *sky);
 
@@ -25,7 +33,7 @@ public:
    * Renders the game.
    * Tries to center on pos.
    */
-  void render(ui::Frame &f, sf::Vector2f pos);
+  void render(ui::Frame &f, const sf::Vector2f &pos);
 
   /**
    * Tick forward animation state.

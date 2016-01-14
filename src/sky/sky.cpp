@@ -2,7 +2,8 @@
 
 namespace sky {
 
-Sky::Sky() : physics() {
+Sky::Sky(const sf::Vector2f &dims) :
+    physics(dims) {
   LIFE_LOG("Creating sky.");
 }
 
@@ -47,4 +48,5 @@ void Sky::tick(float delta) {
     plane.tick(delta);
   }
 }
+
 }

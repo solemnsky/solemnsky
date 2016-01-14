@@ -50,6 +50,7 @@ void ControlState::setState(sky::PlaneState &state) {
 }
 
 SkyDemo::SkyDemo() :
+    sky({3200, 900}),
     renderMan(&sky),
     animTicker{0.05f},
     animVal{0} {
@@ -62,9 +63,11 @@ void SkyDemo::tick(float delta) {
 }
 
 void SkyDemo::render(ui::Frame &f) {
-  f.drawSprite(textureOf(Res::TitleScreen),
-               sf::Vector2f(0, 0), sf::IntRect(0, 0, 1600, 900));
-  renderMan.render(f, sf::Vector2f(0, 0));
+  if (plane->state) {
+    renderMan.render(f, plane->state->pos);
+  } else {
+    renderMan.render(f, {0, 0});
+  }
 }
 
 void SkyDemo::handle(const sf::Event &event) {

@@ -1,6 +1,6 @@
 #include <sstream>
 
-#define _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES // for M_PI
 
 #include <math.h>
 #include <iostream>

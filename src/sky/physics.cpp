@@ -2,23 +2,23 @@
 
 namespace sky {
 
-Physics::Physics() :
+Physics::Physics(const sf::Vector2f &dims) :
+    dims(dims),
     world({0, Settings().gravity / Settings().distanceScale}) {
 
   b2Body *body;
 
-  // make floor
-  body = rectBody({1600, 1}, true);
-  body->SetTransform(toPhysVec({800, 900}), 0);
+  body = rectBody({dims.x, 1}, true);
+  body->SetTransform(toPhysVec({dims.x / 2, dims.y}), 0);
 
-  body = rectBody({1600, 1}, true);
-  body->SetTransform(toPhysVec({800, 0}), 0);
+  body = rectBody({dims.x, 1}, true);
+  body->SetTransform(toPhysVec({dims.x / 2, 0}), 0);
 
-  body = rectBody({1, 900}, true);
-  body->SetTransform(toPhysVec({1600, 450}), 0);
+  body = rectBody({1, dims.y}, true);
+  body->SetTransform(toPhysVec({dims.x, dims.y / 2}), 0);
 
-  body = rectBody({1, 900}, true);
-  body->SetTransform(toPhysVec({0, 450}), 0);
+  body = rectBody({1, dims.y}, true);
+  body->SetTransform(toPhysVec({0, dims.y / 2}), 0);
 }
 
 
