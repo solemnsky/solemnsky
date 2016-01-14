@@ -27,7 +27,7 @@ class Sky;
 struct PlaneTuning {
   PlaneTuning() { }
 
-  sf::Vector2f hitbox{110, 60};
+  sf::Vector2f hitbox{110, 60}; // x axis parallel with flight
 
   struct {
     // mechanics when stalled
@@ -41,36 +41,35 @@ struct PlaneTuning {
   struct {
     // mechanics when not stalled
     float maxRotVel = 180,
-        speed = 330,
-        speedThrottleInfluence = 0.6,
-        speedThrottleForce = 0.3,
-        speedThrottleDeaccForce = 1.1,
-        speedGravityForce = 0.5,
-        speedAfterburnForce = 0.9,
-        damping = 1.5;
-    float threshold = 100; // the maximum airspeed that we need to leave flight
-
+        maxAirspeed = 330, //
+        throttleInfluence = 0.6,
+        throttleDrive = 0.3,
+        throttleBreaking = 1.1,
+        gravityEffect = 0.5,
+        afterburnDrive = 0.9,
+        leftoverDamping = 1.5;
+    float threshold = 100; // the maximum airspeed that we need to enter stall
   } flight;
 
   float throttleSpeed = 1.5;
 };
 
 /**
- * Plain data structure with all the concrete (useful) game state of a plane.
- * Only exists when the plane is alive <=> is participating in the game
+ * Plain data structure with all the concrete game state of a plane.
+ * Only held by Plane when it is alive <=> is participating in the game
  * mechanics.
  *
  * This contains things which need to be synced over the network; however it
- * obviously requires delta compression.
+ * obviously can take some serious delta compression.
  */
 struct PlaneState {
-  PlaneState(Physics *physics, const PlaneTuning &tuning,
+  PlaneState(const PlaneTuning &tuning,
              const sf::Vector2f &pos,
              const float rot);
 
   PlaneTuning tuning;
 
-  Clamped rotCtrl;
+  Clamped rotCtrl; // controls
   Switched throtCtrl;
 
   sf::Vector2f pos, vel; // physical values
@@ -79,7 +78,7 @@ struct PlaneState {
 
   bool stalled, afterburner; // flight mechanics
   sf::Vector2f leftoverVel;
-  Clamped speed;
+  Clamped airspeed;
   Clamped throttle;
 
   float forwardVelocity();
@@ -89,8 +88,8 @@ struct PlaneState {
 /**
  * Plain data structure with all the animation state of a plane, alive or not.
  * This is derived from the PlaneState over time after having been thrust
- * into existence at the joining of a plane into the sky. It is is not necessary
- * to sync this over the network.
+ * into existence at the joining of a plane into the sky, reset to default
+ * at each respawn. It is is not necessary * to sync this over the network.
  *
  * Servers obviously don't have to simulate it; the only way for an end user
  * to cause a modification to this is to render the sky with a RenderMan.
@@ -100,19 +99,25 @@ struct PlaneAnimState {
 
   Angle roll;
   bool orientation;
-  float flipState;
+
+  float flipState; // these two values contribute to the roll
   float rollState;
 
-  // TODO: death animation someday too
+  const static struct {
+    // const static settings describing how animation happens
+    // TODO: decide concretely if this deserves a place somewhere else?
+    float rollAmount = 30, // how many degrees it rolls to either side
+        rollSpeed = 2; // how quickly it rolls 2 * rollAmount
+  } settings;
 
+private:
   /*
    * Delegating some management from the Plane it belongs to:
    */
-private:
   friend class Plane;
 
   void tick(class Plane *parent, const float delta);
-  void reset();  // when the plane respawns
+  void reset(); // when the plane respawns
   // death is animated in the a normal course of events, but respawning changes
   // everything anew
 };
@@ -121,7 +126,6 @@ class Plane {
 private:
   sky::Sky *engine;
   Physics *physics;
-
   b2Body *body;
 
   /*
@@ -139,6 +143,7 @@ private:
 public:
   Plane(Sky *engine);
   ~Plane();
+
   Plane(Plane &&) = delete;
   Plane &operator=(Plane &&) = delete;
   Plane &operator=(const Plane &) = delete;
@@ -146,7 +151,7 @@ public:
   // **you can't copy or move this**
   // because it carries a b2Body*, which is a bit of a problematic resource.
   // also it just doesn't make sense to move it; you have the base state
-  // datastructures to access if you want
+  // data-structures to access if you want
 
   /*
    * End-user API.
