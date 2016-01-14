@@ -33,7 +33,7 @@ public:
   /**
    * Simulating.
    */
-  void tick(float delta); // delta in seconds, as always
+  void tick(float delta); // delta in seconds *everywhere*
 };
 }
 
