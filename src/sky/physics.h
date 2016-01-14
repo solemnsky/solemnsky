@@ -38,8 +38,6 @@ public:
   b2Vec2 toPhysVec(sf::Vector2f vec);
   float toGameDistance(float x);
   float toPhysDistance(float x);
-  float toDeg(float rad); // SF uses degrees, box2D uses radians
-  float toRad(float deg);
 
   /**
    * Managing bodies.

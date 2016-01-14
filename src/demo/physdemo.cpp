@@ -14,7 +14,7 @@ PhysDemo::PhysDemo() : physics({1600, 900}) {
 void PhysDemo::reset() {
   float i = 100;
   for (auto &body : bodies) {
-    body->SetTransform(physics.toPhysVec({i, 450}), physics.toRad(45));
+    body->SetTransform(physics.toPhysVec({i, 450}), toRad(45));
     body->SetLinearVelocity({0, 0});
     body->SetAngularVelocity(0);
     i = cyclicClamp<float>(100, 1500, i + 100);
@@ -34,7 +34,7 @@ void PhysDemo::render(ui::Frame &f) {
   for (auto &body : bodies) {
     f.withTransform(
         sf::Transform().translate(physics.toGameVec(body->GetPosition())).
-            rotate(physics.toDeg(body->GetAngle())),
+            rotate(toDeg(body->GetAngle())),
         [&]() {
           f.drawRect({40, 40}, sf::Color::White);
           f.drawRect({38, 38}, sf::Color::Red);

@@ -64,3 +64,13 @@ sf::Vector2f VecMath::fromAngle(const float angle) {
 float VecMath::angle(const sf::Vector2f &vec) {
   return std::atan2(vec.y, vec.x);
 }
+
+float toDeg(const float x) {
+  constexpr float factor = (float) (180 / M_PI);
+  return x * factor;
+}
+
+float toRad(const float x) {
+  constexpr float factor = (float) (M_PI / 180);
+  return x * factor;
+}

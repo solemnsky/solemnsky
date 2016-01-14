@@ -61,5 +61,9 @@ public:
   static float angle(const sf::Vector2f &vec);
 };
 
+float toRad(const float x);
+
+float toDeg(const float x);
+
 
 #endif //SOLEMNSKY_BASE_UTIL_H
