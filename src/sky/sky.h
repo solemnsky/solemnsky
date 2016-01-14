@@ -17,7 +17,7 @@ typedef int PID; // personal ID for elements in the game
 
 class Sky {
 public:
-  Sky();
+  Sky(const sf::Vector2f &dims);
   ~Sky();
 
   Physics physics;

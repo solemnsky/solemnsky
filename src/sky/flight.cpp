@@ -100,6 +100,7 @@ void Plane::writeToBody() {
           physics->toRad(state->rot));
       body->SetAngularVelocity(physics->toRad(state->rot));
       body->SetLinearVelocity(physics->toPhysVec(state->vel));
+      body->SetGravityScale(state->stalled ? 1 : 0);
     } else {
       body->SetTransform(
           physics->toPhysVec(state->pos),
@@ -213,7 +214,6 @@ void Plane::tick(float delta) {
         state->speed = 0;
       }
     }
-    state->stalled = true;
   }
 }
 

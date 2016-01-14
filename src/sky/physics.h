@@ -26,7 +26,8 @@ public:
     float gravity = 600;
   } settings;
 
-  Physics();
+  const sf::Vector2f dims;
+  Physics(const sf::Vector2f &dims);
 
   void tick(const float delta);
 

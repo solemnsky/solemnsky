@@ -130,10 +130,6 @@ void Frame::drawText(const sf::Vector2f &pos,
                      const sf::Color &color,
                      const sf::Font &font,
                      const sf::Text::Style &style) {
-  sf::Vector2f pt = transformStack.top().transformPoint(sf::Vector2f(1, 0));
-  float transScale = (float) sqrt(pt.x * pt.x + pt.y * pt.y);
-  // I wonder if we need some math utils perhaps
-
   float yOffset = 0;
 
   for (const auto &string : contents) {
@@ -142,7 +138,7 @@ void Frame::drawText(const sf::Vector2f &pos,
     text.setFont(font);
     text.setPosition(pos + sf::Vector2f(0, yOffset));
     text.setString(string);
-    text.setCharacterSize((unsigned int) std::round(size * transScale));
+    text.setCharacterSize((unsigned int) size);
     text.setColor(alphaScaleColor(color));
     text.setStyle(style);
     window.draw(text, transformStack.top());

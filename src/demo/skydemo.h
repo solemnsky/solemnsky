@@ -30,7 +30,7 @@ private:
   Cooldown animTicker;
   int animVal;
 
-  sky::Sky sky{};
+  sky::Sky sky;
   sky::Plane *plane;
 
 public:

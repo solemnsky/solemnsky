@@ -1,6 +1,6 @@
 #include "physdemo.h"
 
-PhysDemo::PhysDemo() {
+PhysDemo::PhysDemo() : physics({1600, 900}) {
   b2Body *body;
   for (int i = 0; i < 40; ++i) {
     body = physics.rectBody({40, 40});
