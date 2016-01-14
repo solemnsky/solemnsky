@@ -27,44 +27,32 @@ class Sky;
 struct PlaneTuning {
   PlaneTuning() { }
 
-  sf::Vector2f hitbox{120, 70};
+  sf::Vector2f hitbox{110, 60};
 
-  /**
-   * When we're in a stall, flight is much simpler.
-   */
   struct {
-    float
-        maxRotVel = 180, // how quickly we can turn, (deg / s)
-        maxVel = 1000, // our terminal velocity (px / s)
-        thrust = 1000, // thrust acceleration (ps / s^2)
+    // mechanics when stalled
+    float maxRotVel = 200, // how quickly we can turn, (deg / s)
+        maxVel = 300, // our terminal velocity (px / s)
+        thrust = 500, // thrust acceleration (ps / s^2)
         damping = 0.8; // how quickly we approach our terminal velocity
-
-    float threshold; // the minimum airspeed that we need to enter flight
+    float threshold = 130; // the minimum airspeed that we need to enter flight
   } stall;
 
-  /**
-   * When we enter flight, things become significantly more complicated.
-   */
   struct {
-    float
-        maxRotVel = 100,
-        cruise = 300,
-        thrustCruise = 400;
-
-    float leftoverVelDamping = 0.7; // rate at which the leftover vel is damped
-
-    float throttleUp = 1, throttleDown = 1;
-    float afterburner = 20;
-    float throttleInfluence = 0.8;
-
-    float speedGravityForce = 200,
-        speedAfterburnForce = 200;
-
-    float threshold = 60; // the maximum airspeed that we need to leave flight
+    // mechanics when not stalled
+    float maxRotVel = 180,
+        speed = 330,
+        speedThrottleInfluence = 0.6,
+        speedThrottleForce = 0.3,
+        speedThrottleDeaccForce = 1.1,
+        speedGravityForce = 0.5,
+        speedAfterburnForce = 0.9,
+        damping = 1.5;
+    float threshold = 100; // the maximum airspeed that we need to leave flight
 
   } flight;
 
-  float throttleSize = 1;
+  float throttleSpeed = 1.5;
 };
 
 /**

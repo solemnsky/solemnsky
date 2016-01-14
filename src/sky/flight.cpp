@@ -16,15 +16,15 @@ PlaneState::PlaneState(Physics *physics, const PlaneTuning &tuning,
     pos(pos),
     rot(rot),
     tuning(tuning),
-    throttle(0, tuning.throttleSize, tuning.throttleSize) {
-  vel = tuning.flight.cruise * sf::Vector2f(std::cos(rot), std::sin(rot));
+    throttle(0, 1, 1) {
+  vel = tuning.flight.speed * sf::Vector2f(std::cos(rot), std::sin(rot));
   rotvel = 0;
 
   stalled = false;
   afterburner = false;
   leftoverVel = {0, 0};
 
-  speed = tuning.flight.cruise;
+  speed = tuning.flight.speed;
 }
 
 float PlaneState::forwardVelocity() {
@@ -129,70 +129,55 @@ void Plane::readFromBody() {
 
 void Plane::tick(float delta) {
   if (state) {
-    state->stalled = true;
-
     const PlaneTuning &tuning = state->tuning;
     const float forwardVel(state->forwardVelocity()),
         velocity(state->velocity());
 
-    /**
-     * Rotation.
-     */
-    const float targetRotVel = ((state->stalled) ?
-                                tuning.stall.maxRotVel :
-                                tuning.flight.maxRotVel) * state->rotCtrl;
-    state->rotvel = targetRotVel;
+    // set rotation
+    state->rotvel = ((state->stalled) ?
+                     tuning.stall.maxRotVel :
+                     tuning.flight.maxRotVel) * state->rotCtrl;
 
     state->afterburner = false;
     if (state->stalled) {
-      /**
-       * Afterburner.
-       */
+
+      // afterburner
       if (state->throtCtrl == 1) {
         state->vel +=
             VecMath::fromAngle(state->rot) * (delta * tuning.stall.thrust);
         state->afterburner = true;
       }
 
-      /**
-       * Damp towards terminal velocity.
-       */
+      // damping towards terminal velocity
       float excessVel = velocity - tuning.stall.maxVel;
       float dampingFactor = tuning.stall.maxVel / velocity;
       if (excessVel > 0)
-        state->vel =
-            state->vel * dampingFactor * std::pow(tuning.stall.damping, delta);
+        state->vel = state->vel * dampingFactor *
+                     std::pow(tuning.stall.damping, delta);
 
-    } else { // motion when not stalled
+    } else {
 
       // modify throttle and afterburner according to controls
       if (state->throtCtrl == 1) state->throttle += delta;
       if (state->throtCtrl == -1) state->throttle -= delta;
-
       state->afterburner = (state->throtCtrl == 1) && state->throttle == 1;
 
       // pick away at leftover velocity
-      state->leftoverVel *= std::pow(tuning.flight.leftoverVelDamping, delta);
+      state->leftoverVel *= std::pow(tuning.flight.damping, delta);
 
       // speed modifiers
       if (state->speed >
-          state->throttle * tuning.flight.throttleInfluence) {
-        if (state->throttle < tuning.flight.throttleInfluence) {
-          state->speed -= tuning.flight.throttleDown * delta;
-        } else {
-          state->speed -= tuning.flight.throttleUp * delta;
-        }
+          state->throttle * tuning.flight.speedThrottleInfluence) {
+        if (state->throttle < tuning.flight.speedThrottleInfluence)
+          state->speed -= tuning.flight.speedThrottleDeaccForce * delta;
+        else state->speed -= tuning.flight.speedThrottleForce * delta;
       }
-
       state->speed += sin(state->rot) * tuning.flight.speedGravityForce * delta;
+      state->speed += ((float) state->afterburner) * // definitely readable
+                      tuning.flight.speedAfterburnForce * delta;
+      float targetSpeed = state->speed * tuning.flight.speed;
 
-      if (state->afterburner)
-        state->speed += tuning.flight.speedAfterburnForce * delta;
-
-      float targetSpeed = state->speed * tuning.flight.cruise;
-
-      // set velocity, according to target speed, rotation,
-      // and leftoverVel
+      // set velocity, according to target speed, rotation, and leftoverVel
       state->vel = targetSpeed * VecMath::fromAngle(state->rot) +
                    state->leftoverVel;
     }
@@ -204,8 +189,8 @@ void Plane::tick(float delta) {
         state->leftoverVel = state->vel - (forwardVel * VecMath::fromAngle
             (state->rot));
 
-        state->speed = forwardVel / tuning.flight.cruise;
-        state->throttle = state->speed / tuning.flight.throttleInfluence;
+        state->speed = forwardVel / tuning.flight.speed;
+        state->throttle = state->speed / tuning.flight.speedThrottleInfluence;
       }
     } else {
       if (forwardVel < tuning.flight.threshold) {
