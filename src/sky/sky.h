@@ -34,6 +34,8 @@ public:
   virtual void spawnPlane(const PID pid, Plane *plane) { }
 
   virtual void killPlane(const PID pid, Plane *plane) { }
+
+  const std::string type = "<subsystem type>";
 };
 
 class Sky {
