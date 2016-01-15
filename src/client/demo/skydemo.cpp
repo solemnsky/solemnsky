@@ -50,10 +50,11 @@ void ControlState::setState(sky::PlaneState &state) {
 }
 
 SkyDemo::SkyDemo() :
-    sky({3200, 900}),
     renderMan(&sky),
+    sky({3200, 900}),
     animTicker{0.05f},
     animVal{0} {
+  sky.attachSystem(&renderMan);
   plane = sky.joinPlane(0, sky::PlaneTuning());
 }
 
@@ -73,7 +74,7 @@ void SkyDemo::render(ui::Frame &f) {
 void SkyDemo::handle(const sf::Event &event) {
   if (event.type == sf::Event::KeyPressed) {
     if (event.key.code == sf::Keyboard::Key::F)
-      plane->spawn({200, 200}, 0, sky::PlaneTuning());
+      sky.spawnPlane(0, {200, 200}, 0, sky::PlaneTuning());
   }
 
   ctrlState.handle(event);

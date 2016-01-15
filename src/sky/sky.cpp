@@ -20,7 +20,7 @@ Sky::~Sky() {
  */
 
 Plane *Sky::joinPlane(const PID pid, const PlaneTuning tuning) {
-  planes.at(pid) = std::make_unique<Plane>(this);
+  planes[pid] = std::make_unique<Plane>(this);
   Plane *plane = planes[pid].get();
   for (Subsystem *system : subsystems) system->joinPlane(pid, plane);
   return plane;

@@ -14,41 +14,53 @@ set(SOURCE_FILES
 
         src/base/base.h
 
-        src/base/value.cpp
-        src/base/value.h
+        src/base/resources.cpp
+        src/base/resources.h
 
         src/base/util.h
         src/base/util.cpp
 
-        src/base/resources.cpp
-        src/base/resources.h
+        src/base/value.cpp
+        src/base/value.h
 
-        #        src/client/demo/demo.h
-        #        src/client/demo/demo.cpp
-        #
-        #        src/client/demo/graphicsdemo.h
-        #        src/client/demo/graphicsdemo.cpp
-        #
-        #        src/client/demo/physdemo.cpp
-        #        src/client/demo/physdemo.h
-        #
-        #        src/client/demo/skydemo.cpp
-        #        src/client/demo/skydemo.h
+        src/client/demo/demo.h
+        src/client/demo/demo.cpp
 
-        src/sky/sky.h
-        src/sky/sky.cpp
+        src/client/demo/graphicsdemo.h
+        src/client/demo/graphicsdemo.cpp
+
+        src/client/demo/physdemo.cpp
+        src/client/demo/physdemo.h
+
+        src/client/demo/skydemo.cpp
+        src/client/demo/skydemo.h
+
+        src/client/client.cpp
+        src/client/client.h
+
+        src/server/server.cpp
+        src/server/server.h
+
+        src/sky/delta.cpp
+        src/sky/delta.h
 
         src/sky/flight.h
         src/sky/flight.cpp
 
-        src/sky/render.cpp
-        src/sky/render.h
-
         src/sky/physics.h
         src/sky/physics.cpp
 
+        src/sky/render.cpp
+        src/sky/render.h
+
+        src/sky/sky.h
+        src/sky/sky.cpp
+
         src/ui/elements/button.cpp
         src/ui/elements/button.h
+
+        src/ui/elements/splash.cpp
+        src/ui/elements/splash.h
 
         src/ui/control.h
         src/ui/control.cpp
@@ -67,18 +79,7 @@ set(SOURCE_FILES
 
         src/ui/ui.h
         src/base/base.h
-
-        src/ui/elements/splash.cpp
-        src/ui/elements/splash.h
-
-        src/client/client.cpp
-        src/client/client.h
-
-        src/server/server.cpp
-        src/server/server.h
-
-        src/sky/delta.cpp
-        src/sky/delta.h)
+        )
 
 
 find_package(Boost)

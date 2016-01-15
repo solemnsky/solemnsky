@@ -3,6 +3,7 @@
 
 namespace ui {
 
+namespace detail {
 void SplashScreen::tick(float delta) {
   if (screenDrawn) {
     loadResources(); // this might call more than once but it doesn't reload
@@ -16,5 +17,6 @@ void SplashScreen::render(ui::Frame &f) {
 }
 
 void SplashScreen::handle(const sf::Event &event) { }
+}
 
 }
