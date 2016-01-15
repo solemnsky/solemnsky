@@ -118,7 +118,7 @@ void Render::tick(float delta) {
 }
 
 void Render::joinPlane(const PID pid, Plane *plane) {
-  animState.at(pid) = detail::PlaneAnimState();
+  animState[pid] = detail::PlaneAnimState();
 }
 
 void Render::quitPlane(const PID pid) {

@@ -1,5 +1,6 @@
 /**
  * Splash screen, a cover for loading our resources (resources.h).
+ * This runs implicitly on runSFML.
  */
 #ifndef SOLEMNSKY_SPLASH_H
 #define SOLEMNSKY_SPLASH_H
@@ -10,6 +11,7 @@
 
 namespace ui {
 
+namespace detail {
 // TODO: make this threaded so the window doesn't freeze up
 class SplashScreen : public Control {
 private:
@@ -29,6 +31,7 @@ public:
   virtual void render(Frame &f) override;
   virtual void handle(const sf::Event &event) override;
 };
+}
 
 }
 

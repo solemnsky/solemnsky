@@ -16,8 +16,6 @@ private:
   ui::Button backButton{{800, 700}, "go back"};
 
 public:
-  Demo(std::shared_ptr<ui::Control>)
-
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   void handle(const sf::Event &event) override;

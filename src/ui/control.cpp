@@ -1,5 +1,6 @@
 #include <cmath>
 #include <assert.h>
+#include "ui/elements/splash.h"
 #include "base/base.h"
 #include "profiler.h"
 #include "control.h"
@@ -65,7 +66,10 @@ namespace ui {
  * runSFML
  */
 
-void runSFML(std::shared_ptr<Control> ctrl) {
+void runSFML(std::shared_ptr<Control> initCtrl) {
+  std::shared_ptr<Control> ctrl =
+      std::make_shared<detail::SplashScreen>(initCtrl);
+
   optional <std::shared_ptr<Control>> passedOn{};
 
   appLog(LogType::Notice, "Creating window ...");
