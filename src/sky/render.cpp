@@ -4,10 +4,51 @@
 namespace sky {
 
 /****
+ * PlaneAnimState
+ */
+
+namespace detail {
+PlaneAnimState::PlaneAnimState() :
+    roll(0),
+    orientation(false),
+    flipState(0),
+    rollState(0) { }
+
+void PlaneAnimState::tick(Plane *parent, const float delta) {
+  auto &state = parent->state;
+  if (state) {
+    // potentially switch orientation
+    bool newOrientation = Angle(state->rot + 90) > 180;
+    if (state->rotCtrl == 0
+        and newOrientation != orientation
+        and state->stalled) {
+      orientation = newOrientation;
+    }
+
+    // flipping (when orientation changes)
+    approach(flipState, (const float) (orientation ? 1 : 0), 2 * delta);
+    Angle flipComponent;
+    if (orientation) flipComponent = 90 - flipState * 180;
+    else flipComponent = 90 + flipState * 180;
+
+    // rolling (when rotation control is active)
+    approach<float>(rollState, state->rotCtrl,
+                    detail::AnimSettings::rollSpeed * delta);
+
+    roll = flipComponent + detail::AnimSettings::rollAmount * rollState;
+  }
+}
+
+void PlaneAnimState::reset() {
+  operator=((PlaneAnimState &&) PlaneAnimState());
+}
+}
+
+/****
  * Render submethods.
  */
 
-float RenderMan::findView(
+float Render::findView(
     const float viewWidth,
     const float totalWidth,
     const float viewTarget) const {
@@ -18,11 +59,11 @@ float RenderMan::findView(
   return viewTarget - (viewWidth / 2);
 }
 
-void RenderMan::renderPlane(
+void Render::renderPlane(
     ui::Frame &f, const int pid, sky::Plane &plane) {
   if (plane.state) {
     PlaneState &state = *plane.state;
-    PlaneAnimState &animState = plane.animState;
+    detail::PlaneAnimState &planeAnimState = animState.at(pid);
 
     const auto &hitbox = state.tuning.hitbox;
 
@@ -33,7 +74,7 @@ void RenderMan::renderPlane(
     f.drawRect(-0.5f * hitbox, 0.5f * hitbox,
                state.stalled ? sf::Color::Red : sf::Color::Green);
 
-    sheet.drawIndexAtRoll(f, sf::Vector2f(200, 200), animState.roll);
+    sheet.drawIndexAtRoll(f, sf::Vector2f(200, 200), planeAnimState.roll);
     f.popTransform();
 
     f.withTransform(sf::Transform().translate(state.pos), [&]() {
@@ -41,17 +82,14 @@ void RenderMan::renderPlane(
                  {std::to_string(pid),
                   state.stalled ? "stalled" : "flying"});
     });
-  } else {
-//    f.drawText(sf::Vector2f(800, 200), {"You're dead, so sorry ..."}, 40,
-//               sf::Color::Black);
   }
 }
 
-RenderMan::RenderMan(Sky *sky) :
+Render::Render(Sky *sky) :
     sky(sky),
     sheet(Res::PlayerSheet) { }
 
-void RenderMan::render(ui::Frame &f, const sf::Vector2f &pos) {
+void Render::render(ui::Frame &f, const sf::Vector2f &pos) {
   f.pushTransform(sf::Transform().translate(
       {-findView(1600, sky->physics.dims.x, pos.x),
        -findView(900, sky->physics.dims.y, pos.y)}
@@ -70,10 +108,28 @@ void RenderMan::render(ui::Frame &f, const sf::Vector2f &pos) {
   f.popTransform();
 }
 
-void RenderMan::tick(float delta) {
-  for (auto &pair : sky->planes) {
-    pair.second->tickAnim(delta);
-  }
+/****
+ * Subsystem listeners.
+ */
+
+void Render::tick(float delta) {
+  for (auto &pair : animState)
+    pair.second.tick(sky->getPlane(pair.first), delta);
 }
 
+void Render::joinPlane(const PID pid, Plane *plane) {
+  animState.at(pid) = detail::PlaneAnimState();
+}
+
+void Render::quitPlane(const PID pid) {
+  animState.erase(pid);
+}
+
+void Render::spawnPlane(const PID pid, Plane *plane) {
+  animState.at(pid).reset();
+}
+
+void Render::killPlane(const PID pid, Plane *plane) {
+  Subsystem::killPlane(pid, plane);
+}
 }

@@ -25,7 +25,7 @@ class SkyDemo : public ui::Control {
 private:
   ControlState ctrlState;
 
-  sky::RenderMan renderMan;
+  sky::Render renderMan;
 
   Cooldown animTicker;
   int animVal;

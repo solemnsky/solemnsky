@@ -23,17 +23,17 @@ set(SOURCE_FILES
         src/base/resources.cpp
         src/base/resources.h
 
-        src/client/demo/demo.h
-        src/client/demo/demo.cpp
-
-        src/client/demo/graphicsdemo.h
-        src/client/demo/graphicsdemo.cpp
-
-        src/client/demo/physdemo.cpp
-        src/client/demo/physdemo.h
-
-        src/client/demo/skydemo.cpp
-        src/client/demo/skydemo.h
+        #        src/client/demo/demo.h
+        #        src/client/demo/demo.cpp
+        #
+        #        src/client/demo/graphicsdemo.h
+        #        src/client/demo/graphicsdemo.cpp
+        #
+        #        src/client/demo/physdemo.cpp
+        #        src/client/demo/physdemo.h
+        #
+        #        src/client/demo/skydemo.cpp
+        #        src/client/demo/skydemo.h
 
         src/sky/sky.h
         src/sky/sky.cpp
@@ -67,7 +67,18 @@ set(SOURCE_FILES
 
         src/ui/ui.h
         src/base/base.h
-        src/ui/elements/splash.cpp src/ui/elements/splash.h src/client/client.cpp src/client/client.h src/server/server.cpp src/server/server.h)
+
+        src/ui/elements/splash.cpp
+        src/ui/elements/splash.h
+
+        src/client/client.cpp
+        src/client/client.h
+
+        src/server/server.cpp
+        src/server/server.h
+
+        src/sky/delta.cpp
+        src/sky/delta.h)
 
 
 find_package(Boost)
