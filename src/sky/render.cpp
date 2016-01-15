@@ -87,7 +87,13 @@ void Render::renderPlane(
 
 Render::Render(Sky *sky) :
     sky(sky),
-    sheet(Res::PlayerSheet) { }
+    sheet(Res::PlayerSheet) {
+  LIFE_LOG("Creating render subsystem.");
+}
+
+Render::~Render() {
+  LIFE_LOG("Destroying render subsystem.");
+}
 
 void Render::render(ui::Frame &f, const sf::Vector2f &pos) {
   f.pushTransform(sf::Transform().translate(

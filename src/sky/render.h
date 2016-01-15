@@ -66,6 +66,7 @@ private:
 
 public:
   Render(Sky *sky);
+  ~Render();
 
   /**
    * Renders the game from a view centered on pos.
@@ -76,10 +77,12 @@ public:
    * Subsystem listeners.
    */
   void tick(float delta) override;
-  virtual void joinPlane(const PID pid, Plane *plane) override;
-  virtual void quitPlane(const PID pid) override;
-  virtual void spawnPlane(const PID pid, Plane *plane) override;
-  virtual void killPlane(const PID pid, Plane *plane) override;
+  void joinPlane(const PID pid, Plane *plane) override;
+  void quitPlane(const PID pid) override;
+  void spawnPlane(const PID pid, Plane *plane) override;
+  void killPlane(const PID pid, Plane *plane) override;
+
+  const std::string type = "render";
 };
 
 }

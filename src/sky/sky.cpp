@@ -8,6 +8,7 @@ Sky::Sky(const sf::Vector2f &dims) : physics(dims) {
 
 void Sky::attachSystem(Subsystem *system) {
   subsystems.push_back(system);
+  LIFE_LOG("Attached " + system->type + " subsystem.");
 }
 
 Sky::~Sky() {
