@@ -36,44 +36,6 @@ float PlaneState::velocity() {
 }
 
 /****
- * PlaneAnimState
- */
-
-PlaneAnimState::PlaneAnimState() :
-    roll(0),
-    orientation(false),
-    flipState(0),
-    rollState(0) { }
-
-void PlaneAnimState::tick(Plane *parent, const float delta) {
-  auto &state = parent->state;
-  if (state) {
-    // potentially switch orientation
-    bool newOrientation = Angle(state->rot + 90) > 180;
-    if (state->rotCtrl == 0
-        and newOrientation != orientation
-        and state->stalled) {
-      orientation = newOrientation;
-    }
-
-    // flipping (when orientation changes)
-    approach(flipState, (const float) (orientation ? 1 : 0), 2 * delta);
-    Angle flipComponent;
-    if (orientation) flipComponent = 90 - flipState * 180;
-    else flipComponent = 90 + flipState * 180;
-
-    // rolling (when rotation control is active)
-    approach<float>(rollState, state->rotCtrl, settings.rollSpeed * delta);
-
-    roll = flipComponent + settings.rollAmount * rollState;
-  }
-}
-
-void PlaneAnimState::reset() {
-  operator=((PlaneAnimState &&) PlaneAnimState());
-}
-
-/****
  * Plane
  */
 
@@ -190,10 +152,6 @@ void Plane::tick(float delta) {
   }
 }
 
-void Plane::tickAnim(float delta) {
-  animState.tick(this, delta);
-}
-
 Plane::Plane(Sky *engine) :
     engine(engine), physics(&engine->physics), body(nullptr) {
   LIFE_LOG("Creating plane.");
@@ -208,7 +166,6 @@ Plane::~Plane() {
 void Plane::spawn(const sf::Vector2f pos, const float rot,
                   const PlaneTuning &tuning) {
   if (state) kill();
-  animState.reset();
   state = {PlaneState(tuning, pos, rot)};
   writeToBody();
 }

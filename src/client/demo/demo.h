@@ -8,11 +8,16 @@
 
 class Demo : public ui::Control {
 private:
+  std::shared_ptr<ui::Control> previous;
+
   ui::Button skyButton{{800, 400}, "engine demo"};
   ui::Button graphicsButton{{800, 500}, "graphics demo"};
   ui::Button physicsButton{{800, 600}, "physics demo"};
+  ui::Button backButton{{800, 700}, "go back"};
 
 public:
+  Demo(std::shared_ptr<ui::Control>)
+
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   void handle(const sf::Event &event) override;

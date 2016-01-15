@@ -12,7 +12,7 @@ void runServer() {
   // we want to get information from the sky
   appLog(
       LogType::Debug,
-      "player is " + (sky.getPlane(0)->state) ? "alive" : "dead");
+      "player is " + ((bool) sky.getPlane(0)->state) ? "alive" : "dead");
 }
 
 #endif //SOLEMNSKY_SERVER_H
