@@ -88,11 +88,11 @@ void Render::renderPlane(
 Render::Render(Sky *sky) :
     sky(sky),
     sheet(Res::PlayerSheet) {
-  LIFE_LOG("Creating render subsystem.");
+  CTOR_LOG("render subsystem");
 }
 
 Render::~Render() {
-  LIFE_LOG("Destroying render subsystem.");
+  DTOR_LOG("render subsystem");
 }
 
 void Render::render(ui::Frame &f, const sf::Vector2f &pos) {

@@ -154,12 +154,12 @@ void Plane::tick(float delta) {
 
 Plane::Plane(Sky *engine) :
     engine(engine), physics(&engine->physics), body(nullptr) {
-  LIFE_LOG("Creating plane.");
+  CTOR_LOG("plane");
 }
 
 Plane::~Plane() {
   kill();
-  LIFE_LOG("Destroying plane.");
+  DTOR_LOG("plane");
 };
 
 

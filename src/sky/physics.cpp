@@ -5,6 +5,7 @@ namespace sky {
 Physics::Physics(const sf::Vector2f &dims) :
     dims(dims),
     world({0, Settings().gravity / Settings().distanceScale}) {
+  CTOR_LOG("physics");
 
   b2Body *body;
 
@@ -21,6 +22,9 @@ Physics::Physics(const sf::Vector2f &dims) :
   body->SetTransform(toPhysVec({0, dims.y / 2}), 0);
 }
 
+Physics::~Physics() {
+  DTOR_LOG("physics");
+}
 
 void Physics::tick(const float delta) {
   world.ClearForces();

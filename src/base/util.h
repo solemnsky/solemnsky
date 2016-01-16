@@ -33,11 +33,11 @@ enum class LogType {
 void appLog(LogType type, const std::string contents);
 
 /**
- * Logging that can be conditionally included.
+ * Logging for memory leaks.
  */
 
-#define DEBUG_LOG(str) appLog(LogType::Debug, str)
-#define LIFE_LOG(str) appLog(LogType::Debug, str)
+#define CTOR_LOG(str) appLog(LogType::Debug, "CTOR -> " + (std::string) str)
+#define DTOR_LOG(str) appLog(LogType::Debug, "DTOR <- " + (std::string) str)
 
 /****
  * Extract useful information from sf::Events.
