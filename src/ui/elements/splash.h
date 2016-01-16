@@ -19,11 +19,11 @@ private:
   // before resources come online
 
   bool screenDrawn{false};
-  std::shared_ptr<Control> afterLoading;
+  std::unique_ptr<Control> afterLoading;
 
 public:
-  SplashScreen(std::shared_ptr<Control> afterLoading) :
-      afterLoading(afterLoading) {
+  SplashScreen(std::unique_ptr<Control> &&afterLoading) :
+      afterLoading(std::move(afterLoading)) {
     font.loadFromFile(filepathTo(Res::Font));
   }
 

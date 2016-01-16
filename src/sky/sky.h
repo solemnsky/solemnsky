@@ -11,43 +11,32 @@
 #include "physics.h"
 #include "flight.h"
 #include <memory>
+#include "ui/frame.h"
+#include "subsystems/subsystem.h"
+#include "subsystems/render.h"
 
 namespace sky {
 
-typedef int PID; // ID for elements in the game
-
-/**
- * A subsystem can listens for events in the engine.
- */
-class Subsystem {
-public:
-  // these are all in the past-tense, called after the action has completed
-  // in the engine: spawned and killed planes here are already spawned and
-  // killed, etc.
-
-  virtual void tick(const float delta) { }
-
-  virtual void joinPlane(const PID pid, Plane *plane) { }
-
-  virtual void quitPlane(const PID pid) { }
-
-  virtual void spawnPlane(const PID pid, Plane *plane) { }
-
-  virtual void killPlane(const PID pid, Plane *plane) { }
-
-  const std::string type = "<subsystem type>";
-};
-
 class Sky {
 private:
-  std::vector<Subsystem *> subsystems;
+  std::unique_ptr<detail::Render> renderSystem;
+  std::vector<detail::Subsystem *> subsystems;
 
 public:
   Sky(const sf::Vector2f &dims);
-  void attachSystem(Subsystem *system);
   ~Sky();
 
   Physics physics;
+
+  /**
+   * Activating subsystems.
+   */
+  void enableRender();
+
+  /**
+   * Render subsystem, enable rendering to use this.
+   */
+  void render(ui::Frame &f, const sf::Vector2f &pos);
 
   /**
    * Planes.

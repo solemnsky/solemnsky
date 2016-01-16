@@ -1,13 +1,14 @@
 #include <ui/frame.h>
 #include "render.h"
+#include "sky/sky.h"
 
 namespace sky {
+namespace detail {
 
 /****
  * PlaneAnimState
  */
 
-namespace detail {
 PlaneAnimState::PlaneAnimState() :
     roll(0),
     orientation(false),
@@ -41,7 +42,6 @@ void PlaneAnimState::tick(Plane *parent, const float delta) {
 
 void PlaneAnimState::reset() {
   operator=((PlaneAnimState &&) PlaneAnimState());
-}
 }
 
 /****
@@ -137,5 +137,7 @@ void Render::spawnPlane(const PID pid, Plane *plane) {
 
 void Render::killPlane(const PID pid, Plane *plane) {
   Subsystem::killPlane(pid, plane);
+}
+
 }
 }

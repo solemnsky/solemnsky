@@ -50,24 +50,22 @@ void ControlState::setState(sky::PlaneState &state) {
 }
 
 SkyDemo::SkyDemo() :
-    renderMan(&sky),
     sky({3200, 900}),
     animTicker{0.05f},
     animVal{0} {
-  sky.attachSystem(&renderMan);
+  sky.enableRender();
   plane = sky.joinPlane(0, sky::PlaneTuning());
 }
 
 void SkyDemo::tick(float delta) {
-  renderMan.tick(delta);
   sky.tick(delta);
 }
 
 void SkyDemo::render(ui::Frame &f) {
   if (plane->state) {
-    renderMan.render(f, plane->state->pos);
+    sky.render(f, plane->state->pos);
   } else {
-    renderMan.render(f, {0, 0});
+    sky.render(f, {0, 0});
   }
 }
 
