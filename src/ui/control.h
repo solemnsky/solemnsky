@@ -1,8 +1,8 @@
 /**
  * The concept of a Control object is the basis of our UI abstraction.
  * Nothing interesting or tricky here, just an interface that supports ticking
- * with time, rendering to a ui::Frame, and handling user input events from 
- * SFML.
+ * with time, rendering to a ui::Frame, handling user input events from
+ * SFML, and giving its place to another Control.
  */
 #ifndef SOLEMNSKY_CONTROL_H
 #define SOLEMNSKY_CONTROL_H
@@ -16,9 +16,6 @@
 
 namespace ui {
 
-/**
- * A user interface thingy.
- */
 class Control {
 public:
   /**
@@ -47,10 +44,10 @@ public:
 };
 
 /**
- * Finally, we can turn all this into an application with runSFML, using the
- * SFML 2 lib.
+ * Shows a splash screen while loading resources and then jumps into the
+ * Control we supplied.
  */
-void runSFML(std::unique_ptr<Control> ctrl);
+void runSFML(std::unique_ptr<Control> &&ctrl);
 }
 
 #endif // SOLEMNSKY_CONTROL_H
