@@ -4,11 +4,11 @@
 namespace sky {
 
 Sky::Sky(const sf::Vector2f &dims) : physics(dims) {
-  LIFE_LOG("Creating sky.");
+  CTOR_LOG("sky");
 }
 
 Sky::~Sky() {
-  LIFE_LOG("Destroying sky.");
+  DTOR_LOG("sky");
   planes.clear(); // destroy the planes before destroying the physics!
 }
 
@@ -17,7 +17,6 @@ Sky::~Sky() {
  */
 
 void Sky::enableRender() {
-  LIFE_LOG("Enabling render subsystem...");
   renderSystem = std::make_unique<detail::Render>(this);
   subsystems.push_back(renderSystem.get());
 }

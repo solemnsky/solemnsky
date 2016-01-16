@@ -18,8 +18,10 @@ namespace ui {
 
 class Control {
 public:
+  virtual ~Control() { }
+
   /**
-   * SFML window.
+   * SFML window, safe to use in any of the callback functions.
    */
   sf::RenderWindow *window;
 

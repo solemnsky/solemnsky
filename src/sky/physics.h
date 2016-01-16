@@ -18,6 +18,9 @@ private:
   b2World world;
 
 public:
+  Physics(const sf::Vector2f &dims);
+  ~Physics();
+
   const struct Settings {
     Settings() = default;
 
@@ -27,7 +30,6 @@ public:
   } settings;
 
   const sf::Vector2f dims;
-  Physics(const sf::Vector2f &dims);
 
   void tick(const float delta);
 
