@@ -29,7 +29,7 @@ public:
   /**
    * Signals to the app loop.
    */
-  std::shared_ptr<Control> next{nullptr};
+  std::unique_ptr<Control> next{nullptr};
   bool quitting{false};
 
   /**
@@ -50,7 +50,7 @@ public:
  * Finally, we can turn all this into an application with runSFML, using the
  * SFML 2 lib.
  */
-void runSFML(std::shared_ptr<Control> ctrl);
+void runSFML(std::unique_ptr<Control> ctrl);
 }
 
 #endif // SOLEMNSKY_CONTROL_H

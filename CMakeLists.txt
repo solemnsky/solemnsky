@@ -41,6 +41,11 @@ set(SOURCE_FILES
         src/server/server.cpp
         src/server/server.h
 
+        src/sky/subsystems/render.cpp
+        src/sky/subsystems/render.h
+
+        src/sky/subsystems/subsystem.h
+
         src/sky/delta.cpp
         src/sky/delta.h
 
@@ -49,9 +54,6 @@ set(SOURCE_FILES
 
         src/sky/physics.h
         src/sky/physics.cpp
-
-        src/sky/render.cpp
-        src/sky/render.h
 
         src/sky/sky.h
         src/sky/sky.cpp
@@ -74,10 +76,9 @@ set(SOURCE_FILES
         src/ui/sheet.cpp
         src/ui/sheet.h
 
-        src/ui/signal.cpp
+        src/ui/ui.h
         src/ui/signal.h
 
-        src/ui/ui.h
         src/base/base.h
         )
 

@@ -23,11 +23,11 @@ void Demo::handle(const sf::Event &event) {
 
 void Demo::signalRead() {
   if (skyButton.clickSignal)
-    next = std::make_shared<LinkBack>(std::make_shared<SkyDemo>());
+    next = std::make_unique<LinkBack>(std::make_shared<SkyDemo>());
   if (graphicsButton.clickSignal)
-    next = std::make_shared<LinkBack>(std::make_shared<GraphicsDemo>());
+    next = std::make_unique<LinkBack>(std::make_shared<GraphicsDemo>());
   if (physicsButton.clickSignal)
-    next = std::make_shared<LinkBack>(std::make_shared<PhysDemo>());
+    next = std::make_unique<LinkBack>(std::make_shared<PhysDemo>());
 }
 
 void Demo::signalClear() {
@@ -64,8 +64,8 @@ void LinkBack::handle(const sf::Event &event) {
 void LinkBack::signalRead() {
   underlying->signalRead();
 
-  if (backButton.clickSignal) next = std::make_shared<Demo>();
-  if (underlying->next) next = underlying->next;
+  if (backButton.clickSignal) next = std::make_unique<Demo>();
+  if (underlying->next) next = std::move(underlying->next);
 }
 
 void LinkBack::signalClear() {

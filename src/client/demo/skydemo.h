@@ -7,7 +7,6 @@
 #include <ui/sheet.h>
 #include "ui/ui.h"
 #include "sky/sky.h"
-#include "sky/render.h"
 
 class ControlState {
 private:
@@ -24,8 +23,6 @@ public:
 class SkyDemo : public ui::Control {
 private:
   ControlState ctrlState;
-
-  sky::Render renderMan;
 
   Cooldown animTicker;
   int animVal;

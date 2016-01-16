@@ -66,11 +66,11 @@ namespace ui {
  * runSFML
  */
 
-void runSFML(std::shared_ptr<Control> initCtrl) {
-  std::shared_ptr<Control> ctrl =
-      std::make_shared<detail::SplashScreen>(initCtrl);
+void runSFML(std::unique_ptr<Control> initCtrl) {
+  std::unique_ptr<Control> ctrl =
+      std::make_unique<detail::SplashScreen>(initCtrl);
 
-  optional <std::shared_ptr<Control>> passedOn{};
+  optional<std::unique_ptr<Control>> passedOn{};
 
   appLog(LogType::Notice, "Creating window ...");
 
@@ -95,7 +95,7 @@ void runSFML(std::shared_ptr<Control> initCtrl) {
 
   while (window.isOpen()) {
     if (ctrl->quitting) window.close();
-    if (ctrl->next) ctrl = ctrl->next;
+    if (ctrl->next) ctrl = std::move(ctrl->next);
 
     /*
      * Events

@@ -29,7 +29,6 @@ public:
       sheet(textureOf(resource)),
       tileDim{(float) record.tileX, (float) record.tileY},
       count(record.countX * record.countY) {
-    appLog(LogType::Info, record.path);
   }
 
   void drawIndex(

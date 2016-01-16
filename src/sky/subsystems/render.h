@@ -4,16 +4,15 @@
 #ifndef SOLEMNSKY_GRAPHICS_H
 #define SOLEMNSKY_GRAPHICS_H
 
-#include <base/resources.h>
+#include "base/resources.h"
+#include <SFML/Graphics.hpp>
 #include "ui/control.h"
 #include "ui/sheet.h"
-#include "flight.h"
-#include <SFML/Graphics.hpp>
-#include "sky.h"
+#include "subsystem.h"
 
 namespace sky {
-
 namespace detail {
+
 struct AnimSettings {
   // might as well avoid magic values.. not sure if we'll want to refactor
   // this in the future
@@ -48,7 +47,6 @@ struct PlaneAnimState {
   // death is animated in the a normal course of events, but respawning changes
   // everything anew
 };
-}
 
 class Render : public Subsystem {
 private:
@@ -81,10 +79,9 @@ public:
   void quitPlane(const PID pid) override;
   void spawnPlane(const PID pid, Plane *plane) override;
   void killPlane(const PID pid, Plane *plane) override;
-
-  const std::string type = "render";
 };
 
+}
 }
 
 #endif //SOLEMNSKY_GRAPHICS_H

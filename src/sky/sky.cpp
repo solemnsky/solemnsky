@@ -1,4 +1,5 @@
 #include "sky.h"
+#include "subsystems/render.h"
 
 namespace sky {
 
@@ -6,14 +7,27 @@ Sky::Sky(const sf::Vector2f &dims) : physics(dims) {
   LIFE_LOG("Creating sky.");
 }
 
-void Sky::attachSystem(Subsystem *system) {
-  subsystems.push_back(system);
-  LIFE_LOG("Attached " + system->type + " subsystem.");
-}
-
 Sky::~Sky() {
   LIFE_LOG("Destroying sky.");
   planes.clear(); // destroy the planes before destroying the physics!
+}
+
+/****
+ * Activating subsystems.
+ */
+
+void Sky::enableRender() {
+  LIFE_LOG("Enabling render subsystem...");
+  renderSystem = std::make_unique<detail::Render>(this);
+  subsystems.push_back(renderSystem.get());
+}
+
+/****
+ * Render subsystem.
+ */
+
+void Sky::render(ui::Frame &f, const sf::Vector2f &pos) {
+  renderSystem->render(f, pos);
 }
 
 /****
@@ -23,7 +37,7 @@ Sky::~Sky() {
 Plane *Sky::joinPlane(const PID pid, const PlaneTuning tuning) {
   planes[pid] = std::make_unique<Plane>(this);
   Plane *plane = planes[pid].get();
-  for (Subsystem *system : subsystems) system->joinPlane(pid, plane);
+  for (auto system : subsystems) system->joinPlane(pid, plane);
   return plane;
 }
 
@@ -33,7 +47,7 @@ Plane *Sky::getPlane(const PID pid) {
 }
 
 void Sky::quitPlane(const PID pid) {
-  for (Subsystem *system : subsystems) system->quitPlane(pid);
+  for (auto system : subsystems) system->quitPlane(pid);
   planes.erase(pid);
 }
 
@@ -41,14 +55,14 @@ void Sky::spawnPlane(const PID pid, const sf::Vector2f pos, const float rot,
                      const PlaneTuning &tuning) {
   if (Plane *plane = getPlane(pid)) {
     plane->spawn(pos, rot, tuning);
-    for (Subsystem *system : subsystems) system->spawnPlane(pid, plane);
+    for (auto system : subsystems) system->spawnPlane(pid, plane);
   }
 }
 
 void Sky::killPlane(const PID pid) {
   if (Plane *plane = getPlane(pid)) {
     plane->kill();
-    for (Subsystem *system : subsystems) system->killPlane(pid, plane);
+    for (auto system : subsystems) system->killPlane(pid, plane);
   }
 }
 
@@ -67,7 +81,7 @@ void Sky::tick(float delta) {
     plane.readFromBody();
     plane.tick(delta);
   }
-  for (Subsystem *system : subsystems) system->tick(delta);
+  for (auto system : subsystems) system->tick(delta);
 }
 
 }
