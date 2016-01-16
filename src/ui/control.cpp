@@ -66,11 +66,9 @@ namespace ui {
  * runSFML
  */
 
-void runSFML(std::unique_ptr<Control> initCtrl) {
+void runSFML(std::unique_ptr<Control> &&initCtrl) {
   std::unique_ptr<Control> ctrl =
-      std::make_unique<detail::SplashScreen>(initCtrl);
-
-  optional<std::unique_ptr<Control>> passedOn{};
+      std::make_unique<detail::SplashScreen>(std::move(initCtrl));
 
   appLog(LogType::Notice, "Creating window ...");
 
