@@ -1,6 +1,6 @@
 #include "value.h"
 #include <cmath>
-#include "util.h"
+#include "sysutil.h"
 
 /**
  * Cooldown.
