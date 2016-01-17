@@ -27,6 +27,7 @@ template<typename T>
 T cyclicClamp(const T min, const T max, const T x) {
   if (x > max) return min + std::fmod((x - min), (max - min));
   if (x < min) return max - cyclicClamp(min, max, (min - x));
+  if (x == max) return min;
   return x;
 }
 
@@ -37,15 +38,23 @@ T sign(const T x) {
   return 0;
 }
 
-template<typename T>
-void approach(T &x, const T target, const T amount) {
-  const T msign = sign(target - x);
-  const T naive = x + msign * amount;
+template<typename T, typename G>
+void approach(T &x, const G target, const G amount) {
+  // having a different type variables for the reference is useful when it's
+  // one of the containers we define below; approach(Clamped &, const float,
+  // const float)  works, for instance.
+  const G msign = sign(target - x);
+  const G naive = x + msign * amount;
   if (sign(target - naive) != msign) {
     x = target;
     return;
   }
   x = naive;
+}
+
+template<typename T>
+void approach(T &x, const T target, const T amount) {
+  approach<T, T>(x, target, amount);
 }
 
 /****
@@ -74,7 +83,7 @@ public:
 
 /**
  * Clamped values: floats that always snap back to a certain range when
- * assigned.
+ * assigned. ([min, max])
  *
  * > Clamped x{0, 1};
  * > x = 3;
@@ -101,14 +110,13 @@ public:
 
 /**
  * Cyclic values: floats that always cycle back to a certain range when
- * assigned.
+ * assigned. ([min, max[)
  */
 class Cyclic {
 private:
   float min, max;
   float value;
 public:
-
   Cyclic() = delete;
 
   Cyclic(const float min, const float max);
@@ -162,5 +170,6 @@ public:
 
   inline operator float() const { return value; }
 };
+
 
 #endif //SOLEMNSKY_VALUE_H

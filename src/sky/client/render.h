@@ -21,7 +21,8 @@ struct AnimSettings {
   // how many degrees it rolls to either side
       rollAmount = 30,
   // how quickly it rolls 2 * rollAmount
-      rollSpeed = 2;
+      rollSpeed = 2,
+      flipSpeed = 2;
 };
 
 /**

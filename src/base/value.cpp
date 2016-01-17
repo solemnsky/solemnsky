@@ -50,7 +50,7 @@ Cyclic::Cyclic(const float min, const float max) :
     min(min), max(max), value(min) { }
 
 Cyclic::Cyclic(const float min, const float max, const float value) :
-    min(min), max(max), value(clamp(min, max, value)) { }
+    min(min), max(max), value(cyclicClamp(min, max, value)) { }
 
 Cyclic &Cyclic::operator=(const float x) {
   value = cyclicClamp(min, max, x);

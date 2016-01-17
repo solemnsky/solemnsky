@@ -54,9 +54,7 @@ add_executable(solemnsky_server
         src/sky/server/deltacom.cpp
         src/sky/server/deltacom.h
 
-        src/server/server.cpp
         src/server/server.h
-
         src/solemnsky_server.cpp)
 target_link_libraries(solemnsky_server
         solemnsky)

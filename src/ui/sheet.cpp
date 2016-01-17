@@ -17,15 +17,24 @@ void SpriteSheet::drawIndex(ui::Frame &f, const sf::Vector2f &dims,
 
 void SpriteSheet::drawIndexAtRoll(ui::Frame &f, const sf::Vector2f &dims,
                                   const Angle deg) const {
-  if (deg < 180) {
-    const int id = (const int) std::floor(count * deg / 180);
-    drawIndex(f, dims, id);
+  const int fullIndex = std::floor(
+      Cyclic(0, count * 2, (deg * count / 180) - 0.5f)
+  );
+
+  bool flipped;
+  int realIndex;
+
+  appLog(LogType::Debug, std::to_string(deg));
+  if (fullIndex < count) {
+    flipped = false;
+    realIndex = fullIndex;
   } else {
-    f.withTransform(sf::Transform().scale(1, -1), [&]() {
-      const int id = (const int) std::floor(count * (360 - deg) / 180);
-      drawIndex(f, dims, id);
-    });
+    flipped = true;
+    realIndex = (count * 2) - fullIndex - 1;
   }
-  // wow much elegant
+
+  f.withTransform(sf::Transform().scale(1, flipped ? -1 : 1), [&]() {
+    drawIndex(f, dims, realIndex);
+  });
 }
 }
