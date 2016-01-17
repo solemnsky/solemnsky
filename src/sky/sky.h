@@ -42,8 +42,9 @@ public:
   void killPlane(const PID pid);
 
   /**
-   * Laser guns: soon.
+   * Laser guns: now in a cinema near you.
    */
+  void fireLaser(const PID pid);
 
   /**
    * Simulating.

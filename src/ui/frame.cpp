@@ -150,6 +150,7 @@ void Frame::drawText(const sf::Vector2f &pos,
 void Frame::drawSprite(const sf::Texture &texture,
                        const sf::Vector2f &pos,
                        const sf::IntRect &portion) {
+  primCount++;
   sf::Sprite sprite;
   sprite.setTexture(texture);
   sprite.setPosition(pos);

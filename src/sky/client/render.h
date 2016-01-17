@@ -13,17 +13,30 @@
 namespace sky {
 namespace detail {
 
-struct AnimSettings {
+const struct RndrParam {
   // might as well avoid magic values.. not sure if we'll want to refactor
   // this in the future
+  RndrParam() = default;
 
-  static constexpr float
+  const float
   // how many degrees it rolls to either side
-      rollAmount = 30,
+      rollAmount = 25,
   // how quickly it rolls 2 * rollAmount
       rollSpeed = 2,
+  // how quickly it flips orientation
       flipSpeed = 2;
-};
+
+  const float spriteSize = 200;
+
+  const sf::FloatRect afterburnArea = {-70, -10, 70, 20};
+
+  const sf::FloatRect barArea = {-100, -100, 200, 30};
+  const sf::Color
+      throttleStall = sf::Color(0, 0, 0, 100),
+      throttle = sf::Color::Black,
+      health = sf::Color::Green,
+      energy = sf::Color::Blue;
+} rndrParam;
 
 /**
  * Plain data structure with all the animation state of a plane, alive or not.
@@ -61,6 +74,9 @@ private:
   float findView(const float viewWidth,
                  const float totalWidth,
                  const float viewTarget) const;
+  void renderBars(ui::Frame &f,
+                  std::vector<std::pair<float, const sf::Color &>> bars,
+                  sf::FloatRect area);
   void renderPlane(ui::Frame &f, const int pid, Plane &plane);
 
   /**

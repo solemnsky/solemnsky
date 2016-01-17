@@ -16,6 +16,8 @@ PlaneAnimState::PlaneAnimState() :
     rollState(0) { }
 
 void PlaneAnimState::tick(Plane *parent, const float delta) {
+  using namespace detail;
+
   auto &state = parent->state;
   if (state) {
     // potentially switch orientation
@@ -24,16 +26,16 @@ void PlaneAnimState::tick(Plane *parent, const float delta) {
 
     // flipping (when orientation changes)
     approach(flipState, (const float) (orientation ? 1 : 0),
-             detail::AnimSettings::flipSpeed * delta);
+             rndrParam.flipSpeed * delta);
     Angle flipComponent;
     if (orientation) flipComponent = 90 - flipState * 180;
     else flipComponent = 90 + flipState * 180;
 
     // rolling (when rotation control is active)
     approach<float>(rollState, state->rotCtrl,
-                    detail::AnimSettings::rollSpeed * delta);
+                    rndrParam.rollSpeed * delta);
 
-    roll = flipComponent + detail::AnimSettings::rollAmount * rollState;
+    roll = flipComponent + rndrParam.rollAmount * rollState;
   }
 }
 
@@ -58,8 +60,30 @@ float Render::findView(
   return viewTarget - (viewWidth / 2);
 }
 
+void Render::renderBars(ui::Frame &f,
+                        std::vector<std::pair<float, const sf::Color &>> bars,
+                        sf::FloatRect area) {
+  const float height = area.height / bars.size();
+
+  sf::FloatRect barArea;
+  barArea.height = height;
+  barArea.left = area.left;
+  for (int i = 0; i < bars.size(); i++) {
+    const auto &bar = bars[i];
+    barArea.top = area.top + i * height;
+    barArea.width = area.width * bar.first;
+
+    f.drawRect(barArea, bar.second);
+  }
+}
+
+std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
+  return std::pair<float, const sf::Color &>(x, c); // like seriously?
+};
+
 void Render::renderPlane(
     ui::Frame &f, const int pid, sky::Plane &plane) {
+  using namespace detail; // for rndrParam
   if (plane.state) {
     PlaneState &state = *plane.state;
     detail::PlaneAnimState &planeAnimState = animState.at(pid);
@@ -67,24 +91,43 @@ void Render::renderPlane(
     const auto &hitbox = state.tuning.hitbox;
 
     f.withTransform(
-        sf::Transform().translate(state.pos).rotate(state.rot).
-            scale(-1, 1), [&]() {
-      f.drawRect(-0.5f * hitbox, 0.5f * hitbox,
-                 state.stalled ? sf::Color::Red : sf::Color::Green);
+        sf::Transform().translate(state.pos).rotate(state.rot), [&]() {
+//      f.drawRect(-0.5f * hitbox, 0.5f * hitbox,
+//                 state.stalled ? sf::Color::Red : sf::Color::Green);
 
-      sheet.drawIndexAtRoll(f, sf::Vector2f(200, 200), planeAnimState.roll);
+      f.withTransform(
+          sf::Transform().scale(state.afterburner, state.afterburner), [&]() {
+        f.drawRect(rndrParam.afterburnArea,
+                   sf::Color::Red);
+      });
+
+      sheet.drawIndexAtRoll(f, sf::Vector2f(rndrParam.spriteSize,
+                                            rndrParam.spriteSize),
+                            planeAnimState.roll);
+
     });
 
     f.withTransform(sf::Transform().translate(state.pos), [&]() {
-      f.drawRect({-100, -100}, {(state.throttle * 200) - 100, -50},
-                 sf::Color::Red);
-      f.drawText(
-          {-100, -100},
-          {"airspeed:" + std::to_string(state.airspeed),
-           "forward vel: " +
-           std::to_string((int) std::round(state.forwardVelocity()))
-          }
+      typedef std::pair<float, sf::Color &> Bar;
+
+      renderBars(
+          f,
+          {mkBar(state.throttle,
+                 state.stalled ? rndrParam.throttleStall
+                               : rndrParam.throttle),
+           mkBar(state.health / state.tuning.maxHealth,
+                 rndrParam.health),
+           mkBar(state.energy, rndrParam.energy)},
+          rndrParam.barArea
       );
+
+//      f.drawText(
+//          {-100, -100},
+//          {"airspeed:" + std::to_string(state.airspeed),
+//           "forward vel: " +
+//           std::to_string((int) std::round(state.forwardVelocity()))
+//          }
+//      );
     });
   }
 }

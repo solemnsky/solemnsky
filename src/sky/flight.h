@@ -28,6 +28,13 @@ struct PlaneTuning {
   PlaneTuning() { }
 
   sf::Vector2f hitbox{110, 60}; // x axis parallel with flight
+  float maxHealth = 10;
+
+  struct {
+    float thrustDrain = 1;
+    float recharge = 0.5;
+    float laserGun = 0.3;
+  } energy;
 
   struct {
     // mechanics when stalled
@@ -76,13 +83,23 @@ struct PlaneState {
   Angle rot;
   float rotvel;
 
-  bool stalled, afterburner; // flight mechanics
+  bool stalled; // flight mechanics
+  Clamped afterburner;
   sf::Vector2f leftoverVel;
-  Clamped airspeed;
-  Clamped throttle;
+  Clamped airspeed, throttle;
 
+  Clamped energy, health; // game mechanics
+
+  /**
+   * Helper methods
+   */
   float forwardVelocity();
   float velocity();
+
+  // returns true if energy was drawn
+  bool requestDiscreteEnergy(const float reqEnergy);
+  // returns the fraction of the requested energy that was drawn
+  float requestEnergy(const float reqEnergy);
 };
 
 class Plane {

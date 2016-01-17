@@ -17,6 +17,8 @@ void SpriteSheet::drawIndex(ui::Frame &f, const sf::Vector2f &dims,
 
 void SpriteSheet::drawIndexAtRoll(ui::Frame &f, const sf::Vector2f &dims,
                                   const Angle deg) const {
+  // TODO: fix this completely
+
   const int fullIndex = std::floor(
       Cyclic(0, count * 2, (deg * count / 180) - 0.5f)
   );
@@ -24,7 +26,6 @@ void SpriteSheet::drawIndexAtRoll(ui::Frame &f, const sf::Vector2f &dims,
   bool flipped;
   int realIndex;
 
-  appLog(LogType::Debug, std::to_string(deg));
   if (fullIndex < count) {
     flipped = false;
     realIndex = fullIndex;
@@ -33,7 +34,7 @@ void SpriteSheet::drawIndexAtRoll(ui::Frame &f, const sf::Vector2f &dims,
     realIndex = (count * 2) - fullIndex - 1;
   }
 
-  f.withTransform(sf::Transform().scale(1, flipped ? -1 : 1), [&]() {
+  f.withTransform(sf::Transform().scale(-1, flipped ? -1 : 1), [&]() {
     drawIndex(f, dims, realIndex);
   });
 }
