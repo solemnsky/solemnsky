@@ -1,5 +1,4 @@
 #include "sky.h"
-#include "subsystems/render.h"
 
 namespace sky {
 
@@ -13,20 +12,11 @@ Sky::~Sky() {
 }
 
 /****
- * Activating subsystems.
+ * Linking subsystems to the engine.
  */
 
-void Sky::enableRender() {
-  renderSystem = std::make_unique<detail::Render>(this);
-  subsystems.push_back(renderSystem.get());
-}
-
-/****
- * Render subsystem.
- */
-
-void Sky::render(ui::Frame &f, const sf::Vector2f &pos) {
-  renderSystem->render(f, pos);
+void Sky::linkSystem(Subsystem *subsystem) {
+  subsystems.push_back(subsystem);
 }
 
 /****

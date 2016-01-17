@@ -44,6 +44,8 @@ void PlaneAnimState::reset() {
   operator=((PlaneAnimState &&) PlaneAnimState());
 }
 
+}
+
 /****
  * Render submethods.
  */
@@ -86,7 +88,7 @@ void Render::renderPlane(
 }
 
 Render::Render(Sky *sky) :
-    sky(sky),
+    Subsystem(sky),
     sheet(Res::PlayerSheet) {
   CTOR_LOG("render subsystem");
 }
@@ -135,9 +137,6 @@ void Render::spawnPlane(const PID pid, Plane *plane) {
   animState.at(pid).reset();
 }
 
-void Render::killPlane(const PID pid, Plane *plane) {
-  Subsystem::killPlane(pid, plane);
-}
+void Render::killPlane(const PID pid, Plane *plane) { }
 
-}
 }

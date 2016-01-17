@@ -8,7 +8,7 @@
 #include <SFML/Graphics.hpp>
 #include "ui/control.h"
 #include "ui/sheet.h"
-#include "subsystem.h"
+#include "sky/subsystem.h"
 
 namespace sky {
 namespace detail {
@@ -47,10 +47,10 @@ struct PlaneAnimState {
   // death is animated in the a normal course of events, but respawning changes
   // everything anew
 };
+}
 
 class Render : public Subsystem {
 private:
-  Sky *sky;
   std::map<int, detail::PlaneAnimState> animState;
   const ui::SpriteSheet sheet;
 
@@ -62,6 +62,15 @@ private:
                  const float viewTarget) const;
   void renderPlane(ui::Frame &f, const int pid, Plane &plane);
 
+  /**
+   * Subsystem listeners.
+   */
+  void tick(float delta) override;
+  void joinPlane(const PID pid, Plane *plane) override;
+  void quitPlane(const PID pid) override;
+  void spawnPlane(const PID pid, Plane *plane) override;
+  void killPlane(const PID pid, Plane *plane) override;
+
 public:
   Render(Sky *sky);
   ~Render();
@@ -71,17 +80,8 @@ public:
    */
   void render(ui::Frame &f, const sf::Vector2f &pos);
 
-  /**
-   * Subsystem listeners.
-   */
-  void tick(float delta) override;
-  void joinPlane(const PID pid, Plane *plane) override;
-  void quitPlane(const PID pid) override;
-  void spawnPlane(const PID pid, Plane *plane) override;
-  void killPlane(const PID pid, Plane *plane) override;
 };
 
-}
 }
 
 #endif //SOLEMNSKY_GRAPHICS_H

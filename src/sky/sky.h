@@ -11,16 +11,13 @@
 #include "physics.h"
 #include "flight.h"
 #include <memory>
-#include "ui/frame.h"
-#include "subsystems/subsystem.h"
-#include "subsystems/render.h"
+#include "subsystem.h"
 
 namespace sky {
 
 class Sky {
 private:
-  std::unique_ptr<detail::Render> renderSystem;
-  std::vector<detail::Subsystem *> subsystems;
+  std::vector<Subsystem *> subsystems;
 
 public:
   Sky(const sf::Vector2f &dims);
@@ -29,14 +26,9 @@ public:
   Physics physics;
 
   /**
-   * Activating subsystems.
+   * Linking subsystems to the engine.
    */
-  void enableRender();
-
-  /**
-   * Render subsystem, enable rendering to use this.
-   */
-  void render(ui::Frame &f, const sf::Vector2f &pos);
+  void linkSystem(Subsystem *);
 
   /**
    * Planes.
