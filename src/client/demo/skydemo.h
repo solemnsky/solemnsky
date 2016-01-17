@@ -4,40 +4,14 @@
 #ifndef SOLEMNSKY_SKYDEMO_H
 #define SOLEMNSKY_SKYDEMO_H
 
-#include <ui/sheet.h>
-#include "ui/ui.h"
-#include "sky/sky.h"
-#include "sky/client/render.h"
-
-class ControlState {
-private:
-  optional<char> charFromEvent(const sf::Event &event);
-  void handleKey(bool &state, const sf::Event &event);
-public:
-  bool leftCtrl{false}, rightCtrl{false},
-      upCtrl{false}, downCtrl{false};
-
-  void handle(const sf::Event &event);
-  void setState(sky::PlaneState &state);
-};
+#include "ui/control.h"
 
 class SkyDemo : public ui::Control {
-private:
-  ControlState ctrlState;
-
-  Cooldown animTicker;
-  int animVal;
-
-  sky::Sky sky;
-  sky::Render renderSystem;
-  sky::Plane *plane;
-
 public:
-  SkyDemo();
-
-  virtual void tick(float delta) override;
-  virtual void render(ui::Frame &f) override;
-  virtual void handle(const sf::Event &event) override;
+  virtual void tick(float delta);
+  virtual void render(ui::Frame &f);
+  virtual void handle(const sf::Event &event);
 };
+
 
 #endif //SOLEMNSKY_SKYDEMO_H

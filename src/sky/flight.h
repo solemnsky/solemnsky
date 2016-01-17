@@ -48,7 +48,7 @@ struct PlaneTuning {
         gravityEffect = 0.5,
         afterburnDrive = 0.9,
         leftoverDamping = 1.5;
-    float threshold = 100; // the maximum airspeed that we need to enter stall
+    float threshold = 0; // the maximum airspeed that we need to enter stall
   } flight;
 
   float throttleSpeed = 1.5;

@@ -57,7 +57,7 @@ add_executable(solemnsky_server
         src/server/server.cpp
         src/server/server.h
 
-        src/servmain.cpp)
+        src/solemnsky_server.cpp)
 target_link_libraries(solemnsky_server
         solemnsky)
 
@@ -109,7 +109,7 @@ add_executable(solemnsky_client
 
         src/ui/ui.h
 
-        src/main.cpp)
+        src/solemnsky_client.cpp)
 target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics

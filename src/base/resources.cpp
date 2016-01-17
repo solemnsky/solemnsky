@@ -72,6 +72,7 @@ void ResMan::loadRes() {
 }
 
 const sf::Texture &ResMan::recallTexture(Res res) {
+  assert(initialized);
   const ResRecord &record(recordOf(res));
   if (record.type == ResType::Texture)
     return textures.at((int) res);
@@ -82,6 +83,7 @@ const sf::Texture &ResMan::recallTexture(Res res) {
 }
 
 const sf::Font &ResMan::recallFont(Res res) {
+  assert(initialized);
   const ResRecord &record(recordOf(res));
   if (record.type == ResType::Font)
     return fonts.at((int) res);

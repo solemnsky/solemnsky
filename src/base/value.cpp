@@ -31,12 +31,12 @@ Clamped &Clamped::operator=(const float x) {
 }
 
 Clamped &Clamped::operator+=(const float x) {
-  value = clamp(min, max, x + value);
+  value = clamp(min, max, value + x);
   return *this;
 }
 
 Clamped &Clamped::operator-=(const float x) {
-  value = clamp(min, max, x - value);
+  value = clamp(min, max, value - x);
   return *this;
 }
 

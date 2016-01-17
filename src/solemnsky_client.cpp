@@ -4,5 +4,5 @@
 #include "client/client.h"
 
 int main(int argc, char **argv) {
-  ui::runSFML(std::make_unique<Client>());
+  ui::runSFML([]() { return std::make_unique<Client>(); });
 }
