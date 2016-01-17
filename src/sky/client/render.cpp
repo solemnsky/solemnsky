@@ -20,14 +20,11 @@ void PlaneAnimState::tick(Plane *parent, const float delta) {
   if (state) {
     // potentially switch orientation
     bool newOrientation = Angle(state->rot + 90) > 180;
-    if (state->rotCtrl == 0
-        and newOrientation != orientation
-        and state->stalled) {
-      orientation = newOrientation;
-    }
+    if (state->rotCtrl == 0) orientation = newOrientation;
 
     // flipping (when orientation changes)
-    approach(flipState, (const float) (orientation ? 1 : 0), 2 * delta);
+    approach(flipState, (const float) (orientation ? 1 : 0),
+             detail::AnimSettings::flipSpeed * delta);
     Angle flipComponent;
     if (orientation) flipComponent = 90 - flipState * 180;
     else flipComponent = 90 + flipState * 180;
@@ -83,9 +80,9 @@ void Render::renderPlane(
                  sf::Color::Red);
       f.drawText(
           {-100, -100},
-          {std::to_string(pid),
-           state.stalled ? "stalled" : "flying",
-           "airspeed: " + std::to_string((int) std::round(state.velocity()))
+          {"airspeed:" + std::to_string(state.airspeed),
+           "forward vel: " +
+           std::to_string((int) std::round(state.forwardVelocity()))
           }
       );
     });

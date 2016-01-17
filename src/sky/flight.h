@@ -41,14 +41,14 @@ struct PlaneTuning {
   struct {
     // mechanics when not stalled
     float maxRotVel = 180,
-        maxAirspeed = 330, //
+        maxAirspeed = 330,
         throttleInfluence = 0.6,
         throttleDrive = 0.3,
         throttleBreaking = 1.1,
-        gravityEffect = 0.5,
+        gravityEffect = 0.6,
         afterburnDrive = 0.9,
-        leftoverDamping = 1.5;
-    float threshold = 0; // the maximum airspeed that we need to enter stall
+        leftoverDamping = 0.3;
+    float threshold = 110; // the maximum airspeed that we need to enter stall
   } flight;
 
   float throttleSpeed = 1.5;
