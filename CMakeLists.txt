@@ -43,7 +43,6 @@ add_library(solemnsky
 
         src/sky/subsystem.h
         )
-
 target_link_libraries(solemnsky
         sfml-system
         Box2D
@@ -55,6 +54,8 @@ add_executable(solemnsky_server
         src/sky/server/deltacom.h
 
         src/server/server.h
+        src/server/server.cpp
+
         src/solemnsky_server.cpp)
 target_link_libraries(solemnsky_server
         solemnsky)

@@ -1,4 +1,5 @@
 #include <ui/frame.h>
+#include <sky/flight.h>
 #include "render.h"
 #include "sky/sky.h"
 
@@ -110,12 +111,17 @@ void Render::renderPlane(
     f.withTransform(sf::Transform().translate(state.pos), [&]() {
       typedef std::pair<float, sf::Color &> Bar;
 
+      const float airspeedStall = state.tuning.flight.threshold /
+                                  state.tuning.flight.airspeedFactor;
       renderBars(
           f,
           {mkBar(state.throttle,
                  state.stalled ? rndrParam.throttleStall
                                : rndrParam.throttle),
-           mkBar(state.health / state.tuning.maxHealth,
+           mkBar(state.stalled
+                 ? Clamped(0, 1, (state.forwardVelocity()) /
+                                 state.tuning.stall.threshold)
+                 : (state.airspeed - airspeedStall) / (1 - airspeedStall),
                  rndrParam.health),
            mkBar(state.energy, rndrParam.energy)},
           rndrParam.barArea

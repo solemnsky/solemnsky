@@ -48,7 +48,7 @@ struct PlaneTuning {
   struct {
     // mechanics when not stalled
     float maxRotVel = 180,
-        maxAirspeed = 330,
+        airspeedFactor = 330,
         throttleInfluence = 0.6,
         throttleDrive = 0.3,
         throttleBreaking = 1.1,
