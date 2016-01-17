@@ -193,7 +193,7 @@ void Plane::spawn(const sf::Vector2f pos, const float rot,
 }
 
 void Plane::kill() {
-  state = {};
+  state = boost::optional<PlaneState>();
   writeToBody();
 }
 
