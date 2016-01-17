@@ -20,7 +20,7 @@ include_directories(
 )
 
 ###### libsolemnsky, for common use by client and server
-add_library(solemnsky
+add_library(solemnsky 
         src/base/base.h
 
         src/base/sysutil.cpp
@@ -45,7 +45,7 @@ add_library(solemnsky
         )
 target_link_libraries(solemnsky
         sfml-system
-        Box2D
+        Box2D_shared
         ${Boost_LIBRARIES})
 
 ###### solemnsky_server
@@ -54,8 +54,6 @@ add_executable(solemnsky_server
         src/sky/server/deltacom.h
 
         src/server/server.h
-        src/server/server.cpp
-
         src/solemnsky_server.cpp)
 target_link_libraries(solemnsky_server
         solemnsky)
