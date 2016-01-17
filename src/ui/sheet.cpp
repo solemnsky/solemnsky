@@ -1,5 +1,5 @@
 #include "sheet.h"
-#include "sysutil.h"
+#include "base/sysutil.h"
 
 namespace ui {
 void SpriteSheet::drawIndex(ui::Frame &f, const sf::Vector2f &dims,
