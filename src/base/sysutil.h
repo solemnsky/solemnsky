@@ -1,6 +1,5 @@
 /**
- * Misc for clients and servers, no dependencies on SFML-graphics or
- * SFML-window.
+ * Basic system utilities for all.
  */
 #ifndef SOLEMNSKY_SYSUTIL_H
 #define SOLEMNSKY_SYSUTIL_H

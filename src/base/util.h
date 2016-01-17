@@ -2,8 +2,8 @@
  * Utilities for client executables, dependening on SFML window and graphics
  * modules.
  */
-#ifndef SOLEMNSKY_SRV_UTIL_H
-#define SOLEMNSKY_SRV_UTIL_H
+#ifndef SOLEMNSKY_UTIL_H
+#define SOLEMNSKY_UTIL_H
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -22,4 +22,4 @@ sf::Color mixColors(
     const sf::Color color1, const sf::Color color2, const float degree);
 
 
-#endif //SOLEMNSKY_SRV_UTIL_H
+#endif //SOLEMNSKY_UTIL_H

@@ -1,26 +1,73 @@
+project(solemnsky)
+
 # tool / compiler versions
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
-# Third party libraries
+# we depend on Box2D and SFML, which we package ourselves
 add_subdirectory("thirdparty/Box2D/Box2D")
 add_subdirectory("thirdparty/SFML")
 
-# source files for common library
-set(COMMON_SRC
-        src/base/base.h
+# we also depend on boost from the host system
+find_package(Boost)
 
-        src/base/resources.cpp
-        src/base/resources.h
+# so we can #include stuff
+include_directories(
+        src/
+        thirdparty/SFML/include/
+        thirdparty/Box2D/Box2D/
+        "${Boost_INCLUDE_DIRS}"
+)
+
+###### libsolemnsky, for common use by client and server
+add_library(solemnsky
+        src/base/base.h
 
         src/base/sysutil.cpp
         src/base/sysutil.h
 
-        src/base/util.cpp
-        src/base/util.h
-
         src/base/value.cpp
         src/base/value.h
+
+        src/sky/delta.cpp
+        src/sky/delta.h
+
+        src/sky/flight.h
+        src/sky/flight.cpp
+
+        src/sky/physics.h
+        src/sky/physics.cpp
+
+        src/sky/sky.h
+        src/sky/sky.cpp
+
+        src/sky/subsystem.h
+        )
+
+target_link_libraries(solemnsky
+        sfml-system
+        Box2D
+        ${Boost_LIBRARIES})
+
+###### solemnsky_server
+add_executable(solemnsky_server
+        src/sky/server/deltacom.cpp
+        src/sky/server/deltacom.h
+
+        src/server/server.cpp
+        src/server/server.h
+
+        src/servmain.cpp)
+target_link_libraries(solemnsky_server
+        solemnsky)
+
+###### solemnsky_client
+add_executable(solemnsky_client
+        src/base/resources.cpp
+        src/base/resources.h
+
+        src/base/util.cpp
+        src/base/util.h
 
         src/client/demo/demo.cpp
         src/client/demo/demo.h
@@ -37,28 +84,8 @@ set(COMMON_SRC
         src/client/client.cpp
         src/client/client.h
 
-        src/server/server.cpp
-        src/server/server.h
-
         src/sky/client/render.cpp
         src/sky/client/render.h
-
-        src/sky/server/deltacom.cpp
-        src/sky/server/deltacom.h
-
-        src/sky/delta.cpp
-        src/sky/delta.h
-
-        src/sky/flight.h
-        src/sky/flight.cpp
-
-        src/sky/physics.h
-        src/sky/physics.cpp
-
-        src/sky/sky.h
-        src/sky/sky.cpp
-
-        src/sky/subsystem.h
 
         src/ui/elements/button.cpp
         src/ui/elements/button.h
@@ -81,44 +108,9 @@ set(COMMON_SRC
         src/ui/signal.h
 
         src/ui/ui.h
-        )
 
-find_package(Boost)
-
-# Libraries for the client
-set(LIBRARIES_CLIENT
-        # libs: SFML 2.2 and box2d 2.3
-        sfml-system
+        src/main.cpp)
+target_link_libraries(solemnsky_client
+        solemnsky
         sfml-graphics
-        sfml-window
-        Box2D
-        "${Boost_LIBRARIES}"
-        )
-
-# Libraries for the server
-set(LIBRARIES_SERVER
-        # libs: SFML 2.2 non-graphical and box2d 2.3
-        sfml-system
-        Box2D
-        "${Boost_LIBRARIES}"
-        )
-
-# Paths to headers for inclusion
-set(INCLUDE_DIRS
-        # so we can #include "directory/something.h"
-        src/
-        thirdparty/SFML/include/
-        thirdparty/Box2D/Box2D/
-        "${Boost_INCLUDE_DIRS}"
-        )
-
-include_directories(${INCLUDE_DIRS})
-
-project(solemnsky)
-add_executable(solemnsky ${LIB_FILES} src/main.cpp)
-target_link_libraries(solemnsky ${LIBRARIES_CLIENT})
-
-project(solemnsky-srv)
-add_executable(solemnsky-srv ${LIB_FILES} src/servmain.cpp)
-target_link_libraries(solemnsky-srv ${LIBRARIES_SERVER})
-
+        sfml-window)
