@@ -22,10 +22,13 @@ PlaneState::PlaneState(const PlaneTuning &tuning,
     rot(rot),
     rotvel(0),
 
-    stalled(false), afterburner(false),
+    stalled(false), afterburner(0, 1, 0),
     airspeed(0, 1, tuning.flight.throttleInfluence),
     leftoverVel(0, 0),
-    throttle(0, 1, 1) { }
+    throttle(0, 1, 1),
+
+    energy(0, 1, 1),
+    health(0, tuning.maxHealth, tuning.maxHealth) { }
 
 float PlaneState::forwardVelocity() {
   return velocity() * (const float) cos(toRad(rot) - std::atan2(vel.y, vel.x));
@@ -33,6 +36,18 @@ float PlaneState::forwardVelocity() {
 
 float PlaneState::velocity() {
   return VecMath::length(vel);
+}
+
+bool PlaneState::requestDiscreteEnergy(const float reqEnergy) {
+  if (energy < reqEnergy) return false;
+  energy -= reqEnergy;
+  return true;
+}
+
+float PlaneState::requestEnergy(const float reqEnergy) {
+  const float initEnergy = energy;
+  energy -= reqEnergy;
+  return (initEnergy - energy) / reqEnergy;
 }
 
 /****
@@ -89,13 +104,18 @@ void Plane::tick(float delta) {
                    tuning.stall.maxRotVel :
                    tuning.flight.maxRotVel) * state->rotCtrl;
 
-  state->afterburner = false;
+  state->energy += tuning.energy.recharge * delta;
+
   if (state->stalled) {
     // afterburner
     if (state->throtCtrl == 1) {
+      const float thrustEfficacity =
+          state->requestEnergy(tuning.energy.thrustDrain * delta);
+
       state->vel +=
-          VecMath::fromAngle(state->rot) * (delta * tuning.stall.thrust);
-      state->afterburner = true;
+          VecMath::fromAngle(state->rot) *
+          (delta * tuning.stall.thrust * thrustEfficacity);
+      state->afterburner = thrustEfficacity;
     }
 
     // damping towards terminal velocity
@@ -107,17 +127,20 @@ void Plane::tick(float delta) {
   } else {
     // modify throttle and afterburner according to controls
     state->throttle += state->throtCtrl * delta;
-    state->afterburner = (state->throtCtrl == 1) && state->throttle == 1;
+    bool afterburning = (state->throtCtrl == 1) && state->throttle == 1;
 
     // pick away at leftover velocity
     state->leftoverVel *= std::pow(tuning.flight.leftoverDamping, delta);
 
     // modify state->airspeed
-
     float speedMod = 0;
     speedMod += sin(toRad(state->rot)) * tuning.flight.gravityEffect * delta;
-    speedMod += (state->afterburner ? 1 : 0) *
-                tuning.flight.afterburnDrive * delta;
+    if (afterburning) {
+      const float thrustEfficacity =
+          state->requestEnergy(tuning.energy.thrustDrain * delta);
+      state->afterburner = thrustEfficacity;
+      speedMod += tuning.flight.afterburnDrive * delta * thrustEfficacity;
+    }
     state->airspeed += speedMod;
 
     approach(state->airspeed,

@@ -56,6 +56,20 @@ void Sky::killPlane(const PID pid) {
 }
 
 /****
+ * Laser guns, cool right?
+ */
+
+void Sky::fireLaser(const PID pid) {
+  if (Plane *plane = getPlane(pid)) {
+    if (auto &state = plane->state) {
+      if (state->requestDiscreteEnergy(0.3)) {
+        appLog(LogType::Debug, "PEW PEW");
+      }
+    }
+  }
+}
+
+/****
  * Simulating.
  */
 
