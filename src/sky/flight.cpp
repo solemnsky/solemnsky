@@ -18,7 +18,7 @@ PlaneState::PlaneState(const PlaneTuning &tuning,
     throtCtrl({-1, 0, 1}, 0),
 
     pos(pos),
-    vel(tuning.flight.maxAirspeed * VecMath::fromAngle(rot)),
+    vel(tuning.flight.airspeedFactor * VecMath::fromAngle(rot)),
     rot(rot),
     rotvel(0),
 
@@ -105,6 +105,7 @@ void Plane::tick(float delta) {
                    tuning.flight.maxRotVel) * state->rotCtrl;
 
   state->energy += tuning.energy.recharge * delta;
+  state->afterburner = 0;
 
   if (state->stalled) {
     // afterburner
@@ -147,7 +148,7 @@ void Plane::tick(float delta) {
              (float) state->throttle * tuning.flight.throttleInfluence,
              tuning.flight.throttleDrive * delta);
 
-    float targetSpeed = state->airspeed * tuning.flight.maxAirspeed;
+    float targetSpeed = state->airspeed * tuning.flight.airspeedFactor;
 
     // set velocity, according to target speed, rotation, and leftoverVel
     state->vel = targetSpeed * VecMath::fromAngle(state->rot) +
@@ -161,7 +162,7 @@ void Plane::tick(float delta) {
       state->leftoverVel =
           state->vel - (forwardVel * VecMath::fromAngle(state->rot));
 
-      state->airspeed = forwardVel / tuning.flight.maxAirspeed;
+      state->airspeed = forwardVel / tuning.flight.airspeedFactor;
       state->throttle = state->airspeed / tuning.flight.throttleInfluence;
     }
   } else {
