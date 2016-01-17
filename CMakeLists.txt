@@ -1,20 +1,20 @@
-project(solemnsky)
-project(solemnsky-srv)
-
 # tool / compiler versions
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
-# Third party Libraries
+# Third party libraries
 add_subdirectory("thirdparty/Box2D/Box2D")
 add_subdirectory("thirdparty/SFML")
 
 # source files for common library
-set(LIB_FILES
+set(COMMON_SRC
         src/base/base.h
 
         src/base/resources.cpp
         src/base/resources.h
+
+        src/base/sysutil.cpp
+        src/base/sysutil.h
 
         src/base/util.cpp
         src/base/util.h
@@ -112,10 +112,13 @@ set(INCLUDE_DIRS
         "${Boost_INCLUDE_DIRS}"
         )
 
-add_executable(solemnsky ${LIB_FILES} src/main.cpp)
-add_executable(solemnsky-srv ${LIB_FILES} src/servmain.cpp)
-
 include_directories(${INCLUDE_DIRS})
+
+project(solemnsky)
+add_executable(solemnsky ${LIB_FILES} src/main.cpp)
 target_link_libraries(solemnsky ${LIBRARIES_CLIENT})
+
+project(solemnsky-srv)
+add_executable(solemnsky-srv ${LIB_FILES} src/servmain.cpp)
 target_link_libraries(solemnsky-srv ${LIBRARIES_SERVER})
 
