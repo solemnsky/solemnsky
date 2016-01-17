@@ -7,6 +7,7 @@
 #include <ui/sheet.h>
 #include "ui/ui.h"
 #include "sky/sky.h"
+#include "sky/client/render.h"
 
 class ControlState {
 private:
@@ -28,6 +29,7 @@ private:
   int animVal;
 
   sky::Sky sky;
+  sky::Render renderSystem;
   sky::Plane *plane;
 
 public:

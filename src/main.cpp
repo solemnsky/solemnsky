@@ -1,8 +1,8 @@
-#include "base/util.h"
-#include <iostream>
-#include "ui/control.h"
-#include "client/demo/demo.h"
+/**
+ * Client main program.
+ */
+#include "client/client.h"
 
-int main(int, char **) {
-  ui::runSFML(std::make_unique<Demo>());
+int main(int argc, char **argv) {
+  ui::runSFML(std::make_unique<Client>());
 }
