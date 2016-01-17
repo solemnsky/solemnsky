@@ -49,7 +49,7 @@ public:
  * Shows a splash screen while loading resources and then jumps into the
  * Control we supplied.
  */
-void runSFML(std::unique_ptr<Control> &&ctrl);
+void runSFML(std::function<std::unique_ptr<Control>()> initCtrl);
 }
 
 #endif // SOLEMNSKY_CONTROL_H

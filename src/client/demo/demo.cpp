@@ -2,6 +2,7 @@
 #include "skydemo.h"
 #include "graphicsdemo.h"
 #include "physdemo.h"
+#include "skydemo.h"
 
 void Demo::tick(float delta) {
   skyButton.tick(delta);

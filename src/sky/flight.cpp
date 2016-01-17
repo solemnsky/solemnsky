@@ -28,7 +28,7 @@ PlaneState::PlaneState(const PlaneTuning &tuning,
     throttle(0, 1, 1) { }
 
 float PlaneState::forwardVelocity() {
-  return velocity() * (float) sin(toRad(rot));
+  return velocity() * (float) sin(std::atan2(vel.y, vel.x) - rot);
 }
 
 float PlaneState::velocity() {
@@ -107,8 +107,7 @@ void Plane::tick(float delta) {
   } else {
 
     // modify throttle and afterburner according to controls
-    if (state->throtCtrl == 1) state->throttle += delta;
-    if (state->throtCtrl == -1) state->throttle -= delta;
+    state->throttle += state->throtCtrl * delta;
     state->afterburner = (state->throtCtrl == 1) && state->throttle == 1;
 
     // pick away at leftover velocity
@@ -129,8 +128,8 @@ void Plane::tick(float delta) {
     float targetSpeed = state->airspeed * tuning.flight.maxAirspeed;
 
     // set velocity, according to target speed, rotation, and leftoverVel
-    state->vel = targetSpeed * VecMath::fromAngle(state->rot) +
-                 state->leftoverVel;
+    state->vel = targetSpeed * VecMath::fromAngle(state->rot);
+//                 state->leftoverVel;
   }
 
   // stall singularities
@@ -140,14 +139,14 @@ void Plane::tick(float delta) {
       state->leftoverVel = state->vel - (forwardVel * VecMath::fromAngle
           (state->rot));
 
-      state->airspeed = forwardVel / tuning.flight.maxAirspeed;
-      state->throttle = state->airspeed / tuning.flight.throttleInfluence;
+      state->airspeed = 1; // forwardVel / tuning.flight.maxAirspeed;
+      state->throttle = 1; // state->airspeed / tuning.flight.throttleInfluence;
     }
   } else {
     if (forwardVel < tuning.flight.threshold) {
-      state->stalled = true;
-      state->throttle = 1;
-      state->airspeed = 0;
+//      state->stalled = true;
+//      state->throttle = 1;
+//      state->airspeed = 0;
     }
   }
 }

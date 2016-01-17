@@ -69,20 +69,25 @@ void Render::renderPlane(
 
     const auto &hitbox = state.tuning.hitbox;
 
-    f.pushTransform(
+    f.withTransform(
         sf::Transform().translate(state.pos).rotate(state.rot).
-            scale(-1, 1));
+            scale(-1, 1), [&]() {
+      f.drawRect(-0.5f * hitbox, 0.5f * hitbox,
+                 state.stalled ? sf::Color::Red : sf::Color::Green);
 
-    f.drawRect(-0.5f * hitbox, 0.5f * hitbox,
-               state.stalled ? sf::Color::Red : sf::Color::Green);
-
-    sheet.drawIndexAtRoll(f, sf::Vector2f(200, 200), planeAnimState.roll);
-    f.popTransform();
+      sheet.drawIndexAtRoll(f, sf::Vector2f(200, 200), planeAnimState.roll);
+    });
 
     f.withTransform(sf::Transform().translate(state.pos), [&]() {
-      f.drawText({-100, -100},
-                 {std::to_string(pid),
-                  state.stalled ? "stalled" : "flying"});
+      f.drawRect({-100, -100}, {(state.throttle * 200) - 100, -50},
+                 sf::Color::Red);
+      f.drawText(
+          {-100, -100},
+          {std::to_string(pid),
+           state.stalled ? "stalled" : "flying",
+           "airspeed: " + std::to_string((int) std::round(state.velocity()))
+          }
+      );
     });
   }
 }

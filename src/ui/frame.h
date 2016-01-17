@@ -15,7 +15,7 @@ namespace ui {
 class Control;
 
 class Frame {
-  friend void runSFML(std::unique_ptr<Control> &&initCtrl);
+  friend void runSFML(std::function<std::unique_ptr<Control>()> initCtrl);
 
 private:
   std::stack<sf::Transform> transformStack;

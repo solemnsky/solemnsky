@@ -7,7 +7,7 @@ namespace detail {
 void SplashScreen::tick(float delta) {
   if (screenDrawn) {
     loadResources(); // this might call more than once but it doesn't reload
-    if (afterLoading) next = std::move(afterLoading);
+    if (!next) next = std::move(afterLoading());
   }
 }
 
