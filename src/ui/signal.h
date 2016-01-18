@@ -20,36 +20,10 @@ struct None {
 };
 
 /**
- * Example:
- *
- * Define:
- * > Signal<None> clickSig;
- *
- * In a tick() somewhere on a button, the user clicks a mouse:
- * > clickSig += {};
- *
- * In an signalRead() somewhere on a GUI, clicks are processed:
- * > for (auto click : clickSig) { ... process click ... }
- *
- * After reading happens, the signals are cleared:
- * > clickSig.clear();
+ * The idea of a Signal.
  */
 template<typename T>
-class Signal {
-private:
-  std::vector<T> queue;
-
-public:
-  Signal() : queue() { }
-
-  inline void operator+=(const T x) { queue.push_back(x); }
-
-  inline operator std::vector<T>() { return queue; }
-
-  inline operator bool() { return queue.size() != 0; }
-
-  inline void clear() { queue = {}; }
-};
+using Signal = std::vector<T>;
 
 }
 
