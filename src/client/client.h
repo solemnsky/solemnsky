@@ -5,38 +5,26 @@
 #include "ui/ui.h"
 #include "sky/sky.h"
 #include "sky/client/render.h"
-
-
-class ControlState {
-private:
-  optional<char> charFromEvent(const sf::Event &event);
-  void handleKey(bool &state, const sf::Event &event);
-public:
-  bool leftCtrl{false}, rightCtrl{false},
-      upCtrl{false}, downCtrl{false};
-
-  void handle(const sf::Event &event);
-  void setState(sky::PlaneState &state);
-};
+#include "gamecontroller.h"
+#include "tabselector.h"
 
 /**
- * The game client. This is going to get pretty huge fast, our luck is that a
- * lot of the UI can be neatly modularized.
+ * The main client app. This is going to get pretty huge fast, our luck is that
+ * the UI can be neatly modularized.
  */
 class Client : public ui::Control {
 private:
-  ControlState ctrlState;
-
-  sky::Sky sky;
-  sky::Render renderSystem;
-  sky::Plane *plane;
+  TabSelector tabSelector;
 
 public:
   Client();
 
-  virtual void tick(float delta) override;
-  virtual void render(ui::Frame &f) override;
-  virtual void handle(const sf::Event &event) override;
+  void tick(float delta) override;
+  void render(ui::Frame &f) override;
+  void handle(const sf::Event &event) override;
+
+  virtual void signalRead() override;
+  virtual void signalClear() override;
 };
 
 #endif //SOLEMNSKY_CLIENT_H

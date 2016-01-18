@@ -66,20 +66,14 @@ add_executable(solemnsky_client
         src/base/util.cpp
         src/base/util.h
 
-        src/client/demo/demo.cpp
-        src/client/demo/demo.h
-
-        src/client/demo/graphicsdemo.cpp
-        src/client/demo/graphicsdemo.h
-
-        src/client/demo/physdemo.cpp
-        src/client/demo/physdemo.h
-
-        src/client/demo/skydemo.cpp
-        src/client/demo/skydemo.h
-
         src/client/client.cpp
         src/client/client.h
+
+        src/client/gamecontroller.cpp
+        src/client/gamecontroller.h
+
+        src/client/tabselector.cpp
+        src/client/tabselector.h
 
         src/sky/client/render.cpp
         src/sky/client/render.h
