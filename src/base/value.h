@@ -39,7 +39,7 @@ T sign(const T x) {
 }
 
 template<typename T, typename G>
-void approach(T &x, const G target, const G amount) {
+bool approach(T &x, const G target, const G amount) {
   // having a different type variables for the reference is useful when it's
   // one of the containers we define below; approach(Clamped &, const float,
   // const float)  works, for instance.
@@ -47,14 +47,15 @@ void approach(T &x, const G target, const G amount) {
   const G naive = x + msign * amount;
   if (sign(target - naive) != msign) {
     x = target;
-    return;
+    return true;
   }
   x = naive;
+  return false;
 }
 
 template<typename T>
-void approach(T &x, const T target, const T amount) {
-  approach<T, T>(x, target, amount);
+bool approach(T &x, const T target, const T amount) {
+  return approach<T, T>(x, target, amount);
 }
 
 /****
@@ -130,7 +131,7 @@ public:
   inline operator float() const { return value; }
 };
 
-void cyclicApproach(Cyclic &x, const float target, const float amount);
+bool cyclicApproach(Cyclic &x, const float target, const float amount);
 float cyclicDistance(const Cyclic x, const float y);
 
 /**

@@ -13,6 +13,19 @@ void Client::tick(float delta) {
   pageSelector.tick(delta);
 }
 
+ui::Control &Client::referencePage(const PageType type) {
+  switch (type) {
+    case PageType::HomePage:
+      return homePage;
+    case PageType::SettingsPage:
+      return settingsPage;
+    case PageType::ListingPage:
+      return listingPage;
+    case PageType::GamePage:
+      return gamePage;
+  }
+}
+
 void Client::drawPage(ui::Frame &f, const PageType type, ui::Control &page) {
   const float distance = cyclicDistance(pageSelector.cycleState, (float) type);
   if (distance < 1)
@@ -39,13 +52,12 @@ void Client::handle(const sf::Event &event) {
     }
   }
   pageSelector.handle(event);
+  if (pageSelector.active) {
+    referencePage(*pageSelector.active).handle(event);
+  }
 }
 
 void Client::signalRead() {
-  for (const auto tabClick : pageSelector.tabClick) {
-    appLog(LogType::Debug, "clicked tab " + std::to_string((int) tabClick));
-    pageSelector.deploying = false;
-  }
 }
 
 void Client::signalClear() {
