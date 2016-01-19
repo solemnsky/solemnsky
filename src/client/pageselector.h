@@ -32,12 +32,10 @@ public:
    * Interface
    */
   bool deploying = false;
-
-  /**
-   * Signals
-   */
-  ui::Signal<PageType> tabClick;
   Cyclic cycleState;
+  optional<PageType> active;
+  void moveTo(const PageType page);
+  ui::Signal<PageType> clicked;
 
   /**
    * Control implementation.

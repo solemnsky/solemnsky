@@ -26,7 +26,9 @@ private:
   SettingsPage settingsPage;
   ListingPage listingPage;
   PageSelector pageSelector;
+
   void drawPage(ui::Frame &f, const PageType type, ui::Control &page);
+  ui::Control &referencePage(const PageType type);
 
 public:
   Client();

@@ -10,7 +10,9 @@ PageSelector::PageSelector() :
 
 void PageSelector::tick(float delta) {
   deployState += (deploying ? 1 : -1) * delta * (deploySpeed / size);
-  cyclicApproach(cycleState, (float) aim, delta * cycleSpeed);
+  if (cyclicApproach(cycleState, (float) aim, delta * cycleSpeed)) {
+    active = {aim};
+  }
 
   const float yOffset = 450 - (tabCount * (size + vSpace) / 2);
 
@@ -23,6 +25,8 @@ void PageSelector::tick(float delta) {
 }
 
 void PageSelector::render(ui::Frame &f) {
+  if (deployState == 0) return;
+
   const float realWidth = deployState * size;
   f.drawSprite(textureOf(Res::PageSelector),
                {1600 - realWidth, 0},
@@ -56,8 +60,8 @@ void PageSelector::handle(const sf::Event &event) {
         {(float) event.mouseButton.x, (float) event.mouseButton.y};
     for (auto &button : buttons) {
       if (button.second.contains(clickPos)) {
-        tabClick.push_back(button.first);
-        aim = button.first;
+        clicked.push_back(button.first);
+        moveTo(button.first);
         break;
       }
     }
@@ -65,5 +69,10 @@ void PageSelector::handle(const sf::Event &event) {
 }
 
 void PageSelector::signalClear() {
-  tabClick = {};
+  clicked.clear();
+}
+
+void PageSelector::moveTo(const PageType page) {
+  active = {};
+  aim = page;
 }

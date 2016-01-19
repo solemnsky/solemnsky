@@ -10,7 +10,6 @@
 class HomePage : public ui::Control {
 private:
 public:
-
   virtual void tick(float delta) override;
   virtual void render(ui::Frame &f) override;
   virtual void handle(const sf::Event &event) override;

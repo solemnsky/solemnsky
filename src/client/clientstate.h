@@ -13,10 +13,10 @@ class ClientState {
 struct Settings {
 public:
   Settings();
-  Settings(std::__cxx11::string filepath);
+  Settings(std::string filepath);
 
-  void readFromFile(std::__cxx11::string filepath);
-  void writeToFile(std::__cxx11::string filepath);
+  void readFromFile(std::string filepath);
+  void writeToFile(std::string filepath);
 
   bool fullscreen;
   bool debugInfo;

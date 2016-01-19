@@ -67,22 +67,17 @@ Cyclic &Cyclic::operator-=(const float x) {
   return *this;
 }
 
-void cyclicApproach(Cyclic &x, const float target, const float amount) {
+bool cyclicApproach(Cyclic &x, const float target, const float amount) {
   const float distance = cyclicDistance(x, target);
   x += sign(distance) * std::min(amount, std::abs(distance));
+  return amount < distance;
 }
 
 float cyclicDistance(const Cyclic x, const float y) {
   const float range = x.max - x.min;
   const float diffUp = Cyclic(0, x.max - x.min, y - x);
-
-  if (diffUp < (range / 2)) {
-    return diffUp;
-  } else {
-    return diffUp - range;
-  }
+  return (diffUp < range / 2) ? diffUp : diffUp - range;
 }
-
 
 /**
  * Switched.
