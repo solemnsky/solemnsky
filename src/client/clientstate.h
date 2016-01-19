@@ -1,17 +1,17 @@
 /**
- * The continuous state of a client, accessible and modifiable from any page.
+ * Client state datatypes / saving some settings to disk.
  */
 #ifndef SOLEMNSKY_CLIENTSTATE_H
 #define SOLEMNSKY_CLIENTSTATE_H
 
 #include "ui/ui.h"
 
-class ClientState {
-
-};
-
+/**
+ * The persistent settings that tweaks how a client works on conceivably
+ * every level. A field goes in this struct <=> that field should be saved to
+ * disk and reloaded on client restart.
+ */
 struct Settings {
-public:
   Settings();
   Settings(std::string filepath);
 
@@ -21,5 +21,15 @@ public:
   bool fullscreen;
   bool debugInfo;
 };
+
+/**
+ * Global state for one instance of the client, accessible just about
+ * everywhere.
+ */
+struct ClientState {
+  Settings settings;
+  float uptime;
+};
+
 
 #endif //SOLEMNSKY_CLIENTSTATE_H

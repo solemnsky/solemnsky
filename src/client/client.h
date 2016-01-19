@@ -10,31 +10,33 @@
 #include "clientstate.h"
 
 /**
- * The main client app. This is going to get pretty huge fast, our luck is that
- * the UI can be neatly modularized.
+ * The main client app.
+ * Its various compontents (the various pages and potential running game) are
+ * neatly modularized.
  */
 class Client : public ui::Control {
 private:
-
   ClientState state;
 
   /**
-   * The various pages...
+   * The various pages that make up the UI.
    */
-  HomePage homePage;
-  SettingsPage settingsPage;
-  ListingPage listingPage;
   PageSelector pageSelector;
+  HomePage homePage;
+  ListingPage listingPage;
+  SettingsPage settingsPage;
 
   /**
    * The game, which may or may not exist at a particular moment.
    */
   std::unique_ptr<Game> game;
-  bool inGame(); // if the game exists and we're in it (the game manages its
-  // own inGame state)
+  bool inGame(); // test if the game exists
 
   void startTutorial();
 
+  /**
+   * Misc helpers.
+   */
   void drawPage(ui::Frame &f, const PageType type, ui::Control &page);
   ui::Control &referencePage(const PageType type);
 

@@ -8,7 +8,7 @@
 #include "ui/ui.h"
 
 enum class PageType {
-  HomePage, SettingsPage, ListingPage
+  HomePage, ListingPage, SettingsPage
 };
 
 const float tabCount = 3;
