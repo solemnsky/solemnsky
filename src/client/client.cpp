@@ -1,7 +1,8 @@
 #include "client.h"
 
 
-Client::Client() {
+Client::Client() :
+    tabSelector() {
 }
 
 void Client::tick(float delta) {
@@ -16,8 +17,6 @@ void Client::handle(const sf::Event &event) {
   if (event.type == sf::Event::KeyPressed) {
     if (event.key.code == sf::Keyboard::Escape) {
       tabSelector.deploying = !tabSelector.deploying;
-      appLog(LogType::Debug, tabSelector.deploying ? "deploying" : "not "
-          "deploying");
     }
   }
   tabSelector.handle(event);
