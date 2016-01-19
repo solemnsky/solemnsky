@@ -1,12 +1,13 @@
 #ifndef SOLEMNSKY_CLIENT_H
 #define SOLEMNSKY_CLIENT_H
 
-#include <ui/sheet.h>
 #include "ui/ui.h"
-#include "sky/sky.h"
-#include "sky/client/render.h"
-#include "gamecontroller.h"
-#include "tabselector.h"
+#include "pageselector.h"
+#include "game.h"
+#include "homepage.h"
+#include "settingspage.h"
+#include "listingpage.h"
+#include "clientstate.h"
 
 /**
  * The main client app. This is going to get pretty huge fast, our luck is that
@@ -14,7 +15,18 @@
  */
 class Client : public ui::Control {
 private:
-  TabSelector tabSelector;
+  PageSelector tabSelector;
+
+  ClientState state;
+
+  /**
+   * The various pages...
+   */
+  HomePage homePage;
+  GamePage gamePage;
+  SettingsPage settingsPage;
+  ListingPage listingPage;
+  PageType pageType
 
 public:
   Client();

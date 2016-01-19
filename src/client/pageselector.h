@@ -7,13 +7,13 @@
 #include "base/value.h"
 #include "ui/ui.h"
 
-enum class TabName {
+enum class PageType {
   MainTab, SettingsTab, ListingTab, GameTab
 };
 
 const float tabCount = 4;
 
-class TabSelector : public ui::Control {
+class PageSelector : public ui::Control {
 private:
   const float animSpeed = 1000; // px/s
   const float size = 150;
@@ -22,10 +22,10 @@ private:
   Clamped deployState;
   Cyclic cycleState;
 
-  std::map<TabName, sf::FloatRect> buttons;
+  std::map<PageType, sf::FloatRect> buttons;
 
 public:
-  TabSelector();
+  PageSelector();
 
   /**
    * Interface
@@ -35,7 +35,7 @@ public:
   /**
    * Signals
    */
-  ui::Signal<TabName> tabClick;
+  ui::Signal<PageType> tabClick;
 
   /**
    * Control implementation.
