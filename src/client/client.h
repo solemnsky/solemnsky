@@ -15,7 +15,6 @@
  */
 class Client : public ui::Control {
 private:
-  PageSelector tabSelector;
 
   ClientState state;
 
@@ -26,7 +25,7 @@ private:
   GamePage gamePage;
   SettingsPage settingsPage;
   ListingPage listingPage;
-  PageType pageType
+  PageSelector pageSelector;
 
 public:
   Client();

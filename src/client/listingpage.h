@@ -8,12 +8,12 @@
 #include "ui/ui.h"
 
 class ListingPage : ui::Control {
-public:
-
 private:
-  virtual void tick(float delta) override;
-  virtual void render(ui::Frame &f) override;
-  virtual void handle(const sf::Event &event) override;
+
+public:
+  void tick(float delta) override;
+  void render(ui::Frame &f) override;
+  void handle(const sf::Event &event) override;
 };
 
 #endif //SOLEMNSKY_LISTINGPAGE_H

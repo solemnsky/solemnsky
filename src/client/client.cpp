@@ -1,33 +1,37 @@
 #include "client.h"
 
-
 Client::Client() :
-    tabSelector() {
+    pageSelector() {
 }
 
 void Client::tick(float delta) {
-  tabSelector.tick(delta);
+  homePage.tick(delta);
+  gamePage.tick(delta);
+  settingsPage.tick(delta);
+  listingPage.tick(delta);
+
+  pageSelector.tick(delta);
 }
 
 void Client::render(ui::Frame &f) {
-  tabSelector.render(f);
+  pageSelector.render(f);
 }
 
 void Client::handle(const sf::Event &event) {
   if (event.type == sf::Event::KeyPressed) {
     if (event.key.code == sf::Keyboard::Escape) {
-      tabSelector.deploying = !tabSelector.deploying;
+      pageSelector.deploying = !pageSelector.deploying;
     }
   }
-  tabSelector.handle(event);
+  pageSelector.handle(event);
 }
 
 void Client::signalRead() {
-  for (const auto tabClick : tabSelector.tabClick) {
+  for (const auto tabClick : pageSelector.tabClick) {
     appLog(LogType::Debug, "clicked tab " + std::to_string((int) tabClick));
   }
 }
 
 void Client::signalClear() {
-  tabSelector.signalClear();
+  pageSelector.signalClear();
 }

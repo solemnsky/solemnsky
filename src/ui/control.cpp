@@ -96,44 +96,6 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
     if (ctrl->next) ctrl = std::move(ctrl->next);
 
     /*
-     * Events
-     * Here we process any events that were added to the cue during our
-     * rendering and logic.
-     */
-    while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed) {
-        appLog(LogType::Notice, "Caught close signal.");
-        window.close();
-      }
-
-      if (event.type != sf::Event::MouseWheelScrolled) { // fk mouse wheels
-        ctrl->handle(transformEvent(frame.windowToFrame, event));
-
-        ctrl->signalRead();
-        ctrl->signalClear();
-      }
-    }
-
-    /*
-     * Rendering / Sleeping
-     * Here our goal is to update the window display (at the next available
-     * screen refresh), and in doing so spend some time before ticking.
-     */
-    if (event.type == sf::Event::Resized || resizeCooldown.cool(cycleDelta)) {
-      resizeCooldown.reset();
-      frame.resize();
-    }
-    frame.beginDraw();
-    profileClock.restart();
-    ctrl->render(frame);
-    profiler.renderTime.push(profileClock.restart().asSeconds());
-    profiler.primCount.push(frame.primCount);
-    frame.endDraw();
-    window.display();
-    // window.display() doesn't seem to block when the window isn't focused
-    if (!window.hasFocus()) sf::sleep(sf::milliseconds(16));
-
-    /*
      * Ticking
      * Here our goal is to execute a logic routine as many times as it needs
      * to simulate the game that passed during the time we slept.
@@ -156,6 +118,44 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
       appLog(LogType::Info, profiler.print());
       profileCooldown.reset();
     }
+
+    /*
+     * Events
+     * Here we process any events that were added to the cue during our
+     * rendering and logic, and push our 'signals' through the stack.
+     */
+    while (window.pollEvent(event)) {
+      if (event.type == sf::Event::Closed) {
+        appLog(LogType::Notice, "Caught close signal.");
+        window.close();
+      }
+
+      if (event.type != sf::Event::MouseWheelScrolled) { // fk mouse wheels
+        ctrl->handle(transformEvent(frame.windowToFrame, event));
+        ctrl->signalRead();
+        ctrl->signalClear();
+      }
+    }
+
+    /*
+     * Rendering / Sleeping
+     * Here our goal is to update the window display (at the next available
+     * screen refresh), and in doing so spend some time before ticking.
+     */
+    if (event.type == sf::Event::Resized || resizeCooldown.cool(cycleDelta)) {
+      resizeCooldown.reset();
+      frame.resize();
+    }
+    frame.beginDraw();
+    profileClock.restart();
+    ctrl->render(frame);
+    profiler.renderTime.push(profileClock.restart().asSeconds());
+    profiler.primCount.push(frame.primCount);
+    frame.endDraw();
+    window.display();
+    // window.display() doesn't seem to block when the window isn't focused
+    // on certain platforms
+    if (!window.hasFocus()) sf::sleep(sf::milliseconds(16));
   }
 
   appLog(LogType::Notice, "Exiting app.");
