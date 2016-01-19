@@ -25,7 +25,7 @@ T clamp(const T min, const T max, const T x) {
 
 template<typename T>
 T cyclicClamp(const T min, const T max, const T x) {
-  if (x > max) return min + std::fmod((x - min), (max - min));
+  if (x > max) return min + std::fmod(x - min, max - min);
   if (x < min) return max - cyclicClamp(min, max, (min - x));
   if (x == max) return min;
   return x;
@@ -93,10 +93,11 @@ public:
  */
 class Clamped {
 private:
-  float min, max;
   float value;
 
 public:
+  float min, max;
+
   Clamped() = delete;
 
   Clamped(const float min, const float max);
@@ -114,9 +115,10 @@ public:
  */
 class Cyclic {
 private:
-  float min, max;
   float value;
 public:
+  float min, max;
+
   Cyclic() = delete;
 
   Cyclic(const float min, const float max);
@@ -127,6 +129,9 @@ public:
 
   inline operator float() const { return value; }
 };
+
+void cyclicApproach(Cyclic &x, const float target, const float amount);
+float cyclicDistance(const Cyclic x, const float y);
 
 /**
  * Switched values: floats that may assume one of a set of values.

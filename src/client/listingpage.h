@@ -7,7 +7,7 @@
 
 #include "ui/ui.h"
 
-class ListingPage : ui::Control {
+class ListingPage : public ui::Control {
 private:
 
 public:

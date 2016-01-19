@@ -9,7 +9,8 @@ PageSelector::PageSelector() :
     cycleState(0, tabCount, 0) { }
 
 void PageSelector::tick(float delta) {
-  deployState += (deploying ? 1 : -1) * delta * (animSpeed / size);
+  deployState += (deploying ? 1 : -1) * delta * (deploySpeed / size);
+  cyclicApproach(cycleState, (float) aim, delta * cycleSpeed);
 
   const float yOffset = 450 - (tabCount * (size + vSpace) / 2);
 
@@ -28,22 +29,22 @@ void PageSelector::render(ui::Frame &f) {
                {0, 0, 150, 900});
 
   {
-    const auto &button = buttons[PageType::MainTab];
-    f.drawSprite(textureOf(Res::MainMenuIcon), {button.left, button.top},
+    const auto &button = buttons[PageType::HomePage];
+    f.drawSprite(textureOf(Res::HomeIcon), {button.left, button.top},
                  {0, 0, 150, 150});
   }
   {
-    const auto &button = buttons[PageType::SettingsTab];
-    f.drawSprite(textureOf(Res::MainMenuIcon), {button.left, button.top},
+    const auto &button = buttons[PageType::SettingsPage];
+    f.drawSprite(textureOf(Res::SettingsIcon), {button.left, button.top},
                  {0, 0, 150, 150});
   }
   {
-    const auto &button = buttons[PageType::ListingTab];
-    f.drawSprite(textureOf(Res::MainMenuIcon), {button.left, button.top},
+    const auto &button = buttons[PageType::ListingPage];
+    f.drawSprite(textureOf(Res::ListingIcon), {button.left, button.top},
                  {0, 0, 150, 150});
   }
   {
-    const auto &button = buttons[PageType::GameTab];
+    const auto &button = buttons[PageType::GamePage];
     f.drawSprite(textureOf(Res::GameIcon), {button.left, button.top},
                  {0, 0, 150, 150});
   }
@@ -56,6 +57,7 @@ void PageSelector::handle(const sf::Event &event) {
     for (auto &button : buttons) {
       if (button.second.contains(clickPos)) {
         tabClick.push_back(button.first);
+        aim = button.first;
         break;
       }
     }
