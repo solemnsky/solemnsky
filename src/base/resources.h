@@ -20,7 +20,6 @@ enum class Res {
   HomeIcon,
   SettingsIcon,
   ListingIcon,
-  GameIcon,
 
   PlayerSheet, // game stuff
 

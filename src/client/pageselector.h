@@ -8,10 +8,10 @@
 #include "ui/ui.h"
 
 enum class PageType {
-  HomePage, SettingsPage, ListingPage, GamePage
+  HomePage, SettingsPage, ListingPage
 };
 
-const float tabCount = 4;
+const float tabCount = 3;
 
 class PageSelector : public ui::Control {
 private:
