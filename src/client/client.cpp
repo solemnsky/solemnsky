@@ -13,7 +13,22 @@ void Client::tick(float delta) {
   pageSelector.tick(delta);
 }
 
+void Client::drawPage(ui::Frame &f, const PageType type, ui::Control &page) {
+  const float distance = cyclicDistance(pageSelector.cycleState, (float) type);
+  if (distance < 1)
+    f.withTransform(
+        sf::Transform().translate(0, 1600 * distance),
+        [&]() {
+          page.render(f);
+        });
+}
+
 void Client::render(ui::Frame &f) {
+  drawPage(f, PageType::HomePage, homePage);
+  drawPage(f, PageType::SettingsPage, settingsPage);
+  drawPage(f, PageType::ListingPage, listingPage);
+  drawPage(f, PageType::GamePage, gamePage);
+
   pageSelector.render(f);
 }
 
@@ -29,6 +44,7 @@ void Client::handle(const sf::Event &event) {
 void Client::signalRead() {
   for (const auto tabClick : pageSelector.tabClick) {
     appLog(LogType::Debug, "clicked tab " + std::to_string((int) tabClick));
+    pageSelector.deploying = false;
   }
 }
 

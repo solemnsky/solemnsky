@@ -3,7 +3,7 @@
 
 #include "ui/ui.h"
 #include "pageselector.h"
-#include "game.h"
+#include "gamepage.h"
 #include "homepage.h"
 #include "settingspage.h"
 #include "listingpage.h"
@@ -26,6 +26,7 @@ private:
   SettingsPage settingsPage;
   ListingPage listingPage;
   PageSelector pageSelector;
+  void drawPage(ui::Frame &f, const PageType type, ui::Control &page);
 
 public:
   Client();

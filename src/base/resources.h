@@ -13,17 +13,16 @@
  */
 
 enum class Res {
-  // fonts everywhere
-  Font,
+  Font, // fonts everywhere
 
-  // ui stuff
-      Title,
+  Title, // ui stuff
   PageSelector,
-  MainMenuIcon,
+  HomeIcon,
+  SettingsIcon,
+  ListingIcon,
   GameIcon,
 
-  // game stuff
-  PlayerSheet,
+  PlayerSheet, // game stuff
 
   LAST // for checking number of resources defined
 };

@@ -58,14 +58,31 @@ Cyclic &Cyclic::operator=(const float x) {
 }
 
 Cyclic &Cyclic::operator+=(const float x) {
-  value = cyclicClamp(min, max, x + value);
+  value = cyclicClamp(min, max, value + x);
   return *this;
 }
 
 Cyclic &Cyclic::operator-=(const float x) {
-  value = cyclicClamp(min, max, x - value);
+  value = cyclicClamp(min, max, value - x);
   return *this;
 }
+
+void cyclicApproach(Cyclic &x, const float target, const float amount) {
+  const float distance = cyclicDistance(x, target);
+  x += sign(distance) * std::min(amount, std::abs(distance));
+}
+
+float cyclicDistance(const Cyclic x, const float y) {
+  const float range = x.max - x.min;
+  const float diffUp = Cyclic(0, x.max - x.min, y - x);
+
+  if (diffUp < (range / 2)) {
+    return diffUp;
+  } else {
+    return diffUp - range;
+  }
+}
+
 
 /**
  * Switched.

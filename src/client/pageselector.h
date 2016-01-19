@@ -8,19 +8,20 @@
 #include "ui/ui.h"
 
 enum class PageType {
-  MainTab, SettingsTab, ListingTab, GameTab
+  HomePage, SettingsPage, ListingPage, GamePage
 };
 
 const float tabCount = 4;
 
 class PageSelector : public ui::Control {
 private:
-  const float animSpeed = 1000; // px/s
-  const float size = 150;
-  const float vSpace = 10;
+  const float deploySpeed = 2000, // px/s
+      cycleSpeed = 8, // window/s
+      size = 150, // px
+      vSpace = 10; // px
 
   Clamped deployState;
-  Cyclic cycleState;
+  PageType aim;
 
   std::map<PageType, sf::FloatRect> buttons;
 
@@ -36,6 +37,7 @@ public:
    * Signals
    */
   ui::Signal<PageType> tabClick;
+  Cyclic cycleState;
 
   /**
    * Control implementation.
