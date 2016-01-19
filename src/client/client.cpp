@@ -1,17 +1,20 @@
 #include "client.h"
 
 bool Client::inGame() {
-  if (game) return game->inGame;
+  if (game) return game->inFocus;
   return false;
 }
 
 Client::Client() :
-    pageSelector() {
-}
+    state(),
+    pageSelector(),
+    homePage(&state),
+    listingPage(&state),
+    settingsPage(&state) { }
 
 
 void Client::startTutorial() {
-
+  game = std::make_unique<Tutorial>(&state);
 }
 
 ui::Control &Client::referencePage(const PageType type) {
@@ -36,15 +39,34 @@ void Client::drawPage(ui::Frame &f, const PageType type, ui::Control &page) {
 }
 
 void Client::render(ui::Frame &f) {
-  drawPage(f, PageType::HomePage, homePage);
-  drawPage(f, PageType::SettingsPage, settingsPage);
-  drawPage(f, PageType::ListingPage, listingPage);
+  bool drawPages = true;
+  float pageAlpha = 1;
 
-  pageSelector.render(f);
+  if (game) {
+    game->render(f);
+    if (game->inFocus) {
+      drawPages = false;
+    } else {
+      drawPages = true;
+      pageAlpha = 0.5;
+    }
+  }
+
+  if (drawPages) {
+    f.withAlpha(pageAlpha, [&]() {
+      drawPage(f, PageType::HomePage, homePage);
+      drawPage(f, PageType::SettingsPage, settingsPage);
+      drawPage(f, PageType::ListingPage, listingPage);
+
+      pageSelector.render(f);
+    });
+  }
 }
 
 void Client::handle(const sf::Event &event) {
-  if (inGame) {
+  if (game) {
+    game->handle(event);
+  } else {
     if (event.type == sf::Event::KeyPressed) {
       if (event.key.code == sf::Keyboard::Escape) {
         pageSelector.deploying = !pageSelector.deploying;
@@ -58,17 +80,22 @@ void Client::handle(const sf::Event &event) {
 }
 
 void Client::tick(float delta) {
-  if (inGame()) {
+  state.uptime += delta;
+
+  if (game) {
     game->tick(delta);
-  } else {
-    pageSelector.tick(delta);
-    homePage.tick(delta);
-    settingsPage.tick(delta);
-    listingPage.tick(delta);
   }
+
+  pageSelector.tick(delta);
+  homePage.tick(delta);
+  settingsPage.tick(delta);
+  listingPage.tick(delta);
 }
 
 void Client::signalRead() {
+  if (!pageSelector.clicked.empty()) {
+    pageSelector.deploying = false;
+  }
 }
 
 void Client::signalClear() {
