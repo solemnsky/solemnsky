@@ -3,12 +3,21 @@
 #include "sysutil.h"
 
 const static std::vector<ResRecord> resRecords{ // edit this side-by-side with resources.h
-    {"fonts/arial.ttf",
+    {"fonts/Atarian/SF Atarian System.ttf",
         ResType::Font,    false},
+
+    {"render-2d/title.png",
+        ResType::Texture, false},
+    {"render-2d/pageselector.png",
+        ResType::Texture, false},
+    {"render-2d/mainmenuicon.png",
+        ResType::Texture, false},
+    {"render-2d/gameicon.png",
+        ResType::Texture, false},
+
     {"render-3d/test_1/player_200.png",
-        ResType::Texture, true, 200, 200, 2, 15},
-    {"render-2d/placeholder/title.png",
-        ResType::Texture, false}
+        ResType::Texture, true, 200, 200, 2, 15}
+
 };
 
 static bool asserted{false}; // make sure we have enough entries in data

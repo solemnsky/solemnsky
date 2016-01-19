@@ -62,6 +62,18 @@ public:
     drawRect(-0.5f * dims, 0.5f * dims, color);
   }
 
+  inline void drawSprite(const sf::Texture &texture, const sf::FloatRect &area,
+                         const sf::IntRect &portion) {
+    withTransform(
+        sf::Transform()
+            .scale(portion.width / area.width,
+                   portion.height / area.height)
+            .translate(area.left, area.top),
+        [&]() {
+          drawSprite(texture, {0, 0}, portion);
+        });
+  }
+
   // non-inline methods
   void drawCircle(const sf::Vector2f &pos, const float radius,
                   const sf::Color &color = {});

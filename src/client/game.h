@@ -7,7 +7,7 @@
 
 #include "ui/ui.h"
 
-class GamePage : public GamePage {
+class GamePage : public ui::Control {
 public:
   virtual void tick(float delta) override;
   virtual void render(ui::Frame &f) override;

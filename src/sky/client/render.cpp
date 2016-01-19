@@ -155,9 +155,9 @@ void Render::render(ui::Frame &f, const sf::Vector2f &pos) {
   ));
 
   // implicitly draw a background in the {3200, 900} region
-  f.drawSprite(textureOf(Res::TitleScreen),
+  f.drawSprite(textureOf(Res::Title),
                {0, 0}, {0, 0, 1600, 900});
-  f.drawSprite(textureOf(Res::TitleScreen),
+  f.drawSprite(textureOf(Res::Title),
                {1600, 0}, {0, 0, 1600, 900});
 
   for (auto &pair : sky->planes) {

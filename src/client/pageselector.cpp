@@ -11,36 +11,41 @@ PageSelector::PageSelector() :
 void PageSelector::tick(float delta) {
   deployState += (deploying ? 1 : -1) * delta * (animSpeed / size);
 
+  const float yOffset = 450 - (tabCount * (size + vSpace) / 2);
+
   buttons.clear();
   for (int i = 0; i < tabCount; i++) {
     const float realWidth = deployState * size;
     buttons[(PageType) i] =
-        {1600 - realWidth, i * size, realWidth, size};
+        {1600 - realWidth, yOffset + i * (size + vSpace), realWidth, size};
   }
 }
 
 void PageSelector::render(ui::Frame &f) {
   const float realWidth = deployState * size;
-  f.drawRect({1600 - realWidth, 0, realWidth, 900}, sf::Color::Red);
+  f.drawSprite(textureOf(Res::PageSelector),
+               {1600 - realWidth, 0},
+               {0, 0, 150, 900});
 
-  for (auto &button : buttons) {
-    switch (button.first) {
-      case PageType::MainTab: {
-        f.drawRect(button.second, sf::Color::Blue);
-        break;
-      }
-      case PageType::SettingsTab: {
-        f.drawRect(button.second, sf::Color::Blue);
-        break;
-      }
-      case PageType::ListingTab: {
-        f.drawRect(button.second, sf::Color::Blue);
-        break;
-      }
-      case PageType::GameTab: {
-        f.drawRect(button.second, sf::Color::Blue);
-      }
-    }
+  {
+    const auto &button = buttons[PageType::MainTab];
+    f.drawSprite(textureOf(Res::MainMenuIcon), {button.left, button.top},
+                 {0, 0, 150, 150});
+  }
+  {
+    const auto &button = buttons[PageType::SettingsTab];
+    f.drawSprite(textureOf(Res::MainMenuIcon), {button.left, button.top},
+                 {0, 0, 150, 150});
+  }
+  {
+    const auto &button = buttons[PageType::ListingTab];
+    f.drawSprite(textureOf(Res::MainMenuIcon), {button.left, button.top},
+                 {0, 0, 150, 150});
+  }
+  {
+    const auto &button = buttons[PageType::GameTab];
+    f.drawSprite(textureOf(Res::GameIcon), {button.left, button.top},
+                 {0, 0, 150, 150});
   }
 }
 
