@@ -3,7 +3,7 @@
 
 #include "ui/ui.h"
 #include "pageselector.h"
-#include "game.h"
+#include "game/tutorial.h"
 #include "homepage.h"
 #include "settingspage.h"
 #include "listingpage.h"
@@ -27,9 +27,13 @@ private:
   PageSelector pageSelector;
 
   /**
-   * The game, which may or may not exist.
+   * The game, which may or may not exist at a particular moment.
    */
   std::unique_ptr<Game> game;
+  bool inGame(); // if the game exists and we're in it (the game manages its
+  // own inGame state)
+
+  void startTutorial();
 
   void drawPage(ui::Frame &f, const PageType type, ui::Control &page);
   ui::Control &referencePage(const PageType type);

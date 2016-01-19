@@ -66,14 +66,31 @@ add_executable(solemnsky_client
         src/base/util.cpp
         src/base/util.h
 
-        src/client/client.cpp
-        src/client/client.h
+        src/client/game/game.h
 
         src/client/game/gamecontroller.cpp
         src/client/game/gamecontroller.h
 
+        src/client/game/tutorial.cpp
+        src/client/game/tutorial.h
+
+        src/client/client.cpp
+        src/client/client.h
+
+        src/client/clientstate.cpp
+        src/client/clientstate.h
+
+        src/client/homepage.cpp
+        src/client/homepage.h
+
+        src/client/listingpage.cpp
+        src/client/listingpage.h
+
         src/client/pageselector.cpp
         src/client/pageselector.h
+
+        src/client/settingspage.cpp
+        src/client/settingspage.h
 
         src/sky/client/render.cpp
         src/sky/client/render.h
@@ -100,7 +117,8 @@ add_executable(solemnsky_client
 
         src/ui/ui.h
 
-        src/solemnsky_client.cpp src/client/settingspage.cpp src/client/settingspage.h src/client/homepage.cpp src/client/homepage.h src/client/game/tutorial.cpp src/client/game/tutorial.h src/client/listingpage.cpp src/client/listingpage.h src/client/clientstate.cpp src/client/clientstate.h src/client/game/game.h)
+        src/solemnsky_client.cpp
+        )
 target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics

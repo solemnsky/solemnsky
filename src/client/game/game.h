@@ -12,8 +12,7 @@ class Game : public ui::Control {
 public:
   ui::Signal<bool> gameOver; // signal that the game is now over, with
   // whether the player won or lost
-  ui::Signal<None> menuCall; // signal that the player has called up the
-  // client UI to change settings or something
+  bool inGame; // if we're inGame
   std::string name; // description of the game
 };
 
