@@ -10,7 +10,7 @@ const static std::vector<ResRecord> resRecords{ // edit this side-by-side with r
         ResType::Texture, false},
     {"render-2d/pageselector.png",
         ResType::Texture, false},
-    {"render-2d/homicon.png",
+    {"render-2d/homeicon.png",
         ResType::Texture, false},
     {"render-2d/settingsicon.png",
         ResType::Texture, false},
