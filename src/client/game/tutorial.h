@@ -1,8 +1,8 @@
 /**
  * The
  */
-#ifndef SOLEMNSKY_GAME_H
-#define SOLEMNSKY_GAME_H
+#ifndef SOLEMNSKY_TUTORIAL_H
+#define SOLEMNSKY_TUTORIAL_H
 
 #include "game.h"
 
@@ -15,4 +15,4 @@ public:
   virtual void handle(const sf::Event &event) override;
 };
 
-#endif //SOLEMNSKY_GAME_H
+#endif //SOLEMNSKY_TUTORIAL_H

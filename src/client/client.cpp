@@ -1,16 +1,17 @@
 #include "client.h"
 
+bool Client::inGame() {
+  if (game) return game->inGame;
+  return false;
+}
+
 Client::Client() :
     pageSelector() {
 }
 
-void Client::tick(float delta) {
-  homePage.tick(delta);
-  gamePage.tick(delta);
-  settingsPage.tick(delta);
-  listingPage.tick(delta);
 
-  pageSelector.tick(delta);
+void Client::startTutorial() {
+
 }
 
 ui::Control &Client::referencePage(const PageType type) {
@@ -21,8 +22,6 @@ ui::Control &Client::referencePage(const PageType type) {
       return settingsPage;
     case PageType::ListingPage:
       return listingPage;
-    case PageType::GamePage:
-      return gamePage;
   }
 }
 
@@ -40,20 +39,32 @@ void Client::render(ui::Frame &f) {
   drawPage(f, PageType::HomePage, homePage);
   drawPage(f, PageType::SettingsPage, settingsPage);
   drawPage(f, PageType::ListingPage, listingPage);
-  drawPage(f, PageType::GamePage, gamePage);
 
   pageSelector.render(f);
 }
 
 void Client::handle(const sf::Event &event) {
-  if (event.type == sf::Event::KeyPressed) {
-    if (event.key.code == sf::Keyboard::Escape) {
-      pageSelector.deploying = !pageSelector.deploying;
+  if (inGame) {
+    if (event.type == sf::Event::KeyPressed) {
+      if (event.key.code == sf::Keyboard::Escape) {
+        pageSelector.deploying = !pageSelector.deploying;
+      }
+    }
+    pageSelector.handle(event);
+    if (pageSelector.active) {
+      referencePage(*pageSelector.active).handle(event);
     }
   }
-  pageSelector.handle(event);
-  if (pageSelector.active) {
-    referencePage(*pageSelector.active).handle(event);
+}
+
+void Client::tick(float delta) {
+  if (inGame()) {
+    game->tick(delta);
+  } else {
+    pageSelector.tick(delta);
+    homePage.tick(delta);
+    settingsPage.tick(delta);
+    listingPage.tick(delta);
   }
 }
 
@@ -63,3 +74,4 @@ void Client::signalRead() {
 void Client::signalClear() {
   pageSelector.signalClear();
 }
+

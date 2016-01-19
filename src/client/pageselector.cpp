@@ -47,11 +47,6 @@ void PageSelector::render(ui::Frame &f) {
     f.drawSprite(textureOf(Res::ListingIcon), {button.left, button.top},
                  {0, 0, 150, 150});
   }
-  {
-    const auto &button = buttons[PageType::GamePage];
-    f.drawSprite(textureOf(Res::GameIcon), {button.left, button.top},
-                 {0, 0, 150, 150});
-  }
 }
 
 void PageSelector::handle(const sf::Event &event) {
