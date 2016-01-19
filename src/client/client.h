@@ -3,7 +3,7 @@
 
 #include "ui/ui.h"
 #include "pageselector.h"
-#include "gamepage.h"
+#include "game.h"
 #include "homepage.h"
 #include "settingspage.h"
 #include "listingpage.h"
@@ -22,10 +22,14 @@ private:
    * The various pages...
    */
   HomePage homePage;
-  GamePage gamePage;
   SettingsPage settingsPage;
   ListingPage listingPage;
   PageSelector pageSelector;
+
+  /**
+   * The game, which may or may not exist.
+   */
+  std::unique_ptr<Game> game;
 
   void drawPage(ui::Frame &f, const PageType type, ui::Control &page);
   ui::Control &referencePage(const PageType type);

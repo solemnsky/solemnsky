@@ -1,13 +1,12 @@
 /**
- * A page where the player can play a game. This is kind of a big deal for
- * us, because like, it's where people play the game.
+ * The
  */
 #ifndef SOLEMNSKY_GAME_H
 #define SOLEMNSKY_GAME_H
 
-#include "ui/ui.h"
+#include "game.h"
 
-class GamePage : public ui::Control {
+class Tutorial : public Game {
 private:
 
 public:
