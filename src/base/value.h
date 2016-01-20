@@ -182,12 +182,6 @@ public:
   inline operator float() const { return value; }
 };
 
-/****
- * Tweening.
- */
-
-float linearTween(const float begin, const float end, const float time) {
-  return begin + time * (end - begin);
-}
+float linearTween(const float begin, const float end, const float time);
 
 #endif //SOLEMNSKY_VALUE_H

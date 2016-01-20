@@ -35,8 +35,8 @@ private:
   // updated on render, for handling mouse events
 
   // visual values
-  constexpr float unfocusedPageScale = 500 / 1600,
-      pageFocusAnimSpeed = 0.5; // s^-1
+  const float unfocusedPageScale = 500.0f / 1600.0f,
+      pageFocusAnimSpeed = 3; // s^-1
 
   const sf::Vector2f homeOffset{202.249, 479.047};
   const sf::Vector2f listingOffset{897.751, 479.047};

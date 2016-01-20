@@ -16,6 +16,8 @@ const static std::vector<ResRecord> resRecords{ // edit this side-by-side with r
         ResType::Texture, false},
     {"render-2d/listingicon.png",
         ResType::Texture, false},
+    {"render-2d/menubackground.png",
+        ResType::Texture, false},
 
     {"render-3d/test_1/player_200.png",
         ResType::Texture, true, 200, 200, 2, 15}
