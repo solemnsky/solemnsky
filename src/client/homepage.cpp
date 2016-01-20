@@ -12,7 +12,7 @@ void HomePage::render(ui::Frame &f) {
   f.drawText({800, 600},
              {"home page",
               "page where the user receives the comforts of home",
-              "uptime: " + std::to_string((int) state->uptime * 1000) + "ms"},
+              "uptime: " + std::to_string((int) (state->uptime * 1000)) + "ms"},
              40);
 }
 

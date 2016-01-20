@@ -29,23 +29,22 @@ void Client::drawPage(
     const PageType type,
     const sf::Vector2f &offset,
     ui::Control &page) {
-  float alpha, scale;
+  float alpha, scale, offsetAmnt;
 
   if (type == focusedPage) {
     alpha = 1;
     scale = linearTween(unfocusedPageScale, 1, focusAnim);
+    offsetAmnt = linearTween(1, 0, focusAnim);
   } else {
     alpha = linearTween(1, 0, focusAnim);
     scale = unfocusedPageScale;
+    offsetAmnt = 1;
   }
 
-  sf::Transform &transform = sf::Transform().translate(-offset).scale(scale,
-                                                                      scale);
+  sf::Transform &transform =
+      sf::Transform().translate(offsetAmnt * offset).scale(scale, scale);
 
-  f.withAlphaTransform(
-      1 - focusAnim,
-      transform,
-      [&]() { page.render(f); });
+  f.withAlphaTransform(alpha, transform, [&]() { page.render(f); });
 
   pageRects.push_back({transform.transformRect({0, 0, 1600, 900}), type});
 }
@@ -57,7 +56,7 @@ void Client::tick(float delta) {
     game->tick(delta);
   }
 
-  focusAnim += pageFocusAnimSpeed * (pageFocused ? 1 : -1);
+  focusAnim += delta * pageFocusAnimSpeed * (pageFocused ? 1 : -1);
   homePage.tick(delta);
   settingsPage.tick(delta);
   listingPage.tick(delta);
@@ -65,20 +64,23 @@ void Client::tick(float delta) {
 
 void Client::render(ui::Frame &f) {
   bool drawPages = true;
-  float pageAlpha = 1;
+  bool gameUnderneath = false;
 
   if (game) {
     game->render(f);
     if (game->inFocus) {
       drawPages = false;
     } else {
-      drawPages = true;
-      pageAlpha = 0.5;
+      gameUnderneath = true;
     }
   }
 
   if (drawPages) {
-    f.withAlpha(pageAlpha, [&]() {
+    if (!gameUnderneath) {
+      f.drawSprite(textureOf(Res::MenuBackground), {0, 0}, {0, 0, 1600, 900});
+    }
+
+    f.withAlpha(gameUnderneath ? 0.5f : 1, [&]() {
       pageRects = {};
       drawPage(f, PageType::Home, homeOffset, homePage);
       drawPage(f, PageType::Settings, listingOffset, listingPage);
@@ -98,14 +100,14 @@ void Client::handle(const sf::Event &event) {
       }
     }
 
-    if (focusAnim = 1) {
+    if (focusAnim == 1) {
       // we're totally focused on a certain control
       referencePage(focusedPage).handle(event);
     } else {
       // we're still in the control menu
       if (event.type == sf::Event::MouseButtonReleased) {
         const sf::Vector2f mouseClick =
-            {event.mouseButton.x, event.mouseButton.y};
+            {(float) event.mouseButton.x, (float) event.mouseButton.y};
 
         pageFocused = false;
         for (auto &rect : pageRects) {
@@ -118,7 +120,6 @@ void Client::handle(const sf::Event &event) {
     }
   }
 }
-
 
 void Client::signalRead() {
 }

@@ -86,9 +86,6 @@ add_executable(solemnsky_client
         src/client/listingpage.cpp
         src/client/listingpage.h
 
-        src/client/pageselector.cpp
-        src/client/pageselector.h
-
         src/client/settingspage.cpp
         src/client/settingspage.h
 
