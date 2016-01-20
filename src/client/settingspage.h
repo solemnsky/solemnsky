@@ -1,8 +1,8 @@
 /**
  * Page where the user modifies settings.
  */
-#ifndef SOLEMNSKY_SETTINGS_H
-#define SOLEMNSKY_SETTINGS_H
+#ifndef SOLEMNSKY_SETTINGSPAGE_H
+#define SOLEMNSKY_SETTINGSPAGE_H
 
 #include "ui/ui.h"
 #include "clientstate.h"
@@ -28,4 +28,4 @@ public:
   void signalClear() override;
 };
 
-#endif //SOLEMNSKY_SETTINGS_H
+#endif //SOLEMNSKY_SETTINGSPAGE_H
