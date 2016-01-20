@@ -1,17 +1,13 @@
 #include "client.h"
 
-bool Client::inGame() {
-  if (game) return game->inFocus;
-  return false;
-}
-
 Client::Client() :
     state(),
-    pageSelector(),
     homePage(&state),
     listingPage(&state),
-    settingsPage(&state) { }
-
+    settingsPage(&state),
+    focusedPage(PageType::Home),
+    pageFocused(false),
+    focusAnim(0, 1, 0) { }
 
 void Client::startTutorial() {
   game = std::make_unique<Tutorial>(&state);
@@ -19,23 +15,52 @@ void Client::startTutorial() {
 
 ui::Control &Client::referencePage(const PageType type) {
   switch (type) {
-    case PageType::HomePage:
+    case PageType::Home:
       return homePage;
-    case PageType::SettingsPage:
+    case PageType::Settings:
       return settingsPage;
-    case PageType::ListingPage:
+    case PageType::Listing:
       return listingPage;
   }
 }
 
-void Client::drawPage(ui::Frame &f, const PageType type, ui::Control &page) {
-  const float distance = cyclicDistance(pageSelector.cycleState, (float) type);
-  if (distance < 1)
-    f.withTransform(
-        sf::Transform().translate(0, 1600 * distance),
-        [&]() {
-          page.render(f);
-        });
+void Client::drawPage(
+    ui::Frame &f,
+    const PageType type,
+    const sf::Vector2f &offset,
+    ui::Control &page) {
+  float alpha, scale;
+
+  if (type == focusedPage) {
+    alpha = 1;
+    scale = linearTween(unfocusedPageScale, 1, focusAnim);
+  } else {
+    alpha = linearTween(1, 0, focusAnim);
+    scale = unfocusedPageScale;
+  }
+
+  sf::Transform &transform = sf::Transform().translate(-offset).scale(scale,
+                                                                      scale);
+
+  f.withAlphaTransform(
+      1 - focusAnim,
+      transform,
+      [&]() { page.render(f); });
+
+  pageRects.push_back({transform.transformRect({0, 0, 1600, 900}), type});
+}
+
+void Client::tick(float delta) {
+  state.uptime += delta;
+
+  if (game) {
+    game->tick(delta);
+  }
+
+  focusAnim += pageFocusAnimSpeed * (pageFocused ? 1 : -1);
+  homePage.tick(delta);
+  settingsPage.tick(delta);
+  listingPage.tick(delta);
 }
 
 void Client::render(ui::Frame &f) {
@@ -54,11 +79,10 @@ void Client::render(ui::Frame &f) {
 
   if (drawPages) {
     f.withAlpha(pageAlpha, [&]() {
-      drawPage(f, PageType::HomePage, homePage);
-      drawPage(f, PageType::SettingsPage, settingsPage);
-      drawPage(f, PageType::ListingPage, listingPage);
-
-      pageSelector.render(f);
+      pageRects = {};
+      drawPage(f, PageType::Home, homeOffset, homePage);
+      drawPage(f, PageType::Settings, listingOffset, listingPage);
+      drawPage(f, PageType::Listing, settingsOffset, settingsPage);
     });
   }
 }
@@ -69,36 +93,36 @@ void Client::handle(const sf::Event &event) {
   } else {
     if (event.type == sf::Event::KeyPressed) {
       if (event.key.code == sf::Keyboard::Escape) {
-        pageSelector.deploying = !pageSelector.deploying;
+        pageFocused = false;
+        return;
       }
     }
-    pageSelector.handle(event);
-    if (pageSelector.active) {
-      referencePage(*pageSelector.active).handle(event);
+
+    if (focusAnim = 1) {
+      // we're totally focused on a certain control
+      referencePage(focusedPage).handle(event);
+    } else {
+      // we're still in the control menu
+      if (event.type == sf::Event::MouseButtonReleased) {
+        const sf::Vector2f mouseClick =
+            {event.mouseButton.x, event.mouseButton.y};
+
+        pageFocused = false;
+        for (auto &rect : pageRects) {
+          if (rect.first.contains(mouseClick)) {
+            pageFocused = true;
+            focusedPage = rect.second;
+          }
+        }
+      }
     }
   }
 }
 
-void Client::tick(float delta) {
-  state.uptime += delta;
-
-  if (game) {
-    game->tick(delta);
-  }
-
-  pageSelector.tick(delta);
-  homePage.tick(delta);
-  settingsPage.tick(delta);
-  listingPage.tick(delta);
-}
 
 void Client::signalRead() {
-  if (!pageSelector.clicked.empty()) {
-    pageSelector.deploying = false;
-  }
 }
 
 void Client::signalClear() {
-  pageSelector.signalClear();
 }
 

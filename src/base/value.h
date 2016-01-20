@@ -6,6 +6,8 @@
  *  vs
  * > Clamped{-1, 1, 0} rotationControl;
  * > rotationControl = newValue;
+ *
+ * Also tweening functions.
  */
 #ifndef SOLEMNSKY_VALUE_H
 #define SOLEMNSKY_VALUE_H
@@ -38,6 +40,9 @@ T sign(const T x) {
   return 0;
 }
 
+/**
+ * Approach a value at a linear rate, potentially hitting and staying at it.
+ */
 template<typename T, typename G>
 bool approach(T &x, const G target, const G amount) {
   // having a different type variables for the reference is useful when it's
@@ -177,5 +182,12 @@ public:
   inline operator float() const { return value; }
 };
 
+/****
+ * Tweening.
+ */
+
+float linearTween(const float begin, const float end, const float time) {
+  return begin + time * (end - begin);
+}
 
 #endif //SOLEMNSKY_VALUE_H

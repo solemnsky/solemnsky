@@ -2,16 +2,19 @@
 #define SOLEMNSKY_CLIENT_H
 
 #include "ui/ui.h"
-#include "pageselector.h"
 #include "game/tutorial.h"
 #include "homepage.h"
 #include "settingspage.h"
 #include "listingpage.h"
 #include "clientstate.h"
 
+enum class PageType {
+  Home, Listing, Settings
+};
+
 /**
  * The main client app.
- * Its various compontents (the various pages and potential running game) are
+ * Its various components (the various pages and potential running game) are
  * neatly modularized.
  */
 class Client : public ui::Control {
@@ -19,25 +22,38 @@ private:
   ClientState state;
 
   /**
-   * The various pages that make up the UI.
+   * Pages and page anim stuff.
    */
-  PageSelector pageSelector;
   HomePage homePage;
   ListingPage listingPage;
   SettingsPage settingsPage;
+  PageType focusedPage;
+  bool pageFocused;
+  Clamped focusAnim; // `elem` [0, 1], 1 is fully focused
+
+  std::vector<std::pair<sf::FloatRect, PageType>> pageRects;
+  // updated on render, for handling mouse events
+
+  // visual values
+  constexpr float unfocusedPageScale = 500 / 1600,
+      pageFocusAnimSpeed = 0.5; // s^-1
+
+  const sf::Vector2f homeOffset{202.249, 479.047};
+  const sf::Vector2f listingOffset{897.751, 479.047};
+  const sf::Vector2f settingsOffset{550, 98.302};
 
   /**
    * The game, which may or may not exist at a particular moment.
    */
   std::unique_ptr<Game> game;
-  bool inGame(); // test if the game exists
 
   void startTutorial();
 
   /**
    * Misc helpers.
    */
-  void drawPage(ui::Frame &f, const PageType type, ui::Control &page);
+  void drawPage(ui::Frame &f, const PageType type, const sf::Vector2f &offset,
+                ui::Control &page);
   ui::Control &referencePage(const PageType type);
 
 public:
