@@ -90,6 +90,11 @@ void Client::render(ui::Frame &f) {
   if (gameFocusAnim != 1) {
     if (!gameUnderneath) {
       f.drawSprite(textureOf(Res::MenuBackground), {0, 0}, {0, 0, 1600, 900});
+    } else {
+      f.drawRect(
+          {0, 0, 1600, 900},
+          sf::Color(0, 0, 0,
+                    (sf::Uint8) (linearTween(1, 0, gameFocusAnim) * 100)));
     }
 
     f.withAlpha(

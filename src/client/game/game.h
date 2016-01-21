@@ -14,7 +14,7 @@ protected:
   ClientState *state;
 
 public:
-  Game(ClientState *state) : state(state) { }
+  Game(ClientState *state) : state(state), inFocus(true), concluded(false) { }
 
   bool inFocus; // set to true by outside forces, false by inside forces
   bool concluded; // modified only by the game itself

@@ -2,29 +2,32 @@
 
 Tutorial::Tutorial(ClientState *state) :
     Game(state),
-    sky({1600, 900}),
+    sky({3200, 900}),
     renderSystem(&sky) {
   sky.linkSystem(&renderSystem);
   name = "tutorial";
+
+  plane = sky.joinPlane(0);
+  sky.spawnPlane(0, {200, 200}, 0, {});
 }
 
 void Tutorial::tick(float delta) {
-  sky.tick(delta);
+  if (inFocus) sky.tick(delta); // if this were multiplayer of course
+  // we wouldn't have this liberty
 }
 
 void Tutorial::render(ui::Frame &f) {
-  f.drawText({800, 450},
-             {"tutorial", "demonstration of play mechanics go here"}, 40);
+  renderSystem.render(f, plane->state
+                         ? plane->state->pos : sf::Vector2f(0, 0));
 }
 
 void Tutorial::handle(const sf::Event &event) {
   controller.handle(event);
+  if (plane->state) controller.setState(*plane->state);
+
   if (event.type == sf::Event::KeyPressed) {
     if (event.key.code == sf::Keyboard::Escape) {
       inFocus = false;
-    }
-    if (event.key.code == sf::Keyboard::F) {
-      concluded = true;
     }
   }
 }
