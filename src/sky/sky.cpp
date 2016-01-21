@@ -23,7 +23,7 @@ void Sky::linkSystem(Subsystem *subsystem) {
  * Handling planes.
  */
 
-Plane *Sky::joinPlane(const PID pid, const PlaneTuning tuning) {
+Plane *Sky::joinPlane(const PID pid) {
   planes[pid] = std::make_unique<Plane>(this);
   Plane *plane = planes[pid].get();
   for (auto system : subsystems) system->joinPlane(pid, plane);

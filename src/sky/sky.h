@@ -34,7 +34,7 @@ public:
    * Planes.
    */
   std::map<PID, std::unique_ptr<Plane>> planes;
-  Plane *joinPlane(const PID pid, const PlaneTuning tuning);
+  Plane *joinPlane(const PID pid);
   Plane *getPlane(const PID pid);
   void quitPlane(const PID pid);
   void spawnPlane(const PID pid, const sf::Vector2f pos, const float rot,
