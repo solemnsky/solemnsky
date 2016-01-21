@@ -25,7 +25,7 @@ void Button::render(Frame &f) {
     f.drawRect(body, mixColors(style.color, style.hotColor,
                                getHeat()));
   else f.drawRect(body, style.clickedColor);
-  const auto size = f.textSize(text, 24);
+  const auto size = f.textSize(text, style.fontSize);
   f.drawText(
       sf::Vector2f(
           body.left + (body.width / 2),
@@ -49,7 +49,10 @@ void Button::handle(const sf::Event &event) {
       inPreClick = isHot;
     } else {
       inPreClick = false;
-      if (isHot) clickSignal.push_back({});
+      if (isHot) {
+        appLog(LogType::Debug, "clicked");
+        clickSignal.push_back({});
+      }
     }
   }
 }

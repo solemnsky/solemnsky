@@ -25,3 +25,15 @@ void Settings::writeToFile(std::string filepath) {
   // write to file
 }
 
+/****
+ * ClientState
+ */
+
+ClientState::ClientState() :
+    focusedPage(PageType::Home),
+    pageFocused(false) { }
+
+void ClientState::focusGame() {
+  pageFocused = false;
+  game->inFocus = true;
+}

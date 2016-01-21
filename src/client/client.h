@@ -8,10 +8,6 @@
 #include "listingpage.h"
 #include "clientstate.h"
 
-enum class PageType {
-  Home, Listing, Settings
-};
-
 /**
  * The main client app.
  * Its various components (the various pages and potential running game) are
@@ -19,25 +15,31 @@ enum class PageType {
  */
 class Client : public ui::Control {
 private:
+  /**
+   * A bunch of state, accessible from sub-windows. Includes some crucial UI
+   * state.
+   */
   ClientState state;
 
   /**
-   * Pages and page anim stuff.
+   * Pages and a few other UI things. All of the interesting UI logic is in
+   * ClientState, where it is a available from other places.
    */
   HomePage homePage;
   ListingPage listingPage;
   SettingsPage settingsPage;
-  PageType focusedPage;
   ui::Button backButton;
-  bool pageFocused;
+
   Clamped focusAnim; // `elem` [0, 1], 1 is fully focused
+  Clamped gameFocusAnim;
 
   std::vector<std::pair<sf::FloatRect, PageType>> pageRects;
   // updated on render, for handling mouse events
 
   // visual values
   const float unfocusedPageScale = 500.0f / 1600.0f,
-      pageFocusAnimSpeed = 3; // s^-1
+      pageFocusAnimSpeed = 3, // s^-1
+      gameFocusAnimSpeed = 4;
 
   const sf::Vector2f homeOffset{202.249, 479.047};
   const sf::Vector2f listingOffset{897.751, 479.047};
