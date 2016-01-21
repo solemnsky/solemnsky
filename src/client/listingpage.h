@@ -6,12 +6,18 @@
 
 #include "ui/ui.h"
 #include "clientstate.h"
+#include "page.h"
 
-class ListingPage : public ui::Control {
+class ListingPage : public Page {
 private:
   ClientState *state;
 public:
   ListingPage(ClientState *state);
+
+  /**
+   * Page interface.
+   */
+  void reset() override;
 
   /**
    * Control interface.

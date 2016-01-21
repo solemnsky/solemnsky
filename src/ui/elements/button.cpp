@@ -63,7 +63,7 @@ void Button::signalClear() {
 
 void Button::reset() {
   isHot = false;
-  hotAnimState = 0;
+//  hotAnimState = 0;
 }
 }
 

@@ -6,6 +6,10 @@ HomePage::HomePage(ClientState *state) :
     state(state),
     tutorialButton({100, 50}, "start tutorial") { }
 
+void HomePage::reset() {
+  tutorialButton.reset();
+}
+
 void HomePage::tick(float delta) {
   tutorialButton.tick(delta);
 }
@@ -46,3 +50,4 @@ void HomePage::signalRead() {
 void HomePage::signalClear() {
   tutorialButton.signalClear();
 }
+

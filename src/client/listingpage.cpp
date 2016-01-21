@@ -2,6 +2,10 @@
 
 ListingPage::ListingPage(ClientState *state) : state(state) { }
 
+void ListingPage::reset() {
+
+}
+
 void ListingPage::tick(float delta) {
 
 }
@@ -16,3 +20,4 @@ void ListingPage::render(ui::Frame &f) {
 void ListingPage::handle(const sf::Event &event) {
 
 }
+

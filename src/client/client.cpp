@@ -15,7 +15,7 @@ Client::Client() :
     gameFocusAnim(0, 1, 0),
     backButton({1500, 850}, "go back", backButtonStyle()) { }
 
-ui::Control &Client::referencePage(const PageType type) {
+Page &Client::referencePage(const PageType type) {
   switch (type) {
     case PageType::Home:
       return homePage;
@@ -65,7 +65,10 @@ void Client::attachState() {
 void Client::tick(float delta) {
   state.uptime += delta;
 
-  if (state.game) state.game->tick(delta);
+  if (state.game) {
+    state.game->tick(delta);
+    if (state.game->concluded) state.game = nullptr;
+  }
 
   focusAnim += delta * pageFocusAnimSpeed * (state.pageFocused ? 1 : -1);
   gameFocusAnim += delta * gameFocusAnimSpeed * (state.gameInFocus() ? 1 : -1);
@@ -89,10 +92,9 @@ void Client::render(ui::Frame &f) {
       f.drawSprite(textureOf(Res::MenuBackground), {0, 0}, {0, 0, 1600, 900});
     }
 
-    f.withAlpha(gameUnderneath
-                ? linearTween(1, 0, gameFocusAnim) *
-                  linearTween(0.5, 1, focusAnim)
-                : 1, [&]() {
+    f.withAlpha(
+        linearTween(1, 0, gameFocusAnim) *
+        (gameUnderneath ? linearTween(0.5, 1, focusAnim) : 1), [&]() {
       pageRects = {};
       drawPage(f, PageType::Home, homeOffset, "home",
                homePage);
@@ -111,11 +113,17 @@ void Client::handle(const sf::Event &event) {
   } else {
     if (event.type == sf::Event::KeyPressed) {
       if (event.key.code == sf::Keyboard::Escape) {
-        if (state.pageFocused) state.pageFocused = false;
-        else {
+
+        // escape key, the thing you press when you're totally lost
+        // let's make it as helpful as possible, shall we?
+        if (state.pageFocused) {
+          state.pageFocused = false;
+          referencePage(state.focusedPage).reset();
+        } else {
           if (state.game) state.game->inFocus = true;
         }
         return;
+
       }
     }
 
@@ -149,6 +157,7 @@ void Client::signalRead() {
 
   if (!backButton.clickSignal.empty()) {
     state.pageFocused = false;
+    referencePage(state.focusedPage).reset();
   }
 }
 

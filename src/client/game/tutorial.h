@@ -5,8 +5,16 @@
 #define SOLEMNSKY_TUTORIAL_H
 
 #include "game.h"
+#include "sky/sky.h"
+#include "sky/client/render.h"
+#include "gamecontroller.h"
 
 class Tutorial : public Game {
+private:
+  sky::Sky sky;
+  sky::Render renderSystem;
+  GameController controller;
+
 public:
   Tutorial(ClientState *state);
 

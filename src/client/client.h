@@ -48,7 +48,7 @@ private:
   /**
    * Misc helpers.
    */
-  ui::Control &referencePage(const PageType type);
+  Page &referencePage(const PageType type);
   void drawPage(ui::Frame &f, const PageType type,
                 const sf::Vector2f &offset, const std::string &name,
                 ui::Control &page);

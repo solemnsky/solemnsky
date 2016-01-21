@@ -115,7 +115,7 @@ add_executable(solemnsky_client
         src/ui/ui.h
 
         src/solemnsky_client.cpp
-        )
+        src/client/page.h)
 target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics
