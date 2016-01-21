@@ -156,6 +156,8 @@ void Client::handle(const sf::Event &event) {
 }
 
 void Client::signalRead() {
+  if (state.game) state.game->signalRead();
+
   homePage.signalRead();
   listingPage.signalRead();
   settingsPage.signalRead();
@@ -167,6 +169,7 @@ void Client::signalRead() {
 }
 
 void Client::signalClear() {
+  if (state.game) state.game->signalClear();
   homePage.signalClear();
   listingPage.signalClear();
   settingsPage.signalClear();
