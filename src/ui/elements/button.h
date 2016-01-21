@@ -49,6 +49,8 @@ public:
   Button(const sf::Vector2f &pos, const std::string &text,
          const Style &style = {});
 
+  void reset(); // reset animation, pretend it was recreated
+
   /**
    * Control implementation.
    */

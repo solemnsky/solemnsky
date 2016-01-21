@@ -57,5 +57,10 @@ void Button::handle(const sf::Event &event) {
 void Button::signalClear() {
   clickSignal.clear();
 }
+
+void Button::reset() {
+  isHot = false;
+  hotAnimState = 0;
+}
 }
 
