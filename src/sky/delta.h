@@ -4,7 +4,11 @@
 #ifndef SOLEMNSKY_DELTA_H
 #define SOLEMNSKY_DELTA_H
 
-// complicated things go here
-// eventually we'll probably figure it out though
+/**
+ * The resolved delta between two Sky states.
+ */
+struct Delta {
+
+};
 
 #endif //SOLEMNSKY_DELTA_H
