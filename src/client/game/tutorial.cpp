@@ -15,5 +15,9 @@ void Tutorial::render(ui::Frame &f) {
 }
 
 void Tutorial::handle(const sf::Event &event) {
-
+  if (event.type == sf::Event::KeyPressed) {
+    if (event.key.code == sf::Keyboard::Escape) {
+      inFocus = false;
+    }
+  }
 }

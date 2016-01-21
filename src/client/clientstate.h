@@ -23,18 +23,42 @@ struct Settings {
   bool debugInfo;
 };
 
-/**
- * Global state for one instance of the client, accessible just about
- * everywhere.
+/****
+ * ClientState: Global state for one instance of the client, accessible just
+ * about * everywhere.
  */
+
+enum class PageType {
+  Home, Listing, Settings
+};
+
 struct ClientState {
-  ui::AppState *appState; // appState for all sub-controls
+  ClientState();
 
+  /**
+   * ui::AppState and Settings.
+   */
+  ui::AppState *appState;
   Settings settings;
+  float uptime;
 
+  /**
+   * The running game.
+   */
   std::unique_ptr<Game> game;
 
-  float uptime;
+  inline bool gameInFocus() {
+    if (game) return game->inFocus;
+    return false;
+  }
+
+  /**
+   * Menu UI state, helpers.
+   */
+  PageType focusedPage;
+  bool pageFocused;
+
+  void focusGame();
 };
 
 

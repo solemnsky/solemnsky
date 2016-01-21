@@ -1,7 +1,9 @@
 #include "client.h"
 
 ui::Button::Style backButtonStyle() {
-  return {};
+  ui::Button::Style style;
+  style.fontSize = 50;
+  return style;
 }
 
 Client::Client() :
@@ -9,10 +11,9 @@ Client::Client() :
     homePage(&state),
     listingPage(&state),
     settingsPage(&state),
-    focusedPage(PageType::Home),
-    backButton({1500, 850}, "go back", backButtonStyle()),
-    pageFocused(false),
-    focusAnim(0, 1, 0) { }
+    focusAnim(0, 1, 0),
+    gameFocusAnim(0, 1, 0),
+    backButton({1500, 850}, "go back", backButtonStyle()) { }
 
 ui::Control &Client::referencePage(const PageType type) {
   switch (type) {
@@ -30,7 +31,7 @@ void Client::drawPage(ui::Frame &f, const PageType type,
                       ui::Control &page) {
   float alpha, scale, offsetAmnt, titleAlpha;
 
-  if (type == focusedPage) {
+  if (type == state.focusedPage) {
     alpha = 1;
     scale = linearTween(unfocusedPageScale, 1, focusAnim);
     offsetAmnt = linearTween(1, 0, focusAnim);
@@ -64,11 +65,11 @@ void Client::attachState() {
 void Client::tick(float delta) {
   state.uptime += delta;
 
-  if (state.game) {
-    state.game->tick(delta);
-  }
+  if (state.game) state.game->tick(delta);
 
-  focusAnim += delta * pageFocusAnimSpeed * (pageFocused ? 1 : -1);
+  focusAnim += delta * pageFocusAnimSpeed * (state.pageFocused ? 1 : -1);
+  gameFocusAnim += delta * gameFocusAnimSpeed * (state.gameInFocus() ? 1 : -1);
+
   if (focusAnim == 0) backButton.reset();
   homePage.tick(delta);
   settingsPage.tick(delta);
@@ -77,24 +78,21 @@ void Client::tick(float delta) {
 }
 
 void Client::render(ui::Frame &f) {
-  bool drawPages = true;
   bool gameUnderneath = false;
-
   if (state.game) {
     state.game->render(f);
-    if (state.game->inFocus) {
-      drawPages = false;
-    } else {
-      gameUnderneath = true;
-    }
+    gameUnderneath = true;
   }
 
-  if (drawPages) {
+  if (gameFocusAnim != 1) {
     if (!gameUnderneath) {
       f.drawSprite(textureOf(Res::MenuBackground), {0, 0}, {0, 0, 1600, 900});
     }
 
-    f.withAlpha(gameUnderneath ? 0.5f : 1, [&]() {
+    f.withAlpha(gameUnderneath
+                ? linearTween(1, 0, gameFocusAnim) *
+                  linearTween(0.5, 1, focusAnim)
+                : 1, [&]() {
       pageRects = {};
       drawPage(f, PageType::Home, homeOffset, "home",
                homePage);
@@ -108,33 +106,35 @@ void Client::render(ui::Frame &f) {
 }
 
 void Client::handle(const sf::Event &event) {
-  if (state.game) {
+  if (state.gameInFocus()) {
     state.game->handle(event);
   } else {
     if (event.type == sf::Event::KeyPressed) {
       if (event.key.code == sf::Keyboard::Escape) {
-        pageFocused = false;
+        if (state.pageFocused) state.pageFocused = false;
+        else {
+          if (state.game) state.game->inFocus = true;
+        }
         return;
       }
     }
 
-    if (focusAnim > 0)
-      backButton.handle(event);
+    if (focusAnim > 0) backButton.handle(event);
 
     if (focusAnim == 1) {
       // we're totally focused on a certain control
-      referencePage(focusedPage).handle(event);
+      referencePage(state.focusedPage).handle(event);
     } else {
       // we're still in the control menu
       if (event.type == sf::Event::MouseButtonReleased) {
         const sf::Vector2f mouseClick =
             {(float) event.mouseButton.x, (float) event.mouseButton.y};
 
-        pageFocused = false;
+        state.pageFocused = false;
         for (auto &rect : pageRects) {
           if (rect.first.contains(mouseClick)) {
-            pageFocused = true;
-            focusedPage = rect.second;
+            state.pageFocused = true;
+            state.focusedPage = rect.second;
           }
         }
       }
@@ -143,12 +143,20 @@ void Client::handle(const sf::Event &event) {
 }
 
 void Client::signalRead() {
+  homePage.signalRead();
+  listingPage.signalRead();
+  settingsPage.signalRead();
+
   if (!backButton.clickSignal.empty()) {
-    pageFocused = false;
+    state.pageFocused = false;
   }
 }
 
 void Client::signalClear() {
+  homePage.signalClear();
+  listingPage.signalClear();
+  settingsPage.signalClear();
+
   backButton.signalClear();
 }
 
