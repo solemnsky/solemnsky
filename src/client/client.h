@@ -28,6 +28,7 @@ private:
   ListingPage listingPage;
   SettingsPage settingsPage;
   PageType focusedPage;
+  ui::Button backButton;
   bool pageFocused;
   Clamped focusAnim; // `elem` [0, 1], 1 is fully focused
 
@@ -43,21 +44,17 @@ private:
   const sf::Vector2f settingsOffset{550, 98.302};
 
   /**
-   * The game, which may or may not exist at a particular moment.
-   */
-  std::unique_ptr<Game> game;
-
-  void startTutorial();
-
-  /**
    * Misc helpers.
    */
-  void drawPage(ui::Frame &f, const PageType type, const sf::Vector2f &offset,
-                ui::Control &page);
   ui::Control &referencePage(const PageType type);
+  void drawPage(ui::Frame &f, const PageType type,
+                const sf::Vector2f &offset, const std::string &name,
+                ui::Control &page);
 
 public:
   Client();
+
+  void attachState() override;
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;

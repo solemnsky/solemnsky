@@ -9,6 +9,7 @@
 #include <tuple>
 #include <functional>
 
+namespace ui {
 template<typename T>
 class RollingSampler {
 private:
@@ -30,14 +31,15 @@ struct SamplerValue {
   const std::pair<T, T> minmax;
   const T max;
   const T min;
-  const T mean;
+  const float mean;
 
   /**
    * Undefined for null sampler data.
    */
   SamplerValue(RollingSampler<T>);
 
-  std::string printWith(std::function<std::string(T)> show);
+  std::string printWith(std::function<std::string(T)> show,
+                        std::function<std::string(float)> showFloat);
 };
 
 /**
@@ -57,5 +59,6 @@ public:
 
   std::string print();
 };
+}
 
 #endif //SOLEMNSKY_PROFILER_H

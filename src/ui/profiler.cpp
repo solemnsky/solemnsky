@@ -2,12 +2,13 @@
 #include "profiler.h"
 #include "base/sysutil.h"
 
+namespace ui {
 /****
  * SamplerValue
  */
 
 template<typename T>
-static const T getMean(std::vector<T> data) {
+static const float getMean(std::vector<T> data) {
   T sum = 0;
   for (T i : data) sum += i;
   return (sum / (T) data.size());
@@ -31,8 +32,10 @@ SamplerValue<T>::SamplerValue(RollingSampler<T> sampler) :
     mean{getMean(sampler.data)} { }
 
 template<typename T>
-std::string SamplerValue<T>::printWith(std::function<std::string(T)> show) {
-  return show(min) + "->" + show(max) + "~~" + show(mean);
+std::string SamplerValue<T>::printWith(
+    std::function<std::string(T)> show,
+    std::function<std::string(float)> showFloat) {
+  return show(min) + "->" + show(max) + "~~" + showFloat(mean);
 }
 
 /****
@@ -58,17 +61,21 @@ static const std::string showInt(int i) {
   return std::to_string(i);
 }
 
+static const std::string showFloat(float f) {
+  return "(" + std::to_string(f) + ")";
+}
+
 std::string Profiler::print() {
   SamplerValue<float> cycleValue{cycleTime}, logicValue{logicTime}, renderValue{
       renderTime};
   SamplerValue<int> primValue{primCount};
   return
-      "cycle period: " + cycleValue.printWith(showTime) +
+      "cycle period: " + cycleValue.printWith(showTime, showTime) +
       " ; cycle frequency: " + showFps(1 / cycleValue.mean) +
       "\n" +
-      "logic delta: " + logicValue.printWith(showTime) +
-      " ; render delta " + renderValue.printWith(showTime) +
+      "logic delta: " + logicValue.printWith(showTime, showTime) +
+      " ; render delta " + renderValue.printWith(showTime, showTime) +
       "\n" +
-      "prim count: " + primValue.printWith(showInt);
+      "prim count: " + primValue.printWith(showInt, showFloat);
 }
-
+}

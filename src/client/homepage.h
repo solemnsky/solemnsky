@@ -9,10 +9,11 @@
 
 class HomePage : public ui::Control {
 private:
-  ClientState *state;
+  ui::Button tutorialButton;
+  ClientState *const state;
 
 public:
-  HomePage(ClientState *state);
+  HomePage(ClientState *const state);
 
   /**
    * Control interface.
@@ -20,6 +21,9 @@ public:
   virtual void tick(float delta) override;
   virtual void render(ui::Frame &f) override;
   virtual void handle(const sf::Event &event) override;
+
+  void signalRead() override;
+  void signalClear() override;
 };
 
 #endif //SOLEMNSKY_HOMEPAGE_H

@@ -5,6 +5,7 @@
 #define SOLEMNSKY_CLIENTSTATE_H
 
 #include "ui/ui.h"
+#include "game/game.h"
 
 /**
  * The persistent settings that tweaks how a client works on conceivably
@@ -27,7 +28,12 @@ struct Settings {
  * everywhere.
  */
 struct ClientState {
+  ui::AppState *appState; // appState for all sub-controls
+
   Settings settings;
+
+  std::unique_ptr<Game> game;
+
   float uptime;
 };
 

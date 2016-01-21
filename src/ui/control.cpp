@@ -70,30 +70,46 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
   std::unique_ptr<Control> ctrl =
       std::make_unique<detail::SplashScreen>(initCtrl);
 
-  appLog(LogType::Notice, "Creating window ...");
+  /**
+   * Create the window.
+   */
+  appLog(LogType::Notice, "Creating window / various things ...");
 
   sf::ContextSettings settings;
   settings.antialiasingLevel = 8;
   sf::RenderWindow window(sf::VideoMode(800, 600), "My window",
                           sf::Style::Default, settings);
   window.setVerticalSyncEnabled(true);
+  window.setKeyRepeatEnabled(false);
 
-  appLog(LogType::Notice, "Starting application ...");
-
-  Profiler profiler{100};
+  ui::Profiler profiler{100};
   Cooldown profileCooldown{500}, resizeCooldown{1};
 
   sf::Clock cycleClock, profileClock;
-  const float tickStep = 1 / 60.0f;
-  float rollingTickTime = 0;
-  float cycleDelta = 0;
+  constexpr float tickStep = 1 / 60.0f;
+  float rollingTickTime = 0, cycleDelta = 0;
 
   Frame frame(window);
   sf::Event event;
+  appLog(LogType::Notice, "Finished creating window.");
+
+  /**
+   * Create appState, start game loop.
+   */
+  appLog(LogType::Notice, "Running application...");
+
+  AppState appState(&window, &profiler);
+
+  ctrl->appState = &appState;
+  ctrl->attachState();
 
   while (window.isOpen()) {
     if (ctrl->quitting) window.close();
-    if (ctrl->next) ctrl = std::move(ctrl->next);
+    if (ctrl->next) {
+      ctrl = std::move(ctrl->next);
+      ctrl->appState = &appState;
+      ctrl->attachState();
+    }
 
     /*
      * Ticking
@@ -158,7 +174,8 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
     if (!window.hasFocus()) sf::sleep(sf::milliseconds(16));
   }
 
-  appLog(LogType::Notice, "Exiting app.");
+  appLog(LogType::Notice, "Exiting app, goodbye!");
 }
+
 }
 

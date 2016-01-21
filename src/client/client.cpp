@@ -1,17 +1,18 @@
 #include "client.h"
 
+ui::Button::Style backButtonStyle() {
+  return {};
+}
+
 Client::Client() :
     state(),
     homePage(&state),
     listingPage(&state),
     settingsPage(&state),
     focusedPage(PageType::Home),
+    backButton({1500, 850}, "go back", backButtonStyle()),
     pageFocused(false),
     focusAnim(0, 1, 0) { }
-
-void Client::startTutorial() {
-  game = std::make_unique<Tutorial>(&state);
-}
 
 ui::Control &Client::referencePage(const PageType type) {
   switch (type) {
@@ -24,51 +25,64 @@ ui::Control &Client::referencePage(const PageType type) {
   }
 }
 
-void Client::drawPage(
-    ui::Frame &f,
-    const PageType type,
-    const sf::Vector2f &offset,
-    ui::Control &page) {
-  float alpha, scale, offsetAmnt;
+void Client::drawPage(ui::Frame &f, const PageType type,
+                      const sf::Vector2f &offset, const std::string &name,
+                      ui::Control &page) {
+  float alpha, scale, offsetAmnt, titleAlpha;
 
   if (type == focusedPage) {
     alpha = 1;
     scale = linearTween(unfocusedPageScale, 1, focusAnim);
     offsetAmnt = linearTween(1, 0, focusAnim);
+    titleAlpha = linearTween(1, 0, focusAnim);
   } else {
     alpha = linearTween(1, 0, focusAnim);
     scale = unfocusedPageScale;
     offsetAmnt = 1;
+    titleAlpha = 1;
   }
 
   sf::Transform &transform =
       sf::Transform().translate(offsetAmnt * offset).scale(scale, scale);
 
-  f.withAlphaTransform(alpha, transform, [&]() { page.render(f); });
+  f.withAlpha(alpha, [&]() {
+    f.withAlpha(titleAlpha, [&]() {
+      f.drawText(sf::Vector2f(0, -40) + offsetAmnt * offset, {name}, 40);
+    });
+    f.withTransform(transform, [&]() {
+      page.render(f);
+    });
+  });
 
   pageRects.push_back({transform.transformRect({0, 0, 1600, 900}), type});
+}
+
+void Client::attachState() {
+  state.appState = appState;
 }
 
 void Client::tick(float delta) {
   state.uptime += delta;
 
-  if (game) {
-    game->tick(delta);
+  if (state.game) {
+    state.game->tick(delta);
   }
 
   focusAnim += delta * pageFocusAnimSpeed * (pageFocused ? 1 : -1);
+  if (focusAnim == 0) backButton.reset();
   homePage.tick(delta);
   settingsPage.tick(delta);
   listingPage.tick(delta);
+  backButton.tick(delta);
 }
 
 void Client::render(ui::Frame &f) {
   bool drawPages = true;
   bool gameUnderneath = false;
 
-  if (game) {
-    game->render(f);
-    if (game->inFocus) {
+  if (state.game) {
+    state.game->render(f);
+    if (state.game->inFocus) {
       drawPages = false;
     } else {
       gameUnderneath = true;
@@ -82,16 +96,20 @@ void Client::render(ui::Frame &f) {
 
     f.withAlpha(gameUnderneath ? 0.5f : 1, [&]() {
       pageRects = {};
-      drawPage(f, PageType::Home, homeOffset, homePage);
-      drawPage(f, PageType::Settings, listingOffset, listingPage);
-      drawPage(f, PageType::Listing, settingsOffset, settingsPage);
+      drawPage(f, PageType::Home, homeOffset, "home",
+               homePage);
+      drawPage(f, PageType::Settings, listingOffset, "server listing",
+               listingPage);
+      drawPage(f, PageType::Listing, settingsOffset, "settings",
+               settingsPage);
+      f.withAlpha(focusAnim, [&]() { backButton.render(f); });
     });
   }
 }
 
 void Client::handle(const sf::Event &event) {
-  if (game) {
-    game->handle(event);
+  if (state.game) {
+    state.game->handle(event);
   } else {
     if (event.type == sf::Event::KeyPressed) {
       if (event.key.code == sf::Keyboard::Escape) {
@@ -99,6 +117,9 @@ void Client::handle(const sf::Event &event) {
         return;
       }
     }
+
+    if (focusAnim > 0)
+      backButton.handle(event);
 
     if (focusAnim == 1) {
       // we're totally focused on a certain control
@@ -122,8 +143,12 @@ void Client::handle(const sf::Event &event) {
 }
 
 void Client::signalRead() {
+  if (!backButton.clickSignal.empty()) {
+    pageFocused = false;
+  }
 }
 
 void Client::signalClear() {
+  backButton.signalClear();
 }
 

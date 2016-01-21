@@ -13,17 +13,35 @@
 #include <functional>
 #include <memory>
 #include "frame.h"
+#include "profiler.h"
 
 namespace ui {
 
+/**
+ * Various lower level settings and SFML-provided state for us to access
+ * occasionally.
+ */
+struct AppState {
+  AppState(sf::RenderWindow *const window,
+           Profiler *const profiler) :
+      window(window), profiler(profiler) { }
+
+  sf::RenderWindow *const window;
+  Profiler *const profiler;
+};
+
 class Control {
+private:
 public:
   virtual ~Control() { }
 
   /**
-   * SFML window, safe to use in any of the callback functions.
+   * SFML window, safe to use in any of the callback functions if you're a
+   * top-level control. This feels kind of hacky, but it'll have to do.
    */
-  sf::RenderWindow *window;
+  AppState *appState;
+
+  virtual void attachState() { }
 
   /**
    * Signals to the app loop.

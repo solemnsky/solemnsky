@@ -6,7 +6,8 @@
 #define SOLEMNSKY_GAME_H
 
 #include "ui/ui.h"
-#include "client/clientstate.h"
+
+class ClientState;
 
 class Game : public ui::Control {
 protected:

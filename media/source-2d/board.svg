@@ -7,6 +7,7 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="210mm"
@@ -15,12 +16,42 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   inkscape:export-filename="/home/magneticduck/solemnsky/Assets/title.png"
+   inkscape:export-filename="C:\Users\Chris\ClionProjects\solemnsky\media\render-2d\gameicon.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
    sodipodi:docname="board.svg">
   <defs
-     id="defs4" />
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.1811 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09449 : 526.1811 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.7874 : 1"
+       id="perspective4449" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4239">
+      <stop
+         style="stop-color:#00b2cd;stop-opacity:0"
+         offset="0"
+         id="stop4241" />
+      <stop
+         style="stop-color:#889cff;stop-opacity:1"
+         offset="1"
+         id="stop4243" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4239"
+       id="linearGradient4245"
+       x1="1308.5715"
+       y1="462.36218"
+       x2="1458.5715"
+       y2="462.36218"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(14.945849,3.1965715)" />
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -28,18 +59,18 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="294.69498"
-     inkscape:cy="696.25708"
+     inkscape:zoom="0.32"
+     inkscape:cx="1975.9657"
+     inkscape:cy="-48.176595"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      showborder="false"
-     inkscape:window-width="1594"
-     inkscape:window-height="873"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="0" />
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -48,7 +79,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -56,9 +87,249 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <text
+       transform="matrix(0.99947793,-0.032309,0.032309,0.99947793,0,0)"
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:45.57533646px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-146.19717"
+       y="106.30598"
+       id="text4354-3"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4356-2"
+         x="-146.19717"
+         y="106.30598" /></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text4176"
+       y="636.24951"
+       x="3389.9675"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         y="636.24951"
+         x="3389.9675"
+         id="tspan4178"
+         sodipodi:role="line">pageselector.png</tspan><tspan
+         id="tspan4180"
+         y="686.24951"
+         x="3389.9675"
+         sodipodi:role="line" /></text>
     <g
-       id="g4376"
-       transform="translate(-262.85714,-471.42857)">
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\Users\Chris\ClionProjects\solemnsky\media\render-2d\mainmenuicon.png"
+       id="g4283"
+       transform="translate(2157.7616,824.58686)">
+      <g
+         id="g4416"
+         inkscape:export-filename="C:\Users\Chris\ClionProjects\solemnsky\media\render-2d\homeicon.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90"
+         transform="translate(-260.61936,-14.142136)">
+        <rect
+           y="1156.6479"
+           x="472.54898"
+           height="150"
+           width="150"
+           id="rect4182"
+           style="fill:#00b2cd;fill-opacity:0" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text4184"
+           y="1244.9813"
+           x="514.39325"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           xml:space="preserve"><tspan
+             y="1244.9813"
+             x="514.39325"
+             id="tspan4186"
+             sodipodi:role="line">Home</tspan></text>
+      </g>
+    </g>
+    <text
+       sodipodi:linespacing="125%"
+       id="text4188"
+       y="306.66565"
+       x="2858.2388"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"
+       transform="matrix(0.82968766,0.5582279,-0.5582279,0.82968766,0,0)"><tspan
+         y="306.66565"
+         x="2858.2388"
+         sodipodi:role="line"
+         id="tspan4412">homeicon.png</tspan><tspan
+         id="tspan4192"
+         y="356.66565"
+         x="2858.2388"
+         sodipodi:role="line" /></text>
+    <g
+       id="g4444"
+       transform="translate(2420.6187,1287.9627)"
+       inkscape:export-filename="C:\Users\Chris\ClionProjects\solemnsky\media\render-2d\gameicon.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         style="fill:#00b2cd;fill-opacity:0"
+         id="rect4182-8"
+         width="150"
+         height="150"
+         x="601.80225"
+         y="679.13" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="643.52936"
+         y="767.46332"
+         id="text4184-3"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4186-8"
+           x="643.52936"
+           y="767.46332">Game</tspan></text>
+    </g>
+    <text
+       sodipodi:linespacing="125%"
+       id="text4188-2"
+       y="2148.1331"
+       x="3099.6125"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         id="tspan4224"
+         y="2148.1331"
+         x="3099.6125"
+         sodipodi:role="line">gameicon.png</tspan><tspan
+         id="tspan4192-6"
+         y="2198.1331"
+         x="3099.6125"
+         sodipodi:role="line" /></text>
+    <g
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\Users\Chris\ClionProjects\solemnsky\media\render-2d\pageselector.png"
+       id="g4249"
+       transform="translate(2157.7616,816.53406)">
+      <rect
+         style="fill:url(#linearGradient4245);fill-opacity:1"
+         id="rect4174"
+         width="150"
+         height="900"
+         x="1323.5173"
+         y="15.558748" />
+      <rect
+         style="fill:#000000;fill-opacity:1"
+         id="rect4247"
+         width="4.3476205"
+         height="900"
+         x="1323.5173"
+         y="15.558748" />
+    </g>
+    <g
+       id="g4363"
+       inkscape:export-filename="C:\Users\Chris\ClionProjects\solemnsky\media\render-2d\settingsicon.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       transform="translate(2924.9074,923.2977)">
+      <rect
+         style="fill:#00b2cd;fill-opacity:0"
+         id="rect4182-0"
+         width="150"
+         height="150"
+         x="-337.63968"
+         y="1043.795" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="-316.81363"
+         y="1132.1284"
+         id="text4184-2"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4186-7"
+           x="-316.81363"
+           y="1132.1284">Settings</tspan></text>
+    </g>
+    <text
+       sodipodi:linespacing="125%"
+       id="text4188-7"
+       y="3197.3435"
+       x="1342.1097"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"
+       transform="matrix(0.84390741,-0.53648885,0.53648885,0.84390741,0,0)"><tspan
+         id="tspan4192-9"
+         y="3197.3435"
+         x="1342.1097"
+         sodipodi:role="line">listingicon.png</tspan><tspan
+         y="3247.3435"
+         x="1342.1097"
+         sodipodi:role="line"
+         id="tspan4648" /></text>
+    <g
+       id="g4431"
+       transform="translate(2043.8415,1282.912)">
+      <g
+         transform="translate(486.89353,-432.34529)"
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="C:\Users\Chris\ClionProjects\solemnsky\media\render-2d\listingicon.png"
+         id="g4407">
+        <rect
+           y="1116.526"
+           x="274.10934"
+           height="150"
+           width="150"
+           id="rect4182-0-0"
+           style="fill:#00b2cd;fill-opacity:0" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text4184-2-5"
+           y="1204.8594"
+           x="305.99008"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           xml:space="preserve"><tspan
+             y="1204.8594"
+             x="305.99008"
+             id="tspan4186-7-6"
+             sodipodi:role="line">Listing</tspan></text>
+      </g>
+    </g>
+    <text
+       sodipodi:linespacing="125%"
+       id="text4188-7-6"
+       y="2913.313"
+       x="1494.5964"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"
+       transform="matrix(0.94019393,-0.34063966,0.34063966,0.94019393,0,0)"><tspan
+         y="2913.313"
+         x="1494.5964"
+         id="tspan4190-5-6"
+         sodipodi:role="line">settingsicon.png</tspan><tspan
+         id="tspan4321-5"
+         y="2963.313"
+         x="1494.5964"
+         sodipodi:role="line" /><tspan
+         id="tspan4192-9-5"
+         y="3013.313"
+         x="1494.5964"
+         sodipodi:role="line" /></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="689.15039"
+       y="107.6776"
+       id="text4384"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4386"
+         x="689.15039"
+         y="107.6776">title.png</tspan></text>
+    <g
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\Users\Chris\ClionProjects\solemnsky\media\render-2d\title.png"
+       id="g4253"
+       transform="translate(631.19061,138.17252)">
       <rect
          y="14.189685"
          x="-631.19061"
@@ -66,43 +337,158 @@
          width="1600"
          id="rect4160"
          style="opacity:1;fill:#889cff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none" />
-      <g
-         transform="matrix(1.0605663,-0.03428374,0.03428374,1.0605663,59.681449,-58.596276)"
-         id="g4370">
-        <text
-           xml:space="preserve"
-           style="font-style:normal;font-weight:normal;font-size:121.8865509px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           x="-251.73181"
-           y="528.97876"
-           id="text4156"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             id="tspan4158"
-             x="-251.73181"
-             y="528.97876">SolemnSky</tspan></text>
-        <text
-           xml:space="preserve"
-           style="font-style:normal;font-weight:normal;font-size:28.51830673px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           x="47.603443"
-           y="559.66461"
-           id="text4354"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             id="tspan4356"
-             x="47.603443"
-             y="559.66461">development preview</tspan></text>
-      </g>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4156"
+         y="492.45621"
+         x="-217.25446"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:165.20075989px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"
+         transform="matrix(0.99947793,-0.032309,0.032309,0.99947793,0,0)"><tspan
+           y="492.45621"
+           x="-217.25446"
+           id="tspan4158"
+           sodipodi:role="line">SolemnSky</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4354"
+         y="553.60077"
+         x="-24.609711"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:79.79875183px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"
+         transform="matrix(0.99947793,-0.032309,0.032309,0.99947793,0,0)"><tspan
+           y="553.60077"
+           x="-24.609711"
+           id="tspan4356"
+           sodipodi:role="line">development preview</tspan></text>
+    </g>
+    <rect
+       style="fill:#000000;fill-opacity:1"
+       id="rect4465"
+       width="500"
+       height="281.24997"
+       x="202.24855"
+       y="292.06519" />
+    <rect
+       style="fill:#000000;fill-opacity:1"
+       id="rect4465-5"
+       width="500"
+       height="281.24997"
+       x="897.7514"
+       y="292.06519" />
+    <rect
+       style="fill:#000000;fill-opacity:1"
+       id="rect4465-2"
+       width="500"
+       height="281.24997"
+       x="550"
+       y="672.81018" />
+    <g
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\Users\Chris\ClionProjects\solemnsky\media\render-2d\title.png"
+       id="g4253-3"
+       transform="translate(2659.3156,-671.20248)">
+      <rect
+         y="14.189685"
+         x="-631.19061"
+         height="900"
+         width="1600"
+         id="rect4160-3"
+         style="opacity:1;fill:#889cff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4156-8"
+         y="492.45621"
+         x="-217.25446"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:165.20075989px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"
+         transform="matrix(0.99947793,-0.032309,0.032309,0.99947793,0,0)"><tspan
+           y="492.45621"
+           x="-217.25446"
+           id="tspan4158-4"
+           sodipodi:role="line">SolemnSky</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4354-0"
+         y="553.60077"
+         x="-24.609711"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:79.79875183px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"
+         transform="matrix(0.99947793,-0.032309,0.032309,0.99947793,0,0)"><tspan
+           y="553.60077"
+           x="-24.609711"
+           id="tspan4356-20"
+           sodipodi:role="line">development preview</tspan></text>
+    </g>
+    <rect
+       style="fill:#000000;fill-opacity:1"
+       id="rect4465-6"
+       width="500"
+       height="281.24997"
+       x="2230.3735"
+       y="-517.30981" />
+    <rect
+       style="fill:#000000;fill-opacity:1"
+       id="rect4465-5-8"
+       width="500"
+       height="281.24997"
+       x="2925.8765"
+       y="-517.30981" />
+    <rect
+       style="fill:#000000;fill-opacity:1"
+       id="rect4465-2-7"
+       width="500"
+       height="281.24997"
+       x="2578.125"
+       y="-136.56479" />
+    <g
+       id="g4703"
+       inkscape:export-filename="C:\Users\Chris\ClionProjects\solemnsky\media\render-2d\menubackground.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         y="1346.1122"
+         x="156.24998"
+         height="900"
+         width="1600"
+         id="rect4160-0"
+         style="opacity:1;fill:#818181;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4156-4"
+         y="1672.2678"
+         x="34.951935"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:364.05239868px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"
+         transform="matrix(0.99718158,-0.07502598,0.07502598,0.99718158,0,0)"><tspan
+           y="1672.2678"
+           x="34.951935"
+           id="tspan4158-8"
+           sodipodi:role="line">SolemnSky</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4354-5"
+         y="1731.8308"
+         x="1028.1838"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:79.79875183px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"
+         transform="matrix(0.99723161,-0.07435807,0.07435807,0.99723161,0,0)"><tspan
+           y="1731.8308"
+           x="1028.1838"
+           id="tspan4356-4"
+           sodipodi:role="line">development preview</tspan></text>
     </g>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="-204.89737"
-       y="-501.92349"
-       id="text4384"
+       x="696.875"
+       y="1274.2372"
+       id="text4699"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
-         id="tspan4386"
-         x="-204.89737"
-         y="-501.92349">title.png</tspan></text>
+         id="tspan4701"
+         x="696.875"
+         y="1274.2372">menubackground.png</tspan></text>
   </g>
 </svg>
