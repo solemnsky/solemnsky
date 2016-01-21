@@ -6,14 +6,20 @@
 
 #include "ui/ui.h"
 #include "clientstate.h"
+#include "page.h"
 
-class HomePage : public ui::Control {
+class HomePage : public Page {
 private:
   ui::Button tutorialButton;
   ClientState *const state;
 
 public:
   HomePage(ClientState *const state);
+
+  /**
+   * Page interface.
+   */
+  void reset() override;
 
   /**
    * Control interface.

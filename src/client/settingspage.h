@@ -7,7 +7,9 @@
 #include "ui/ui.h"
 #include "clientstate.h"
 
-class SettingsPage : public ui::Control {
+#include "page.h"
+
+class SettingsPage : public Page {
 private:
   ClientState *state;
 
@@ -17,12 +19,16 @@ public:
   ui::Signal<ui::None> completeSignal; // user has completed entering settings
 
   /**
+   * Page interface.
+   */
+  void reset() override;
+
+  /**
    * Control interface.
    */
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   void handle(const sf::Event &event) override;
-
 
   void signalRead() override;
   void signalClear() override;

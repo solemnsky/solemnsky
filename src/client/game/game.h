@@ -16,10 +16,8 @@ protected:
 public:
   Game(ClientState *state) : state(state) { }
 
-  /**
-   * inFocus is modified by external and internal forces
-   */
-  bool inFocus;
+  bool inFocus; // set to true by outside forces, false by inside forces
+  bool concluded; // modified only by the game itself
 
   std::string name; // description of the game, given by the game itself
 };

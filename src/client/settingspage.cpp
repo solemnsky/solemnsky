@@ -6,6 +6,10 @@
 
 SettingsPage::SettingsPage(ClientState *state) : state(state) { }
 
+void SettingsPage::reset() {
+
+}
+
 void SettingsPage::tick(float delta) {
 
 }
