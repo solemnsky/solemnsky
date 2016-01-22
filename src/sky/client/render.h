@@ -40,7 +40,7 @@ const struct RndrParam {
 
 /**
  * Plain data structure with all the animation state of a plane, alive or not.
- * This is derived from the PlaneState over time after having been thrust
+ * This is derived from the Plane over time after having been thrust
  * into existence at the joining of a plane into the sky, reset to default
  * at each respawn. It is is not necessary to sync this over the network.
  */
@@ -56,7 +56,7 @@ struct PlaneAnimState {
   /**
    * Mutating state.
    */
-  void tick(class Plane *parent, const float delta);
+  void tick(class PlaneHandle *parent, const float delta);
   void reset(); // when the plane respawns
   // death is animated in the a normal course of events, but respawning changes
   // everything anew
@@ -77,16 +77,16 @@ private:
   void renderBars(ui::Frame &f,
                   std::vector<std::pair<float, const sf::Color &>> bars,
                   sf::FloatRect area);
-  void renderPlane(ui::Frame &f, const int pid, Plane &plane);
+  void renderPlane(ui::Frame &f, const int pid, PlaneHandle &plane);
 
   /**
    * Subsystem listeners.
    */
   void tick(float delta) override;
-  void joinPlane(const PID pid, Plane *plane) override;
+  void joinPlane(const PID pid, PlaneHandle *plane) override;
   void quitPlane(const PID pid) override;
-  void spawnPlane(const PID pid, Plane *plane) override;
-  void killPlane(const PID pid, Plane *plane) override;
+  void spawnPlane(const PID pid, PlaneHandle *plane) override;
+  void killPlane(const PID pid, PlaneHandle *plane) override;
 
 public:
   Render(Sky *sky);

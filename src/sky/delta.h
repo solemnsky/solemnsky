@@ -5,9 +5,16 @@
 #define SOLEMNSKY_DELTA_H
 
 /**
- * The resolved delta between two Sky states.
+ * Delta between two PlaneVitalStates
  */
-struct Delta {
+struct PlaneVitalStateDelta {
+
+};
+
+/**
+ * Delta between two PlaneStates.
+ */
+struct PlaneStateDelta {
 
 };
 

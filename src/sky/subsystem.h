@@ -37,13 +37,13 @@ private:
 
   virtual void tick(const float delta) { }
 
-  virtual void joinPlane(const PID pid, Plane *plane) { }
+  virtual void joinPlane(const PID pid, PlaneHandle *plane) { }
 
   virtual void quitPlane(const PID pid) { }
 
-  virtual void spawnPlane(const PID pid, Plane *plane) { }
+  virtual void spawnPlane(const PID pid, PlaneHandle *plane) { }
 
-  virtual void killPlane(const PID pid, Plane *plane) { }
+  virtual void killPlane(const PID pid, PlaneHandle *plane) { }
 
 public:
   Subsystem(Sky *sky) : sky(sky) { }

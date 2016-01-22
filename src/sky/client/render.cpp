@@ -16,7 +16,7 @@ PlaneAnimState::PlaneAnimState() :
     flipState(0),
     rollState(0) { }
 
-void PlaneAnimState::tick(Plane *parent, const float delta) {
+void PlaneAnimState::tick(PlaneHandle *parent, const float delta) {
   using namespace detail;
 
   auto &state = parent->state;
@@ -83,10 +83,10 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
 };
 
 void Render::renderPlane(
-    ui::Frame &f, const int pid, sky::Plane &plane) {
+    ui::Frame &f, const int pid, sky::PlaneHandle &plane) {
   using namespace detail; // for rndrParam
   if (plane.state) {
-    PlaneState &state = *plane.state;
+    PlaneVital &state = *plane.state;
     detail::PlaneAnimState &planeAnimState = animState.at(pid);
 
     const auto &hitbox = state.tuning.hitbox;
@@ -176,7 +176,7 @@ void Render::tick(float delta) {
     pair.second.tick(sky->getPlane(pair.first), delta);
 }
 
-void Render::joinPlane(const PID pid, Plane *plane) {
+void Render::joinPlane(const PID pid, PlaneHandle *plane) {
   animState[pid] = detail::PlaneAnimState();
 }
 
@@ -184,10 +184,10 @@ void Render::quitPlane(const PID pid) {
   animState.erase(pid);
 }
 
-void Render::spawnPlane(const PID pid, Plane *plane) {
+void Render::spawnPlane(const PID pid, PlaneHandle *plane) {
   animState.at(pid).reset();
 }
 
-void Render::killPlane(const PID pid, Plane *plane) { }
+void Render::killPlane(const PID pid, PlaneHandle *plane) { }
 
 }
