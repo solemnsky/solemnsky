@@ -2,8 +2,8 @@
 
 namespace sky {
 
-Physics::Physics(const sf::Vector2f &dims) :
-    dims(dims),
+Physics::Physics(const Map &map) :
+    dims(map.dimensions),
     world({0, Settings().gravity / Settings().distanceScale}) {
   CTOR_LOG("physics");
 

@@ -12,6 +12,7 @@
 #include "flight.h"
 #include <memory>
 #include "subsystem.h"
+#include "map.h"
 
 namespace sky {
 
@@ -20,9 +21,10 @@ private:
   std::vector<Subsystem *> subsystems;
 
 public:
-  Sky(const sf::Vector2f &dims);
+  Sky(const Map &map);
   ~Sky();
 
+  const Map map;
   Physics physics;
 
   /**

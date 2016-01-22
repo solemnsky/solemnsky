@@ -14,8 +14,7 @@ struct PlaneVitalStateDelta {
 /**
  * Delta between two PlaneStates.
  */
-struct PlaneStateDelta {
-
+struct PlaneDelta {
 };
 
 #endif //SOLEMNSKY_DELTA_H
