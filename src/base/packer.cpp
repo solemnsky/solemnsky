@@ -35,12 +35,12 @@ void Packet::writeInt(const int x) {
   head += 4;
 }
 
-char Packet::readChar() {
+char Packet::unpackChar() {
   head++;
   return data[head - 1];
 }
 
-void Packet::writeChar(const char x) {
+void Packet::packChar(const char x) {
   data[head] = x;
   head++;
 }
@@ -55,11 +55,11 @@ void Packet::dump() {
  * Predefined rules.
  */
 
-float PackFloat::read(Packet &packet) {
+float PackFloat::unpack(Packet &packet) const {
   return 0;
 }
 
-void PackFloat::write(Packet &packet, float &t) {
+void PackFloat::pack(Packet &packet, float &t) const {
   ;
 }
 

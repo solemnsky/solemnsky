@@ -12,11 +12,8 @@
  */
 class Packet {
 private:
-  enum {
-    PacketSize = 1024
-  };  // TODO: should I be doing this?
-
   int head = 0;
+
 public:
   Packet();
   Packet(std::vector<char> data);
@@ -29,8 +26,8 @@ public:
   int readInt();
   void writeInt(const int x);
 
-  char readChar();
-  void writeChar(const char x);
+  char unpackChar();
+  void packChar(const char x);
 
   void dump(); // dump to stdout
 };
@@ -42,28 +39,34 @@ public:
  */
 template<typename T>
 struct PackRules {
-  virtual T read(Packet &packet) = 0;
-  virtual void write(Packet &packet, T &t) = 0;
+  virtual T unpack(Packet &packet) const = 0;
+  virtual void pack(Packet &packet, T &t) const = 0;
 };
 
 template<typename T>
-Packet pack(PackRules<T> rules, T x) {
+Packet pack(const PackRules<T> &rules, T x) {
   Packet packet;
-  rules.write(packet, x);
+  rules.pack(packet, x);
+  return packet;
+}
+
+Packet pack(const PackRules<float> &rules, float x) {
+  Packet packet;
+  rules.pack(packet, x);
   return packet;
 }
 
 template<typename T>
-T read(PackRules<T> rules, Packet &packet) {
-  return rules.read(packet);
+T read(const PackRules<T> &rules, Packet &packet) {
+  return rules.unpack(packet);
 }
 
 /**
  * Predefined PackRules.
  */
 struct PackFloat : public PackRules<float> {
-  float read(Packet &packet) override;
-  void write(Packet &packet, float &t) override;
+  float unpack(Packet &packet) const override;
+  void pack(Packet &packet, float &t) const override;
 };
 
 template<typename T>
@@ -74,16 +77,16 @@ struct PackOptional : PackRules<optional<T>> {
       underlyingRules(underlyingRules) { }
 
   optional<T> read(Packet &packet) {
-    char c = packet.readChar();
-    if (c == 'y') return {underlyingRules.read(packet)};
+    char c = packet.unpackChar();
+    if (c == 'y') return {underlyingRules.unpack(packet)};
     else return {};
   }
 
   void write(Packet &packet, optional<T> x) {
     if (x) {
-      packet.writeChar('y');
-      underlyingRules.write(packet, x);
-    } else packet.writeChar('n');
+      packet.packChar('y');
+      underlyingRules.pack(packet, x);
+    } else packet.packChar('n');
   }
 };
 
