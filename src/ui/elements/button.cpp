@@ -50,7 +50,6 @@ void Button::handle(const sf::Event &event) {
     } else {
       inPreClick = false;
       if (isHot) {
-        appLog(LogType::Debug, "clicked");
         clickSignal.push_back({});
       }
     }

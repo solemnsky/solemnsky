@@ -48,7 +48,7 @@ add_library(solemnsky
         src/base/packer.cpp src/base/packer.h)
 target_link_libraries(solemnsky
         sfml-system
-        sfml-network
+        #        sfml-network
         Box2D_shared
         ${Boost_LIBRARIES})
 
@@ -57,7 +57,9 @@ add_executable(solemnsky_server
         src/sky/server/deltacom.cpp
         src/sky/server/deltacom.h
 
+        src/server/server.cpp
         src/server/server.h
+
         src/solemnsky_server.cpp)
 target_link_libraries(solemnsky_server
         solemnsky)
