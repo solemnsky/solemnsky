@@ -31,6 +31,8 @@ public:
 
   char readChar();
   void writeChar(const char x);
+
+  void dump(); // dump to stdout
 };
 
 /**
@@ -59,7 +61,7 @@ T read(PackRules<T> rules, Packet &packet) {
 /**
  * Predefined PackRules.
  */
-struct PackFloat : PackRules<float> {
+struct PackFloat : public PackRules<float> {
   float read(Packet &packet) override;
   void write(Packet &packet, float &t) override;
 };

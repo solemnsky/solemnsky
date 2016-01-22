@@ -17,7 +17,7 @@ private:
   sky::Render renderSystem;
   GameController controller;
 
-  sky::PlaneHandle *plane;
+  sky::Plane *plane;
 
 public:
   Tutorial(ClientState *state);
