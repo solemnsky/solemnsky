@@ -150,8 +150,8 @@ Render::~Render() {
 
 void Render::render(ui::Frame &f, const sf::Vector2f &pos) {
   f.pushTransform(sf::Transform().translate(
-      {-findView(1600, sky->physics.dims.x, pos.x),
-       -findView(900, sky->physics.dims.y, pos.y)}
+      {-findView(1600, sky->map.dimensions.x, pos.x),
+       -findView(900, sky->map.dimensions.y, pos.y)}
   ));
 
   // implicitly draw a background in the {3200, 900} region

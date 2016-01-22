@@ -2,6 +2,10 @@
 
 namespace sky {
 
+Sky::Sky(const Map &map) : map(map), physics(map) {
+
+}
+
 Sky::Sky(const sf::Vector2f &dims) : physics(dims) {
   CTOR_LOG("sky");
 }
@@ -31,7 +35,7 @@ Plane *Sky::joinPlane(const PID pid) {
 }
 
 Plane *Sky::getPlane(const PID pid) {
-  if (planes.find(pid) != planes.end()) return planes[pid].get();
+  if (planes.find(pid) != planes.end()) return &planes[pid]->state;
   else return nullptr;
 }
 

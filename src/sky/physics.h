@@ -10,6 +10,7 @@
 
 #include <Box2D/Box2D.h>
 #include "base/sysutil.h"
+#include "map.h"
 
 namespace sky {
 
@@ -18,7 +19,7 @@ private:
   b2World world;
 
 public:
-  Physics(const sf::Vector2f &dims);
+  Physics(const Map &map);
   ~Physics();
 
   const struct Settings {

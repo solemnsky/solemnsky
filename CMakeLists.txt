@@ -35,6 +35,9 @@ add_library(solemnsky
         src/sky/flight.h
         src/sky/flight.cpp
 
+        src/sky/map.cpp
+        src/sky/map.h
+
         src/sky/physics.h
         src/sky/physics.cpp
 
@@ -42,9 +45,10 @@ add_library(solemnsky
         src/sky/sky.cpp
 
         src/sky/subsystem.h
-        )
+        src/base/packer.cpp src/base/packer.h)
 target_link_libraries(solemnsky
         sfml-system
+        sfml-network
         Box2D_shared
         ${Boost_LIBRARIES})
 
