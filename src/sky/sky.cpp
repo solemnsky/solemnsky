@@ -77,6 +77,7 @@ void Sky::fireLaser(const PID pid) {
  */
 
 void Sky::tick(float delta) {
+
   for (auto &elem : planes) {
     PlaneHandle &plane = *elem.second;
     plane.writeToBody();

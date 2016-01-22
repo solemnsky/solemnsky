@@ -1,4 +1,5 @@
 #include "packer.h"
+#include <iostream>
 
 /****
  * Packet.
@@ -42,6 +43,12 @@ char Packet::readChar() {
 void Packet::writeChar(const char x) {
   data[head] = x;
   head++;
+}
+
+void Packet::dump() {
+  std::cout << "packet: ";
+  for (char c : data) std::cout << c;
+  std::cout << "\n";
 }
 
 /****

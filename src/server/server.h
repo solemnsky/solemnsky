@@ -5,7 +5,8 @@
 #include "base/packer.h"
 
 void runServer() {
-  appLog(LogType::Debug, "hello world");
+  Packet packet = pack(PackFloat(), 1.0f);
+  packet.dump();
 //  sky::Sky sky({1600, 900});
 //  // a client joins
 //  sky.joinPlane(0);

@@ -19,11 +19,12 @@ PlaneAnimState::PlaneAnimState() :
 void PlaneAnimState::tick(PlaneHandle *parent, const float delta) {
   using namespace detail;
 
-  auto &state = parent->state;
-  if (state) {
+  auto vstate = parent->state.vital;
+
+  if (vstate) {
     // potentially switch orientation
-    bool newOrientation = Angle(state->rot + 90) > 180;
-    if (state->rotCtrl == 0) orientation = newOrientation;
+    bool newOrientation = Angle(vstate->rot + 90) > 180;
+    if (vstate->rotCtrl == 0) orientation = newOrientation;
 
     // flipping (when orientation changes)
     approach(flipState, (const float) (orientation ? 1 : 0),
@@ -33,7 +34,7 @@ void PlaneAnimState::tick(PlaneHandle *parent, const float delta) {
     else flipComponent = 90 + flipState * 180;
 
     // rolling (when rotation control is active)
-    approach<float>(rollState, state->rotCtrl,
+    approach<float>(rollState, vstate->rotCtrl,
                     rndrParam.rollSpeed * delta);
 
     roll = flipComponent + rndrParam.rollAmount * rollState;
@@ -85,19 +86,19 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
 void Render::renderPlane(
     ui::Frame &f, const int pid, sky::PlaneHandle &plane) {
   using namespace detail; // for rndrParam
-  if (plane.state) {
-    PlaneVital &state = *plane.state;
+  if (plane.state.vital) {
+    PlaneVital &vstate = *plane.state.vital;
     detail::PlaneAnimState &planeAnimState = animState.at(pid);
 
-    const auto &hitbox = state.tuning.hitbox;
+    const auto &hitbox = vstate.tuning.hitbox;
 
     f.withTransform(
-        sf::Transform().translate(state.pos).rotate(state.rot), [&]() {
+        sf::Transform().translate(vstate.pos).rotate(vstate.rot), [&]() {
 //      f.drawRect(-0.5f * hitbox, 0.5f * hitbox,
-//                 state.stalled ? sf::Color::Red : sf::Color::Green);
+//                 vstate.stalled ? sf::Color::Red : sf::Color::Green);
 
       f.withTransform(
-          sf::Transform().scale(state.afterburner, state.afterburner), [&]() {
+          sf::Transform().scale(vstate.afterburner, vstate.afterburner), [&]() {
         f.drawRect(rndrParam.afterburnArea,
                    sf::Color::Red);
       });
@@ -108,30 +109,30 @@ void Render::renderPlane(
 
     });
 
-    f.withTransform(sf::Transform().translate(state.pos), [&]() {
+    f.withTransform(sf::Transform().translate(vstate.pos), [&]() {
       typedef std::pair<float, sf::Color &> Bar;
 
-      const float airspeedStall = state.tuning.flight.threshold /
-                                  state.tuning.flight.airspeedFactor;
+      const float airspeedStall = vstate.tuning.flight.threshold /
+                                  vstate.tuning.flight.airspeedFactor;
       renderBars(
           f,
-          {mkBar(state.throttle,
-                 state.stalled ? rndrParam.throttleStall
-                               : rndrParam.throttle),
-           mkBar(state.stalled
-                 ? Clamped(0, 1, (state.forwardVelocity()) /
-                                 state.tuning.stall.threshold)
-                 : (state.airspeed - airspeedStall) / (1 - airspeedStall),
+          {mkBar(vstate.throttle,
+                 vstate.stalled ? rndrParam.throttleStall
+                                : rndrParam.throttle),
+           mkBar(vstate.stalled
+                 ? Clamped(0, 1, (vstate.forwardVelocity()) /
+                                 vstate.tuning.stall.threshold)
+                 : (vstate.airspeed - airspeedStall) / (1 - airspeedStall),
                  rndrParam.health),
-           mkBar(state.energy, rndrParam.energy)},
+           mkBar(vstate.energy, rndrParam.energy)},
           rndrParam.barArea
       );
 
 //      f.drawText(
 //          {-100, -100},
-//          {"airspeed:" + std::to_string(state.airspeed),
+//          {"airspeed:" + std::to_string(vstate.airspeed),
 //           "forward vel: " +
-//           std::to_string((int) std::round(state.forwardVelocity()))
+//           std::to_string((int) std::round(vstate.forwardVelocity()))
 //          }
 //      );
     });
@@ -173,7 +174,7 @@ void Render::render(ui::Frame &f, const sf::Vector2f &pos) {
 
 void Render::tick(float delta) {
   for (auto &pair : animState)
-    pair.second.tick(sky->getPlane(pair.first), delta);
+    pair.second.tick(sky->getPlaneHandle(pair.first), delta);
 }
 
 void Render::joinPlane(const PID pid, PlaneHandle *plane) {
