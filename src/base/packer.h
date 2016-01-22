@@ -13,15 +13,15 @@
 class Packet {
 private:
   enum {
-    PacketSize = 1024;
+    PacketSize = 1024
   };  // TODO: should I be doing this?
 
   int head = 0;
 public:
   Packet();
-  Packet(char data[PacketSize]);
+  Packet(std::vector<char> data);
 
-  char data[PacketSize];
+  std::vector<char> data;
 
   /**
    * Helper readers / writers.
@@ -39,7 +39,7 @@ public:
  * functions).
  */
 template<typename T>
-struct PackRules<T> {
+struct PackRules {
   virtual T read(Packet &packet) = 0;
   virtual void write(Packet &packet, T &t) = 0;
 };

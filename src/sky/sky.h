@@ -38,6 +38,7 @@ public:
   std::map<PID, std::unique_ptr<PlaneHandle>> planes;
   Plane *joinPlane(const PID pid);
   Plane *getPlane(const PID pid);
+  PlaneHandle *getPlaneHandle(const PID pid);
   void quitPlane(const PID pid);
   void spawnPlane(const PID pid, const sf::Vector2f pos, const float rot,
                   const PlaneTuning &tuning);
