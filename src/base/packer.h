@@ -35,7 +35,7 @@ public:
 
 /**
  * PackRules: modular rules for packing and unpacking, so we
- * don't sit around writing redundant code (seperate unpacking and packing
+ * don't sit around writing redundant code (separate unpacking and packing
  * functions).
  */
 template<typename T>
