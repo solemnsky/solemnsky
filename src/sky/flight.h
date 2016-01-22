@@ -1,10 +1,5 @@
 /**
- * Our flight mechanics system possesses both a complete detachment from the
- * physical reality of flight and a small complexity, surfacing in an assortment
- * of strange variables and tuning constants. We delegate the simple collision
- * detection / resolution we require to Box2d.
- *
- * The Plane class manages the state and simulation of a plane.
+ * Data structures / simulation and box2d integration for planes.
  */
 #ifndef SOLEMNSKY_FLIGHT_H
 #define SOLEMNSKY_FLIGHT_H
@@ -19,10 +14,6 @@ class Sky;
 
 /**
  * Tuning values describing how a plane flies.
- * The flight system is fairly unrealistic but intuitive.
- * Altitude did this well, we're making a little twist on it.
- *
- * There are a lot of values and terms to juggle, documented below.
  */
 struct PlaneTuning {
   PlaneTuning() { }
@@ -62,18 +53,16 @@ struct PlaneTuning {
 };
 
 /**
- * Plain data structure with all the concrete game state of a plane.
- * Only held by Plane when it is alive <=> is participating in the game
- * mechanics.
- *
- * This contains things which need to be synced over the network; however it
- * obviously can take some serious delta compression.
+ * State specific to a plane that is spawned.
  */
-struct PlaneState {
-  PlaneState(const PlaneTuning &tuning,
+struct PlaneVital {
+  PlaneVital(const PlaneTuning &tuning,
              const sf::Vector2f &pos,
              const float rot);
 
+  /**
+   * Data.
+   */
   PlaneTuning tuning;
 
   Clamped rotCtrl; // controls
@@ -91,7 +80,7 @@ struct PlaneState {
   Clamped energy, health; // game mechanics
 
   /**
-   * Helper methods
+   * Helper methods.
    */
   float forwardVelocity();
   float velocity();
@@ -102,7 +91,28 @@ struct PlaneState {
   float requestEnergy(const float reqEnergy);
 };
 
-class Plane {
+/**
+ * A plane, expressed in a simple (copyable etc.) struct.
+ */
+struct Plane {
+  Plane();
+
+  /**
+   * Data.
+   */
+  std::string name;
+  optional<PlaneVital> vital; // exists <=> plane is spawned
+
+  /**
+   * Helper methods.
+   */
+  // ???
+};
+
+/**
+ * Handle for a
+ */
+class PlaneHandle {
 private:
   sky::Sky *engine;
   Physics *physics;
@@ -121,19 +131,19 @@ private:
   void kill();
 
 public:
-  Plane(Sky *engine);
-  ~Plane();
+  PlaneHandle(Sky *engine);
+  ~PlaneHandle();
 
-  Plane(Plane &&) = delete;
-  Plane &operator=(Plane &&) = delete;
-  Plane &operator=(const Plane &) = delete;
+  PlaneHandle(PlaneHandle &&) = delete;
+  PlaneHandle &operator=(PlaneHandle &&) = delete;
+  PlaneHandle &operator=(const PlaneHandle &) = delete;
 
   // **you can't copy or move this**
   // because it carries a b2Body*, which is a bit of a problematic resource.
   // also it just doesn't make sense to move it; you have the base state
   // data-structures to access if you want
 
-  optional<PlaneState> state{}; // exists <=> plane is spawned
+  Plane state{}; // exists <=> plane is spawned
 };
 }
 

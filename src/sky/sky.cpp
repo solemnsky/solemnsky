@@ -24,10 +24,10 @@ void Sky::linkSystem(Subsystem *subsystem) {
  */
 
 Plane *Sky::joinPlane(const PID pid) {
-  planes[pid] = std::make_unique<Plane>(this);
-  Plane *plane = planes[pid].get();
+  planes[pid] = std::make_unique<PlaneHandle>(this);
+  PlaneHandle *plane = planes[pid].get();
   for (auto system : subsystems) system->joinPlane(pid, plane);
-  return plane;
+  return &plane->state;
 }
 
 Plane *Sky::getPlane(const PID pid) {
@@ -42,14 +42,14 @@ void Sky::quitPlane(const PID pid) {
 
 void Sky::spawnPlane(const PID pid, const sf::Vector2f pos, const float rot,
                      const PlaneTuning &tuning) {
-  if (Plane *plane = getPlane(pid)) {
+  if (PlaneHandle *plane = getPlane(pid)) {
     plane->spawn(pos, rot, tuning);
     for (auto system : subsystems) system->spawnPlane(pid, plane);
   }
 }
 
 void Sky::killPlane(const PID pid) {
-  if (Plane *plane = getPlane(pid)) {
+  if (PlaneHandle *plane = getPlane(pid)) {
     plane->kill();
     for (auto system : subsystems) system->killPlane(pid, plane);
   }
@@ -60,7 +60,7 @@ void Sky::killPlane(const PID pid) {
  */
 
 void Sky::fireLaser(const PID pid) {
-  if (Plane *plane = getPlane(pid)) {
+  if (PlaneHandle *plane = getPlane(pid)) {
     if (auto &state = plane->state) {
       if (state->requestDiscreteEnergy(0.3)) {
         appLog(LogType::Debug, "PEW PEW");
@@ -75,12 +75,12 @@ void Sky::fireLaser(const PID pid) {
 
 void Sky::tick(float delta) {
   for (auto &elem : planes) {
-    Plane &plane = *elem.second;
+    PlaneHandle &plane = *elem.second;
     plane.writeToBody();
   }
   physics.tick(delta);
   for (auto &elem : planes) {
-    Plane &plane = *elem.second;
+    PlaneHandle &plane = *elem.second;
     plane.readFromBody();
     plane.tick(delta);
   }

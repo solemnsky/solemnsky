@@ -31,7 +31,7 @@ void GameController::handle(const sf::Event &event) {
   }
 }
 
-void GameController::setState(sky::PlaneState &state) {
+void GameController::setState(sky::PlaneVital &state) {
   state.rotCtrl = 0;
   if (leftCtrl) state.rotCtrl = -1;
   if (rightCtrl) state.rotCtrl += 1;

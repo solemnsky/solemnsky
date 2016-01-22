@@ -16,7 +16,7 @@ public:
       upCtrl{false}, downCtrl{false};
 
   void handle(const sf::Event &event);
-  void setState(sky::PlaneState &state);
+  void setState(sky::PlaneVital &state);
 };
 
 #endif //SOLEMNSKY_GAMECONTROLLER_H
