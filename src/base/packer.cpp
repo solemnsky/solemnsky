@@ -6,7 +6,7 @@
 
 Packet::Packet() { }
 
-Packet::Packet(char data[PacketSize]) : data(data) { }
+Packet::Packet(std::vector<char> data) : data(data) { }
 
 int Packet::readInt() {
   union {

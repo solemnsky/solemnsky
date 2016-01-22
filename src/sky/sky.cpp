@@ -3,10 +3,6 @@
 namespace sky {
 
 Sky::Sky(const Map &map) : map(map), physics(map) {
-
-}
-
-Sky::Sky(const sf::Vector2f &dims) : physics(dims) {
   CTOR_LOG("sky");
 }
 
@@ -39,6 +35,11 @@ Plane *Sky::getPlane(const PID pid) {
   else return nullptr;
 }
 
+PlaneHandle *Sky::getPlaneHandle(const PID pid) {
+  if (planes.find(pid) != planes.end()) return planes[pid].get();
+  else return nullptr;
+}
+
 void Sky::quitPlane(const PID pid) {
   for (auto system : subsystems) system->quitPlane(pid);
   planes.erase(pid);
@@ -46,14 +47,14 @@ void Sky::quitPlane(const PID pid) {
 
 void Sky::spawnPlane(const PID pid, const sf::Vector2f pos, const float rot,
                      const PlaneTuning &tuning) {
-  if (PlaneHandle *plane = getPlane(pid)) {
+  if (auto *plane = getPlaneHandle(pid)) {
     plane->spawn(pos, rot, tuning);
     for (auto system : subsystems) system->spawnPlane(pid, plane);
   }
 }
 
 void Sky::killPlane(const PID pid) {
-  if (PlaneHandle *plane = getPlane(pid)) {
+  if (auto *plane = getPlaneHandle(pid)) {
     plane->kill();
     for (auto system : subsystems) system->killPlane(pid, plane);
   }
@@ -64,11 +65,9 @@ void Sky::killPlane(const PID pid) {
  */
 
 void Sky::fireLaser(const PID pid) {
-  if (PlaneHandle *plane = getPlane(pid)) {
-    if (auto &state = plane->state) {
-      if (state->requestDiscreteEnergy(0.3)) {
-        appLog(LogType::Debug, "PEW PEW");
-      }
+  if (auto *state = getPlane(pid)) {
+    if (state->vital->requestDiscreteEnergy(0.3)) {
+      appLog(LogType::Debug, "PEW PEW");
     }
   }
 }
