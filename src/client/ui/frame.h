@@ -9,7 +9,7 @@
 #include <stack>
 #include <SFML/Graphics.hpp>
 #include <functional>
-#include "base/resources.h"
+#include "client/util/resources.h"
 
 namespace ui {
 class Control;

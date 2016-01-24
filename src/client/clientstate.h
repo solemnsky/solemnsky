@@ -4,7 +4,7 @@
 #ifndef SOLEMNSKY_CLIENTSTATE_H
 #define SOLEMNSKY_CLIENTSTATE_H
 
-#include "ui/ui.h"
+#include "ui/control.h"
 #include "game/game.h"
 
 /**

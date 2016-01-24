@@ -1,6 +1,6 @@
 #include <assert.h>
 #include "resources.h"
-#include "sysutil.h"
+#include "util/methods.h"
 
 const static std::vector<ResRecord> resRecords{ // edit this side-by-side with resources.h
     {"fonts/Atarian/SF Atarian System.ttf",

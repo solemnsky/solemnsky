@@ -5,9 +5,8 @@
 #ifndef SOLEMNSKY_SPLASH_H
 #define SOLEMNSKY_SPLASH_H
 
-#include "ui/control.h"
 #include <memory>
-#include "base/resources.h"
+#include "client/ui/control.h"
 
 namespace ui {
 

@@ -1,7 +1,6 @@
 #include <assert.h>
 #include <cmath>
-#include "base/sysutil.h"
-#include "base/resources.h"
+#include "util/methods.h"
 #include "frame.h"
 
 namespace ui {

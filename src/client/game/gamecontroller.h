@@ -4,8 +4,7 @@
 #ifndef SOLEMNSKY_GAMECONTROLLER_H
 #define SOLEMNSKY_GAMECONTROLLER_H
 
-#include "base/sysutil.h"
-#include "base/util.h"
+#include "client/util/sfmlutil.h"
 #include "sky/flight.h"
 
 class GameController {

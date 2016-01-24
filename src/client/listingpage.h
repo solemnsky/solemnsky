@@ -4,7 +4,7 @@
 #ifndef SOLEMNSKY_LISTINGPAGE_H
 #define SOLEMNSKY_LISTINGPAGE_H
 
-#include "ui/ui.h"
+#include "ui/control.h"
 #include "clientstate.h"
 #include "page.h"
 

@@ -7,7 +7,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
-#include "util.h"
+#include "util/types.h"
 
 /****
  * Extract useful information from sf::Events.

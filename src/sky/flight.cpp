@@ -2,6 +2,7 @@
 
 #include "flight.h"
 #include "sky.h"
+#include "util/methods.h"
 
 namespace sky {
 

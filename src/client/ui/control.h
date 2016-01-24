@@ -14,6 +14,7 @@
 #include <memory>
 #include "frame.h"
 #include "profiler.h"
+#include "signal.h"
 
 namespace ui {
 
@@ -69,5 +70,8 @@ public:
  */
 void runSFML(std::function<std::unique_ptr<Control>()> initCtrl);
 }
+
+// elements
+#include "elements/button.h"
 
 #endif // SOLEMNSKY_CONTROL_H

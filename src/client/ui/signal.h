@@ -7,7 +7,6 @@
 #ifndef SOLEMNSKY_SIGNAL_H
 #define SOLEMNSKY_SIGNAL_H
 
-#include "base/base.h"
 #include <vector>
 
 namespace ui {

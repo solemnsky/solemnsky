@@ -1,6 +1,6 @@
-#include "value.h"
+#include "types.h"
 #include <cmath>
-#include "sysutil.h"
+#include "methods.h"
 
 /**
  * Cooldown.
@@ -114,6 +114,3 @@ Angle &Angle::operator-=(const float x) {
   return *this;
 }
 
-float linearTween(const float begin, const float end, const float time) {
-  return begin + time * (end - begin);
-}

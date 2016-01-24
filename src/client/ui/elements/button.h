@@ -4,10 +4,8 @@
 #ifndef SOLEMNSKY_BUTTON_H
 #define SOLEMNSKY_BUTTON_H
 
-#include "ui/control.h"
-#include "base/base.h"
-#include  <SFML/Graphics/Color.hpp>
-#include <ui/signal.h>
+#include "client/ui/control.h"
+#include "util/types.h"
 
 namespace ui {
 

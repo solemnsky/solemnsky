@@ -1,5 +1,5 @@
 /**
- * Basic system utilities for all.
+ * Utilities in the form of methods; useful for definitions.
  */
 #ifndef SOLEMNSKY_SYSUTIL_H
 #define SOLEMNSKY_SYSUTIL_H
@@ -7,13 +7,6 @@
 #include <SFML/System.hpp>
 #include <Box2D/Box2D.h>
 #include <functional>
-#include <boost/optional.hpp>
-
-/****
- * Optional.
- */
-
-using boost::optional;
 
 /****
  * Canonical log messages with some handy formatting.
@@ -52,5 +45,10 @@ float toRad(const float x);
 
 float toDeg(const float x);
 
+/**
+ * Tweening.
+ */
+
+float linearTween(const float begin, const float end, const float time);
 
 #endif //SOLEMNSKY_SYSUTIL_H

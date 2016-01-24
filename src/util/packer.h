@@ -5,7 +5,7 @@
 #define SOLEMNSKY_PACKER_H
 
 #include <string>
-#include "sysutil.h"
+#include "util/types.h"
 
 /**
  * Packet: the data, with a small interface for reading and writing primitives.
