@@ -5,26 +5,56 @@
 #define SOLEMNSKY_PACKER_H
 
 #include <string>
+#include <memory>
 #include "util/types.h"
+#include "util/methods.h"
 
 /**
  * Packet: the data, with a small interface for reading and writing primitives.
  */
 class Packet {
 private:
-  int head = 0;
+  int readHead = 0;
 
 public:
   Packet();
   Packet(std::vector<char> data);
+  Packet(const Packet &packet);
+  Packet(Packet &&packet);
+  Packet operator=(const Packet &packet);
+  Packet operator=(Packet &&packet);
 
   std::vector<char> data;
 
   /**
-   * Helper readers / writers.
+   * Packing and unpacking basic values.
    */
-  int readInt();
-  void writeInt(const int x);
+  template<typename T>
+  T unpackValue() {
+    union {
+      char chars[sizeof(T)];
+      T value;
+    } magic;
+
+    for (size_t i = 0; i < sizeof(T); i++)
+      magic.chars[i] = data.at(readHead + i);
+
+    readHead += sizeof(T);
+    return magic.value;
+  }
+
+  template<typename T>
+  void packValue(const T x) {
+    union {
+      char chars[sizeof(T)];
+      T value;
+    } magic;
+
+    magic.value = x;
+
+    for (size_t i = 0; i < sizeof(T); i++)
+      data.push_back(magic.chars[i]);
+  }
 
   char unpackChar();
   void packChar(const char x);
@@ -38,9 +68,25 @@ public:
  * functions).
  */
 template<typename T>
-struct PackRules {
+struct PackRulesAbstract {
   virtual T unpack(Packet &packet) const = 0;
-  virtual void pack(Packet &packet, T &t) const = 0;
+  virtual void pack(Packet &packet, const T &t) const = 0;
+};
+
+template<typename T>
+struct PackRules {
+  std::unique_ptr<PackRulesAbstract<T>> abstract;
+
+  PackRules(std::unique_ptr<PackRulesAbstract<T>> abstract) :
+      abstract(std::move(abstract)) {}
+
+  inline T unpack(Packet &packet) const {
+    return abstract->unpack(packet);
+  }
+
+  void pack(Packet &packet, const T &t) const {
+    abstract->pack(packet, t);
+  }
 };
 
 template<typename T>
@@ -50,43 +96,44 @@ Packet pack(const PackRules<T> &rules, T x) {
   return packet;
 }
 
-Packet pack(const PackRules<float> &rules, float x) {
-  Packet packet;
-  rules.pack(packet, x);
-  return packet;
-}
-
 template<typename T>
-T read(const PackRules<T> &rules, Packet &packet) {
+T unpack(const PackRules<T> &rules, Packet &packet) {
   return rules.unpack(packet);
 }
 
 /**
  * Predefined PackRules.
  */
-struct PackFloat : public PackRules<float> {
+struct PackFloat : public PackRulesAbstract<float> {
   float unpack(Packet &packet) const override;
-  void pack(Packet &packet, float &t) const override;
+  void pack(Packet &packet, const float &t) const override;
+
+  static PackRules<float> packer();
 };
 
 template<typename T>
-struct PackOptional : PackRules<optional<T>> {
-  PackRules<T> underlyingRules;
+struct PackOptional : PackRulesAbstract<optional<T>> {
+  std::unique_ptr<PackRulesAbstract<T>> underlyingRules;
 
-  PackOptional<T>(PackRules<T> underlyingRules) :
-      underlyingRules(underlyingRules) { }
+  PackOptional<T>(std::unique_ptr<PackRulesAbstract<T>> underlyingRules) :
+      underlyingRules(std::move(underlyingRules)) { }
 
-  optional<T> read(Packet &packet) {
+  optional<T> unpack(Packet &packet) const override {
     char c = packet.unpackChar();
-    if (c == 'y') return {underlyingRules.unpack(packet)};
+    if (c == 'y') return {underlyingRules->unpack(packet)};
     else return {};
   }
 
-  void write(Packet &packet, optional<T> x) {
+  void pack(Packet &packet, const optional<T> &x) const override {
     if (x) {
       packet.packChar('y');
-      underlyingRules.pack(packet, x);
+      underlyingRules->pack(packet, x);
     } else packet.packChar('n');
+  }
+
+  static PackRules<optional<T>> packer(const PackRules<T> &underlying) {
+    return PackRules<optional<T>>(
+        std::make_unique<PackOptional<T>>(std::move(underlying.abstract)));
   }
 };
 
