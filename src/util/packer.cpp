@@ -9,40 +9,29 @@ Packet::Packet() { }
 
 Packet::Packet(std::vector<char> data) : data(data) { }
 
-int Packet::readInt() {
-  union {
-    char chars[sizeof(int)];
-    int myInt;
-  } magic;
+Packet::Packet(const Packet &packet) : data(packet.data) {}
 
-  for (int i = 0; i < 4; i++)
-    magic.chars[i] = data[head + i];
+Packet::Packet(Packet &&packet) : data(packet.data) {}
 
-  head += 4;
-  return magic.myInt;
+Packet Packet::operator=(const Packet &packet) {
+  readHead = 0;
+  data = packet.data;
+  return *this;
 }
 
-void Packet::writeInt(const int x) {
-  union {
-    char chars[sizeof(int)];
-    int myInt;
-  } magic;
-
-  magic.myInt = x;;
-  for (int i = 0; i < 4; i++)
-    data[head + i] = magic.chars[i];
-
-  head += 4;
+Packet Packet::operator=(Packet &&packet) {
+  readHead = 0;
+  data = packet.data;
+  return *this;
 }
 
 char Packet::unpackChar() {
-  head++;
-  return data[head - 1];
+  readHead++;
+  return data[readHead - 1];
 }
 
 void Packet::packChar(const char x) {
-  data[head] = x;
-  head++;
+  data.push_back(x);
 }
 
 void Packet::dump() {
@@ -56,10 +45,14 @@ void Packet::dump() {
  */
 
 float PackFloat::unpack(Packet &packet) const {
-  return 0;
+  return packet.unpackValue<float>();
 }
 
-void PackFloat::pack(Packet &packet, float &t) const {
-  ;
+void PackFloat::pack(Packet &packet, const float &t) const {
+  packet.packValue<float>(t);
+}
+
+PackRules<float> PackFloat::packer() {
+  return PackRules<float>(std::make_unique<PackFloat>());
 }
 

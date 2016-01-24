@@ -64,7 +64,7 @@ Plane::Plane() {
  */
 
 void PlaneHandle::writeToBody() {
-  auto vstate = state.vital;
+  auto &vstate = state.vital;
 
   if (vstate) {
     if (!body) {
@@ -93,7 +93,7 @@ void PlaneHandle::writeToBody() {
 }
 
 void PlaneHandle::readFromBody() {
-  auto vstate = state.vital;
+  auto &vstate = state.vital;
 
   if (!vstate) return;
 
@@ -106,7 +106,7 @@ void PlaneHandle::readFromBody() {
 }
 
 void PlaneHandle::tick(float delta) {
-  auto vstate = state.vital; // woo saved one character
+  auto &vstate = state.vital; // woo saved one character
 
   if (!vstate) return;
 
