@@ -20,14 +20,15 @@ include_directories(
 )
 
 ###### libsolemnsky, for common use by client and server
-add_library(solemnsky 
-        src/base/base.h
+add_library(solemnsky SHARED
+        src/util/packer.cpp
+        src/util/packer.h
 
-        src/base/sysutil.cpp
-        src/base/sysutil.h
+        src/util/methods.cpp
+        src/util/methods.h
 
-        src/base/value.cpp
-        src/base/value.h
+        src/util/types.cpp
+        src/util/types.h
 
         src/sky/delta.cpp
         src/sky/delta.h
@@ -45,12 +46,13 @@ add_library(solemnsky
         src/sky/sky.cpp
 
         src/sky/subsystem.h
-        src/base/packer.cpp src/base/packer.h)
+        )
 target_link_libraries(solemnsky
         sfml-system
-        #        sfml-network
+        sfml-network
         Box2D_shared
-        ${Boost_LIBRARIES})
+        ${Boost_LIBRARIES}
+        )
 
 ###### solemnsky_server
 add_executable(solemnsky_server
@@ -59,19 +61,13 @@ add_executable(solemnsky_server
 
         src/server/server.cpp
         src/server/server.h
-
-        src/solemnsky_server.cpp)
+        )
 target_link_libraries(solemnsky_server
-        solemnsky)
+        solemnsky
+        )
 
 ###### solemnsky_client
 add_executable(solemnsky_client
-        src/base/resources.cpp
-        src/base/resources.h
-
-        src/base/util.cpp
-        src/base/util.h
-
         src/client/game/game.h
 
         src/client/game/gamecontroller.cpp
@@ -79,6 +75,32 @@ add_executable(solemnsky_client
 
         src/client/game/tutorial.cpp
         src/client/game/tutorial.h
+
+        src/client/ui/elements/button.cpp
+        src/client/ui/elements/button.h
+
+        src/client/ui/elements/splash.cpp
+        src/client/ui/elements/splash.h
+
+        src/client/ui/control.h
+        src/client/ui/control.cpp
+
+        src/client/ui/frame.cpp
+        src/client/ui/frame.h
+
+        src/client/ui/profiler.h
+        src/client/ui/profiler.cpp
+
+        src/client/ui/sheet.cpp
+        src/client/ui/sheet.h
+
+        src/client/ui/signal.h
+
+        src/client/util/resources.cpp
+        src/client/util/resources.h
+
+        src/client/util/sfmlutil.cpp
+        src/client/util/sfmlutil.h
 
         src/client/client.cpp
         src/client/client.h
@@ -92,37 +114,16 @@ add_executable(solemnsky_client
         src/client/listingpage.cpp
         src/client/listingpage.h
 
+        src/client/page.h
+
         src/client/settingspage.cpp
         src/client/settingspage.h
 
         src/sky/client/render.cpp
         src/sky/client/render.h
-
-        src/ui/elements/button.cpp
-        src/ui/elements/button.h
-
-        src/ui/elements/splash.cpp
-        src/ui/elements/splash.h
-
-        src/ui/control.h
-        src/ui/control.cpp
-
-        src/ui/frame.cpp
-        src/ui/frame.h
-
-        src/ui/profiler.h
-        src/ui/profiler.cpp
-
-        src/ui/sheet.cpp
-        src/ui/sheet.h
-
-        src/ui/signal.h
-
-        src/ui/ui.h
-
-        src/solemnsky_client.cpp
-        src/client/page.h)
+        )
 target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics
-        sfml-window)
+        sfml-window
+        )
