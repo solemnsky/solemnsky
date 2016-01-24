@@ -1,8 +1,8 @@
 #ifndef SOLEMNSKY_SERVER_H
 #define SOLEMNSKY_SERVER_H
 
-//#include "sky/sky.h"
+#include "sky/sky.h"
 
-void runServer();
+int main();
 
 #endif //SOLEMNSKY_SERVER_H

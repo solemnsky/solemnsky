@@ -1,7 +1,7 @@
 #include "server.h"
-#include "base/packer.h"
+#include "util/packer.h"
 
-void runServer() {
+int main() {
   Packet packet = pack((PackRules<float> &&) PackFloat(), 5);
   packet.dump();
 }
