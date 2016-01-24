@@ -5,8 +5,7 @@
 #include <math.h>
 #include <iostream>
 #include <cmath>
-#include "sysutil.h"
-#include "util.h"
+#include "methods.h"
 
 void appLog(LogType type, const std::string contents) {
   static std::vector<std::string> prefixes =
@@ -30,11 +29,6 @@ void appLog(LogType type, const std::string contents) {
   }
 }
 
-inline uint8 mix(const uint8 x1, const uint8 x2, const float degree) {
-  const float _x1(x1), _x2(x2);
-  return (uint8) (std::round(degree * (_x2 - _x1)) + _x1);
-}
-
 float VecMath::length(const sf::Vector2f &vec) {
   return (float) sqrt(vec.x * vec.x + vec.y * vec.y);
 }
@@ -56,4 +50,12 @@ float toDeg(const float x) {
 float toRad(const float x) {
   constexpr float factor = (float) (M_PI / 180);
   return x * factor;
+}
+
+/**
+ * Tweening.
+ */
+
+float linearTween(const float begin, const float end, const float time) {
+  return begin + time * (end - begin);
 }

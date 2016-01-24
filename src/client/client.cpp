@@ -1,4 +1,5 @@
 #include "client.h"
+#include "util/methods.h"
 
 ui::Button::Style backButtonStyle() {
   ui::Button::Style style;
@@ -175,5 +176,9 @@ void Client::signalClear() {
   settingsPage.signalClear();
 
   backButton.signalClear();
+}
+
+int main() {
+  ui::runSFML([]() { return std::make_unique<Client>(); });
 }
 

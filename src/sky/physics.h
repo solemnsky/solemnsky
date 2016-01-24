@@ -9,7 +9,6 @@
 #define SOLEMNSKY_PHYSICS_H
 
 #include <Box2D/Box2D.h>
-#include "base/sysutil.h"
 #include "map.h"
 
 namespace sky {

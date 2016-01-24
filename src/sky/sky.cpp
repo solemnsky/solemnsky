@@ -1,4 +1,5 @@
 #include "sky.h"
+#include "util/methods.h"
 
 namespace sky {
 
@@ -77,7 +78,7 @@ void Sky::fireLaser(const PID pid) {
  */
 
 void Sky::tick(float delta) {
-
+  appLog(LogType::Debug, "ticking");
   for (auto &elem : planes) {
     PlaneHandle &plane = *elem.second;
     plane.writeToBody();

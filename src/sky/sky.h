@@ -8,9 +8,9 @@
 #define SOLEMNSKY_SKY_H
 
 #include <map>
+#include <memory>
 #include "physics.h"
 #include "flight.h"
-#include <memory>
 #include "subsystem.h"
 #include "map.h"
 

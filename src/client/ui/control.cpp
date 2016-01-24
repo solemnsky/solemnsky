@@ -1,7 +1,8 @@
 #include <cmath>
 #include <assert.h>
-#include "ui/elements/splash.h"
-#include "base/base.h"
+#include "elements/splash.h"
+#include "util/methods.h"
+#include "util/types.h"
 #include "profiler.h"
 #include "control.h"
 

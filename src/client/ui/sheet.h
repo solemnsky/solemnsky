@@ -4,11 +4,8 @@
 #ifndef SOLEMNSKY_SHEET_H
 #define SOLEMNSKY_SHEET_H
 
-#include <base/value.h>
 #include "frame.h"
-#include "base/resources.h"
-#include "base/sysutil.h"
-#include "base/value.h"
+#include "util/types.h"
 
 namespace ui {
 class SpriteSheet {

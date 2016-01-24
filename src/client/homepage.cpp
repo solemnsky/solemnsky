@@ -1,6 +1,6 @@
 #include "client/game/tutorial.h"
 #include "homepage.h"
-#include "base/resources.h"
+#include "util/methods.h"
 
 HomePage::HomePage(ClientState *state) :
     state(state),

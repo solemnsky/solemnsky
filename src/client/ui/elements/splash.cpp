@@ -1,5 +1,5 @@
 #include "splash.h"
-#include "base/resources.h"
+#include "client/util/resources.h"
 
 namespace ui {
 

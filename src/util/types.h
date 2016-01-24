@@ -1,19 +1,18 @@
 /**
- * Helper constructs to attach explicit meaning and utilities to floats.
- *
- * > float rotationControl{0}; // between -1 and 1
- * > rotationControl = clamp(-1, 1, newValue);
- *  vs
- * > Clamped{-1, 1, 0} rotationControl;
- * > rotationControl = newValue;
- *
- * Also tweening functions.
+ * Utilities in the form of types, useful for declarations.
  */
 #ifndef SOLEMNSKY_VALUE_H
 #define SOLEMNSKY_VALUE_H
 
 #include <vector>
 #include <cmath>
+#include <boost/optional.hpp>
+
+/****
+ * Optional.
+ */
+
+using boost::optional;
 
 /**
  * Useful functions.
@@ -181,7 +180,5 @@ public:
 
   inline operator float() const { return value; }
 };
-
-float linearTween(const float begin, const float end, const float time);
 
 #endif //SOLEMNSKY_VALUE_H

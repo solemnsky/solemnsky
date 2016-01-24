@@ -5,7 +5,7 @@
 #ifndef SOLEMNSKY_GAME_H
 #define SOLEMNSKY_GAME_H
 
-#include "ui/ui.h"
+#include "client/ui/control.h"
 
 class ClientState;
 

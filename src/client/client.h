@@ -1,7 +1,6 @@
 #ifndef SOLEMNSKY_CLIENT_H
 #define SOLEMNSKY_CLIENT_H
 
-#include "ui/ui.h"
 #include "game/tutorial.h"
 #include "homepage.h"
 #include "settingspage.h"
@@ -65,5 +64,7 @@ public:
   virtual void signalRead() override;
   virtual void signalClear() override;
 };
+
+int main();
 
 #endif //SOLEMNSKY_CLIENT_H

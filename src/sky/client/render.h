@@ -4,10 +4,10 @@
 #ifndef SOLEMNSKY_GRAPHICS_H
 #define SOLEMNSKY_GRAPHICS_H
 
-#include "base/resources.h"
+#include "client/util/resources.h"
+#include "client/ui/control.h"
+#include "client/ui/sheet.h"
 #include <SFML/Graphics.hpp>
-#include "ui/control.h"
-#include "ui/sheet.h"
 #include "sky/subsystem.h"
 
 namespace sky {
