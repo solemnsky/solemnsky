@@ -165,11 +165,13 @@ public:
 template<typename Parent, typename Member>
 struct MemberRule {
   MemberRule(const PackRule<Member> &packRule,
-            std::function<Member&(Parent)> accessor) :
-    packRule(packRule), accessor(accessor) {}
+             std::function<Member(const Parent)> getter,
+             std::function<void(Parent &, Member)> setter) :
+      packRule(packRule), getter(getter), setter(setter) { }
 
   PackRule<Member> packRule;
-  std::function<Member&(Parent)> accessor;
+  std::function<Member(const Parent)> getter;
+  std::function<void(Parent &, Member)> setter;
 };
 
 template<typename Parent>
@@ -182,7 +184,7 @@ class ClassRule {
   static void pack(Packet &packet, const Parent parent,
                    const MemberRule<Parent, HeadMember> &rule,
                    TailMembers... tailMembers) {
-    rule.packRule.pack(packet, rule.accessor(parent));
+    rule.packRule.pack(packet, rule.getter(parent));
     pack(packet, parent, tailMembers...);
   }
 
@@ -195,9 +197,10 @@ class ClassRule {
   static Parent unpack(Packet &packet, Parent &parent,
                        const MemberRule<Parent, HeadMember> &rule,
                        TailMembers... tailMembers) {
-    rule.accessor(parent) = rule.packRule.unpack(packet);
+    rule.setter(parent, rule.packRule.unpack(packet));
     return unpack(packet, parent, tailMembers...);
   }
+
 public:
   template<typename... Members>
   static PackRule<Parent> rules(Members... members) {
