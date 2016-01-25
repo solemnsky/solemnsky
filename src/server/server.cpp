@@ -3,17 +3,16 @@
 #include "util/methods.h"
 
 int main() {
-  PackRules<float> floatPack = PackFloat::packer();
-  PackRules<optional<float>> optPack = PackOptional<float>::packer(floatPack);
+  const PackRules<float> floatPack = ValueRules<float>::rules();
+  const PackRules<optional<float>> optionalPack =
+      OptionalRules<float>::rules(floatPack);
 
-  Packet packet = pack(floatPack, 5.0f);
+  Packet packet;
+  packet = pack(floatPack, 999999.0f);
   packet.dump();
   appLog(LogType::Debug, std::to_string(unpack(floatPack, packet)));
 
-
-//  packet = pack(optionalFloat, optional<float>(5.0f));
-//  packet.dump();
-//  appLog(LogType::Debug, std::to_string(
-//      *unpack(optionalFloat, packet)));
-
+  packet = pack(optionalPack, {88888.0f});
+  packet.dump();
+  appLog(LogType::Debug, std::to_string(*unpack(optionalPack, packet)));
 }
