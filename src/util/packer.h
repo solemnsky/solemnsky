@@ -77,13 +77,13 @@ T Packet::unpackValue() {
 }
 
 /****
- * PackRules<T>: the packing / unpacking of a T.
+ * PackRule<T>: the packing / unpacking of a T.
  */
 
 template<typename T>
-struct PackRules {
-  PackRules(const std::function<void(Packet &, const T)> &pack,
-            const std::function<T(Packet &)> unpack)
+struct PackRule {
+  PackRule(const std::function<void(Packet &, const T)> &pack,
+           const std::function<T(Packet &)> unpack)
       : pack(pack), unpack(unpack) { }
 
   const std::function<void(Packet &, const T)> pack;
@@ -91,14 +91,14 @@ struct PackRules {
 };
 
 template<typename T>
-Packet pack(const PackRules<T> &rules, const T x) {
+Packet pack(const PackRule<T> &rules, const T x) {
   Packet packet;
   rules.pack(packet, x);
   return packet;
 }
 
 template<typename T>
-T unpack(const PackRules<T> &rules, Packet &packet) {
+T unpack(const PackRule<T> &rules, Packet &packet) {
   return rules.unpack(packet);
 }
 
@@ -107,49 +107,105 @@ T unpack(const PackRules<T> &rules, Packet &packet) {
  */
 
 /**
- * ValueRules: packing an intrinsic datatype.
+ * ValueRule: packing an intrinsic datatype.
  */
-template<typename T>
-class ValueRules {
-  static void pack(Packet &packet, const T val) {
-    packet.packValue<T>(val);
+template<typename Value>
+class ValueRule {
+  static void pack(Packet &packet, const Value val) {
+    packet.packValue<Value>(val);
   }
 
-  static T unpack(Packet &packet) {
-    return packet.unpackValue<T>();
+  static Value unpack(Packet &packet) {
+    return packet.unpackValue<Value>();
   }
 
 public:
-  static PackRules<T> rules() {
-    return PackRules<T>(ValueRules<T>::pack, ValueRules<T>::unpack);
+  static PackRule<Value> rules() {
+    return PackRule<Value>(ValueRule<Value>::pack, ValueRule<Value>::unpack);
   }
 };
 
-template<typename T>
-class OptionalRules {
-  static void pack(const PackRules<T> &underlying,
-                   Packet &packet, const optional<T> x) {
+template<typename Value>
+class OptionalRule {
+  static void pack(const PackRule<Value> &underlying,
+                   Packet &packet, const optional<Value> x) {
     if (x) {
       packet.packChar('y');
       underlying.pack(packet, *x);
     } else packet.packChar('n');
   }
 
-  static optional<T> unpack(const PackRules<T> &underlying,
-                     Packet &packet) {
+  static optional<Value> unpack(const PackRule<Value> &underlying,
+                                Packet &packet) {
     char c = packet.unpackChar();
     if (c == 'y') return {underlying.unpack(packet)};
     else return {};
   }
 
 public:
-  static PackRules<optional<T>> rules(const PackRules<T> &underlying) {
-    return PackRules<optional<T>>(
-        [&](Packet &packet, const optional<T> x) {
-          OptionalRules<T>::pack(underlying, packet, x);
+  static PackRule<optional<Value>> rules(const PackRule<Value> &underlying) {
+    return PackRule<optional<Value>>(
+        [&](Packet &packet, const optional<Value> x) {
+          OptionalRule<Value>::pack(underlying, packet, x);
         },
         [&](Packet &packet) {
-          return OptionalRules<T>::unpack(underlying, packet);
+          return OptionalRule<Value>::unpack(underlying, packet);
+        }
+    );
+  }
+};
+
+/****
+ * ClassRule: rather sickening, but extremely helpful.
+ */
+
+template<typename Parent, typename Member>
+struct MemberRule {
+  MemberRule(PackRule<Member> packRule,
+            std::function<Member&(Parent)> accessor) :
+    packRule(packRule), accessor(accessor) {}
+
+  PackRule<Member> packRule;
+  std::function<Member&(Parent)> accessor;
+};
+
+template<typename Parent, typename... Members>
+class ClassRule {
+
+  static void pack(Packet &packet, const Parent parent) {
+    // pack endpoint: do nothing
+  }
+
+  template<typename Member>
+  static void pack(Packet &packet, const Parent parent,
+                   MemberRule<Parent, Member>,
+                   Members... members) {
+    // stub
+    pack(packet, parent, members...);
+  }
+
+  static Parent unpack(Packet &packet, Parent &parent) {
+    // unpack endpoint: return the parent
+    return parent;
+  }
+
+  template<typename Member>
+  static Parent unpack(Packet &packet, Parent &parent,
+                       MemberRule<Parent, Member>,
+                       Members... members) {
+    // stub
+    return unpack(packet, parent, members...);
+  }
+public:
+  static PackRule<Parent> rules(Members... members) {
+    return PackRule<Parent>(
+        [&](Packet &packet, const Parent parent) {
+          ClassRule<Parent, Members...>::pack(packet, parent, members...);
+        },
+        [&](Packet &packet) {
+          Parent parent{};
+          return ClassRule<Parent, Members...>::unpack(
+              packet, parent, members...);
         }
     );
   }
