@@ -8,10 +8,12 @@ struct MyStruct {
   MyStruct(float x, float y) : x(x), y(y) { };
 
   float x;
-  float y;
+  optional<float> y;
 
   std::string show() {
-    return "x: " + std::to_string(x) + " y: " + std::to_string(y);
+    if (y)
+      return "x: " + std::to_string(x) + " y: " + std::to_string(*y);
+    return "x: " + std::to_string(x);
   }
 };
 
@@ -23,12 +25,12 @@ int main() {
       ClassRule<MyStruct>::rules(
           MemberRule<MyStruct, float>(
               floatPack,
-              [](const MyStruct parent) -> float { return parent.x; },
-              [](MyStruct &parent, float x) { parent.x = x; })),
-          MemberRule<MyStruct, float>(
-              floatPack,
-              [](const MyStruct parent) -> float { return parent.y; },
-              [](MyStruct &parent, float y) { parent.y = y; })
+              [](const MyStruct parent) { return parent.x; },
+              [](MyStruct &parent, float x) { parent.x = x; }),
+          MemberRule<MyStruct, optional<float>>(
+              optionalPack,
+              [](const MyStruct parent) { return parent.y; },
+              [](MyStruct &parent, optional<float> y) { parent.y = y; })
       );
 
   Packet packet;
