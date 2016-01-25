@@ -25,6 +25,10 @@ Packet Packet::operator=(Packet &&packet) {
   return *this;
 }
 
+void Packet::resetHead() {
+  readHead = 0;
+}
+
 char Packet::unpackChar() {
   readHead++;
   return data[readHead - 1];
@@ -39,20 +43,3 @@ void Packet::dump() {
   for (char c : data) std::cout << c;
   std::cout << "\n";
 }
-
-/****
- * Predefined rules.
- */
-
-float PackFloat::unpack(Packet &packet) const {
-  return packet.unpackValue<float>();
-}
-
-void PackFloat::pack(Packet &packet, const float &t) const {
-  packet.packValue<float>(t);
-}
-
-PackRules<float> PackFloat::packer() {
-  return PackRules<float>(std::make_unique<PackFloat>());
-}
-
