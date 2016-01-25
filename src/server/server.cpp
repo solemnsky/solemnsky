@@ -22,9 +22,13 @@ int main() {
   const PackRule<MyStruct> classPack =
       ClassRule<MyStruct>::rules(
           MemberRule<MyStruct, float>(
-              floatPack, [](MyStruct parent) -> float & { return parent.x; }),
+              floatPack,
+              [](const MyStruct parent) -> float { return parent.x; },
+              [](MyStruct &parent, float x) { parent.x = x; })),
           MemberRule<MyStruct, float>(
-              floatPack, [](MyStruct parent) -> float & { return parent.y; })
+              floatPack,
+              [](const MyStruct parent) -> float { return parent.y; },
+              [](MyStruct &parent, float y) { parent.y = y; })
       );
 
   Packet packet;
@@ -46,9 +50,9 @@ int main() {
                          std::to_string(*unpack(optionalPack, packet)));
 
   appLog(LogType::Debug, "** classPack **");
-  MyStruct myStruct{1, 1};
+  MyStruct myStruct{42, 53};
   appLog(LogType::Debug, "input: " + myStruct.show());
-  packet = pack(classPack, MyStruct(42, 50));
+  packet = pack(classPack, myStruct);
   packet.dump();
   appLog(LogType::Debug, "output: " + unpack(classPack, packet).show());
 }
