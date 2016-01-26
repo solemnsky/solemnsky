@@ -9,9 +9,9 @@ Packet::Packet() { }
 
 Packet::Packet(std::vector<char> data) : data(data) { }
 
-Packet::Packet(const Packet &packet) : data(packet.data) {}
+Packet::Packet(const Packet &packet) : data(packet.data) { }
 
-Packet::Packet(Packet &&packet) : data(packet.data) {}
+Packet::Packet(Packet &&packet) : data(packet.data) { }
 
 Packet Packet::operator=(const Packet &packet) {
   readHead = 0;

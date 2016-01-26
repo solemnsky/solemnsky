@@ -25,12 +25,10 @@ int main() {
       ClassRule<MyStruct>::rules(
           MemberRule<MyStruct, float>(
               floatPack,
-              [](const MyStruct parent) { return parent.x; },
-              [](MyStruct &parent, float x) { parent.x = x; }),
+              &MyStruct::x),
           MemberRule<MyStruct, optional<float>>(
               optionalPack,
-              [](const MyStruct parent) { return parent.y; },
-              [](MyStruct &parent, optional<float> y) { parent.y = y; })
+              &MyStruct::y)
       );
 
   Packet packet;
