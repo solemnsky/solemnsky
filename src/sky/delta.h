@@ -26,42 +26,71 @@ struct PlaneDelta {
  * Our various PackRules, in namespace sky::pk.
  */
 namespace pk {
+
+/**** float ****/
 const PackRule<float> floatPack = ValueRule<float>();
 
+/**** sf::Vector2f ****/
 const PackRule<sf::Vector2f> vectorPack =
     ClassRule<sf::Vector2f>(
         MemberRule<sf::Vector2f, float>(floatPack, &sf::Vector2f.x),
         MemberRule<sf::Vector2f, float>(floatPack, &sf::Vector2f.y)
     );
 
+/**** PlaneTuning::Energy ****/
+#define member(TYPE, RULE, PTR) \
+  MemberRule<PlaneTuning::Energy, TYPE>(RULE, &PlaneTuning::Energy::PTR)
 const PackRule<PlaneTuning::Energy> planeTuningEnergyPack =
     ClassRule<PlaneTuning::Energy>(
-        MemberRule<PlaneTuning::Energy, float>(
-            floatPack, &PlaneTuning::Energy::thrustDrain),
-        MemberRule<PlaneTuning::Energy, float>(
-            floatPack, &PlaneTuning::Energy::recharge),
-        MemberRule<PlaneTuning::Energy, float>(
-            floatPack, &PlaneTuning::Energy::laserGun)
+        member(float, floatPack, thrustDrain),
+        member(float, floatPack, recharge),
+        member(float, floatPack, laserGun)
     );
+#undef member
 
+/**** PlaneTuning::Stall ****/
+#define member(TYPE, RULE, PTR) \
+  MemberRule<PlaneTuning::Stall, TYPE>(RULE, &PlaneTuning::Stall::PTR)
+const PackRule<PlaneTuning::Stall> planeTuningStallPack =
+    ClassRule<PlaneTuning::Stall>(
+        member(float, floatPack, maxRotVel),
+        member(float, floatPack, maxVel),
+        member(float, floatPack, thrust),
+        member(float, floatPack, damping),
+        member(float, floatPack, threshold)
+    );
+#undef member
+
+/**** PlaneTuning::Flight ****/
+#define member(TYPE, RULE, PTR) \
+  MemberRule<PlaneTuning::Flight, TYPE>(RULE, &PlaneTuning::Flight::PTR)
+const PackRule<PlaneTuning::Flight> planeTuningFlightPack =
+    ClassRule<PlaneTuning::Flight>(
+        member(float, floatPack, maxRotVel),
+        member(float, floatPack, airspeedFactor),
+        member(float, floatPack, throttleInfluence),
+        member(float, floatPack, throttleBreaking),
+        member(float, floatPack, gravityEffect),
+        member(float, floatPack, gravityEffect),
+        member(float, floatPack, afterburnDrive),
+        member(float, floatPack, leftoverDamping),
+        member(float, floatPack, threshold)
+    );
+#undef member
+
+/**** PlaneTuning ****/
+#define member(TYPE, RULE, PTR) \
+  MemberRule<PlaneTuning, TYPE>(RULE, &PlaneTuning::PTR)
 const PackRule<PlaneTuning> planeTuningPack =
     ClassRule<PlaneTuning>(
-        MemberRule<PlaneTuning, sf::Vector2f>(
-            vectorPack, &PlaneTuning::hitbox),
-        MemberRule<PlaneTuning, PlaneTuning::Energy>(
-            planeTuningEnergyPack, &PlaneTuning::energy)
+        member(sf::Vector2f, vectorPack, hitbox),
+        member(PlaneTuning::Energy, planeTuningEnergyPack, energy),
+        member(PlaneTuning::Stall, planeTuningStallPack, stall),
+        member(PlaneTuning::Flight, planeTuningFlightPack, flight),
+        member(float, floatPack, throttleSpeed)
     );
+#undef member
 
-const PackRule<PlaneVital> planeVitalPack =
-    ClassRule<PlaneVital>();
-
-const PackRule<PlaneDelta> planeDeltaPack =
-    ClassRule<PlaneDelta>(
-        MemberRule<PlaneDelta, optional<PlaneTuning>>(
-            OptionalRule<PlaneTuning>(planeTuningPack),
-            &PlaneDelta::tuningDelta
-        )
-    );
 }
 }
 
