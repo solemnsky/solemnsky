@@ -53,7 +53,8 @@ struct PlaneTuning {
 };
 
 /**
- * State specific to a plane that is spawned.
+ * State specific to a plane that is spawned, everything in here is expected
+ * to change very frequently, while it exists anyway.
  */
 struct PlaneVital {
   PlaneVital(const PlaneTuning &tuning,
@@ -63,8 +64,6 @@ struct PlaneVital {
   /**
    * Data.
    */
-  PlaneTuning tuning;
-
   Clamped rotCtrl; // controls
   Switched throtCtrl;
 
@@ -95,12 +94,13 @@ struct PlaneVital {
  * A plane, expressed in a simple (copyable etc.) struct.
  */
 struct Plane {
-  Plane();
+  Plane() = default;
 
   /**
    * Data.
    */
   std::string name;
+  PlaneTuning tuning;
   optional<PlaneVital> vital; // exists <=> plane is spawned
 
   /**
@@ -127,7 +127,9 @@ private:
   void readFromBody();
   void tick(float d);
 
-  void spawn(const sf::Vector2f pos, const float rot, const PlaneTuning &);
+  void spawn(const PlaneTuning &tuning,
+             const sf::Vector2f pos,
+             const float rot);
   void kill();
 
 public:
@@ -143,7 +145,7 @@ public:
   // also it just doesn't make sense to move it; you have the base state
   // data-structures to access if you want
 
-  Plane state{}; // exists <=> plane is spawned
+  Plane state{};
 };
 }
 

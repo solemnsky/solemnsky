@@ -89,9 +89,10 @@ void Render::renderPlane(
   using namespace detail; // for rndrParam
   if (plane.state.vital) {
     PlaneVital &vstate = *plane.state.vital;
+    PlaneTuning &tuning = plane.state.tuning;
     detail::PlaneAnimState &planeAnimState = animState.at(pid);
 
-    const auto &hitbox = vstate.tuning.hitbox;
+    const auto &hitbox = tuning.hitbox;
 
     f.withTransform(
         sf::Transform().translate(vstate.pos).rotate(vstate.rot), [&]() {
@@ -113,8 +114,8 @@ void Render::renderPlane(
     f.withTransform(sf::Transform().translate(vstate.pos), [&]() {
       typedef std::pair<float, sf::Color &> Bar;
 
-      const float airspeedStall = vstate.tuning.flight.threshold /
-                                  vstate.tuning.flight.airspeedFactor;
+      const float airspeedStall = tuning.flight.threshold /
+                                  tuning.flight.airspeedFactor;
       renderBars(
           f,
           {mkBar(vstate.throttle,
@@ -122,7 +123,7 @@ void Render::renderPlane(
                                 : rndrParam.throttle),
            mkBar(vstate.stalled
                  ? Clamped(0, 1, (vstate.forwardVelocity()) /
-                                 vstate.tuning.stall.threshold)
+                                 tuning.stall.threshold)
                  : (vstate.airspeed - airspeedStall) / (1 - airspeedStall),
                  rndrParam.health),
            mkBar(vstate.energy, rndrParam.energy)},

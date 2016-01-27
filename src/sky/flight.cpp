@@ -13,8 +13,6 @@ namespace sky {
 PlaneVital::PlaneVital(const PlaneTuning &tuning,
                        const sf::Vector2f &pos,
                        const float rot) :
-    tuning(tuning),
-
     rotCtrl(-1, 1, 0),
     throtCtrl({-1, 0, 1}, 0),
 
@@ -55,10 +53,6 @@ float PlaneVital::requestEnergy(const float reqEnergy) {
  * Plane
  */
 
-Plane::Plane() {
-
-}
-
 /****
  * PlaneHandle
  */
@@ -68,7 +62,7 @@ void PlaneHandle::writeToBody() {
 
   if (vstate) {
     if (!body) {
-      body = physics->rectBody(vstate->tuning.hitbox);
+      body = physics->rectBody(state.tuning.hitbox);
 
       // hard-set these values when a body is new
       body->SetAngularVelocity(toRad(vstate->rot));
@@ -111,7 +105,7 @@ void PlaneHandle::tick(float delta) {
   if (!vstate) return;
 
   // helpful synonyms
-  const auto &tuning = vstate->tuning;
+  const auto &tuning = state.tuning;
   const float forwardVel(vstate->forwardVelocity()), velocity(
       vstate->velocity());
 
@@ -203,18 +197,18 @@ PlaneHandle::~PlaneHandle() {
   DTOR_LOG("plane");
 };
 
-
-void PlaneHandle::spawn(const sf::Vector2f pos, const float rot,
-                        const PlaneTuning &tuning) {
+void PlaneHandle::spawn(const PlaneTuning &tuning,
+                        const sf::Vector2f pos,
+                        const float rot) {
   if (state.vital) kill();
-  state.vital = {PlaneVital(tuning, pos, rot)};
+  state.vital.emplace(PlaneVital(tuning, pos, rot));
+  state.tuning = tuning;
   writeToBody();
 }
 
 void PlaneHandle::kill() {
-  state.vital = {};
+  state.vital.reset();
   writeToBody();
 }
-
 
 }
