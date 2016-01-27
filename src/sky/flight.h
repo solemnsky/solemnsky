@@ -21,13 +21,13 @@ struct PlaneTuning {
   sf::Vector2f hitbox{110, 60}; // x axis parallel with flight
   float maxHealth = 10;
 
-  struct {
+  struct Energy {
     float thrustDrain = 1;
     float recharge = 0.5;
     float laserGun = 0.3;
   } energy;
 
-  struct {
+  struct Stall {
     // mechanics when stalled
     float maxRotVel = 200, // how quickly we can turn, (deg / s)
         maxVel = 300, // our terminal velocity (px / s)
@@ -36,7 +36,7 @@ struct PlaneTuning {
     float threshold = 130; // the minimum airspeed that we need to enter flight
   } stall;
 
-  struct {
+  struct Flight {
     // mechanics when not stalled
     float maxRotVel = 180,
         airspeedFactor = 330,

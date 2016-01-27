@@ -23,12 +23,33 @@ struct PlaneDelta {
 };
 
 /**
- * PackRule's.
+ * Our various PackRules, in namespace sky::pk.
  */
+namespace pk {
+const PackRule<float> floatPack = ValueRule<float>();
+
+const PackRule<sf::Vector2f> vectorPack =
+    ClassRule<sf::Vector2f>(
+        MemberRule<sf::Vector2f, float>(floatPack, &sf::Vector2f.x),
+        MemberRule<sf::Vector2f, float>(floatPack, &sf::Vector2f.y)
+    );
+
+const PackRule<PlaneTuning::Energy> planeTuningEnergyPack =
+    ClassRule<PlaneTuning::Energy>(
+        MemberRule<PlaneTuning::Energy, float>(
+            floatPack, &PlaneTuning::Energy::thrustDrain),
+        MemberRule<PlaneTuning::Energy, float>(
+            floatPack, &PlaneTuning::Energy::recharge),
+        MemberRule<PlaneTuning::Energy, float>(
+            floatPack, &PlaneTuning::Energy::laserGun)
+    );
+
 const PackRule<PlaneTuning> planeTuningPack =
     ClassRule<PlaneTuning>(
-        MemberRule<PlaneTuning, float>(
-            ValueRule<float>(), &PlaneTuning::maxHealth)
+        MemberRule<PlaneTuning, sf::Vector2f>(
+            vectorPack, &PlaneTuning::hitbox),
+        MemberRule<PlaneTuning, PlaneTuning::Energy>(
+            planeTuningEnergyPack, &PlaneTuning::energy)
     );
 
 const PackRule<PlaneVital> planeVitalPack =
@@ -36,11 +57,12 @@ const PackRule<PlaneVital> planeVitalPack =
 
 const PackRule<PlaneDelta> planeDeltaPack =
     ClassRule<PlaneDelta>(
-//        MemberRule<PlaneDelta, optional<PlaneTuning>>(
-//            OptionalRule<PlaneTuning> (planeTuningPack),
-//            &PlaneDelta::tuningDelta
-//        )
+        MemberRule<PlaneDelta, optional<PlaneTuning>>(
+            OptionalRule<PlaneTuning>(planeTuningPack),
+            &PlaneDelta::tuningDelta
+        )
     );
+}
 }
 
 #endif //SOLEMNSKY_DELTA_H
