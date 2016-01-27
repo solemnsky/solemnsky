@@ -187,7 +187,7 @@ class OptionalRule : public PackRule<optional<Value>> {
 
 public:
   OptionalRule(const PackRule<Value> &underlying) :
-      PackRule<Value>(
+      PackRule<optional<Value>>(
           [&](Packet &packet, const optional<Value> val) {
             OptionalRule<Value>::optPack(underlying, packet, val);
           },
