@@ -23,12 +23,8 @@ int main() {
       OptionalRule<float>::rules(floatPack);
   const PackRule<MyStruct> classPack =
       ClassRule<MyStruct>::rules(
-          MemberRule<MyStruct, float>(
-              floatPack,
-              &MyStruct::x),
-          MemberRule<MyStruct, optional<float>>(
-              optionalPack,
-              &MyStruct::y)
+          MemberRule<MyStruct, float>(floatPack, &MyStruct::x),
+          MemberRule<MyStruct, optional<float>>(optionalPack, &MyStruct::y)
       );
 
   Packet packet;
@@ -39,12 +35,13 @@ int main() {
   packet = pack(floatPack, fl);
   packet.dump();
   appLog(LogType::Debug, "output: " +
-                         std::to_string(unpack(floatPack, packet)));
+                         std::to_string(
+                             unpack(floatPack, packet)));
 
   appLog(LogType::Debug, "** optionalPack **");
   optional<float> optFl = {88888.0f};
   appLog(LogType::Debug, "input: " + std::to_string(*optFl));
-  packet = pack(optionalPack, {88888.0f});
+  packet = pack(optionalPack, optFl);
   packet.dump();
   appLog(LogType::Debug, "output: " +
                          std::to_string(*unpack(optionalPack, packet)));

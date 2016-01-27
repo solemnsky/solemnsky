@@ -49,7 +49,7 @@ void Sky::quitPlane(const PID pid) {
 void Sky::spawnPlane(const PID pid, const sf::Vector2f pos, const float rot,
                      const PlaneTuning &tuning) {
   if (auto *plane = getPlaneHandle(pid)) {
-    plane->spawn(pos, rot, tuning);
+    plane->spawn(tuning, pos, rot);
     for (auto system : subsystems) system->spawnPlane(pid, plane);
   }
 }
