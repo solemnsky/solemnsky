@@ -94,16 +94,20 @@ struct PackRule {
       : pack(pack), unpack(unpack) { }
 
 private:
-  template<typename G> friend
+  template<typename G>
+  friend
   Packet pack(const PackRule<G> &rules, const G val);
 
-  template<typename G> friend
+  template<typename G>
+  friend
   Packet packInto(const PackRule<G> &rules, Packet &packet, const G val);
 
-  template<typename G> friend
+  template<typename G>
+  friend
   G unpack(const PackRule<G> &rules, Packet &packet);
 
-  template<typename G> friend
+  template<typename G>
+  friend
   G unpackInto(const PackRule<G> &rules, Packet &packet, G &val);
 
   const std::function<void(Packet &, const T)> pack;
@@ -143,7 +147,7 @@ inline T unpackInto(const PackRule<T> &rules, Packet &packet, T &val) {
  * ValueRule: packing an intrinsic datatype.
  */
 template<typename Value>
-class ValueRule {
+class ValueRule : public PackRule<Value> {
   static void valuePack(Packet &packet, const Value val) {
     packet.packValue<Value>(val);
   }
@@ -153,17 +157,18 @@ class ValueRule {
   }
 
 public:
-  static PackRule<Value> rules() {
-    return PackRule<Value>(ValueRule<Value>::valuePack,
-                           ValueRule<Value>::valueUnpack);
-  }
+  ValueRule() :
+      PackRule<Value>(
+          ValueRule<Value>::valuePack,
+          ValueRule<Value>::valueUnpack
+      ) { }
 };
 
 /**
  * OptionalRule: packing an optional<>.
  */
 template<typename Value>
-class OptionalRule {
+class OptionalRule : public PackRule<Value> {
   static void optPack(const PackRule<Value> &underlying,
                       Packet &packet, const optional<Value> val) {
     if (val) {
@@ -181,16 +186,15 @@ class OptionalRule {
   }
 
 public:
-  static PackRule<optional<Value>> rules(const PackRule<Value> &underlying) {
-    return PackRule<optional<Value>>(
-        [&](Packet &packet, const optional<Value> val) {
-          OptionalRule<Value>::optPack(underlying, packet, val);
-        },
-        [&](Packet &packet, optional<Value> &val) {
-          OptionalRule<Value>::optUnpack(underlying, packet, val);
-        }
-    );
-  }
+  OptionalRule(const PackRule<Value> &underlying) :
+      PackRule<Value>(
+          [&](Packet &packet, const optional<Value> val) {
+            OptionalRule<Value>::optPack(underlying, packet, val);
+          },
+          [&](Packet &packet, optional<Value> &val) {
+            OptionalRule<Value>::optUnpack(underlying, packet, val);
+          }
+      ) { }
 };
 
 /**
@@ -208,7 +212,7 @@ struct MemberRule {
 };
 
 template<typename Parent>
-class ClassRule {
+class ClassRule : public PackRule<Parent> {
   static void classPack(Packet &packet, const Parent parent) { }
 
   template<typename HeadMember, typename... TailMembers>
@@ -231,16 +235,15 @@ class ClassRule {
 
 public:
   template<typename... Members>
-  static PackRule<Parent> rules(Members... members) {
-    return PackRule<Parent>(
-        [&](Packet &packet, const Parent parent) {
-          ClassRule<Parent>::classPack(packet, parent, members...);
-        },
-        [&](Packet &packet, Parent &parent) {
-          ClassRule<Parent>::classUnpack(packet, parent, members...);
-        }
-    );
-  }
+  ClassRule(Members... members) :
+      PackRule<Parent>(
+          [&](Packet &packet, const Parent parent) {
+            ClassRule<Parent>::classPack(packet, parent, members...);
+          },
+          [&](Packet &packet, Parent &parent) {
+            ClassRule<Parent>::classUnpack(packet, parent, members...);
+          }
+      ) { }
 };
 
 #endif //SOLEMNSKY_PACKER_H

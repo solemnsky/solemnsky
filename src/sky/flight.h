@@ -60,6 +60,7 @@ struct PlaneVital {
   PlaneVital(const PlaneTuning &tuning,
              const sf::Vector2f &pos,
              const float rot);
+  PlaneVital operator=(PlaneVital &&) = default;
 
   /**
    * Data.

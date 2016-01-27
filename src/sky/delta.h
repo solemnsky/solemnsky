@@ -15,20 +15,36 @@ namespace sky {
 struct PlaneDelta {
   PlaneDelta() = default; // for unpacking
 
-  optional<PlaneTuning> tuneDelta; // exists on spawn
+  optional<PlaneTuning> tuningDelta; // exists on spawn
   optional<PlaneVital> vitalDelta; // exists on life
+  optional<std::string> nameDelta; // exists on name change
 
-  void apply(Plane &vital) { }
+  void apply(Plane &plane);
 };
 
-struct PlaneVitalPack {
-};
+/**
+ * PackRule's.
+ */
+const PackRule<PlaneTuning> planeTuningPack =
+    ClassRule<PlaneTuning>::rule(
+        {ValueRule<float>::rule(), &PlaneTuning::maxHealth}
+    );
 
-struct PlaneDeltaPack {
-  static PackRule<PlaneDelta> rules() {
-    return ClassRule<PlaneDelta>::rules();
-  }
-};
+
+const PackRule<PlaneVital> planeVitalPack =
+    ClassRule<PlaneVital>::rule(
+        {}
+    )
+
+const PackRule<PlaneDelta> planeDeltaPack =
+    ClassRule<PlaneDelta>::rule(
+        MemberRule<PlaneDelta, optional<PlaneTuning>>(
+            {OptionalRule<PlaneTuning>::rule(planeTuningPack),
+             &PlaneDelta::tuningDelta},
+            {OptionalRule<PlaneVital>::rule(planeVitalPack),
+            &PlaneDelta::vitalDelta}
+        )
+    );
 
 }
 

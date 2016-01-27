@@ -18,11 +18,11 @@ struct MyStruct {
 };
 
 int main() {
-  const PackRule<float> floatPack = ValueRule<float>::rules();
+  const PackRule<float> floatPack = ValueRule<float>();
   const PackRule<optional<float>> optionalPack =
-      OptionalRule<float>::rules(floatPack);
+      OptionalRule<float>(floatPack);
   const PackRule<MyStruct> classPack =
-      ClassRule<MyStruct>::rules(
+      ClassRule<MyStruct>(
           MemberRule<MyStruct, float>(floatPack, &MyStruct::x),
           MemberRule<MyStruct, optional<float>>(optionalPack, &MyStruct::y)
       );
