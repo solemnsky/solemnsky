@@ -168,7 +168,7 @@ public:
  * OptionalRule: packing an optional<>.
  */
 template<typename Value>
-class OptionalRule : public PackRule<Value> {
+class OptionalRule : public PackRule<optional<Value>> {
   static void optPack(const PackRule<Value> &underlying,
                       Packet &packet, const optional<Value> val) {
     if (val) {

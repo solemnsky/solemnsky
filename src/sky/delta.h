@@ -26,26 +26,21 @@ struct PlaneDelta {
  * PackRule's.
  */
 const PackRule<PlaneTuning> planeTuningPack =
-    ClassRule<PlaneTuning>::rule(
-        {ValueRule<float>::rule(), &PlaneTuning::maxHealth}
+    ClassRule<PlaneTuning>(
+        MemberRule<PlaneTuning, float>(
+            ValueRule<float>(), &PlaneTuning::maxHealth)
     );
-
 
 const PackRule<PlaneVital> planeVitalPack =
-    ClassRule<PlaneVital>::rule(
-        {}
-    )
+    ClassRule<PlaneVital>();
 
 const PackRule<PlaneDelta> planeDeltaPack =
-    ClassRule<PlaneDelta>::rule(
-        MemberRule<PlaneDelta, optional<PlaneTuning>>(
-            {OptionalRule<PlaneTuning>::rule(planeTuningPack),
-             &PlaneDelta::tuningDelta},
-            {OptionalRule<PlaneVital>::rule(planeVitalPack),
-            &PlaneDelta::vitalDelta}
-        )
+    ClassRule<PlaneDelta>(
+//        MemberRule<PlaneDelta, optional<PlaneTuning>>(
+//            OptionalRule<PlaneTuning> (planeTuningPack),
+//            &PlaneDelta::tuningDelta
+//        )
     );
-
 }
 
 #endif //SOLEMNSKY_DELTA_H

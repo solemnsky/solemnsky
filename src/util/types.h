@@ -7,7 +7,6 @@
 #include <vector>
 #include <cmath>
 #include <boost/optional.hpp>
-#include "util/packer.h"
 
 /****
  * Optional.
