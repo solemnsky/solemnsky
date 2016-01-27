@@ -58,11 +58,11 @@ int main() {
   appLog(LogType::Debug, "** classPack **");
   sky::PlaneTuning tuning;
   tuning.hitbox.x = 10;
-  appLog(LogType::Debug, "input: " + "has hitbox x dim " +
+  appLog(LogType::Debug, "input: has hitbox x dim " +
                          std::to_string(tuning.hitbox.x));
   packet = pack(sky::pk::planeTuningPack, tuning);
   packet.dump();
   tuning = unpack(sky::pk::planeTuningPack, packet);
-  appLog(LogType::Debug, "output: " + "has hitbox x dim " +
+  appLog(LogType::Debug, "output: has hitbox x dim " +
                          std::to_string(tuning.hitbox.x));
 }

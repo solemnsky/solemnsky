@@ -33,8 +33,8 @@ const PackRule<float> floatPack = ValueRule<float>();
 /**** sf::Vector2f ****/
 const PackRule<sf::Vector2f> vectorPack =
     ClassRule<sf::Vector2f>(
-        MemberRule<sf::Vector2f, float>(floatPack, &sf::Vector2f.x),
-        MemberRule<sf::Vector2f, float>(floatPack, &sf::Vector2f.y)
+        MemberRule<sf::Vector2f, float>(floatPack, &sf::Vector2f::x),
+        MemberRule<sf::Vector2f, float>(floatPack, &sf::Vector2f::y)
     );
 
 /**** PlaneTuning::Energy ****/
