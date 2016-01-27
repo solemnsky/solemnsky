@@ -1,6 +1,8 @@
 #include "server.h"
 #include "util/packer.h"
 #include "util/methods.h"
+#include "sky/flight.h"
+#include "sky/delta.h"
 
 struct MyStruct {
   MyStruct() = default;
@@ -52,4 +54,15 @@ int main() {
   packet = pack(classPack, myStruct);
   packet.dump();
   appLog(LogType::Debug, "output: " + unpack(classPack, packet).show());
+
+  appLog(LogType::Debug, "** classPack **");
+  sky::PlaneTuning tuning;
+  tuning.hitbox.x = 10;
+  appLog(LogType::Debug, "input: " + "has hitbox x dim " +
+                         std::to_string(tuning.hitbox.x));
+  packet = pack(sky::pk::planeTuningPack, tuning);
+  packet.dump();
+  tuning = unpack(sky::pk::planeTuningPack, packet);
+  appLog(LogType::Debug, "output: " + "has hitbox x dim " +
+                         std::to_string(tuning.hitbox.x));
 }
