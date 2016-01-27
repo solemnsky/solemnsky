@@ -1,8 +1,8 @@
 /**
  * Utilities in the form of methods; useful for definitions.
  */
-#ifndef SOLEMNSKY_SYSUTIL_H
-#define SOLEMNSKY_SYSUTIL_H
+#ifndef SOLEMNSKY_METHODS_H
+#define SOLEMNSKY_METHODS_H
 
 #include <SFML/System.hpp>
 #include <Box2D/Box2D.h>
@@ -42,7 +42,6 @@ public:
 };
 
 float toRad(const float x);
-
 float toDeg(const float x);
 
 /**
@@ -51,4 +50,4 @@ float toDeg(const float x);
 
 float linearTween(const float begin, const float end, const float time);
 
-#endif //SOLEMNSKY_SYSUTIL_H
+#endif //SOLEMNSKY_METHODS_H
