@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="solemnsky" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="dist/bin/Debug/solemnsky" prefix_auto="1" extension_auto="1" />
+				<Option object_output="dist/obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="dist/bin/Release/solemnsky" prefix_auto="1" extension_auto="1" />
+				<Option object_output="dist/obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="src/client/client.cpp" />
+		<Unit filename="src/client/client.h" />
+		<Unit filename="src/client/clientstate.cpp" />
+		<Unit filename="src/client/clientstate.h" />
+		<Unit filename="src/client/game/game.h" />
+		<Unit filename="src/client/game/gamecontroller.cpp" />
+		<Unit filename="src/client/game/gamecontroller.h" />
+		<Unit filename="src/client/game/tutorial.cpp" />
+		<Unit filename="src/client/game/tutorial.h" />
+		<Unit filename="src/client/homepage.cpp" />
+		<Unit filename="src/client/homepage.h" />
+		<Unit filename="src/client/listingpage.cpp" />
+		<Unit filename="src/client/listingpage.h" />
+		<Unit filename="src/client/page.h" />
+		<Unit filename="src/client/settingspage.cpp" />
+		<Unit filename="src/client/settingspage.h" />
+		<Unit filename="src/client/ui/control.cpp" />
+		<Unit filename="src/client/ui/control.h" />
+		<Unit filename="src/client/ui/elements/button.cpp" />
+		<Unit filename="src/client/ui/elements/button.h" />
+		<Unit filename="src/client/ui/elements/splash.cpp" />
+		<Unit filename="src/client/ui/elements/splash.h" />
+		<Unit filename="src/client/ui/frame.cpp" />
+		<Unit filename="src/client/ui/frame.h" />
+		<Unit filename="src/client/ui/profiler.cpp" />
+		<Unit filename="src/client/ui/profiler.h" />
+		<Unit filename="src/client/ui/sheet.cpp" />
+		<Unit filename="src/client/ui/sheet.h" />
+		<Unit filename="src/client/ui/signal.h" />
+		<Unit filename="src/client/util/resources.cpp" />
+		<Unit filename="src/client/util/resources.h" />
+		<Unit filename="src/client/util/sfmlutil.cpp" />
+		<Unit filename="src/client/util/sfmlutil.h" />
+		<Unit filename="src/server/server.cpp" />
+		<Unit filename="src/server/server.h" />
+		<Unit filename="src/sky/client/render.cpp" />
+		<Unit filename="src/sky/client/render.h" />
+		<Unit filename="src/sky/delta.cpp" />
+		<Unit filename="src/sky/delta.h" />
+		<Unit filename="src/sky/flight.cpp" />
+		<Unit filename="src/sky/flight.h" />
+		<Unit filename="src/sky/map.cpp" />
+		<Unit filename="src/sky/map.h" />
+		<Unit filename="src/sky/physics.cpp" />
+		<Unit filename="src/sky/physics.h" />
+		<Unit filename="src/sky/server/deltacom.cpp" />
+		<Unit filename="src/sky/server/deltacom.h" />
+		<Unit filename="src/sky/sky.cpp" />
+		<Unit filename="src/sky/sky.h" />
+		<Unit filename="src/sky/subsystem.h" />
+		<Unit filename="src/util/methods.cpp" />
+		<Unit filename="src/util/methods.h" />
+		<Unit filename="src/util/packer.cpp" />
+		<Unit filename="src/util/packer.h" />
+		<Unit filename="src/util/types.cpp" />
+		<Unit filename="src/util/types.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
