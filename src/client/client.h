@@ -37,12 +37,18 @@ private:
 
   // visual values
   const float unfocusedPageScale = 500.0f / 1600.0f,
-      pageFocusAnimSpeed = 3, // s^-1
-      gameFocusAnimSpeed = 4;
+              pageFocusAnimSpeed = 3, // s^-1
+              gameFocusAnimSpeed = 4;
 
-  const sf::Vector2f homeOffset{202.249, 479.047};
-  const sf::Vector2f listingOffset{897.751, 479.047};
-  const sf::Vector2f settingsOffset{550, 98.302};
+  const sf::Vector2f homeOffset {
+    202.249, 479.047
+  };
+  const sf::Vector2f listingOffset {
+    897.751, 479.047
+  };
+  const sf::Vector2f settingsOffset {
+    550, 98.302
+  };
 
   /**
    * Misc helpers.
