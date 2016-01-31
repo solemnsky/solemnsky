@@ -8,14 +8,12 @@
 #include "sky/delta.h"
 
 namespace sky {
-
-class DeltaCompress : Subsystem {
+class DeltaCompress : sky::Subsystem {
 private:
   // a bunch of tricky stuff will go here in due time
 public:
-  DeltaCompress(Sky *sky);
+  DeltaCompress(sky::Sky *sky);
 };
-
 }
 
 #endif //SOLEMNSKY_DELTACOM_H

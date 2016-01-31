@@ -7,7 +7,7 @@
 #include <cmath>
 #include "methods.h"
 
-void appLog(LogType type, const std::string contents) {
+void appLog(LogType type, const std::string &contents) {
   static std::vector<std::string> prefixes =
       {"INFO:   ",
        "NOTICE: ",
@@ -27,6 +27,16 @@ void appLog(LogType type, const std::string contents) {
       std::cout << prefixes[4] + line + "\n";
     }
   }
+}
+
+void appErrorLogic(const std::string &contents) {
+  appLog(LogType::Error, contents);
+  throw std::logic_error(contents);
+}
+
+void appErrorRuntime(const std::string &contents) {
+  appLog(LogType::Error, contents);
+  throw std::runtime_error(contents);
 }
 
 float VecMath::length(const sf::Vector2f &vec) {
@@ -59,3 +69,4 @@ float toRad(const float x) {
 float linearTween(const float begin, const float end, const float time) {
   return begin + time * (end - begin);
 }
+

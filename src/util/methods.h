@@ -15,14 +15,16 @@
 enum class LogType {
   Info, // you might like to know it
   Notice, // you should know it
-  Error, // you have to know it (buzzfeed articles, etc)
-  Debug // exists for debugging
+  Error, // you will know it
+  Debug // debugging
 };
 
 /**
- * Logs a pretty little message.
+ * Logging / error throwing functions.
  */
-void appLog(LogType type, const std::string contents);
+void appLog(LogType type, const std::string &contents);
+void appErrorLogic(const std::string &contents); // log and throw
+void appErrorRuntime(const std::string &contents); // log and throw
 
 /**
  * Logging for memory leaks.

@@ -89,9 +89,7 @@ Switched &Switched::operator=(const float x) {
       return *this;
     }
 
-  appLog(LogType::Error, "Bad assignment to Switched value!");
-  assert(false); // no need for exceptions, this should be
-  // 'practically a compile-time error'
+  throw std::logic_error("Bad assignment to Switched value!");
 }
 
 /**

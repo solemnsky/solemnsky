@@ -92,12 +92,8 @@ void Render::renderPlane(
     PlaneTuning &tuning = plane.state.tuning;
     detail::PlaneAnimState &planeAnimState = animState.at(pid);
 
-    const auto &hitbox = tuning.hitbox;
-
     f.withTransform(
         sf::Transform().translate(vstate.pos).rotate(vstate.rot), [&]() {
-//      f.drawRect(-0.5f * hitbox, 0.5f * hitbox,
-//                 vstate.stalled ? sf::Color::Red : sf::Color::Green);
 
       f.withTransform(
           sf::Transform().scale(vstate.afterburner, vstate.afterburner), [&]() {

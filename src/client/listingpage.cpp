@@ -6,7 +6,7 @@ void ListingPage::reset() {
 
 }
 
-void ListingPage::tick(float delta) {
+void ListingPage::tick(float) {
 
 }
 

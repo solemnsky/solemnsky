@@ -56,8 +56,8 @@ target_link_libraries(solemnsky
 
 ###### solemnsky_server
 add_executable(solemnsky_server
-        src/sky/server/deltacom.cpp
-        src/sky/server/deltacom.h
+        src/server/subsystem/deltacom.cpp
+        src/server/subsystem/deltacom.h
 
         src/server/server.cpp
         src/server/server.h
@@ -119,8 +119,8 @@ add_executable(solemnsky_client
         src/client/settingspage.cpp
         src/client/settingspage.h
 
-        src/sky/client/render.cpp
-        src/sky/client/render.h
+        src/client/subsystem/render.cpp
+        src/client/subsystem/render.h
         )
 target_link_libraries(solemnsky_client
         solemnsky
