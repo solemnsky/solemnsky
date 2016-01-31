@@ -99,47 +99,41 @@ struct PackRule {
 
 private:
   template<typename G>
-  friend
-  Packet pack(const PackRule<G> &rules, const G val);
-
+  friend Packet pack(const PackRule<G> &rules, const G val);
   template<typename G>
-  friend
-  Packet &packInto(const PackRule<G> &rules, Packet &packet, const G val);
-
+  friend Packet &packInto(const PackRule<G> &rules, Packet &packet,
+                          const G val);
   template<typename G>
-  friend
-  G unpack(const PackRule<G> &rules, Packet &packet);
-
+  friend G unpack(const PackRule<G> &rules, Packet &packet);
   template<typename G>
-  friend
-  G unpackInto(const PackRule<G> &rules, Packet &packet, G &val);
+  friend G unpackInto(const PackRule<G> &rules, Packet &packet, G &val);
 
   const std::function<void(Packet &, const T &)> pack;
   const std::function<void(Packet &, T &)> unpack;
 };
 
 template<typename T>
-inline Packet pack(const PackRule<T> &rules, const T val) {
+Packet pack(const PackRule<T> &rules, const T val) {
   Packet packet;
   rules.pack(packet, val);
   return packet;
 }
 
 template<typename T>
-inline Packet &packInto(const PackRule<T> &rules, Packet &packet, const T val) {
+Packet &packInto(const PackRule<T> &rules, Packet &packet, const T val) {
   rules.pack(packet, val);
   return packet;
 }
 
 template<typename T>
-inline T unpack(const PackRule<T> &rules, Packet &packet) {
+T unpack(const PackRule<T> &rules, Packet &packet) {
   T val;
   rules.unpack(packet, val);
   return val;
 }
 
 template<typename T>
-inline T unpackInto(const PackRule<T> &rules, Packet &packet, T &val) {
+T unpackInto(const PackRule<T> &rules, Packet &packet, T &val) {
   rules.unpack(packet, val);
   return val;
 }
@@ -149,10 +143,10 @@ inline T unpackInto(const PackRule<T> &rules, Packet &packet, T &val) {
  */
 
 /**
- * ValueRule: packing an intrinsic datatype.
+ * ValuePack: packing an intrinsic datatype.
  */
 template<typename Value>
-class ValueRule : public PackRule<Value> {
+class ValuePack : public PackRule<Value> {
   static void valuePack(Packet &packet, const Value val) {
     packet.packValue<Value>(val);
   }
@@ -162,18 +156,18 @@ class ValueRule : public PackRule<Value> {
   }
 
 public:
-  ValueRule() :
+  ValuePack() :
       PackRule<Value>(
-          ValueRule<Value>::valuePack,
-          ValueRule<Value>::valueUnpack
+          ValuePack<Value>::valuePack,
+          ValuePack<Value>::valueUnpack
       ) { }
 };
 
 /**
- * OptionalRule: packing an optional<>.
+ * OptionalPack: packing an optional<>.
  */
 template<typename Value>
-class OptionalRule : public PackRule<optional<Value>> {
+class OptionalPack : public PackRule<optional<Value>> {
   static void optPack(const PackRule<Value> &underlying,
                       Packet &packet, const optional<Value> val) {
     if (val) {
@@ -191,25 +185,26 @@ class OptionalRule : public PackRule<optional<Value>> {
   }
 
 public:
-  OptionalRule(const PackRule<Value> &underlying) :
+  OptionalPack(const PackRule<Value> &underlying) :
       PackRule<optional<Value>>(
           [&](Packet &packet, const optional<Value> &val) {
-            OptionalRule<Value>::optPack(underlying, packet, val);
+            OptionalPack<Value>::optPack(underlying, packet, val);
           },
           [&](Packet &packet, optional<Value> &val) {
-            OptionalRule<Value>::optUnpack(underlying, packet, val);
+            OptionalPack<Value>::optUnpack(underlying, packet, val);
           }
       ) { }
 };
 
 /**
- * ClassRule: rather sickening, but extremely helpful.
+ * ClassPack: rather sickening, but extremely helpful.
  */
 
 template<typename Parent, typename Member>
 struct MemberRule {
   MemberRule(const PackRule<Member> &packRule,
-             Member Parent::* pointer) :
+             Member Parent::* pointer,
+  const std::string &name = "") :
       packRule(packRule), pointer(pointer) { }
 
   PackRule<Member> packRule;
@@ -217,7 +212,7 @@ struct MemberRule {
 };
 
 template<typename Parent>
-class ClassRule : public PackRule<Parent> {
+class ClassPack : public PackRule<Parent> {
   static void classPack(Packet &packet, const Parent &parent) {
     appLog(LogType::Debug, "finished packing");
   }
@@ -239,23 +234,24 @@ class ClassRule : public PackRule<Parent> {
   static void classUnpack(Packet &packet, Parent &parent,
                           const MemberRule<Parent, HeadMember> &rule,
                           TailMembers... tailMembers) {
-    unpackInto(rule.packRule, packet, parent.*rule.pointer);
+    appLog(LogType::Debug, "unpacking element");
+//    unpackInto(rule.packRule, packet, parent.*rule.pointer);
     classUnpack(packet, parent, tailMembers...);
   }
 
 public:
   template<typename... Members>
-  ClassRule(Members... members) :
+  ClassPack(Members... members) :
       PackRule<Parent>(
           [&](Packet &packet, const Parent parent) {
             appLog(LogType::Debug,
                    "beginning packing");
-            ClassRule<Parent>::classPack(packet, parent, members...);
+            ClassPack<Parent>::classPack(packet, parent, members...);
           },
           [&](Packet &packet, Parent &parent) {
             appLog(LogType::Debug,
                    "beginning unpacking");
-            ClassRule<Parent>::classUnpack(packet, parent, members...);
+            ClassPack<Parent>::classUnpack(packet, parent, members...);
           }
       ) { }
 };
