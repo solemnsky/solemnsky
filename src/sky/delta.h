@@ -83,11 +83,11 @@ const PackRule<PlaneTuning::Flight> planeTuningFlightPack =
   MemberRule<PlaneTuning, TYPE>(RULE, &PlaneTuning::PTR)
 const PackRule<PlaneTuning> planeTuningPack =
     ClassRule<PlaneTuning>(
-        member(sf::Vector2f, vectorPack, hitbox),
-        member(PlaneTuning::Energy, planeTuningEnergyPack, energy),
-        member(PlaneTuning::Stall, planeTuningStallPack, stall),
-        member(PlaneTuning::Flight, planeTuningFlightPack, flight),
-        member(float, floatPack, throttleSpeed)
+//        member(sf::Vector2f, vectorPack, hitbox),
+//        member(PlaneTuning::Energy, planeTuningEnergyPack, energy),
+//        member(PlaneTuning::Stall, planeTuningStallPack, stall),
+//        member(PlaneTuning::Flight, planeTuningFlightPack, flight),
+//        member(float, floatPack, throttleSpeed)
     );
 #undef member
 

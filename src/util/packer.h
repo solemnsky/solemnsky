@@ -15,13 +15,14 @@
 
 struct Packet {
   Packet();
-  Packet(std::vector<char> data);
+  Packet(const std::vector<char> &data);
+  ~Packet();
 
   // reset read head on any copy or move
   Packet(const Packet &packet);
   Packet(Packet &&packet);
-  Packet operator=(const Packet &packet);
-  Packet operator=(Packet &&packet);
+  Packet &operator=(const Packet &packet);
+  Packet &operator=(Packet &&packet);
 
   std::vector<char> data;
   int readHead = 0;
@@ -47,6 +48,7 @@ struct Packet {
   char unpackChar();
 
   void dump(); // dump data to stdout
+  void reset();
 };
 
 template<typename T>
@@ -89,6 +91,8 @@ T Packet::unpackValue() {
 
 template<typename T>
 struct PackRule {
+  PackRule() = delete;
+
   PackRule(const std::function<void(Packet &, const T)> &pack,
            const std::function<void(Packet &, T &)> &unpack)
       : pack(pack), unpack(unpack) { }
@@ -100,7 +104,7 @@ private:
 
   template<typename G>
   friend
-  Packet packInto(const PackRule<G> &rules, Packet &packet, const G val);
+  Packet &packInto(const PackRule<G> &rules, Packet &packet, const G val);
 
   template<typename G>
   friend
@@ -110,7 +114,7 @@ private:
   friend
   G unpackInto(const PackRule<G> &rules, Packet &packet, G &val);
 
-  const std::function<void(Packet &, const T)> pack;
+  const std::function<void(Packet &, const T &)> pack;
   const std::function<void(Packet &, T &)> unpack;
 };
 
@@ -122,8 +126,9 @@ inline Packet pack(const PackRule<T> &rules, const T val) {
 }
 
 template<typename T>
-inline Packet packInto(const PackRule<T> &rules, Packet &packet, const T val) {
+inline Packet &packInto(const PackRule<T> &rules, Packet &packet, const T val) {
   rules.pack(packet, val);
+  return packet;
 }
 
 template<typename T>
@@ -188,7 +193,7 @@ class OptionalRule : public PackRule<optional<Value>> {
 public:
   OptionalRule(const PackRule<Value> &underlying) :
       PackRule<optional<Value>>(
-          [&](Packet &packet, const optional<Value> val) {
+          [&](Packet &packet, const optional<Value> &val) {
             OptionalRule<Value>::optPack(underlying, packet, val);
           },
           [&](Packet &packet, optional<Value> &val) {
@@ -213,23 +218,28 @@ struct MemberRule {
 
 template<typename Parent>
 class ClassRule : public PackRule<Parent> {
-  static void classPack(Packet &packet, const Parent parent) { }
+  static void classPack(Packet &packet, const Parent &parent) {
+    appLog(LogType::Debug, "finished packing");
+  }
 
   template<typename HeadMember, typename... TailMembers>
-  static void classPack(Packet &packet, const Parent parent,
+  static void classPack(Packet &packet, const Parent &parent,
                         const MemberRule<Parent, HeadMember> &rule,
                         TailMembers... tailMembers) {
+    appLog(LogType::Debug, "packing element");
     packInto(rule.packRule, packet, parent.*rule.pointer);
     classPack(packet, parent, tailMembers...);
   }
 
-  static void classUnpack(Packet &packet, Parent &parent) { }
+  static void classUnpack(Packet &packet, Parent &parent) {
+    appLog(LogType::Debug, "finished unpacking");
+  }
 
   template<typename HeadMember, typename... TailMembers>
   static void classUnpack(Packet &packet, Parent &parent,
                           const MemberRule<Parent, HeadMember> &rule,
                           TailMembers... tailMembers) {
-    parent.*rule.pointer = unpack(rule.packRule, packet);
+    unpackInto(rule.packRule, packet, parent.*rule.pointer);
     classUnpack(packet, parent, tailMembers...);
   }
 
@@ -238,9 +248,13 @@ public:
   ClassRule(Members... members) :
       PackRule<Parent>(
           [&](Packet &packet, const Parent parent) {
+            appLog(LogType::Debug,
+                   "beginning packing");
             ClassRule<Parent>::classPack(packet, parent, members...);
           },
           [&](Packet &packet, Parent &parent) {
+            appLog(LogType::Debug,
+                   "beginning unpacking");
             ClassRule<Parent>::classUnpack(packet, parent, members...);
           }
       ) { }
