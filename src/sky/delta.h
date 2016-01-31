@@ -28,11 +28,11 @@ struct PlaneDelta {
 namespace pk {
 
 /**** float ****/
-const PackRule<float> floatPack = ValueRule<float>();
+const PackRule<float> floatPack = ValuePack<float>();
 
 /**** sf::Vector2f ****/
 const PackRule<sf::Vector2f> vectorPack =
-    ClassRule<sf::Vector2f>(
+    ClassPack<sf::Vector2f>(
         MemberRule<sf::Vector2f, float>(floatPack, &sf::Vector2f::x),
         MemberRule<sf::Vector2f, float>(floatPack, &sf::Vector2f::y)
     );
@@ -41,7 +41,7 @@ const PackRule<sf::Vector2f> vectorPack =
 #define member(TYPE, RULE, PTR) \
   MemberRule<PlaneTuning::Energy, TYPE>(RULE, &PlaneTuning::Energy::PTR)
 const PackRule<PlaneTuning::Energy> planeTuningEnergyPack =
-    ClassRule<PlaneTuning::Energy>(
+    ClassPack<PlaneTuning::Energy>(
         member(float, floatPack, thrustDrain),
         member(float, floatPack, recharge),
         member(float, floatPack, laserGun)
@@ -52,7 +52,7 @@ const PackRule<PlaneTuning::Energy> planeTuningEnergyPack =
 #define member(TYPE, RULE, PTR) \
   MemberRule<PlaneTuning::Stall, TYPE>(RULE, &PlaneTuning::Stall::PTR)
 const PackRule<PlaneTuning::Stall> planeTuningStallPack =
-    ClassRule<PlaneTuning::Stall>(
+    ClassPack<PlaneTuning::Stall>(
         member(float, floatPack, maxRotVel),
         member(float, floatPack, maxVel),
         member(float, floatPack, thrust),
@@ -65,7 +65,7 @@ const PackRule<PlaneTuning::Stall> planeTuningStallPack =
 #define member(TYPE, RULE, PTR) \
   MemberRule<PlaneTuning::Flight, TYPE>(RULE, &PlaneTuning::Flight::PTR)
 const PackRule<PlaneTuning::Flight> planeTuningFlightPack =
-    ClassRule<PlaneTuning::Flight>(
+    ClassPack<PlaneTuning::Flight>(
         member(float, floatPack, maxRotVel),
         member(float, floatPack, airspeedFactor),
         member(float, floatPack, throttleInfluence),
@@ -82,7 +82,7 @@ const PackRule<PlaneTuning::Flight> planeTuningFlightPack =
 #define member(TYPE, RULE, PTR) \
   MemberRule<PlaneTuning, TYPE>(RULE, &PlaneTuning::PTR)
 const PackRule<PlaneTuning> planeTuningPack =
-    ClassRule<PlaneTuning>(
+    ClassPack<PlaneTuning>(
 //        member(sf::Vector2f, vectorPack, hitbox),
 //        member(PlaneTuning::Energy, planeTuningEnergyPack, energy),
 //        member(PlaneTuning::Stall, planeTuningStallPack, stall),
