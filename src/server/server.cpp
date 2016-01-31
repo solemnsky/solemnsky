@@ -55,7 +55,7 @@ int main() {
   packet.dump();
   appLog(LogType::Debug, "output: " + unpack(classPack, packet).show());
 
-  appLog(LogType::Debug, "** classPack **");
+  appLog(LogType::Debug, "** large classPack **");
   sky::PlaneTuning tuning;
   tuning.hitbox.x = 10;
   appLog(LogType::Debug, "input: has hitbox x dim " +

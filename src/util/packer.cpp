@@ -5,21 +5,24 @@
  * Packet.
  */
 
-Packet::Packet() { }
+Packet::Packet() { CTOR_LOG("packet"); }
 
-Packet::Packet(std::vector<char> data) : data(data) { }
+Packet::Packet(const std::vector<char> &data) :
+    data(data) { CTOR_LOG("packet"); }
 
-Packet::Packet(const Packet &packet) : data(packet.data) { }
+Packet::Packet(const Packet &packet) : Packet(packet.data) { }
 
-Packet::Packet(Packet &&packet) : data(packet.data) { }
+Packet::Packet(Packet &&packet) : Packet(packet.data) { }
 
-Packet Packet::operator=(const Packet &packet) {
+Packet::~Packet() { DTOR_LOG("packet"); }
+
+Packet & Packet::operator=(const Packet &packet) {
   readHead = 0;
   data = packet.data;
   return *this;
 }
 
-Packet Packet::operator=(Packet &&packet) {
+Packet & Packet::operator=(Packet &&packet) {
   readHead = 0;
   data = packet.data;
   return *this;
@@ -42,4 +45,9 @@ void Packet::dump() {
   std::cout << "packet: ";
   for (char c : data) std::cout << c;
   std::cout << "\n";
+}
+
+void Packet::reset() {
+  data.clear();
+  resetHead();
 }
