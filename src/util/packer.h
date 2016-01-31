@@ -97,17 +97,6 @@ struct PackRule {
            const std::function<void(Packet &, T &)> &unpack)
       : pack(pack), unpack(unpack) { }
 
-private:
-  template<typename G>
-  friend Packet pack(const PackRule<G> &rules, const G val);
-  template<typename G>
-  friend Packet &packInto(const PackRule<G> &rules, Packet &packet,
-                          const G val);
-  template<typename G>
-  friend G unpack(const PackRule<G> &rules, Packet &packet);
-  template<typename G>
-  friend G unpackInto(const PackRule<G> &rules, Packet &packet, G &val);
-
   const std::function<void(Packet &, const T &)> pack;
   const std::function<void(Packet &, T &)> unpack;
 };
