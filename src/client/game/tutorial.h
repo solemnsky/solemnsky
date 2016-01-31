@@ -6,7 +6,7 @@
 
 #include "game.h"
 #include "sky/sky.h"
-#include "sky/client/render.h"
+#include "client/subsystem/render.h"
 #include "gamecontroller.h"
 
 class Tutorial : public Game {

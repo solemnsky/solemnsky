@@ -120,13 +120,13 @@ void PlaneHandle::tick(float delta) {
   if (vstate->stalled) {
     // afterburner
     if (vstate->throtCtrl == 1) {
-      const float thrustEfficacity =
+      const float thrustEfficacy =
           vstate->requestEnergy(tuning.energy.thrustDrain * delta);
 
       vstate->vel +=
           VecMath::fromAngle(vstate->rot) *
-          (delta * tuning.stall.thrust * thrustEfficacity);
-      vstate->afterburner = thrustEfficacity;
+          (delta * tuning.stall.thrust * thrustEfficacy);
+      vstate->afterburner = thrustEfficacy;
     }
 
     // damping towards terminal velocity

@@ -1,5 +1,5 @@
 /**
- * Page where the user recieves the comforts of home.
+ * Page where the user receives the comforts of home.
  */
 #ifndef SOLEMNSKY_HOMEPAGE_H
 #define SOLEMNSKY_HOMEPAGE_H

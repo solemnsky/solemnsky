@@ -90,8 +90,7 @@ const sf::Texture &ResMan::recallTexture(Res res) {
   if (record.type == ResType::Texture)
     return textures.at((int) res);
   else {
-    appLog(LogType::Error, record.path + " is not a texture.");
-    assert(false); // no need for exceptions, this is practically a syntax error
+    appErrorLogic(record.path + " is not a texture.");
   }
 }
 
@@ -101,8 +100,7 @@ const sf::Font &ResMan::recallFont(Res res) {
   if (record.type == ResType::Font)
     return fonts.at((int) res);
   else {
-    appLog(LogType::Error, record.path + " is not a font");
-    assert(false);
+    appErrorLogic(record.path + " is not a font");
   }
 }
 

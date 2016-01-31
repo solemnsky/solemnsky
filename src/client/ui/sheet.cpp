@@ -1,3 +1,4 @@
+#include <util/methods.h>
 #include "sheet.h"
 
 namespace ui {
@@ -16,11 +17,10 @@ void SpriteSheet::drawIndex(ui::Frame &f, const sf::Vector2f &dims,
 
 void SpriteSheet::drawIndexAtRoll(ui::Frame &f, const sf::Vector2f &dims,
                                   const Angle deg) const {
-  // TODO: fix this completely
-
-  const int fullIndex = std::floor(
-      Cyclic(0, count * 2, (deg * count / 180) - 0.5f)
-  );
+  const int fullIndex =
+      (deg > 180)
+      ? std::floor(Cyclic(0, count * 2, deg * count / 180))
+      : std::floor(Cyclic(0, count * 2, (deg * count / 180) - 0.5f));
 
   bool flipped;
   int realIndex;

@@ -1,5 +1,5 @@
 /**
- * Utilities for client executables, dependening on SFML window and graphics
+ * Utilities for client executables, depending on SFML window and graphics
  * modules.
  */
 #ifndef SOLEMNSKY_UTIL_H
