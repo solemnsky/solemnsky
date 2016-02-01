@@ -31,22 +31,22 @@ int main() {
 
   Packet packet;
 
-  appLog(LogType::Debug, "** floatPack **");
-  float fl = 999999.0f;
-  appLog(LogType::Debug, "input: " + std::to_string(fl));
-  packet = pack(floatPack, fl);
-  packet.dump();
-  appLog(LogType::Debug, "output: " +
-                         std::to_string(
-                             unpack(floatPack, packet)));
-
-  appLog(LogType::Debug, "** optionalPack **");
-  optional<float> optFl = {88888.0f};
-  appLog(LogType::Debug, "input: " + std::to_string(*optFl));
-  packet = pack(optionalPack, optFl);
-  packet.dump();
-  appLog(LogType::Debug, "output: " +
-                         std::to_string(*unpack(optionalPack, packet)));
+//  appLog(LogType::Debug, "** floatPack **");
+//  float fl = 999999.0f;
+//  appLog(LogType::Debug, "input: " + std::to_string(fl));
+//  packet = pack(floatPack, fl);
+//  packet.dump();
+//  appLog(LogType::Debug, "output: " +
+//                         std::to_string(
+//                             unpack(floatPack, packet)));
+//
+//  appLog(LogType::Debug, "** optionalPack **");
+//  optional<float> optFl = {88888.0f};
+//  appLog(LogType::Debug, "input: " + std::to_string(*optFl));
+//  packet = pack(optionalPack, optFl);
+//  packet.dump();
+//  appLog(LogType::Debug, "output: " +
+//                         std::to_string(*unpack(optionalPack, packet)));
 
   appLog(LogType::Debug, "** classPack **");
   MyStruct myStruct{42, 53};
@@ -55,14 +55,14 @@ int main() {
   packet.dump();
   appLog(LogType::Debug, "output: " + unpack(classPack, packet).show());
 
-  appLog(LogType::Debug, "** large classPack **");
-  sky::PlaneTuning tuning;
-  tuning.hitbox.x = 10;
-  appLog(LogType::Debug, "input: has hitbox x dim " +
-                         std::to_string(tuning.hitbox.x));
-  packet = pack(sky::pk::planeTuningPack, tuning);
-  packet.dump();
-  tuning = unpack(sky::pk::planeTuningPack, packet);
-  appLog(LogType::Debug, "output: has hitbox x dim " +
-                         std::to_string(tuning.hitbox.x));
+//  appLog(LogType::Debug, "** large classPack **");
+//  sky::PlaneTuning tuning;
+//  tuning.hitbox.x = 10;
+//  appLog(LogType::Debug, "input: has hitbox x dim " +
+//                         std::to_string(tuning.hitbox.x));
+//  packet = pack(sky::pk::planeTuningPack, tuning);
+//  packet.dump();
+//  tuning = unpack(sky::pk::planeTuningPack, packet);
+//  appLog(LogType::Debug, "output: has hitbox x dim " +
+//                         std::to_string(tuning.hitbox.x));
 }
