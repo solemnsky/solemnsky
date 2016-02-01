@@ -97,6 +97,8 @@ struct PackRule {
            const std::function<void(Packet &, T &)> &unpack)
       : pack(pack), unpack(unpack) { }
 
+  virtual ~PackRule() { }
+
   const std::function<void(Packet &, const T &)> pack;
   const std::function<void(Packet &, T &)> unpack;
 };
@@ -193,7 +195,7 @@ template<typename Parent, typename Member>
 struct MemberRule {
   MemberRule(const PackRule<Member> &packRule,
              Member Parent::* pointer,
-  const std::string &name = "") :
+             const std::string &name = "") :
       packRule(packRule), pointer(pointer) { }
 
   PackRule<Member> packRule;
@@ -211,7 +213,7 @@ class ClassPack : public PackRule<Parent> {
                         const MemberRule<Parent, HeadMember> &rule,
                         TailMembers... tailMembers) {
     appLog(LogType::Debug, "packing element");
-    packInto(rule.packRule, packet, parent.*rule.pointer);
+//    packInto(rule.packRule, packet, parent.*rule.pointer);
     classPack(packet, parent, tailMembers...);
   }
 
@@ -232,7 +234,7 @@ public:
   template<typename... Members>
   ClassPack(Members... members) :
       PackRule<Parent>(
-          [&](Packet &packet, const Parent parent) {
+          [&](Packet &packet, const Parent &parent) {
             appLog(LogType::Debug,
                    "beginning packing");
             ClassPack<Parent>::classPack(packet, parent, members...);
