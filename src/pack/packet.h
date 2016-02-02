@@ -1,5 +1,6 @@
 /**
- * A packet, 
+ * A packet that we can read / write bits and chars to, and presumably
+ * transmit and recieve.
  */
 #ifndef SOLEMNSKY_PACKET_H
 #define SOLEMNSKY_PACKET_H
