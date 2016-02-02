@@ -1,68 +1,22 @@
 #include "server.h"
-#include "util/packer.h"
-#include "util/methods.h"
-#include "sky/flight.h"
-#include "sky/delta.h"
-
-struct MyStruct {
-  MyStruct() = default;
-
-  MyStruct(float x, float y) : x(x), y(y) { };
-
-  float x;
-  optional<float> y;
-
-  std::string show() {
-    if (y)
-      return "x: " + std::to_string(x) + " y: " + std::to_string(*y);
-    return "x: " + std::to_string(x);
-  }
-};
+#include "pack/packet.h"
+#include <iostream>
 
 int main() {
-  const PackRule<float> floatPack = ValuePack<float>();
-  const PackRule<optional<float>> optionalPack =
-      OptionalPack<float>(floatPack);
-  const PackRule<MyStruct> classPack =
-      ClassPack<MyStruct>(
-          MemberRule<MyStruct, float>(floatPack, &MyStruct::x),
-          MemberRule<MyStruct, optional<float>>(optionalPack, &MyStruct::y)
-      );
-
-  Packet packet;
-
-//  appLog(LogType::Debug, "** floatPack **");
-//  float fl = 999999.0f;
-//  appLog(LogType::Debug, "input: " + std::to_string(fl));
-//  packet = pack(floatPack, fl);
-//  packet.dump();
-//  appLog(LogType::Debug, "output: " +
-//                         std::to_string(
-//                             unpack(floatPack, packet)));
-//
-//  appLog(LogType::Debug, "** optionalPack **");
-//  optional<float> optFl = {88888.0f};
-//  appLog(LogType::Debug, "input: " + std::to_string(*optFl));
-//  packet = pack(optionalPack, optFl);
-//  packet.dump();
-//  appLog(LogType::Debug, "output: " +
-//                         std::to_string(*unpack(optionalPack, packet)));
-
-  appLog(LogType::Debug, "** classPack **");
-  MyStruct myStruct{42, 53};
-  appLog(LogType::Debug, "input: " + myStruct.show());
-  packet = pack(classPack, myStruct);
+  pk::Packet packet;
+  packet.writeBit(1);
+  packet.writeBit(1);
+  packet.writeChar('a');
+  packet.writeBit(0);
+  packet.writeChar('z');
+  packet.writeBit(1);
+  packet.writeChar('f');
   packet.dump();
-  appLog(LogType::Debug, "output: " + unpack(classPack, packet).show());
-
-//  appLog(LogType::Debug, "** large classPack **");
-//  sky::PlaneTuning tuning;
-//  tuning.hitbox.x = 10;
-//  appLog(LogType::Debug, "input: has hitbox x dim " +
-//                         std::to_string(tuning.hitbox.x));
-//  packet = pack(sky::pk::planeTuningPack, tuning);
-//  packet.dump();
-//  tuning = unpack(sky::pk::planeTuningPack, packet);
-//  appLog(LogType::Debug, "output: has hitbox x dim " +
-//                         std::to_string(tuning.hitbox.x));
+  std::cout << packet.readBit();
+  std::cout << packet.readBit();
+  std::cout << packet.readChar();
+  std::cout << packet.readBit();
+  std::cout << packet.readChar();
+  std::cout << packet.readBit();
+  std::cout << packet.readChar();
 }

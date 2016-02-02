@@ -50,10 +50,6 @@ float PlaneVital::requestEnergy(const float reqEnergy) {
 }
 
 /****
- * Plane
- */
-
-/****
  * PlaneHandle
  */
 
@@ -70,7 +66,7 @@ void PlaneHandle::writeToBody() {
       body->SetGravityScale(vstate->stalled ? 1 : 0);
     } else {
       // otherwise, use impulses so we're participating in physics minimally
-      // (ideally we should be using motors for this, let's put that as an
+      // (ideally we should be using motor joints for this, let's put that as an
       // optional TODO...)
       physics->approachRotVel(body, vstate->rotvel);
       physics->approachVel(body, vstate->vel);

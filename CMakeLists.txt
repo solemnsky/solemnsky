@@ -21,8 +21,8 @@ include_directories(
 
 ###### libsolemnsky, for common use by client and server
 add_library(solemnsky STATIC
-        src/util/packer.cpp
-        src/util/packer.h
+        src/pack/packet.cpp
+        src/pack/packet.h
 
         src/util/methods.cpp
         src/util/methods.h
@@ -46,7 +46,7 @@ add_library(solemnsky STATIC
         src/sky/sky.cpp
 
         src/sky/subsystem.h
-        )
+        src/pack/pack.cpp src/pack/pack.h)
 target_link_libraries(solemnsky
         sfml-system
         sfml-network
