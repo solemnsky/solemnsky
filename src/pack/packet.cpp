@@ -16,7 +16,7 @@ Packet::Packet(const Packet &packet) :
 
 Packet &Packet::operator=(const Packet &packet) {
   writeOffset = packet.writeOffset;
-  data = data;
+  data = packet.data;
   readReset();
 }
 
@@ -82,8 +82,8 @@ void Packet::readReset() {
   readHead = 0;
 }
 
-char Packet::readChar() {
-  char result;
+unsigned char Packet::readChar() {
+  unsigned char result;
   if (writeOffset == 0) {
     result = data[readHead];
     readHead++;
@@ -103,4 +103,5 @@ bool Packet::readBit() {
   } else readOffset++;
   return result;
 }
+
 }

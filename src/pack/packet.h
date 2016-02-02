@@ -12,6 +12,7 @@ namespace pk {
 struct Packet {
 private:
   std::vector<unsigned char> data;
+
   inline unsigned char &lastData() { return data[data.size() - 1]; }
 
   int writeOffset; // offset when writing (appending) to
@@ -39,7 +40,7 @@ public:
   Packet(const std::vector<unsigned char> &data);
 
   Packet(const Packet &);
-  Packet &operator=(const Packet&);
+  Packet &operator=(const Packet &);
 
   /**
    * Accessing.
@@ -53,15 +54,50 @@ public:
    */
   void writeReset();
   void writeChar(const unsigned char x);
-  void writeBit(const bool x); // actually writes a bit, yeah
+  void writeBit(const bool x); // by the power of bitwise operation
+
+  /**
+   * Writing other byte-construtable values like floats and ints.
+   */
+  template<typename T>
+  void writeValue(const T x);
 
   /**
    * Reading.
    */
   void readReset();
-  char readChar();
+  unsigned char readChar();
   bool readBit();
+
+  template<typename T>
+  T readValue();
 };
+
+template<typename T>
+void Packet::writeValue(const T x) {
+  union {
+    unsigned char chars[sizeof(T)];
+    T value;
+  } magic;
+
+  magic.value = x;
+
+  for (size_t i = 0; i < sizeof(T); i++)
+    writeChar(magic.chars[i]);
+}
+
+template<typename T>
+T Packet::readValue() {
+  union {
+    unsigned char chars[sizeof(T)];
+    T value;
+  } magic;
+
+  for (size_t i = 0; i < sizeof(T); i++)
+    magic.chars[i] = readChar();
+
+  return magic.value;
+}
 
 }
 
