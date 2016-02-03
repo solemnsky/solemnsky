@@ -25,42 +25,42 @@ struct Pack {
 
 private:
   template<typename T>
-  friend Packet pack(struct Pack<T>, const T &);
+  friend Packet pack(const Pack<T> &, const T &);
 
   template<typename T>
-  friend void packInto(struct Pack<T>, const T &, Packet &);
+  friend void packInto(const Pack<T> &, const T &, Packet &);
 
   template<typename T>
-  friend T unpack(Pack<T> rules, Packet &packet);
+  friend T unpack(const Pack<T> &, Packet &);
 
   template<typename T>
-  friend void unpackInto(Pack<T> rules, Packet &packet, const T &value);
+  friend void unpackInto(const Pack<T> &, Packet &, T &);
 
-  std::function<void(Packet &, const Value &)> pack;
-  std::function<void(Packet &, Value &)> unpack;
+  const std::function<void(Packet &, const Value &)> pack;
+  const std::function<void(Packet &, Value &)> unpack;
 };
 
 template<typename T>
-Packet pack(Pack<T> rules, const T &value) {
+Packet pack(const Pack<T> &rules, const T &value) {
   Packet packet;
   rules.pack(packet, value);
   return packet;
 }
 
 template<typename T>
-void packInto(struct Pack<T> rules, const T &value, Packet &packet) {
+void packInto(const Pack<T> &rules, const T &value, Packet &packet) {
   rules.pack(packet, value);
 }
 
 template<typename T>
-T unpack(Pack<T> rules, Packet &packet) {
+T unpack(const Pack<T> &rules, Packet &packet) {
   T value;
   rules.unpack(packet, value);
   return value;
 }
 
 template<typename T>
-void unpackInto(Pack<T> rules, Packet &packet, const T &value) {
+void unpackInto(const Pack<T> &rules, Packet &packet, T &value) {
   rules.unpack(packet, value);
 }
 
@@ -114,6 +114,68 @@ struct BytePack : Pack<T> {
       },
       [](Packet &packet, T &value) {
         value = packet.readValue<T>();
+      }) { }
+};
+
+/**
+ * Packs an optional<>.
+ */
+template<typename T>
+struct OptionalPack : Pack<optional<T>> {
+  OptionalPack(const Pack<T> &rule) : Pack<optional<T>>(
+      [rule](Packet &packet, const optional<T> &value) {
+        packet.writeBit((bool) value);
+        if (value) packInto(rule, *value, packet);
+      },
+      [rule](Packet &packet, optional<T> &value) {
+        if (packet.readBit())
+          value.emplace(unpack(rule, packet));
+        else value.reset();
+      }) { }
+};
+
+/**
+ * Pack a class, syncing an variadic argument list of
+ */
+
+template<typename Class, typename Member>
+struct MemberRule {
+  MemberRule(Pack<Member> &rule, Member Class::* ptr) :
+      rule(rule), ptr(ptr) { }
+
+  Pack<Member> rule;
+  Member Class::* ptr;
+};
+
+template<typename Class>
+struct ClassPack : Pack<Class> {
+private:
+  static void classPack(Packet &packet, const Class &value) { }
+
+  template<typename Member, typename... Rest>
+  static void classPack(Packet &packet, const Class &value,
+                 const MemberRule<Class, Member> &rule, Rest... rest) {
+    packInto(rule.rule, value.*rule.ptr, packet);
+    classPack(packet, value, rest...);
+  };
+
+  static void classUnpack(Packet &packet, Class &value) { }
+
+  template<typename Member, typename... Rest>
+  static void classUnpack(Packet &packet, Class &value,
+                   const MemberRule<Class, Member> &rule, Rest... rest) {
+    unpackInto(rule.rule, packet, value.*rule.ptr);
+    classUnpack(packet, value, rest...);
+  };
+
+public:
+  template<typename... Members>
+  ClassPack(Members... members) : Pack<Class>(
+      [members...](Packet &packet, const Class &value) {
+        ClassPack::classPack(packet, value, members...);
+      },
+      [members...](Packet &packet, Class &value) {
+        ClassPack::classUnpack(packet, value, members...);
       }) { }
 };
 
