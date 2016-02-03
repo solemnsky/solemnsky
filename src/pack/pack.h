@@ -140,11 +140,11 @@ struct OptionalPack : Pack<optional<T>> {
 
 template<typename Class, typename Member>
 struct MemberRule {
-  MemberRule(Pack<Member> &rule, Member Class::* ptr) :
+  MemberRule(const Pack<Member> &rule, Member Class::* const ptr) :
       rule(rule), ptr(ptr) { }
 
-  Pack<Member> rule;
-  Member Class::* ptr;
+  const Pack<Member> rule;
+  Member Class::* const ptr;
 };
 
 template<typename Class>
@@ -154,7 +154,7 @@ private:
 
   template<typename Member, typename... Rest>
   static void classPack(Packet &packet, const Class &value,
-                 const MemberRule<Class, Member> &rule, Rest... rest) {
+                        const MemberRule<Class, Member> &rule, Rest... rest) {
     packInto(rule.rule, value.*rule.ptr, packet);
     classPack(packet, value, rest...);
   };
@@ -163,7 +163,7 @@ private:
 
   template<typename Member, typename... Rest>
   static void classUnpack(Packet &packet, Class &value,
-                   const MemberRule<Class, Member> &rule, Rest... rest) {
+                          const MemberRule<Class, Member> &rule, Rest... rest) {
     unpackInto(rule.rule, packet, value.*rule.ptr);
     classUnpack(packet, value, rest...);
   };
