@@ -73,7 +73,7 @@ bool approach(T &x, const T target, const T amount) {
  * > cooldown.reset();
  * > print(cooldown); // 'false', cooldown now at 1
  */
-class Cooldown {
+struct Cooldown {
 public:
   float cooldown;
   float period;
@@ -96,7 +96,7 @@ public:
  * > x -= 1.4;
  * > print(x) // '0'
  */
-class Clamped {
+struct Clamped {
 private:
   float value;
 
@@ -118,7 +118,7 @@ public:
  * Cyclic values: floats that always cycle back to a certain range when
  * assigned. ([min, max[)
  */
-class Cyclic {
+struct Cyclic {
 private:
   float value;
 public:
@@ -146,7 +146,7 @@ float cyclicDistance(const Cyclic x, const float y);
  * > x = 4;
  * > (error printed, program execution terminated)
  */
-class Switched {
+struct Switched {
 private:
   std::vector<float> states;
   float value;
@@ -167,7 +167,7 @@ public:
  * [0, 360[ by type. SFML doesn't seem to have this and I'm not going to be
  * using potentially redundant cyclicClamps everywhere...
  */
-class Angle {
+struct Angle {
 private:
   float value;
 public:
