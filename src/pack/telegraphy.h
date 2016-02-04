@@ -24,44 +24,53 @@ using IpAddress = sf::IpAddress;
  * bandwidth to verify arrival or ordering because after 100 ms it's worthless.
  */
 struct Strategy {
-  enum Control {
+  enum class Control {
     None, // just send it
     Arrival, // make sure they get there
     Ordering // make sure they get there in their original ordering
-  } control;
+  };
 
-  double timeout;
+  Strategy(const Control = Control::None,
+           const optional<double> timeout = {});
+
+  Control control;
+  optional<double> timeout;
   // if it takes longer than this value it's no longer profitable for it to
   // arrive at all (applies to non-None controls)
 };
 
 /**
- * A thing you transmit, maps to a packet.
+ * Transmission. Parameter holder for Telegraph::transmit().
  */
 struct Transmission {
-  Transmission() {}
+  Transmission(Packet &&packet, // *move, not copy*!
+               const IpAddress &destination,
+               const Strategy &strategy);
 
-  Packet data;
+  Packet packet;
   IpAddress destination;
+  Strategy strategy;
 };
 
 /**
- * A thing you receive, maps to a packet.
+ * Reception. Parameter holder for Telegraph::receive() callback.
  */
 struct Reception {
-  Reception(const Packet &data, const IpAddress &address);
+  Reception(Packet *packet,
+            const IpAddress &address);
 
-  Packet data;
+  Packet *packet; // only access this in the callback
   IpAddress address;
 };
 
 namespace detail {
 /**
- * Internal representation of a packet on the wire, with the data and some
- * additional information.
+ * Internal representation of a packet on the wire, with packet data and
+ * meta-information.
  */
 struct WirePacket {
   WirePacket() = default;
+  WirePacket(Packet &&packet); // *move, not copy*!
 
   bool receive(sf::UdpSocket &sock,
                IpAddress &addr,
@@ -70,33 +79,26 @@ struct WirePacket {
                 const IpAddress &addr,
                 const unsigned short port);
 
-  Packet data;
+  Packet packet;
+  // TODO: strategy-related meta-information
 };
 }
 
 class Telegraph {
 private:
   sf::UdpSocket sock;
-  detail::WirePacket buffer;
-  std::vector<Reception> receptionCue;
 
 public:
   Telegraph(unsigned short port);
-
-  unsigned short port;
-
-  /**
-   * Staying alive.
-   */
-  void process();
+  const unsigned short port;
 
   /**
    * Receptions and transmissions.
    */
-  void transmit(const Transmission &transmission);
-  std::vector<Reception> receive();
+  void transmit(Transmission &&transmission);
+  void receive(std::function<void(Reception &)> onReceive);
+  // continually call this
 };
-
 }
 
 #endif //SOLEMNSKY_TELEGRAPHY_H
