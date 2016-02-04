@@ -10,15 +10,14 @@
 namespace pk {
 
 struct Packet {
+  static constexpr int bufferSize = 1024 * 2; // magic number
 private:
-  static constexpr int bufferSize = 1024*2; // magic number
-
   std::vector<unsigned char> data;
 
   inline unsigned char &writeHeadData() { return data[writeHead]; }
 
-  int writeHead, writeOffset; // offset when writing through
-  int readHead, readOffset; // head and offset when reading through
+  size_t writeHead = 0, readHead = 0;
+  int writeOffset = 0, readOffset = 0;
 
   /**
    * 1: written / read, 0: unwritten / unread
@@ -62,6 +61,7 @@ public:
 
   template<typename T>
   T readValue();
+  void setSize(size_t newSize);
 };
 
 template<typename T>

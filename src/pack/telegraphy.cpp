@@ -30,18 +30,20 @@ namespace detail {
  * WirePacket.
  */
 WirePacket::WirePacket(const Packet &packet) :
-  packet(packet) { }
+    packet(packet) { }
 
 bool WirePacket::receive(sf::UdpSocket &sock,
                          IpAddress &addr,
                          unsigned short &port) {
   static std::size_t size;
   sf::Socket::Status status =
-      sock.receive(packet.getRaw(), packet.getSize(), size, addr, port);
-  if (status == sf::Socket::Done) return true;
+      sock.receive(packet.getRaw(), Packet::bufferSize, size, addr, port);
+  if (size == 0) return false;
+
+  packet.setSize(size);
   if (status == sf::Socket::Error)
     appLog(LogType::Error, "packet reception error!");
-  return false;
+  return true;
 }
 
 void WirePacket::transmit(sf::UdpSocket &sock,
@@ -63,7 +65,7 @@ Telegraph::Telegraph(unsigned short port) : port(port) {
 }
 
 void Telegraph::transmit(Transmission &&transmission) {
-  detail::WirePacket buffer(transmission.packet);
+  static detail::WirePacket buffer(transmission.packet);
   // wire.header = blah blah
   buffer.transmit(sock, transmission.destination, port);
 }
@@ -72,7 +74,7 @@ void Telegraph::receive(std::function<void(Reception &&)> onReceive) {
   static detail::WirePacket wire;
   static IpAddress address;
   static unsigned short port;
-  while (wire.receive(sock, address, port)) {
+  if (wire.receive(sock, address, port)) {
     onReceive(Reception(wire.packet, address));
     // potentially respond to server or don't immediately add to cue
     // according to strategy in use

@@ -3,22 +3,31 @@
 #include "pack/telegraphy.h"
 #include "sky/delta.h"
 #include <iostream>
+#include "util/methods.h"
 
 int main() {
   using sky::pack::planeTuningPack;
+
+  pk::Telegraph telegraph(4242);
 
   sky::PlaneTuning tuning;
   tuning.energy.recharge = 9999;
   pk::Packet packet = pack(planeTuningPack, tuning);
   packet.dump();
-  tuning = unpack(planeTuningPack, packet);
-  std::cout << tuning.energy.recharge;
-
-  pk::Telegraph telegraph(424242);
+  tuning = {};
   telegraph.transmit(
-      pk::Transmission(packet, sf::IpAddress("192.134.329"),
+      pk::Transmission(packet, sf::IpAddress("localhost"),
       pk::Strategy(pk::Strategy::Control::None)));
-  telegraph.receive([&](pk::Reception &&reception) {
-    tuning = unpack(planeTuningPack, reception.packet);
-  });
+
+  bool received = false;
+  while (!received) {
+    telegraph.receive([&](pk::Reception &&reception) {
+      appLog(LogType::Debug, "packet recieved!");
+      reception.packet.dump();
+      tuning = unpack(planeTuningPack, reception.packet);
+      received = true;
+    });
+  }
+
+  std::cout << tuning.energy.recharge;
 }
