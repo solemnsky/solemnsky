@@ -3,22 +3,19 @@
 
 namespace pk {
 
-Packet::Packet() : Packet(std::vector<unsigned char>()) {
-  data.resize(Packet::bufferSize);
-}
+Packet::Packet() : Packet(std::vector<unsigned char>()) { }
 
 Packet::Packet(const std::vector<unsigned char> &data) :
-    data(data),
-    writeOffset(0),
-    readOffset(0),
-    readHead(0) {
+    data(data) {
   this->data.resize(Packet::bufferSize);
 }
 
 Packet::Packet(const Packet &packet) :
-    Packet(packet.data) { }
+    writeHead(packet.writeHead), writeOffset(packet.writeOffset),
+    data(packet.data) { }
 
 Packet &Packet::operator=(const Packet &packet) {
+  writeHead = packet.writeHead;
   writeOffset = packet.writeOffset;
   data = packet.data;
   readReset();
@@ -29,28 +26,32 @@ Packet &Packet::operator=(const Packet &packet) {
  * Accessing.
  */
 size_t Packet::getSize() const {
-  return data.size();
+  return writeHead;
 }
 
 void *Packet::getRaw() {
   return data.data();
 }
 
+void Packet::setSize(size_t newSize) {
+  writeHead = newSize;
+}
+
 void Packet::dumpBinary() {
   std::cout << "packet: ";
   int i;
-  for (char x : data) {
+  for (int x = 0; x < getSize(); x++) {
     for (i = 0; i < 8; i++)
-      std::cout << ((x >> (7 - i)) & 1);
+      std::cout << ((data[x] >> (7 - i)) & 1);
     std::cout << ' ';
   }
-  std::cout << '\n';
+  std::cout << std::endl;
 }
 
 void Packet::dump() {
   std::cout << "packet: ";
-  for (char x : data) std::cout << x;
-  std::cout << '\n';
+  for (int x = 0; x < getSize(); x++) std::cout << data[x];
+  std::cout << std::endl;
 }
 
 /**
