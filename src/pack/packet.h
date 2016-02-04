@@ -11,6 +11,8 @@ namespace pk {
 
 struct Packet {
 private:
+  static constexpr int bufferSize = 1024*2; // magic number
+
   std::vector<unsigned char> data;
 
   inline unsigned char &lastData() { return data[data.size() - 1]; }
@@ -46,6 +48,8 @@ public:
    * Accessing.
    */
   size_t getSize() const;
+  void *getRaw();
+
   void dumpBinary();
   void dump();
 

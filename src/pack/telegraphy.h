@@ -46,14 +46,13 @@ struct Transmission {
 };
 
 /**
- * A thing you recieve, maps to a packet.
+ * A thing you receive, maps to a packet.
  */
 struct Reception {
-  Reception() {}
+  Reception(const Packet &data, const IpAddress &address);
 
   Packet data;
-  IpAddress origin;
-  double delta;
+  IpAddress address;
 };
 
 namespace detail {
@@ -61,19 +60,25 @@ namespace detail {
  * Internal representation of a packet on the wire, with the data and some
  * additional information.
  */
-class WirePacket {
+struct WirePacket {
   WirePacket() = default;
 
-  int count; // for ordering
-  Strategy strategy;
+  bool receive(sf::UdpSocket &sock,
+               IpAddress &addr,
+               unsigned short &port);
+  void transmit(sf::UdpSocket &sock,
+                const IpAddress &addr,
+                const unsigned short port);
+
   Packet data;
 };
-
 }
 
 class Telegraph {
 private:
   sf::UdpSocket sock;
+  detail::WirePacket buffer;
+  std::vector<Reception> receptionCue;
 
 public:
   Telegraph(unsigned short port);
@@ -90,7 +95,6 @@ public:
    */
   void transmit(const Transmission &transmission);
   std::vector<Reception> receive();
-
 };
 
 }
