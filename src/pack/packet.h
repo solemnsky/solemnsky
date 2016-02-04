@@ -41,7 +41,7 @@ public:
   Packet();
   Packet(const std::vector<unsigned char> &data);
 
-  Packet(const Packet &);
+  Packet(const Packet &packet);
   Packet &operator=(const Packet &);
 
   /**
