@@ -3,13 +3,17 @@
 
 namespace pk {
 
-Packet::Packet() : Packet(std::vector<unsigned char>()) { }
+Packet::Packet() : Packet(std::vector<unsigned char>()) {
+  data.resize(Packet::bufferSize);
+}
 
 Packet::Packet(const std::vector<unsigned char> &data) :
     data(data),
     writeOffset(0),
     readOffset(0),
-    readHead(0) { }
+    readHead(0) {
+  this->data.resize(Packet::bufferSize);
+}
 
 Packet::Packet(const Packet &packet) :
     Packet(packet.data) { }
@@ -18,6 +22,7 @@ Packet &Packet::operator=(const Packet &packet) {
   writeOffset = packet.writeOffset;
   data = packet.data;
   readReset();
+  return *this;
 }
 
 /**
@@ -25,6 +30,10 @@ Packet &Packet::operator=(const Packet &packet) {
  */
 size_t Packet::getSize() const {
   return data.size();
+}
+
+void *Packet::getRaw() {
+  return data.data();
 }
 
 void Packet::dumpBinary() {
