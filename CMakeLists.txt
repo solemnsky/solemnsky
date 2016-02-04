@@ -46,7 +46,7 @@ add_library(solemnsky STATIC
         src/sky/sky.cpp
 
         src/sky/subsystem.h
-        src/pack/pack.cpp src/pack/pack.h)
+        src/pack/pack.cpp src/pack/pack.h src/pack/telegraphy.cpp src/pack/telegraphy.cpp src/pack/telegraphy.h)
 target_link_libraries(solemnsky
         sfml-system
         sfml-network
