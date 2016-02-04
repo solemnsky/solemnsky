@@ -15,26 +15,16 @@ private:
 
   std::vector<unsigned char> data;
 
-  inline unsigned char &lastData() { return data[data.size() - 1]; }
+  inline unsigned char &writeHeadData() { return data[writeHead]; }
 
-  int writeOffset; // offset when writing (appending) to
+  int writeHead, writeOffset; // offset when writing through
   int readHead, readOffset; // head and offset when reading through
 
   /**
-   * During writing:
-   *
-   * 1: written, 0: unwritten
-   * [...] 11111111 00001111
-   *                   ^ writeOffset = 4
-   */
-
-  /**
-   * During reading:
-   *
-   * 1: read, 0: unread
-   * 11111111 00001111 [...]
-   *             ^ read head = 4
-   *          ^ readOffset = 1
+   * 1: written / read, 0: unwritten / unread
+   * [...] 11111111 00001111 00000000 [...]
+   *                   ^ offset = 4
+   *                ^ writeHead
    */
 
 public:
@@ -60,9 +50,6 @@ public:
   void writeChar(const unsigned char x);
   void writeBit(const bool x); // by the power of bitwise operation
 
-  /**
-   * Writing other byte-construtable values like floats and ints.
-   */
   template<typename T>
   void writeValue(const T x);
 

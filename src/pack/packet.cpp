@@ -58,25 +58,27 @@ void Packet::dump() {
  */
 
 void Packet::writeReset() {
-  data.clear();
+  writeHead = 0;
   writeOffset = 0;
 }
 
 void Packet::writeChar(const unsigned char x) {
   if (writeOffset == 0) {
-    data.push_back(x);
+    data[writeHead] = x;
   } else {
-    lastData() |= (x << writeOffset);
-    data.push_back(x >> (8 - writeOffset));
+    writeHeadData() |= (x << writeOffset);
+    data[writeHead] = x >> (8 - writeOffset);
   }
+  writeHead++;
 }
 
 void Packet::writeBit(const bool x) {
   if (writeOffset == 0) {
-    data.push_back((unsigned char) (x ? 1 : 0));
+    data[writeHead] = (unsigned char) (x ? 1 : 0);
+    writeHead++;
     writeOffset++;
   } else {
-    if (x) lastData() |= (1 << writeOffset);
+    if (x) writeHeadData() |= (1 << writeOffset);
     if (writeOffset == 7) writeOffset = 0;
     else writeOffset++;
   }

@@ -13,7 +13,7 @@ Strategy::Strategy(const Strategy::Control control,
 /**
  * Transmission.
  */
-Transmission::Transmission(Packet &&packet,
+Transmission::Transmission(Packet &packet,
                            const IpAddress &destination,
                            const Strategy &strategy) :
     packet(packet), destination(destination), strategy(strategy) { }
@@ -21,7 +21,7 @@ Transmission::Transmission(Packet &&packet,
 /**
  * Reception.
  */
-Reception::Reception(Packet *packet,
+Reception::Reception(Packet &packet,
                      const IpAddress &address) :
     packet(packet), address(address) { }
 
@@ -29,7 +29,7 @@ namespace detail {
 /**
  * WirePacket.
  */
-WirePacket::WirePacket(Packet &&packet) :
+WirePacket::WirePacket(const Packet &packet) :
   packet(packet) { }
 
 bool WirePacket::receive(sf::UdpSocket &sock,
@@ -68,12 +68,12 @@ void Telegraph::transmit(Transmission &&transmission) {
   buffer.transmit(sock, transmission.destination, port);
 }
 
-void Telegraph::receive(std::function<void(Reception &)> onReceive) {
+void Telegraph::receive(std::function<void(Reception &&)> onReceive) {
   static detail::WirePacket wire;
   static IpAddress address;
   static unsigned short port;
   while (wire.receive(sock, address, port)) {
-    onReceive(wire);
+    onReceive(Reception(wire.packet, address));
     // potentially respond to server or don't immediately add to cue
     // according to strategy in use
   }

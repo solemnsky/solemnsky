@@ -1,7 +1,6 @@
 /**
- * Manager sending / receiving packets with various transmission control
- * strategies. Used both as a listener and as a transmitter. Every UDP
- * connection in our network design has one of these at both ends.
+ * Here we define an infrastructure for sending / receiving packets with
+ * various transmission control strategies.
  *
  * Yeah, Telegraph. That's what I'm calling it. You can't argue with the Latin.
  * At least I didn't call it SemaphoreLine or something.
@@ -40,27 +39,27 @@ struct Strategy {
 };
 
 /**
- * Transmission. Parameter holder for Telegraph::transmit().
+ * Transmission. Parameter / reference holder for Telegraph::transmit().
  */
 struct Transmission {
-  Transmission(Packet &&packet, // *move, not copy*!
+  Transmission(Packet &packet,
                const IpAddress &destination,
                const Strategy &strategy);
 
-  Packet packet;
-  IpAddress destination;
-  Strategy strategy;
+  Packet &packet;
+  const IpAddress destination;
+  const Strategy strategy;
 };
 
 /**
- * Reception. Parameter holder for Telegraph::receive() callback.
+ * Reception. Parameter / reference holder for Telegraph::receive() callback.
  */
 struct Reception {
-  Reception(Packet *packet,
+  Reception(Packet &packet,
             const IpAddress &address);
 
-  Packet *packet; // only access this in the callback
-  IpAddress address;
+  Packet &packet;
+  const IpAddress address;
 };
 
 namespace detail {
@@ -70,7 +69,7 @@ namespace detail {
  */
 struct WirePacket {
   WirePacket() = default;
-  WirePacket(Packet &&packet); // *move, not copy*!
+  WirePacket(const Packet &packet);
 
   bool receive(sf::UdpSocket &sock,
                IpAddress &addr,
@@ -84,6 +83,10 @@ struct WirePacket {
 };
 }
 
+/**
+ * Transmission manager of sorts, used both as a listener and as a transmitter.
+ * Every UDP connection in our design has one of these at both ends.
+ */
 class Telegraph {
 private:
   sf::UdpSocket sock;
@@ -96,8 +99,7 @@ public:
    * Receptions and transmissions.
    */
   void transmit(Transmission &&transmission);
-  void receive(std::function<void(Reception &)> onReceive);
-  // continually call this
+  void receive(std::function<void(Reception &&)> onReceive);
 };
 }
 
