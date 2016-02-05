@@ -21,7 +21,7 @@ include_directories(
 
 ###### libsolemnsky, for common use by client and server
 add_library(solemnsky STATIC
-        src/sky/protocol/protocol.h
+        src/sky/protocol.h
 
         src/sky/delta.cpp
         src/sky/delta.h
@@ -79,6 +79,9 @@ target_link_libraries(solemnsky_server
 
 ###### solemnsky_client
 add_executable(solemnsky_client
+        src/client/game/multiplayerclient.cpp
+        src/client/game/multiplayerclient.h
+
         src/client/game/game.h
 
         src/client/game/gamecontroller.cpp

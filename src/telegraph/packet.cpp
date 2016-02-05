@@ -1,5 +1,6 @@
 #include "packet.h"
 #include <iostream>
+#include "util/methods.h"
 
 namespace tg {
 
@@ -8,11 +9,14 @@ Packet::Packet() : Packet(std::vector<unsigned char>()) { }
 Packet::Packet(const std::vector<unsigned char> &data) :
     data(data) {
   this->data.resize(Packet::bufferSize);
+  CTOR_LOG("Packet");
 }
 
 Packet::Packet(const Packet &packet) :
     writeHead(packet.writeHead), writeOffset(packet.writeOffset),
-    data(packet.data) { }
+    data(packet.data) {
+  CTOR_LOG("Packet");
+}
 
 Packet &Packet::operator=(const Packet &packet) {
   writeHead = packet.writeHead;
@@ -20,6 +24,10 @@ Packet &Packet::operator=(const Packet &packet) {
   data = packet.data;
   readReset();
   return *this;
+}
+
+Packet::~Packet() {
+  DTOR_LOG("Packet");
 }
 
 unsigned char &Packet::writeHeadData() {
