@@ -8,7 +8,7 @@
 #include <functional>
 #include <string>
 
-namespace pk {
+namespace tg { // TeleGraph
 
 /**
  * Non-abstract struct holding rules on how to pack / unpack a Value.
@@ -69,14 +69,30 @@ void unpackInto(const Pack<T> &rules, Packet &packet, T &value) {
  */
 
 /**
- * Packs a boolean in one bit. Doesn't get more space-efficent than this.
+ * Pack a boolean in one bit. Doesn't get more space-efficent than this.
  */
 struct BoolPack : Pack<bool> {
   BoolPack();
 };
 
 /**
- * Packs a std::string, using the desired type to represent its length.
+ * Pack an enum using a variable number of bits. Don't take more than you use.
+ */
+template<typename Enum>
+struct EnumPack : Pack<Enum> {
+  EnumPack(int bits) : Pack<Enum>(
+      [&bits](Packet &packet, const Enum &value) {
+        for (int i = 0; i < bits; i++)
+          packet.writeBit((value >> i) &1);
+      },
+      [&bits](Packet &packet, Enum &value) {
+        for (int i = 0; i < bits; i++)
+          if (packet.readBit()) value |= (1 << i);
+      }) { }
+};
+
+/**
+ * Pack a std::string, using the desired type to represent its length.
  */
 template<typename SizeT>
 struct CustomStringPack : Pack<std::string> {
@@ -98,13 +114,13 @@ struct CustomStringPack : Pack<std::string> {
 };
 
 /**
- * Packs a std::string, representing its length in a single unsigned char,
+ * Pack a std::string, representing its length in a single unsigned char,
  * therefore cutting off more than 255 characters.
  */
 using StringPack = CustomStringPack<unsigned char>;
 
 /**
- * Packs a T byte-wise. Unions to the rescue!
+ * Pack a T byte-wise. Unions to the rescue!
  */
 template<typename T>
 struct BytePack : Pack<T> {
@@ -137,7 +153,6 @@ struct OptionalPack : Pack<optional<T>> {
 /**
  * Pack a class, syncing an variadic argument list of
  */
-
 template<typename Class, typename Member>
 struct MemberRule {
   MemberRule(const Pack<Member> &rule, Member Class::* const ptr) :

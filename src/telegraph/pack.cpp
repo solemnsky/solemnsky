@@ -1,6 +1,6 @@
 #include "pack.h"
 
-namespace pk {
+namespace tg {
 
 BoolPack::BoolPack() : Pack<bool>(
     [](Packet &packet, const bool &value) {

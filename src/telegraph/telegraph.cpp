@@ -1,7 +1,7 @@
-#include "telegraphy.h"
+#include "telegraph.h"
 #include "util/methods.h"
 
-namespace pk {
+namespace tg {
 
 /**
  * Strategy.
@@ -58,7 +58,6 @@ void WirePacket::transmit(sf::UdpSocket &sock,
 /**
  * Telegraph.
  */
-
 Telegraph::Telegraph(unsigned short port) : port(port) {
   sock.bind(port);
   sock.setBlocking(false);
@@ -74,7 +73,7 @@ void Telegraph::receive(std::function<void(Reception &&)> onReceive) {
   static detail::WirePacket wire;
   static IpAddress address;
   static unsigned short port;
-  if (wire.receive(sock, address, port)) {
+  while (wire.receive(sock, address, port)) {
     onReceive(Reception(wire.packet, address));
     // potentially respond to server or don't immediately add to cue
     // according to strategy in use

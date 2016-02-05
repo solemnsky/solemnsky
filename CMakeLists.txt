@@ -21,14 +21,7 @@ include_directories(
 
 ###### libsolemnsky, for common use by client and server
 add_library(solemnsky STATIC
-        src/pack/packet.cpp
-        src/pack/packet.h
-
-        src/util/methods.cpp
-        src/util/methods.h
-
-        src/util/types.cpp
-        src/util/types.h
+        src/sky/protocol/protocol.h
 
         src/sky/delta.cpp
         src/sky/delta.h
@@ -46,7 +39,22 @@ add_library(solemnsky STATIC
         src/sky/sky.cpp
 
         src/sky/subsystem.h
-        src/pack/pack.cpp src/pack/pack.h src/pack/telegraphy.cpp src/pack/telegraphy.cpp src/pack/telegraphy.h)
+
+        src/telegraph/pack.cpp
+        src/telegraph/pack.h
+
+        src/telegraph/packet.cpp
+        src/telegraph/packet.h
+
+        src/telegraph/telegraph.cpp
+        src/telegraph/telegraph.h
+
+        src/util/methods.cpp
+        src/util/methods.h
+
+        src/util/types.cpp
+        src/util/types.h
+        )
 target_link_libraries(solemnsky
         sfml-system
         sfml-network
@@ -58,6 +66,9 @@ target_link_libraries(solemnsky
 add_executable(solemnsky_server
         src/server/subsystem/deltacom.cpp
         src/server/subsystem/deltacom.h
+
+        src/server/subsystem/serverlog.h
+        src/server/subsystem/serverlog.cpp
 
         src/server/server.cpp
         src/server/server.h

@@ -7,14 +7,12 @@
 
 #include "util/types.h"
 
-namespace pk {
+namespace tg {
 
 struct Packet {
   static constexpr int bufferSize = 1024 * 2; // magic number
 private:
   std::vector<unsigned char> data;
-
-  inline unsigned char &writeHeadData() { return data[writeHead]; }
 
   size_t writeHead = 0, readHead = 0;
   int writeOffset = 0, readOffset = 0;
@@ -25,6 +23,11 @@ private:
    *                   ^ offset = 4
    *                ^ writeHead
    */
+
+  unsigned char & writeHeadData();
+  // we can't use more than bufferSize lets us
+  // TODO: implement packet fragmentation (will this eventually be necessary?)
+  // alternative: make Pack control byte usage from compile-time
 
 public:
   Packet();
