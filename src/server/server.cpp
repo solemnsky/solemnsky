@@ -16,20 +16,14 @@ int main() {
   sky::ClientMessage message;
   tg::Packet transmitPacket;
 
-  // send ping
-  message.joke = "no joke for you";
-  message.type = sky::ClientMessage::Type::Ping;
-  transmitPacket.writeReset();
-  tg::packInto(clientMessagePack, message, transmitPacket);
-  telegraph.transmit(tg::Transmission(transmitPacket, "localhost", 4242,
-                                      tg::Strategy()));
-
   bool running = true;
   while (running) {
     telegraph.receive([&](tg::Reception &&reception) {
+      appLog(LogType::Debug, "message received: ");
+      reception.packet.dump();
       tg::unpackInto(clientMessagePack, reception.packet, message);
       switch (message.type) {
-        case sky::ClientMessage::Type::Ping: {
+      case sky::ClientMessage::Type::Ping: {
           appLog(LogType::Info, "ping received!");
           appLog(LogType::Info, "joke is: " + message.joke);
           appLog(LogType::Info, "responding with pong");

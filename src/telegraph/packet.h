@@ -9,29 +9,16 @@
 
 namespace tg {
 
+/**
+ * Holds datagram data. Uses only statically allocated data, provides easy
+ * handles to recv()/send() style APIs. Hold Packets as consistently
+ * allocated buffers when possible.
+ */
 struct Packet {
-  static constexpr int bufferSize = 1024 * 2; // magic number
-private:
-  std::vector<unsigned char> data;
-
-  size_t writeHead = 0, readHead = 0;
-  int writeOffset = 0, readOffset = 0;
-
-  /**
-   * 1: written / read, 0: unwritten / unread
-   * [...] 11111111 00001111 00000000 [...]
-   *                   ^ offset = 4
-   *                ^ writeHead
-   */
-
-  unsigned char & writeHeadData();
-  // we can't use more than bufferSize lets us
-  // TODO: implement packet fragmentation (will this eventually be necessary?)
-  // alternative: make Pack control byte usage from compile-time
-
 public:
+  static constexpr size_t bufferSize = 1024 * 2;
+
   Packet();
-  Packet(const std::vector<unsigned char> &data);
 
   Packet(const Packet &packet);
   Packet(Packet &&);
@@ -41,39 +28,74 @@ public:
   ~Packet();
 
   /**
-   * Accessing.
+   * Data.
    */
-  size_t getSize() const;
-  void *getRaw();
-  const void *getRaw() const;
+  unsigned char data[bufferSize]; // statically allocated data buffer
+  size_t size; // data that is actually used
 
+  /**
+   * Dumping to stdout.
+   */
   void dumpBinary();
   void dump();
-
-  /**
-   * Writing.
-   */
-  void writeReset();
-  void writeChar(const unsigned char x);
-  void writeBit(const bool x); // by the power of bitwise operation
-
-  template<typename T>
-  void writeValue(const T x);
-
-  /**
-   * Reading.
-   */
-  void readReset();
-  unsigned char readChar();
-  bool readBit();
-
-  template<typename T>
-  T readValue();
-  void setSize(size_t newSize);
 };
 
+/**
+ * 'offset' and 'head' variables in the following code represent this:
+ *
+ * 1: written / read, 0: unwritten / unread
+ * [...] 11111111 00001111 00000000 [...]
+ *                   ^ offset = 4
+ *                ^ head
+ */
+
+/**
+ * Write stuff to a packet, bit-vector style.
+ */
+struct PacketWriter {
+private:
+  Packet *packet;
+  size_t head;
+  unsigned char offset;
+
+  unsigned char &accessHead();
+
+public:
+  PacketWriter(Packet *packet);
+
+  void writeChar(const unsigned char x);
+  void writeBit(const bool x); // by the power of bitwise operation
+  template<typename T>
+  void writeValue(const T x);
+};
+
+/**
+ * Read stuff from a packet, bit-vector style.
+ */
+struct PacketReader {
+private:
+  Packet const *packet;
+  size_t head;
+  unsigned char offset;
+
+  unsigned char accessHead() const;
+
+public:
+
+  PacketReader(Packet const *packet);
+
+  unsigned char readChar();
+  bool readBit();
+  template<typename T>
+  T readValue();
+};
+
+/**
+ * Template definition for writeValue and readValue.
+ */
+
 template<typename T>
-void Packet::writeValue(const T x) {
+void PacketWriter::writeValue(const T x) {
   union {
     unsigned char chars[sizeof(T)];
     T value;
@@ -86,7 +108,7 @@ void Packet::writeValue(const T x) {
 }
 
 template<typename T>
-T Packet::readValue() {
+T PacketReader::readValue() {
   union {
     unsigned char chars[sizeof(T)];
     T value;

@@ -19,8 +19,8 @@ template<typename Value>
 struct Pack {
   Pack() = delete;
 
-  Pack(std::function<void(Packet &, const Value &)> pack,
-       std::function<void(Packet &, Value &)> unpack) :
+  Pack(std::function<void(PacketWriter &, const Value &)> pack,
+       std::function<void(PacketReader &, Value &)> unpack) :
       pack(pack), unpack(unpack) { }
 
 private:
@@ -43,25 +43,25 @@ private:
 template<typename T>
 Packet pack(const Pack<T> &rules, const T &value) {
   Packet packet;
-  rules.pack(packet, value);
+  rules.pack(PacketWriter(&packet), value);
   return packet;
 }
 
 template<typename T>
 void packInto(const Pack<T> &rules, const T &value, Packet &packet) {
-  rules.pack(packet, value);
+  rules.pack(PacketWriter(&packet), value);
 }
 
 template<typename T>
 T unpack(const Pack<T> &rules, Packet &packet) {
   T value;
-  rules.unpack(packet, value);
+  rules.unpack(PacketReader(&packet), value);
   return value;
 }
 
 template<typename T>
 void unpackInto(const Pack<T> &rules, Packet &packet, T &value) {
-  rules.unpack(packet, value);
+  rules.unpack(PacketReader(&packet), value);
 }
 
 /****
@@ -81,13 +81,13 @@ struct BoolPack : Pack<bool> {
 template<typename Enum>
 struct EnumPack : Pack<Enum> {
   EnumPack<Enum>(int bits) : Pack<Enum>(
-      [&bits](Packet &packet, const Enum &value) {
+      [&bits](PacketWriter &writer, const Enum &value) {
         for (unsigned char i = 0; i < bits; i++)
-          packet.writeBit((const bool) ((((unsigned char) value) >> i) & 1));
+          writer.writeBit((const bool) ((((unsigned char) value) >> i) & 1));
       },
-      [&bits](Packet &packet, Enum &value) {
+      [&bits](PacketReader &reader, Enum &value) {
         for (unsigned char i = 0; i < bits; i++)
-          if (packet.readBit())
+          if (reader.readBit())
             value = static_cast<Enum>(
                         (((unsigned char) value) | (1 << i)));
       }) { }
