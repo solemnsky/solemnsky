@@ -38,7 +38,7 @@ struct ServerMessage {
  * Packing rules.
  */
 namespace pk {
-// we have tg in scope in this namespace
+using namespace tg;
 
 const Pack<std::string> stringPack = StringPack();
 const Pack<optional<std::string>> optStringPack =

@@ -18,10 +18,23 @@ Packet::Packet(const Packet &packet) :
   CTOR_LOG("Packet");
 }
 
+
+Packet::Packet(Packet &&packet) :
+    writeHead(packet.writeHead), writeOffset(packet.writeOffset),
+    data(std::move(packet.data)) { }
+
 Packet &Packet::operator=(const Packet &packet) {
   writeHead = packet.writeHead;
   writeOffset = packet.writeOffset;
   data = packet.data;
+  readReset();
+  return *this;
+}
+
+Packet &Packet::operator=(Packet &&packet) {
+  writeHead = packet.writeHead;
+  writeOffset = packet.writeOffset;
+  data = std::move(packet.data); // neat eh
   readReset();
   return *this;
 }
@@ -39,10 +52,16 @@ unsigned char &Packet::writeHeadData() {
  * Accessing.
  */
 size_t Packet::getSize() const {
-  return writeHead;
+  // essentially 'round up' from writeHead
+  if (writeOffset == 0) return writeHead;
+  else return writeHead + 1;
 }
 
 void *Packet::getRaw() {
+  return data.data();
+}
+
+const void *Packet::getRaw() const {
   return data.data();
 }
 

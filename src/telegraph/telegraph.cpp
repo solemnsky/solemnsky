@@ -13,10 +13,11 @@ Strategy::Strategy(const Strategy::Control control,
 /**
  * Transmission.
  */
-Transmission::Transmission(Packet &packet,
-                           const IpAddress &destination,
-                           const Strategy &strategy) :
-    packet(packet), destination(destination), strategy(strategy) { }
+Transmission::Transmission(Packet &packet, const IpAddress &destination,
+                           const unsigned short port, const Strategy &strategy)
+    :
+    packet(packet), destination(destination),
+    strategy(strategy), port(port) { }
 
 /**
  * Reception.
@@ -29,7 +30,7 @@ namespace detail {
 /**
  * WirePacket.
  */
-WirePacket::WirePacket(const Packet &packet) :
+WirePacket::WirePacket(Packet *packet) :
     packet(packet) { }
 
 bool WirePacket::receive(sf::UdpSocket &sock,
@@ -37,18 +38,19 @@ bool WirePacket::receive(sf::UdpSocket &sock,
                          unsigned short &port) {
   static std::size_t size;
   sf::Socket::Status status =
-      sock.receive(packet.getRaw(), Packet::bufferSize, size, addr, port);
+      sock.receive(packet->getRaw(), Packet::bufferSize, size, addr, port);
   if (size == 0) return false;
 
-  packet.setSize(size);
+  packet->setSize(size);
   if (status == sf::Socket::Error)
     appLog(LogType::Error, "packet reception error!");
   return true;
 }
 
 void WirePacket::transmit(sf::UdpSocket &sock,
-                          const IpAddress &addr, const unsigned short port) {
-  if (sock.send(packet.getRaw(), packet.getSize(), addr, port) !=
+                          const IpAddress &addr,
+                          const unsigned short port) {
+  if (sock.send(packet->getRaw(), packet->getSize(), addr, port) !=
       sf::Socket::Done)
     appLog(LogType::Error, "packet transmission error!");
 }
@@ -64,17 +66,17 @@ Telegraph::Telegraph(unsigned short port) : port(port) {
 }
 
 void Telegraph::transmit(Transmission &&transmission) {
-  static detail::WirePacket buffer(transmission.packet);
+  static detail::WirePacket buffer(&transmission.packet);
   // wire.header = blah blah
   buffer.transmit(sock, transmission.destination, port);
 }
 
 void Telegraph::receive(std::function<void(Reception &&)> onReceive) {
-  static detail::WirePacket wire;
+  detail::WirePacket wire(&incomingBuffer);
   static IpAddress address;
   static unsigned short port;
   while (wire.receive(sock, address, port)) {
-    onReceive(Reception(wire.packet, address));
+    onReceive(Reception(incomingBuffer, address));
     // potentially respond to server or don't immediately add to cue
     // according to strategy in use
   }

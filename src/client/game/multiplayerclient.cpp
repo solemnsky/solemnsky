@@ -5,8 +5,8 @@
 MultiplayerClient::MultiplayerClient(ClientState *state) :
     Game(state),
     quitButton({100, 50}, "quit tutorial", {}),
-    telegraph(4242),
-  pingCooldown(1){ }
+    telegraph(4243),
+    pingCooldown(1) { }
 
 void MultiplayerClient::tick(float delta) {
   quitButton.tick(delta);
@@ -33,8 +33,12 @@ void MultiplayerClient::tick(float delta) {
     sky::ClientMessage message;
     message.joke = "no joke for you";
     message.type = sky::ClientMessage::Type::Ping;
+    buffer.writeReset();
     tg::packInto(clientMessagePack, message, buffer);
-    telegraph.transmit(tg::Transmission(buffer, "localhost", tg::Strategy()));
+    telegraph.transmit(tg::Transmission(buffer, "localhost", 4242,
+                                        tg::Strategy()));
+    appLog(LogType::Info, "sending ping");
+    pingCooldown.reset();
   }
 }
 
