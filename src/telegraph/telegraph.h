@@ -12,7 +12,7 @@
 #include "pack.h"
 #include <SFML/Network.hpp>
 
-namespace pk {
+namespace tg {
 
 using IpAddress = sf::IpAddress;
 

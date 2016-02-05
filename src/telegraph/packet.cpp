@@ -1,7 +1,7 @@
 #include "packet.h"
 #include <iostream>
 
-namespace pk {
+namespace tg {
 
 Packet::Packet() : Packet(std::vector<unsigned char>()) { }
 
@@ -20,6 +20,11 @@ Packet &Packet::operator=(const Packet &packet) {
   data = packet.data;
   readReset();
   return *this;
+}
+
+unsigned char &Packet::writeHeadData() {
+  assert(writeHead < bufferSize);
+  return data[writeHead];
 }
 
 /**
@@ -65,17 +70,17 @@ void Packet::writeReset() {
 
 void Packet::writeChar(const unsigned char x) {
   if (writeOffset == 0) {
-    data[writeHead] = x;
+    writeHeadData() = x;
   } else {
     writeHeadData() |= (x << writeOffset);
-    data[writeHead] = x >> (8 - writeOffset);
+    writeHeadData() = x >> (8 - writeOffset);
   }
   writeHead++;
 }
 
 void Packet::writeBit(const bool x) {
   if (writeOffset == 0) {
-    data[writeHead] = (unsigned char) (x ? 1 : 0);
+    writeHeadData() = (unsigned char) (x ? 1 : 0);
     writeHead++;
     writeOffset++;
   } else {
