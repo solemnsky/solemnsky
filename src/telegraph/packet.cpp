@@ -10,19 +10,13 @@ namespace tg {
 Packet::Packet() : size(0) { }
 
 Packet::Packet(const Packet &packet) :
-    data(packet.data), size(packet.size) { CTOR_LOG("Packet"); }
-
-Packet::Packet(Packet &&packet) :
-    data(std::move(packet.data)), size(packet.size) { CTOR_LOG("Packet"); }
+    size(packet.size) {
+  data = packet.data;
+  CTOR_LOG("Packet");
+}
 
 Packet &Packet::operator=(const Packet &packet) {
   data = packet.data;
-  size = packet.size;
-  return *this;
-}
-
-Packet &Packet::operator=(Packet &&packet) {
-  data = std::move(packet.data); // neat eh
   size = packet.size;
   return *this;
 }
@@ -46,6 +40,19 @@ void Packet::dump() {
   std::cout << "packet: ";
   for (int x = 0; x < size; x++) std::cout << data[x];
   std::cout << std::endl;
+}
+
+
+unsigned char *Packet::getRaw() {
+  return data.data();
+}
+
+size_t Packet::getSize() {
+  return size;
+}
+
+void Packet::setSize(size_t size) {
+  this->size = size;
 }
 
 /**

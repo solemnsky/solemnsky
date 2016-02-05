@@ -3,11 +3,10 @@
 namespace tg {
 
 BoolPack::BoolPack() : Pack<bool>(
-    [](Packet &packet, const bool &value) {
-      packet.writeBit(value);
+    [](PacketWriter &writer, const bool &value) {
+      writer.writeBit(value);
     },
-    [](Packet &packet, bool &value) {
-      value = packet.readBit();
+    [](PacketReader &reader, bool &value) {
+      value = reader.readBit();
     }) { }
-
 }

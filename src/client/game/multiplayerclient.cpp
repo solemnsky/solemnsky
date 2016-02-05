@@ -33,7 +33,6 @@ void MultiplayerClient::tick(float delta) {
     sky::ClientMessage message;
     message.joke = "no joke for you";
     message.type = sky::ClientMessage::Type::Ping;
-    buffer.writeReset();
     tg::packInto(clientMessagePack, message, buffer);
     telegraph.transmit(tg::Transmission(buffer, "localhost", 4242,
                                         tg::Strategy()));

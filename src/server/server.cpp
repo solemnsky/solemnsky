@@ -30,7 +30,6 @@ int main() {
 
           response.type = sky::ServerMessage::Type::Pong;
           response.motd.reset();
-          transmitPacket.writeReset();
           tg::packInto(serverMessagePack, response, transmitPacket);
 
           telegraph.transmit(tg::Transmission(
