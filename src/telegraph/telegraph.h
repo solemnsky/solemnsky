@@ -42,13 +42,13 @@ struct Strategy {
  * Transmission. Parameter / reference holder for Telegraph::transmit().
  */
 struct Transmission {
-  Transmission(Packet &packet,
-               const IpAddress &destination,
-               const Strategy &strategy);
+  Transmission(Packet &packet, const IpAddress &destination,
+                 const unsigned short port, const Strategy &strategy);
 
   Packet &packet;
   const IpAddress destination;
   const Strategy strategy;
+  const unsigned short port;
 };
 
 /**
@@ -64,12 +64,12 @@ struct Reception {
 
 namespace detail {
 /**
- * Internal representation of a packet on the wire, with packet data and
- * meta-information.
+ * Helper construct to manage receiving and transmitting packets, along with
+ * metadata and stuff.
  */
 struct WirePacket {
   WirePacket() = default;
-  WirePacket(const Packet &packet);
+  WirePacket(Packet *packet);
 
   bool receive(sf::UdpSocket &sock,
                IpAddress &addr,
@@ -78,7 +78,7 @@ struct WirePacket {
                 const IpAddress &addr,
                 const unsigned short port);
 
-  Packet packet;
+  Packet *packet;
   // TODO: strategy-related meta-information
 };
 }
@@ -90,6 +90,7 @@ struct WirePacket {
 class Telegraph {
 private:
   sf::UdpSocket sock;
+  Packet incomingBuffer;
 
 public:
   Telegraph(unsigned short port);

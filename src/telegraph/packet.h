@@ -34,7 +34,9 @@ public:
   Packet(const std::vector<unsigned char> &data);
 
   Packet(const Packet &packet);
+  Packet(Packet &&);
   Packet &operator=(const Packet &);
+  Packet &operator=(Packet &&);
 
   ~Packet();
 
@@ -43,6 +45,7 @@ public:
    */
   size_t getSize() const;
   void *getRaw();
+  const void *getRaw() const;
 
   void dumpBinary();
   void dump();
