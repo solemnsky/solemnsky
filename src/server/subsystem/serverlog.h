@@ -12,7 +12,7 @@ class ServerLog : sky::Subsystem {
 private:
   std::function<void(std::string &&)> logger;
 public:
-  ServerLog(std::function<void(std::string &&)> logger);
+  ServerLog(Sky *sky, std::function<void(std::string &&)> logger);
 };
 }
 

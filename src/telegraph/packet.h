@@ -36,6 +36,8 @@ public:
   Packet(const Packet &packet);
   Packet &operator=(const Packet &);
 
+  ~Packet();
+
   /**
    * Accessing.
    */

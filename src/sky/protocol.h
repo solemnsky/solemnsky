@@ -38,18 +38,29 @@ struct ServerMessage {
  * Packing rules.
  */
 namespace pk {
+// we have tg in scope in this namespace
 
-const tg::Pack<std::string> stringPack = tg::StringPack();
+const Pack<std::string> stringPack = StringPack();
+const Pack<optional<std::string>> optStringPack =
+  tg::OptionalPack<std::string>(stringPack);
 
 #define member(TYPE, PTR, RULE) \
   MemberRule<ClientMessage, TYPE>(RULE, &ClientMessage::PTR)
-const tg::Pack<ClientMessage> clientMessagePack =
-  tg::ClassPack(
-    member(ClientMessage::Type, type, tg::EnumPack(1)),
+const Pack<ClientMessage> clientMessagePack =
+  ClassPack<ClientMessage>(
+    member(ClientMessage::Type, type, EnumPack<ClientMessage::Type>(1)),
     member(std::string, joke, stringPack)
   );
 #undef member
 
+#define member(TYPE, PTR, RULE) \
+  MemberRule<ServerMessage, TYPE>(RULE, &ServerMessage::PTR)
+const Pack<ServerMessage> serverMessagePack =
+    ClassPack<ServerMessage>(
+        member(ServerMessage::Type, type, EnumPack<ServerMessage::Type>(1)),
+        member(optional<std::string>, motd, optStringPack)
+    );
+#undef member
 };
 
 }

@@ -1,6 +1,7 @@
-#include "client/game/tutorial.h"
+//#include "client/game/tutorial.h"
 #include "homepage.h"
 #include "util/methods.h"
+#include "client/game/multiplayerclient.h"
 
 HomePage::HomePage(ClientState *state) :
     state(state),
@@ -41,8 +42,7 @@ void HomePage::handle(const sf::Event &event) {
 
 void HomePage::signalRead() {
   if (!tutorialButton.clickSignal.empty()) {
-    appLog(LogType::Debug, "starting game");
-    state->game = std::make_unique<Tutorial>(state);
+    state->game = std::make_unique<MultiplayerClient>(state);
     state->focusGame();
   }
 }

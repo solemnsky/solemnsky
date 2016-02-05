@@ -80,14 +80,16 @@ struct BoolPack : Pack<bool> {
  */
 template<typename Enum>
 struct EnumPack : Pack<Enum> {
-  EnumPack(int bits) : Pack<Enum>(
+  EnumPack<Enum>(int bits) : Pack<Enum>(
       [&bits](Packet &packet, const Enum &value) {
-        for (int i = 0; i < bits; i++)
-          packet.writeBit((value >> i) &1);
+        for (unsigned char i = 0; i < bits; i++)
+          packet.writeBit((const bool) ((((unsigned char) value) >> i) & 1));
       },
       [&bits](Packet &packet, Enum &value) {
-        for (int i = 0; i < bits; i++)
-          if (packet.readBit()) value |= (1 << i);
+        for (unsigned char i = 0; i < bits; i++)
+          if (packet.readBit())
+            value = static_cast<Enum>(
+                        (((unsigned char) value) | (1 << i)));
       }) { }
 };
 
