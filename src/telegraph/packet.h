@@ -21,16 +21,14 @@ public:
   Packet();
 
   Packet(const Packet &packet);
-  Packet(Packet &&);
   Packet &operator=(const Packet &);
-  Packet &operator=(Packet &&);
 
   ~Packet();
 
   /**
    * Data.
    */
-  unsigned char data[bufferSize]; // statically allocated data buffer
+  std::array<unsigned char, bufferSize> data; // statically allocated data
   size_t size; // data that is actually used
 
   /**
@@ -38,6 +36,13 @@ public:
    */
   void dumpBinary();
   void dump();
+
+  /**
+   * Using recv() / send() API.
+   */
+  unsigned char *getRaw();
+  size_t getSize();
+  void setSize(size_t size);
 };
 
 /**

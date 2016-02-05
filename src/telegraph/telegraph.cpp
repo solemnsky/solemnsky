@@ -66,9 +66,9 @@ Telegraph::Telegraph(unsigned short port) : port(port) {
 }
 
 void Telegraph::transmit(Transmission &&transmission) {
-  static detail::WirePacket buffer(&transmission.packet);
+  static detail::WirePacket wire(&transmission.packet);
   // wire.header = blah blah
-  buffer.transmit(sock, transmission.destination, transmission.port);
+  wire.transmit(sock, transmission.destination, transmission.port);
 }
 
 void Telegraph::receive(std::function<void(Reception &&)> onReceive) {

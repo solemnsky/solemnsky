@@ -23,45 +23,36 @@ struct Pack {
        std::function<void(PacketReader &, Value &)> unpack) :
       pack(pack), unpack(unpack) { }
 
-private:
-  template<typename T>
-  friend Packet pack(const Pack<T> &, const T &);
-
-  template<typename T>
-  friend void packInto(const Pack<T> &, const T &, Packet &);
-
-  template<typename T>
-  friend T unpack(const Pack<T> &, Packet &);
-
-  template<typename T>
-  friend void unpackInto(const Pack<T> &, Packet &, T &);
-
-  const std::function<void(Packet &, const Value &)> pack;
-  const std::function<void(Packet &, Value &)> unpack;
+  const std::function<void(PacketWriter &, const Value &)> pack;
+  const std::function<void(PacketReader &, Value &)> unpack;
 };
 
 template<typename T>
 Packet pack(const Pack<T> &rules, const T &value) {
   Packet packet;
-  rules.pack(PacketWriter(&packet), value);
+  PacketWriter writer{&packet};
+  rules.pack(writer, value);
   return packet;
 }
 
 template<typename T>
 void packInto(const Pack<T> &rules, const T &value, Packet &packet) {
-  rules.pack(PacketWriter(&packet), value);
+  PacketWriter writer{&packet};
+  rules.pack(writer, value);
 }
 
 template<typename T>
 T unpack(const Pack<T> &rules, Packet &packet) {
   T value;
-  rules.unpack(PacketReader(&packet), value);
+  PacketReader reader{&packet};
+  rules.unpack(reader, value);
   return value;
 }
 
 template<typename T>
 void unpackInto(const Pack<T> &rules, Packet &packet, T &value) {
-  rules.unpack(PacketReader(&packet), value);
+  PacketReader reader{&packet};
+  rules.unpack(reader, value);
 }
 
 /****
@@ -99,17 +90,17 @@ struct EnumPack : Pack<Enum> {
 template<typename SizeT>
 struct CustomStringPack : Pack<std::string> {
   CustomStringPack() : Pack<std::string>(
-      [](Packet &packet, const std::string &value) {
+      [](PacketWriter &writer, const std::string &value) {
         assert(8 ^ sizeof(SizeT) < value.length());
-        packet.writeValue<SizeT>((SizeT) value.length());
+        writer.writeValue<SizeT>((SizeT) value.length());
         for (const char x : value)
-          packet.writeChar((unsigned char) x);
+          writer.writeChar((unsigned char) x);
       },
-      [](Packet &packet, std::string &value) {
+      [](PacketReader &reader, std::string &value) {
         value.clear();
-        SizeT size = packet.readValue<SizeT>();
+        SizeT size = reader.readValue<SizeT>();
         while (size > 0) {
-          value.push_back(packet.readChar());
+          value.push_back(reader.readChar());
           size--;
         }
       }) { }
@@ -127,11 +118,11 @@ using StringPack = CustomStringPack<unsigned char>;
 template<typename T>
 struct BytePack : Pack<T> {
   BytePack() : Pack<T>(
-      [](Packet &packet, const T &value) {
-        packet.writeValue<T>(value);
+      [](PacketWriter &writer, const T &value) {
+        writer.writeValue<T>(value);
       },
-      [](Packet &packet, T &value) {
-        value = packet.readValue<T>();
+      [](PacketReader &reader, T &value) {
+        value = reader.readValue<T>();
       }) { }
 };
 
@@ -141,14 +132,15 @@ struct BytePack : Pack<T> {
 template<typename T>
 struct OptionalPack : Pack<optional<T>> {
   OptionalPack(const Pack<T> &rule) : Pack<optional<T>>(
-      [rule](Packet &packet, const optional<T> &value) {
-        packet.writeBit((bool) value);
-        if (value) packInto(rule, *value, packet);
+      [rule](PacketWriter &reader, const optional<T> &value) {
+        reader.writeBit((bool) value);
+        if (value) rule.pack(reader, *value);
       },
-      [rule](Packet &packet, optional<T> &value) {
-        if (packet.readBit())
-          value.emplace(unpack(rule, packet));
-        else value.reset();
+      [rule](PacketReader &reader, optional<T> &value) {
+        if (reader.readBit()) {
+          value.emplace(T());
+          rule.unpack(reader, *value);
+        } else value.reset();
       }) { }
 };
 
@@ -167,36 +159,35 @@ struct MemberRule {
 template<typename Class>
 struct ClassPack : Pack<Class> {
 private:
-  static void classPack(Packet &packet, const Class &value) { }
+  static void classPack(PacketWriter &, const Class &) { }
 
   template<typename Member, typename... Rest>
-  static void classPack(Packet &packet, const Class &value,
+  static void classPack(PacketWriter &writer, const Class &value,
                         const MemberRule<Class, Member> &rule, Rest... rest) {
-    packInto(rule.rule, value.*rule.ptr, packet);
-    classPack(packet, value, rest...);
+    rule.rule.pack(writer, value.*rule.ptr);
+    classPack(writer, value, rest...);
   };
 
-  static void classUnpack(Packet &packet, Class &value) { }
+  static void classUnpack(PacketReader &, Class &) { }
 
   template<typename Member, typename... Rest>
-  static void classUnpack(Packet &packet, Class &value,
+  static void classUnpack(PacketReader &reader, Class &value,
                           const MemberRule<Class, Member> &rule, Rest... rest) {
-    unpackInto(rule.rule, packet, value.*rule.ptr);
-    classUnpack(packet, value, rest...);
+    rule.rule.unpack(reader, value.*rule.ptr);
+    classUnpack(reader, value, rest...);
   };
 
 public:
   template<typename... Members>
   ClassPack(Members... members) : Pack<Class>(
-      [members...](Packet &packet, const Class &value) {
-        ClassPack::classPack(packet, value, members...);
+      [members...](PacketWriter &writer, const Class &value) {
+        ClassPack::classPack(writer, value, members...);
       },
-      [members...](Packet &packet, Class &value) {
-        ClassPack::classUnpack(packet, value, members...);
+      [members...](PacketReader &reader, Class &value) {
+        ClassPack::classUnpack(reader, value, members...);
       }) { }
 };
 
 }
-
 
 #endif //SOLEMNSKY_PACK_H
