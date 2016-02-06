@@ -65,7 +65,7 @@ public:
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;
-  void handle(const sf::Event &event) override;
+  bool handle(const sf::Event &event) override;
 
   virtual void signalRead() override;
   virtual void signalClear() override;

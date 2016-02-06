@@ -11,6 +11,7 @@
 class MultiplayerClient : public Game {
 private:
   ui::Button quitButton;
+  ui::TextEntry chatEntry;
 
   tg::Telegraph<sky::prot::ClientPacket, sky::prot::ServerPacket> telegraph;
   Cooldown pingCooldown;
@@ -23,7 +24,7 @@ public:
    */
   virtual void tick(float delta) override;
   virtual void render(ui::Frame &f) override;
-  virtual void handle(const sf::Event &event) override;
+  virtual bool handle(const sf::Event &event) override;
 
   void signalRead() override;
   void signalClear() override;

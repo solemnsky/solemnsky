@@ -6,12 +6,14 @@ using sky::pk::clientPacketPack;
 
 MultiplayerClient::MultiplayerClient(ClientState *state) :
     Game(state),
-    quitButton({100, 50}, "quit tutorial", {}),
+    quitButton({100, 50}, "quit tutorial"),
+    chatEntry({500, 500}, "chat"),
     telegraph(4243, clientPacketPack, serverPacketPack),
     pingCooldown(1) { }
 
 void MultiplayerClient::tick(float delta) {
   quitButton.tick(delta);
+  chatEntry.tick(delta);
 
   using namespace sky::prot;
 
@@ -42,16 +44,20 @@ void MultiplayerClient::tick(float delta) {
 
 void MultiplayerClient::render(ui::Frame &f) {
   quitButton.render(f);
+  chatEntry.render(f);
 }
 
-void MultiplayerClient::handle(const sf::Event &event) {
-  quitButton.handle(event);
+bool MultiplayerClient::handle(const sf::Event &event) {
+  if (chatEntry.handle(event)) return true;
+  if (quitButton.handle(event)) return true;
   if (event.type == sf::Event::EventType::KeyPressed) {
     if (event.key.code == sf::Keyboard::Return)
       telegraph.transmit(
           sky::prot::ClientChat(std::string("hey there server!")),
           "localhost", 4242);
+    return true;
   }
+  return false;
 }
 
 void MultiplayerClient::signalRead() {

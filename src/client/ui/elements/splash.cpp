@@ -16,7 +16,7 @@ void SplashScreen::render(ui::Frame &f) {
   screenDrawn = true;
 }
 
-void SplashScreen::handle(const sf::Event &event) { }
+bool SplashScreen::handle(const sf::Event &event) { }
 }
 
 }
