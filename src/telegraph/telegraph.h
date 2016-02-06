@@ -42,8 +42,10 @@ struct Strategy {
  * Transmission. Parameter / reference holder for Telegraph::transmit().
  */
 struct Transmission {
-  Transmission(Packet &packet, const IpAddress &destination,
-                 const unsigned short port, const Strategy &strategy);
+  Transmission(Packet &packet,
+               const IpAddress &destination,
+               const unsigned short port,
+               const Strategy &strategy = Strategy());
 
   Packet &packet;
   const IpAddress destination;

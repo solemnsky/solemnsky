@@ -10,10 +10,7 @@ namespace tg {
 Packet::Packet() : size(0) { }
 
 Packet::Packet(const Packet &packet) :
-    size(packet.size) {
-  data = packet.data;
-  CTOR_LOG("Packet");
-}
+    size(packet.size) { data = packet.data; }
 
 Packet &Packet::operator=(const Packet &packet) {
   data = packet.data;
@@ -21,27 +18,28 @@ Packet &Packet::operator=(const Packet &packet) {
   return *this;
 }
 
-Packet::~Packet() {
-  DTOR_LOG("Packet");
+Packet::~Packet() { }
+
+void Packet::reset() {
+  size = 0;
 }
 
-void Packet::dumpBinary() {
-  std::cout << "packet: ";
+std::string Packet::dumpBinary() {
+  std::string str;
   int i;
   for (int x = 0; x < size; x++) {
     for (i = 0; i < 8; i++)
-      std::cout << ((data[x] >> (7 - i)) & 1);
-    std::cout << ' ';
+      str += ((bool) ((data[x] >> (7 - i)) & 1)) ? '1' : '0';
+    str += " ";
   }
-  std::cout << std::endl;
+  return str;
 }
 
-void Packet::dump() {
-  std::cout << "packet: ";
-  for (int x = 0; x < size; x++) std::cout << data[x];
-  std::cout << std::endl;
+std::string Packet::dump() {
+  std::string str;
+  for (int x = 0; x < size; x++) str += (char) data[x];
+  return str;
 }
-
 
 unsigned char *Packet::getRaw() {
   return data.data();
@@ -59,7 +57,9 @@ void Packet::setSize(size_t size) {
  * PacketWriter.
  */
 PacketWriter::PacketWriter(Packet *packet) :
-    packet(packet), head(0), offset(0) { }
+    packet(packet), head(0), offset(0) {
+  packet->size = 0;
+}
 
 unsigned char &PacketWriter::accessHead() {
   if (head >= Packet::bufferSize) {
@@ -73,24 +73,27 @@ unsigned char &PacketWriter::accessHead() {
 void PacketWriter::writeChar(const unsigned char x) {
   unsigned char &headRef = accessHead();
   head++;
+  packet->size++;
   if (offset == 0) {
     headRef = x;
   } else {
     headRef |= (x << offset);
-    head++;
     accessHead() = x >> (8 - offset);
   }
 }
 
 void PacketWriter::writeBit(const bool x) {
-  unsigned char &head = accessHead();
+  unsigned char &headRef = accessHead();
   if (offset == 0) {
-    accessHead() = (unsigned char) (x ? 1 : 0);
-    head++;
+    headRef = (unsigned char) (x ? 1 : 0);
     offset++;
+    packet->size++;
   } else {
-    if (x) accessHead() |= (1 << offset);
-    if (offset == 7) offset = 0;
+    if (x) headRef |= (1 << offset);
+    if (offset == 7) {
+      offset = 0;
+      head++;
+    }
     else offset++;
   }
 }
@@ -103,10 +106,9 @@ PacketReader::PacketReader(Packet const *packet) :
     packet(packet), head(0), offset(0) { }
 
 unsigned char PacketReader::accessHead() const {
-  if (head >= Packet::bufferSize) {
+  if (head >= packet->size) {
     appErrorLogic(
-        "We can't write that much to a packet! "
-            "It's time to implement packet fragmentation, you lazy fool.");
+        "Trying to read too much from a packet!");
   }
   return packet->data[head];
 }

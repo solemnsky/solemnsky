@@ -1,0 +1,86 @@
+#include "gtest/gtest.h"
+#include "telegraph/pack.h"
+
+class PackFixture : public testing::Test {
+public:
+  PackFixture() { }
+
+  ~PackFixture() { }
+
+  tg::Packet buffer;
+};
+
+/**
+ * PacketWriters and PacketReaders operate correctly.
+ */
+TEST_F(PackFixture, ReadWrite) {
+  const tg::Pack<bool> boolPack = tg::BoolPack();
+  const tg::Pack<int> intPack = tg::BytePack<int>();
+
+  tg::PacketWriter writer{&buffer};
+  tg::PacketReader reader{&buffer};
+
+  writer.writeValue<int>(2);
+  writer.writeBit(true);
+  writer.writeChar(0xFF);
+  EXPECT_EQ(buffer.dumpBinary(),
+            "00000010 00000000 00000000 00000000 11111111 00000001 ");
+  //        | int                              | |char ||        |
+  //                                                    bit      char
+  EXPECT_EQ(reader.readValue<int>(), 2);
+  EXPECT_EQ(reader.readBit(), true);
+  EXPECT_EQ(reader.readChar(), 0xff);
+//  EXPECT_DEATH(reader.readChar(), ".*");
+}
+
+/**
+ * Our basic pack rules work correctly.
+ */
+TEST_F(PackFixture, Rules) {
+  const tg::Pack<float> floatPack = tg::BytePack<float>();
+  const tg::Pack<std::string> stringPack = tg::StringPack();
+  const tg::Pack<optional<std::string>> optPack =
+      tg::OptionalPack<std::string>(stringPack);
+
+  const float testFloat = 5.23f;
+  tg::packInto(floatPack, testFloat, buffer);
+  EXPECT_EQ(tg::unpack(floatPack, buffer), testFloat);
+  EXPECT_EQ(buffer.size, sizeof(float));
+
+  const std::string testString = "hello world";
+  tg::packInto(stringPack, testString, buffer);
+  EXPECT_EQ(tg::unpack(stringPack, buffer), testString);
+  EXPECT_EQ(buffer.size, testString.length() + 1); // 1 byte for length
+
+  const optional<std::string> testValue = testString;
+  tg::packInto(optPack, testValue, buffer);
+  EXPECT_EQ(tg::unpack(optPack, buffer), testValue);
+  EXPECT_EQ(buffer.size, testString.length() + 2);
+  // the 1 bit for optional state, bumps us into another byte
+}
+
+/**
+ * Our ClassPack rule works correctly.
+ */
+struct MyStruct {
+  MyStruct() = default;
+  int x = 0;
+  optional<int> y = 0;
+};
+
+TEST_F(PackFixture, ClassPack) {
+  const tg::Pack<int> intPack = tg::BytePack<int>();
+  const tg::Pack<optional<int>> optPack = tg::OptionalPack<int>(intPack);
+  const tg::Pack<MyStruct> classPack =
+      tg::ClassPack<MyStruct>(
+          tg::MemberRule<MyStruct, int>(intPack, &MyStruct::x),
+          tg::MemberRule<MyStruct, optional<int>>(optPack, &MyStruct::y)
+      );
+
+  MyStruct myStruct;
+  myStruct.x = 5;
+  tg::packInto(classPack, myStruct, buffer);
+  MyStruct unpacked = tg::unpack(classPack, buffer);
+  EXPECT_EQ(unpacked.y, myStruct.y);
+  EXPECT_EQ(unpacked.x, myStruct.x);
+}

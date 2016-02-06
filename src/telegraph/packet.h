@@ -30,12 +30,13 @@ public:
    */
   std::array<unsigned char, bufferSize> data; // statically allocated data
   size_t size; // data that is actually used
+  void reset();
 
   /**
-   * Dumping to stdout.
+   * Debug dumping.
    */
-  void dumpBinary();
-  void dump();
+  std::string dumpBinary();
+  std::string dump();
 
   /**
    * Using recv() / send() API.
