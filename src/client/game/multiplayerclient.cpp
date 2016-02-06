@@ -36,8 +36,7 @@ void MultiplayerClient::tick(float delta) {
     tg::packInto(clientMessagePack, message, buffer);
     telegraph.transmit(tg::Transmission(buffer, "localhost", 4242,
                                         tg::Strategy()));
-    appLog(LogType::Info, "sending ping:");
-    buffer.dump();
+    appLog(LogType::Info, "sending ping: " + buffer.dump());
     tg::unpackInto(clientMessagePack, buffer, message);
     pingCooldown.reset();
   }
