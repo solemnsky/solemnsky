@@ -10,22 +10,6 @@ Strategy::Strategy(const Strategy::Control control,
                    const optional<double> timeout) :
     control(control), timeout(timeout) { }
 
-/**
- * Transmission.
- */
-Transmission::Transmission(Packet &packet, const IpAddress &destination,
-                           const unsigned short port, const Strategy &strategy)
-    :
-    packet(packet), destination(destination),
-    strategy(strategy), port(port) { }
-
-/**
- * Reception.
- */
-Reception::Reception(Packet &packet,
-                     const IpAddress &address) :
-    packet(packet), address(address) { }
-
 namespace detail {
 /**
  * WirePacket.
@@ -54,31 +38,6 @@ void WirePacket::transmit(sf::UdpSocket &sock,
       sf::Socket::Done)
     appLog(LogType::Error, "packet transmission error!");
 }
-
 }
 
-/**
- * Telegraph.
- */
-Telegraph::Telegraph(unsigned short port) : port(port) {
-  sock.bind(port);
-  sock.setBlocking(false);
-}
-
-void Telegraph::transmit(Transmission &&transmission) {
-  static detail::WirePacket wire(&transmission.packet);
-  // wire.header = blah blah
-  wire.transmit(sock, transmission.destination, transmission.port);
-}
-
-void Telegraph::receive(std::function<void(Reception &&)> onReceive) {
-  detail::WirePacket wire(&incomingBuffer);
-  static IpAddress address;
-  static unsigned short port;
-  while (wire.receive(sock, address, port)) {
-    onReceive(Reception(incomingBuffer, address));
-    // potentially respond to server or don't immediately add to cue
-    // according to strategy in use
-  }
-}
 }

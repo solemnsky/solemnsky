@@ -9,44 +9,43 @@
 int main() {
   using sky::pk::clientMessagePack;
   using sky::pk::serverMessagePack;
+  using namespace sky::prot;
 
   tg::Telegraph telegraph(4242);
 
-  sky::ServerMessage response;
-  sky::ClientMessage message;
-  tg::Packet transmitPacket;
+  ClientPacket clientPacket;
+  tg::Packet buffer;
 
   bool running = true;
   while (running) {
     telegraph.receive([&](tg::Reception &&reception) {
       appLog(LogType::Debug, "message received: " + reception.packet.dump());
-      tg::unpackInto(clientMessagePack, reception.packet, message);
-      switch (message.type) {
-      case sky::ClientMessage::Type::Ping: {
+      tg::unpackInto(clientMessagePack, reception.packet, clientPacket);
+      switch (clientPacket.type) {
+        case ClientPacket::Type::Ping: {
           appLog(LogType::Info, "message is a ping request");
-          appLog(LogType::Info, "joke is: " + message.joke);
           appLog(LogType::Info, "responding with pong");
 
-          response.type = sky::ServerMessage::Type::Pong;
-          response.motd.reset();
-          tg::packInto(serverMessagePack, response, transmitPacket);
-
+          tg::packInto(serverMessagePack, ServerPong(), buffer);
           telegraph.transmit(tg::Transmission(
-              transmitPacket, reception.address, 4243, tg::Strategy()));
+              buffer, reception.address, 4243, tg::Strategy()));
           break;
         }
-        case sky::ClientMessage::Type::MotD: {
+        case ClientPacket::Type::MotD: {
           appLog(LogType::Info, "message is a MotD request");
-          appLog(LogType::Info, "joke is: " + message.joke);
           appLog(LogType::Info, "responding with MotD");
 
-          response.type = sky::ServerMessage::Type::MotD;
-          response.motd = "Wheeeee I'm in a UDP packet look at me!";
-          tg::packInto(serverMessagePack, response, transmitPacket);
-
+          tg::packInto(
+              serverMessagePack,
+              ServerMotD(
+                  std::string("Wheeeee I'm in a UDP packet look at me!")),
+              buffer);
           telegraph.transmit(tg::Transmission(
-              transmitPacket, reception.address, 4243, tg::Strategy()));
+              buffer, reception.address, 4243, tg::Strategy()));
           break;
+        }
+        case ClientPacket::Type::Chat: {
+
         }
       }
     });

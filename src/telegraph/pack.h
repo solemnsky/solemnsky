@@ -77,10 +77,11 @@ struct EnumPack : Pack<Enum> {
           writer.writeBit((const bool) ((((unsigned char) value) >> i) & 1));
       },
       [bits](PacketReader &reader, Enum &value) {
+        unsigned char newValue = 0;
         for (unsigned char i = 0; i < bits; i++)
           if (reader.readBit())
-            value = static_cast<Enum>(
-                        (((unsigned char) value) | (1 << i)));
+            newValue = (unsigned char) ((unsigned char) value | (1 << i));
+        value = static_cast<Enum>(newValue);
       }) { }
 };
 

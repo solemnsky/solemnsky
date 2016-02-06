@@ -13,31 +13,33 @@ void MultiplayerClient::tick(float delta) {
 
   using sky::pk::serverMessagePack;
   using sky::pk::clientMessagePack;
+  using namespace sky::prot;
 
+  ServerPacket serverPacket;
   telegraph.receive([&](tg::Reception &&reception) {
-    sky::ServerMessage message{
-        tg::unpack(serverMessagePack, reception.packet)};
-    switch (message.type) {
-      case sky::ServerMessage::Type::Pong: {
+    tg::unpackInto(serverMessagePack, reception.packet, serverPacket);
+    switch (serverPacket.type) {
+      case ServerPacket::Type::Pong: {
         appLog(LogType::Info, "received pong from server!");
         break;
       }
-      case sky::ServerMessage::Type::MotD: {
-        appLog(LogType::Info, "received MotD from server: " + *message.motd);
+      case ServerPacket::Type::MotD: {
+        appLog(LogType::Info, "received MotD from server: " +
+                              *serverPacket.stringData);
         break;
+      }
+      case ServerPacket::Type::Message: {
+        appLog(LogType::Info, "received message from server: " +
+                              *serverPacket.stringData);
       }
     }
   });
 
   if (pingCooldown.cool(delta)) {
-    sky::ClientMessage message;
-    message.joke = "no joke for you";
-    message.type = sky::ClientMessage::Type::Ping;
-    tg::packInto(clientMessagePack, message, buffer);
+    tg::packInto(clientMessagePack, ClientPing(), buffer);
     telegraph.transmit(tg::Transmission(buffer, "localhost", 4242,
                                         tg::Strategy()));
     appLog(LogType::Info, "sending ping: " + buffer.dump());
-    tg::unpackInto(clientMessagePack, buffer, message);
     pingCooldown.reset();
   }
 }
