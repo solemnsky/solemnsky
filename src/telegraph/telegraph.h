@@ -40,37 +40,46 @@ struct Strategy {
 
 /**
  * Transmission. Parameter / reference holder for Telegraph::transmit().
+ * Represents the transmission of a T.
  */
+template<typename T>
 struct Transmission {
-  Transmission(Packet &packet,
+  Transmission(const T &value,
                const IpAddress &destination,
                const unsigned short port,
-               const Strategy &strategy = Strategy());
+               const Strategy &strategy = Strategy()) :
+      value(value),
+      destination(destination),
+      port(port),
+      strategy(strategy) { }
 
-  Packet &packet;
-  const IpAddress destination;
-  const Strategy strategy;
+  const T &value;
+  const IpAddress &destination;
   const unsigned short port;
+  const Strategy &strategy;
 };
 
 /**
  * Reception. Parameter / reference holder for Telegraph::receive() callback.
  */
+template<typename T>
 struct Reception {
-  Reception(Packet &packet,
-            const IpAddress &address);
+  Reception(const T &value,
+            const IpAddress &address) :
+      value(value),
+      address(address) { }
 
-  Packet &packet;
-  const IpAddress address;
+  const T &value;
+  const IpAddress &address;
 };
 
 namespace detail {
 /**
- * Helper construct to manage receiving and transmitting packets, along with
+ * Utility to manage receiving and transmitting packets, along with their
  * metadata and stuff.
  */
 struct WirePacket {
-  WirePacket() = default;
+  WirePacket() = delete;
   WirePacket(Packet *packet);
 
   bool receive(sf::UdpSocket &sock,
@@ -89,21 +98,57 @@ struct WirePacket {
  * Transmission manager of sorts, used both as a listener and as a transmitter.
  * Every UDP connection in our design has one of these at both ends.
  */
+template<typename TransmitT, typename ReceiveT>
 class Telegraph {
 private:
   sf::UdpSocket sock;
-  Packet incomingBuffer;
+  detail::WirePacket wire;
+  Packet buffer; // volatile
+  ReceiveT valueBuffer;
+
+  const Pack<TransmitT> transmitRule;
+  const Pack<ReceiveT> receiveRule;
 
 public:
-  Telegraph(unsigned short port);
+  Telegraph(unsigned short port,
+            const Pack<TransmitT> &transmitRule,
+            const Pack<ReceiveT> &receiveRule) :
+      port(port),
+      transmitRule(transmitRule),
+      receiveRule(receiveRule),
+      buffer(),
+      wire(&buffer) { }
+
   const unsigned short port;
 
   /**
    * Receptions and transmissions.
    */
-  void transmit(Transmission &&transmission);
-  void receive(std::function<void(Reception &&)> onReceive);
+  void transmit(Transmission<TransmitT> &&transmission);
+  void receive(std::function<void(Reception<ReceiveT> &&)> onReceive);
 };
+
+template<typename TransmitT, typename ReceiveT>
+void Telegraph<TransmitT, ReceiveT>
+::transmit(Transmission<TransmitT> &&transmission) {
+  packInto(transmitRule, transmission.value, buffer);
+  // wire.header = blah blah
+  wire.transmit(sock, transmission.destination, transmission.port);
+}
+
+template<typename TransmitT, typename ReceiveT>
+void Telegraph<TransmitT, ReceiveT>
+::receive(std::function<void(Reception<ReceiveT> &&)> onReceive) {
+  static IpAddress address;
+  static unsigned short port;
+  while (wire.receive(sock, address, port)) {
+    unpackInto(receiveRule, buffer, valueBuffer);
+    onReceive(Reception<ReceiveT>(valueBuffer, address));
+    // potentially respond to server or don't immediately add to cue
+    // according to strategy in use
+  }
+}
+
 }
 
 #endif //SOLEMNSKY_TELEGRAPHY_H
