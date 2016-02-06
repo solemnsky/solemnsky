@@ -5,5 +5,5 @@
 	path = thirdparty/Box2D
 	url = http://github.com/solemnsky/Box2D
 [submodule "thirdparty/googletest"]
-	path = thirdparty/googletest
+	path = tests/googletest
 	url = https://github.com/google/googletest

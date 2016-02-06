@@ -1,6 +1,6 @@
 #include "server.h"
 
-#include "telegraph/telegraph.h"
+#include "telegraphtest.h"
 #include "sky/delta.h"
 #include "sky/protocol.h"
 #include <iostream>

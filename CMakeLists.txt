@@ -141,3 +141,6 @@ target_link_libraries(solemnsky_client
         sfml-graphics
         sfml-window
         )
+
+# Google Test unit tests
+add_subdirectory(tests/)
