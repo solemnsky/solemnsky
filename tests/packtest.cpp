@@ -36,11 +36,15 @@ TEST_F(PackFixture, ReadWrite) {
 /**
  * Our basic pack rules work correctly.
  */
+enum class MyEnum {
+  ValueA, ValueB, ValueC, ValueD
+};
 TEST_F(PackFixture, Rules) {
   const tg::Pack<float> floatPack = tg::BytePack<float>();
   const tg::Pack<std::string> stringPack = tg::StringPack();
   const tg::Pack<optional<std::string>> optPack =
       tg::OptionalPack<std::string>(stringPack);
+  const tg::Pack<MyEnum> enumPack = tg::EnumPack<MyEnum>(2);
 
   const float testFloat = 5.23f;
   tg::packInto(floatPack, testFloat, buffer);
@@ -57,6 +61,11 @@ TEST_F(PackFixture, Rules) {
   EXPECT_EQ(tg::unpack(optPack, buffer), testValue);
   EXPECT_EQ(buffer.size, testString.length() + 2);
   // the 1 bit for optional state, bumps us into another byte
+
+  const MyEnum testEnum = MyEnum::ValueC;
+  tg::packInto(enumPack, testEnum, buffer);
+  EXPECT_EQ(tg::unpack(enumPack, buffer), testEnum);
+  EXPECT_EQ(buffer.size, 1);
 }
 
 /**

@@ -72,11 +72,11 @@ struct BoolPack : Pack<bool> {
 template<typename Enum>
 struct EnumPack : Pack<Enum> {
   EnumPack<Enum>(int bits) : Pack<Enum>(
-      [&bits](PacketWriter &writer, const Enum &value) {
+      [bits](PacketWriter &writer, const Enum &value) {
         for (unsigned char i = 0; i < bits; i++)
           writer.writeBit((const bool) ((((unsigned char) value) >> i) & 1));
       },
-      [&bits](PacketReader &reader, Enum &value) {
+      [bits](PacketReader &reader, Enum &value) {
         for (unsigned char i = 0; i < bits; i++)
           if (reader.readBit())
             value = static_cast<Enum>(

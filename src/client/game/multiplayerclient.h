@@ -5,7 +5,7 @@
 #define SOLEMNSKY_MULTICLIENT_H
 
 #include "game.h"
-#include "telegraphtest.h"
+#include "telegraph/telegraph.h"
 
 class MultiplayerClient : public Game {
 private:

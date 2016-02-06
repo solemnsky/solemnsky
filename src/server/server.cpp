@@ -1,6 +1,6 @@
 #include "server.h"
 
-#include "telegraphtest.h"
+#include "telegraph/telegraph.h"
 #include "sky/delta.h"
 #include "sky/protocol.h"
 #include <iostream>
@@ -19,12 +19,11 @@ int main() {
   bool running = true;
   while (running) {
     telegraph.receive([&](tg::Reception &&reception) {
-      appLog(LogType::Debug, "message received: ");
-      reception.packet.dump();
+      appLog(LogType::Debug, "message received: " + reception.packet.dump());
       tg::unpackInto(clientMessagePack, reception.packet, message);
       switch (message.type) {
       case sky::ClientMessage::Type::Ping: {
-          appLog(LogType::Info, "ping received!");
+          appLog(LogType::Info, "message is a ping request");
           appLog(LogType::Info, "joke is: " + message.joke);
           appLog(LogType::Info, "responding with pong");
 
@@ -37,7 +36,7 @@ int main() {
           break;
         }
         case sky::ClientMessage::Type::MotD: {
-          appLog(LogType::Info, "MotD request received!");
+          appLog(LogType::Info, "message is a MotD request");
           appLog(LogType::Info, "joke is: " + message.joke);
           appLog(LogType::Info, "responding with MotD");
 
