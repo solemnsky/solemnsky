@@ -6,13 +6,13 @@
 
 #include "game.h"
 #include "telegraph/telegraph.h"
+#include "sky/protocol.h"
 
 class MultiplayerClient : public Game {
 private:
   ui::Button quitButton;
-  tg::Telegraph telegraph;
-  tg::Packet buffer;
 
+  tg::Telegraph<sky::prot::ClientPacket, sky::prot::ServerPacket> telegraph;
   Cooldown pingCooldown;
 
 public:

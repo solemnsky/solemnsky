@@ -39,27 +39,6 @@ struct Strategy {
 };
 
 /**
- * Transmission. Parameter / reference holder for Telegraph::transmit().
- * Represents the transmission of a T.
- */
-template<typename T>
-struct Transmission {
-  Transmission(const T &value,
-               const IpAddress &destination,
-               const unsigned short port,
-               const Strategy &strategy = Strategy()) :
-      value(value),
-      destination(destination),
-      port(port),
-      strategy(strategy) { }
-
-  const T &value;
-  const IpAddress &destination;
-  const unsigned short port;
-  const Strategy &strategy;
-};
-
-/**
  * Reception. Parameter / reference holder for Telegraph::receive() callback.
  */
 template<typename T>
@@ -75,12 +54,17 @@ struct Reception {
 
 namespace detail {
 /**
- * Utility to manage receiving and transmitting packets, along with their
- * metadata and stuff.
+ * Internal manager for transmitting / receiving a Packet buffer
+ * and associated strategy-related flags.
  */
-struct WirePacket {
-  WirePacket() = delete;
-  WirePacket(Packet *packet);
+class Wire {
+private:
+  Packet *buffer;
+  // int orderFlag; etc etc
+
+public:
+  Wire() = delete;
+  Wire(Packet *buffer);
 
   bool receive(sf::UdpSocket &sock,
                IpAddress &addr,
@@ -88,9 +72,6 @@ struct WirePacket {
   void transmit(sf::UdpSocket &sock,
                 const IpAddress &addr,
                 const unsigned short port);
-
-  Packet *packet;
-  // TODO: strategy-related meta-information
 };
 }
 
@@ -102,38 +83,46 @@ template<typename TransmitT, typename ReceiveT>
 class Telegraph {
 private:
   sf::UdpSocket sock;
-  detail::WirePacket wire;
-  Packet buffer; // volatile
   ReceiveT valueBuffer;
+  Packet buffer;
+  detail::Wire wire;
 
   const Pack<TransmitT> transmitRule;
   const Pack<ReceiveT> receiveRule;
 
 public:
-  Telegraph(unsigned short port,
+  Telegraph(const unsigned short port,
             const Pack<TransmitT> &transmitRule,
             const Pack<ReceiveT> &receiveRule) :
       port(port),
       transmitRule(transmitRule),
       receiveRule(receiveRule),
       buffer(),
-      wire(&buffer) { }
+      wire(&buffer) {
+    sock.setBlocking(false);
+    sock.bind(port);
+  }
 
   const unsigned short port;
 
   /**
    * Receptions and transmissions.
    */
-  void transmit(Transmission<TransmitT> &&transmission);
+  void transmit(const TransmitT &value,
+                const IpAddress &address,
+                const unsigned short port,
+                const Strategy &strategy = Strategy());
   void receive(std::function<void(Reception<ReceiveT> &&)> onReceive);
 };
 
 template<typename TransmitT, typename ReceiveT>
 void Telegraph<TransmitT, ReceiveT>
-::transmit(Transmission<TransmitT> &&transmission) {
-  packInto(transmitRule, transmission.value, buffer);
-  // wire.header = blah blah
-  wire.transmit(sock, transmission.destination, transmission.port);
+::transmit(const TransmitT &value,
+           const IpAddress &address, const unsigned short port,
+           const Strategy &strategy) {
+  packInto(transmitRule, value, buffer);
+  // wire.header = blah blah depending on strategy
+  wire.transmit(sock, address, port);
 }
 
 template<typename TransmitT, typename ReceiveT>

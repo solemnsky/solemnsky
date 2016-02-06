@@ -12,29 +12,28 @@ Strategy::Strategy(const Strategy::Control control,
 
 namespace detail {
 /**
- * WirePacket.
+ * Wire.
  */
-WirePacket::WirePacket(Packet *packet) :
-    packet(packet) { }
+Wire::Wire(Packet *buffer) : buffer(buffer) { }
 
-bool WirePacket::receive(sf::UdpSocket &sock,
-                         IpAddress &addr,
-                         unsigned short &port) {
+bool Wire::receive(sf::UdpSocket &sock,
+                   IpAddress &addr,
+                   unsigned short &port) {
   static std::size_t size;
   sf::Socket::Status status =
-      sock.receive(packet->getRaw(), Packet::bufferSize, size, addr, port);
+      sock.receive(buffer->getRaw(), Packet::bufferSize, size, addr, port);
   if (size == 0) return false;
 
-  packet->setSize(size);
+  buffer->setSize(size);
   if (status == sf::Socket::Error)
     appLog(LogType::Error, "packet reception error!");
   return true;
 }
 
-void WirePacket::transmit(sf::UdpSocket &sock,
-                          const IpAddress &addr,
-                          const unsigned short port) {
-  if (sock.send(packet->getRaw(), packet->getSize(), addr, port) !=
+void Wire::transmit(sf::UdpSocket &sock,
+                    const IpAddress &addr,
+                    const unsigned short port) {
+  if (sock.send(buffer->getRaw(), buffer->getSize(), addr, port) !=
       sf::Socket::Done)
     appLog(LogType::Error, "packet transmission error!");
 }
