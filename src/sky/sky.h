@@ -1,8 +1,11 @@
 /**
- * A Sky is the basic core of the game state, with a simple interface for
- * joining / quitting players, spawning and killing, etc. It is shared by
- * client and server. Non-universal subsystems such as graphics and delta
- * compression can be attached to a Sky with the subsystem framework.
+ * A Sky is the basic core of the game state. It is semantically subordinate to
+ * an Arena, and exposes a simple interface for clients and servers alike for
+ * all kinds of circumstances, from server-side simulation to replaying
+ * recordings.
+ *
+ * Non-universal subsystems such as graphics and delta compression can be
+ * attached to a Sky with the 'Subsystem' framework.
  */
 #ifndef SOLEMNSKY_SKY_H
 #define SOLEMNSKY_SKY_H

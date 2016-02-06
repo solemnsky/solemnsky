@@ -63,6 +63,9 @@ struct PlaneVital {
 
   /**
    * Data.
+   * *** ALL float encapsulations from util should have equal parameters in
+   * all instances of PlaneVital. This is essential to serialization and
+   * sanity in general. ****
    */
   Clamped rotCtrl; // controls
   Switched throtCtrl;

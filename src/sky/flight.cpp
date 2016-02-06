@@ -27,7 +27,7 @@ PlaneVital::PlaneVital(const PlaneTuning &tuning,
     throttle(0, 1, 1),
 
     energy(0, 1, 1),
-    health(0, tuning.maxHealth, tuning.maxHealth) { }
+    health(0, 1, 1) { }
 
 float PlaneVital::forwardVelocity() {
   return velocity() * (const float) cos(toRad(rot) - std::atan2(vel.y, vel.x));

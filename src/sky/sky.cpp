@@ -42,8 +42,8 @@ PlaneHandle *Sky::getPlaneHandle(const PID pid) {
 }
 
 void Sky::quitPlane(const PID pid) {
-  for (auto system : subsystems) system->quitPlane(pid);
   planes.erase(pid);
+  for (auto system : subsystems) system->quitPlane(pid);
 }
 
 void Sky::spawnPlane(const PID pid, const sf::Vector2f pos, const float rot,
