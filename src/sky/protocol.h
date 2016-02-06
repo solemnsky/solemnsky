@@ -14,64 +14,67 @@ namespace prot {
  * Stuff clients say.
  */
 struct ClientPacket {
-  ClientPacket() = default;
-
   enum class Type {
     Ping, // request ping
     MotD, // request MotD
     Chat // try to send a chat message
-  } type;
+  };
 
+  ClientPacket() = default;
+
+  ClientPacket(const Type type,
+               const optional<std::string> &stringData = {}) :
+      type(type), stringData(stringData) { }
+
+  Type type;
   optional<std::string> stringData;
 };
 
 struct ClientPing : public ClientPacket {
-  ClientPing() : ClientPacket(),
-                 type(ClientPacket::Type::Ping) { }
+  ClientPing() : ClientPacket(ClientPacket::Type::Ping) { }
 };
 
 struct ClientMotD : public ClientPacket {
-  ClientMotD() : ClientPacket(),
-                 type(ClientPacket::Type::MotD) { }
+  ClientMotD() : ClientPacket(ClientPacket::Type::MotD) { }
 };
 
 struct ClientChat : public ClientPacket {
-  ClientChat(std::string &&str) : ClientPacket(),
-                                  type(ClientPacket::Type::Chat),
-                                  stringData(str) { }
+  ClientChat(std::string &&str) :
+      ClientPacket(ClientPacket::Type::Chat, str) { }
 };
 
 /**
  * Stuff servers say.
  */
 struct ServerPacket {
-  ServerPacket() = default;
-
   enum class Type {
     Pong, // respond to a ping
     MotD, // distribute the MotD
-    Message // distribute message
-  } type;
+    Message // distribute message for all clients to print to screen
+  };
 
+  ServerPacket() = default;
+
+  ServerPacket(const Type type,
+               const optional<std::string> &stringData = {}) :
+      type(type), stringData(stringData) { }
+
+  Type type;
   optional<std::string> stringData;
 };
 
 struct ServerPong : public ServerPacket {
-  ServerPong() : ServerPacket(),
-                 type(ServerPacket::Type::Pong) { }
+  ServerPong() : ServerPacket(ServerPacket::Type::Pong) { }
 };
 
 struct ServerMotD : public ServerPacket {
-  ServerMotD(std::string &&motd) : ServerPacket(),
-                                   type(ServerPacket::Type::MotD),
-                                   stringData(motd) { }
+  ServerMotD(std::string &&motd) :
+      ServerPacket(ServerPacket::Type::MotD, motd) { }
 };
 
 struct ServerMessage : public ServerPacket {
-  ServerMessage(std::string &&message) : ServerPacket(),
-                                         type(ServerPacket::Type::Message),
-                                         stringData(message) { }
-
+  ServerMessage(std::string &&message) :
+      ServerPacket(ServerPacket::Type::Message, message) { }
 };
 }
 
@@ -86,23 +89,27 @@ const Pack<optional<std::string>> optStringPack =
     tg::OptionalPack<std::string>(stringPack);
 
 #define member(TYPE, PTR, RULE) \
-  MemberRule<ClientPacket, TYPE>(RULE, &ClientPacket::PTR)
-const Pack<ClientPacket> clientMessagePack =
-    ClassPack<ClientPacket>(
-        member(ClientPacket::Type, type, EnumPack<ClientPacket::Type>(1)),
+  MemberRule<prot::ClientPacket, TYPE>(RULE, &prot::ClientPacket::PTR)
+const Pack<prot::ClientPacket> clientPacketPack =
+    ClassPack<prot::ClientPacket>(
+        member(prot::ClientPacket::Type, type,
+               EnumPack<prot::ClientPacket::Type>(2)),
         member(optional<std::string>, stringData, optStringPack)
     );
 #undef member
 
 #define member(TYPE, PTR, RULE) \
-  MemberRule<ServerPacket, TYPE>(RULE, &ServerPacket::PTR)
-const Pack<ServerPacket> serverMessagePack =
-    ClassPack<ServerPacket>(
-        member(ServerPacket::Type, type, EnumPack<ServerPacket::Type>(1)),
+  MemberRule<prot::ServerPacket, TYPE>(RULE, &prot::ServerPacket::PTR)
+const Pack<prot::ServerPacket> serverPacketPack =
+    ClassPack<prot::ServerPacket>(
+        member(prot::ServerPacket::Type, type,
+               EnumPack<prot::ServerPacket::Type>(2)),
         member(optional<std::string>, stringData, optStringPack)
     );
 #undef member
-};
+
+}
+
 }
 
 #endif //SOLEMNSKY_PROTOCOL_H
