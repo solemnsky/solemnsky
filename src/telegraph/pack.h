@@ -60,6 +60,27 @@ void unpackInto(const Pack<T> &rules, Packet &packet, T &value) {
  */
 
 /**
+ * Pack implementations are transitive given the existance of mutual
+ * assignment operations.
+ *
+ * This is mainly useful for small types like Clamped and such.
+ */
+template<typename A, typename B>
+struct AssignPack : Pack<B> {
+  AssignPack(const Pack<A> &packer) : Pack<B>(
+      [packer](PacketWriter &writer, const B &value) {
+        A aValue = value;
+        packer.pack(writer, aValue);
+      },
+      [packer](PacketReader &reader, B &value) {
+        A aValue;
+        packer.unpack(reader, aValue);
+        value = aValue;
+      }) { }
+};
+
+
+/**
  * Pack a boolean in one bit. Doesn't get more space-efficent than this.
  */
 struct BoolPack : Pack<bool> {

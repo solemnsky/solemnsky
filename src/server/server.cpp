@@ -30,7 +30,7 @@ int main() {
           telegraph.transmit(
               ServerMotD(
                   std::string("Wheeeee I'm in a UDP packet look at me!")),
-              reception.address, 4243, tg::Strategy());
+              reception.address, 4243);
           break;
         }
         case ClientPacket::Type::Chat: {

@@ -1,11 +1,15 @@
 /**
  * Utilities in the form of types, useful for declarations.
+ *
+ * Everything here is covered by unit testing; see the respective tests for
+ * usage example.
  */
 #ifndef SOLEMNSKY_VALUE_H
 #define SOLEMNSKY_VALUE_H
 
 #include <vector>
 #include <cmath>
+#include <SFML/System.hpp>
 #include <boost/optional.hpp>
 
 /****
@@ -63,15 +67,15 @@ bool approach(T &x, const T target, const T amount) {
 }
 
 /****
- * Cooldown values: floats that are used for a 'cooldown' effect, incrementing
- * up a range until they hit a maximum, at which point they assume a 'true'
- * conversion to bool. They can be cooled, reset, and primed.
- *
- * > Cooldown cooldown{1};
- * > print(cooldown.cool(0.5)); // 'false'
- * > print(cooldown.cool(0.6)); // 'true'
- * > cooldown.reset();
- * > print(cooldown); // 'false', cooldown now at 1
+ * Float-augmentation types.
+ * Below we have a series of types that build a wrapper around a float,
+ * constricting the way in which it can be used. *Pretend that the settings
+ * you pass to their ctors are template variables*: e.g. a Clamped member of
+ * a class can be expected to have the same bounds in every instance.
+ */
+
+/**
+ * Floats that are used for a 'cooldown' effect.
  */
 struct Cooldown {
 public:
@@ -87,14 +91,7 @@ public:
 };
 
 /**
- * Clamped values: floats that always snap back to a certain range when
- * assigned. ([min, max])
- *
- * > Clamped x{0, 1};
- * > x = 3;
- * > print(x) // '1' (nearest member of [0, 1] to 3)
- * > x -= 1.4;
- * > print(x) // '0'
+ * Floats that always snap back to a certain range. ([min, max])
  */
 struct Clamped {
 private:
@@ -115,8 +112,7 @@ public:
 };
 
 /**
- * Cyclic values: floats that always cycle back to a certain range when
- * assigned. ([min, max[)
+ * Floats that always cycle back to a certain range when assigned. ([min, max[)
  */
 struct Cyclic {
 private:
@@ -139,12 +135,7 @@ bool cyclicApproach(Cyclic &x, const float target, const float amount);
 float cyclicDistance(const Cyclic x, const float y);
 
 /**
- * Switched values: floats that may assume one of a set of values.
- *
- * > Switched x{{1, 2, 3}, 1};
- * > x = 1; // okay
- * > x = 4;
- * > (error printed, program execution terminated)
+ * Floats that must only assume one of a set of values.
  */
 struct Switched {
 private:
@@ -163,9 +154,7 @@ public:
 };
 
 /**
- * Angle value: represents an angle in degrees. Like a Cyclic but bound to
- * [0, 360[ by type. SFML doesn't seem to have this and I'm not going to be
- * using potentially redundant cyclicClamps everywhere...
+ * Angle value: represents an angle in degrees.
  */
 struct Angle {
 private:
@@ -173,10 +162,13 @@ private:
 public:
   inline Angle() : Angle(0) { }
   Angle(const float x);
+  Angle(const sf::Vector2f &);
 
   Angle &operator=(const float x);
   Angle &operator+=(const float x);
   Angle &operator-=(const float x);
+
+  sf::Vector2f toVector();
 
   inline operator float() const { return value; }
 };

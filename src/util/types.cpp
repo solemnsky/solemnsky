@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES // for M_PI
 #include "types.h"
 #include <cmath>
 #include "methods.h"
@@ -97,6 +98,10 @@ Switched &Switched::operator=(const float x) {
  */
 Angle::Angle(const float x) : value(cyclicClamp<float>(0, 360, x)) { }
 
+Angle::Angle(const sf::Vector2f &vec) {
+  operator=(toDeg((float) atan2(vec.y, vec.x)));
+}
+
 Angle &Angle::operator=(const float x) {
   value = cyclicClamp<float>(0, 360, x);
   return *this;
@@ -112,3 +117,7 @@ Angle &Angle::operator-=(const float x) {
   return *this;
 }
 
+sf::Vector2f Angle::toVector() {
+  const float rad = toRad(value);
+  return sf::Vector2f((float) cos(rad), (float) sin(rad));
+}

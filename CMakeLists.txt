@@ -21,22 +21,25 @@ include_directories(
 
 ###### libsolemnsky, for common use by client and server
 add_library(solemnsky STATIC
-        src/sky/protocol.h
+        src/sky/arena.cpp
+        src/sky/arena.h
 
         src/sky/delta.cpp
         src/sky/delta.h
 
-        src/sky/flight.h
         src/sky/flight.cpp
+        src/sky/flight.h
 
         src/sky/map.cpp
         src/sky/map.h
 
-        src/sky/physics.h
         src/sky/physics.cpp
+        src/sky/physics.h
 
-        src/sky/sky.h
+        src/sky/protocol.h
+
         src/sky/sky.cpp
+        src/sky/sky.h
 
         src/sky/subsystem.h
 
@@ -67,8 +70,8 @@ add_executable(solemnsky_server
         src/server/subsystem/deltacom.cpp
         src/server/subsystem/deltacom.h
 
-        src/server/subsystem/serverlog.h
         src/server/subsystem/serverlog.cpp
+        src/server/subsystem/serverlog.h
 
         src/server/server.cpp
         src/server/server.h
@@ -79,16 +82,19 @@ target_link_libraries(solemnsky_server
 
 ###### solemnsky_client
 add_executable(solemnsky_client
-        src/client/game/multiplayerclient.cpp
-        src/client/game/multiplayerclient.h
-
         src/client/game/game.h
 
         src/client/game/gamecontroller.cpp
         src/client/game/gamecontroller.h
 
+        src/client/game/multiplayerclient.cpp
+        src/client/game/multiplayerclient.h
+
         src/client/game/tutorial.cpp
         src/client/game/tutorial.h
+
+        src/client/subsystem/render.cpp
+        src/client/subsystem/render.h
 
         src/client/ui/elements/button.cpp
         src/client/ui/elements/button.h
@@ -96,14 +102,14 @@ add_executable(solemnsky_client
         src/client/ui/elements/splash.cpp
         src/client/ui/elements/splash.h
 
-        src/client/ui/control.h
         src/client/ui/control.cpp
+        src/client/ui/control.h
 
         src/client/ui/frame.cpp
         src/client/ui/frame.h
 
-        src/client/ui/profiler.h
         src/client/ui/profiler.cpp
+        src/client/ui/profiler.h
 
         src/client/ui/sheet.cpp
         src/client/ui/sheet.h
@@ -132,9 +138,6 @@ add_executable(solemnsky_client
 
         src/client/settingspage.cpp
         src/client/settingspage.h
-
-        src/client/subsystem/render.cpp
-        src/client/subsystem/render.h
         )
 target_link_libraries(solemnsky_client
         solemnsky
@@ -142,5 +145,5 @@ target_link_libraries(solemnsky_client
         sfml-window
         )
 
-# Google Test unit tests
+###### unit tests
 add_subdirectory(tests/)

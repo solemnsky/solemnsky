@@ -1,5 +1,5 @@
 /**
- * Deltas between game states and Pack<> rules for them. Used in the
+ * 'Deltas' between game state structures and Pack<> rules for them. Used in the
  * multiplayer protocol and game recording files.
  */
 #ifndef SOLEMNSKY_DELTA_H
@@ -29,8 +29,9 @@ struct PlaneDelta {
 namespace pk {
 using namespace tg;
 
-/**** float ****/
+/**** float bool ****/
 const Pack<float> floatPack = BytePack<float>();
+const Pack<bool> boolPack = BoolPack();
 
 /**** sf::Vector2f ****/
 const tg::Pack<sf::Vector2f> vectorPack =
@@ -93,6 +94,31 @@ const Pack<PlaneTuning> planeTuningPack =
     );
 #undef member
 
+/**** Clamped Switched Angle ****/
+const Pack<Clamped> clampedPack = AssignPack<float, Clamped>(floatPack);
+const Pack<Switched> switchedPack = AssignPack<float, Switched>(floatPack);
+const Pack<Angle> anglePack = AssignPack<float, Angle>(floatPack);
+
+/**** PlaneVital ****/
+#define member(TYPE, PTR, RULE) \
+  MemberRule<PlaneVital, TYPE>(RULE, &PlaneVital::PTR)
+const Pack<PlaneVital> planeVitalPack =
+    ClassPack<PlaneVital>(
+        member(Clamped, rotCtrl, clampedPack),
+        member(Switched, throtCtrl, switchedPack),
+        member(sf::Vector2f, pos, vectorPack),
+        member(sf::Vector2f, vel, vectorPack),
+        member(Angle, rot, anglePack),
+        member(float, rotvel, floatPack),
+        member(bool, stalled, boolPack),
+        member(Clamped, afterburner, clampedPack),
+        member(sf::Vector2f, leftoverVel, vectorPack),
+        member(Clamped, airspeed, clampedPack),
+        member(Clamped, throttle, clampedPack),
+        member(Clamped, energy, clampedPack),
+        member(Clamped, health, clampedPack)
+    );
+#undef member
 }
 
 }
