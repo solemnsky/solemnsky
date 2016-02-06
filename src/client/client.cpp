@@ -113,7 +113,7 @@ void Client::render(ui::Frame &f) {
   }
 }
 
-void Client::handle(const sf::Event &event) {
+bool Client::handle(const sf::Event &event) {
   if (state.gameInFocus()) {
     state.game->handle(event);
   } else {
@@ -128,8 +128,7 @@ void Client::handle(const sf::Event &event) {
         } else {
           if (state.game) state.game->inFocus = true;
         }
-        return;
-
+        return true;
       }
     }
 
@@ -154,6 +153,7 @@ void Client::handle(const sf::Event &event) {
       }
     }
   }
+  return true;
 }
 
 void Client::signalRead() {

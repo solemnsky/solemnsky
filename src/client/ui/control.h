@@ -37,12 +37,14 @@ public:
   virtual ~Control() { }
 
   /**
-   * SFML window, safe to use in any of the callback functions if you're a
-   * top-level control. This feels kind of hacky, but it'll have to do.
+   * SFML window, safe to use in any of the callback functions iff you're a
+   * top-level control.
    */
   AppState *appState;
 
   virtual void attachState() { }
+  // signal that appState is initialized
+  // this is meaningful == Control is top-level
 
   /**
    * Signals to the app loop.
@@ -55,7 +57,8 @@ public:
    */
   virtual void tick(float delta) = 0;
   virtual void render(Frame &f) = 0;
-  virtual void handle(const sf::Event &event) = 0;
+  virtual bool handle(const sf::Event &event) = 0;
+  // return true to prevent propogation
 
   /**
    * Signal framework.
@@ -73,5 +76,6 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl);
 
 // elements
 #include "elements/button.h"
+#include "elements/textentry.h"
 
 #endif // SOLEMNSKY_CONTROL_H

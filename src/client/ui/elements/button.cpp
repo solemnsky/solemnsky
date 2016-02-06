@@ -22,7 +22,7 @@ void Button::render(Frame &f) {
   f.pushAlpha(style.alpha);
   const auto body = getBody();
   if (!inPreClick)
-    f.drawRect(body, mixColors(style.color, style.hotColor,
+    f.drawRect(body, mixColors(style.baseColor, style.hotColor,
                                getHeat()));
   else f.drawRect(body, style.clickedColor);
   const auto size = f.textSize(text, style.fontSize);
@@ -35,7 +35,7 @@ void Button::render(Frame &f) {
   f.popAlpha();
 }
 
-void Button::handle(const sf::Event &event) {
+bool Button::handle(const sf::Event &event) {
   const auto body = getBody();
   if (event.type == sf::Event::MouseMoved) {
     const sf::Vector2f pt(event.mouseMove.x, event.mouseMove.y);
@@ -53,7 +53,9 @@ void Button::handle(const sf::Event &event) {
         clickSignal.push_back({});
       }
     }
+    return isHot;
   }
+  return false;
 }
 
 void Button::signalClear() {

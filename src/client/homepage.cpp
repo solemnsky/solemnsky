@@ -36,8 +36,8 @@ void HomePage::render(ui::Frame &f) {
   tutorialButton.render(f);
 }
 
-void HomePage::handle(const sf::Event &event) {
-  tutorialButton.handle(event);
+bool HomePage::handle(const sf::Event &event) {
+  return tutorialButton.handle(event);
 }
 
 void HomePage::signalRead() {

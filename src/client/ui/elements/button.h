@@ -23,10 +23,10 @@ private:
 
 public:
   /**
-   * Settings
+   * Style settings.
    */
   const struct Style {
-    sf::Color color{132, 173, 181},
+    sf::Color baseColor{132, 173, 181},
         hotColor{92, 189, 206},
         clickedColor{63, 208, 234},
         textColor{255, 255, 255};
@@ -37,15 +37,16 @@ public:
     int fontSize = 40;
     float alpha = 1;
 
-    Style() { }
+    Style() = default;
   } style;
+
+  Button() = delete;
+  Button(const sf::Vector2f &pos,
+         const std::string &text,
+         const Style &style = {});
 
   sf::Vector2f pos;
   std::string text; // what the button has to say
-
-  Button() = delete;
-  Button(const sf::Vector2f &pos, const std::string &text,
-         const Style &style = {});
 
   void reset(); // reset animation, pretend it was recreated
 
@@ -54,11 +55,11 @@ public:
    */
   void tick(float delta) override;
   void render(Frame &f) override;
-  void handle(const sf::Event &event) override;
+  bool handle(const sf::Event &event) override;
   void signalClear() override;
 
   /**
-   * Signal.
+   * UI state and signals.
    */
   bool isHot{false}; // if the mouse is hovering over it
   ui::Signal<ui::None> clickSignal;

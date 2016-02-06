@@ -102,6 +102,9 @@ add_executable(solemnsky_client
         src/client/ui/elements/splash.cpp
         src/client/ui/elements/splash.h
 
+        src/client/ui/elements/textentry.cpp
+        src/client/ui/elements/textentry.h
+
         src/client/ui/control.cpp
         src/client/ui/control.h
 
