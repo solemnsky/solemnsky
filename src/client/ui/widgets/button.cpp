@@ -4,26 +4,23 @@
 namespace ui {
 
 sf::FloatRect Button::getBody() {
-  float w(style.width), h(style.height);
-  return {pos.x - (w / 2), pos.y - (h / 2), w, h};
+  return sf::FloatRect(pos, style.dimensions);
 }
 
 Button::Button(const sf::Vector2f &pos, const std::string &text,
                const Style &style) :
     pos(pos), text(text), style(style),
-    hotAnimState(0, style.hotAnimLength, 0) { }
+    heat(0, 1, 0) { }
 
 void Button::tick(float delta) {
-  if (isHot) hotAnimState += delta;
-  else hotAnimState -= delta;
+  heat += (isHot ? 1 : -1) * delta * style.heatRate;
 }
 
 void Button::render(Frame &f) {
   f.pushAlpha(style.alpha);
   const auto body = getBody();
   if (!inPreClick)
-    f.drawRect(body, mixColors(style.baseColor, style.hotColor,
-                               getHeat()));
+    f.drawRect(body, mixColors(style.baseColor, style.hotColor, heat));
   else f.drawRect(body, style.clickedColor);
   const auto size = f.textSize(text, style.fontSize);
   f.drawText(
@@ -64,7 +61,6 @@ void Button::signalClear() {
 
 void Button::reset() {
   isHot = false;
-//  hotAnimState = 0;
 }
 }
 

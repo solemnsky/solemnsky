@@ -15,7 +15,8 @@ enum class PageType {
   Home, Listing, Settings
 };
 
-class Client; // we send callbacks to this
+// we send callbacks to the Client, but it instantiates ClientShared
+class Client;
 
 struct ClientShared {
 private:
@@ -28,15 +29,20 @@ public:
   double uptime;
 
   /**
-   * The Game.
+   * The game.
    */
   std::unique_ptr<class Game> game;
-  bool gameInFocus(); // the game exists and is in focus
 
   /**
-   * UI methods.
+   * UI state, read-only by elements.
+   */
+  bool gameFocused;
+
+  /**
+   * UI methods, propogating through the whole Client.
    */
   void beginGame(std::unique_ptr<Game> &&game);
+  void unfocusGame();
   void focusPage(const PageType type);
   void unfocusPage();
 };

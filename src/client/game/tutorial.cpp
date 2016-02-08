@@ -17,7 +17,7 @@ Tutorial::Tutorial(ClientShared &state) :
 
 void Tutorial::tick(float delta) {
   quitButton.tick(delta);
-  if (inFocus)
+  if (shared.game)
     sky.tick(delta); // if this were multiplayer of course
   // we wouldn't have this liberty
 }
@@ -30,15 +30,17 @@ void Tutorial::render(ui::Frame &f) {
 
 bool Tutorial::handle(const sf::Event &event) {
   if (quitButton.handle(event)) return true;
-  if (controller.handle(event)) return true;
-  if (plane->vital) controller.setState(*plane->vital);
-
-  if (event.type == sf::Event::KeyPressed) {
-    if (event.key.code == sf::Keyboard::Escape) {
-      inFocus = false;
-      return true;
-    }
+  if (controller.handle(event)) {
+    if (plane->vital) controller.setState(*plane->vital);
+    return true;
   }
+
+  if (event.type == sf::Event::KeyPressed
+      && event.key.code == sf::Keyboard::Escape) {
+    shared.unfocusGame();
+    return true;
+  }
+
   return false;
 }
 

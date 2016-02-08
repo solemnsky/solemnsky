@@ -15,7 +15,8 @@ public:
   /**
    * Page interface.
    */
-  void reset() override;
+  void onLooseFocus() override;
+  void onFocus() override;
 
   /**
    * Control interface.

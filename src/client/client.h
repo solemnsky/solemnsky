@@ -9,30 +9,30 @@
 #include "settingspage.h"
 #include "listingpage.h"
 
-class ClientUIState {
+class ClientUiState {
 private:
+  const float pageFocusAnimSpeed = 3, // s^-1
+      gameFocusAnimSpeed = 4;
+public:
+  ClientUiState();
+
   PageType focusedPage;
   bool pageFocusing;
+  bool gameFocusing;
 
-  Clamped pageFocusAnim;
-  Clamped gameFocusAnim;
-public:
-  ClientUIState();
+  Clamped pageFocusFactor;
+  Clamped gameFocusFactor;
 
-  /**
-   * Accessing.
-   */
-  float getPageFocusFactor(); // what's the focus factor of the page?
-  float getGameFocusFactor(); // what's the factor of the game
-  bool getPageFocused(); // is the page focused?
-  bool getGameFocused(); // is the game focused?
-  PageType getPageType(); // what page are we focused on?
+  bool pageFocused();
+  bool menuFocused();
+  bool gameFocused();
 
   /**
    * Triggering.
    */
   void focusGame();
-  void focusPage(PageType type);
+  void unfocusGame();
+  void focusPage(PageType page);
   void unfocusPage();
 
   void tick(float delta);
@@ -59,16 +59,14 @@ private:
   /**
    * UI state.
    */
-  ClientUIState uiState;
+  ClientUiState uiState;
   std::vector<std::pair<sf::FloatRect, PageType>> pageRects;
 
   /**
    * Style settings.
    */
   const struct Style {
-    const float unfocusedPageScale = 500.0f / 1600.0f,
-        pageFocusAnimSpeed = 3, // s^-1
-        gameFocusAnimSpeed = 4;
+    const float unfocusedPageScale = 500.0f / 1600.0f;
 
     const sf::Vector2f homeOffset{202.249, 479.047};
     const sf::Vector2f listingOffset{897.751, 479.047};
@@ -101,9 +99,13 @@ public:
   /**
    * UI methods.
    */
-  void unfocusPage();
-  void focusPage(const PageType type);
   void beginGame(std::unique_ptr<Game> &&game);
+
+  void focusGame();
+  void unfocusGame();
+
+  void focusPage(const PageType type);
+  void unfocusPage();
 };
 
 int main();

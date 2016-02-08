@@ -16,14 +16,15 @@ public:
   /**
    * Page interface.
    */
-  void reset() override;
+  void onLooseFocus() override;
+  void onFocus() override;
 
   /**
    * Control interface.
    */
-  virtual void tick(float delta) override;
-  virtual void render(ui::Frame &f) override;
-  virtual bool handle(const sf::Event &event) override;
+  void tick(float delta) override;
+  void render(ui::Frame &f) override;
+  bool handle(const sf::Event &event) override;
 
   void signalRead() override;
   void signalClear() override;

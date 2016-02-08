@@ -5,11 +5,20 @@ using sky::pk::serverPacketPack;
 using sky::pk::clientPacketPack;
 
 MultiplayerClient::MultiplayerClient(ClientShared &state) :
+    sky({}),
     Game(state, "multiplayer"),
     quitButton({100, 50}, "quit tutorial"),
     chatEntry({500, 500}, "chat"),
     telegraph(4243, clientPacketPack, serverPacketPack),
     pingCooldown(1) { }
+
+void MultiplayerClient::onLooseFocus() {
+
+}
+
+void MultiplayerClient::onFocus() {
+
+}
 
 void MultiplayerClient::tick(float delta) {
   quitButton.tick(delta);
@@ -67,3 +76,4 @@ void MultiplayerClient::signalRead() {
 void MultiplayerClient::signalClear() {
   quitButton.signalClear();
 }
+
