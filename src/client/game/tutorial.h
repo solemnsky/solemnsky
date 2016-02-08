@@ -4,7 +4,7 @@
 #ifndef SOLEMNSKY_TUTORIAL_H
 #define SOLEMNSKY_TUTORIAL_H
 
-#include "game.h"
+#include "client/elements/elements.h"
 #include "sky/sky.h"
 #include "client/subsystem/render.h"
 #include "gamecontroller.h"
@@ -20,14 +20,14 @@ private:
   sky::Plane *plane;
 
 public:
-  Tutorial(ClientState *state);
+  Tutorial(ClientShared &state);
 
   /**
    * Control interface.
    */
   virtual void tick(float delta) override;
   virtual void render(ui::Frame &f) override;
-  virtual void handle(const sf::Event &event) override;
+  virtual bool handle(const sf::Event &event) override;
 
   void signalRead() override;
   void signalClear() override;

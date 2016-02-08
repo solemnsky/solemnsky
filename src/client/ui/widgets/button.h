@@ -25,7 +25,7 @@ public:
   /**
    * Style settings.
    */
-  const struct Style {
+  struct Style {
     sf::Color baseColor{132, 173, 181},
         hotColor{92, 189, 206},
         clickedColor{63, 208, 234},
@@ -37,7 +37,7 @@ public:
     int fontSize = 40;
     float alpha = 1;
 
-    Style() = default;
+    Style() { }
   } style;
 
   Button() = delete;
@@ -48,8 +48,6 @@ public:
   sf::Vector2f pos;
   std::string text; // what the button has to say
 
-  void reset(); // reset animation, pretend it was recreated
-
   /**
    * Control implementation.
    */
@@ -59,10 +57,15 @@ public:
   void signalClear() override;
 
   /**
-   * UI state and signals.
+   * UI methods.
    */
-  bool isHot{false}; // if the mouse is hovering over it
-  ui::Signal<ui::None> clickSignal;
+  void reset(); // reset animation
+
+  /**
+   * UI state and signals, read-only.
+   */
+  bool isHot{false};
+  bool clickSignal{false};
 };
 
 }

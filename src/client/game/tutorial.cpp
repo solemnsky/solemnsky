@@ -4,13 +4,12 @@ ui::Button::Style quitButtonStyle() {
   return {};
 }
 
-Tutorial::Tutorial(ClientState *state) :
+Tutorial::Tutorial(ClientShared &state) :
+    Game(state, "tutorial"),
     quitButton({100, 50}, "quit tutorial", quitButtonStyle()),
-    Game(state),
     sky({}),
     renderSystem(&sky) {
   sky.linkSystem(&renderSystem);
-  name = "tutorial";
 
   plane = sky.joinPlane(0);
   sky.spawnPlane(0, {200, 200}, 0, {});
@@ -29,21 +28,22 @@ void Tutorial::render(ui::Frame &f) {
   quitButton.render(f);
 }
 
-void Tutorial::handle(const sf::Event &event) {
-  quitButton.handle(event);
-  controller.handle(event);
+bool Tutorial::handle(const sf::Event &event) {
+  if (quitButton.handle(event)) return true;
+  if (controller.handle(event)) return true;
   if (plane->vital) controller.setState(*plane->vital);
 
   if (event.type == sf::Event::KeyPressed) {
     if (event.key.code == sf::Keyboard::Escape) {
       inFocus = false;
+      return true;
     }
   }
+  return false;
 }
 
 void Tutorial::signalRead() {
-  if (!quitButton.clickSignal.empty()) { concluded = true; }
-
+  if (quitButton.clickSignal) concluded = true;
 }
 
 void Tutorial::signalClear() {

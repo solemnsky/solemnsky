@@ -82,7 +82,14 @@ target_link_libraries(solemnsky_server
 
 ###### solemnsky_client
 add_executable(solemnsky_client
-        src/client/game/game.h
+        src/client/elements/clientshared.cpp
+        src/client/elements/clientshared.h
+
+        src/client/elements/elements.cpp
+        src/client/elements/elements.h
+
+        src/client/elements/settings.cpp
+        src/client/elements/settings.h
 
         src/client/game/gamecontroller.cpp
         src/client/game/gamecontroller.h
@@ -96,14 +103,11 @@ add_executable(solemnsky_client
         src/client/subsystem/render.cpp
         src/client/subsystem/render.h
 
-        src/client/ui/elements/button.cpp
-        src/client/ui/elements/button.h
+        src/client/ui/widgets/button.cpp
+        src/client/ui/widgets/button.h
 
-        src/client/ui/elements/splash.cpp
-        src/client/ui/elements/splash.h
-
-        src/client/ui/elements/textentry.cpp
-        src/client/ui/elements/textentry.h
+        src/client/ui/widgets/textentry.cpp
+        src/client/ui/widgets/textentry.h
 
         src/client/ui/control.cpp
         src/client/ui/control.h
@@ -117,7 +121,8 @@ add_executable(solemnsky_client
         src/client/ui/sheet.cpp
         src/client/ui/sheet.h
 
-        src/client/ui/signal.h
+        src/client/ui/splash.cpp
+        src/client/ui/splash.h
 
         src/client/util/resources.cpp
         src/client/util/resources.h
@@ -128,16 +133,11 @@ add_executable(solemnsky_client
         src/client/client.cpp
         src/client/client.h
 
-        src/client/clientstate.cpp
-        src/client/clientstate.h
-
         src/client/homepage.cpp
         src/client/homepage.h
 
         src/client/listingpage.cpp
         src/client/listingpage.h
-
-        src/client/page.h
 
         src/client/settingspage.cpp
         src/client/settingspage.h

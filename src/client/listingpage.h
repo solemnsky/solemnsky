@@ -4,15 +4,11 @@
 #ifndef SOLEMNSKY_LISTINGPAGE_H
 #define SOLEMNSKY_LISTINGPAGE_H
 
-#include "ui/control.h"
-#include "clientstate.h"
-#include "page.h"
+#include "elements/elements.h"
 
 class ListingPage : public Page {
-private:
-  ClientState *state;
 public:
-  ListingPage(ClientState *state);
+  ListingPage(ClientShared &state);
 
   /**
    * Page interface.
@@ -24,7 +20,7 @@ public:
    */
   void tick(float delta) override;
   void render(ui::Frame &f) override;
-  void handle(const sf::Event &event) override;
+  bool handle(const sf::Event &event) override;
 };
 
 #endif //SOLEMNSKY_LISTINGPAGE_H

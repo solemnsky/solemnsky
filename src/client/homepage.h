@@ -4,17 +4,14 @@
 #ifndef SOLEMNSKY_HOMEPAGE_H
 #define SOLEMNSKY_HOMEPAGE_H
 
-#include "ui/control.h"
-#include "clientstate.h"
-#include "page.h"
+#include "elements/elements.h"
 
 class HomePage : public Page {
 private:
   ui::Button tutorialButton;
-  ClientState *const state;
 
 public:
-  HomePage(ClientState *const state);
+  HomePage(ClientShared &state);
 
   /**
    * Page interface.

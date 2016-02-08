@@ -4,8 +4,8 @@
 using sky::pk::serverPacketPack;
 using sky::pk::clientPacketPack;
 
-MultiplayerClient::MultiplayerClient(ClientState *state) :
-    Game(state),
+MultiplayerClient::MultiplayerClient(ClientShared &state) :
+    Game(state, "multiplayer"),
     quitButton({100, 50}, "quit tutorial"),
     chatEntry({500, 500}, "chat"),
     telegraph(4243, clientPacketPack, serverPacketPack),
@@ -61,7 +61,7 @@ bool MultiplayerClient::handle(const sf::Event &event) {
 }
 
 void MultiplayerClient::signalRead() {
-  if (!quitButton.clickSignal.empty()) { concluded = true; }
+  if (quitButton.clickSignal) concluded = true;
 }
 
 void MultiplayerClient::signalClear() {

@@ -1,6 +1,7 @@
 #include "listingpage.h"
 
-ListingPage::ListingPage(ClientState *state) : state(state) { }
+ListingPage::ListingPage(ClientShared &state) :
+    Page(state) {}
 
 void ListingPage::reset() {
 
@@ -17,7 +18,7 @@ void ListingPage::render(ui::Frame &f) {
               "page where the user checks server listings / views stats."}, 40);
 }
 
-void ListingPage::handle(const sf::Event &event) {
-
+bool ListingPage::handle(const sf::Event &event) {
+  return false;
 }
 

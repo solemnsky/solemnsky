@@ -16,16 +16,15 @@ public:
   /**
    * Style settings.
    */
-  const struct Style {
+  struct Style {
     sf::Color bgColor{255, 255, 255}, // background
       descriptionColor{0, 0, 0}, // description text, when empty and unfocused
       textColor{0, 0, 0}; // text, when not empty
     float width{500}, height{50};
     float fontSize = 40;
 
-    Style() = default;
+    Style() { }
   } style;
-
 
   TextEntry() = delete;
   TextEntry(const sf::Vector2f &pos,
@@ -44,10 +43,16 @@ public:
   virtual void signalClear() override;
 
   /**
-   * UI state and signals.
+   * UI methods.
    */
   std::string contents;
   std::string description;
+  void focus();
+  void unFocus();
+
+  /**
+   * UI state and signals, read-only.
+   */
   bool focused;
 };
 

@@ -1,10 +1,7 @@
 #include "settingspage.h"
 
-/****
- * SettingsPage.
- */
-
-SettingsPage::SettingsPage(ClientState *state) : state(state) { }
+SettingsPage::SettingsPage(ClientShared &state) :
+    Page(state) { }
 
 void SettingsPage::reset() {
 
@@ -20,14 +17,14 @@ void SettingsPage::render(ui::Frame &f) {
              {"settings page", "page where the user modifies settings"}, 40);
 }
 
-void SettingsPage::handle(const sf::Event &event) {
-
+bool SettingsPage::handle(const sf::Event &event) {
+  return false;
 }
 
 void SettingsPage::signalRead() {
 }
 
 void SettingsPage::signalClear() {
-  completeSignal.clear();
+  completeSignal = false;
 }
 
