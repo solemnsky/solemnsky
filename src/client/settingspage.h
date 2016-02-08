@@ -4,19 +4,13 @@
 #ifndef SOLEMNSKY_SETTINGSPAGE_H
 #define SOLEMNSKY_SETTINGSPAGE_H
 
-#include "ui/control.h"
-#include "clientstate.h"
-
-#include "page.h"
+#include "elements/elements.h"
 
 class SettingsPage : public Page {
-private:
-  ClientState *state;
-
 public:
-  SettingsPage(ClientState *state);
+  SettingsPage(ClientShared &state);
 
-  ui::Signal<ui::None> completeSignal; // user has completed entering settings
+  bool completeSignal; // user has completed entering settings
 
   /**
    * Page interface.
@@ -28,7 +22,7 @@ public:
    */
   void tick(float delta) override;
   void render(ui::Frame &f) override;
-  void handle(const sf::Event &event) override;
+  bool handle(const sf::Event &event) override;
 
   void signalRead() override;
   void signalClear() override;

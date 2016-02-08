@@ -14,7 +14,7 @@ public:
   bool leftCtrl{false}, rightCtrl{false},
       upCtrl{false}, downCtrl{false};
 
-  void handle(const sf::Event &event);
+  bool handle(const sf::Event &event);
   void setState(sky::PlaneVital &state);
 };
 

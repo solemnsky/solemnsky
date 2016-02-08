@@ -1,3 +1,6 @@
+/**
+ * Top-level client, designed to connect the end-user to the Sky efficiently.
+ */
 #ifndef SOLEMNSKY_CLIENT_H
 #define SOLEMNSKY_CLIENT_H
 
@@ -5,54 +8,79 @@
 #include "homepage.h"
 #include "settingspage.h"
 #include "listingpage.h"
-#include "clientstate.h"
+
+class ClientUIState {
+private:
+  PageType focusedPage;
+  bool pageFocusing;
+
+  Clamped pageFocusAnim;
+  Clamped gameFocusAnim;
+public:
+  ClientUIState();
+
+  /**
+   * Accessing.
+   */
+  float getPageFocusFactor(); // what's the focus factor of the page?
+  float getGameFocusFactor(); // what's the factor of the game
+  bool getPageFocused(); // is the page focused?
+  bool getGameFocused(); // is the game focused?
+  PageType getPageType(); // what page are we focused on?
+
+  /**
+   * Triggering.
+   */
+  void focusGame();
+  void focusPage(PageType type);
+  void unfocusPage();
+
+  void tick(float delta);
+};
 
 /**
  * The main client app.
  * Its various components (the various pages and potential running game) are
- * neatly modularized.
+ * neatly modularized; see client/elements/elements.h. This is simply the glue
+ * that brings everything together.
  */
 class Client : public ui::Control {
 private:
-  /**
-   * A bunch of state, accessible from sub-windows. Includes some crucial UI
-   * state.
-   */
-  ClientState state;
+  ClientShared shared;
 
   /**
-   * Pages and a few other UI things. All of the interesting UI logic is in
-   * ClientState, where it is a available from other places.
+   * Pages.
    */
   HomePage homePage;
   ListingPage listingPage;
   SettingsPage settingsPage;
   ui::Button backButton;
 
-  Clamped focusAnim; // `elem` [0, 1], 1 is fully focused
-  Clamped gameFocusAnim;
-
+  /**
+   * UI state.
+   */
+  ClientUIState uiState;
   std::vector<std::pair<sf::FloatRect, PageType>> pageRects;
-  // updated on render, for handling mouse events
-
-  // visual values
-  const float unfocusedPageScale = 500.0f / 1600.0f,
-              pageFocusAnimSpeed = 3, // s^-1
-              gameFocusAnimSpeed = 4;
-
-  const sf::Vector2f homeOffset {
-    202.249, 479.047
-  };
-  const sf::Vector2f listingOffset {
-    897.751, 479.047
-  };
-  const sf::Vector2f settingsOffset {
-    550, 98.302
-  };
 
   /**
-   * Misc helpers.
+   * Style settings.
    */
+  const struct Style {
+    const float unfocusedPageScale = 500.0f / 1600.0f,
+        pageFocusAnimSpeed = 3, // s^-1
+        gameFocusAnimSpeed = 4;
+
+    const sf::Vector2f homeOffset{202.249, 479.047};
+    const sf::Vector2f listingOffset{897.751, 479.047};
+    const sf::Vector2f settingsOffset{550, 98.302};
+
+    Style() { }
+  } style;
+
+  /**
+   * Helpers.
+   */
+  void forAllPages(std::function<void(Page &)> f);
   Page &referencePage(const PageType type);
   void drawPage(ui::Frame &f, const PageType type,
                 const sf::Vector2f &offset, const std::string &name,
@@ -67,8 +95,15 @@ public:
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
 
-  virtual void signalRead() override;
-  virtual void signalClear() override;
+  void signalRead() override;
+  void signalClear() override;
+
+  /**
+   * UI methods.
+   */
+  void unfocusPage();
+  void focusPage(const PageType type);
+  void beginGame(std::unique_ptr<Game> &&game);
 };
 
 int main();

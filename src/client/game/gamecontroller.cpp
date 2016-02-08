@@ -4,31 +4,32 @@ void GameController::handleKey(bool &state, const sf::Event &event) {
   state = event.type == sf::Event::KeyPressed;
 }
 
-void GameController::handle(const sf::Event &event) {
+bool GameController::handle(const sf::Event &event) {
   if (event.type == sf::Event::KeyPressed ||
       event.type == sf::Event::KeyReleased) {
     switch (event.key.code) {
       case sf::Keyboard::J: {
         handleKey(leftCtrl, event);
-        break;
+        return true;
       }
       case sf::Keyboard::L: {
         handleKey(rightCtrl, event);
-        break;
+        return true;
       }
       case sf::Keyboard::I: {
         handleKey(upCtrl, event);
-        break;
+        return true;
       }
       case sf::Keyboard::K: {
         handleKey(downCtrl, event);
-        break;
+        return true;
       }
       default: {
         break;
       }
     }
   }
+  return false;
 }
 
 void GameController::setState(sky::PlaneVital &state) {

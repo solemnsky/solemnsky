@@ -44,7 +44,6 @@ public:
 
   virtual void attachState() { }
   // signal that appState is initialized
-  // this is meaningful == Control is top-level
 
   /**
    * Signals to the app loop.
@@ -75,7 +74,7 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl);
 }
 
 // elements
-#include "elements/button.h"
-#include "elements/textentry.h"
+#include "widgets/button.h"
+#include "widgets/textentry.h"
 
 #endif // SOLEMNSKY_CONTROL_H

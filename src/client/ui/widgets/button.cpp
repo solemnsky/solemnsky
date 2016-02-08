@@ -50,7 +50,7 @@ bool Button::handle(const sf::Event &event) {
     } else {
       inPreClick = false;
       if (isHot) {
-        clickSignal.push_back({});
+        clickSignal = true;
       }
     }
     return isHot;
@@ -59,7 +59,7 @@ bool Button::handle(const sf::Event &event) {
 }
 
 void Button::signalClear() {
-  clickSignal.clear();
+  clickSignal = false;
 }
 
 void Button::reset() {

@@ -1,6 +1,6 @@
 #include <cmath>
 #include <assert.h>
-#include "elements/splash.h"
+#include "splash.h"
 #include "util/methods.h"
 #include "util/types.h"
 #include "profiler.h"
@@ -16,7 +16,6 @@ namespace {
  * the window dimensions are less than 1600x900. I suppose I expect to come
  * back to this sometime in the future when everybody's using 4k displays...
  */
-
 sf::Event transformEvent(const sf::Transform trans,
                          const sf::Event event) {
   const bool mouseMoved(event.type == sf::Event::MouseMoved),

@@ -4,7 +4,7 @@
 #ifndef SOLEMNSKY_MULTICLIENT_H
 #define SOLEMNSKY_MULTICLIENT_H
 
-#include "game.h"
+#include "client/elements/elements.h"
 #include "telegraph/telegraph.h"
 #include "sky/protocol.h"
 
@@ -17,7 +17,7 @@ private:
   Cooldown pingCooldown;
 
 public:
-  MultiplayerClient(ClientState *state);
+  MultiplayerClient(ClientShared &state);
 
   /**
    * Control interface.
