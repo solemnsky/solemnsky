@@ -1,8 +1,7 @@
 #include "elements.h"
 
-Game::Game(ClientShared &state,
+Game::Game(ClientShared &shared,
            const std::string &name) :
-    inFocus(true),
+    shared(shared),
     concluded(false),
-    state(state),
     name(name) { }

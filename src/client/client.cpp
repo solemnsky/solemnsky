@@ -2,45 +2,55 @@
 #include "util/methods.h"
 
 /**
- * ClientUIState.
+ * ClientUiState.
  */
 
-ClientUIState::ClientUIState() :
+ClientUiState::ClientUiState() :
     focusedPage(PageType::Home),
+    gameFocusing(false),
     pageFocusing(false),
-    pageFocusAnim(0, 1, 0),
-    gameFocusAnim(0, 1, 0) { }
+    pageFocusFactor(0, 1, 0),
+    gameFocusFactor(0, 1, 0) { }
 
-float ClientUIState::getPageFocusFactor() { return pageFocusAnim; }
+bool ClientUiState::pageFocused() { return pageFocusFactor == 1; }
 
-float ClientUIState::getGameFocusFactor() { return gameFocusAnim; }
+bool ClientUiState::gameFocused() { return gameFocusFactor == 1; }
 
-bool ClientUIState::getPageFocused() { return pageFocusAnim == 1; }
-
-bool ClientUIState::getGameFocused() { return gameFocusAnim == 1; }
-
-PageType ClientUIState::getPageType() { return focusedPage; }
-
-void ClientUIState::focusGame() {
-
+bool ClientUiState::menuFocused() {
+  return pageFocusFactor == 0 &&
+         gameFocusFactor == 0;
 }
 
-void ClientUIState::focusPage(PageType type) {
-
+void ClientUiState::focusGame() {
+  unfocusPage();
+  gameFocusing = true;
 }
 
-void ClientUIState::unfocusPage() {
-
+void ClientUiState::unfocusGame() {
+  gameFocusing = false;
 }
 
-void ClientUIState::tick(float delta) {
+void ClientUiState::focusPage(PageType page) {
+  if (pageFocusFactor != 0) {
+    pageFocusing = false;
+  } else {
+    pageFocusing = true;
+    focusedPage = page;
+  }
+}
 
+void ClientUiState::unfocusPage() {
+  pageFocusing = false;
+}
+
+void ClientUiState::tick(float delta) {
+  pageFocusFactor += pageFocusAnimSpeed * delta * (pageFocusing ? 1 : -1);
+  gameFocusFactor += gameFocusAnimSpeed * delta * (gameFocusing ? 1 : -1);
 }
 
 /**
  * Client.
  */
-
 ui::Button::Style backButtonStyle() {
   ui::Button::Style style;
   style.fontSize = 50;
@@ -48,7 +58,7 @@ ui::Button::Style backButtonStyle() {
 }
 
 Client::Client() :
-shared(this),
+    shared(this),
     homePage(shared),
     listingPage(shared),
     settingsPage(shared),
@@ -74,16 +84,18 @@ Page &Client::referencePage(const PageType type) {
 void Client::drawPage(ui::Frame &f, const PageType type,
                       const sf::Vector2f &offset, const std::string &name,
                       ui::Control &page) {
-  float alpha, scale, offsetAmnt, titleAlpha;
+  const float focusFactor = uiState.pageFocusFactor;
 
-  if (type == shared.focusedPage) {
+  float alpha, scale, offsetAmnt, titleAlpha;
+  if (type == uiState.focusedPage) {
     alpha = 1;
-    scale = linearTween(unfocusedPageScale, 1, focusAnim);
-    offsetAmnt = linearTween(1, 0, focusAnim);
-    titleAlpha = linearTween(1, 0, focusAnim);
+    scale = linearTween(style.unfocusedPageScale, 1,
+                        uiState.pageFocusFactor);
+    offsetAmnt = linearTween(1, 0, focusFactor);
+    titleAlpha = linearTween(1, 0, focusFactor);
   } else {
-    alpha = linearTween(1, 0, focusAnim);
-    scale = unfocusedPageScale;
+    alpha = linearTween(1, 0, focusFactor);
+    scale = style.unfocusedPageScale;
     offsetAmnt = 1;
     titleAlpha = 1;
   }
@@ -115,13 +127,13 @@ void Client::tick(float delta) {
 
   if (shared.game) {
     shared.game->tick(delta);
-    if (shared.game->concluded) shared.game = nullptr;
+    if (shared.game->concluded) {
+      shared.game = nullptr;
+      uiState.unfocusGame();
+    }
   }
 
-  focusAnim += delta * pageFocusAnimSpeed * (pageFocused ? 1 : -1);
-  gameFocusAnim += delta * gameFocusAnimSpeed * (shared.gameInFocus() ? 1 : -1);
-
-  if (focusAnim == 0) backButton.reset();
+  uiState.tick(delta);
 
   forAllPages([&delta](Page &page) { page.tick(delta); });
   backButton.tick(delta);
@@ -134,73 +146,79 @@ void Client::render(ui::Frame &f) {
     gameUnderneath = true;
   }
 
-  if (gameFocusAnim != 1) {
+  const float gameFocusFactor = uiState.gameFocusFactor,
+      pageFocusFactor = uiState.pageFocusFactor;
+  if (!uiState.gameFocused()) {
     if (!gameUnderneath) {
       f.drawSprite(textureOf(Res::MenuBackground), {0, 0}, {0, 0, 1600, 900});
     } else {
       f.drawRect(
           {0, 0, 1600, 900},
           sf::Color(0, 0, 0,
-                    (sf::Uint8) (linearTween(1, 0, gameFocusAnim) * 100)));
+                    (sf::Uint8) (linearTween(1, 0, gameFocusFactor) * 100)));
     }
 
     f.withAlpha(
-        linearTween(1, 0, gameFocusAnim) *
-        (gameUnderneath ? linearTween(0.5, 1, focusAnim) : 1), [&]() {
+        linearTween(1, 0, gameFocusFactor) *
+        (gameUnderneath ? linearTween(0.5, 1, pageFocusFactor) : 1), [&]() {
       pageRects = {};
-      drawPage(f, PageType::Home, homeOffset, "home",
-               homePage);
-      drawPage(f, PageType::Settings, listingOffset, "server listing",
-               listingPage);
-      drawPage(f, PageType::Listing, settingsOffset, "settings",
-               settingsPage);
-      f.withAlpha(focusAnim, [&]() { backButton.render(f); });
+      drawPage(
+          f, PageType::Home, style.homeOffset,
+          "home", homePage);
+      drawPage(
+          f, PageType::Settings, style.listingOffset,
+          "server listing", listingPage);
+      drawPage(
+          f, PageType::Listing,
+          style.settingsOffset, "settings", settingsPage);
+      f.withAlpha(pageFocusFactor, [&]() { backButton.render(f); });
     });
   }
 }
 
 bool Client::handle(const sf::Event &event) {
-  if (shared.gameInFocus()) {
+  if (uiState.gameFocused() and shared.game) {
+    // first priority: if in-game, events are handled by the game
     return shared.game->handle(event);
-  } else {
-    if (event.type == sf::Event::KeyPressed) {
-      if (event.key.code == sf::Keyboard::Escape) {
+  }
 
-        // escape key, the thing you press when you're totally lost
-        // let's make it as helpful as possible, shall we?
-        if (pageFocused) {
-          pageFocused = false;
-          referencePage(focusedPage).onLooseFocus();
-        } else {
-          if (shared.game) shared.game->inFocus = true;
-          referencePage(focusedPage).onLooseFocus();
-        }
-        return true;
-      }
+  if (event.type == sf::Event::KeyPressed
+      and event.key.code == sf::Keyboard::Escape) {
+    // second priority: escape key, the thing you press when you're lost
+    if (uiState.pageFocused()) {
+      referencePage(uiState.focusedPage).onLooseFocus();
+      uiState.unfocusPage();
+    } else if (shared.game) {
+      shared.game->onFocus();
+      uiState.focusGame();
     }
+    return true;
+  }
 
-    if (focusAnim > 0) if (backButton.handle(event)) return true;
+  if (uiState.pageFocused()) {
+    // we're focused on a page
 
-    if (focusAnim == 1) {
-      // we're totally focused on a certain control
-      referencePage(focusedPage).handle(event);
-    } else {
-      // we're still in the control menu
-      if (event.type == sf::Event::MouseButtonReleased) {
-        const sf::Vector2f mouseClick =
-            {(float) event.mouseButton.x, (float) event.mouseButton.y};
+    if (backButton.handle(event)) {
+      referencePage(uiState.focusedPage).onLooseFocus();
+      backButton.reset();
+      return true;
+    }
+    if (referencePage(uiState.focusedPage).handle(event)) return true;
+  }
 
-        pageFocused = false;
-        for (auto &rect : pageRects) {
-          if (rect.first.contains(mouseClick)) {
-            pageFocused = true;
-            focusedPage = rect.second;
-          }
-        }
-      }
+  if (uiState.menuFocused()) {
+    // we're in the menu
+
+    if (event.type == sf::Event::MouseButtonReleased) {
+      const sf::Vector2f mouseClick =
+          {(float) event.mouseButton.x, (float) event.mouseButton.y};
+
+      for (auto &rect : pageRects)
+        if (rect.first.contains(mouseClick)) uiState.focusPage(rect.second);
     }
   }
-  return true;
+
+  return false;
 }
 
 void Client::signalRead() {
@@ -224,21 +242,31 @@ void Client::signalClear() {
   backButton.signalClear();
 }
 
+void Client::beginGame(std::unique_ptr<Game> &&game) {
+  uiState.focusGame();
+  shared.gameFocused = true;
+  shared.game = std::move(game);
+}
+
+void Client::focusGame() {
+  uiState.focusGame();
+  shared.gameFocused = true;
+}
+
+void Client::unfocusGame() {
+  uiState.unfocusGame();
+  shared.gameFocused = false;
+}
+
 
 void Client::unfocusPage() {
-  pageFocused = false;
-  referencePage(focusedPage).onLooseFocus();
+  referencePage(uiState.focusedPage).onLooseFocus();
+  uiState.unfocusPage();
 }
 
 void Client::focusPage(const PageType type) {
-  focusedPage = type;
-  pageFocusing = true;
-}
-
-void Client::beginGame(std::unique_ptr<Game> &&game) {
-  unfocusPage();
-  shared.game = std::move(game);
-  shared.game->inFocus = true;
+  referencePage(type).onFocus();
+  uiState.focusPage(type);
 }
 
 int main() {

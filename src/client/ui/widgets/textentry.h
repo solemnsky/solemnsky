@@ -12,16 +12,22 @@ namespace ui {
 
 class TextEntry : public Control {
 private:
+  Clamped heat;
+
+  sf::FloatRect getBody();
+
 public:
   /**
    * Style settings.
    */
   struct Style {
-    sf::Color bgColor{255, 255, 255}, // background
-      descriptionColor{0, 0, 0}, // description text, when empty and unfocused
-      textColor{0, 0, 0}; // text, when not empty
-    float width{500}, height{50};
-    float fontSize = 40;
+    sf::Color inactiveBgColor{142, 183, 191}, // background when inactive
+        hotBgColor{162, 203, 211}, // background when active (hot)
+        focusedBgColor{255, 255, 255},
+        descriptionColor{20, 20, 20}, // description text
+        textColor{0, 0, 0}; // text
+    sf::Vector2f dimensions{500, 50};
+    int fontSize = 40;
 
     Style() { }
   } style;
@@ -53,7 +59,8 @@ public:
   /**
    * UI state and signals, read-only.
    */
-  bool focused;
+  bool isHot;
+  bool isFocused;
 };
 
 }

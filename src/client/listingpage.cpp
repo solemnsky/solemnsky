@@ -3,7 +3,11 @@
 ListingPage::ListingPage(ClientShared &state) :
     Page(state) {}
 
-void ListingPage::reset() {
+void ListingPage::onLooseFocus() {
+
+}
+
+void ListingPage::onFocus() {
 
 }
 

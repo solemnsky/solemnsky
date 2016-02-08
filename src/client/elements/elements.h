@@ -20,10 +20,10 @@
  */
 class Page : public ui::Control {
 protected:
-  ClientShared &state;
+  ClientShared &shared;
 
 public:
-  Page(ClientShared &state) : state(state) { }
+  Page(ClientShared &state) : shared(state) { }
 
   virtual void attachClientState() { } // when client state is initialized
   // (this is necessary because of the Control::attachState() thing)
@@ -39,12 +39,11 @@ public:
  */
 class Game : public ui::Control {
 protected:
-  ClientShared &state;
+  ClientShared &shared;
 
 public:
-  Game(ClientShared &state, const std::string &name);
+  Game(ClientShared &shared, const std::string &name);
 
-  bool inFocus;
   bool concluded;
 
   virtual void onLooseFocus() = 0;

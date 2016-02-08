@@ -14,10 +14,8 @@ namespace ui {
  */
 class Button : public Control {
 private:
-  Clamped hotAnimState;
+  Clamped heat;
   bool inPreClick{false};
-
-  inline float getHeat() { return hotAnimState / style.hotAnimLength; }
 
   sf::FloatRect getBody();
 
@@ -31,9 +29,9 @@ public:
         clickedColor{63, 208, 234},
         textColor{255, 255, 255};
 
-    float width{200}, height{100};
+    sf::Vector2f dimensions{200, 100};
 
-    float hotAnimLength = 0.1;
+    float heatRate = 10;
     int fontSize = 40;
     float alpha = 1;
 

@@ -3,7 +3,11 @@
 SettingsPage::SettingsPage(ClientShared &state) :
     Page(state) { }
 
-void SettingsPage::reset() {
+void SettingsPage::onLooseFocus() {
+
+}
+
+void SettingsPage::onFocus() {
 
 }
 

@@ -7,9 +7,11 @@ HomePage::HomePage(ClientShared &clientState) :
     Page(clientState),
     tutorialButton({100, 50}, "start tutorial") { }
 
-void HomePage::reset() {
+void HomePage::onLooseFocus() {
   tutorialButton.reset();
 }
+
+void HomePage::onFocus() { }
 
 void HomePage::tick(float delta) {
   tutorialButton.tick(delta);
@@ -18,16 +20,16 @@ void HomePage::tick(float delta) {
 void HomePage::render(ui::Frame &f) {
   f.drawSprite(textureOf(Res::Title), {0, 0}, {0, 0, 1600, 900});
   const float cycleTime =
-      ui::SamplerValue<float>(state.appState->profiler->logicTime).mean +
-      ui::SamplerValue<float>(state.appState->profiler->renderTime).mean;
+      ui::SamplerValue<float>(shared.appState->profiler->logicTime).mean +
+      ui::SamplerValue<float>(shared.appState->profiler->renderTime).mean;
 
   const float actualCycleTime =
-      ui::SamplerValue<float>(state.appState->profiler->cycleTime).mean;
+      ui::SamplerValue<float>(shared.appState->profiler->cycleTime).mean;
 
   f.drawText({800, 600},
              {"home page",
               "page where the user receives the comforts of home",
-              "uptime: " + std::to_string((int) (state.uptime * 1000)) + "ms",
+              "uptime: " + std::to_string((int) (shared.uptime * 1000)) + "ms",
               "max FPS: " + std::to_string((int) std::round(1 / cycleTime)),
               "actual FPS: " +
               std::to_string((int) std::round(1 / actualCycleTime))
@@ -42,7 +44,7 @@ bool HomePage::handle(const sf::Event &event) {
 
 void HomePage::signalRead() {
   if (tutorialButton.clickSignal)
-    state.enterGame(std::make_unique<MultiplayerClient>(state));
+    shared.beginGame(std::make_unique<MultiplayerClient>(shared));
 }
 
 void HomePage::signalClear() {
