@@ -21,6 +21,7 @@ struct Player {
 };
 
 class Arena {
+ public:
   std::map<PID, Player> players;
   std::string motd; // the arena MotD
 };

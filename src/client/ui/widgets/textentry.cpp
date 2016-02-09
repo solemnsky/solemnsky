@@ -41,7 +41,7 @@ void TextEntry::render(Frame &f) {
     f.drawRect(
         {style.sidePadding + textDims.x - scroll, 0},
         {style.sidePadding + textDims.x - scroll +
-         style.cursorWidth, style.dimensions.y},
+            style.cursorWidth, style.dimensions.y},
         style.textColor);
 
     // TODO: clipping out of bounds text
@@ -63,7 +63,11 @@ bool TextEntry::handle(const sf::Event &event) {
     const sf::Vector2f pt(event.mouseButton.x, event.mouseButton.y);
 
     bool contains = body.contains(pt);
-    if (clicked) isFocused = contains;
+    if (clicked) {
+      if (contains) focus();
+      else unfocus();
+    }
+
     return contains;
   }
   if (!isFocused) {
