@@ -14,6 +14,7 @@ class TextEntry : public Control {
 private:
   Clamped heat;
 
+  float scroll;
   int cursor;
   sf::FloatRect getBody();
 
@@ -28,7 +29,8 @@ public:
         descriptionColor{20, 20, 20}, // description text
         textColor{0, 0, 0}; // text
     sf::Vector2f dimensions{500, 50};
-    float leftPadding = 10;
+    float cursorWidth = 5;
+    float sidePadding = 10;
     int fontSize = 40;
     float heatRate = 10;
 
@@ -56,6 +58,7 @@ public:
    */
   std::string contents;
   std::string description;
+  void reset(); // reset animations
   void focus();
   void unFocus();
 

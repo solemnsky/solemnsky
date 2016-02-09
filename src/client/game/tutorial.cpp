@@ -17,7 +17,7 @@ Tutorial::Tutorial(ClientShared &state) :
 
 void Tutorial::tick(float delta) {
   quitButton.tick(delta);
-  if (shared.game)
+  if (shared.ui.gameFocused())
     sky.tick(delta); // if this were multiplayer of course
   // we wouldn't have this liberty
 }
