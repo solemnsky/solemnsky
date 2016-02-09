@@ -7,6 +7,7 @@
 
 #include "util/types.h"
 #include "telegraph/pack.h"
+#include "arena.h"
 
 namespace sky {
 namespace prot {
@@ -15,8 +16,12 @@ namespace prot {
  */
 struct ClientPacket {
   enum class Type {
-    Ping, // request ping
+    Ping,
     MotD, // request MotD
+
+    ReqConnection, // request a connection, supplying a preferred nickname
+    ReqNickChange, // request to change the nickname, supplying it
+
     Chat // try to send a chat message
   };
 
@@ -34,6 +39,17 @@ struct ClientPing : public ClientPacket {
   ClientPing() : ClientPacket(ClientPacket::Type::Ping) { }
 };
 
+struct ClientReqConnection : public ClientPacket {
+  ClientReqConnection(std::string &&nick) :
+      ClientPacket(ClientPacket::Type::ReqConnection, nick) { }
+};
+
+struct ClientReqNickChange : public ClientPacket {
+  ClientReqNickChange(std::string &&nick) :
+      ClientPacket(ClientPacket::Type::ReqNickChange, nick) { }
+};
+
+
 struct ClientMotD : public ClientPacket {
   ClientMotD() : ClientPacket(ClientPacket::Type::MotD) { }
 };
@@ -48,7 +64,9 @@ struct ClientChat : public ClientPacket {
  */
 struct ServerPacket {
   enum class Type {
-    Pong, // respond to a ping
+    Pong,
+    AssignNick, // give a client a nickname
+    AcceptConnection, // accept a connection
     MotD, // distribute the MotD
     Message // distribute message for all clients to print to screen
   };
@@ -61,10 +79,22 @@ struct ServerPacket {
 
   Type type;
   optional<std::string> stringData;
+
+  optional<Arena> arena; // for AcceptConnection
+  optional<PID> pid; // for AcceptConnection
 };
 
 struct ServerPong : public ServerPacket {
   ServerPong() : ServerPacket(ServerPacket::Type::Pong) { }
+};
+
+struct ServerAssignNick : public ServerPacket {
+  ServerAssignNick(std::string &&nick) :
+      ServerPacket(ServerPacket::Type::AssignNick, nick) { }
+};
+
+struct ServerAcceptConnection : public ServerPacket {
+  ServerAcceptConnection()
 };
 
 struct ServerMotD : public ServerPacket {

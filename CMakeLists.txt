@@ -41,8 +41,6 @@ add_library(solemnsky STATIC
         src/sky/sky.cpp
         src/sky/sky.h
 
-        src/sky/subsystem.h
-
         src/telegraph/pack.cpp
         src/telegraph/pack.h
 

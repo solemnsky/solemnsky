@@ -4,7 +4,7 @@
 #ifndef SOLEMNSKY_DELTACOM_H
 #define SOLEMNSKY_DELTACOM_H
 
-#include "sky/subsystem.h"
+#include "sky/sky.h"
 #include "sky/delta.h"
 
 namespace sky {

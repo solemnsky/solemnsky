@@ -12,8 +12,7 @@ struct Settings {
   bool readFromFile(std::string filepath);
   bool writeToFile(std::string filepath);
 
-
-  std::string playerName;
+  std::string preferredNickname;
 };
 
 

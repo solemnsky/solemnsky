@@ -8,6 +8,7 @@
 #include "telegraph/telegraph.h"
 #include "sky/protocol.h"
 #include "sky/sky.h"
+#include "sky/arena.h"
 #include "client/subsystem/render.h"
 
 class MultiplayerClient : public Game {
@@ -19,11 +20,32 @@ private:
   tg::Telegraph<sky::prot::ClientPacket, sky::prot::ServerPacket> telegraph;
   Cooldown pingCooldown;
 
+  /**
+   * Target server.
+   */
+  const sf::IpAddress targetServer;
+  const unsigned short targetPort;
+  
+  /**
+   * Helpers.
+   */
+  void handleGamePacket(tg::Reception<sky::prot::ServerPacket> &&reception);
+
+  /**
+   * Multiplayer protocol state.
+   */
+  bool triedConnection; // have we sent a verbs requesting connection yet?
+  bool connected;
+
+  sky::PID myPID;
+  sky::Arena arena;
   sky::Sky sky;
   sky::Render renderSystem;
 
 public:
-  MultiplayerClient(ClientShared &state);
+  MultiplayerClient(ClientShared &state,
+                    const sf::IpAddress &targetServer,
+                    const unsigned short targetPort);
 
   /**
    * Game interface.
