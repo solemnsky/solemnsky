@@ -5,12 +5,16 @@ using sky::pk::serverPacketPack;
 using sky::pk::clientPacketPack;
 
 MultiplayerClient::MultiplayerClient(ClientShared &state) :
-    sky({}),
-    Game(state, "multiplayer"),
     quitButton({100, 50}, "quit tutorial"),
-    chatEntry({500, 500}, "Type CHAT here!"),
+    chatEntry({20, 850}, "[enter] to chat"),
+    messageLog({20, 840}),
+    sky({}),
+    renderSystem(&sky),
+    Game(state, "multiplayer"),
     telegraph(4243, clientPacketPack, serverPacketPack),
-    pingCooldown(1) { }
+    pingCooldown(1) {
+  sky.linkSystem(&renderSystem);
+}
 
 void MultiplayerClient::onLooseFocus() {
   quitButton.reset();
@@ -22,8 +26,11 @@ void MultiplayerClient::onFocus() {
 }
 
 void MultiplayerClient::tick(float delta) {
+  sky.tick(delta);
+
   quitButton.tick(delta);
   chatEntry.tick(delta);
+  messageLog.tick(delta);
 
   using namespace sky::prot;
 
@@ -41,6 +48,7 @@ void MultiplayerClient::tick(float delta) {
       case ServerPacket::Type::Message: {
         appLog(LogType::Info, "received message from server: " +
                               *reception.value.stringData);
+        messageLog.pushEntry(std::string(*reception.value.stringData));
       }
     }
   });
@@ -53,18 +61,22 @@ void MultiplayerClient::tick(float delta) {
 }
 
 void MultiplayerClient::render(ui::Frame &f) {
+  renderSystem.render(f, {});
+
   quitButton.render(f);
   chatEntry.render(f);
+  messageLog.render(f);
 }
 
 bool MultiplayerClient::handle(const sf::Event &event) {
   if (chatEntry.handle(event)) return true;
   if (quitButton.handle(event)) return true;
   if (event.type == sf::Event::EventType::KeyPressed) {
-    if (event.key.code == sf::Keyboard::Return)
-      return true;
+    if (event.key.code == sf::Keyboard::Return) {
+      chatEntry.focus();
+    }
   }
-  return false;
+  return messageLog.handle(event);
 }
 
 void MultiplayerClient::signalRead() {

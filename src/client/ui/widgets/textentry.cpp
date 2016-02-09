@@ -40,9 +40,11 @@ void TextEntry::render(Frame &f) {
 
     f.drawRect(
         {style.sidePadding + textDims.x - scroll, 0},
-        {style.sidePadding + textDims.x +
+        {style.sidePadding + textDims.x - scroll +
          style.cursorWidth, style.dimensions.y},
         style.textColor);
+
+    // TODO: clipping out of bounds text
 
     f.popTransform();
   } else {
@@ -81,12 +83,12 @@ bool TextEntry::handle(const sf::Event &event) {
         case sf::Keyboard::Return: {
           isFocused = false;
           inputSignal.emplace(std::move(contents));
+          cursor = 0;
           return true;
         }
         case sf::Keyboard::BackSpace: {
           if (!contents.empty() and cursor != 0) {
             contents.erase((size_t) cursor - 1, 1);
-            appLog(LogType::Debug, contents);
             cursor--;
           }
           return true;
@@ -105,7 +107,7 @@ bool TextEntry::handle(const sf::Event &event) {
     }
 
     if (event.type == sf::Event::TextEntered) {
-      if (event.text.unicode == 8) return true; // backspace character
+      if (event.text.unicode < 32) return true; // non-printable
       contents.insert((size_t) cursor, {(char) event.text.unicode});
       cursor++;
       return true;
@@ -128,7 +130,7 @@ void TextEntry::focus() {
   isFocused = true;
 }
 
-void TextEntry::unFocus() { }
+void TextEntry::unfocus() { }
 
 }
 

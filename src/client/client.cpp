@@ -130,20 +130,19 @@ void Client::render(ui::Frame &f) {
 
 bool Client::handle(const sf::Event &event) {
   if (shared.ui.gameFocused() and shared.game) {
-    // first priority: if in-game, events are handled by the game
+    // events handled by the game
     return shared.game->handle(event);
   }
 
   if (shared.ui.pageFocused()) {
-    // we're focused on a page
-
+    // events handled by the back button / focused page
     if (backButton.handle(event)) return true;
     if (referencePage(shared.ui.focusedPage).handle(event)) return true;
   }
 
   if (event.type == sf::Event::KeyPressed
       and event.key.code == sf::Keyboard::Escape) {
-    // second priority: escape key, the thing you press when you're lost
+    // the escape key, unfocuses pages / focuses the game
     if (shared.ui.pageFocused()) {
       referencePage(shared.ui.focusedPage).onLooseFocus();
       shared.ui.unfocusPage();
@@ -155,14 +154,13 @@ bool Client::handle(const sf::Event &event) {
   }
 
   if (shared.ui.menuFocused()) {
-    // we're in the menu
-
+    // pages are clicked in the menu
     if (event.type == sf::Event::MouseButtonReleased) {
       const sf::Vector2f mouseClick =
           {(float) event.mouseButton.x, (float) event.mouseButton.y};
 
       for (auto &rect : pageRects)
-        if (rect.first.contains(mouseClick)) shared.ui.focusPage(rect.second);
+        if (rect.first.contains(mouseClick)) focusPage(rect.second);
     }
   }
 
