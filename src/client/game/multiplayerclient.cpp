@@ -13,7 +13,8 @@ MultiplayerClient::MultiplayerClient(ClientShared &state) :
     pingCooldown(1) { }
 
 void MultiplayerClient::onLooseFocus() {
-
+  quitButton.reset();
+  chatEntry.reset();
 }
 
 void MultiplayerClient::onFocus() {

@@ -11,12 +11,45 @@
 #include "client/ui/control.h"
 #include "settings.h"
 
+// recursive relationship with Client: it instantiates ClientShared
+class Client;
+
 enum class PageType {
   Home, Listing, Settings
 };
 
-// we send callbacks to the Client, but it instantiates ClientShared
-class Client;
+class ClientUiState {
+private:
+  const float pageFocusAnimSpeed = 3, // s^-1
+      gameFocusAnimSpeed = 4;
+
+  /**
+   * Modifying
+   */
+  friend class Client;
+
+  void focusGame();
+  void unfocusGame();
+  void focusPage(PageType page);
+  void unfocusPage();
+
+  void tick(float delta);
+
+public:
+  ClientUiState();
+
+  PageType focusedPage;
+  bool pageFocusing;
+  bool gameFocusing;
+
+  Clamped pageFocusFactor;
+  Clamped gameFocusFactor;
+
+  bool pageFocused() const;
+  bool menuFocused() const;
+  bool gameFocused() const;
+
+};
 
 struct ClientShared {
 private:
@@ -35,8 +68,8 @@ public:
 
   /**
    * UI state, read-only by elements.
-   */
-  bool gameFocused;
+  */
+  ClientUiState ui;
 
   /**
    * UI methods, propogating through the whole Client.

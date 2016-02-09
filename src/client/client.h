@@ -9,35 +9,6 @@
 #include "settingspage.h"
 #include "listingpage.h"
 
-class ClientUiState {
-private:
-  const float pageFocusAnimSpeed = 3, // s^-1
-      gameFocusAnimSpeed = 4;
-public:
-  ClientUiState();
-
-  PageType focusedPage;
-  bool pageFocusing;
-  bool gameFocusing;
-
-  Clamped pageFocusFactor;
-  Clamped gameFocusFactor;
-
-  bool pageFocused();
-  bool menuFocused();
-  bool gameFocused();
-
-  /**
-   * Triggering.
-   */
-  void focusGame();
-  void unfocusGame();
-  void focusPage(PageType page);
-  void unfocusPage();
-
-  void tick(float delta);
-};
-
 /**
  * The main client app.
  * Its various components (the various pages and potential running game) are
@@ -56,10 +27,6 @@ private:
   SettingsPage settingsPage;
   ui::Button backButton;
 
-  /**
-   * UI state.
-   */
-  ClientUiState uiState;
   std::vector<std::pair<sf::FloatRect, PageType>> pageRects;
 
   /**
