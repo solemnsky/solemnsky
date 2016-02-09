@@ -37,18 +37,20 @@ bool Button::handle(const sf::Event &event) {
   if (event.type == sf::Event::MouseMoved) {
     const sf::Vector2f pt(event.mouseMove.x, event.mouseMove.y);
     isHot = body.contains(pt);
+    return true;
   }
-  if (optional<bool> buttonPressed = getMouseButtonAction(event)) {
+  if (event.type == sf::Event::MouseButtonPressed or
+      event.type == sf::Event::MouseButtonReleased) {
+    bool clicking = event.type == sf::Event::MouseButtonPressed;
     const sf::Vector2f pt(event.mouseButton.x, event.mouseButton.y);
+
     isHot = body.contains(pt);
 
-    if (*buttonPressed) {
+    if (clicking) {
       inPreClick = isHot;
     } else {
       inPreClick = false;
-      if (isHot) {
-        clickSignal = true;
-      }
+      if (isHot) clickSignal = true;
     }
     return isHot;
   }
