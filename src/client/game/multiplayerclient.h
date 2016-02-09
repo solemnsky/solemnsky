@@ -8,16 +8,19 @@
 #include "telegraph/telegraph.h"
 #include "sky/protocol.h"
 #include "sky/sky.h"
+#include "client/subsystem/render.h"
 
 class MultiplayerClient : public Game {
 private:
   ui::Button quitButton;
   ui::TextEntry chatEntry;
+  ui::TextLog messageLog;
 
   tg::Telegraph<sky::prot::ClientPacket, sky::prot::ServerPacket> telegraph;
   Cooldown pingCooldown;
 
   sky::Sky sky;
+  sky::Render renderSystem;
 
 public:
   MultiplayerClient(ClientShared &state);

@@ -26,12 +26,12 @@ public:
     sf::Color inactiveBgColor{142, 183, 191}, // background when inactive
         hotBgColor{162, 203, 211}, // background when active (hot)
         focusedBgColor{255, 255, 255},
-        descriptionColor{20, 20, 20}, // description text
+        descriptionColor{100, 100, 100}, // description text
         textColor{0, 0, 0}; // text
-    sf::Vector2f dimensions{500, 50};
+    sf::Vector2f dimensions{500, 40};
     float cursorWidth = 5;
     float sidePadding = 10;
-    int fontSize = 40;
+    int fontSize = 30;
     float heatRate = 10;
 
     Style() { }
@@ -60,7 +60,7 @@ public:
   std::string description;
   void reset(); // reset animations
   void focus();
-  void unFocus();
+  void unfocus();
 
   /**
    * UI state and signals, read-only.

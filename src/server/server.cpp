@@ -36,6 +36,10 @@ int main() {
         case ClientPacket::Type::Chat: {
           appLog(LogType::Info, "chat packet received.");
           appLog(LogType::Info, ">>" + *reception.value.stringData);
+          telegraph.transmit(
+              ServerMessage(std::string(*reception.value.stringData)),
+              reception.address, 4243
+          );
           break;
         }
       }
