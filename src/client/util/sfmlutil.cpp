@@ -1,13 +1,5 @@
 #include "sfmlutil.h"
 
-optional<bool> getMouseButtonAction(sf::Event event) {
-  if (event.type == sf::Event::MouseButtonReleased)
-    return {false};
-  if (event.type == sf::Event::MouseButtonPressed)
-    return {true};
-  return {};
-}
-
 inline sf::Uint8 mix(const sf::Uint8 x1,
                      const sf::Uint8 x2,
                      const float degree) {

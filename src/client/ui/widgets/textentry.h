@@ -14,6 +14,7 @@ class TextEntry : public Control {
 private:
   Clamped heat;
 
+  int cursor;
   sf::FloatRect getBody();
 
 public:
@@ -27,7 +28,9 @@ public:
         descriptionColor{20, 20, 20}, // description text
         textColor{0, 0, 0}; // text
     sf::Vector2f dimensions{500, 50};
+    float leftPadding = 10;
     int fontSize = 40;
+    float heatRate = 10;
 
     Style() { }
   } style;
@@ -61,6 +64,7 @@ public:
    */
   bool isHot;
   bool isFocused;
+  optional<std::string> inputSignal;
 };
 
 }

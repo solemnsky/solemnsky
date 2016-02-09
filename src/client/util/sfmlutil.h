@@ -10,12 +10,6 @@
 #include "util/types.h"
 
 /****
- * Extract useful information from sf::Events.
- */
-
-optional<bool> getMouseButtonAction(sf::Event event);
-
-/****
  * Do stuff with colors.
  */
 sf::Color mixColors(

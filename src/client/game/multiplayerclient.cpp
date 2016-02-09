@@ -8,7 +8,7 @@ MultiplayerClient::MultiplayerClient(ClientShared &state) :
     sky({}),
     Game(state, "multiplayer"),
     quitButton({100, 50}, "quit tutorial"),
-    chatEntry({500, 500}, "chat"),
+    chatEntry({500, 500}, "Type CHAT here!"),
     telegraph(4243, clientPacketPack, serverPacketPack),
     pingCooldown(1) { }
 
@@ -61,19 +61,21 @@ bool MultiplayerClient::handle(const sf::Event &event) {
   if (quitButton.handle(event)) return true;
   if (event.type == sf::Event::EventType::KeyPressed) {
     if (event.key.code == sf::Keyboard::Return)
-      telegraph.transmit(
-          sky::prot::ClientChat(std::string("hey there server!")),
-          "localhost", 4242);
-    return true;
+      return true;
   }
   return false;
 }
 
 void MultiplayerClient::signalRead() {
   if (quitButton.clickSignal) concluded = true;
+  if (chatEntry.inputSignal)
+    telegraph.transmit(
+        sky::prot::ClientChat(std::string(*chatEntry.inputSignal)),
+        "localhost", 4242);
 }
 
 void MultiplayerClient::signalClear() {
   quitButton.signalClear();
+  chatEntry.signalClear();
 }
 
