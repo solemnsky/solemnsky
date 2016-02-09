@@ -4,13 +4,18 @@
 using sky::pk::serverPacketPack;
 using sky::pk::clientPacketPack;
 
-MultiplayerClient::MultiplayerClient(ClientShared &state) :
+MultiplayerClient::MultiplayerClient(ClientShared &state, const sf::IpAddress &targetServer,
+                                     const unsigned short targetPort) :
+    Game(state, "multiplayer"),
+    targetServer(targetServer),
+    targetPort(targetPort),
     quitButton({100, 50}, "quit tutorial"),
     chatEntry({20, 850}, "[enter] to chat"),
     messageLog({20, 840}),
+    triedConnection(false),
+    connected(false),
     sky({}),
     renderSystem(&sky),
-    Game(state, "multiplayer"),
     telegraph(4243, clientPacketPack, serverPacketPack),
     pingCooldown(1) {
   sky.linkSystem(&renderSystem);
@@ -25,6 +30,27 @@ void MultiplayerClient::onFocus() {
 
 }
 
+void MultiplayerClient::handleGamePacket(
+    tg::Reception<sky::prot::ServerPacket> &&reception {
+  using namespace sky::prot;
+  switch (reception.value.type) {
+    case ServerPacket::Type::Pong: {
+      appLog(LogType::Info, "received pong from server!");
+      break;
+    }
+    case ServerPacket::Type::MotD: {
+      appLog(LogType::Info, "received MotD from server: " +
+                            *reception.value.stringData);
+      break;
+    }
+    case ServerPacket::Type::Message: {
+      appLog(LogType::Info, "received message from server: " +
+                            *reception.value.stringData);
+      messageLog.pushEntry(std::string(*reception.value.stringData));
+    }
+  }
+}
+
 void MultiplayerClient::tick(float delta) {
   sky.tick(delta);
 
@@ -34,24 +60,27 @@ void MultiplayerClient::tick(float delta) {
 
   using namespace sky::prot;
 
-  telegraph.receive([&](tg::Reception<ServerPacket> &&reception) {
-    switch (reception.value.type) {
-      case ServerPacket::Type::Pong: {
-        appLog(LogType::Info, "received pong from server!");
-        break;
+  if (!triedConnection) {
+    telegraph.transmit(ClientReqConnection(shared.settings.preferredNickname),
+                       targetServer, targetPort);
+    triedConnection = true;
+  }
+
+  if (!connected) {
+    telegraph.receive([&](tg::Reception<ServerPacket> &&reception) {
+      switch (reception.value.type) {
+        case ServerPacket::Type::AcceptConnection: {
+          appLog(LogType::Info, "connected to server!");
+          break;
+        }
+        default: break;
       }
-      case ServerPacket::Type::MotD: {
-        appLog(LogType::Info, "received MotD from server: " +
-                              *reception.value.stringData);
-        break;
-      }
-      case ServerPacket::Type::Message: {
-        appLog(LogType::Info, "received message from server: " +
-                              *reception.value.stringData);
-        messageLog.pushEntry(std::string(*reception.value.stringData));
-      }
-    }
-  });
+    });
+  } else {
+    telegraph.receive([&](tg::Reception<ServerPacket> &&reception) {
+      handleGamePacket(std::move(reception));
+    });
+  }
 
   if (pingCooldown.cool(delta)) {
     telegraph.transmit(ClientPing(), "localhost", 4242);

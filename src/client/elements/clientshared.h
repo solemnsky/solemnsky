@@ -48,7 +48,6 @@ public:
   bool pageFocused() const;
   bool menuFocused() const;
   bool gameFocused() const;
-
 };
 
 struct ClientShared {

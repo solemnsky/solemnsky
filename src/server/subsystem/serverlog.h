@@ -4,7 +4,7 @@
 #ifndef SOLEMNSKY_SERVERLOG_H
 #define SOLEMNSKY_SERVERLOG_H
 
-#include "sky/subsystem.h"
+#include "sky/sky.h"
 #include "util/types.h"
 
 namespace sky {

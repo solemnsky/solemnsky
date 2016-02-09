@@ -7,8 +7,8 @@
 #include "client/util/resources.h"
 #include "client/ui/control.h"
 #include "client/ui/sheet.h"
+#include "sky/sky.h"
 #include <SFML/Graphics.hpp>
-#include "sky/subsystem.h"
 
 namespace sky {
 namespace detail {

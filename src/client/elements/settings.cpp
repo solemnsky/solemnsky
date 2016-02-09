@@ -1,7 +1,7 @@
 #include "settings.h"
 
 Settings::Settings() :
-    playerName("nameless plane") { }
+    preferredNickname("nameless plane") { }
 
 bool Settings::readFromFile(std::string filepath) {
   return true;

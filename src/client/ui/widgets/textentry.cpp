@@ -76,8 +76,7 @@ bool TextEntry::handle(const sf::Event &event) {
     if (event.type == sf::Event::KeyPressed) {
       switch (event.key.code) {
         case sf::Keyboard::Escape: {
-          isFocused = false;
-          contents.clear();
+          unfocus();
           return true;
         }
         case sf::Keyboard::Return: {
@@ -106,7 +105,7 @@ bool TextEntry::handle(const sf::Event &event) {
       }
     }
 
-    if (event.type == sf::Event::TextEntered) {
+    if (event.type == sf::Event::TextEntered and isFocused) {
       if (event.text.unicode < 32) return true; // non-printable
       contents.insert((size_t) cursor, {(char) event.text.unicode});
       cursor++;
@@ -130,7 +129,11 @@ void TextEntry::focus() {
   isFocused = true;
 }
 
-void TextEntry::unfocus() { }
+void TextEntry::unfocus() {
+  isFocused = false;
+  cursor = 0;
+  contents = "";
+}
 
 }
 

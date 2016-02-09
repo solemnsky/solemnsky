@@ -10,15 +10,19 @@
 */
 #ifndef SOLEMNSKY_ARENA_H
 #define SOLEMNSKY_ARENA_H
+#include "util/types.h"
+#include "sky.h"
+#include <map>
 
 namespace sky {
 
 struct Player {
-
+  std::string nickname;
 };
 
 class Arena {
-
+  std::map<PID, Player> players;
+  std::string motd; // the arena MotD
 };
 
 }
