@@ -11,41 +11,47 @@
 #include "sky/arena.h"
 #include "client/subsystem/render.h"
 
-class MultiplayerClient : public Game {
-private:
+class MultiplayerClient: public Game {
+ private:
   ui::Button quitButton;
   ui::TextEntry chatEntry;
   ui::TextLog messageLog;
 
+
+  /**
+   * Connection details.
+   */
+  const sf::IpAddress serverAddress;
+  const unsigned short serverPort, clientPort;
+
+  /**
+   * Connection state.
+   */
   tg::Telegraph<sky::prot::ClientPacket, sky::prot::ServerPacket> telegraph;
   Cooldown pingCooldown;
 
-  /**
-   * Target server.
-   */
-  const sf::IpAddress targetServer;
-  const unsigned short targetPort;
-  
-  /**
-   * Helpers.
-   */
-  void handleGamePacket(tg::Reception<sky::prot::ServerPacket> &&reception);
-
-  /**
-   * Multiplayer protocol state.
-   */
   bool triedConnection; // have we sent a verbs requesting connection yet?
   bool connected;
 
+  /**
+   * Local model of the Arena / game state.
+   */
   sky::PID myPID;
   sky::Arena arena;
   sky::Sky sky;
   sky::Render renderSystem;
 
-public:
+  /**
+   * Helpers.
+   */
+  void transmitServer(const sky::prot::ClientPacket &packet);
+  void handleGamePacket(tg::Reception<sky::prot::ServerPacket> &&reception);
+
+ public:
   MultiplayerClient(ClientShared &state,
-                    const sf::IpAddress &targetServer,
-                    const unsigned short targetPort);
+                    const sf::IpAddress &serverAddress,
+                    const unsigned short serverPort,
+                    const unsigned short clientPort);
 
   /**
    * Game interface.

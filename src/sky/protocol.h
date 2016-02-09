@@ -8,6 +8,7 @@
 #include "util/types.h"
 #include "telegraph/pack.h"
 #include "arena.h"
+#include <map>
 
 namespace sky {
 namespace prot {
@@ -17,44 +18,38 @@ namespace prot {
 struct ClientPacket {
   enum class Type {
     Ping,
-    MotD, // request MotD
-
     ReqConnection, // request a connection, supplying a preferred nickname
     ReqNickChange, // request to change the nickname, supplying it
-
     Chat // try to send a chat message
   };
 
   ClientPacket() = default;
 
   ClientPacket(const Type type,
-               const optional<std::string> &stringData = {}) :
+               const optional<std::string> &stringData = {},
+               const optional<unsigned short> &port = {}) :
       type(type), stringData(stringData) { }
 
   Type type;
   optional<std::string> stringData;
+  optional<unsigned short> port; // port the client wants to listen on
 };
 
-struct ClientPing : public ClientPacket {
+struct ClientPing: public ClientPacket {
   ClientPing() : ClientPacket(ClientPacket::Type::Ping) { }
 };
 
-struct ClientReqConnection : public ClientPacket {
-  ClientReqConnection(std::string &&nick) :
-      ClientPacket(ClientPacket::Type::ReqConnection, nick) { }
+struct ClientReqConnection: public ClientPacket {
+  ClientReqConnection(const std::string &nick, const unsigned short port) :
+      ClientPacket(ClientPacket::Type::ReqConnection, nick, port) { }
 };
 
-struct ClientReqNickChange : public ClientPacket {
-  ClientReqNickChange(std::string &&nick) :
+struct ClientReqNickChange: public ClientPacket {
+  ClientReqNickChange(const std::string &nick) :
       ClientPacket(ClientPacket::Type::ReqNickChange, nick) { }
 };
 
-
-struct ClientMotD : public ClientPacket {
-  ClientMotD() : ClientPacket(ClientPacket::Type::MotD) { }
-};
-
-struct ClientChat : public ClientPacket {
+struct ClientChat: public ClientPacket {
   ClientChat(std::string &&str) :
       ClientPacket(ClientPacket::Type::Chat, str) { }
 };
@@ -67,14 +62,15 @@ struct ServerPacket {
     Pong,
     AssignNick, // give a client a nickname
     AcceptConnection, // accept a connection
-    MotD, // distribute the MotD
     Message // distribute message for all clients to print to screen
   };
 
   ServerPacket() = default;
 
   ServerPacket(const Type type,
-               const optional<std::string> &stringData = {}) :
+               const optional<std::string> &stringData = {},
+               const optional<Arena> &arena = {},
+               const optional<PID> &pid = {}) :
       type(type), stringData(stringData) { }
 
   Type type;
@@ -84,25 +80,21 @@ struct ServerPacket {
   optional<PID> pid; // for AcceptConnection
 };
 
-struct ServerPong : public ServerPacket {
+struct ServerPong: public ServerPacket {
   ServerPong() : ServerPacket(ServerPacket::Type::Pong) { }
 };
 
-struct ServerAssignNick : public ServerPacket {
+struct ServerAssignNick: public ServerPacket {
   ServerAssignNick(std::string &&nick) :
       ServerPacket(ServerPacket::Type::AssignNick, nick) { }
 };
 
-struct ServerAcceptConnection : public ServerPacket {
-  ServerAcceptConnection()
+struct ServerAcceptConnection: public ServerPacket {
+  ServerAcceptConnection(const Arena &arena, const PID pid) :
+      ServerPacket(ServerPacket::Type::AcceptConnection, {}, arena, pid) { }
 };
 
-struct ServerMotD : public ServerPacket {
-  ServerMotD(std::string &&motd) :
-      ServerPacket(ServerPacket::Type::MotD, motd) { }
-};
-
-struct ServerMessage : public ServerPacket {
+struct ServerMessage: public ServerPacket {
   ServerMessage(std::string &&message) :
       ServerPacket(ServerPacket::Type::Message, message) { }
 };
@@ -116,8 +108,12 @@ using namespace tg;
 
 const Pack<std::string> stringPack = StringPack();
 const Pack<optional<std::string>> optStringPack =
-    tg::OptionalPack<std::string>(stringPack);
+    OptionalPack<std::string>(stringPack);
+const Pack<PID> pidPack = BytePack<PID>();
 
+/**
+ * ClientPacket.
+ */
 #define member(TYPE, PTR, RULE) \
   MemberRule<prot::ClientPacket, TYPE>(RULE, &prot::ClientPacket::PTR)
 const Pack<prot::ClientPacket> clientPacketPack =
@@ -128,13 +124,39 @@ const Pack<prot::ClientPacket> clientPacketPack =
     );
 #undef member
 
+/**
+ * Player.
+ */
+#define member(TYPE, PTR, RULE) \
+  MemberRule<Player, TYPE>(RULE, &Player::PTR)
+const Pack<Player> playerPack =
+    ClassPack<Player>(
+        member(std::string, nickname, stringPack)
+    );
+#undef member
+
+/**
+ * Arena.
+ */
+#define member(TYPE, PTR, RULE) \
+  MemberRule<Arena, TYPE>(RULE, &Arena::PTR)
+const Pack<Arena> arenaPack =
+    ClassPack<Arena>(
+        MemberRule<Arena, std::map<PID, Player>>(
+            MapPack<PID, Player>(pidPack, playerPack),
+            &Arena::players),
+        member(std::string, motd, stringPack)
+    );
+#undef member
+
 #define member(TYPE, PTR, RULE) \
   MemberRule<prot::ServerPacket, TYPE>(RULE, &prot::ServerPacket::PTR)
 const Pack<prot::ServerPacket> serverPacketPack =
     ClassPack<prot::ServerPacket>(
         member(prot::ServerPacket::Type, type,
                EnumPack<prot::ServerPacket::Type>(2)),
-        member(optional<std::string>, stringData, optStringPack)
+        member(optional<std::string>, stringData, optStringPack),
+        member(optional<Arena>, arena, OptionalPack<Arena>(arenaPack))
     );
 #undef member
 

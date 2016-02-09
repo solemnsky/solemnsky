@@ -6,8 +6,8 @@
  * At least I didn't call it SemaphoreLine or something.
  */
 
-#ifndef SOLEMNSKY_TELEGRAPHY_H
-#define SOLEMNSKY_TELEGRAPHY_H
+#ifndef SOLEMNSKY_TELEGRAPH_H
+#define SOLEMNSKY_TELEGRAPH_H
 
 #include "pack.h"
 #include <SFML/Network.hpp>
@@ -58,11 +58,11 @@ namespace detail {
  * and associated strategy-related flags.
  */
 class Wire {
-private:
+ private:
   Packet *buffer;
   // int orderFlag; etc etc
 
-public:
+ public:
   Wire() = delete;
   Wire(Packet *buffer);
 
@@ -81,7 +81,7 @@ public:
  */
 template<typename TransmitT, typename ReceiveT>
 class Telegraph {
-private:
+ private:
   sf::UdpSocket sock;
   ReceiveT valueBuffer;
   Packet buffer;
@@ -90,7 +90,7 @@ private:
   const Pack<TransmitT> transmitRule;
   const Pack<ReceiveT> receiveRule;
 
-public:
+ public:
   Telegraph(const unsigned short port,
             const Pack<TransmitT> &transmitRule,
             const Pack<ReceiveT> &receiveRule) :
@@ -140,4 +140,4 @@ void Telegraph<TransmitT, ReceiveT>
 
 }
 
-#endif //SOLEMNSKY_TELEGRAPHY_H
+#endif //SOLEMNSKY_TELEGRAPH_H

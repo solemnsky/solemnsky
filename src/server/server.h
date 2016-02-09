@@ -11,8 +11,11 @@
 
 struct PlayerClient {
   PlayerClient(const sf::IpAddress &address, const unsigned short port);
-  sf::IpAddress address;
-  unsigned short port;
+
+  const sf::IpAddress address;
+  const unsigned short port;
+
+  double lastPing;
 };
 
 class Server {
@@ -21,8 +24,18 @@ private:
 
   optional<sky::Sky> sky;
   sky::Arena arena;
+  std::map<sky::PID, PlayerClient> clients;
 
   tg::Telegraph<sky::prot::ServerPacket, sky::prot::ClientPacket> telegraph;
+
+  /**
+   * Helpers.
+   */
+  sky::PID getFreePID() const; // get a PID not currently used in the arena
+  optional<sky::PID> pidFromIP(const sf::IpAddress &address) const;
+
+  void sendToClient(const sky::prot::ServerPacket &packet, const sky::PID pid);
+  void broadcastToClients(const sky::prot::ServerPacket &packet);
 
 public:
   Server();

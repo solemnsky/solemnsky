@@ -1,25 +1,52 @@
 #include "multiplayerclient.h"
 #include "util/methods.h"
 
-using sky::pk::serverPacketPack;
-using sky::pk::clientPacketPack;
-
-MultiplayerClient::MultiplayerClient(ClientShared &state, const sf::IpAddress &targetServer,
-                                     const unsigned short targetPort) :
+MultiplayerClient::MultiplayerClient(ClientShared &state,
+                                     const sf::IpAddress &serverAddress,
+                                     const unsigned short serverPort,
+                                     const unsigned short clientPort) :
     Game(state, "multiplayer"),
-    targetServer(targetServer),
-    targetPort(targetPort),
+
     quitButton({100, 50}, "quit tutorial"),
     chatEntry({20, 850}, "[enter] to chat"),
     messageLog({20, 840}),
+
+    serverAddress(serverAddress),
+    serverPort(serverPort),
+    clientPort(clientPort),
+
     triedConnection(false),
     connected(false),
+    telegraph(clientPort, sky::pk::clientPacketPack, sky::pk::serverPacketPack),
+    pingCooldown(5),
     sky({}),
-    renderSystem(&sky),
-    telegraph(4243, clientPacketPack, serverPacketPack),
-    pingCooldown(1) {
+    renderSystem(&sky) {
   sky.linkSystem(&renderSystem);
 }
+
+void MultiplayerClient::handleGamePacket(
+    tg::Reception<sky::prot::ServerPacket> &&reception) {
+  using namespace sky::prot;
+  switch (reception.value.type) {
+    case ServerPacket::Type::Pong: {
+      appLog(LogType::Info, "received pong from server!");
+      break;
+    }
+    case ServerPacket::Type::Message: {
+      appLog(LogType::Info, "received message from server: " +
+          *reception.value.stringData);
+      messageLog.pushEntry(std::string(*reception.value.stringData));
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+void MultiplayerClient::transmitServer(const sky::prot::ClientPacket &packet) {
+  telegraph.transmit(packet, serverAddress, serverPort);
+}
+
 
 void MultiplayerClient::onLooseFocus() {
   quitButton.reset();
@@ -28,27 +55,6 @@ void MultiplayerClient::onLooseFocus() {
 
 void MultiplayerClient::onFocus() {
 
-}
-
-void MultiplayerClient::handleGamePacket(
-    tg::Reception<sky::prot::ServerPacket> &&reception {
-  using namespace sky::prot;
-  switch (reception.value.type) {
-    case ServerPacket::Type::Pong: {
-      appLog(LogType::Info, "received pong from server!");
-      break;
-    }
-    case ServerPacket::Type::MotD: {
-      appLog(LogType::Info, "received MotD from server: " +
-                            *reception.value.stringData);
-      break;
-    }
-    case ServerPacket::Type::Message: {
-      appLog(LogType::Info, "received message from server: " +
-                            *reception.value.stringData);
-      messageLog.pushEntry(std::string(*reception.value.stringData));
-    }
-  }
 }
 
 void MultiplayerClient::tick(float delta) {
@@ -61,19 +67,23 @@ void MultiplayerClient::tick(float delta) {
   using namespace sky::prot;
 
   if (!triedConnection) {
-    telegraph.transmit(ClientReqConnection(shared.settings.preferredNickname),
-                       targetServer, targetPort);
+    transmitServer(
+        ClientReqConnection(shared.settings.preferredNickname, clientPort));
     triedConnection = true;
+    appLog(LogType::Debug, "sent connection request...");
   }
 
   if (!connected) {
     telegraph.receive([&](tg::Reception<ServerPacket> &&reception) {
       switch (reception.value.type) {
         case ServerPacket::Type::AcceptConnection: {
-          appLog(LogType::Info, "connected to server!");
+          arena = *reception.value.arena;
+          myPID = *reception.value.pid;
+          appLog(LogType::Info, "connected to server! MotD is: " + arena.motd);
           break;
         }
-        default: break;
+        default:
+          break;
       }
     });
   } else {
@@ -83,7 +93,7 @@ void MultiplayerClient::tick(float delta) {
   }
 
   if (pingCooldown.cool(delta)) {
-    telegraph.transmit(ClientPing(), "localhost", 4242);
+    transmitServer(ClientPing());
     appLog(LogType::Info, "sending ping");
     pingCooldown.reset();
   }
@@ -111,13 +121,13 @@ bool MultiplayerClient::handle(const sf::Event &event) {
 void MultiplayerClient::signalRead() {
   if (quitButton.clickSignal) concluded = true;
   if (chatEntry.inputSignal)
-    telegraph.transmit(
-        sky::prot::ClientChat(std::string(*chatEntry.inputSignal)),
-        "localhost", 4242);
+    transmitServer(
+        sky::prot::ClientChat(std::string(*chatEntry.inputSignal)));
 }
 
 void MultiplayerClient::signalClear() {
   quitButton.signalClear();
   chatEntry.signalClear();
 }
+
 

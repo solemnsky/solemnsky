@@ -1,8 +1,8 @@
 #include "gtest/gtest.h"
 #include "telegraph/pack.h"
 
-class PackFixture : public testing::Test {
-public:
+class PackFixture: public testing::Test {
+ public:
   PackFixture() { }
 
   ~PackFixture() { }
@@ -77,19 +77,39 @@ struct MyStruct {
   optional<int> y = 0;
 };
 
-TEST_F(PackFixture, ClassPack) {
-  const tg::Pack<int> intPack = tg::BytePack<int>();
-  const tg::Pack<optional<int>> optPack = tg::OptionalPack<int>(intPack);
-  const tg::Pack<MyStruct> classPack =
-      tg::ClassPack<MyStruct>(
-          tg::MemberRule<MyStruct, int>(intPack, &MyStruct::x),
-          tg::MemberRule<MyStruct, optional<int>>(optPack, &MyStruct::y)
-      );
+const tg::Pack<int> intPack = tg::BytePack<int>();
+const tg::Pack<optional<int>> optPack = tg::OptionalPack<int>(intPack);
+const tg::Pack<MyStruct> classPack =
+    tg::ClassPack<MyStruct>(
+        tg::MemberRule<MyStruct, int>(intPack, &MyStruct::x),
+        tg::MemberRule<MyStruct, optional<int>>(optPack, &MyStruct::y)
+    );
 
+TEST_F(PackFixture, ClassPack) {
   MyStruct myStruct;
   myStruct.x = 5;
   tg::packInto(classPack, myStruct, buffer);
   MyStruct unpacked = tg::unpack(classPack, buffer);
   EXPECT_EQ(unpacked.y, myStruct.y);
   EXPECT_EQ(unpacked.x, myStruct.x);
+}
+
+/**
+ * Our MapPack rule works correctly.
+ */
+TEST_F(PackFixture, MapPack) {
+  const tg::Pack<std::map<int, MyStruct>> mapPack =
+      tg::MapPack<int, MyStruct>(intPack, classPack);
+
+  std::map<int, MyStruct> myMap;
+  MyStruct myStruct1, myStruct2;
+  myStruct1.x = 10;
+  myStruct2.y = 5;
+  myMap.emplace(std::pair<int, MyStruct>(0, myStruct1));
+  myMap.emplace(std::pair<int, MyStruct>(2, myStruct2));
+  tg::packInto(mapPack, myMap, buffer);
+
+  std::map<int, MyStruct> unpacked = tg::unpack(mapPack, buffer);
+  EXPECT_EQ(unpacked[0].x, myStruct1.x);
+  EXPECT_EQ(*unpacked[2].y, *myStruct2.y);
 }

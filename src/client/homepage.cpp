@@ -44,7 +44,8 @@ bool HomePage::handle(const sf::Event &event) {
 
 void HomePage::signalRead() {
   if (tutorialButton.clickSignal)
-    shared.beginGame(std::make_unique<MultiplayerClient>(shared));
+    shared.beginGame(std::make_unique<MultiplayerClient>(
+        shared, "localhost", 4242, 4243));
 }
 
 void HomePage::signalClear() {
