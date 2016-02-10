@@ -33,14 +33,16 @@ void appErrorRuntime(const std::string &contents); // log and throw
  * Logging for memory leaks.
  */
 
-#define CTOR_LOG(str) appLog("CTOR -> " + (std::string) str)
-#define DTOR_LOG(str) appLog("DTOR <- " + (std::string) str)
+//#define CTOR_LOG(str) appLog("CTOR -> " + (std::string) str)
+//#define DTOR_LOG(str) appLog("DTOR <- " + (std::string) str)
+#define CTOR_LOG(str) {}while(0)
+#define DTOR_LOG(str) {}while(0)
 
 /****
  * For some reason sf::Vector has no math utilities, here are some.
  */
 class VecMath {
-public:
+ public:
   static float length(const sf::Vector2f &vec);
   static sf::Vector2f fromAngle(const float angle);
   static float angle(const sf::Vector2f &vec);
