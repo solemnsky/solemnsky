@@ -7,13 +7,24 @@
 #include <cmath>
 #include "methods.h"
 
-void appLog(LogType type, const std::string &contents) {
+std::string showTime() {
+  static sf::Clock clock;
+  std::string clockTime =
+      std::to_string(clock.getElapsedTime().asMilliseconds());
+  return clockTime + std::string(10 - clockTime.size(), ' ');
+}
+
+void appLog(const std::string &contents, const LogOrigin origin) {
+
   static std::vector<std::string> prefixes =
-      {"INFO:   ",
-       "NOTICE: ",
-       "ERROR:  ",
-       "DEBUG:  ",
-       "        "};
+      {"]:        ",
+       "engine]:  ",
+       "network]: ",
+       "app]:     ",
+       "client]:  ",
+       "server]:  ",
+       "ERROR]:   ",
+       "          "};
 
   std::stringstream stream(contents);
   std::string line;
@@ -21,21 +32,23 @@ void appLog(LogType type, const std::string &contents) {
   bool isFirstLine(true);
   while (getline(stream, line, '\n')) {
     if (isFirstLine) {
-      std::cout << prefixes[(int) type] + line + "\n";
+      std::cout << showTime() + "[" + prefixes[(int) origin] + line;
+      std::endl(std::cout);
       isFirstLine = false;
     } else {
-      std::cout << prefixes[4] + line + "\n";
+      std::cout << prefixes[7] + line;
+      std::endl(std::cout);
     }
   }
 }
 
 void appErrorLogic(const std::string &contents) {
-  appLog(LogType::Error, contents);
+  appLog(contents, LogOrigin::Error);
   throw std::logic_error(contents);
 }
 
 void appErrorRuntime(const std::string &contents) {
-  appLog(LogType::Error, contents);
+  appLog(contents, LogOrigin::Error);
   throw std::runtime_error(contents);
 }
 

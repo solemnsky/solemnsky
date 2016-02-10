@@ -23,19 +23,21 @@ bool Wire::receive(sf::UdpSocket &sock,
   sf::Socket::Status status =
       sock.receive(buffer->getRaw(), Packet::bufferSize, size, addr, port);
   if (size == 0) return false;
+  appLog("incoming packet: " + buffer->dump());
 
   buffer->setSize(size);
   if (status == sf::Socket::Error)
-    appLog(LogType::Error, "packet reception error!");
+    appErrorRuntime("packet reception error!");
   return true;
 }
 
 void Wire::transmit(sf::UdpSocket &sock,
                     const IpAddress &addr,
                     const unsigned short port) {
+  appLog("outgoing packet: " + buffer->dump());
   if (sock.send(buffer->getRaw(), buffer->getSize(), addr, port) !=
       sf::Socket::Done)
-    appLog(LogType::Error, "packet transmission error!");
+    appErrorRuntime("packet transmission error!");
 }
 }
 

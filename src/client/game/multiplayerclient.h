@@ -17,7 +17,6 @@ class MultiplayerClient: public Game {
   ui::TextEntry chatEntry;
   ui::TextLog messageLog;
 
-
   /**
    * Connection details.
    */
@@ -35,6 +34,7 @@ class MultiplayerClient: public Game {
 
   /**
    * Local model of the Arena / game state.
+   * Use with discretion until 'connected'.
    */
   sky::PID myPID;
   sky::Arena arena;
@@ -45,7 +45,13 @@ class MultiplayerClient: public Game {
    * Helpers.
    */
   void transmitServer(const sky::prot::ClientPacket &packet);
+
+  /**
+   * Packet processing subroutines.
+   */
   void handleGamePacket(tg::Reception<sky::prot::ServerPacket> &&reception);
+  void handleConnectionPacket
+      (tg::Reception<sky::prot::ServerPacket> &&reception);
 
  public:
   MultiplayerClient(ClientShared &state,

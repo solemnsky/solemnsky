@@ -24,18 +24,15 @@ MultiplayerClient::MultiplayerClient(ClientShared &state,
   sky.linkSystem(&renderSystem);
 }
 
-void MultiplayerClient::handleGamePacket(
+void MultiplayerClient::handleConnectionPacket(
     tg::Reception<sky::prot::ServerPacket> &&reception) {
   using namespace sky::prot;
+
   switch (reception.value.type) {
-    case ServerPacket::Type::Pong: {
-      appLog(LogType::Info, "received pong from server!");
-      break;
-    }
-    case ServerPacket::Type::Message: {
-      appLog(LogType::Info, "received message from server: " +
-          *reception.value.stringData);
-      messageLog.pushEntry(std::string(*reception.value.stringData));
+    case ServerPacket::Type::AcceptConnection: {
+      arena = *reception.value.arena;
+      myPID = *reception.value.pid;
+      appLog("connected to server! MotD is: " + arena.motd, LogOrigin::Client);
       break;
     }
     default:
@@ -47,6 +44,23 @@ void MultiplayerClient::transmitServer(const sky::prot::ClientPacket &packet) {
   telegraph.transmit(packet, serverAddress, serverPort);
 }
 
+void MultiplayerClient::handleGamePacket(
+    tg::Reception<sky::prot::ServerPacket> &&reception) {
+  using namespace sky::prot;
+  switch (reception.value.type) {
+    case ServerPacket::Type::Pong: {
+      appLog("received pong from server!");
+      break;
+    }
+    case ServerPacket::Type::Message: {
+      appLog("received message from server: " + *reception.value.stringData);
+      messageLog.pushEntry(std::string(*reception.value.stringData));
+      break;
+    }
+    default:
+      break;
+  }
+}
 
 void MultiplayerClient::onLooseFocus() {
   quitButton.reset();
@@ -70,32 +84,23 @@ void MultiplayerClient::tick(float delta) {
     transmitServer(
         ClientReqConnection(shared.settings.preferredNickname, clientPort));
     triedConnection = true;
-    appLog(LogType::Debug, "sent connection request...");
+    appLog("sent connection request...");
   }
 
   if (!connected) {
     telegraph.receive([&](tg::Reception<ServerPacket> &&reception) {
-      switch (reception.value.type) {
-        case ServerPacket::Type::AcceptConnection: {
-          arena = *reception.value.arena;
-          myPID = *reception.value.pid;
-          appLog(LogType::Info, "connected to server! MotD is: " + arena.motd);
-          break;
-        }
-        default:
-          break;
-      }
+      handleConnectionPacket(std::move(reception));
     });
   } else {
     telegraph.receive([&](tg::Reception<ServerPacket> &&reception) {
       handleGamePacket(std::move(reception));
     });
-  }
 
-  if (pingCooldown.cool(delta)) {
-    transmitServer(ClientPing());
-    appLog(LogType::Info, "sending ping");
-    pingCooldown.reset();
+//    if (pingCooldown.cool(delta)) {
+//      transmitServer(ClientPing());
+//      appLog(LogOrigin::Info, "sending ping");
+//      pingCooldown.reset();
+//    }
   }
 }
 

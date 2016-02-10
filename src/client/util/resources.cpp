@@ -50,7 +50,7 @@ void ResMan::loadRes() {
 
   std::string resCount = std::to_string((int) Res::LAST);
   std::string progress;
-  appLog(LogType::Notice, "Loading resources ...");
+  appLog("Loading resources ...", LogOrigin::App);
 
   for (Res res = Res::Font; res < Res::LAST; res = (Res) (((int) res) + 1)) {
     const ResRecord &record(recordOf(res));
@@ -59,14 +59,14 @@ void ResMan::loadRes() {
 
     switch (record.type) {
       case ResType::Font: {
-        appLog(LogType::Info, "Loading font " + record.path + progress);
+        appLog("Loading font " + record.path + progress, LogOrigin::App);
         sf::Font font;
         font.loadFromFile(filepathTo(res));
         fonts.emplace((int) res, std::move(font));
         break;
       }
       case ResType::Texture: {
-        appLog(LogType::Info, "Loading texture " + record.path + progress);
+        appLog("Loading texture " + record.path + progress, LogOrigin::App);
 
         sf::Texture texture;
         texture.loadFromFile(filepathTo(res));
@@ -75,11 +75,11 @@ void ResMan::loadRes() {
     }
   }
 
-  appLog(LogType::Info,
-         std::to_string(fonts.size()) + " total fonts available.");
-  appLog(LogType::Info,
-         std::to_string(textures.size()) + " total textures available.");
-  appLog(LogType::Notice, "Finished loading resources.");
+  appLog(std::to_string(fonts.size()) + " total fonts available.",
+         LogOrigin::App);
+  appLog(std::to_string(textures.size()) + " total textures available.",
+         LogOrigin::App);
+  appLog("Finished loading resources.", LogOrigin::App);
 
   initialized = true;
 }
