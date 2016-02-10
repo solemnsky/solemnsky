@@ -65,7 +65,7 @@ struct PlaneAnimState {
 
 class Render : public Subsystem {
 private:
-  std::map<int, detail::PlaneAnimState> animState;
+  std::map<PID, detail::PlaneAnimState> animState;
   const ui::SpriteSheet sheet;
 
   /**
@@ -77,7 +77,7 @@ private:
   void renderBars(ui::Frame &f,
                   std::vector<std::pair<float, const sf::Color &>> bars,
                   sf::FloatRect area);
-  void renderPlane(ui::Frame &f, const int pid, PlaneHandle &plane);
+  void renderPlane(ui::Frame &f, const int pid, const PlaneHandle &plane);
 
   /**
    * Subsystem listeners.

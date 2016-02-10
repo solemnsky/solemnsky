@@ -62,7 +62,7 @@ void ResMan::loadRes() {
         appLog(LogType::Info, "Loading font " + record.path + progress);
         sf::Font font;
         font.loadFromFile(filepathTo(res));
-        fonts.emplace(std::pair<int, sf::Font>((int) res, font));
+        fonts.emplace((int) res, std::move(font));
         break;
       }
       case ResType::Texture: {
@@ -70,7 +70,7 @@ void ResMan::loadRes() {
 
         sf::Texture texture;
         texture.loadFromFile(filepathTo(res));
-        textures.emplace(std::pair<int, sf::Texture>((int) res, texture));
+        textures.emplace((int) res, std::move(texture));
       }
     }
   }

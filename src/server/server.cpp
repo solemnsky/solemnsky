@@ -1,9 +1,16 @@
 #include "server.h"
 #include "util/methods.h"
 
+/**
+ * PlayerClient.
+ */
 PlayerClient::PlayerClient(const sf::IpAddress &address,
                            const unsigned short port) :
     address(address), port(port) { }
+
+/**
+ * Server.
+ */
 
 Server::Server() :
     telegraph(4242, sky::pk::serverPacketPack, sky::pk::clientPacketPack),
@@ -18,60 +25,81 @@ sky::PID Server::getFreePID() const {
   return maxId;
 }
 
-optional<sky::PID> Server::pidFromIP(const sf::IpAddress &address) const {
-  for (auto &pair : clients)
+optional<sky::PID> Server::clientFromIP(
+    const sf::IpAddress &address) const {
+  for (const auto &pair : clients)
     if (pair.second.address == address) return pair.first;
   return {};
 }
 
+/**
+ * Transmission synonyms.
+ */
 void Server::sendToClient(const sky::prot::ServerPacket &packet,
-                          const sky::PID pid) {
-  if (clients.find(pid) != clients.end()) {
-    const PlayerClient &client = clients.at(pid);
-    telegraph.transmit(packet, client.address, client.port);
-  }
+                          const PlayerClient &client) {
+  telegraph.transmit(packet, client.address, client.port);
 }
 
-void Server::broadcastToClients(const sky::prot::ServerPacket &packet) {
-  for (auto &pair : clients)
-    telegraph.transmit(packet, pair.second.address, pair.second.port);
+void Server::sendToAll(const sky::prot::ServerPacket &packet) {
+  for (const auto &pair : clients)
+    sendToClient(packet, pair.second);
 }
 
 /**
- * Processing.
+ * Subroutines
  */
+void Server::processFromClient(sky::PID pid,
+                               const sky::prot::ClientPacket &packet) {
+  using namespace sky::prot;
+
+  PlayerClient &client = clients.at(pid);
+  client.lastPing = uptime;
+
+  switch (packet.type) {
+    case ClientPacket::Type::Ping: {
+      sendToClient(ServerPong(), client);
+      break;
+    }
+    case ClientPacket::Type::ReqNickChange: {
+      arena.players.at(pid).nickname = *packet.stringData;
+      sendToAll(ServerAssignNick(pid, std::string(*packet.stringData)));
+      break;
+    }
+    case ClientPacket::Type::Chat: {
+      sendToAll(ServerMessage(std::string(*packet.stringData)));
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+void Server::processConnection(
+    tg::Reception<sky::prot::ClientPacket> &&reception) {
+  using namespace sky::prot;
+
+  switch (reception.value.type) {
+    case ClientPacket::Type::ReqConnection: {
+      sky::PID pid = getFreePID();
+      clients.emplace(
+          pid, PlayerClient(reception.address, *reception.value.port));
+      sendToClient(ServerAcceptConnection(arena, pid), clients.at(pid));
+      break;
+    };
+    default:
+      break;
+  }
+}
+
 void Server::tick(float delta) {
   if (sky) sky->tick(delta);
 
-  using namespace sky::prot;
-
   uptime += delta;
-  telegraph.receive([&](tg::Reception<ClientPacket> &&reception) {
-    switch (reception.value.type) {
-      case ClientPacket::Type::Ping: {
-        appLog(LogType::Info, "ping request recieved.");
-        appLog(LogType::Info, "responding with pong.");
-        telegraph.transmit(ServerPong(), reception.address, 4243);
-        break;
-      }
-      case ClientPacket::Type::ReqConnection: {
-        sky::PID pid = getFreePID();
-        clients.emplace(std::pair<sky::PID, PlayerClient>(
-            pid, PlayerClient(reception.address, *reception.value.port)));
-        sendToClient(ServerAcceptConnection(arena, pid), pid);
-        appLog(LogType::Info, "connection granted to client");
-        break;
-      }
-      case ClientPacket::Type::ReqNickChange: {
-        break;
-      }
-      case ClientPacket::Type::Chat: {
-        appLog(LogType::Info, "chat packet received.");
-        appLog(LogType::Info, ">>" + *reception.value.stringData);
-        broadcastToClients(
-            ServerMessage(std::string(*reception.value.stringData)));
-        break;
-      }
+  telegraph.receive([&](tg::Reception<sky::prot::ClientPacket> &&reception) {
+    if (optional<sky::PID> pid = clientFromIP(reception.address)) {
+      processFromClient(*pid, reception.value);
+    } else {
+      processConnection(std::move(reception));
     }
   });
 }

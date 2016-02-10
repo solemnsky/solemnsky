@@ -25,19 +25,20 @@ void Sky::linkSystem(Subsystem *subsystem) {
  */
 
 Plane *Sky::joinPlane(const PID pid) {
-  planes[pid] = std::make_unique<PlaneHandle>(this);
-  PlaneHandle *plane = planes[pid].get();
+  planes.emplace(pid, std::move(PlaneHandle(this)));
+
+  PlaneHandle *plane = &planes.at(pid);
   for (auto system : subsystems) system->joinPlane(pid, plane);
   return &plane->state;
 }
 
 Plane *Sky::getPlane(const PID pid) {
-  if (planes.find(pid) != planes.end()) return &planes[pid]->state;
+  if (planes.find(pid) != planes.end()) return &planes.at(pid).state;
   else return nullptr;
 }
 
 PlaneHandle *Sky::getPlaneHandle(const PID pid) {
-  if (planes.find(pid) != planes.end()) return planes[pid].get();
+  if (planes.find(pid) != planes.end()) return &planes.at(pid);
   else return nullptr;
 }
 
@@ -79,12 +80,12 @@ void Sky::fireLaser(const PID pid) {
 
 void Sky::tick(float delta) {
   for (auto &elem : planes) {
-    PlaneHandle &plane = *elem.second;
+    PlaneHandle &plane = elem.second;
     plane.writeToBody();
   }
   physics.tick(delta);
   for (auto &elem : planes) {
-    PlaneHandle &plane = *elem.second;
+    PlaneHandle &plane = elem.second;
     plane.readFromBody();
     plane.tick(delta);
   }

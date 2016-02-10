@@ -85,11 +85,12 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
 };
 
 void Render::renderPlane(
-    ui::Frame &f, const int pid, sky::PlaneHandle &plane) {
+    ui::Frame &f, const int pid, const PlaneHandle &plane) {
   using namespace detail; // for rndrParam
   if (plane.state.vital) {
-    PlaneVital &vstate = *plane.state.vital;
-    PlaneTuning &tuning = plane.state.tuning;
+    const PlaneVital &vstate = *plane.state.vital;
+    const PlaneTuning &tuning = plane.state.tuning;
+
     detail::PlaneAnimState &planeAnimState = animState.at(pid);
 
     f.withTransform(
@@ -160,7 +161,7 @@ void Render::render(ui::Frame &f, const sf::Vector2f &pos) {
                {1600, 0}, {0, 0, 1600, 900});
 
   for (auto &pair : sky->planes) {
-    renderPlane(f, pair.first, *pair.second);
+    renderPlane(f, pair.first, pair.second);
   }
 
   f.popTransform();
@@ -176,7 +177,7 @@ void Render::tick(float delta) {
 }
 
 void Render::joinPlane(const PID pid, PlaneHandle *plane) {
-  animState[pid] = detail::PlaneAnimState();
+  animState.emplace(pid, detail::PlaneAnimState());
 }
 
 void Render::quitPlane(const PID pid) {
