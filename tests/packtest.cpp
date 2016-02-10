@@ -105,8 +105,8 @@ TEST_F(PackFixture, MapPack) {
   MyStruct myStruct1, myStruct2;
   myStruct1.x = 10;
   myStruct2.y = 5;
-  myMap.emplace(std::pair<int, MyStruct>(0, myStruct1));
-  myMap.emplace(std::pair<int, MyStruct>(2, myStruct2));
+  myMap.emplace(myStruct1, 0);
+  myMap.emplace(myStruct2, 2);
   tg::packInto(mapPack, myMap, buffer);
 
   std::map<int, MyStruct> unpacked = tg::unpack(mapPack, buffer);

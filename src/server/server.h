@@ -19,7 +19,7 @@ struct PlayerClient {
 };
 
 class Server {
-private:
+ private:
   double uptime;
 
   optional<sky::Sky> sky;
@@ -29,15 +29,27 @@ private:
   tg::Telegraph<sky::prot::ServerPacket, sky::prot::ClientPacket> telegraph;
 
   /**
-   * Helpers.
+   * Client management helpers.
    */
   sky::PID getFreePID() const; // get a PID not currently used in the arena
-  optional<sky::PID> pidFromIP(const sf::IpAddress &address) const;
+  optional<sky::PID> clientFromIP(const sf::IpAddress &address) const;
 
-  void sendToClient(const sky::prot::ServerPacket &packet, const sky::PID pid);
-  void broadcastToClients(const sky::prot::ServerPacket &packet);
+  /**
+   * Transmission synonyms.
+   */
+  void sendToClient(const sky::prot::ServerPacket &packet,
+                    const PlayerClient &client);
+  void sendToAll(const sky::prot::ServerPacket &packet);
 
-public:
+  /**
+   * Packet processing subroutines.
+   */
+  void processFromClient(sky::PID pid,
+                         const sky::prot::ClientPacket &packet);
+  void processConnection(
+      tg::Reception<sky::prot::ClientPacket> &&reception);
+
+ public:
   Server();
 
   void tick(float delta);

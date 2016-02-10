@@ -84,8 +84,8 @@ struct PlaneVital {
   /**
    * Helper methods.
    */
-  float forwardVelocity();
-  float velocity();
+  float forwardVelocity() const;
+  float velocity() const;
 
   // returns true if energy was drawn
   bool requestDiscreteEnergy(const float reqEnergy);
@@ -139,14 +139,9 @@ public:
   PlaneHandle(Sky *engine);
   ~PlaneHandle();
 
-  PlaneHandle(PlaneHandle &&) = delete;
-  PlaneHandle &operator=(PlaneHandle &&) = delete;
+  PlaneHandle(PlaneHandle &&);
+  PlaneHandle(const PlaneHandle &) = delete;
   PlaneHandle &operator=(const PlaneHandle &) = delete;
-
-  // **you can't copy or move this**
-  // because it carries a b2Body*, which is a bit of a problematic resource.
-  // also it just doesn't make sense to move it; you have the base state
-  // data-structures to access if you want
 
   Plane state{};
 };

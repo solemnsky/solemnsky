@@ -79,7 +79,7 @@ public:
   /**
    * Planes.
    */
-  std::map<PID, std::unique_ptr<PlaneHandle>> planes;
+  std::map<PID, PlaneHandle> planes;
   Plane *joinPlane(const PID pid);
   Plane *getPlane(const PID pid);
   PlaneHandle *getPlaneHandle(const PID pid);

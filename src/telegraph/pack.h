@@ -170,7 +170,7 @@ struct MapPack: Pack<std::map<K, V>> {
             while (reader.readBit()) {
               keyRule.unpack(reader, key);
               valueRule.unpack(reader, value);
-              map.emplace(std::pair<K, V>(key, value));
+              map.emplace(key, value);
             }
           }) { }
 };

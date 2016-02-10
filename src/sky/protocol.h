@@ -74,10 +74,10 @@ struct ServerPacket {
       type(type), stringData(stringData) { }
 
   Type type;
-  optional<std::string> stringData;
 
-  optional<Arena> arena; // for AcceptConnection
-  optional<PID> pid; // for AcceptConnection
+  optional<std::string> stringData;
+  optional<Arena> arena;
+  optional<PID> pid;
 };
 
 struct ServerPong: public ServerPacket {
@@ -85,8 +85,8 @@ struct ServerPong: public ServerPacket {
 };
 
 struct ServerAssignNick: public ServerPacket {
-  ServerAssignNick(std::string &&nick) :
-      ServerPacket(ServerPacket::Type::AssignNick, nick) { }
+  ServerAssignNick(const PID pid, std::string &&nick) :
+      ServerPacket(ServerPacket::Type::AssignNick, nick, {}, pid) { }
 };
 
 struct ServerAcceptConnection: public ServerPacket {

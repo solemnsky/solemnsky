@@ -29,11 +29,11 @@ PlaneVital::PlaneVital(const PlaneTuning &tuning,
     energy(0, 1, 1),
     health(0, 1, 1) { }
 
-float PlaneVital::forwardVelocity() {
+float PlaneVital::forwardVelocity() const {
   return velocity() * (const float) cos(toRad(rot) - std::atan2(vel.y, vel.x));
 }
 
-float PlaneVital::velocity() {
+float PlaneVital::velocity() const {
   return VecMath::length(vel);
 }
 
@@ -121,7 +121,7 @@ void PlaneHandle::tick(float delta) {
 
       vstate->vel +=
           VecMath::fromAngle(vstate->rot) *
-          (delta * tuning.stall.thrust * thrustEfficacy);
+              (delta * tuning.stall.thrust * thrustEfficacy);
       vstate->afterburner = thrustEfficacy;
     }
 
@@ -130,7 +130,7 @@ void PlaneHandle::tick(float delta) {
     float dampingFactor = tuning.stall.maxVel / velocity;
     if (excessVel > 0)
       vstate->vel = vstate->vel * dampingFactor *
-                    std::pow(tuning.stall.damping, delta);
+          std::pow(tuning.stall.damping, delta);
   } else {
     // modify throttle and afterburner according to controls
     vstate->throttle += vstate->throtCtrl * delta;
@@ -160,7 +160,7 @@ void PlaneHandle::tick(float delta) {
 
     // set velocity, according to target speed, rotation, and leftoverVel
     vstate->vel = targetSpeed * VecMath::fromAngle(vstate->rot) +
-                  vstate->leftoverVel;
+        vstate->leftoverVel;
   }
 
   // stall singularities
@@ -188,6 +188,12 @@ PlaneHandle::PlaneHandle(Sky *engine) :
   CTOR_LOG("plane");
 }
 
+PlaneHandle::PlaneHandle(PlaneHandle &&handle) :
+    engine(handle.engine),
+    physics(handle.physics),
+    body(handle.body),
+    state(handle.state) { }
+
 PlaneHandle::~PlaneHandle() {
   kill();
   DTOR_LOG("plane");
@@ -206,5 +212,4 @@ void PlaneHandle::kill() {
   state.vital.reset();
   writeToBody();
 }
-
 }
