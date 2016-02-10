@@ -84,7 +84,7 @@ void MultiplayerClient::tick(float delta) {
     transmitServer(
         ClientReqConnection(shared.settings.preferredNickname, clientPort));
     triedConnection = true;
-    appLog("sent connection request...");
+    appLog("sent connection request...", LogOrigin::Client);
   }
 
   if (!connected) {

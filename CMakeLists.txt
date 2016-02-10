@@ -4,9 +4,10 @@ project(solemnsky)
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
-# we depend on Box2D and SFML, which we package ourselves
+# we depend on Box2D, SFML, and enet, from submodules in thirdparty/
 add_subdirectory("thirdparty/Box2D/Box2D")
 add_subdirectory("thirdparty/SFML")
+add_subdirectory("thirdparty/enet")
 
 # we also depend on boost from the host system
 find_package(Boost)
@@ -16,6 +17,8 @@ include_directories(
         src/
         thirdparty/SFML/include/
         thirdparty/Box2D/Box2D/
+        thirdparty/enet/include/
+        thirdparty/enetpp/include/
         "${Boost_INCLUDE_DIRS}"
 )
 
@@ -57,6 +60,7 @@ add_library(solemnsky STATIC
         src/util/types.h
         )
 target_link_libraries(solemnsky
+        enet
         sfml-system
         sfml-network
         Box2D_shared

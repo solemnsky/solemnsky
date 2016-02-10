@@ -2,18 +2,36 @@
 #include "util/methods.h"
 #include "gtest/gtest.h"
 
-const tg::Pack<std::string> stringPack = tg::StringPack();
+struct server_client {
+  unsigned int uid;
+  unsigned get_uid() const { return uid; }
+};
+
+unsigned int nextUid = 0;
+void initClient(server_client &client, const char *ip) {
+  client.uid = nextUid;
+  nextUid++;
+}
 
 class TelegraphFixture: public testing::Test {
  public:
-  tg::Packet buffer;
-  tg::Telegraph<std::string, std::string> telegraph1, telegraph2;
+  enetpp::client client;
+  enetpp::server<server_client> server;
 
-  TelegraphFixture() :
-      telegraph1(4242, stringPack, stringPack),
-      telegraph2(4243, stringPack, stringPack) { }
+  TelegraphFixture() {
+    enetpp::global_state::get().initialize();
+    server.start_listening(
+        enetpp::server_listen_params<server_client>().
+            set_max_client_count(20).
+            set_channel_count(1).
+            set_listen_port(801).
+            set_initialize_client_function(initClient));
+  }
 
-  ~TelegraphFixture() { }
+  ~TelegraphFixture() {
+    server.stop_listening();
+    enetpp::global_state::get().deinitialize();
+  }
 };
 
 /**
@@ -22,17 +40,8 @@ class TelegraphFixture: public testing::Test {
 TEST_F(TelegraphFixture, TransmitReceive) {
   const std::string message{"hello world"};
 
-  // transmit
-  telegraph1.transmit(message, {"localhost"}, 4243);
-
-  // receive
-  std::string result;
-  bool received = false;
-  while (!received) {
-    telegraph2.receive([&](tg::Reception<std::string> &&reception) {
-      result = reception.value;
-      received = true;
-    });
-  }
-  EXPECT_EQ(result, message);
+  client.connect(
+      enetpp::client_connect_params()
+          .set_channel_count(1)
+          .set_server_host_name_and_port("localhost", 801));
 }

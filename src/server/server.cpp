@@ -88,7 +88,8 @@ void Server::processConnection(
       sendToClient(ServerAcceptConnection(arena, pid), clients.at(pid));
 
       appLog("new client joined from IP " +
-                 reception.address + ", assuming PID " + std::to_string(pid),
+                 reception.address.toString() + ", assuming PID " +
+                 std::to_string(pid),
              LogOrigin::Server);
       break;
     };

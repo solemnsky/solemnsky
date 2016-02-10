@@ -7,3 +7,6 @@
 [submodule "thirdparty/googletest"]
 	path = tests/googletest
 	url = https://github.com/google/googletest
+[submodule "thirdparty/enet"]
+	path = thirdparty/enet
+	url = https://github.com/lsalzman/enet
