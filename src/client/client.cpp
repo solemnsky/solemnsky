@@ -143,7 +143,7 @@ bool Client::handle(const sf::Event &event) {
   if (event.type == sf::Event::KeyPressed
       and event.key.code == sf::Keyboard::Escape) {
     // the escape key, unfocuses pages / focuses the game
-    if (shared.ui.pageFocused()) {
+    if (!shared.ui.gameFocused() and !shared.ui.menuFocused()) {
       referencePage(shared.ui.focusedPage).onLooseFocus();
       shared.ui.unfocusPage();
     } else if (shared.game) {

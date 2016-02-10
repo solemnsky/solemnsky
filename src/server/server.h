@@ -47,7 +47,7 @@ class Server {
   void processFromClient(sky::PID pid,
                          const sky::prot::ClientPacket &packet);
   void processConnection(
-      tg::Reception<sky::prot::ClientPacket> &&reception);
+      const tg::Reception<sky::prot::ClientPacket> &reception);
 
  public:
   Server();

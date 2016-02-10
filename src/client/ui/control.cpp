@@ -73,7 +73,7 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
   /**
    * Create the window.
    */
-  appLog(LogType::Notice, "Creating window / various things ...");
+  appLog("Creating window / various things ...", LogOrigin::App);
 
   sf::ContextSettings settings;
   settings.antialiasingLevel = 8;
@@ -83,7 +83,7 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
   window.setKeyRepeatEnabled(false);
 
   ui::Profiler profiler{100};
-  Cooldown profileCooldown{500}, resizeCooldown{1};
+  Cooldown resizeCooldown{1};
 
   sf::Clock cycleClock, profileClock;
   constexpr float tickStep = 1 / 60.0f;
@@ -91,12 +91,12 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
 
   Frame frame(window);
   sf::Event event;
-  appLog(LogType::Notice, "Finished creating window.");
+  appLog("Finished creating window.", LogOrigin::App);
 
   /**
    * Create appState, start game loop.
    */
-  appLog(LogType::Notice, "Running application...");
+  appLog("Running application...", LogOrigin::App);
 
   AppState appState(&window, &profiler);
 
@@ -130,11 +130,6 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
     ctrl->signalRead();
     ctrl->signalClear();
 
-    if (profileCooldown.cool(1)) {
-      appLog(LogType::Info, profiler.print());
-      profileCooldown.reset();
-    }
-
     /*
      * Events
      * Here we process any events that were added to the cue during our
@@ -142,7 +137,7 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
      */
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed) {
-        appLog(LogType::Notice, "Caught close signal.");
+        appLog("Caught close signal.", LogOrigin::App);
         window.close();
       }
 
@@ -174,7 +169,7 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
     if (!window.hasFocus()) sf::sleep(sf::milliseconds(16));
   }
 
-  appLog(LogType::Notice, "Exiting app, goodbye!");
+  appLog("Exiting app, goodbye!", LogOrigin::App);
 }
 
 }

@@ -69,7 +69,7 @@ void Sky::killPlane(const PID pid) {
 void Sky::fireLaser(const PID pid) {
   if (auto *state = getPlane(pid)) {
     if (state->vital->requestDiscreteEnergy(0.3)) {
-      appLog(LogType::Debug, "PEW PEW");
+      appLog("PEW PEW");
     }
   }
 }

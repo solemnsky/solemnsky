@@ -12,17 +12,20 @@
  * Canonical log messages with some handy formatting.
  */
 
-enum class LogType {
-  Info, // you might like to know it
-  Notice, // you should know it
-  Error, // you will know it
-  Debug // debugging
+enum class LogOrigin {
+  None, // not specified
+  Engine, // something deep in the engine
+  Network, // transmission stuff
+  App, // multimedia management for clients
+  Client, // misc. things for clients
+  Server, // misc. things for servers
+  Error // is a fatal error
 };
 
 /**
  * Logging / error throwing functions.
  */
-void appLog(LogType type, const std::string &contents);
+void appLog(const std::string &contents, const LogOrigin = LogOrigin::None);
 void appErrorLogic(const std::string &contents); // log and throw
 void appErrorRuntime(const std::string &contents); // log and throw
 
@@ -30,8 +33,8 @@ void appErrorRuntime(const std::string &contents); // log and throw
  * Logging for memory leaks.
  */
 
-#define CTOR_LOG(str) appLog(LogType::Debug, "CTOR -> " + (std::string) str)
-#define DTOR_LOG(str) appLog(LogType::Debug, "DTOR <- " + (std::string) str)
+#define CTOR_LOG(str) appLog("CTOR -> " + (std::string) str)
+#define DTOR_LOG(str) appLog("DTOR <- " + (std::string) str)
 
 /****
  * For some reason sf::Vector has no math utilities, here are some.

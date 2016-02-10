@@ -75,15 +75,21 @@ void Server::processFromClient(sky::PID pid,
 }
 
 void Server::processConnection(
-    tg::Reception<sky::prot::ClientPacket> &&reception) {
+    const tg::Reception<sky::prot::ClientPacket> &reception) {
   using namespace sky::prot;
 
   switch (reception.value.type) {
     case ClientPacket::Type::ReqConnection: {
+      appLog("processing connection request...");
+
       sky::PID pid = getFreePID();
       clients.emplace(
           pid, PlayerClient(reception.address, *reception.value.port));
       sendToClient(ServerAcceptConnection(arena, pid), clients.at(pid));
+
+      appLog("new client joined from IP " +
+                 reception.address + ", assuming PID " + std::to_string(pid),
+             LogOrigin::Server);
       break;
     };
     default:
@@ -99,7 +105,7 @@ void Server::tick(float delta) {
     if (optional<sky::PID> pid = clientFromIP(reception.address)) {
       processFromClient(*pid, reception.value);
     } else {
-      processConnection(std::move(reception));
+      processConnection(reception);
     }
   });
 }
