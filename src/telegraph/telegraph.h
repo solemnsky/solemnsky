@@ -7,6 +7,7 @@
 
 #include "enet/enet.h"
 #include "util/types.h"
+#include "pack.h"
 
 namespace tg {
 
@@ -51,6 +52,42 @@ class Host {
                 const ENetPacketFlag flag);
   ENetEvent poll();
 };
+
+/**
+ * Simple helper to hold some boring data and help transmit / receive packets
+ * serialized with our Pack system.
+ */
+template<typename ReceiveType, typename TransmitType>
+class Telegraph {
+ private:
+  ReceiveType receiveBuffer;
+  Packet packetBuffer;
+
+  Pack<ReceiveType> receiveRule;
+  Pack<TransmitType> transmitRule;
+
+ public:
+  Telegraph() = delete;
+  Telegraph(Pack<ReceiveType> receiveRule, Pack<TransmitType> transmitRule) :
+      receiveRule(receiveRule), transmitRule(transmitRule) { }
+
+  void transmit(Host &host, ENetPeer *const peer,
+                const TransmitType &value,
+                ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
+    packInto(transmitRule, value, packetBuffer);
+    host.transmit(peer, packetBuffer.getRaw(), packetBuffer.getSize(),
+                  flag);
+  }
+
+  ReceiveType receive(const ENetPacket *packet) {
+    packetBuffer.setSize(packet->dataLength);
+    strcpy((char *) packetBuffer.getRaw(), (char *) packet->data);
+    unpackInto(receiveRule, packetBuffer, receiveBuffer);
+    return receiveBuffer;
+  }
+};
+
+
 
 }
 

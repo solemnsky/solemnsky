@@ -25,7 +25,6 @@ UsageFlag::~UsageFlag() {
   }
 }
 
-
 /**
  * Host.
  */
@@ -37,7 +36,7 @@ Host::Host(const bool isServer, const unsigned short port) {
     host = enet_host_create(&address, 32, 1, 0, 0);
   } else {
     // sensible upstream / downstream limits
-    host = enet_host_create(nullptr, 1, 1, 57600, 14400);
+    host = enet_host_create(nullptr, 3, 1, 57600 / 8, 14400 / 8);
   }
 
   if (host == NULL) appErrorRuntime("Failed to initialize ENet host!");
