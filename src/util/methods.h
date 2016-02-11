@@ -15,7 +15,7 @@
 enum class LogOrigin {
   None, // not specified
   Engine, // something deep in the engine
-  Network, // transmission stuff
+  Network, // network / enet stuff
   App, // multimedia management for clients
   Client, // misc. things for clients
   Server, // misc. things for servers

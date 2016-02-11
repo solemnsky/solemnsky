@@ -2,7 +2,7 @@ project(solemnsky)
 
 # tool / compiler versions
 cmake_minimum_required(VERSION 3.2)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # we depend on Box2D, SFML, and enet, from submodules in thirdparty/
 add_subdirectory("thirdparty/Box2D/Box2D")
