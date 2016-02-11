@@ -102,7 +102,7 @@ void PacketWriter::writeBit(const bool x) {
  * PacketReader.
  */
 
-PacketReader::PacketReader(Packet const *packet) :
+PacketReader::PacketReader(const Packet *packet) :
     packet(packet), head(0), offset(0) { }
 
 unsigned char PacketReader::accessHead() const {

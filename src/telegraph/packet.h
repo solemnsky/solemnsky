@@ -80,15 +80,14 @@ public:
  */
 struct PacketReader {
 private:
-  Packet const *packet;
+  const Packet *packet;
   size_t head;
   unsigned char offset;
 
   unsigned char accessHead() const;
 
 public:
-
-  PacketReader(Packet const *packet);
+  PacketReader(const Packet *packet);
 
   unsigned char readChar();
   bool readBit();

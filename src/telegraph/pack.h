@@ -51,7 +51,7 @@ T unpack(const Pack<T> &rules, Packet &packet) {
 }
 
 template<typename T>
-void unpackInto(const Pack<T> &rules, Packet &packet, T &value) {
+void unpackInto(const Pack<T> &rules, const Packet &packet, T &value) {
   PacketReader reader{&packet};
   rules.unpack(reader, value);
 }
