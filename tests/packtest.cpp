@@ -45,6 +45,7 @@ TEST_F(PackFixture, Rules) {
   const tg::Pack<optional<std::string>> optPack =
       tg::OptionalPack<std::string>(stringPack);
   const tg::Pack<MyEnum> enumPack = tg::EnumPack<MyEnum>(2);
+  const tg::Pack<std::list<float>> listPack = tg::ListPack<float>(floatPack);
 
   const float testFloat = 5.23f;
   tg::packInto(floatPack, testFloat, buffer);
@@ -66,6 +67,11 @@ TEST_F(PackFixture, Rules) {
   tg::packInto(enumPack, testEnum, buffer);
   EXPECT_EQ(tg::unpack(enumPack, buffer), testEnum);
   EXPECT_EQ(buffer.size, 1);
+
+  const std::list<float> testList = {1, 2, 3, 4};
+  tg::packInto(listPack, testList, buffer);
+  EXPECT_EQ(tg::unpack(listPack, buffer), testList);
+  EXPECT_EQ(buffer.size, (sizeof(float) * 4) + sizeof(size_t));
 }
 
 /**

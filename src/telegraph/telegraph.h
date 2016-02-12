@@ -26,6 +26,11 @@ struct UsageFlag {
 };
 
 /**
+ * Host type: client or server.
+ */
+enum class HostType { Client, Server };
+
+/**
  * General encapsulation of a ENetHost.
  */
 class Host {
@@ -34,7 +39,7 @@ class Host {
   ENetEvent event;
 
  public:
-  Host(const bool isServer,
+  Host(const HostType type,
        const unsigned short port = 0);
   ~Host();
 
@@ -87,9 +92,6 @@ class Telegraph {
   }
 };
 
-
-
 }
-
 
 #endif //SOLEMNSKY_TELEGRAPH_H

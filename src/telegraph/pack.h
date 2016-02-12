@@ -5,6 +5,7 @@
 #define SOLEMNSKY_PACK_H
 
 #include "packet.h"
+#include <list>
 #include <functional>
 #include <map>
 #include <string>
@@ -79,7 +80,6 @@ struct AssignPack: Pack<B> {
         value = aValue;
       }) { }
 };
-
 
 /**
  * Pack a boolean in one bit. Doesn't get more space-efficent than this.
@@ -173,6 +173,31 @@ struct MapPack: Pack<std::map<K, V>> {
               map.emplace(key, value);
             }
           }) { }
+};
+
+/**
+ * Packs a std::list, using a certain type to serialize its size.
+ */
+template<typename T, typename SizeT = size_t>
+struct ListPack: Pack<std::list<T>> {
+  ListPack(const Pack<T> &rule) :
+      Pack<std::list<T>>(
+          [rule](PacketWriter &writer, const std::list<T> &list) {
+            writer.writeValue<SizeT>(list.size());
+            for (auto &value : list)
+              rule.pack(writer, value);
+          },
+          [rule](PacketReader &reader, std::list<T> &list) {
+            list.clear();
+            SizeT i = reader.readValue<SizeT>();
+            T value;
+            while (i > 0) {
+              i--;
+              rule.unpack(reader, value);
+              list.push_back(value);
+            }
+          }
+      ) { }
 };
 
 /**

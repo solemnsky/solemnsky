@@ -12,27 +12,26 @@
 
 namespace sky {
 namespace prot {
+
 /**
  * Stuff clients say.
  */
 struct ClientPacket {
   enum class Type {
     Ping,
-    ReqConnection, // request a connection, supplying a preferred nickname
-    ReqNickChange, // request to change the nickname, supplying it
+    ReqConnection, // request to finalize connection (enet is already connected)
+    ReqNick, // request to change the nickname, supplying it
     Chat // try to send a chat message
   };
 
   ClientPacket() = default;
 
   ClientPacket(const Type type,
-               const optional<std::string> &stringData = {},
-               const optional<unsigned short> &port = {}) :
+               const optional<std::string> &stringData = {}) :
       type(type), stringData(stringData) { }
 
   Type type;
   optional<std::string> stringData;
-  optional<unsigned short> port; // port the client wants to listen on
 };
 
 struct ClientPing: public ClientPacket {
@@ -40,13 +39,13 @@ struct ClientPing: public ClientPacket {
 };
 
 struct ClientReqConnection: public ClientPacket {
-  ClientReqConnection(const std::string &nick, const unsigned short port) :
-      ClientPacket(ClientPacket::Type::ReqConnection, nick, port) { }
+  ClientReqConnection(const std::string &nick) :
+      ClientPacket(ClientPacket::Type::ReqConnection, nick) { }
 };
 
-struct ClientReqNickChange: public ClientPacket {
-  ClientReqNickChange(const std::string &nick) :
-      ClientPacket(ClientPacket::Type::ReqNickChange, nick) { }
+struct ClientReqNick: public ClientPacket {
+  ClientReqNick(const std::string &nick) :
+      ClientPacket(ClientPacket::Type::ReqNick, nick) { }
 };
 
 struct ClientChat: public ClientPacket {
@@ -125,13 +124,13 @@ const Pack<prot::ClientPacket> clientPacketPack =
 #undef member
 
 /**
- * Player.
+ * PlayerRecord.
  */
 #define member(TYPE, PTR, RULE) \
   MemberRule<Player, TYPE>(RULE, &Player::PTR)
-const Pack<Player> playerPack =
-    ClassPack<Player>(
-        member(std::string, nickname, stringPack)
+const Pack<PlayerRecord> playerRecordPack =
+    ClassPack<PlayerRecord>(
+        member(optional<std::string>, nickname, optStringPack)
     );
 #undef member
 
@@ -142,13 +141,16 @@ const Pack<Player> playerPack =
   MemberRule<Arena, TYPE>(RULE, &Arena::PTR)
 const Pack<Arena> arenaPack =
     ClassPack<Arena>(
-        MemberRule<Arena, std::map<PID, Player>>(
-            MapPack<PID, Player>(pidPack, playerPack),
-            &Arena::players),
+        MemberRule<Arena, std::list<PlayerRecord>>(
+            ListPack<PlayerRecord>(playerRecordPack),
+            &Arena::playerRecords),
         member(std::string, motd, stringPack)
     );
 #undef member
 
+/**
+ * ServerPacket.
+ */
 #define member(TYPE, PTR, RULE) \
   MemberRule<prot::ServerPacket, TYPE>(RULE, &prot::ServerPacket::PTR)
 const Pack<prot::ServerPacket> serverPacketPack =

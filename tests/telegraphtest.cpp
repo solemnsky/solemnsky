@@ -22,10 +22,9 @@ ENetEvent processHosts(tg::Host &host1, tg::Host &host2) {
  * We can transmit and receive stuff from telegraphs okay.
  */
 
-
 TEST_F(TelegraphFixture, TransmitReceive) {
-  tg::Host server(true, 4242);
-  tg::Host client(false);
+  tg::Host server(tg::HostType::Server, 4242);
+  tg::Host client(tg::HostType::Client);
   ENetEvent event;
   ENetPeer *serverPeer;
   ENetPeer *clientPeer;

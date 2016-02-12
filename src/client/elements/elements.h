@@ -46,8 +46,14 @@ public:
 
   bool concluded;
 
+  // when the UI gains focus over the game
   virtual void onLooseFocus() = 0;
+
+  // when the UI gives focus to the game
   virtual void onFocus() = 0;
+
+  // try to exit, set Control::conclude flag eventually
+  virtual void onExit() = 0;
 
   std::string name; // description of the game
   std::string status; // brief status of the game

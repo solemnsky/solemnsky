@@ -75,6 +75,8 @@ public:
    */
   void beginGame(std::unique_ptr<Game> &&game);
   void unfocusGame();
+  void exitGame();
+
   void focusPage(const PageType type);
   void unfocusPage();
 };
