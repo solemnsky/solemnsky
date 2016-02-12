@@ -18,7 +18,7 @@ include_directories(
         thirdparty/SFML/include/
         thirdparty/Box2D/Box2D/
         thirdparty/enet/include/
-        thirdparty/enetpp/include/
+        #        thirdparty/enetpp/include/
         "${Boost_INCLUDE_DIRS}"
 )
 

@@ -18,52 +18,43 @@ class MultiplayerClient: public Game {
   ui::TextLog messageLog;
 
   /**
-   * Connection details.
+   * Connection state / network stuff.
    */
-  const sf::IpAddress serverAddress;
-  const unsigned short serverPort, clientPort;
-
-  /**
-   * Connection state.
-   */
-  tg::Telegraph<sky::prot::ClientPacket, sky::prot::ServerPacket> telegraph;
+  tg::Host host;
+  ENetPeer *server;
+  tg::Telegraph<sky::prot::ServerPacket, sky::prot::ClientPacket> telegraph;
   Cooldown pingCooldown;
 
   bool triedConnection; // have we sent a verbs requesting connection yet?
-  bool connected;
+  bool connected; // we've initialized the Arena
+
+  ENetEvent event; // volatile
 
   /**
    * Local model of the Arena / game state.
    * Use with discretion until 'connected'.
    */
-  sky::PID myPID;
+  sky::PlayerRecord *myRecord;
   sky::Arena arena;
-  sky::Sky sky;
-  sky::Render renderSystem;
 
   /**
-   * Helpers.
+   * Networking submethods.
    */
   void transmitServer(const sky::prot::ClientPacket &packet);
-
-  /**
-   * Packet processing subroutines.
-   */
-  void handleGamePacket(tg::Reception<sky::prot::ServerPacket> &&reception);
-  void handleConnectionPacket
-      (tg::Reception<sky::prot::ServerPacket> &&reception);
+  // handle a network poll, assuming we're connected / initialized
+  void handleNetwork(const ENetEvent &event);
 
  public:
   MultiplayerClient(ClientShared &state,
-                    const sf::IpAddress &serverAddress,
-                    const unsigned short serverPort,
-                    const unsigned short clientPort);
+                    const std::string &serverHostname,
+                    const unsigned short serverPort);
 
   /**
    * Game interface.
    */
   void onLooseFocus() override;
   void onFocus() override;
+  void onExit() override;
 
   /**
    * Control interface.

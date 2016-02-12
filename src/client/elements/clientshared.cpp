@@ -62,6 +62,10 @@ void ClientShared::unfocusGame() {
   client->unfocusGame();
 }
 
+void ClientShared::exitGame() {
+  game->onExit();
+}
+
 void ClientShared::focusPage(const PageType type) {
   client->focusPage(type);
 }

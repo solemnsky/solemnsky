@@ -11,13 +11,26 @@
 
 class Server {
  private:
+  tg::UsageFlag flag; // for enet global state
+
   double uptime;
 
-  optional<sky::Sky> sky;
   sky::Arena arena;
 
+  /**
+   * Connection stuff.
+   */
+  tg::Host host;
+  tg::Telegraph<sky::prot::ClientPacket, sky::prot::ServerPacket> telegraph;
+  ENetEvent event;
+
+  /**
+   * Packet processing subroutines.
+   */
+  void processPacket(ENetPeer *client, const sky::prot::ClientPacket &packet);
+
  public:
-  Server();
+  Server(const unsigned short port);
 
   void tick(float delta);
 

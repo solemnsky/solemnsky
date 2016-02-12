@@ -13,7 +13,7 @@
 
 namespace sky {
 
-typedef int PID; // ID for elements in the game
+typedef unsigned int PID; // ID for elements in the game
 
 /**
  * Subsystem abstraction, representing a module that attaches to Sky events

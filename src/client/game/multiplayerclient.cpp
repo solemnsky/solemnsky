@@ -2,65 +2,37 @@
 #include "util/methods.h"
 
 MultiplayerClient::MultiplayerClient(ClientShared &state,
-                                     const sf::IpAddress &serverAddress,
-                                     const unsigned short serverPort,
-                                     const unsigned short clientPort) :
+                                     const std::string &serverHostname,
+                                     const unsigned short serverPort) :
     Game(state, "multiplayer"),
 
     quitButton({100, 50}, "quit tutorial"),
     chatEntry({20, 850}, "[enter] to chat"),
     messageLog({20, 840}),
 
-    serverAddress(serverAddress),
-    serverPort(serverPort),
-    clientPort(clientPort),
-
-    triedConnection(false),
-    connected(false),
-    telegraph(clientPort, sky::pk::clientPacketPack, sky::pk::serverPacketPack),
+    host(tg::HostType::Client),
+    server(nullptr),
+    telegraph(sky::pk::serverPacketPack, sky::pk::clientPacketPack),
     pingCooldown(5),
-    sky({}),
-    renderSystem(&sky) {
-  sky.linkSystem(&renderSystem);
+    connected(false) {
+  host.connect(serverHostname, serverPort);
 }
-
-void MultiplayerClient::handleConnectionPacket(
-    tg::Reception<sky::prot::ServerPacket> &&reception) {
-  using namespace sky::prot;
-
-  switch (reception.value.type) {
-    case ServerPacket::Type::AcceptConnection: {
-      arena = *reception.value.arena;
-      myPID = *reception.value.pid;
-      appLog("connected to server! MotD is: " + arena.motd, LogOrigin::Client);
-      break;
-    }
-    default:
-      break;
-  }
-}
+/**
+ * Networking submethods.
+ */
 
 void MultiplayerClient::transmitServer(const sky::prot::ClientPacket &packet) {
-  telegraph.transmit(packet, serverAddress, serverPort);
+  if (server) telegraph.transmit(host, server, packet);
 }
 
-void MultiplayerClient::handleGamePacket(
-    tg::Reception<sky::prot::ServerPacket> &&reception) {
-  using namespace sky::prot;
-  switch (reception.value.type) {
-    case ServerPacket::Type::Pong: {
-      appLog("received pong from server!");
-      break;
-    }
-    case ServerPacket::Type::Message: {
-      appLog("received message from server: " + *reception.value.stringData);
-      messageLog.pushEntry(std::string(*reception.value.stringData));
-      break;
-    }
-    default:
-      break;
-  }
+
+void MultiplayerClient::handleNetwork(const ENetEvent &event) {
+
 }
+
+/**
+ * Game interface.
+ */
 
 void MultiplayerClient::onLooseFocus() {
   quitButton.reset();
@@ -71,42 +43,44 @@ void MultiplayerClient::onFocus() {
 
 }
 
-void MultiplayerClient::tick(float delta) {
-  sky.tick(delta);
+void MultiplayerClient::onExit() {
+  // we could try to disconnect from the server gracefully here
+  concluded = true;
+}
 
+/**
+ * Control interface.
+ */
+
+void MultiplayerClient::tick(float delta) {
   quitButton.tick(delta);
   chatEntry.tick(delta);
   messageLog.tick(delta);
 
   using namespace sky::prot;
 
-  if (!triedConnection) {
-    transmitServer(
-        ClientReqConnection(shared.settings.preferredNickname, clientPort));
-    triedConnection = true;
-    appLog("sent connection request...", LogOrigin::Client);
+  if (!triedConnection)
+    transmitServer(ClientReqConnection(shared.settings.preferredNickname));
+
+  event = host.poll();
+  if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
+    server = nullptr;
+    onExit();
   }
 
-  if (!connected) {
-    telegraph.receive([&](tg::Reception<ServerPacket> &&reception) {
-      handleConnectionPacket(std::move(reception));
-    });
+  if (!server) {
+    // still trying to connect to the server...
+    if (event.type == ENET_EVENT_TYPE_CONNECT) server = event.peer;
   } else {
-    telegraph.receive([&](tg::Reception<ServerPacket> &&reception) {
-      handleGamePacket(std::move(reception));
-    });
-
-//    if (pingCooldown.cool(delta)) {
-//      transmitServer(ClientPing());
-//      appLog(LogOrigin::Info, "sending ping");
-//      pingCooldown.reset();
-//    }
+    if (!connected) {
+      if (event.type == ENET_EVENT_TYPE_RECEIVE)
+    } else {
+      handleNetwork(event);
+    }
   }
 }
 
 void MultiplayerClient::render(ui::Frame &f) {
-  renderSystem.render(f, {});
-
   quitButton.render(f);
   chatEntry.render(f);
   messageLog.render(f);
