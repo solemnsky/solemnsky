@@ -28,7 +28,8 @@ UsageFlag::~UsageFlag() {
 /**
  * Host.
  */
-Host::Host(const HostType type, const unsigned short port) {
+Host::Host(const HostType type, const unsigned short port) :
+    host(nullptr) {
   switch (type) {
     case HostType::Server: {
       ENetAddress address;
@@ -36,14 +37,16 @@ Host::Host(const HostType type, const unsigned short port) {
       address.port = port;
       // no upstream / downstream bandwidth limits
       host = enet_host_create(&address, 32, 1, 0, 0);
+      break;
     }
     case HostType::Client: {
       // sensible upstream / downstream bandwidth limits
-      host = enet_host_create(nullptr, 1, 1, 57600 / 8, 14400 / 8);
+      host = enet_host_create(nullptr, 1, 3, 57600 / 8, 14400 / 8);
+      break;
     }
   }
 
-  if (host == NULL) appErrorRuntime("Failed to initialize ENet host!");
+  if (host == nullptr) appErrorRuntime("Failed to initialize ENet host!");
 }
 
 Host::~Host() {

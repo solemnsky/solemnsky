@@ -1,6 +1,6 @@
 /**
  * A model of a multiplayer arena, held by clients and servers. Persists
- * throughout server function, subordinates Sky.
+ * throughout server function.
  */
 #ifndef SOLEMNSKY_ARENA_H
 #define SOLEMNSKY_ARENA_H
@@ -17,6 +17,7 @@ struct PlayerRecord {
   PID pid;
   std::string nickname;
 
+  PlayerRecord(); // for packing
   PlayerRecord(const PID pid);
 
   bool operator==(const PlayerRecord &record); // are pids equal
@@ -24,12 +25,15 @@ struct PlayerRecord {
 
 class Arena {
  public:
+  Arena();
+
   std::list<PlayerRecord> playerRecords;
   std::string motd; // the arena MotD
 
-  optional<Sky> sky;
+  // ... sky instantiation data ...
 
   PlayerRecord &connectPlayer();
+  PlayerRecord * getPlayer(const PID pid);
   void disconnectPlayer(const PlayerRecord &record);
 };
 

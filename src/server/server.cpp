@@ -16,6 +16,8 @@ void Server::processPacket(ENetPeer *client,
                            const sky::prot::ClientPacket &packet) {
   sky::PlayerRecord &record = *((sky::PlayerRecord *) client->data);
 
+  const std::string &pidString = std::to_string(record.pid);
+
   switch (packet.type) {
     case sky::prot::ClientPacket::Type::Ping: {
       appLog("received ping from " + record.pid, LogOrigin::Server);
@@ -26,7 +28,7 @@ void Server::processPacket(ENetPeer *client,
     }
     case sky::prot::ClientPacket::Type::ReqConnection: {
       appLog(
-          "client " + record.pid + " joining server with nick "
+          "client " + pidString + " joining server with nick "
               + *packet.stringData,
           LogOrigin::Server);
       record.nickname = *packet.stringData;
@@ -34,14 +36,16 @@ void Server::processPacket(ENetPeer *client,
     }
     case sky::prot::ClientPacket::Type::ReqNick: {
       appLog(
-          "client " + record.pid + " changing nick to " + *packet.stringData,
+          "client " + pidString + " changing nick to "
+              + *packet.stringData,
           LogOrigin::Server);
       record.nickname = *packet.stringData;
       break;
     }
     case sky::prot::ClientPacket::Type::Chat: {
       appLog(
-          "client " + record.pid + " says: " + *packet.stringData,
+          "client " + pidString + " says: " + *packet
+              .stringData,
           LogOrigin::Server);
       break;
     }
@@ -73,7 +77,7 @@ void Server::tick(float delta) {
 }
 
 int main() {
-  Server server(0);
+  Server server(4242);
   sf::Clock clock;
 
   while (server.running) {

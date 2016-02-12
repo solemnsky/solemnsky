@@ -36,6 +36,7 @@ TEST_F(TelegraphFixture, TransmitReceive) {
   EXPECT_EQ(event.type, ENET_EVENT_TYPE_CONNECT); // server gets connect event
   clientPeer = event.peer;
 
+  appLog("connected!");
   // **we're connected and all synced up**
 
   const tg::Pack<std::string> stringPack = tg::StringPack();
