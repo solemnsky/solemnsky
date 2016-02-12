@@ -6,6 +6,7 @@
 #define SOLEMNSKY_PROTOCOL_H
 
 #include "util/types.h"
+#include "delta.h"
 #include "telegraph/pack.h"
 #include "arena.h"
 #include <map>
@@ -93,6 +94,10 @@ struct ServerAcceptConnection: public ServerPacket {
       ServerPacket(ServerPacket::Type::AcceptConnection, {}, arena, pid) { }
 };
 
+struct ServerNotifyConnection: public ServerPacket {
+
+};
+
 struct ServerMessage: public ServerPacket {
   ServerMessage(std::string &&message) :
       ServerPacket(ServerPacket::Type::Message, message) { }
@@ -127,10 +132,11 @@ const Pack<prot::ClientPacket> clientPacketPack =
  * PlayerRecord.
  */
 #define member(TYPE, PTR, RULE) \
-  MemberRule<Player, TYPE>(RULE, &Player::PTR)
+  MemberRule<PlayerRecord, TYPE>(RULE, &PlayerRecord::PTR)
 const Pack<PlayerRecord> playerRecordPack =
     ClassPack<PlayerRecord>(
-        member(optional<std::string>, nickname, optStringPack)
+        member(bool, connected, boolPack),
+        member(std::string, nickname, stringPack)
     );
 #undef member
 

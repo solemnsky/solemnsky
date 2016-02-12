@@ -22,9 +22,8 @@ MultiplayerClient::MultiplayerClient(ClientShared &state,
  */
 
 void MultiplayerClient::transmitServer(const sky::prot::ClientPacket &packet) {
-  if (server) telegraph.transmit(host, server, packet);
+  if (server and connected) telegraph.transmit(host, server, packet);
 }
-
 
 void MultiplayerClient::handleNetwork(const ENetEvent &event) {
 
@@ -59,21 +58,35 @@ void MultiplayerClient::tick(float delta) {
 
   using namespace sky::prot;
 
-  if (!triedConnection)
+  if (!triedConnection) {
     transmitServer(ClientReqConnection(shared.settings.preferredNickname));
+    appLog("Connecting to server...", LogOrigin::Client);
+  }
 
   event = host.poll();
   if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
     server = nullptr;
+    appLog("Disconnected from server!", LogOrigin::Client);
     onExit();
   }
 
   if (!server) {
     // still trying to connect to the server...
-    if (event.type == ENET_EVENT_TYPE_CONNECT) server = event.peer;
+    if (event.type == ENET_EVENT_TYPE_CONNECT) {
+      server = event.peer;
+      appLog("Found server...", LogOrigin::Client);
+    }
   } else {
     if (!connected) {
-      if (event.type == ENET_EVENT_TYPE_RECEIVE)
+      if (event.type == ENET_EVENT_TYPE_RECEIVE) {
+        const ServerPacket &packet = telegraph.receive(event.packet);
+        if (packet.type == ServerPacket::Type::AcceptConnection) {
+          arena = *packet.arena;
+          myRecord = arena.getPlayer(*packet.pid);
+          connected = true;
+          appLog("Connected to server!", LogOrigin::Client);
+        }
+      }
     } else {
       handleNetwork(event);
     }
