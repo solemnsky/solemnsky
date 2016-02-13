@@ -23,6 +23,12 @@ struct PlayerRecord {
   bool operator==(const PlayerRecord &record); // are pids equal
 };
 
+struct PlayerRecordDelta {
+  bool connected; // sets connection state
+  optional<std::string> nickname; // exists if nickname changed
+  // ... potentially other things ...
+};
+
 class Arena {
  public:
   Arena();
@@ -32,9 +38,23 @@ class Arena {
 
   // ... sky instantiation data ...
 
+  /**
+   * Shared API.
+   */
+  PlayerRecord *getRecord(const PID pid);
+
+  /**
+   * For servers.
+   */
   PlayerRecord &connectPlayer();
-  PlayerRecord * getPlayer(const PID pid);
   void disconnectPlayer(const PlayerRecord &record);
+
+  /**
+   * For clients.
+   */
+  void applyConnection(const PlayerRecord &record);
+  void applyRecordDelta(const PID pid, const PlayerRecordDelta);
+  void applyDisconnection(const PID pid);
 };
 
 }

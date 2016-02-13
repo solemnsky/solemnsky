@@ -1,9 +1,8 @@
 #include <cmath>
-#include <assert.h>
+
 #include "splash.h"
 #include "util/methods.h"
-#include "util/types.h"
-#include "profiler.h"
+#include "telegraph/telegraph.h"
 #include "control.h"
 
 namespace {
@@ -74,6 +73,8 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
    * Create the window.
    */
   appLog("Creating window / various things ...", LogOrigin::App);
+
+  tg::UsageFlag flag; // for ENet initialization
 
   sf::ContextSettings settings;
   settings.antialiasingLevel = 8;

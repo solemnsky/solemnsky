@@ -8,6 +8,8 @@
 #include "enet/enet.h"
 #include "util/types.h"
 #include "pack.h"
+#include "util/methods.h"
+#include <boost/range/iterator_range_core.hpp>
 
 namespace tg {
 
@@ -51,6 +53,7 @@ class Host {
    * API.
    */
   ENetPeer *connect(const std::string &address, const unsigned short port);
+  boost::iterator_range<ENetPeer *> getPeers();
   void disconnect(ENetPeer *);
   void transmit(ENetPeer *const peer,
                 unsigned char *data, size_t size,
@@ -76,17 +79,54 @@ class Telegraph {
   Telegraph(Pack<ReceiveType> receiveRule, Pack<TransmitType> transmitRule) :
       receiveRule(receiveRule), transmitRule(transmitRule) { }
 
-  void transmit(Host &host, ENetPeer *const peer,
-                const TransmitType &value,
-                ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
+  /**
+   * Transmit a packet to one peer.
+   */
+  void transmit(
+      Host &host, ENetPeer *const peer,
+      const TransmitType &value,
+      ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
     packInto(transmitRule, value, packetBuffer);
+    appLog(">> " + packetBuffer.dump());
     host.transmit(peer, packetBuffer.getRaw(), packetBuffer.getSize(),
                   flag);
+  }
+
+  /**
+   * Transmit same packet to an iterator range of peers.
+   */
+  void transmitMult(
+      Host &host, const boost::iterator_range<ENetPeer *> &peers,
+      const TransmitType &value,
+      ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
+    packInto(transmitRule, value, packetBuffer);
+    appLog(">> " + packetBuffer.dump());
+    for (ENetPeer *peer = peers.begin(); peer != peers.end(); peer++)
+      host.transmit(peer, packetBuffer.getRaw(), packetBuffer.getSize(), flag);
+  }
+
+  /**
+   * Transmit same packet to the peers in an iterator range of peers
+   * that satisfy a predicate.
+   */
+  void transmitMultPred(
+      Host &host, const boost::iterator_range<ENetPeer *> &peers,
+      std::function<bool(ENetPeer *)> predicate,
+      const TransmitType &value,
+      ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
+    packInto(transmitRule, value, packetBuffer);
+    appLog(">> " + packetBuffer.dump());
+    for (ENetPeer *peer = peers.begin(); peer != peers.end(); peer++) {
+      if (predicate(peer))
+        host.transmit(
+            peer, packetBuffer.getRaw(), packetBuffer.getSize(), flag);
+    }
   }
 
   ReceiveType receive(const ENetPacket *packet) {
     packetBuffer.setSize(packet->dataLength);
     strcpy((char *) packetBuffer.getRaw(), (char *) packet->data);
+    appLog("<< " + packetBuffer.dump());
     unpackInto(receiveRule, packetBuffer, receiveBuffer);
     return receiveBuffer;
   }

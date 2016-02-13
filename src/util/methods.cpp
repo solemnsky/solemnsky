@@ -17,14 +17,14 @@ std::string showTime() {
 void appLog(const std::string &contents, const LogOrigin origin) {
 
   static std::vector<std::string> prefixes =
-      {"]:        ",
-       "engine]:  ",
-       "network]: ",
-       "app]:     ",
-       "client]:  ",
-       "server]:  ",
-       "ERROR]:   ",
-       "          "};
+      {"]        : ",
+       "engine]  : ",
+       "network] : ",
+       "app]     : ",
+       "client]  : ",
+       "server]  : ",
+       "ERROR]   : ",
+       "         : "};
 
   std::stringstream stream(contents);
   std::string line;

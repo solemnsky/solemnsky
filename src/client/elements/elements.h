@@ -53,7 +53,7 @@ public:
   virtual void onFocus() = 0;
 
   // try to exit, set Control::conclude flag eventually
-  virtual void onExit() = 0;
+  virtual void doExit() = 0;
 
   std::string name; // description of the game
   std::string status; // brief status of the game

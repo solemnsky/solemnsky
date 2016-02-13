@@ -26,7 +26,10 @@ class MultiplayerClient: public Game {
   Cooldown pingCooldown;
 
   bool triedConnection; // have we sent a verbs requesting connection yet?
-  bool connected; // we've initialized the Arena
+  bool arenaConnected; // we've initialized the Arena
+
+  bool disconnecting;
+  Cooldown disconnectTimeout;
 
   ENetEvent event; // volatile
 
@@ -54,7 +57,7 @@ class MultiplayerClient: public Game {
    */
   void onLooseFocus() override;
   void onFocus() override;
-  void onExit() override;
+  void doExit() override;
 
   /**
    * Control interface.
