@@ -40,6 +40,7 @@ add_library(solemnsky STATIC
         src/sky/physics.h
 
         src/sky/protocol.h
+        src/sky/protocol.cpp
 
         src/sky/sky.cpp
         src/sky/sky.h

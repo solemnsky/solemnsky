@@ -94,7 +94,6 @@ class Telegraph {
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
     packInto(transmitRule, value, packetBuffer);
-    appLog(">> " + packetBuffer.dumpBinary());
     host.transmit(peer, packetBuffer.getRaw(), packetBuffer.getSize(),
                   flag);
   }
@@ -107,7 +106,6 @@ class Telegraph {
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
     packInto(transmitRule, value, packetBuffer);
-    appLog(">> " + packetBuffer.dumpBinary());
     for (ENetPeer *peer : peers)
       host.transmit(peer, packetBuffer.getRaw(), packetBuffer.getSize(), flag);
   }
@@ -122,7 +120,6 @@ class Telegraph {
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
     packInto(transmitRule, value, packetBuffer);
-    appLog(">> " + packetBuffer.dumpBinary());
     for (ENetPeer *peer : peers) {
       if (predicate(peer))
         host.transmit(
@@ -132,8 +129,8 @@ class Telegraph {
 
   ReceiveType receive(const ENetPacket *packet) {
     packetBuffer.setSize(packet->dataLength);
-    strcpy((char *) packetBuffer.getRaw(), (char *) packet->data);
-    appLog("<< " + packetBuffer.dumpBinary());
+    unsigned char *raw = packetBuffer.getRaw();
+    for (size_t i = 0; i < packet->dataLength; i++) raw[i] = packet->data[i];
     unpackInto(receiveRule, packetBuffer, receiveBuffer);
     return receiveBuffer;
   }

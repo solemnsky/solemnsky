@@ -28,7 +28,8 @@ public:
   /**
    * Data.
    */
-  std::array<unsigned char, bufferSize> data; // statically allocated data
+  std::array<unsigned char, bufferSize> data;
+  // statically allocated data
   size_t size; // data that is actually used
   void reset();
 

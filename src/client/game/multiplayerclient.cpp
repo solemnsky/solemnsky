@@ -19,6 +19,7 @@ MultiplayerClient::MultiplayerClient(ClientShared &state,
     disconnecting(false),
     disconnectTimeout(1) {
   host.connect(serverHostname, serverPort);
+  messageLog.expanded = true;
 }
 
 /**
@@ -26,6 +27,7 @@ MultiplayerClient::MultiplayerClient(ClientShared &state,
  */
 
 void MultiplayerClient::transmitServer(const sky::prot::ClientPacket &packet) {
+  appLog("Transmitting: " + packet.dump());
   if (server)
     telegraph.transmit(host, server, packet);
 }
@@ -40,13 +42,25 @@ void MultiplayerClient::handleNetwork(const sky::prot::ServerPacket &packet) {
     case ServerPacket::Type::Pong:
       break;
     case ServerPacket::Type::NotifyConnection: {
-      arena.applyConnection(*packet.record);
+      messageLog.pushEntry("\"" + packet.record->nickname + "\" connecting...");
+      arena.applyConnection(*packet.pid);
       break;
     }
     case ServerPacket::Type::NotifyRecordDelta: {
+      if (sky::PlayerRecord *record = arena.getRecord(*packet.pid)) {
+        if (packet.recordDelta->connected) {
+          messageLog.pushEntry("\"" + record->nickname + "\" has joined!");
+        } else if (packet.recordDelta->nickname) {
+          messageLog.pushEntry("\"" + record->nickname + "\" changed name to"
+                                   + *packet.recordDelta->nickname);
+        }
+      }
       arena.applyRecordDelta(*packet.pid, *packet.recordDelta);
     }
     case ServerPacket::Type::NotifyDisconnection: {
+      if (sky::PlayerRecord *record = arena.getRecord(*packet.pid)) {
+        messageLog.pushEntry("<-- " + record->nickname);
+      }
       arena.applyDisconnection(*packet.pid);
     }
     case ServerPacket::Type::NotifyMessage: {
@@ -132,6 +146,7 @@ void MultiplayerClient::tick(float delta) {
 
     if (event.type == ENET_EVENT_TYPE_RECEIVE) {
       const ServerPacket &packet = telegraph.receive(event.packet);
+      appLog("Receiving: " + packet.dump());
 
       if (arenaConnected) {
         handleNetwork(packet);
@@ -153,12 +168,16 @@ void MultiplayerClient::tick(float delta) {
 }
 
 void MultiplayerClient::render(ui::Frame &f) {
+  f.drawSprite(textureOf(Res::Title), {0, 0}, {0, 0, 1600, 900});
+
   quitButton.render(f);
   chatEntry.render(f);
   messageLog.render(f);
 
   if (!server) {
     f.drawText({400, 400}, {"Connecting..."}, 60, sf::Color::White);
+  } else if (disconnecting) {
+    f.drawText({400, 400}, {"Disconnecting..."}, 60, sf::Color::White);
   }
 }
 

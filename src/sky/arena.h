@@ -52,7 +52,7 @@ class Arena {
   /**
    * For clients.
    */
-  void applyConnection(const PlayerRecord &record);
+  void applyConnection(const PID pid);
   void applyRecordDelta(const PID pid, const PlayerRecordDelta);
   void applyDisconnection(const PID pid);
 };

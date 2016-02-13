@@ -31,6 +31,8 @@ class Server {
   void broadcastToClients(const sky::prot::ServerPacket &packet);
   void broadcastToClientsExcept(const sky::PID pid,
                                 const sky::prot::ServerPacket &packet);
+  void transmitToClient(ENetPeer *const client,
+                        const sky::prot::ServerPacket &packet);
 
   // every peer has a record in the arena associated with it
   sky::PlayerRecord &recordFromPeer(ENetPeer *peer) const;

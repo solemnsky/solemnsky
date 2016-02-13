@@ -120,7 +120,7 @@ unsigned char PacketReader::readChar() {
     return headVal;
   } else {
     return (headVal >> offset)
-           | (accessHead() << (8 - offset));
+        | (accessHead() << (8 - offset));
   }
 }
 

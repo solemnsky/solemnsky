@@ -7,6 +7,7 @@
 #include "packet.h"
 #include <list>
 #include <functional>
+#include "util/methods.h"
 #include <map>
 #include <string>
 
@@ -100,9 +101,10 @@ struct EnumPack: Pack<Enum> {
       },
       [bits](PacketReader &reader, Enum &value) {
         unsigned char newValue = 0;
-        for (unsigned char i = 0; i < bits; i++)
+        for (unsigned char i = 0; i < bits; i++) {
           if (reader.readBit())
-            newValue = (unsigned char) ((unsigned char) value | (1 << i));
+            newValue = (unsigned char) (newValue | (1 << i));
+        }
         value = static_cast<Enum>(newValue);
       }) { }
 };
