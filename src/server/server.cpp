@@ -17,13 +17,13 @@ Server::Server(const unsigned short port) :
  */
 
 void Server::broadcastToClients(const sky::prot::ServerPacket &packet) {
-  telegraph.transmitMult(host, host.getPeers(), packet);
+  telegraph.transmitMult(host, host.peers, packet);
 }
 
 void Server::broadcastToClientsExcept(const sky::PID pid,
                                       const sky::prot::ServerPacket &packet) {
   telegraph.transmitMultPred(
-      host, host.getPeers(),
+      host, host.peers,
       [&](ENetPeer *peer) {
         return recordFromPeer(peer).pid == pid;
       }, packet);
@@ -37,12 +37,15 @@ void Server::processPacket(ENetPeer *client,
                            const sky::prot::ClientPacket &packet) {
   // received a packet from a connected peer
 
+  appLog(std::to_string((int) packet.type));
+
   using namespace sky::prot;
   sky::PlayerRecord &record = recordFromPeer(client);
 
   if (packet.type == ClientPacket::Type::Ping) {
     // we always send a pong to ping requests
     telegraph.transmit(host, client, ServerPong());
+    return;
   }
 
   const std::string &pidString = std::to_string(record.pid);
@@ -56,6 +59,17 @@ void Server::processPacket(ENetPeer *client,
               + *packet.stringData,
           LogOrigin::Server);
       record.nickname = *packet.stringData;
+      record.connected = true;
+      telegraph.transmit(host, client,
+                         ServerAcceptConnection(record.pid, arena));
+
+      sky::PlayerRecordDelta delta;
+      delta.connected = true;
+      delta.nickname = record.nickname;
+      broadcastToClientsExcept(
+          record.pid,
+          ServerNotifyRecordDelta(record.pid, delta)
+      );
     }
   } else {
     switch (packet.type) {
@@ -64,6 +78,7 @@ void Server::processPacket(ENetPeer *client,
             "client " + pidString + " says: " + *packet
                 .stringData,
             LogOrigin::Server);
+        broadcastToClients(ServerNotifyMessage(*packet.stringData, record.pid));
         break;
       }
     }
@@ -83,17 +98,20 @@ void Server::tick(float delta) {
       sky::PlayerRecord &record = arena.connectPlayer();
       appLog("Client connected, PID " + std::to_string(record.pid));
       event.peer->data = &record;
-
+      broadcastToClientsExcept(record.pid,
+                               sky::prot::ServerNotifyConnection(record));
       break;
     }
     case ENET_EVENT_TYPE_DISCONNECT: {
       sky::PlayerRecord &record = recordFromPeer(event.peer);
       appLog("Client disconnected, PID " + std::to_string(record.pid));
+      broadcastToClientsExcept(
+          record.pid,
+          sky::prot::ServerNotifyDisconnection("no reason given", record.pid));
       arena.disconnectPlayer(record);
       break;
     }
     case ENET_EVENT_TYPE_RECEIVE: {
-      appLog("Received packet.");
       processPacket(event.peer, telegraph.receive(event.packet));
       break;
     }

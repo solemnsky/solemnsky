@@ -66,7 +66,7 @@ void Arena::applyRecordDelta(const PID pid, const PlayerRecordDelta delta) {
 }
 
 void Arena::applyDisconnection(const PID pid) {
-  playerRecords.remove_if([](const PlayerRecord &record) {
+  playerRecords.remove_if([&](const PlayerRecord &record) {
     return record.pid == pid;
   });
 }

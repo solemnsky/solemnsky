@@ -24,7 +24,7 @@ void Packet::reset() {
   size = 0;
 }
 
-std::string Packet::dumpBinary() {
+std::string Packet::dumpBinary() const {
   std::string str;
   int i;
   for (int x = 0; x < size; x++) {
@@ -35,7 +35,7 @@ std::string Packet::dumpBinary() {
   return str;
 }
 
-std::string Packet::dump() {
+std::string Packet::dump() const {
   std::string str;
   for (int x = 0; x < size; x++) str += (char) data[x];
   return str;

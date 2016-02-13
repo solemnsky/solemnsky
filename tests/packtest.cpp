@@ -1,12 +1,13 @@
 #include "gtest/gtest.h"
 #include "telegraph/pack.h"
 #include "sky/protocol.h"
+#include "util/methods.h"
 
-class PackFixture: public testing::Test {
+class PackTest: public testing::Test {
  public:
-  PackFixture() { }
+  PackTest() { }
 
-  ~PackFixture() { }
+  ~PackTest() { }
 
   tg::Packet buffer;
 };
@@ -14,7 +15,7 @@ class PackFixture: public testing::Test {
 /**
  * PacketWriters and PacketReaders operate correctly.
  */
-TEST_F(PackFixture, ReadWrite) {
+TEST_F(PackTest, ReadWrite) {
   const tg::Pack<bool> boolPack = tg::BoolPack();
   const tg::Pack<int> intPack = tg::BytePack<int>();
 
@@ -40,7 +41,7 @@ TEST_F(PackFixture, ReadWrite) {
 enum class MyEnum {
   ValueA, ValueB, ValueC, ValueD
 };
-TEST_F(PackFixture, Rules) {
+TEST_F(PackTest, Rules) {
   const tg::Pack<float> floatPack = tg::BytePack<float>();
   const tg::Pack<std::string> stringPack = tg::StringPack();
   const tg::Pack<optional<std::string>> optPack =
@@ -92,7 +93,7 @@ const tg::Pack<MyStruct> classPack =
         tg::MemberRule<MyStruct, optional<int>>(optPack, &MyStruct::y)
     );
 
-TEST_F(PackFixture, ClassPack) {
+TEST_F(PackTest, ClassPack) {
   MyStruct myStruct;
   myStruct.x = 5;
   tg::packInto(classPack, myStruct, buffer);
@@ -104,7 +105,7 @@ TEST_F(PackFixture, ClassPack) {
 /**
  * Our MapPack rule works correctly.
  */
-TEST_F(PackFixture, MapPack) {
+TEST_F(PackTest, MapPack) {
   const tg::Pack<std::map<int, MyStruct>> mapPack =
       tg::MapPack<int, MyStruct>(intPack, classPack);
 
@@ -119,4 +120,18 @@ TEST_F(PackFixture, MapPack) {
   std::map<int, MyStruct> unpacked = tg::unpack(mapPack, buffer);
   EXPECT_EQ(unpacked[0].x, myStruct1.x);
   EXPECT_EQ(*unpacked[2].y, *myStruct2.y);
+}
+
+/**
+ * Our protocol verb packing works correctly.
+ */
+TEST_F(PackTest, ProtocolPack) {
+  using namespace sky::pk;
+  using namespace sky::prot;
+
+  ClientPacket packet = ClientReqConnection("nickname");
+  tg::packInto(clientPacketPack, packet, buffer);
+  tg::unpackInto(clientPacketPack, buffer, packet);
+  EXPECT_EQ(*packet.stringData, "nickname");
+  EXPECT_EQ(packet.type, ClientPacket::Type::ReqConnection);
 }

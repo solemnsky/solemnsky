@@ -40,6 +40,12 @@ class Host {
   ENetHost *host;
   ENetEvent event;
 
+  /**
+   * Keeping track of peers.
+   */
+  void registerPeer(ENetPeer *peer);
+  void unregisterPeer(ENetPeer *peer);
+
  public:
   Host(const HostType type,
        const unsigned short port = 0);
@@ -52,8 +58,8 @@ class Host {
   /**
    * API.
    */
+  std::vector<ENetPeer *> peers;
   ENetPeer *connect(const std::string &address, const unsigned short port);
-  boost::iterator_range<ENetPeer *> getPeers();
   void disconnect(ENetPeer *);
   void transmit(ENetPeer *const peer,
                 unsigned char *data, size_t size,
@@ -62,19 +68,20 @@ class Host {
 };
 
 /**
- * Simple helper to hold some boring data and help transmit / receive packets
+ * Simple helper to hold some boring buffers and help transmit / receive packets
  * serialized with our Pack system.
  */
 template<typename ReceiveType, typename TransmitType>
 class Telegraph {
  private:
   ReceiveType receiveBuffer;
-  Packet packetBuffer;
 
   Pack<ReceiveType> receiveRule;
   Pack<TransmitType> transmitRule;
 
  public:
+  Packet packetBuffer;
+
   Telegraph() = delete;
   Telegraph(Pack<ReceiveType> receiveRule, Pack<TransmitType> transmitRule) :
       receiveRule(receiveRule), transmitRule(transmitRule) { }
@@ -87,7 +94,7 @@ class Telegraph {
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
     packInto(transmitRule, value, packetBuffer);
-    appLog(">> " + packetBuffer.dump());
+    appLog(">> " + packetBuffer.dumpBinary());
     host.transmit(peer, packetBuffer.getRaw(), packetBuffer.getSize(),
                   flag);
   }
@@ -96,12 +103,12 @@ class Telegraph {
    * Transmit same packet to an iterator range of peers.
    */
   void transmitMult(
-      Host &host, const boost::iterator_range<ENetPeer *> &peers,
+      Host &host, const std::vector<ENetPeer *> &peers,
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
     packInto(transmitRule, value, packetBuffer);
-    appLog(">> " + packetBuffer.dump());
-    for (ENetPeer *peer = peers.begin(); peer != peers.end(); peer++)
+    appLog(">> " + packetBuffer.dumpBinary());
+    for (ENetPeer *peer : peers)
       host.transmit(peer, packetBuffer.getRaw(), packetBuffer.getSize(), flag);
   }
 
@@ -110,13 +117,13 @@ class Telegraph {
    * that satisfy a predicate.
    */
   void transmitMultPred(
-      Host &host, const boost::iterator_range<ENetPeer *> &peers,
+      Host &host, const std::vector<ENetPeer *> &peers,
       std::function<bool(ENetPeer *)> predicate,
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
     packInto(transmitRule, value, packetBuffer);
-    appLog(">> " + packetBuffer.dump());
-    for (ENetPeer *peer = peers.begin(); peer != peers.end(); peer++) {
+    appLog(">> " + packetBuffer.dumpBinary());
+    for (ENetPeer *peer : peers) {
       if (predicate(peer))
         host.transmit(
             peer, packetBuffer.getRaw(), packetBuffer.getSize(), flag);
@@ -126,7 +133,7 @@ class Telegraph {
   ReceiveType receive(const ENetPacket *packet) {
     packetBuffer.setSize(packet->dataLength);
     strcpy((char *) packetBuffer.getRaw(), (char *) packet->data);
-    appLog("<< " + packetBuffer.dump());
+    appLog("<< " + packetBuffer.dumpBinary());
     unpackInto(receiveRule, packetBuffer, receiveBuffer);
     return receiveBuffer;
   }

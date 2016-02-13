@@ -128,20 +128,20 @@ struct ServerNotifyMessage: public ServerPacket {
 namespace pk {
 using namespace tg;
 
-const Pack<std::string> stringPack = StringPack();
-const Pack<optional<std::string>> optStringPack =
+static const Pack<std::string> stringPack = StringPack();
+static const Pack<optional<std::string>> optStringPack =
     OptionalPack<std::string>(stringPack);
-const Pack<PID> pidPack = BytePack<PID>();
+static const Pack<PID> pidPack = BytePack<PID>();
 
 /**
  * ClientPacket.
  */
 #define member(TYPE, PTR, RULE) \
   MemberRule<prot::ClientPacket, TYPE>(RULE, &prot::ClientPacket::PTR)
-const Pack<prot::ClientPacket> clientPacketPack =
+static const Pack<prot::ClientPacket> clientPacketPack =
     ClassPack<prot::ClientPacket>(
         member(prot::ClientPacket::Type, type,
-               EnumPack<prot::ClientPacket::Type>(2)),
+               EnumPack<prot::ClientPacket::Type>(3)),
         member(optional<std::string>, stringData, optStringPack)
     );
 #undef member
@@ -151,7 +151,7 @@ const Pack<prot::ClientPacket> clientPacketPack =
  */
 #define member(TYPE, PTR, RULE) \
   MemberRule<PlayerRecord, TYPE>(RULE, &PlayerRecord::PTR)
-const Pack<PlayerRecord> playerRecordPack =
+static const Pack<PlayerRecord> playerRecordPack =
     ClassPack<PlayerRecord>(
         member(bool, connected, boolPack),
         member(std::string, nickname, stringPack)
@@ -163,7 +163,7 @@ const Pack<PlayerRecord> playerRecordPack =
  */
 #define member(TYPE, PTR, RULE) \
   MemberRule<Arena, TYPE>(RULE, &Arena::PTR)
-const Pack<Arena> arenaPack =
+static const Pack<Arena> arenaPack =
     ClassPack<Arena>(
         MemberRule<Arena, std::list<PlayerRecord>>(
             ListPack<PlayerRecord>(playerRecordPack),
@@ -177,15 +177,14 @@ const Pack<Arena> arenaPack =
  */
 #define member(TYPE, PTR, RULE) \
   MemberRule<prot::ServerPacket, TYPE>(RULE, &prot::ServerPacket::PTR)
-const Pack<prot::ServerPacket> serverPacketPack =
+static const Pack<prot::ServerPacket> serverPacketPack =
     ClassPack<prot::ServerPacket>(
         member(prot::ServerPacket::Type, type,
-               EnumPack<prot::ServerPacket::Type>(2)),
+               EnumPack<prot::ServerPacket::Type>(3)),
         member(optional<std::string>, stringData, optStringPack),
         member(optional<Arena>, arena, OptionalPack<Arena>(arenaPack))
     );
 #undef member
-
 }
 
 }

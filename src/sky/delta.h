@@ -30,11 +30,11 @@ namespace pk {
 using namespace tg;
 
 /**** float bool ****/
-const Pack<float> floatPack = BytePack<float>();
-const Pack<bool> boolPack = BoolPack();
+static const Pack<float> floatPack = BytePack<float>();
+static const Pack<bool> boolPack = BoolPack();
 
 /**** sf::Vector2f ****/
-const tg::Pack<sf::Vector2f> vectorPack =
+static const tg::Pack<sf::Vector2f> vectorPack =
     ClassPack<sf::Vector2f>(
         MemberRule<sf::Vector2f, float>(floatPack, &sf::Vector2f::x),
         MemberRule<sf::Vector2f, float>(floatPack, &sf::Vector2f::y)
@@ -43,7 +43,7 @@ const tg::Pack<sf::Vector2f> vectorPack =
 /**** PlaneTuning::Energy ****/
 #define member(TYPE, PTR, RULE) \
   MemberRule<PlaneTuning::Energy, TYPE>(RULE, &PlaneTuning::Energy::PTR)
-const Pack<PlaneTuning::Energy> planeTuningEnergyPack =
+static const Pack<PlaneTuning::Energy> planeTuningEnergyPack =
     ClassPack<PlaneTuning::Energy>(
         member(float, thrustDrain, floatPack),
         member(float, recharge, floatPack),
@@ -54,7 +54,7 @@ const Pack<PlaneTuning::Energy> planeTuningEnergyPack =
 /**** PlaneTuning::Stall ****/
 #define member(TYPE, PTR, RULE) \
   MemberRule<PlaneTuning::Stall, TYPE>(RULE, &PlaneTuning::Stall::PTR)
-const Pack<PlaneTuning::Stall> planeTuningStallPack =
+static const Pack<PlaneTuning::Stall> planeTuningStallPack =
     ClassPack<PlaneTuning::Stall>(
         member(float, maxRotVel, floatPack),
         member(float, maxVel, floatPack),
@@ -67,7 +67,7 @@ const Pack<PlaneTuning::Stall> planeTuningStallPack =
 /**** PlaneTuning::Flight ****/
 #define member(TYPE, PTR, RULE) \
   MemberRule<PlaneTuning::Flight, TYPE>(RULE, &PlaneTuning::Flight::PTR)
-const Pack<PlaneTuning::Flight> planeTuningFlightPack =
+static const Pack<PlaneTuning::Flight> planeTuningFlightPack =
     ClassPack<PlaneTuning::Flight>(
         member(float, maxRotVel, floatPack),
         member(float, airspeedFactor, floatPack),
@@ -84,7 +84,7 @@ const Pack<PlaneTuning::Flight> planeTuningFlightPack =
 /**** PlaneTuning ****/
 #define member(TYPE, PTR, RULE) \
   MemberRule<PlaneTuning, TYPE>(RULE, &PlaneTuning::PTR)
-const Pack<PlaneTuning> planeTuningPack =
+static const Pack<PlaneTuning> planeTuningPack =
     ClassPack<PlaneTuning>(
         member(sf::Vector2f, hitbox, vectorPack),
         member(PlaneTuning::Energy, energy, planeTuningEnergyPack),
@@ -95,14 +95,15 @@ const Pack<PlaneTuning> planeTuningPack =
 #undef member
 
 /**** Clamped Switched Angle ****/
-const Pack<Clamped> clampedPack = AssignPack<float, Clamped>(floatPack);
-const Pack<Switched> switchedPack = AssignPack<float, Switched>(floatPack);
-const Pack<Angle> anglePack = AssignPack<float, Angle>(floatPack);
+static const Pack<Clamped> clampedPack = AssignPack<float, Clamped>(floatPack);
+static const Pack<Switched> switchedPack =
+    AssignPack<float, Switched>(floatPack);
+static const Pack<Angle> anglePack = AssignPack<float, Angle>(floatPack);
 
 /**** PlaneVital ****/
 #define member(TYPE, PTR, RULE) \
   MemberRule<PlaneVital, TYPE>(RULE, &PlaneVital::PTR)
-const Pack<PlaneVital> planeVitalPack =
+static const Pack<PlaneVital> planeVitalPack =
     ClassPack<PlaneVital>(
         member(Clamped, rotCtrl, clampedPack),
         member(Switched, throtCtrl, switchedPack),

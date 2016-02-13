@@ -35,8 +35,8 @@ public:
   /**
    * Debug dumping.
    */
-  std::string dumpBinary();
-  std::string dump();
+  std::string dumpBinary() const;
+  std::string dump() const;
 
   /**
    * Using recv() / send() API.
