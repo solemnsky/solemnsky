@@ -46,22 +46,47 @@ Host::Host(const HostType type, const unsigned short port) :
     }
   }
 
-  if (host == nullptr) appErrorRuntime("Failed to create ENet host!");
+  if (host == nullptr) {
+    if (enetUsageCount == 0) {
+      appErrorRuntime("Failed to create ENet host: ENet global state "
+                          "not initialized!");
+    }
+    appErrorRuntime("Failed to create ENet host!");
+  }
 }
 
 Host::~Host() {
   enet_host_destroy(host);
 }
 
+void Host::registerPeer(ENetPeer *peer) {
+  auto found = std::find(peers.begin(), peers.end(), peer);
+  if (found != peers.end()) {
+    *found = peer;
+  } else {
+    peers.push_back(peer);
+  }
+}
+
+void Host::unregisterPeer(ENetPeer *peer) {
+  auto found = std::find(peers.begin(), peers.end(), peer);
+  if (found != peers.end()) {
+    peers.erase(found);
+  }
+}
+
 ENetPeer *Host::connect(const std::string &address, const unsigned short port) {
   ENetAddress eaddress;
   enet_address_set_host(&eaddress, address.c_str());
   eaddress.port = port;
-  return enet_host_connect(host, &eaddress, 1, 0);
+  ENetPeer *peer = enet_host_connect(host, &eaddress, 1, 0);
+  registerPeer(peer);
+  return peer;
 }
 
 void Host::disconnect(ENetPeer *peer) {
   enet_peer_disconnect(peer, 0);
+  unregisterPeer(peer);
 }
 
 void Host::transmit(ENetPeer *const peer,
@@ -74,12 +99,13 @@ void Host::transmit(ENetPeer *const peer,
 
 ENetEvent Host::poll() {
   enet_host_service(host, &event, 0);
-  return event;
-}
 
-boost::iterator_range<ENetPeer *> Host::getPeers() {
-  return boost::make_iterator_range<ENetPeer *>(
-      host->peers, host->peers + host->peerCount);
+  if (event.type == ENET_EVENT_TYPE_CONNECT)
+    registerPeer(event.peer);
+  else if (event.type == ENET_EVENT_TYPE_DISCONNECT)
+    unregisterPeer(event.peer);
+
+  return event;
 }
 
 }

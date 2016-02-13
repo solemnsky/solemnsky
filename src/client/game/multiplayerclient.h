@@ -45,7 +45,7 @@ class MultiplayerClient: public Game {
    */
   void transmitServer(const sky::prot::ClientPacket &packet);
   // handle a network poll, assuming we're connected / initialized
-  void handleNetwork(const ENetEvent &event);
+  void handleNetwork(const sky::prot::ServerPacket &event);
 
  public:
   MultiplayerClient(ClientShared &state,
