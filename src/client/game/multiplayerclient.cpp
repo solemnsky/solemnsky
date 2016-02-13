@@ -14,15 +14,20 @@ MultiplayerClient::MultiplayerClient(ClientShared &state,
     server(nullptr),
     telegraph(sky::pk::serverPacketPack, sky::pk::clientPacketPack),
     pingCooldown(5),
-    connected(false) {
+    triedConnection(false),
+    arenaConnected(false),
+    disconnecting(false),
+    disconnectTimeout(1) {
   host.connect(serverHostname, serverPort);
 }
+
 /**
  * Networking submethods.
  */
 
 void MultiplayerClient::transmitServer(const sky::prot::ClientPacket &packet) {
-  if (server and connected) telegraph.transmit(host, server, packet);
+  if (server)
+    telegraph.transmit(host, server, packet);
 }
 
 void MultiplayerClient::handleNetwork(const ENetEvent &event) {
@@ -42,9 +47,15 @@ void MultiplayerClient::onFocus() {
 
 }
 
-void MultiplayerClient::onExit() {
-  // we could try to disconnect from the server gracefully here
-  concluded = true;
+void MultiplayerClient::doExit() {
+  if (!server) {
+    concluded = true;
+  } else {
+    host.disconnect(server);
+    appLog("Disconnecting from server...", LogOrigin::Client);
+    disconnecting = true;
+    disconnectTimeout.reset();
+  }
 }
 
 /**
@@ -58,45 +69,70 @@ void MultiplayerClient::tick(float delta) {
 
   using namespace sky::prot;
 
-  if (!triedConnection) {
-    transmitServer(ClientReqConnection(shared.settings.preferredNickname));
-    appLog("Connecting to server...", LogOrigin::Client);
-  }
-
   event = host.poll();
   if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
     server = nullptr;
     appLog("Disconnected from server!", LogOrigin::Client);
-    onExit();
+    concluded = true;
+    return;
+  }
+
+  if (disconnecting) {
+    if (disconnectTimeout.cool(delta)) {
+      appLog("Disconnecting from unresponsive server!", LogOrigin::Client);
+      concluded = true;
+    }
+    return;
   }
 
   if (!server) {
     // still trying to connect to the server...
     if (event.type == ENET_EVENT_TYPE_CONNECT) {
       server = event.peer;
-      appLog("Found server...", LogOrigin::Client);
+      appLog("Connected to server!", LogOrigin::Client);
     }
   } else {
-    if (!connected) {
-      if (event.type == ENET_EVENT_TYPE_RECEIVE) {
-        const ServerPacket &packet = telegraph.receive(event.packet);
-        if (packet.type == ServerPacket::Type::AcceptConnection) {
-          arena = *packet.arena;
-          myRecord = arena.getPlayer(*packet.pid);
-          connected = true;
-          appLog("Connected to server!", LogOrigin::Client);
-        }
-      }
-    } else {
+    // connected
+    if (arenaConnected) {
+      // at this point the whole enet / arena connection has established and
+      // we're not disconnecting.
       handleNetwork(event);
+      return;
+    }
+
+    if (!triedConnection) {
+      // we have a link but haven't sent an arena connection request
+      transmitServer(ClientReqConnection(shared.settings.preferredNickname));
+      appLog("Joining arena...", LogOrigin::Client);
+      triedConnection = true;
+      return;
+    }
+
+    if (event.type == ENET_EVENT_TYPE_RECEIVE) {
+      // waiting for the arena connection request to be accepted
+      const ServerPacket &packet = telegraph.receive(event.packet);
+      if (packet.type == ServerPacket::Type::AcceptConnection) {
+        arena = *packet.arena;
+        myRecord = arena.getRecord(*packet.pid);
+        arenaConnected = true;
+        appLog("Joined arena with "
+                   + std::to_string(arena.playerRecords.size())
+                   + " other players!",
+               LogOrigin::Client);
+      }
     }
   }
+
 }
 
 void MultiplayerClient::render(ui::Frame &f) {
   quitButton.render(f);
   chatEntry.render(f);
   messageLog.render(f);
+
+  if (!server) {
+    f.drawText({400, 400}, {"Connecting..."}, 60, sf::Color::White);
+  }
 }
 
 bool MultiplayerClient::handle(const sf::Event &event) {
@@ -111,10 +147,12 @@ bool MultiplayerClient::handle(const sf::Event &event) {
 }
 
 void MultiplayerClient::signalRead() {
-  if (quitButton.clickSignal) concluded = true;
-  if (chatEntry.inputSignal)
-    transmitServer(
-        sky::prot::ClientChat(std::string(*chatEntry.inputSignal)));
+  if (quitButton.clickSignal) doExit();
+  if (chatEntry.inputSignal) {
+    if (arenaConnected)
+      transmitServer(
+          sky::prot::ClientChat(std::string(*chatEntry.inputSignal)));
+  }
 }
 
 void MultiplayerClient::signalClear() {

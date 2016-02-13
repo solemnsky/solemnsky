@@ -19,17 +19,19 @@ namespace prot {
  */
 struct ClientPacket {
   enum class Type {
-    Ping,
+    Ping, // request a pong, always available
     ReqConnection, // request to finalize connection (enet is already connected)
-    ReqNick, // request to change the nickname, supplying it
-    Chat // try to send a chat message
+
+    // available only when joined in arena
+        Chat // try to send a chat message
   };
 
   ClientPacket() = default;
 
   ClientPacket(const Type type,
                const optional<std::string> &stringData = {}) :
-      type(type), stringData(stringData) { }
+      type(type),
+      stringData(stringData) { }
 
   Type type;
   optional<std::string> stringData;
@@ -44,11 +46,6 @@ struct ClientReqConnection: public ClientPacket {
       ClientPacket(ClientPacket::Type::ReqConnection, nick) { }
 };
 
-struct ClientReqNick: public ClientPacket {
-  ClientReqNick(const std::string &nick) :
-      ClientPacket(ClientPacket::Type::ReqNick, nick) { }
-};
-
 struct ClientChat: public ClientPacket {
   ClientChat(std::string &&str) :
       ClientPacket(ClientPacket::Type::Chat, str) { }
@@ -60,47 +57,68 @@ struct ClientChat: public ClientPacket {
 struct ServerPacket {
   enum class Type {
     Pong,
-    AssignNick, // give a client a nickname
     AcceptConnection, // accept a connection
-    Message // distribute message for all clients to print to screen
+    NotifyConnection, // notify clients of a new player record
+    NotifyRecordDelta, // notify clients of a record delta
+    NotifyDisconnection, // notify clients of a player record removal
+    NotifyMessage // distribute message for all clients to log
   };
 
   ServerPacket() = default;
 
   ServerPacket(const Type type,
                const optional<std::string> &stringData = {},
+               const optional<PID> &pid = {},
                const optional<Arena> &arena = {},
-               const optional<PID> &pid = {}) :
-      type(type), stringData(stringData) { }
+               const optional<PlayerRecord> &record = {},
+               const optional<PlayerRecordDelta> &recordDelta = {}) :
+      type(type),
+      stringData(stringData),
+      pid(pid),
+      arena(arena),
+      record(record),
+      recordDelta(recordDelta) { }
 
   Type type;
-
   optional<std::string> stringData;
-  optional<Arena> arena;
   optional<PID> pid;
+  optional<Arena> arena;
+  optional<PlayerRecord> record;
+  optional<PlayerRecordDelta> recordDelta;
 };
 
 struct ServerPong: public ServerPacket {
   ServerPong() : ServerPacket(ServerPacket::Type::Pong) { }
 };
 
-struct ServerAssignNick: public ServerPacket {
-  ServerAssignNick(const PID pid, std::string &&nick) :
-      ServerPacket(ServerPacket::Type::AssignNick, nick, {}, pid) { }
-};
-
 struct ServerAcceptConnection: public ServerPacket {
-  ServerAcceptConnection(const Arena &arena, const PID pid) :
-      ServerPacket(ServerPacket::Type::AcceptConnection, {}, arena, pid) { }
+  ServerAcceptConnection(const PID pid,
+                         const Arena &arena) :
+      ServerPacket(ServerPacket::Type::AcceptConnection, {}, pid, arena) { }
 };
 
 struct ServerNotifyConnection: public ServerPacket {
-
+  ServerNotifyConnection(const PlayerRecord &record) :
+      ServerPacket(ServerPacket::Type::NotifyConnection, {}, {}, {}, record) { }
 };
 
-struct ServerMessage: public ServerPacket {
-  ServerMessage(std::string &&message) :
-      ServerPacket(ServerPacket::Type::Message, message) { }
+struct ServerNotifyRecordDelta: public ServerPacket {
+  ServerNotifyRecordDelta(const PID pid,
+                          const PlayerRecordDelta &recordDelta) :
+      ServerPacket(ServerPacket::Type::NotifyRecordDelta, {},
+                   pid, {}, {}, recordDelta) { }
+};
+
+struct ServerNotifyDisconnection: public ServerPacket {
+  ServerNotifyDisconnection(const std::string &reason, const PID pid) :
+      ServerPacket(ServerPacket::Type::NotifyDisconnection, reason, pid) { }
+};
+
+struct ServerNotifyMessage: public ServerPacket {
+  // no PID supplied if it's not from a client
+  ServerNotifyMessage(const std::string &message,
+                      const optional<PID> pid = {}) :
+      ServerPacket(ServerPacket::Type::NotifyMessage, message, pid) { }
 };
 }
 

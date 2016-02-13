@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "telegraph/pack.h"
+#include "sky/protocol.h"
 
 class PackFixture: public testing::Test {
  public:

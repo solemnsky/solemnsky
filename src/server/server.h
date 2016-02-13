@@ -27,11 +27,23 @@ class Server {
   /**
    * Packet processing subroutines.
    */
+
+  void broadcastToClients(const sky::prot::ServerPacket &packet);
+  void broadcastToClientsExcept(const sky::PID pid,
+                                const sky::prot::ServerPacket &packet);
+
+  // every peer has a record in the arena associated with it
+  sky::PlayerRecord &recordFromPeer(ENetPeer *peer) const;
+
+  // we process a packet sent from a connected client
   void processPacket(ENetPeer *client, const sky::prot::ClientPacket &packet);
 
  public:
   Server(const unsigned short port);
 
+  /**
+   * Server tick.
+   */
   void tick(float delta);
 
   bool running;

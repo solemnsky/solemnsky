@@ -41,12 +41,12 @@ Host::Host(const HostType type, const unsigned short port) :
     }
     case HostType::Client: {
       // sensible upstream / downstream bandwidth limits
-      host = enet_host_create(nullptr, 1, 3, 57600 / 8, 14400 / 8);
+      host = enet_host_create(nullptr, 2, 1, 57600 / 8, 14400 / 8);
       break;
     }
   }
 
-  if (host == nullptr) appErrorRuntime("Failed to initialize ENet host!");
+  if (host == nullptr) appErrorRuntime("Failed to create ENet host!");
 }
 
 Host::~Host() {
@@ -75,6 +75,11 @@ void Host::transmit(ENetPeer *const peer,
 ENetEvent Host::poll() {
   enet_host_service(host, &event, 0);
   return event;
+}
+
+boost::iterator_range<ENetPeer *> Host::getPeers() {
+  return boost::make_iterator_range<ENetPeer *>(
+      host->peers, host->peers + host->peerCount);
 }
 
 }
