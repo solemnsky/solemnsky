@@ -49,10 +49,10 @@ TEST_F(TelegraphTest, TransmitReceive) {
   EXPECT_EQ(event.type, ENET_EVENT_TYPE_RECEIVE); // server receives packet
   EXPECT_EQ(telegraph.receive(event.packet), "hey there");
 
-  telegraph.transmit(server, clientPeer, "hey, I got your message");
+  telegraph.transmit(server, clientPeer, "hey, I got your message ;D");
   event = processHosts(client, server);
   EXPECT_EQ(event.type, ENET_EVENT_TYPE_RECEIVE); // client receives packet
-  EXPECT_EQ(telegraph.receive(event.packet), "hey, I got your message");
+  EXPECT_EQ(telegraph.receive(event.packet), "hey, I got your message ;D");
 }
 
 /**
@@ -81,20 +81,8 @@ TEST_F(TelegraphTest, Protocol) {
   clientTelegraph.transmit(client, serverPeer, ClientReqConnection("nickname"));
   event = processHosts(server, client);
 
-  const tg::Packet targetBuffer =
-      tg::pack(clientPacketPack,
-               (ClientPacket) ClientReqConnection("nickname"));
-  appLog(targetBuffer.dumpBinary());
-
-  const ClientPacket &targetPacket =
-      tg::unpack(clientPacketPack, targetBuffer);
+  const ClientPacket &targetPacket = ClientReqConnection("nickname");
   const ClientPacket &packet = serverTelegraph.receive(event.packet);
-
-  // if these lines aren't commented, the test succeeds; otherwise, it fails
-  // and packet.type seems to adopt some volatile value (???)
-
-//  EXPECT_EQ(serverTelegraph.packetBuffer.data[0], targetBuffer.data[0]);
-//  EXPECT_EQ(serverTelegraph.packetBuffer.data[1], targetBuffer.data[1]);
 
   EXPECT_EQ(packet.type, targetPacket.type);
   EXPECT_EQ(*packet.stringData, *targetPacket.stringData);

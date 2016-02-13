@@ -35,6 +35,9 @@ struct ClientPacket {
 
   Type type;
   optional<std::string> stringData;
+
+  // debug
+  std::string dump() const;
 };
 
 struct ClientPing: public ClientPacket {
@@ -85,6 +88,8 @@ struct ServerPacket {
   optional<Arena> arena;
   optional<PlayerRecord> record;
   optional<PlayerRecordDelta> recordDelta;
+
+  std::string dump() const;
 };
 
 struct ServerPong: public ServerPacket {
@@ -98,8 +103,8 @@ struct ServerAcceptConnection: public ServerPacket {
 };
 
 struct ServerNotifyConnection: public ServerPacket {
-  ServerNotifyConnection(const PlayerRecord &record) :
-      ServerPacket(ServerPacket::Type::NotifyConnection, {}, {}, {}, record) { }
+  ServerNotifyConnection(const PID pid) :
+      ServerPacket(ServerPacket::Type::NotifyConnection, {}, pid) { }
 };
 
 struct ServerNotifyRecordDelta: public ServerPacket {
@@ -128,63 +133,15 @@ struct ServerNotifyMessage: public ServerPacket {
 namespace pk {
 using namespace tg;
 
-static const Pack<std::string> stringPack = StringPack();
-static const Pack<optional<std::string>> optStringPack =
-    OptionalPack<std::string>(stringPack);
-static const Pack<PID> pidPack = BytePack<PID>();
+extern const Pack<std::string> stringPack;
+extern const Pack<optional<std::string>> optStringPack;
+extern const Pack<PID> pidPack;
 
-/**
- * ClientPacket.
- */
-#define member(TYPE, PTR, RULE) \
-  MemberRule<prot::ClientPacket, TYPE>(RULE, &prot::ClientPacket::PTR)
-static const Pack<prot::ClientPacket> clientPacketPack =
-    ClassPack<prot::ClientPacket>(
-        member(prot::ClientPacket::Type, type,
-               EnumPack<prot::ClientPacket::Type>(3)),
-        member(optional<std::string>, stringData, optStringPack)
-    );
-#undef member
-
-/**
- * PlayerRecord.
- */
-#define member(TYPE, PTR, RULE) \
-  MemberRule<PlayerRecord, TYPE>(RULE, &PlayerRecord::PTR)
-static const Pack<PlayerRecord> playerRecordPack =
-    ClassPack<PlayerRecord>(
-        member(bool, connected, boolPack),
-        member(std::string, nickname, stringPack)
-    );
-#undef member
-
-/**
- * Arena.
- */
-#define member(TYPE, PTR, RULE) \
-  MemberRule<Arena, TYPE>(RULE, &Arena::PTR)
-static const Pack<Arena> arenaPack =
-    ClassPack<Arena>(
-        MemberRule<Arena, std::list<PlayerRecord>>(
-            ListPack<PlayerRecord>(playerRecordPack),
-            &Arena::playerRecords),
-        member(std::string, motd, stringPack)
-    );
-#undef member
-
-/**
- * ServerPacket.
- */
-#define member(TYPE, PTR, RULE) \
-  MemberRule<prot::ServerPacket, TYPE>(RULE, &prot::ServerPacket::PTR)
-static const Pack<prot::ServerPacket> serverPacketPack =
-    ClassPack<prot::ServerPacket>(
-        member(prot::ServerPacket::Type, type,
-               EnumPack<prot::ServerPacket::Type>(3)),
-        member(optional<std::string>, stringData, optStringPack),
-        member(optional<Arena>, arena, OptionalPack<Arena>(arenaPack))
-    );
-#undef member
+extern const Pack<prot::ClientPacket> clientPacketPack;
+extern const Pack<PlayerRecord> playerRecordPack;
+extern const Pack<PlayerRecordDelta> playerRecordDeltaPack;
+extern const Pack<Arena> arenaPack;
+extern const Pack<prot::ServerPacket> serverPacketPack;
 }
 
 }

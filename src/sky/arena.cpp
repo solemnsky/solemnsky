@@ -49,11 +49,11 @@ void Arena::disconnectPlayer(const PlayerRecord &record) {
  * For clients.
  */
 
-void Arena::applyConnection(const PlayerRecord &record) {
-  if (PlayerRecord *existingRecord = getRecord(record.pid)) {
-    *existingRecord = record;
+void Arena::applyConnection(const PID pid) {
+  if (PlayerRecord *existingRecord = getRecord(pid)) {
+    *existingRecord = pid;
   } else {
-    playerRecords.push_back(record);
+    playerRecords.push_back(PlayerRecord(pid));
   }
 }
 
