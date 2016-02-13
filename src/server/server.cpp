@@ -17,25 +17,25 @@ Server::Server(const unsigned short port) :
  */
 
 void Server::broadcastToClients(const sky::prot::ServerPacket &packet) {
-  appLog("sending to all: " + packet.dump());
+  appLog("To all: " + packet.dump());
   telegraph.transmitMult(host, host.peers, packet);
 }
 
 void Server::broadcastToClientsExcept(const sky::PID pid,
                                       const sky::prot::ServerPacket &packet) {
-  appLog("sending to all except "
+  appLog("To all except "
              + std::to_string(pid) + ": " + packet.dump());
   telegraph.transmitMultPred(
       host, host.peers,
       [&](ENetPeer *peer) {
-        return recordFromPeer(peer).pid == pid;
+        return recordFromPeer(peer).pid != pid;
       }, packet);
 }
 
 void Server::transmitToClient(ENetPeer *const client,
                               const sky::prot::ServerPacket &packet) {
   appLog(
-      "sending to " + std::to_string(recordFromPeer(client).pid) + ": "
+      "To client " + std::to_string(recordFromPeer(client).pid) + ": "
           + packet.dump());
   telegraph.transmit(host, client, packet);
 }
@@ -58,17 +58,15 @@ void Server::processPacket(ENetPeer *client,
   }
 
   const std::string &pidString = std::to_string(record.pid);
-
-  appLog("Received from " + pidString + ": " + packet.dump());
+  appLog("Client " + pidString + ": " + packet.dump());
 
   if (!record.connected) {
     // if the client isn't connected, we just want a ReqConnection before
     // anything else...
     if (packet.type == ClientPacket::Type::ReqConnection) {
-      appLog(
-          "client " + pidString + " joining server with nick "
-              + *packet.stringData,
-          LogOrigin::Server);
+      appLog("Client " + pidString + " entering in arena as \""
+                 + *packet.stringData + "\".",
+             LogOrigin::Server);
       record.nickname = *packet.stringData;
       record.connected = true;
       transmitToClient(client, ServerAcceptConnection(record.pid, arena));
@@ -76,20 +74,20 @@ void Server::processPacket(ENetPeer *client,
       sky::PlayerRecordDelta delta;
       delta.connected = true;
       delta.nickname = record.nickname;
-      broadcastToClientsExcept(
-          record.pid,
-          ServerNotifyRecordDelta(record.pid, delta)
-      );
+      broadcastToClientsExcept(record.pid, ServerNotifyRecordDelta(delta));
     }
   } else {
     switch (packet.type) {
       case sky::prot::ClientPacket::Type::Chat: {
-        appLog(
-            "client " + pidString + " says: " + *packet.stringData,
-            LogOrigin::Server);
         broadcastToClients(ServerNotifyMessage(*packet.stringData, record.pid));
         break;
       }
+      case ClientPacket::Type::Ping: {
+        transmitToClient(client, ServerPong());
+        break;
+      }
+      default:
+        break;
     }
   }
 }

@@ -42,11 +42,11 @@ void MultiplayerClient::handleNetwork(const sky::prot::ServerPacket &packet) {
     case ServerPacket::Type::Pong:
       break;
     case ServerPacket::Type::NotifyConnection: {
-      messageLog.pushEntry("\"" + packet.record->nickname + "\" connecting...");
       arena.applyConnection(*packet.pid);
       break;
     }
     case ServerPacket::Type::NotifyRecordDelta: {
+      arena.applyRecordDelta(*packet.recordDelta);
       if (sky::PlayerRecord *record = arena.getRecord(*packet.pid)) {
         if (packet.recordDelta->connected) {
           messageLog.pushEntry("\"" + record->nickname + "\" has joined!");
@@ -55,22 +55,23 @@ void MultiplayerClient::handleNetwork(const sky::prot::ServerPacket &packet) {
                                    + *packet.recordDelta->nickname);
         }
       }
-      arena.applyRecordDelta(*packet.pid, *packet.recordDelta);
+      break;
     }
     case ServerPacket::Type::NotifyDisconnection: {
       if (sky::PlayerRecord *record = arena.getRecord(*packet.pid)) {
-        messageLog.pushEntry("<-- " + record->nickname);
+        messageLog.pushEntry("\"" + record->nickname + "has quit!");
       }
       arena.applyDisconnection(*packet.pid);
+      break;
     }
     case ServerPacket::Type::NotifyMessage: {
       if (packet.pid) {
-        messageLog.pushEntry(
-            arena.getRecord(*packet.pid)->nickname +
-                ": " + *packet.stringData);
-      } else {
+        if (sky::PlayerRecord *record = arena.getRecord(*packet.pid))
+          messageLog.pushEntry(record->nickname + ": " + *packet.stringData);
+        messageLog.pushEntry("[unknown]: " + *packet.stringData);
+      } else
         messageLog.pushEntry("[server]: " + *packet.stringData);
-      }
+      break;
     }
     default:
       break;
@@ -138,8 +139,8 @@ void MultiplayerClient::tick(float delta) {
     // connected
     if (!triedConnection) {
       // we have a link but haven't sent an arena connection request
+      appLog("Asking to join arena...", LogOrigin::Client);
       transmitServer(ClientReqConnection(shared.settings.preferredNickname));
-      appLog("Joining arena...", LogOrigin::Client);
       triedConnection = true;
       return;
     }
@@ -149,6 +150,7 @@ void MultiplayerClient::tick(float delta) {
       appLog("Receiving: " + packet.dump());
 
       if (arenaConnected) {
+        // in the arena
         handleNetwork(packet);
       } else {
         // waiting for the arena connection request to be accepted
@@ -156,10 +158,7 @@ void MultiplayerClient::tick(float delta) {
           arena = *packet.arena;
           myRecord = arena.getRecord(*packet.pid);
           arenaConnected = true;
-          appLog("Joined arena with "
-                     + std::to_string(arena.playerRecords.size())
-                     + " other players!",
-                 LogOrigin::Client);
+          appLog("Joined arena!", LogOrigin::Client);
         }
       }
     }

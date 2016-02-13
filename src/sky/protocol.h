@@ -108,10 +108,9 @@ struct ServerNotifyConnection: public ServerPacket {
 };
 
 struct ServerNotifyRecordDelta: public ServerPacket {
-  ServerNotifyRecordDelta(const PID pid,
-                          const PlayerRecordDelta &recordDelta) :
+  ServerNotifyRecordDelta(const PlayerRecordDelta &recordDelta) :
       ServerPacket(ServerPacket::Type::NotifyRecordDelta, {},
-                   pid, {}, {}, recordDelta) { }
+                   {}, {}, {}, recordDelta) { }
 };
 
 struct ServerNotifyDisconnection: public ServerPacket {

@@ -57,8 +57,8 @@ void Arena::applyConnection(const PID pid) {
   }
 }
 
-void Arena::applyRecordDelta(const PID pid, const PlayerRecordDelta delta) {
-  if (PlayerRecord *record = getRecord(pid)) {
+void Arena::applyRecordDelta(const PlayerRecordDelta delta) {
+  if (PlayerRecord *record = getRecord(delta.pid)) {
     record->connected = delta.connected;
     if (delta.nickname)
       record->nickname = *delta.nickname;

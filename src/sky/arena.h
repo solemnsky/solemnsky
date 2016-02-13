@@ -24,6 +24,7 @@ struct PlayerRecord {
 };
 
 struct PlayerRecordDelta {
+  PID pid;
   bool connected; // sets connection state
   optional<std::string> nickname; // exists if nickname changed
   // ... potentially other things ...
@@ -53,7 +54,7 @@ class Arena {
    * For clients.
    */
   void applyConnection(const PID pid);
-  void applyRecordDelta(const PID pid, const PlayerRecordDelta);
+  void applyRecordDelta(const PlayerRecordDelta delta);
   void applyDisconnection(const PID pid);
 };
 

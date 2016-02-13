@@ -18,22 +18,14 @@ std::string prot::ServerPacket::dump() const {
     case Type::Pong:
       return "Pong";
     case Type::AcceptConnection:
-      return "AcceptConnection";
-//      return "AcceptConnection: "; + *pid;
+      return "AcceptConnection: " + std::to_string(*pid);
     case Type::NotifyConnection:
-      return "NotifyConnection";
-//      return "NotifyConnection: " + std::to_string(*pid);
-    case Type::NotifyRecordDelta: {
+      return "NotifyConnection: " + std::to_string(*pid);
+    case Type::NotifyRecordDelta:
       return "NotifyRecordDelta";
-//      if (recordDelta->nickname)
-//        return "NotifyRecordDelta: "
-//            + std::to_string(*pid) + ", " + *recordDelta->nickname;
-//      else return "NotifyRecordDelta: " + std::to_string(*pid);
-    }
     case Type::NotifyDisconnection:
-      return "NotifyDisconnection";
-//      return "NotifyDisconnection: " + std::to_string(*pid)
-//          + " (" + *stringData + ")";
+      return "NotifyDisconnection: " + std::to_string(*pid)
+          + " (" + *stringData + ")";
     case Type::NotifyMessage:
       return "NotifyMessage: " + *stringData;
   }
