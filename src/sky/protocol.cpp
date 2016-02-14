@@ -21,11 +21,11 @@ std::string ClientPacket::dump() const {
 }
 
 #define member(TYPE, PTR, RULE) \
-  tg::MemberRule<prot::ClientPacket, TYPE>(RULE, &prot::ClientPacket::PTR)
-const tg::Pack<prot::ClientPacket> clientPacketPack =
-    tg::ClassPack<prot::ClientPacket>(
-        member(prot::ClientPacket::Type, type,
-               tg::EnumPack<prot::ClientPacket::Type>(3)),
+  tg::MemberRule<ClientPacket, TYPE>(RULE, &ClientPacket::PTR)
+const tg::Pack<ClientPacket> clientPacketPack =
+    tg::ClassPack<ClientPacket>(
+        member(ClientPacket::Type, type,
+               tg::EnumPack<ClientPacket::Type>(3)),
         member(optional<std::string>, stringData, tg::optStringPack),
         member(optional<PlayerDelta>, playerDelta,
                tg::OptionalPack<PlayerDelta>(playerDeltaPack))
@@ -50,19 +50,36 @@ std::string ServerPacket::dump() const {
 }
 
 #define member(TYPE, PTR, RULE) \
-  tg::MemberRule<prot::ServerPacket, TYPE>(RULE, &prot::ServerPacket::PTR)
-const tg::Pack<prot::ServerPacket> serverPacketPack =
-    tg::ClassPack<prot::ServerPacket>(
-        member(prot::ServerPacket::Type, type,
-               tg::EnumPack<prot::ServerPacket::Type>(3)),
+  tg::MemberRule<ServerPacket, TYPE>(RULE, &ServerPacket::PTR)
+const tg::Pack<ServerPacket> serverPacketPack =
+    tg::ClassPack<ServerPacket>(
+        member(ServerPacket::Type, type,
+               tg::EnumPack<ServerPacket::Type>(3)),
         member(optional<std::string>, stringData, tg::optStringPack),
         member(optional<PID>, pid, tg::OptionalPack<PID>(pidPack)),
         member(optional<ArenaInitializer>, arenaInitializer,
-               tg::OptionalPack<ArenaInitializer>(arenaInitializerPack)),
+               tg::OptionalPack<ArenaInitializer>(
+                   // arenaInitializerPack // this appears to be null..?
+                   // (the rule's functions are not initialized)
+                   // it's defined in arena.cpp, as the following:
+                   tg::ClassPack<ArenaInitializer>(
+                       tg::MemberRule<ArenaInitializer, std::vector<Player>>(
+                           tg::VectorPack<Player>(
+                               playerPack // and now this is null!!
+                               // (also defined in arena.cpp)
+                               // I don't want to inline everything...
+                           ),
+                           &ArenaInitializer::playerRecords),
+                       tg::MemberRule<ArenaInitializer, std::string>(
+                           tg::stringPack, &ArenaInitializer::motd
+                       )
+                   )
+               )),
         member(optional<ArenaDelta>, arenaDelta,
                tg::OptionalPack<ArenaDelta>(arenaDeltaPack))
     );
 #undef member
 
 }
+
 }

@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <sky/protocol.h>
 #include "sky/arena.h"
 #include "util/methods.h"
 
@@ -31,11 +32,14 @@ TEST_F(ArenaTest, InitializationTest) {
   player1.nickname = "somebody";
 
   sky::ArenaInitializer initializer = arena.captureInitializer();
-  tg::packInto(sky::arenaInitializerPack, initializer, buffer);
+  sky::prot::ServerPacket ack = sky::prot::ServerAckJoin(1, initializer);
+  tg::packInto(sky::prot::serverPacketPack, ack, buffer);
 
-  sky::Arena remoteArena = tg::unpack(sky::arenaInitializerPack, buffer);
+  sky::prot::ServerPacket receivedAck =
+      tg::unpack(sky::prot::serverPacketPack, buffer);
+  sky::Arena remoteArena = *receivedAck.arenaInitializer;
 
-  EXPECT_EQ(remoteArena.getRecord(1)->nickname, "somebody");
+  EXPECT_EQ(remoteArena.getRecord(*receivedAck.pid)->nickname, "somebody");
   EXPECT_EQ(remoteArena.motd, "test server");
 }
 
@@ -67,7 +71,6 @@ TEST_F(ArenaTest, DeltaTest) {
   appLog(buffer.dump());
   arena.applyDelta(tg::unpack(sky::arenaDeltaPack, buffer));
   EXPECT_EQ(arena.getRecord(1)->nickname, "somebody else");
-
 
   delta = {};
   delta.playerQuit = 1;

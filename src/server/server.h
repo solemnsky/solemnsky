@@ -36,7 +36,7 @@ class Server {
                         const sky::prot::ServerPacket &packet);
 
   // every peer has a record in the arena associated with it
-  sky::Player &recordFromPeer(ENetPeer *peer) const;
+  sky::Player *playerFromPeer(ENetPeer *peer) const;
 
   // we process a packet sent from a connected client
   void processPacket(ENetPeer *client, const sky::prot::ClientPacket &packet);
