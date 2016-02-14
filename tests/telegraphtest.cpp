@@ -60,7 +60,6 @@ TEST_F(TelegraphTest, TransmitReceive) {
  */
 TEST_F(TelegraphTest, Protocol) {
   using namespace sky::prot;
-  using namespace sky::pk;
 
   tg::Host server(tg::HostType::Server, 4242);
   tg::Host client(tg::HostType::Client);
@@ -78,10 +77,10 @@ TEST_F(TelegraphTest, Protocol) {
   tg::Telegraph<ClientPacket, ServerPacket> serverTelegraph{
       clientPacketPack, serverPacketPack};
 
-  clientTelegraph.transmit(client, serverPeer, ClientReqConnection("nickname"));
+  clientTelegraph.transmit(client, serverPeer, ClientReqJoin("nickname"));
   event = processHosts(server, client);
 
-  const ClientPacket &targetPacket = ClientReqConnection("nickname");
+  const ClientPacket &targetPacket = ClientReqJoin("nickname");
   const ClientPacket &packet = serverTelegraph.receive(event.packet);
 
   EXPECT_EQ(packet.type, targetPacket.type);

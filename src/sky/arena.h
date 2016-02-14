@@ -1,40 +1,91 @@
 /**
- * A model of a multiplayer arena, held by clients and servers. Persists
- * throughout server function.
+ * A model of a multiplayer arena, (players + metadata + potential sky) held by
+ * clients and servers. A server, during operation, holds an arena; a
+ * multiplayer client constructs one from a network-transmitted
+ * ArenaInitializer and keeps somewhat in sync with the server-side arena
+ * model through deltas.
  */
 #ifndef SOLEMNSKY_ARENA_H
 #define SOLEMNSKY_ARENA_H
+
 #include "util/types.h"
 #include "sky.h"
+#include "telegraph/pack.h"
 #include <map>
 #include <list>
+#include <vector>
 
 namespace sky {
 
-struct PlayerRecord {
-  bool connected;
+/**
+ * A player in the arena.
+ */
+struct Player {
+  Player(); // for unpacking
+  Player(const PID pid);
 
   PID pid;
   std::string nickname;
 
-  PlayerRecord(); // for packing
-  PlayerRecord(const PID pid);
-
-  bool operator==(const PlayerRecord &record); // are pids equal
+  bool operator==(const Player &record); // are PIDs equal?
 };
 
-struct PlayerRecordDelta {
-  PID pid;
-  bool connected; // sets connection state
+extern const tg::Pack<Player> playerPack;
+
+/**
+ * A change in a Player.
+ */
+struct PlayerDelta {
+  PlayerDelta(); // for unpacking
+  PlayerDelta(const optional<std::string> &nickname);
+
   optional<std::string> nickname; // exists if nickname changed
+
   // ... potentially other things ...
 };
 
+extern const tg::Pack<PlayerDelta> playerDeltaPack;
+
+/**
+ * The data a client needs when jumping into an arena. Further changes are
+ * transmitted through ArenaDelta's.
+ */
+struct ArenaInitializer {
+  ArenaInitializer(); // for unpacking
+
+  std::vector<Player> playerRecords;
+  std::string motd;
+};
+
+extern const tg::Pack<ArenaInitializer> arenaInitializerPack;
+
+/**
+ * A change that occurred in an Arena.
+ */
+struct ArenaDelta {
+  ArenaDelta(); // for unpacking
+
+  // exactly one of these is non-null
+  optional<PID> playerQuit;
+  optional<Player> playerJoin;
+  optional<std::pair<PID, PlayerDelta>> playerDelta;
+  optional<std::string> motdDelta;
+};
+
+extern const tg::Pack<ArenaDelta> arenaDeltaPack;
+
+/**
+ * Arena.
+ */
 class Arena {
  public:
   Arena();
+  Arena(const ArenaInitializer &initializer);
 
-  std::list<PlayerRecord> playerRecords;
+  /**
+   * Data.
+   */
+  std::list<Player> players;
   std::string motd; // the arena MotD
 
   // ... sky instantiation data ...
@@ -42,20 +93,17 @@ class Arena {
   /**
    * Shared API.
    */
-  PlayerRecord *getRecord(const PID pid);
+  Player *getRecord(const PID pid);
+  void applyDelta(const ArenaDelta &);
 
   /**
    * For servers.
    */
-  PlayerRecord &connectPlayer();
-  void disconnectPlayer(const PlayerRecord &record);
+  Player &connectPlayer();
+  void disconnectPlayer(const Player &record);
+  void modifyPlayer(const PID pid, PlayerDelta &delta);
 
-  /**
-   * For clients.
-   */
-  void applyConnection(const PID pid);
-  void applyRecordDelta(const PlayerRecordDelta delta);
-  void applyDisconnection(const PID pid);
+  ArenaInitializer captureInitializer();
 };
 
 }

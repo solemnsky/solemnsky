@@ -10,10 +10,12 @@
 #include "physics.h"
 #include "flight.h"
 #include "map.h"
+#include "telegraph/pack.h"
 
 namespace sky {
 
 typedef unsigned int PID; // ID for elements in the game
+extern const tg::Pack<PID> pidPack;
 
 /**
  * Subsystem abstraction, representing a module that attaches to Sky events
@@ -28,10 +30,10 @@ typedef unsigned int PID; // ID for elements in the game
  * > sky.link(render);
  */
 class Subsystem {
-protected:
+ protected:
   Sky *sky; // pointer to the sky it's attached to
 
-private:
+ private:
   friend class Sky;
 
   // these are all in the past-tense, called after the action has completed
@@ -47,7 +49,7 @@ private:
 
   virtual void killPlane(const PID pid, PlaneHandle *plane) { }
 
-public:
+ public:
   Subsystem(Sky *sky) : sky(sky) { }
 
   // a Subsystem's life is never managed from a handle to a Subsystem, but
@@ -61,10 +63,10 @@ public:
  * recordings.
  */
 class Sky {
-private:
+ private:
   std::vector<Subsystem *> subsystems;
 
-public:
+ public:
   Sky(const Map &map);
   ~Sky();
 

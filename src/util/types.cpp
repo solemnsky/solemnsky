@@ -42,10 +42,16 @@ Clamped &Clamped::operator-=(const float x) {
 }
 
 /**
+ * Movement.
+ */
+
+float movementValue(const Movement movement) {
+  return 0;
+}
+
+/**
  * Cyclic: this code could be combined with Clamped if I were using value
- * templates, which I'm not, because it would make me use more value
- * templates in other places in the code, which would be bad because ...
- * well, I'm still working on this rationalization.
+ * templates, which would make things complicated quickly.
  */
 Cyclic::Cyclic(const float min, const float max) :
     min(min), max(max), value(min) { }
@@ -81,39 +87,25 @@ float cyclicDistance(const Cyclic x, const float y) {
 }
 
 /**
- * Switched.
+ * Angle.
  */
-Switched &Switched::operator=(const float x) {
-  for (float possible : states)
-    if (x == possible) {
-      value = x;
-      return *this;
-    }
+Angle::Angle(const float x) : value(0, 360, x) { }
 
-  throw std::logic_error("Bad assignment to Switched value!");
-}
-
-/**
- * Angle
- */
-Angle::Angle(const float x) : value(cyclicClamp<float>(0, 360, x)) { }
-
-Angle::Angle(const sf::Vector2f &vec) {
-  operator=(toDeg((float) atan2(vec.y, vec.x)));
-}
+Angle::Angle(const sf::Vector2f &vec) :
+    Angle(toDeg((float) atan2(vec.y, vec.x))) { }
 
 Angle &Angle::operator=(const float x) {
-  value = cyclicClamp<float>(0, 360, x);
+  this->value = x;
   return *this;
 }
 
 Angle &Angle::operator+=(const float x) {
-  value = cyclicClamp<float>(0, 360, x + value);
+  this->value += x;
   return *this;
 }
 
 Angle &Angle::operator-=(const float x) {
-  value = cyclicClamp<float>(0, 360, x - value);
+  this->value -= x;
   return *this;
 }
 

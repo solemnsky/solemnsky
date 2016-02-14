@@ -135,30 +135,21 @@ bool cyclicApproach(Cyclic &x, const float target, const float amount);
 float cyclicDistance(const Cyclic x, const float y);
 
 /**
- * Floats that must only assume one of a set of values.
+ * The movement of a one-dimensional variable at a constant or null rate.
  */
-struct Switched {
-private:
-  std::vector<float> states;
-  float value;
 
-public:
-  Switched() = delete;
-
-  Switched(std::vector<float> states, float value) :
-      states(states), value(value) { operator=(value); /* confirm validity */ };
-
-  Switched &operator=(const float x);
-
-  inline operator float() const { return value; }
+enum class Movement {
+  Up, Down, None
 };
+
+float movementValue(const Movement movement);
 
 /**
  * Angle value: represents an angle in degrees.
  */
 struct Angle {
 private:
-  float value;
+  Cyclic value;
 public:
   inline Angle() : Angle(0) { }
   Angle(const float x);
