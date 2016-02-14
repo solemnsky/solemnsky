@@ -36,7 +36,7 @@ void GameController::setState(sky::PlaneVital &state) {
   state.rotCtrl = 0;
   if (leftCtrl) state.rotCtrl = -1;
   if (rightCtrl) state.rotCtrl += 1;
-  state.throtCtrl = 0;
-  if (upCtrl) state.throtCtrl = 1;
-  if (downCtrl) state.throtCtrl = -1;
+  state.throtCtrl = Movement::None;
+  if (upCtrl) state.throtCtrl = Movement::Up;
+  if (downCtrl) state.throtCtrl = Movement::Down;
 }

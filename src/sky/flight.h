@@ -7,6 +7,7 @@
 #include <Box2D/Box2D.h>
 #include "physics.h"
 #include "util/types.h"
+#include "telegraph/pack.h"
 
 namespace sky {
 
@@ -52,11 +53,14 @@ struct PlaneTuning {
   float throttleSpeed = 1.5;
 };
 
+extern const tg::Pack<PlaneTuning> planeTuningPack;
+
 /**
  * State specific to a plane that is spawned, everything in here is expected
  * to change very frequently, while it exists anyway.
  */
 struct PlaneVital {
+  PlaneVital(); // for packing
   PlaneVital(const PlaneTuning &tuning,
              const sf::Vector2f &pos,
              const float rot);
@@ -68,7 +72,7 @@ struct PlaneVital {
    * sanity in general. ****
    */
   Clamped rotCtrl; // controls
-  Switched throtCtrl;
+  Movement throtCtrl;
 
   sf::Vector2f pos, vel; // physical values
   Angle rot;
@@ -93,6 +97,8 @@ struct PlaneVital {
   float requestEnergy(const float reqEnergy);
 };
 
+extern const tg::Pack<PlaneVital> planeVitalPack;
+
 /**
  * A plane, expressed in a simple (copyable etc.) struct.
  */
@@ -102,7 +108,6 @@ struct Plane {
   /**
    * Data.
    */
-  std::string name;
   PlaneTuning tuning;
   optional<PlaneVital> vital; // exists <=> plane is spawned
 
@@ -113,7 +118,7 @@ struct Plane {
 };
 
 /**
- * Handle for a
+ * Handle for a plane, holds
  */
 class PlaneHandle {
 private:

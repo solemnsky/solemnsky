@@ -97,7 +97,7 @@ public:
 };
 
 /**
- * Template definition for writeValue and readValue.
+ * Templated definitions for writeValue and readValue.
  */
 
 template<typename T>
@@ -108,9 +108,7 @@ void PacketWriter::writeValue(const T x) {
   } magic;
 
   magic.value = x;
-
-  for (size_t i = 0; i < sizeof(T); i++)
-    writeChar(magic.chars[i]);
+  for (size_t i = 0; i < sizeof(T); i++) writeChar(magic.chars[i]);
 }
 
 template<typename T>
@@ -120,9 +118,7 @@ T PacketReader::readValue() {
     T value;
   } magic;
 
-  for (size_t i = 0; i < sizeof(T); i++)
-    magic.chars[i] = readChar();
-
+  for (size_t i = 0; i < sizeof(T); i++) magic.chars[i] = readChar();
   return magic.value;
 }
 

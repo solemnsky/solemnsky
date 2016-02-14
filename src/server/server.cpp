@@ -7,7 +7,7 @@
 
 Server::Server(const unsigned short port) :
     host(tg::HostType::Server, port),
-    telegraph(sky::pk::clientPacketPack, sky::pk::serverPacketPack) {
+    telegraph(sky::prot::clientPacketPack, sky::prot::serverPacketPack) {
   appLog("Starting server on port " + std::to_string(port),
          LogOrigin::Server);
 }
@@ -40,8 +40,8 @@ void Server::transmitToClient(ENetPeer *const client,
   telegraph.transmit(host, client, packet);
 }
 
-sky::PlayerRecord &Server::recordFromPeer(ENetPeer *peer) const {
-  return *((sky::PlayerRecord *) peer->data);
+sky::Player &Server::recordFromPeer(ENetPeer *peer) const {
+  return *((sky::Player *) peer->data);
 }
 
 void Server::processPacket(ENetPeer *client,
@@ -49,46 +49,51 @@ void Server::processPacket(ENetPeer *client,
   // received a packet from a connected peer
 
   using namespace sky::prot;
-  sky::PlayerRecord &record = recordFromPeer(client);
+  if (!client->data) {
+    // client is still connecting, we need to do a ReqJoin / AckJoin
+    // handshake and then distribute an ArenaDelta to the other clients
+    if (packet.type == ClientPacket::Type::ReqJoin) {
+      sky::Player &newPlayer = arena.connectPlayer();
+      newPlayer.nickname = *packet.stringData;
 
-  if (packet.type == ClientPacket::Type::Ping) {
-    // we always send a pong to ping requests
-    transmitToClient(client, ServerPong());
+      appLog("Client " + std::to_string(newPlayer.pid)
+                 + " entering in arena as \"" + *packet.stringData + "\".",
+             LogOrigin::Server);
+      transmitToClient(
+          client, ServerAckJoin(newPlayer.pid, arena.captureInitializer()));
+
+      sky::ArenaDelta delta;
+      delta.playerJoin = newPlayer;
+      broadcastToClientsExcept(newPlayer.pid, ServerNotifyDelta(delta));
+    }
     return;
   }
 
-  const std::string &pidString = std::to_string(record.pid);
+  sky::Player &player = recordFromPeer(client);
+
+  const std::string &pidString = std::to_string(player.pid);
   appLog("Client " + pidString + ": " + packet.dump());
 
-  if (!record.connected) {
-    // if the client isn't connected, we just want a ReqConnection before
-    // anything else...
-    if (packet.type == ClientPacket::Type::ReqConnection) {
-      appLog("Client " + pidString + " entering in arena as \""
-                 + *packet.stringData + "\".",
-             LogOrigin::Server);
-      record.nickname = *packet.stringData;
-      record.connected = true;
-      transmitToClient(client, ServerAcceptConnection(record.pid, arena));
-
-      sky::PlayerRecordDelta delta;
-      delta.connected = true;
-      delta.nickname = record.nickname;
-      broadcastToClientsExcept(record.pid, ServerNotifyRecordDelta(delta));
+  switch (packet.type) {
+    case ClientPacket::Type::ReqDelta: {
+      sky::ArenaDelta delta;
+      delta.playerDelta = std::pair<sky::PID, sky::PlayerDelta>(
+          player.pid, *packet.playerDelta
+      );
+      arena.applyDelta(delta);
+      broadcastToClients(ServerNotifyDelta(delta));
+      break;
     }
-  } else {
-    switch (packet.type) {
-      case sky::prot::ClientPacket::Type::Chat: {
-        broadcastToClients(ServerNotifyMessage(*packet.stringData, record.pid));
-        break;
-      }
-      case ClientPacket::Type::Ping: {
-        transmitToClient(client, ServerPong());
-        break;
-      }
-      default:
-        break;
+    case ClientPacket::Type::Chat: {
+      broadcastToClients(ServerNotifyMessage(*packet.stringData, player.pid));
+      break;
     }
+    case ClientPacket::Type::Ping: {
+      transmitToClient(client, ServerPong());
+      break;
+    }
+    default:
+      break;
   }
 }
 
@@ -102,19 +107,19 @@ void Server::tick(float delta) {
     case ENET_EVENT_TYPE_NONE:
       break;
     case ENET_EVENT_TYPE_CONNECT: {
-      sky::PlayerRecord &record = arena.connectPlayer();
-      appLog("Client connected, PID " + std::to_string(record.pid));
-      event.peer->data = &record;
-      broadcastToClientsExcept(record.pid,
-                               sky::prot::ServerNotifyConnection(record.pid));
+      appLog("Client connecting...");
+      event.peer->data = nullptr;
       break;
     }
     case ENET_EVENT_TYPE_DISCONNECT: {
-      sky::PlayerRecord &record = recordFromPeer(event.peer);
-      appLog("Client disconnected, PID " + std::to_string(record.pid));
+      sky::Player &record = recordFromPeer(event.peer);
+      appLog("Client disconnected, PID " + std::to_string(record.pid),
+             LogOrigin::Server);
+      sky::ArenaDelta arenaDelta;
+      arenaDelta.playerQuit = record.pid;
       broadcastToClientsExcept(
           record.pid,
-          sky::prot::ServerNotifyDisconnection("no reason given", record.pid));
+          sky::prot::ServerNotifyDelta(arenaDelta));
       arena.disconnectPlayer(record);
       break;
     }

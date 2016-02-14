@@ -26,7 +26,6 @@ class MultiplayerClient: public Game {
   Cooldown pingCooldown;
 
   bool triedConnection; // have we sent a verbs requesting connection yet?
-  bool arenaConnected; // we've initialized the Arena
 
   bool disconnecting;
   Cooldown disconnectTimeout;
@@ -37,8 +36,8 @@ class MultiplayerClient: public Game {
    * Local model of the Arena / game state.
    * Use with discretion until 'connected'.
    */
-  sky::PlayerRecord *myRecord;
-  sky::Arena arena;
+  sky::Player *myRecord;
+  optional<sky::Arena> arena;
 
   /**
    * Networking submethods.

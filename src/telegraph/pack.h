@@ -15,8 +15,6 @@ namespace tg { // TeleGraph
 
 /**
  * Non-abstract struct holding rules on how to pack / unpack a Value.
- * For API consistency, functionality is hidden behind non-member methods pack,
- * packInto, unpack, and unpackInfo.
  */
 template<typename Value>
 struct Pack {
@@ -63,7 +61,7 @@ void unpackInto(const Pack<T> &rules, const Packet &packet, T &value) {
  */
 
 /**
- * Pack implementations are transitive given the existance of mutual
+ * Pack implementations are transitive, given the existence of mutual
  * assignment operations.
  *
  * This is mainly useful for small types like Clamped and such.
@@ -83,7 +81,7 @@ struct AssignPack: Pack<B> {
 };
 
 /**
- * Pack a boolean in one bit. Doesn't get more space-efficent than this.
+ * Pack a boolean in one bit. Doesn't get more space-efficient than this.
  */
 struct BoolPack: Pack<bool> {
   BoolPack();
@@ -178,18 +176,18 @@ struct MapPack: Pack<std::map<K, V>> {
 };
 
 /**
- * Packs a std::list, using a certain type to serialize its size.
+ * Pack a std::list's and std::vector's, using a certain size type.
  */
-template<typename T, typename SizeT = size_t>
-struct ListPack: Pack<std::list<T>> {
-  ListPack(const Pack<T> &rule) :
-      Pack<std::list<T>>(
-          [rule](PacketWriter &writer, const std::list<T> &list) {
+template<typename Listlike, typename T, typename SizeT = size_t>
+struct ListlikePack: Pack<Listlike> {
+  ListlikePack(const Pack<T> &rule) :
+      Pack<Listlike>(
+          [rule](PacketWriter &writer, const Listlike &list) {
             writer.writeValue<SizeT>(list.size());
             for (auto &value : list)
               rule.pack(writer, value);
           },
-          [rule](PacketReader &reader, std::list<T> &list) {
+          [rule](PacketReader &reader, Listlike &list) {
             list.clear();
             SizeT i = reader.readValue<SizeT>();
             T value;
@@ -202,8 +200,14 @@ struct ListPack: Pack<std::list<T>> {
       ) { }
 };
 
+template<typename T, typename SizeT = size_t>
+using ListPack = ListlikePack<std::list<T>, T, SizeT>;
+
+template<typename T, typename SizeT = size_t>
+using VectorPack = ListlikePack<std::vector<T>, T, SizeT>;
+
 /**
- * Pack a class, syncing an variadic argument list of
+ * Pack a class, holding a variadic argument list of member rules.
  */
 template<typename Class, typename Member>
 struct MemberRule {
@@ -245,6 +249,42 @@ struct ClassPack: Pack<Class> {
         ClassPack::classUnpack(reader, value, members...);
       }) { }
 };
+
+/**
+ * Pack a std::pair.
+ */
+
+template<typename First, typename Second>
+struct PairPack: public Pack<std::pair<First, Second>> {
+  PairPack(const Pack<First> &firstRule,
+           const Pack<Second> &secondRule) :
+      Pack<std::pair<First, Second>>(
+          [firstRule, secondRule]
+              (PacketWriter &writer, const std::pair<First, Second> &pair) {
+            firstRule.pack(writer, pair.first);
+            secondRule.pack(writer, pair.second);
+          },
+          [firstRule, secondRule]
+              (PacketReader &reader, std::pair<First, Second> &pair) {
+            firstRule.unpack(reader, pair.first);
+            secondRule.unpack(reader, pair.second);
+          }
+      ) { }
+};
+
+/**
+ * Instantiated Pack's.
+ */
+
+extern const Pack<std::string> stringPack;
+extern const Pack<optional<std::string>> optStringPack;
+extern const Pack<bool> boolPack;
+extern const Pack<float> floatPack;
+extern const Pack<int> intPack;
+extern const Pack<sf::Vector2f> vectorPack;
+extern const Pack<Clamped> clampedPack;
+extern const Pack<Angle> anglePack;
+extern const Pack<Movement> movementPack;
 
 }
 

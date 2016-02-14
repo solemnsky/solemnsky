@@ -123,15 +123,27 @@ TEST_F(PackTest, MapPack) {
 }
 
 /**
+ * Our ListlikePack rules work correctly.
+ */
+TEST_F(PackTest, ListlikePack) {
+  const tg::Pack<std::vector<int>> vecPack = tg::VectorPack<int>(tg::intPack);
+
+  std::vector<int> myVec = {1, 2, 5, 6};
+  tg::packInto(vecPack, myVec, buffer);
+  std::vector<int> unpacked = tg::unpack(vecPack, buffer);
+  EXPECT_EQ(myVec, unpacked);
+  EXPECT_EQ(buffer.size, sizeof(size_t) + 4 * sizeof(int));
+}
+
+/**
  * Our protocol verb packing works correctly.
  */
 TEST_F(PackTest, ProtocolPack) {
-  using namespace sky::pk;
   using namespace sky::prot;
 
-  ClientPacket packet = ClientReqConnection("nickname");
+  ClientPacket packet = ClientReqJoin("nickname");
   tg::packInto(clientPacketPack, packet, buffer);
   tg::unpackInto(clientPacketPack, buffer, packet);
   EXPECT_EQ(*packet.stringData, "nickname");
-  EXPECT_EQ(packet.type, ClientPacket::Type::ReqConnection);
+  EXPECT_EQ(packet.type, ClientPacket::Type::ReqJoin);
 }

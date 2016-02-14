@@ -2,9 +2,7 @@
 #include "gtest/gtest.h"
 
 /**
- * I know this looks stupid but hey, at least now we're *sure* we won't have
- * stupid bugs later. Further justifying this, I cite that I'm interested in
- * poking at GoogleTest a bit.
+ * Extremely simple utils.
  */
 
 TEST(UtilTest, CooldownTest) {
@@ -30,13 +28,6 @@ TEST(UtilTest, CyclicTest) {
   EXPECT_EQ(x = 5, -5);
   EXPECT_EQ(x = 6, -4);
   EXPECT_EQ(x = -7, 3);
-}
-
-TEST(UtilTest, SwitchedTest) {
-  Switched x{{0, 3, 5}, 5};
-  EXPECT_ANY_THROW(x = 1);
-  EXPECT_NO_THROW(x = 0);
-  EXPECT_NO_THROW(x = 5);
 }
 
 TEST(UtilTest, AngleTest) {

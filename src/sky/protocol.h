@@ -15,38 +15,47 @@ namespace sky {
 namespace prot {
 
 /**
- * Stuff clients say.
+ * Protocol verbs for the client.
  */
 struct ClientPacket {
   enum class Type {
     Ping, // request a pong, always available
-    ReqConnection, // request to finalize connection (enet is already connected)
-
-    // available only when joined in arena
-        Chat // try to send a chat message
+    ReqJoin, // request to set your player data (enet is already connected)
+    ReqDelta, // request a change to your player data
+    Chat // send a chat message
   };
 
   ClientPacket() = default;
 
   ClientPacket(const Type type,
-               const optional<std::string> &stringData = {}) :
+               const optional<std::string> &stringData = {},
+               const optional<PlayerDelta> &playerDelta = {}) :
       type(type),
-      stringData(stringData) { }
+      stringData(stringData),
+      playerDelta(playerDelta) { }
 
   Type type;
   optional<std::string> stringData;
+  optional<PlayerDelta> playerDelta;
 
   // debug
   std::string dump() const;
 };
 
+extern const tg::Pack<prot::ClientPacket> clientPacketPack;
+
 struct ClientPing: public ClientPacket {
   ClientPing() : ClientPacket(ClientPacket::Type::Ping) { }
 };
 
-struct ClientReqConnection: public ClientPacket {
-  ClientReqConnection(const std::string &nick) :
-      ClientPacket(ClientPacket::Type::ReqConnection, nick) { }
+struct ClientReqJoin: public ClientPacket {
+  ClientReqJoin(const std::string &nickname) :
+      ClientPacket(ClientPacket::Type::ReqJoin, nickname) { }
+};
+
+struct ClientReqDelta: public ClientPacket {
+  ClientReqDelta(const PlayerDelta &playerDelta) :
+      ClientPacket(ClientPacket::Type::ReqDelta, {}, playerDelta) { }
 };
 
 struct ClientChat: public ClientPacket {
@@ -55,15 +64,13 @@ struct ClientChat: public ClientPacket {
 };
 
 /**
- * Stuff servers say.
+ * Protocol verbs for the server.
  */
 struct ServerPacket {
   enum class Type {
     Pong,
-    AcceptConnection, // accept a connection
-    NotifyConnection, // notify clients of a new player record
-    NotifyRecordDelta, // notify clients of a record delta
-    NotifyDisconnection, // notify clients of a player record removal
+    AckJoin, // acknowledge a ReqJoin, send ArenaInitializer
+    NotifyDelta, // notify clients of a change in the arena
     NotifyMessage // distribute message for all clients to log
   };
 
@@ -72,76 +79,46 @@ struct ServerPacket {
   ServerPacket(const Type type,
                const optional<std::string> &stringData = {},
                const optional<PID> &pid = {},
-               const optional<Arena> &arena = {},
-               const optional<PlayerRecord> &record = {},
-               const optional<PlayerRecordDelta> &recordDelta = {}) :
+               const optional<ArenaInitializer> &arena = {},
+               const optional<ArenaDelta> &arenaDelta = {}) :
       type(type),
       stringData(stringData),
       pid(pid),
-      arena(arena),
-      record(record),
-      recordDelta(recordDelta) { }
+      arenaInitializer(arena) { }
 
   Type type;
   optional<std::string> stringData;
   optional<PID> pid;
-  optional<Arena> arena;
-  optional<PlayerRecord> record;
-  optional<PlayerRecordDelta> recordDelta;
+  optional<ArenaInitializer> arenaInitializer;
+  optional<ArenaDelta> arenaDelta;
 
+  // debug
   std::string dump() const;
 };
+
+extern const tg::Pack<prot::ServerPacket> serverPacketPack;
 
 struct ServerPong: public ServerPacket {
   ServerPong() : ServerPacket(ServerPacket::Type::Pong) { }
 };
 
-struct ServerAcceptConnection: public ServerPacket {
-  ServerAcceptConnection(const PID pid,
-                         const Arena &arena) :
-      ServerPacket(ServerPacket::Type::AcceptConnection, {}, pid, arena) { }
+struct ServerAckJoin: public ServerPacket {
+  ServerAckJoin(const PID pid, const ArenaInitializer &arenaInitializer) :
+      ServerPacket(ServerPacket::Type::AckJoin, {}, pid, arenaInitializer) { }
 };
 
-struct ServerNotifyConnection: public ServerPacket {
-  ServerNotifyConnection(const PID pid) :
-      ServerPacket(ServerPacket::Type::NotifyConnection, {}, pid) { }
-};
-
-struct ServerNotifyRecordDelta: public ServerPacket {
-  ServerNotifyRecordDelta(const PlayerRecordDelta &recordDelta) :
-      ServerPacket(ServerPacket::Type::NotifyRecordDelta, {},
-                   {}, {}, {}, recordDelta) { }
-};
-
-struct ServerNotifyDisconnection: public ServerPacket {
-  ServerNotifyDisconnection(const std::string &reason, const PID pid) :
-      ServerPacket(ServerPacket::Type::NotifyDisconnection, reason, pid) { }
+struct ServerNotifyDelta: public ServerPacket {
+  ServerNotifyDelta(const ArenaDelta &arenaDelta) :
+      ServerPacket(ServerPacket::Type::NotifyDelta, {}, {}, {}, arenaDelta) { }
 };
 
 struct ServerNotifyMessage: public ServerPacket {
-  // no PID supplied if it's not from a client
   ServerNotifyMessage(const std::string &message,
                       const optional<PID> pid = {}) :
       ServerPacket(ServerPacket::Type::NotifyMessage, message, pid) { }
 };
 }
 
-/****
- * Packing rules.
- */
-namespace pk {
-using namespace tg;
-
-extern const Pack<std::string> stringPack;
-extern const Pack<optional<std::string>> optStringPack;
-extern const Pack<PID> pidPack;
-
-extern const Pack<prot::ClientPacket> clientPacketPack;
-extern const Pack<PlayerRecord> playerRecordPack;
-extern const Pack<PlayerRecordDelta> playerRecordDeltaPack;
-extern const Pack<Arena> arenaPack;
-extern const Pack<prot::ServerPacket> serverPacketPack;
-}
 
 }
 

@@ -6,15 +6,77 @@
 
 namespace sky {
 
-/****
+/**
+ * PlaneTuning
+ */
+
+#define member(TYPE, PTR, RULE) \
+  tg::MemberRule<PlaneTuning::Energy, TYPE>(RULE, &PlaneTuning::Energy::PTR)
+const tg::Pack<PlaneTuning::Energy> planeTuningEnergyPack =
+    tg::ClassPack<PlaneTuning::Energy>(
+        member(float, thrustDrain, tg::floatPack),
+        member(float, recharge, tg::floatPack),
+        member(float, laserGun, tg::floatPack)
+    );
+#undef member
+
+#define member(TYPE, PTR, RULE) \
+  tg::MemberRule<PlaneTuning::Stall, TYPE>(RULE, &PlaneTuning::Stall::PTR)
+const tg::Pack<PlaneTuning::Stall> planeTuningStallPack =
+    tg::ClassPack<PlaneTuning::Stall>(
+        member(float, maxRotVel, tg::floatPack),
+        member(float, maxVel, tg::floatPack),
+        member(float, thrust, tg::floatPack),
+        member(float, damping, tg::floatPack),
+        member(float, threshold, tg::floatPack)
+    );
+#undef member
+
+#define member(TYPE, PTR, RULE) \
+  tg::MemberRule<PlaneTuning::Flight, TYPE>(RULE, &PlaneTuning::Flight::PTR)
+const tg::Pack<PlaneTuning::Flight> planeTuningFlightPack =
+    tg::ClassPack<PlaneTuning::Flight>(
+        member(float, maxRotVel, tg::floatPack),
+        member(float, airspeedFactor, tg::floatPack),
+        member(float, throttleInfluence, tg::floatPack),
+        member(float, throttleBreaking, tg::floatPack),
+        member(float, gravityEffect, tg::floatPack),
+        member(float, gravityEffect, tg::floatPack),
+        member(float, afterburnDrive, tg::floatPack),
+        member(float, leftoverDamping, tg::floatPack),
+        member(float, threshold, tg::floatPack)
+    );
+#undef member
+
+#define member(TYPE, PTR, RULE) \
+  tg::MemberRule<PlaneTuning, TYPE>(RULE, &PlaneTuning::PTR)
+const tg::Pack<PlaneTuning> planeTuningPack =
+    tg::ClassPack<PlaneTuning>(
+        member(sf::Vector2f, hitbox, tg::vectorPack),
+        member(PlaneTuning::Energy, energy, planeTuningEnergyPack),
+        member(PlaneTuning::Stall, stall, planeTuningStallPack),
+        member(PlaneTuning::Flight, flight, planeTuningFlightPack),
+        member(float, throttleSpeed, tg::floatPack)
+    );
+#undef member
+
+/**
  * PlaneVital
  */
+
+PlaneVital::PlaneVital() :
+    rotCtrl(-1, 1),
+    afterburner(0, 1),
+    airspeed(0, 1),
+    throttle(0, 1),
+    energy(0, 1),
+    health(0, 1) { }
 
 PlaneVital::PlaneVital(const PlaneTuning &tuning,
                        const sf::Vector2f &pos,
                        const float rot) :
     rotCtrl(-1, 1, 0),
-    throtCtrl({-1, 0, 1}, 0),
+    throtCtrl(Movement::None),
 
     pos(pos),
     vel(tuning.flight.airspeedFactor * VecMath::fromAngle(rot)),
@@ -48,6 +110,26 @@ float PlaneVital::requestEnergy(const float reqEnergy) {
   energy -= reqEnergy;
   return (initEnergy - energy) / reqEnergy;
 }
+
+#define member(TYPE, PTR, RULE) \
+  tg::MemberRule<PlaneVital, TYPE>(RULE, &PlaneVital::PTR)
+const tg::Pack<PlaneVital> planeVitalPack =
+    tg::ClassPack<PlaneVital>(
+        member(Clamped, rotCtrl, tg::clampedPack),
+        member(Movement, throtCtrl, tg::movementPack),
+        member(sf::Vector2f, pos, tg::vectorPack),
+        member(sf::Vector2f, vel, tg::vectorPack),
+        member(Angle, rot, tg::anglePack),
+        member(float, rotvel, tg::floatPack),
+        member(bool, stalled, tg::boolPack),
+        member(Clamped, afterburner, tg::clampedPack),
+        member(sf::Vector2f, leftoverVel, tg::vectorPack),
+        member(Clamped, airspeed, tg::clampedPack),
+        member(Clamped, throttle, tg::clampedPack),
+        member(Clamped, energy, tg::clampedPack),
+        member(Clamped, health, tg::clampedPack)
+    );
+#undef member
 
 /****
  * PlaneHandle
@@ -115,7 +197,7 @@ void PlaneHandle::tick(float delta) {
 
   if (vstate->stalled) {
     // afterburner
-    if (vstate->throtCtrl == 1) {
+    if (vstate->throtCtrl == Movement::Up) {
       const float thrustEfficacy =
           vstate->requestEnergy(tuning.energy.thrustDrain * delta);
 
@@ -133,9 +215,9 @@ void PlaneHandle::tick(float delta) {
           std::pow(tuning.stall.damping, delta);
   } else {
     // modify throttle and afterburner according to controls
-    vstate->throttle += vstate->throtCtrl * delta;
+    vstate->throttle += movementValue(vstate->throtCtrl) * delta;
     bool afterburning =
-        (vstate->throtCtrl == 1) && vstate->throttle == 1;
+        (vstate->throtCtrl == Movement::Up) && vstate->throttle == 1;
 
     // pick away at leftover velocity
     vstate->leftoverVel *= std::pow(tuning.flight.leftoverDamping, delta);
