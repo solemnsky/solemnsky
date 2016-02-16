@@ -7,7 +7,7 @@
 
 Server::Server(const unsigned short port) :
     host(tg::HostType::Server, port),
-    telegraph(sky::prot::clientPacketPack, sky::prot::serverPacketPack) {
+    telegraph(sky::clientPacketPack, sky::serverPacketPack) {
   appLog("Starting server on port " + std::to_string(port),
          LogOrigin::Server);
 }
@@ -16,13 +16,13 @@ Server::Server(const unsigned short port) :
  * Packet processing subroutines.
  */
 
-void Server::broadcastToClients(const sky::prot::ServerPacket &packet) {
+void Server::broadcastToClients(const sky::ServerPacket &packet) {
   appLog("To all: " + packet.dump());
   telegraph.transmitMult(host, host.peers, packet);
 }
 
 void Server::broadcastToClientsExcept(const sky::PID pid,
-                                      const sky::prot::ServerPacket &packet) {
+                                      const sky::ServerPacket &packet) {
   appLog("To all except "
              + std::to_string(pid) + ": " + packet.dump());
   telegraph.transmitMultPred(
@@ -35,7 +35,7 @@ void Server::broadcastToClientsExcept(const sky::PID pid,
 }
 
 void Server::transmitToClient(ENetPeer *const client,
-                              const sky::prot::ServerPacket &packet) {
+                              const sky::ServerPacket &packet) {
   std::string clientDesc = "[unconnected]";
   if (sky::Player *player = playerFromPeer(client))
     clientDesc = std::to_string(player->pid);
@@ -53,11 +53,12 @@ sky::Player *Server::playerFromPeer(ENetPeer *peer) const {
 }
 
 void Server::processPacket(ENetPeer *client,
-                           const sky::prot::ClientPacket &packet) {
+                           const sky::ClientPacket &packet) {
   // received a packet from a connected peer
 
-  using namespace sky::prot;
-  if (sky::Player *player = playerFromPeer(client)) {
+  using namespace sky;
+
+  if (Player *player = playerFromPeer(client)) {
     const std::string &pidString = std::to_string(player->pid);
     appLog("Client " + pidString + ": " + packet.dump());
 
@@ -89,6 +90,7 @@ void Server::processPacket(ENetPeer *client,
     if (packet.type == ClientPacket::Type::ReqJoin) {
       sky::Player &newPlayer = arena.connectPlayer();
       newPlayer.nickname = *packet.stringData;
+      event.peer->data = &newPlayer;
 
       appLog("Client " + std::to_string(newPlayer.pid)
                  + " entering in arena as \"" + *packet.stringData + "\".",
@@ -125,7 +127,7 @@ void Server::tick(float delta) {
         arenaDelta.playerQuit = player->pid;
         broadcastToClientsExcept(
             player->pid,
-            sky::prot::ServerNotifyDelta(arenaDelta));
+            sky::ServerNotifyDelta(arenaDelta));
         arena.disconnectPlayer(*player);
       }
       break;

@@ -85,15 +85,15 @@ private:
   size_t head;
   unsigned char offset;
 
-  unsigned char accessHead() const;
+  optional<unsigned char> accessHead() const;
 
 public:
   PacketReader(const Packet *packet);
 
-  unsigned char readChar();
-  bool readBit();
+  optional<unsigned char> readChar();
+  optional<bool> readBit();
   template<typename T>
-  T readValue();
+  optional<T> readValue();
 };
 
 /**
@@ -112,13 +112,18 @@ void PacketWriter::writeValue(const T x) {
 }
 
 template<typename T>
-T PacketReader::readValue() {
+optional<T> PacketReader::readValue() {
   union {
     unsigned char chars[sizeof(T)];
     T value;
   } magic;
 
-  for (size_t i = 0; i < sizeof(T); i++) magic.chars[i] = readChar();
+  optional<unsigned char> currChar;
+  for (size_t i = 0; i < sizeof(T); i++) {
+    currChar = readChar();
+    if (!currChar) return {};
+    magic.chars[i] = *currChar;
+  }
   return magic.value;
 }
 

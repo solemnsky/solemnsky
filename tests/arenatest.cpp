@@ -32,11 +32,11 @@ TEST_F(ArenaTest, InitializationTest) {
   player1.nickname = "somebody";
 
   sky::ArenaInitializer initializer = arena.captureInitializer();
-  sky::prot::ServerPacket ack = sky::prot::ServerAckJoin(1, initializer);
-  tg::packInto(sky::prot::serverPacketPack, ack, buffer);
+  sky::ServerPacket ack = sky::ServerAckJoin(1, initializer);
+  tg::packInto(sky::serverPacketPack, ack, buffer);
 
-  sky::prot::ServerPacket receivedAck =
-      tg::unpack(sky::prot::serverPacketPack, buffer);
+  sky::ServerPacket receivedAck =
+      *tg::unpack(sky::serverPacketPack, buffer);
   sky::Arena remoteArena = *receivedAck.arenaInitializer;
 
   EXPECT_EQ(remoteArena.getRecord(*receivedAck.pid)->nickname, "somebody");
@@ -51,7 +51,7 @@ TEST_F(ArenaTest, DeltaTest) {
   delta.motdDelta = "secret server";
   tg::packInto(sky::arenaDeltaPack, delta, buffer);
   appLog(buffer.dump());
-  arena.applyDelta(tg::unpack(sky::arenaDeltaPack, buffer));
+  arena.applyDelta(*tg::unpack(sky::arenaDeltaPack, buffer));
   EXPECT_EQ(arena.motd, "secret server");
 
   delta = {};
@@ -60,7 +60,7 @@ TEST_F(ArenaTest, DeltaTest) {
   delta.playerJoin = player;
   tg::packInto(sky::arenaDeltaPack, delta, buffer);
   appLog(buffer.dump());
-  arena.applyDelta(tg::unpack(sky::arenaDeltaPack, buffer));
+  arena.applyDelta(*tg::unpack(sky::arenaDeltaPack, buffer));
   EXPECT_NE(arena.getRecord(1), nullptr);
   EXPECT_EQ(arena.getRecord(1)->nickname, "somebody");
 
@@ -69,14 +69,14 @@ TEST_F(ArenaTest, DeltaTest) {
       1, sky::PlayerDelta(std::string("somebody else")));
   tg::packInto(sky::arenaDeltaPack, delta, buffer);
   appLog(buffer.dump());
-  arena.applyDelta(tg::unpack(sky::arenaDeltaPack, buffer));
+  arena.applyDelta(*tg::unpack(sky::arenaDeltaPack, buffer));
   EXPECT_EQ(arena.getRecord(1)->nickname, "somebody else");
 
   delta = {};
   delta.playerQuit = 1;
   tg::packInto(sky::arenaDeltaPack, delta, buffer);
   appLog(buffer.dump());
-  arena.applyDelta(tg::unpack(sky::arenaDeltaPack, buffer));
+  arena.applyDelta(*tg::unpack(sky::arenaDeltaPack, buffer));
   EXPECT_EQ(arena.getRecord(1), nullptr);
 }
 

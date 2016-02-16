@@ -80,13 +80,11 @@ ENetPeer *Host::connect(const std::string &address, const unsigned short port) {
   enet_address_set_host(&eaddress, address.c_str());
   eaddress.port = port;
   ENetPeer *peer = enet_host_connect(host, &eaddress, 1, 0);
-  registerPeer(peer);
   return peer;
 }
 
 void Host::disconnect(ENetPeer *peer) {
   enet_peer_disconnect(peer, 0);
-  unregisterPeer(peer);
 }
 
 void Host::transmit(ENetPeer *const peer,

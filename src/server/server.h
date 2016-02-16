@@ -21,7 +21,7 @@ class Server {
    * Connection stuff.
    */
   tg::Host host;
-  tg::Telegraph<sky::prot::ClientPacket, sky::prot::ServerPacket> telegraph;
+  tg::Telegraph<sky::ClientPacket, sky::ServerPacket> telegraph;
   ENetEvent event;
   std::vector<ENetPeer *> connectingPeers;
 
@@ -29,17 +29,17 @@ class Server {
    * Packet processing subroutines.
    */
 
-  void broadcastToClients(const sky::prot::ServerPacket &packet);
+  void broadcastToClients(const sky::ServerPacket &packet);
   void broadcastToClientsExcept(const sky::PID pid,
-                                const sky::prot::ServerPacket &packet);
+                                const sky::ServerPacket &packet);
   void transmitToClient(ENetPeer *const client,
-                        const sky::prot::ServerPacket &packet);
+                        const sky::ServerPacket &packet);
 
   // every peer has a record in the arena associated with it
   sky::Player *playerFromPeer(ENetPeer *peer) const;
 
   // we process a packet sent from a connected client
-  void processPacket(ENetPeer *client, const sky::prot::ClientPacket &packet);
+  void processPacket(ENetPeer *client, const sky::ClientPacket &packet);
 
  public:
   Server(const unsigned short port);

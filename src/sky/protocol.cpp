@@ -1,7 +1,6 @@
 #include "protocol.h"
 
 namespace sky {
-namespace prot {
 
 /**
  * ClientPacket.
@@ -43,7 +42,7 @@ std::string ServerPacket::dump() const {
     case Type::AckJoin:
       return "AckJoin";
     case Type::NotifyDelta:
-      "NotifyDelta";
+      return "NotifyDelta";
     case Type::NotifyMessage:
       return "NotifyMessage";
   }
@@ -58,28 +57,10 @@ const tg::Pack<ServerPacket> serverPacketPack =
         member(optional<std::string>, stringData, tg::optStringPack),
         member(optional<PID>, pid, tg::OptionalPack<PID>(pidPack)),
         member(optional<ArenaInitializer>, arenaInitializer,
-               tg::OptionalPack<ArenaInitializer>(
-                   // arenaInitializerPack // this appears to be null..?
-                   // (the rule's functions are not initialized)
-                   // it's defined in arena.cpp, as the following:
-                   tg::ClassPack<ArenaInitializer>(
-                       tg::MemberRule<ArenaInitializer, std::vector<Player>>(
-                           tg::VectorPack<Player>(
-                               playerPack // and now this is null!!
-                               // (also defined in arena.cpp)
-                               // I don't want to inline everything...
-                           ),
-                           &ArenaInitializer::playerRecords),
-                       tg::MemberRule<ArenaInitializer, std::string>(
-                           tg::stringPack, &ArenaInitializer::motd
-                       )
-                   )
-               )),
-        member(optional<ArenaDelta>, arenaDelta,
-               tg::OptionalPack<ArenaDelta>(arenaDeltaPack))
+               tg::OptionalPack<ArenaInitializer>(arenaInitializerPack)),
+        member(optional<sky::ArenaDelta>, arenaDelta,
+               tg::OptionalPack<sky::ArenaDelta>(sky::arenaDeltaPack))
     );
 #undef member
-
-}
 
 }

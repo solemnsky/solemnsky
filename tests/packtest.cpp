@@ -29,10 +29,11 @@ TEST_F(PackTest, ReadWrite) {
             "00000010 00000000 00000000 00000000 11111111 00000001 ");
   //        | int                              | |char ||        |
   //                                                    bit      char
-  EXPECT_EQ(reader.readValue<int>(), 2);
-  EXPECT_EQ(reader.readBit(), true);
-  EXPECT_EQ(reader.readChar(), 0xff);
-//  EXPECT_DEATH(reader.readChar(), ".*");
+  EXPECT_EQ(*reader.readValue<int>(), 2);
+  EXPECT_EQ(*reader.readBit(), true);
+  EXPECT_EQ(*reader.readChar(), 0xff);
+  EXPECT_EQ((bool) reader.readChar(), false);
+  // no more input to read, result is null
 }
 
 /**
@@ -97,9 +98,25 @@ TEST_F(PackTest, ClassPack) {
   MyStruct myStruct;
   myStruct.x = 5;
   tg::packInto(classPack, myStruct, buffer);
-  MyStruct unpacked = tg::unpack(classPack, buffer);
+  MyStruct unpacked = *tg::unpack(classPack, buffer);
   EXPECT_EQ(unpacked.y, myStruct.y);
   EXPECT_EQ(unpacked.x, myStruct.x);
+}
+
+/**
+ * Rules can fail when their input packets are malformed / too small.
+ */
+TEST_F(PackTest, FailTest) {
+  // a packet that doesn't have a null terminating character can't be read as
+  // a string
+  tg::packInto(tg::boolPack, true, buffer);
+  optional<std::string> unpackedStr = tg::unpack(tg::stringPack, buffer);
+  EXPECT_EQ((bool) unpackedStr, false);
+
+  // an int can't be read from a packet without 4 bytes
+  tg::packInto(tg::BytePack<unsigned short int>(), (unsigned short) 0, buffer);
+  optional<int> unpackedInt = tg::unpack(tg::intPack, buffer);
+  EXPECT_EQ((bool) unpackedInt, false);
 }
 
 /**
@@ -117,7 +134,7 @@ TEST_F(PackTest, MapPack) {
   myMap.emplace(2, myStruct2);
   tg::packInto(mapPack, myMap, buffer);
 
-  std::map<int, MyStruct> unpacked = tg::unpack(mapPack, buffer);
+  std::map<int, MyStruct> unpacked = *tg::unpack(mapPack, buffer);
   EXPECT_EQ(unpacked[0].x, myStruct1.x);
   EXPECT_EQ(*unpacked[2].y, *myStruct2.y);
 }
@@ -130,7 +147,7 @@ TEST_F(PackTest, ListlikePack) {
 
   std::vector<int> myVec = {1, 2, 5, 6};
   tg::packInto(vecPack, myVec, buffer);
-  std::vector<int> unpacked = tg::unpack(vecPack, buffer);
+  std::vector<int> unpacked = *tg::unpack(vecPack, buffer);
   EXPECT_EQ(myVec, unpacked);
   EXPECT_EQ(buffer.size, sizeof(size_t) + 4 * sizeof(int));
 }
@@ -139,7 +156,7 @@ TEST_F(PackTest, ListlikePack) {
  * Our protocol verb packing works correctly.
  */
 TEST_F(PackTest, ProtocolPack) {
-  using namespace sky::prot;
+  using namespace sky;
 
   ClientPacket packet = ClientReqJoin("nickname");
   tg::packInto(clientPacketPack, packet, buffer);

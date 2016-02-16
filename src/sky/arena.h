@@ -30,7 +30,14 @@ struct Player {
   bool operator==(const Player &record); // are PIDs equal?
 };
 
-extern const tg::Pack<Player> playerPack;
+#define member(TYPE, PTR, RULE) \
+  tg::MemberRule<Player, TYPE>(RULE, &Player::PTR)
+const tg::Pack<Player> playerPack =
+    tg::ClassPack<Player>(
+        member(PID, pid, pidPack),
+        member(std::string, nickname, tg::stringPack)
+    );
+#undef member
 
 /**
  * A change in a Player.
@@ -44,7 +51,13 @@ struct PlayerDelta {
   // ... potentially other things ...
 };
 
-extern const tg::Pack<PlayerDelta> playerDeltaPack;
+#define member(TYPE, PTR, RULE) \
+  tg::MemberRule<PlayerDelta, TYPE>(RULE, &PlayerDelta::PTR)
+const tg::Pack<PlayerDelta> playerDeltaPack =
+    tg::ClassPack<PlayerDelta>(
+        member(optional<std::string>, nickname, tg::optStringPack)
+    );
+#undef member
 
 /**
  * The data a client needs when jumping into an arena. Further changes are
@@ -57,7 +70,16 @@ struct ArenaInitializer {
   std::string motd;
 };
 
-extern const tg::Pack<ArenaInitializer> arenaInitializerPack;
+#define member(TYPE, PTR, RULE) \
+  tg::MemberRule<ArenaInitializer, TYPE>(RULE, &ArenaInitializer::PTR)
+static const tg::Pack<ArenaInitializer> arenaInitializerPack =
+    tg::ClassPack<ArenaInitializer>(
+        tg::MemberRule<ArenaInitializer, std::vector<Player>>(
+            tg::VectorPack<Player>(playerPack),
+            &ArenaInitializer::playerRecords),
+        member(std::string, motd, tg::stringPack)
+    );
+#undef member
 
 /**
  * A change that occurred in an Arena.
@@ -72,7 +94,22 @@ struct ArenaDelta {
   optional<std::string> motdDelta;
 };
 
-extern const tg::Pack<ArenaDelta> arenaDeltaPack;
+#define member(TYPE, PTR, RULE) \
+  tg::MemberRule<ArenaDelta, TYPE>(RULE, &ArenaDelta::PTR)
+static const tg::Pack<ArenaDelta> arenaDeltaPack =
+    tg::ClassPack<ArenaDelta>(
+        member(optional<PID>, playerQuit, tg::OptionalPack<PID>(pidPack)),
+        member(optional<Player>, playerJoin,
+               tg::OptionalPack<Player>(playerPack)),
+        tg::MemberRule<ArenaDelta, optional<std::pair<PID, PlayerDelta>>>(
+            tg::OptionalPack<std::pair<PID, PlayerDelta>>(
+                tg::PairPack<PID, PlayerDelta>(pidPack, playerDeltaPack)),
+            // oh boy
+            &ArenaDelta::playerDelta
+        ),
+        member(optional<std::string>, motdDelta, tg::optStringPack)
+    );
+#undef member
 
 /**
  * Arena.
