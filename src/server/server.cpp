@@ -52,7 +52,7 @@ sky::Player *Server::playerFromPeer(ENetPeer *peer) const {
   else return nullptr;
 }
 
-void Server::processPacket(ENetPeer *client,
+bool Server::processPacket(ENetPeer *client,
                            const sky::ClientPacket &packet) {
   // received a packet from a connected peer
 
@@ -64,30 +64,39 @@ void Server::processPacket(ENetPeer *client,
 
     switch (packet.type) {
       case ClientPacket::Type::ReqDelta: {
+        if (!all(packet.playerDelta))
+          return false;
+
         sky::ArenaDelta delta;
         delta.playerDelta = std::pair<sky::PID, sky::PlayerDelta>(
             player->pid, *packet.playerDelta
         );
         arena.applyDelta(delta);
         broadcastToClients(ServerNotifyDelta(delta));
-        break;
+        return true;
       }
       case ClientPacket::Type::Chat: {
+        if (!all(packet.stringData))
+          return false;
+
         broadcastToClients(ServerNotifyMessage(*packet.stringData,
                                                player->pid));
-        break;
+        return true;
       }
       case ClientPacket::Type::Ping: {
         transmitToClient(client, ServerPong());
-        break;
+        return true;
       }
       default:
-        break;
+        return false;
     }
   } else {
     // client is still connecting, we need to do a ReqJoin / AckJoin
     // handshake and then distribute an ArenaDelta to the other clients
     if (packet.type == ClientPacket::Type::ReqJoin) {
+      if (!all(packet.stringData))
+        return false;
+
       sky::Player &newPlayer = arena.connectPlayer();
       newPlayer.nickname = *packet.stringData;
       event.peer->data = &newPlayer;
@@ -133,7 +142,19 @@ void Server::tick(float delta) {
       break;
     }
     case ENET_EVENT_TYPE_RECEIVE: {
-      processPacket(event.peer, telegraph.receive(event.packet));
+      bool success = true;
+      if (const auto &reception = telegraph.receive(event.packet)) {
+        if (!processPacket(event.peer, *reception))
+          success = false;
+      } else success = false;
+
+      if (!success) {
+        // something went wrong with the packet process
+        if (sky::Player *player = playerFromPeer(event.peer))
+          appLog("Received malformed packet from client "
+                     + std::to_string(player->pid) + "!");
+        else appLog("Received malformed packet from unregistered client!");
+      }
       break;
     }
   }
