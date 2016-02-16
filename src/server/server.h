@@ -39,7 +39,7 @@ class Server {
   sky::Player *playerFromPeer(ENetPeer *peer) const;
 
   // we process a packet sent from a connected client
-  void processPacket(ENetPeer *client, const sky::ClientPacket &packet);
+  bool processPacket(ENetPeer *client, const sky::ClientPacket &packet);
 
  public:
   Server(const unsigned short port);

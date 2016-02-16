@@ -127,12 +127,13 @@ class Telegraph {
     }
   }
 
-  ReceiveType receive(const ENetPacket *packet) {
+  optional<ReceiveType> receive(const ENetPacket *packet) {
     packetBuffer.setSize(packet->dataLength);
     unsigned char *raw = packetBuffer.getRaw();
     for (size_t i = 0; i < packet->dataLength; i++) raw[i] = packet->data[i];
-    unpackInto(receiveRule, packetBuffer, receiveBuffer);
-    return receiveBuffer;
+    if (unpackInto(receiveRule, packetBuffer, receiveBuffer))
+      return receiveBuffer;
+    else return {};
   }
 };
 

@@ -57,4 +57,19 @@ float toDeg(const float x);
 
 float linearTween(const float begin, const float end, const float time);
 
+/**
+ * Stuff.
+ */
+
+/**
+ * all() occasionally makes code a bit easier to read, for instance when
+ * checking that a series of optional<> fields in a protocol packet are
+ * non-null.
+ */
+inline bool
+all() { return true; }
+template<typename Head, typename... Tail>
+inline bool
+all(Head head, Tail... tail) { return ((bool) head) && all(tail...); }
+
 #endif //SOLEMNSKY_METHODS_H
