@@ -12,7 +12,7 @@ MultiplayerClient::MultiplayerClient(ClientShared &state,
 
     host(tg::HostType::Client),
     server(nullptr),
-    telegraph(sky::prot::serverPacketPack, sky::prot::clientPacketPack),
+    telegraph(sky::serverPacketPack, sky::clientPacketPack),
     pingCooldown(5),
     triedConnection(false),
     disconnecting(false),
@@ -25,17 +25,16 @@ MultiplayerClient::MultiplayerClient(ClientShared &state,
  * Networking submethods.
  */
 
-void MultiplayerClient::transmitServer(const sky::prot::ClientPacket &packet) {
+void MultiplayerClient::transmitServer(const sky::ClientPacket &packet) {
   appLog("Transmitting: " + packet.dump());
-  if (server)
-    telegraph.transmit(host, server, packet);
+  if (server) telegraph.transmit(host, server, packet);
 }
 
-void MultiplayerClient::handleNetwork(const sky::prot::ServerPacket &packet) {
+void MultiplayerClient::handleNetwork(const sky::ServerPacket &packet) {
   // at this point the whole enet / arena connection has established and
   // we're not disconnecting.
 
-  using namespace sky::prot;
+  using namespace sky;
 
   switch (packet.type) {
     case ServerPacket::Type::Pong:
@@ -48,7 +47,7 @@ void MultiplayerClient::handleNetwork(const sky::prot::ServerPacket &packet) {
       if (packet.pid) {
         if (sky::Player *record = arena->getRecord(*packet.pid))
           messageLog.pushEntry(record->nickname + ": " + *packet.stringData);
-        messageLog.pushEntry("[unknown]: " + *packet.stringData);
+        else messageLog.pushEntry("[unknown]: " + *packet.stringData);
       } else
         messageLog.pushEntry("[server]: " + *packet.stringData);
       break;
@@ -91,7 +90,7 @@ void MultiplayerClient::tick(float delta) {
   chatEntry.tick(delta);
   messageLog.tick(delta);
 
-  using namespace sky::prot;
+  using namespace sky;
 
   event = host.poll();
   if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
@@ -175,7 +174,7 @@ void MultiplayerClient::signalRead() {
   if (chatEntry.inputSignal) {
     if (arena)
       transmitServer(
-          sky::prot::ClientChat(std::string(*chatEntry.inputSignal)));
+          sky::ClientChat(std::string(*chatEntry.inputSignal)));
   }
 }
 

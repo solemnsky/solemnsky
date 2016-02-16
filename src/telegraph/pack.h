@@ -21,11 +21,12 @@ struct Pack {
   Pack() = delete;
 
   Pack(std::function<void(PacketWriter &, const Value &)> pack,
-       std::function<void(PacketReader &, Value &)> unpack) :
+       std::function<bool(PacketReader &, Value &)> unpack) :
       pack(pack), unpack(unpack) { }
 
   const std::function<void(PacketWriter &, const Value &)> pack;
-  const std::function<void(PacketReader &, Value &)> unpack;
+  // returns true <=> unpacking succeeded <= packet is not corrupted
+  const std::function<bool(PacketReader &, Value &)> unpack;
 };
 
 template<typename T>
@@ -43,17 +44,17 @@ void packInto(const Pack<T> &rules, const T &value, Packet &packet) {
 }
 
 template<typename T>
-T unpack(const Pack<T> &rules, const Packet &packet) {
+optional<T> unpack(const Pack<T> &rules, const Packet &packet) {
   T value;
   PacketReader reader{&packet};
-  rules.unpack(reader, value);
-  return value;
+  if (rules.unpack(reader, value)) return value;
+  return {};
 }
 
 template<typename T>
-void unpackInto(const Pack<T> &rules, const Packet &packet, T &value) {
+bool unpackInto(const Pack<T> &rules, const Packet &packet, T &value) {
   PacketReader reader{&packet};
-  rules.unpack(reader, value);
+  return rules.unpack(reader, value);
 }
 
 /****
@@ -75,8 +76,11 @@ struct AssignPack: Pack<B> {
       },
       [packer](PacketReader &reader, B &value) {
         A aValue;
-        packer.unpack(reader, aValue);
-        value = aValue;
+        if (packer.unpack(reader, aValue)) {
+          value = aValue;
+          return true;
+        }
+        return false;
       }) { }
 };
 
@@ -99,11 +103,15 @@ struct EnumPack: Pack<Enum> {
       },
       [bits](PacketReader &reader, Enum &value) {
         unsigned char newValue = 0;
+        optional<bool> readBit;
         for (unsigned char i = 0; i < bits; i++) {
-          if (reader.readBit())
+          readBit = reader.readBit();
+          if (!readBit) return false;
+          if (*readBit)
             newValue = (unsigned char) (newValue | (1 << i));
         }
         value = static_cast<Enum>(newValue);
+        return true;
       }) { }
 };
 
@@ -116,8 +124,11 @@ struct BytePack: Pack<T> {
       [](PacketWriter &writer, const T &value) {
         writer.writeValue<T>(value);
       },
-      [](PacketReader &reader, T &value) {
-        value = reader.readValue<T>();
+      [](PacketReader &reader, T &value) -> bool {
+        optional<T> readValue = reader.readValue<T>();
+        if (readValue) value = *readValue;
+        else return false;
+        return true;
       }) { }
 };
 
@@ -138,11 +149,14 @@ struct OptionalPack: Pack<optional<T>> {
         writer.writeBit((bool) value);
         if (value) rule.pack(writer, *value);
       },
-      [rule](PacketReader &reader, optional<T> &value) {
-        if (reader.readBit()) {
+      [rule](PacketReader &reader, optional<T> &value) -> bool {
+        optional<bool> readBit = reader.readBit();
+        if (!readBit) return false;
+        if (*readBit) {
           value.emplace(T());
-          rule.unpack(reader, *value);
+          if (!rule.unpack(reader, *value)) return false;
         } else value.reset();
+        return true;
       }) { }
 };
 
@@ -163,15 +177,20 @@ struct MapPack: Pack<std::map<K, V>> {
             writer.writeBit(false);
           },
           [keyRule, valueRule]
-              (PacketReader &reader, std::map<K, V> &map) {
+              (PacketReader &reader, std::map<K, V> &map) -> bool {
             K key;
             V value;
             map.clear();
-            while (reader.readBit()) {
+            optional<bool> readBit = reader.readBit();
+            if (!readBit) return false;
+            while (*readBit) {
               keyRule.unpack(reader, key);
-              valueRule.unpack(reader, value);
+              if (!valueRule.unpack(reader, value)) return false;
               map.emplace(key, value);
+              readBit = reader.readBit();
+              if (!readBit) return false;
             }
+            return true;
           }) { }
 };
 
@@ -187,15 +206,20 @@ struct ListlikePack: Pack<Listlike> {
             for (auto &value : list)
               rule.pack(writer, value);
           },
-          [rule](PacketReader &reader, Listlike &list) {
+          [rule](PacketReader &reader, Listlike &list) -> bool {
             list.clear();
-            SizeT i = reader.readValue<SizeT>();
+
+            optional<SizeT> size = reader.readValue<SizeT>();
+            if (!size) return false;
+            SizeT i = *size;
+
             T value;
             while (i > 0) {
               i--;
-              rule.unpack(reader, value);
+              if (!rule.unpack(reader, value)) return false;
               list.push_back(value);
             }
+            return true;
           }
       ) { }
 };
@@ -230,13 +254,15 @@ struct ClassPack: Pack<Class> {
     classPack(writer, value, rest...);
   };
 
-  static void classUnpack(PacketReader &, Class &) { }
+  static bool classUnpack(PacketReader &, Class &) {
+    return true;
+  }
 
   template<typename Member, typename... Rest>
-  static void classUnpack(PacketReader &reader, Class &value,
+  static bool classUnpack(PacketReader &reader, Class &value,
                           const MemberRule<Class, Member> &rule, Rest... rest) {
-    rule.rule.unpack(reader, value.*rule.ptr);
-    classUnpack(reader, value, rest...);
+    if (!rule.rule.unpack(reader, value.*rule.ptr)) return false;
+    return classUnpack(reader, value, rest...);
   };
 
  public:
@@ -245,8 +271,8 @@ struct ClassPack: Pack<Class> {
       [members...](PacketWriter &writer, const Class &value) {
         ClassPack::classPack(writer, value, members...);
       },
-      [members...](PacketReader &reader, Class &value) {
-        ClassPack::classUnpack(reader, value, members...);
+      [members...](PacketReader &reader, Class &value) -> bool {
+        return ClassPack::classUnpack(reader, value, members...);
       }) { }
 };
 
@@ -265,9 +291,10 @@ struct PairPack: public Pack<std::pair<First, Second>> {
             secondRule.pack(writer, pair.second);
           },
           [firstRule, secondRule]
-              (PacketReader &reader, std::pair<First, Second> &pair) {
-            firstRule.unpack(reader, pair.first);
-            secondRule.unpack(reader, pair.second);
+              (PacketReader &reader, std::pair<First, Second> &pair) -> bool {
+            if (!firstRule.unpack(reader, pair.first)) return false;
+            if (!secondRule.unpack(reader, pair.second)) return false;
+            return true;
           }
       ) { }
 };

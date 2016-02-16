@@ -12,7 +12,6 @@
 #include <map>
 
 namespace sky {
-namespace prot {
 
 /**
  * Protocol verbs for the client.
@@ -42,7 +41,7 @@ struct ClientPacket {
   std::string dump() const;
 };
 
-extern const tg::Pack<prot::ClientPacket> clientPacketPack;
+extern const tg::Pack<ClientPacket> clientPacketPack;
 
 struct ClientPing: public ClientPacket {
   ClientPing() : ClientPacket(ClientPacket::Type::Ping) { }
@@ -96,7 +95,7 @@ struct ServerPacket {
   std::string dump() const;
 };
 
-extern const tg::Pack<prot::ServerPacket> serverPacketPack;
+extern const tg::Pack<ServerPacket> serverPacketPack;
 
 struct ServerPong: public ServerPacket {
   ServerPong() : ServerPacket(ServerPacket::Type::Pong) { }
@@ -117,8 +116,6 @@ struct ServerNotifyMessage: public ServerPacket {
                       const optional<PID> pid = {}) :
       ServerPacket(ServerPacket::Type::NotifyMessage, message, pid) { }
 };
-}
-
 
 }
 

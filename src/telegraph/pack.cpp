@@ -6,8 +6,11 @@ BoolPack::BoolPack() : Pack<bool>(
     [](PacketWriter &writer, const bool &value) {
       writer.writeBit(value);
     },
-    [](PacketReader &reader, bool &value) {
-      value = reader.readBit();
+    [](PacketReader &reader, bool &value) -> bool {
+      optional<bool> readBit = reader.readBit();
+      if (readBit) value = *readBit;
+      else return false;
+      return true;
     }) { }
 
 StringPack::StringPack() : Pack<std::string>(
@@ -16,11 +19,15 @@ StringPack::StringPack() : Pack<std::string>(
         writer.writeChar((unsigned char) x);
       writer.writeChar(0);
     },
-    [](PacketReader &reader, std::string &value) {
+    [](PacketReader &reader, std::string &value) -> bool {
       value.clear();
-      unsigned char current;
-      while ((current = reader.readChar()) != 0)
-        value.push_back(current);
+      optional<unsigned char> current;
+      for (; ;) {
+        current = reader.readChar();
+        if (!current) return false;
+        if (*current == 0) return true;
+        value.push_back(*current);
+      }
     }) { }
 
 /**

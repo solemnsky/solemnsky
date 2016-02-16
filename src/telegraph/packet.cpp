@@ -105,27 +105,30 @@ void PacketWriter::writeBit(const bool x) {
 PacketReader::PacketReader(const Packet *packet) :
     packet(packet), head(0), offset(0) { }
 
-unsigned char PacketReader::accessHead() const {
-  if (head >= packet->size) {
-    appErrorLogic(
-        "Trying to read too much from a packet!");
-  }
+optional<unsigned char> PacketReader::accessHead() const {
+  if (head >= packet->size) return {};
   return packet->data[head];
 }
 
-unsigned char PacketReader::readChar() {
-  const unsigned char headVal = accessHead();
+optional<unsigned char> PacketReader::readChar() {
+  optional<unsigned char> headVal = accessHead();
+  if (!headVal) return {};
+
   head++;
-  if (offset == 0) {
-    return headVal;
-  } else {
-    return (headVal >> offset)
-        | (accessHead() << (8 - offset));
+  if (offset == 0) return headVal;
+  else {
+    optional<unsigned char> nextHeadVal = accessHead();
+    if (!nextHeadVal) return {};
+    return (*headVal >> offset)
+        | (*nextHeadVal << (8 - offset));
   }
 }
 
-bool PacketReader::readBit() {
-  bool result = (bool) ((accessHead() >> offset) & 1);
+optional<bool> PacketReader::readBit() {
+  optional<unsigned char> headVal = accessHead();
+  if (!headVal) return {};
+
+  bool result = (bool) ((*headVal >> offset) & 1);
   if (offset == 7) {
     offset = 0;
     head++;

@@ -22,7 +22,7 @@ class MultiplayerClient: public Game {
    */
   tg::Host host;
   ENetPeer *server;
-  tg::Telegraph<sky::prot::ServerPacket, sky::prot::ClientPacket> telegraph;
+  tg::Telegraph<sky::ServerPacket, sky::ClientPacket> telegraph;
   Cooldown pingCooldown;
 
   bool triedConnection; // have we sent a verbs requesting connection yet?
@@ -42,9 +42,9 @@ class MultiplayerClient: public Game {
   /**
    * Networking submethods.
    */
-  void transmitServer(const sky::prot::ClientPacket &packet);
+  void transmitServer(const sky::ClientPacket &packet);
   // handle a network poll, assuming we're connected / initialized
-  void handleNetwork(const sky::prot::ServerPacket &event);
+  void handleNetwork(const sky::ServerPacket &event);
 
  public:
   MultiplayerClient(ClientShared &state,
