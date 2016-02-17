@@ -53,7 +53,7 @@ class MultiplayerClient: public Game {
   /**
    * Game interface.
    */
-  void onLooseFocus() override;
+  void onBlur() override;
   void onFocus() override;
   void onChangeSettings(const SettingsDelta &settings) override;
   void doExit() override;

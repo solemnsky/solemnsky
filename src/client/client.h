@@ -15,20 +15,33 @@
  * neatly modularized; see client/elements/elements.h. This is simply the glue
  * that brings everything together.
  */
-class Client : public ui::Control {
-private:
+class Client: public ui::Control {
+ private:
   const struct Style {
     float unfocusedPageScale = 500.0f / 1600.0f;
 
-    sf::Vector2f homeOffset{202.249, 479.047};
-    sf::Vector2f listingOffset{897.751, 479.047};
-    sf::Vector2f settingsOffset{550, 98.302};
+    sf::Vector2f
+        homeOffset{182.812, 121.875},
+        settingsOffset{917.187, 121.875},
+        listingOffset{550.000, 495.250},
+        quitButtonOffset{182.812, 610.875},
+        aboutButtonOffset{1217.188, 610.875},
+        backButtonOffset{1400, 850};
+    // see the schema in media/source2d/board.png
+
+    sf::Color pageUnderlayColor{0, 0, 0, 20};
+
+    int descriptionFontSize = 50;
+    int descriptionNegativeMargin = 10;
 
     ui::Button::Style backButtonStyle() const;
     ui::Button::Style quitButtonStyle() const;
+    ui::Button::Style aboutButtonStyle() const;
+
     std::string backButtonText = "go back",
         quitGameText = "quit game",
-        quitAppText = "quit solemnsky";
+        quitAppText = "quit solemnsky",
+        aboutButtonText = "about";
 
     Style() { }
   } style;
@@ -38,6 +51,7 @@ private:
    */
   ui::Button backButton; // for exiting menus, lower right
   ui::Button quitButton; // for exiting arena / quitting the game, top left
+  ui::Button aboutButton; // for seeing the about screen
 
   ClientShared shared;
 
@@ -59,7 +73,7 @@ private:
                 const sf::Vector2f &offset, const std::string &name,
                 ui::Control &page);
 
-public:
+ public:
   Client();
 
   void attachState() override;
@@ -74,16 +88,18 @@ public:
   /**
    * UI methods.
    */
+  void resetUI(); // reset UI elements
+
   void beginGame(std::unique_ptr<Game> &&game);
+  void exitGame();
 
   void focusGame();
-  void unfocusGame();
+  void blurGame();
 
   void focusPage(const PageType type);
-  void unfocusPage();
+  void blurPage();
 
   void changeSettings(const SettingsDelta &settings);
-  void exitGame();
 };
 
 int main();

@@ -20,7 +20,7 @@ class Button : public Control {
         clickedColor{63, 208, 234},
         textColor{255, 255, 255};
 
-    sf::Vector2f dimensions{200, 100};
+    sf::Vector2f dimensions{200, 50};
 
     float heatRate = 10;
     int fontSize = 40;
