@@ -40,8 +40,11 @@ public:
   TextEntry() = delete;
   TextEntry(const sf::Vector2f &pos,
             const std::string &description = "",
+            const bool persistent = false,
             const Style &style = {});
 
+  bool persistent; // text is persistent, doesn't reset on focus change / entry
+  // and the displayed description is the contents
   sf::Vector2f pos;
 
   /**

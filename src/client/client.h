@@ -73,6 +73,8 @@ public:
 
   void focusPage(const PageType type);
   void unfocusPage();
+
+  void onChangeSettings(const SettingsDelta &settings);
 };
 
 int main();

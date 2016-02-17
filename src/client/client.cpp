@@ -81,7 +81,7 @@ void Client::tick(float delta) {
 
   if (shared.game) {
     shared.game->tick(delta);
-    if (shared.game->concluded) {
+    if (shared.game->quitting) {
       shared.game = nullptr;
       shared.ui.unfocusGame();
     }
@@ -215,6 +215,12 @@ void Client::unfocusPage() {
 void Client::focusPage(const PageType type) {
   referencePage(type).onFocus();
   shared.ui.focusPage(type);
+}
+
+void Client::onChangeSettings(const SettingsDelta &settings) {
+  forAllPages([&settings](Page &page) {
+    page.onChangeSettings(settings);
+  });
 }
 
 int main() {

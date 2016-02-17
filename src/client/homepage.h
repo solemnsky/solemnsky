@@ -18,6 +18,7 @@ public:
    */
   void onLooseFocus() override;
   void onFocus() override;
+  void onChangeSettings(const SettingsDelta &settings) override;
 
   /**
    * Control interface.

@@ -30,6 +30,7 @@ public:
 
   virtual void onLooseFocus() = 0;
   virtual void onFocus() = 0;
+  virtual void onChangeSettings(const SettingsDelta &settings) = 0;
 };
 
 /**
@@ -44,13 +45,9 @@ protected:
 public:
   Game(ClientShared &shared, const std::string &name);
 
-  bool concluded;
-
-  // when the UI gains focus over the game
   virtual void onLooseFocus() = 0;
-
-  // when the UI gives focus to the game
   virtual void onFocus() = 0;
+  virtual void onChangeSettings(const SettingsDelta &settings) = 0;
 
   // try to exit, set Control::conclude flag eventually
   virtual void doExit() = 0;
