@@ -70,7 +70,9 @@ Player &Arena::connectPlayer() {
 }
 
 void Arena::disconnectPlayer(const Player &record) {
-  players.remove(record);
+  players.remove_if([&](const Player &p) {
+    return p.pid == record.pid;
+  });
 }
 
 void Arena::modifyPlayer(const PID pid, PlayerDelta &delta) {
