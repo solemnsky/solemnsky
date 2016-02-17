@@ -33,10 +33,10 @@ void appErrorRuntime(const std::string &contents); // log and throw
  * Logging for memory leaks.
  */
 
-//#define CTOR_LOG(str) appLog("CTOR -> " + (std::string) str)
+//#define CTOR_LOG(str) appLog("CTOR --> " + (std::string) str)
 //#define DTOR_LOG(str) appLog("DTOR <- " + (std::string) str)
-#define CTOR_LOG(str) {}while(0)
 #define DTOR_LOG(str) {}while(0)
+#define CTOR_LOG(str) {}while(0)
 
 /****
  * For some reason sf::Vector has no math utilities, here are some.

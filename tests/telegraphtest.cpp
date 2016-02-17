@@ -47,12 +47,12 @@ TEST_F(TelegraphTest, TransmitReceive) {
   telegraph.transmit(client, serverPeer, "hey there");
   event = processHosts(server, client);
   EXPECT_EQ(event.type, ENET_EVENT_TYPE_RECEIVE); // server receives packet
-  EXPECT_EQ(telegraph.receive(event.packet), "hey there");
+  EXPECT_EQ(*telegraph.receive(event.packet), "hey there");
 
   telegraph.transmit(server, clientPeer, "hey, I got your message ;D");
   event = processHosts(client, server);
   EXPECT_EQ(event.type, ENET_EVENT_TYPE_RECEIVE); // client receives packet
-  EXPECT_EQ(telegraph.receive(event.packet), "hey, I got your message ;D");
+  EXPECT_EQ(*telegraph.receive(event.packet), "hey, I got your message ;D");
 }
 
 /**
@@ -81,8 +81,9 @@ TEST_F(TelegraphTest, Protocol) {
   event = processHosts(server, client);
 
   const ClientPacket &targetPacket = ClientReqJoin("nickname");
-  const ClientPacket &packet = serverTelegraph.receive(event.packet);
+  const optional<ClientPacket> &packet = serverTelegraph.receive(event.packet);
 
-  EXPECT_EQ(packet.type, targetPacket.type);
-  EXPECT_EQ(*packet.stringData, *targetPacket.stringData);
+  EXPECT_EQ((bool) packet, true);
+  EXPECT_EQ(packet->type, targetPacket.type);
+  EXPECT_EQ(*packet->stringData, *targetPacket.stringData);
 }

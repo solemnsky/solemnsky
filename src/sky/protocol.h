@@ -83,7 +83,8 @@ struct ServerPacket {
       type(type),
       stringData(stringData),
       pid(pid),
-      arenaInitializer(arena) { }
+      arenaInitializer(arena),
+      arenaDelta(arenaDelta) { }
 
   Type type;
   optional<std::string> stringData;
