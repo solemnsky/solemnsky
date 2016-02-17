@@ -11,17 +11,7 @@
 namespace ui {
 
 class TextEntry : public Control {
-private:
-  Clamped heat;
-
-  float scroll;
-  int cursor;
-  sf::FloatRect getBody();
-
-public:
-  /**
-   * Style settings.
-   */
+ public:
   struct Style {
     sf::Color inactiveBgColor{142, 183, 191}, // background when inactive
         hotBgColor{162, 203, 211}, // background when active (hot)
@@ -36,6 +26,15 @@ public:
 
     Style() { }
   } style;
+
+ private:
+  Clamped heat;
+
+  float scroll;
+  int cursor;
+  sf::FloatRect getBody();
+
+ public:
 
   TextEntry() = delete;
   TextEntry(const sf::Vector2f &pos,

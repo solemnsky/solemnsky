@@ -28,3 +28,6 @@ SettingsDelta::SettingsDelta(const Settings &oldSettings,
     nickname = newSettings.nickname;
 }
 
+void SettingsDelta::apply(Settings &settings) const {
+  if (nickname) settings.nickname = *nickname;
+}

@@ -11,6 +11,7 @@ HomePage::HomePage(ClientShared &clientState) :
 
 void HomePage::onLooseFocus() {
   tutorialButton.reset();
+  localhostButton.reset();
 }
 
 void HomePage::onFocus() { }
@@ -40,8 +41,7 @@ void HomePage::render(ui::Frame &f) {
               "max FPS: " + std::to_string((int) std::round(1 / cycleTime)),
               "actual FPS: " +
                   std::to_string((int) std::round(1 / actualCycleTime))
-             },
-             40);
+             }, 40);
 
   tutorialButton.render(f);
   localhostButton.render(f);

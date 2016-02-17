@@ -33,6 +33,8 @@ struct SettingsDelta {
   SettingsDelta(const Settings &oldSettings, const Settings &newSettings);
   SettingsDelta();
 
+  void apply(Settings &settings) const;
+
   /**
    * Data.
    */

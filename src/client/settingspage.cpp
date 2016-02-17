@@ -16,7 +16,7 @@ SettingsPage::SettingsPage(ClientShared &state) :
 }
 
 void SettingsPage::writeToSettings() {
-  shared.onChangeSettings(SettingsDelta(shared.settings, newSettings));
+  shared.changeSettings(SettingsDelta(shared.settings, newSettings));
 }
 
 /**
@@ -24,6 +24,9 @@ void SettingsPage::writeToSettings() {
  */
 
 void SettingsPage::onLooseFocus() {
+  newSettings.nickname = nicknameChooser.contents;
+
+  writeToSettings();
   nicknameChooser.reset();
 }
 
@@ -61,6 +64,7 @@ bool SettingsPage::handle(const sf::Event &event) {
 void SettingsPage::signalRead() {
   if (nicknameChooser.inputSignal) {
     newSettings.nickname = nicknameChooser.contents;
+    writeToSettings();
   }
 }
 

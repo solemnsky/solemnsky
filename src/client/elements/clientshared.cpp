@@ -12,7 +12,6 @@ ClientUiState::ClientUiState() :
     gameFocusFactor(0, 1, 0) { }
 
 void ClientUiState::focusGame() {
-  unfocusPage();
   gameFocusing = true;
 }
 
@@ -54,7 +53,6 @@ ClientShared::ClientShared(Client *client) :
     client(client) { }
 
 void ClientShared::beginGame(std::unique_ptr<Game> &&game) {
-  unfocusPage();
   client->beginGame(std::move(game));
 }
 
@@ -74,6 +72,6 @@ void ClientShared::unfocusPage() {
   client->unfocusPage();
 }
 
-void ClientShared::onChangeSettings(const SettingsDelta &settings) {
-  client->onChangeSettings(settings);
+void ClientShared::changeSettings(const SettingsDelta &settings) {
+  client->changeSettings(settings);
 }

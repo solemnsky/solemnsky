@@ -58,14 +58,13 @@ struct PlaneAnimState {
    */
   void spawn(const PlaneVital &vital);
   void tick(PlaneHandle *parent, const float delta);
-  void reset(); // when the plane respawns
   // death is animated in the a normal course of events, but respawning changes
   // everything anew
 };
 }
 
-class Render : public Subsystem {
-private:
+class Render: public Subsystem {
+ private:
   std::map<PID, detail::PlaneAnimState> animState;
   const ui::SpriteSheet sheet;
 
@@ -89,7 +88,7 @@ private:
   void spawnPlane(const PID pid, PlaneHandle &plane) override; // has PlaneVital
   void killPlane(const PID pid, PlaneHandle &plane) override;
 
-public:
+ public:
   Render(Sky *sky);
   ~Render();
 
