@@ -1,4 +1,5 @@
 #include <sstream>
+#include <vector>
 
 #define _USE_MATH_DEFINES // for M_PI
 

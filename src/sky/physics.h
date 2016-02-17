@@ -27,7 +27,7 @@ public:
     int velocityIterations = 8, positionIterations = 3;
     float distanceScale = 100;
     float gravity = 150;
-  } settings;
+  } settings{};
 
   const sf::Vector2f dims;
 

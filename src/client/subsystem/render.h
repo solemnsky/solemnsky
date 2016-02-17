@@ -36,7 +36,7 @@ const struct RndrParam {
       throttle = sf::Color::Black,
       health = sf::Color::Green,
       energy = sf::Color::Blue;
-} rndrParam;
+} rndrParam{};
 
 /**
  * Plain data structure with all the animation state of a plane, alive or not.

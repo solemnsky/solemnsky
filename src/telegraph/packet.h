@@ -5,6 +5,7 @@
 #ifndef SOLEMNSKY_PACKET_H
 #define SOLEMNSKY_PACKET_H
 
+#include <array>
 #include "util/types.h"
 
 namespace tg {
