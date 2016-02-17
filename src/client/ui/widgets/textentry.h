@@ -32,7 +32,14 @@ class TextEntry : public Control {
 
   float scroll;
   int cursor;
+
+  optional<sf::Event> pressedKeyboardEvent;
+  Cooldown repeatActivate;
+  Cooldown repeatCooldown;
+
   sf::FloatRect getBody();
+
+  bool handleKeyboardEvent(const sf::Event &event);
 
  public:
 

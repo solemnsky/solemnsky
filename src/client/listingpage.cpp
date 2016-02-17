@@ -18,7 +18,7 @@ void ListingPage::tick(float) {
 }
 
 void ListingPage::render(ui::Frame &f) {
-  f.drawSprite(textureOf(Res::Title), {0, 0}, {0, 0, 1600, 900});
+  drawBackground(f);
   f.drawText({800, 600},
              {"listing page",
               "page where the user checks server listings / views stats."}, 40);

@@ -11,8 +11,6 @@
 
 class Tutorial : public Game {
 private:
-  ui::Button quitButton;
-
   sky::Sky sky;
   sky::Render renderSystem;
   GameController controller;

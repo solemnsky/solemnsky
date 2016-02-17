@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cmath>
 #include "methods.h"
+#include "types.h"
 
 std::string showTime() {
   static sf::Clock clock;
@@ -15,7 +16,6 @@ std::string showTime() {
 }
 
 void appLog(const std::string &contents, const LogOrigin origin) {
-
   static std::vector<std::string> prefixes =
       {"]        : ",
        "engine]  : ",
@@ -80,6 +80,7 @@ float toRad(const float x) {
  */
 
 float linearTween(const float begin, const float end, const float time) {
-  return begin + time * (end - begin);
+  return clamp<float>(std::min(begin, end),
+                      std::max(begin, end), begin + time * (end - begin));
 }
 

@@ -13,7 +13,6 @@
 
 class MultiplayerClient: public Game {
  private:
-  ui::Button quitButton;
   ui::TextEntry chatEntry;
   ui::TextLog messageLog;
 

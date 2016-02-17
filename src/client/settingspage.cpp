@@ -48,7 +48,7 @@ void SettingsPage::tick(float delta) {
 }
 
 void SettingsPage::render(ui::Frame &f) {
-  f.drawSprite(textureOf(Res::Title), {0, 0}, {0, 0, 1600, 900});
+  drawBackground(f);
   f.drawText({800, 600},
              {"settings page", "page where the user modifies settings"}, 40);
 

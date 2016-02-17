@@ -17,6 +17,28 @@
  */
 class Client : public ui::Control {
 private:
+  const struct Style {
+    float unfocusedPageScale = 500.0f / 1600.0f;
+
+    sf::Vector2f homeOffset{202.249, 479.047};
+    sf::Vector2f listingOffset{897.751, 479.047};
+    sf::Vector2f settingsOffset{550, 98.302};
+
+    ui::Button::Style backButtonStyle() const;
+    ui::Button::Style quitButtonStyle() const;
+    std::string backButtonText = "go back",
+        quitGameText = "quit game",
+        quitAppText = "quit solemnsky";
+
+    Style() { }
+  } style;
+
+  /**
+   * Buttons.
+   */
+  ui::Button backButton; // for exiting menus, lower right
+  ui::Button quitButton; // for exiting arena / quitting the game, top left
+
   ClientShared shared;
 
   /**
@@ -25,22 +47,8 @@ private:
   HomePage homePage;
   ListingPage listingPage;
   SettingsPage settingsPage;
-  ui::Button backButton;
 
   std::vector<std::pair<sf::FloatRect, PageType>> pageRects;
-
-  /**
-   * Style settings.
-   */
-  const struct Style {
-    const float unfocusedPageScale = 500.0f / 1600.0f;
-
-    const sf::Vector2f homeOffset{202.249, 479.047};
-    const sf::Vector2f listingOffset{897.751, 479.047};
-    const sf::Vector2f settingsOffset{550, 98.302};
-
-    Style() { }
-  } style;
 
   /**
    * Helpers.
@@ -75,6 +83,7 @@ public:
   void unfocusPage();
 
   void changeSettings(const SettingsDelta &settings);
+  void exitGame();
 };
 
 int main();
