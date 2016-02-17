@@ -112,16 +112,16 @@ void Client::render(ui::Frame &f) {
 
     f.withAlpha(
         linearTween(1, 0, gameFocusFactor) *
-        (gameUnderneath ? linearTween(0.5, 1, pageFocusFactor) : 1), [&]() {
+            (gameUnderneath ? linearTween(0.5, 1, pageFocusFactor) : 1), [&]() {
       pageRects = {};
       drawPage(
           f, PageType::Home, style.homeOffset,
           "home", homePage);
       drawPage(
-          f, PageType::Settings, style.listingOffset,
+          f, PageType::Listing, style.listingOffset,
           "server listing", listingPage);
       drawPage(
-          f, PageType::Listing,
+          f, PageType::Settings,
           style.settingsOffset, "settings", settingsPage);
       f.withAlpha(pageFocusFactor, [&]() { backButton.render(f); });
     });
