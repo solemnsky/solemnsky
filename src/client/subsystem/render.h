@@ -86,7 +86,7 @@ private:
   void tick(float delta) override;
   void joinPlane(const PID pid, PlaneHandle &plane) override;
   void quitPlane(const PID pid) override;
-  void spawnPlane(const PID pid, PlaneHandle &plane) override;
+  void spawnPlane(const PID pid, PlaneHandle &plane) override; // has PlaneVital
   void killPlane(const PID pid, PlaneHandle &plane) override;
 
 public:

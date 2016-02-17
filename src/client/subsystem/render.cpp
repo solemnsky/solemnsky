@@ -21,7 +21,7 @@ void PlaneAnimState::spawn(const PlaneVital &vital) {
   roll = 90;
   orientation = Angle(vital.rot + 90) > 180;
   flipState = 0;
-  rollState = 90;
+  rollState = 0;
 }
 
 void PlaneAnimState::tick(sky::PlaneHandle *parent, const float delta) {
@@ -47,10 +47,6 @@ void PlaneAnimState::tick(sky::PlaneHandle *parent, const float delta) {
 
     roll = flipComponent + rndrParam.rollAmount * rollState;
   }
-}
-
-void PlaneAnimState::reset() {
-  operator=((PlaneAnimState &&) PlaneAnimState());
 }
 
 }
@@ -184,7 +180,7 @@ void Render::quitPlane(const PID pid) {
 }
 
 void Render::spawnPlane(const PID pid, PlaneHandle &plane) {
-  animState.at(pid).reset();
+  animState.at(pid).spawn(*plane.state.vital);
 }
 
 void Render::killPlane(const PID pid, PlaneHandle &plane) { }

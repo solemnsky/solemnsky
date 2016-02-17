@@ -6,11 +6,22 @@
 
 #include "elements/elements.h"
 
-class HomePage : public Page {
-private:
+class HomePage: public Page {
+ private:
   ui::Button tutorialButton;
+  ui::Button localhostButton;
 
-public:
+ public:
+  struct Style {
+    sf::Vector2f tutorialButtonPos{300, 300},
+        localhostButtonPos{300, 500};
+
+    std::string tutorialButtonDesc = "start tutorial",
+        localhostButtonDesc = "connect to localhost";
+
+    Style() { }
+  } style;
+
   HomePage(ClientShared &state);
 
   /**
