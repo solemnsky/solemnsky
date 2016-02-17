@@ -13,16 +13,7 @@ namespace ui {
  * A rectangular button.
  */
 class Button : public Control {
-private:
-  Clamped heat;
-  bool inPreClick{false};
-
-  sf::FloatRect getBody();
-
-public:
-  /**
-   * Style settings.
-   */
+ public:
   struct Style {
     sf::Color baseColor{132, 173, 181},
         hotColor{92, 189, 206},
@@ -38,6 +29,13 @@ public:
     Style() { }
   } style;
 
+private:
+  Clamped heat;
+  bool inPreClick{false};
+
+  sf::FloatRect getBody();
+
+public:
   Button() = delete;
   Button(const sf::Vector2f &pos,
          const std::string &text,

@@ -19,13 +19,7 @@ struct TextLogEntry {
 }
 
 class TextLog : public Control {
-private:
-  double lifetime;
-
-public:
-  /**
-   * Style settings.
-   */
+ public:
   struct Style {
     sf::Color textColor{255, 255, 255};
     float sidePadding;
@@ -37,6 +31,11 @@ public:
 
     Style() { }
   } style;
+
+private:
+  double lifetime;
+
+ public:
 
   TextLog() = delete;
   TextLog(const sf::Vector2f &pos,

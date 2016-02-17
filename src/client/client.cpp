@@ -191,11 +191,12 @@ void Client::signalClear() {
 void Client::beginGame(std::unique_ptr<Game> &&game) {
   shared.ui.focusGame();
   shared.game = std::move(game);
-  shared.game->onFocus();
+  focusGame();
 }
 
 void Client::focusGame() {
   if (shared.game) {
+    shared.ui.unfocusPage();
     shared.ui.focusGame();
     shared.game->onFocus();
   }
@@ -205,7 +206,6 @@ void Client::unfocusGame() {
   shared.ui.unfocusGame();
   if (shared.game) shared.game->onLooseFocus();
 }
-
 
 void Client::unfocusPage() {
   referencePage(shared.ui.focusedPage).onLooseFocus();
@@ -217,10 +217,12 @@ void Client::focusPage(const PageType type) {
   shared.ui.focusPage(type);
 }
 
-void Client::onChangeSettings(const SettingsDelta &settings) {
+void Client::changeSettings(const SettingsDelta &settings) {
+  settings.apply(shared.settings);
   forAllPages([&settings](Page &page) {
     page.onChangeSettings(settings);
   });
+  if (shared.game) shared.game->onChangeSettings(settings);
 }
 
 int main() {

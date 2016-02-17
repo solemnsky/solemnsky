@@ -184,9 +184,10 @@ bool MultiplayerClient::handle(const sf::Event &event) {
   if (event.type == sf::Event::EventType::KeyPressed) {
     if (event.key.code == sf::Keyboard::Return) {
       chatEntry.focus();
+      return true;
     }
   }
-  return messageLog.handle(event);
+  return false;
 }
 
 void MultiplayerClient::signalRead() {

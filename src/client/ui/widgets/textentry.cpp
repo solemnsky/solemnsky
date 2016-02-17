@@ -88,7 +88,8 @@ bool TextEntry::handle(const sf::Event &event) {
         }
         case sf::Keyboard::Return: {
           isFocused = false;
-          inputSignal.emplace(std::move(contents));
+          if (persistent) inputSignal.emplace(contents);
+          else inputSignal.emplace(std::move(contents));
           cursor = 0;
           return true;
         }
