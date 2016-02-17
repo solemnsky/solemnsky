@@ -18,12 +18,20 @@
  * Pages may have multiple tabs: that is delegated to their particular
  * implementation.
  */
-class Page : public ui::Control {
-protected:
+class Page: public ui::Control {
+ private:
+  const struct Style {
+    float margins = 50; // 50 px of background margin
+    float xFactor = (1600.0f - 2 * margins) / 1600,
+        yFactor = (900.0f - 2 * margins) / 900;
+    Style() { }
+  } style;
+
+ protected:
   ClientShared &shared;
 
-public:
-  Page(ClientShared &state) : shared(state) { }
+ public:
+  Page(ClientShared &state);
 
   virtual void attachClientState() { } // when client state is initialized
   // (this is necessary because of the Control::attachState() thing)
@@ -31,6 +39,8 @@ public:
   virtual void onLooseFocus() = 0;
   virtual void onFocus() = 0;
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
+
+  void drawBackground(ui::Frame &f);
 };
 
 /**
@@ -38,11 +48,11 @@ public:
  * global ClientState. At any moment the game may or may not exist -- if it
  * exists, it
  */
-class Game : public ui::Control {
-protected:
+class Game: public ui::Control {
+ protected:
   ClientShared &shared;
 
-public:
+ public:
   Game(ClientShared &shared, const std::string &name);
 
   virtual void onLooseFocus() = 0;

@@ -6,7 +6,6 @@ MultiplayerClient::MultiplayerClient(ClientShared &state,
                                      const unsigned short serverPort) :
     Game(state, "multiplayer"),
 
-    quitButton({100, 50}, "quit tutorial"),
     chatEntry({20, 850}, "[enter] to chat"),
     messageLog({20, 840}),
 
@@ -79,7 +78,6 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
  */
 
 void MultiplayerClient::onLooseFocus() {
-  quitButton.reset();
   chatEntry.reset();
 }
 
@@ -112,7 +110,6 @@ void MultiplayerClient::doExit() {
  */
 
 void MultiplayerClient::tick(float delta) {
-  quitButton.tick(delta);
   chatEntry.tick(delta);
   messageLog.tick(delta);
 
@@ -165,9 +162,9 @@ void MultiplayerClient::tick(float delta) {
 }
 
 void MultiplayerClient::render(ui::Frame &f) {
-  f.drawSprite(textureOf(Res::Title), {0, 0}, {0, 0, 1600, 900});
+  if (server && !disconnecting)
+    f.drawSprite(textureOf(Res::Title), {0, 0}, {0, 0, 1600, 900});
 
-  quitButton.render(f);
   chatEntry.render(f);
   messageLog.render(f);
 
@@ -180,7 +177,6 @@ void MultiplayerClient::render(ui::Frame &f) {
 
 bool MultiplayerClient::handle(const sf::Event &event) {
   if (chatEntry.handle(event)) return true;
-  if (quitButton.handle(event)) return true;
   if (event.type == sf::Event::EventType::KeyPressed) {
     if (event.key.code == sf::Keyboard::Return) {
       chatEntry.focus();
@@ -191,7 +187,6 @@ bool MultiplayerClient::handle(const sf::Event &event) {
 }
 
 void MultiplayerClient::signalRead() {
-  if (quitButton.clickSignal) doExit();
   if (chatEntry.inputSignal) {
     if (arena)
       transmitServer(
@@ -200,7 +195,6 @@ void MultiplayerClient::signalRead() {
 }
 
 void MultiplayerClient::signalClear() {
-  quitButton.signalClear();
   chatEntry.signalClear();
 }
 

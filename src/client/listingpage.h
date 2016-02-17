@@ -7,6 +7,11 @@
 #include "elements/elements.h"
 
 class ListingPage : public Page {
+ private:
+  struct Style {
+
+    Style() { }
+  } style;
 public:
   ListingPage(ClientShared &state);
 

@@ -4,18 +4,26 @@
 /**
  * Client.
  */
-ui::Button::Style backButtonStyle() {
+ui::Button::Style Client::Style::backButtonStyle() const {
+  ui::Button::Style style;
+  style.fontSize = 50;
+  return style;
+}
+
+ui::Button::Style Client::Style::quitButtonStyle() const {
   ui::Button::Style style;
   style.fontSize = 50;
   return style;
 }
 
 Client::Client() :
+    backButton({1400, 800}, style.backButtonText, style.backButtonStyle()),
+    quitButton({200, 100}, "", style.quitButtonStyle()),
+
     shared(this),
     homePage(shared),
     listingPage(shared),
-    settingsPage(shared),
-    backButton({1400, 800}, "go back", backButtonStyle()) { }
+    settingsPage(shared) { }
 
 void Client::forAllPages(std::function<void(Page &)> f) {
   f(homePage);
@@ -82,28 +90,30 @@ void Client::tick(float delta) {
   if (shared.game) {
     shared.game->tick(delta);
     if (shared.game->quitting) {
-      shared.game = nullptr;
+      shared.game.reset();
       shared.ui.unfocusGame();
     }
   }
 
   forAllPages([&delta](Page &page) { page.tick(delta); });
   backButton.tick(delta);
+  quitButton.tick(delta);
 }
 
 void Client::render(ui::Frame &f) {
-  bool gameUnderneath = false;
-  if (shared.game) {
-    shared.game->render(f);
-    gameUnderneath = true;
-  }
-
+  bool gameUnderneath = (bool) shared.game;
   const float gameFocusFactor = shared.ui.gameFocusFactor,
       pageFocusFactor = shared.ui.pageFocusFactor;
-  if (!shared.ui.gameFocused()) {
+  // gameFocusFactor: 0 means game is blurred, 1 means the game is focused
+  // pageFocusFactor: 0 means we're in the menu, 1 means a page focused
+
+  if (shared.ui.gameFocused()) {
+    if (shared.game) shared.game->render(f);
+  } else {
     if (!gameUnderneath) {
       f.drawSprite(textureOf(Res::MenuBackground), {0, 0}, {0, 0, 1600, 900});
     } else {
+      shared.game->render(f);
       f.drawRect(
           {0, 0, 1600, 900},
           sf::Color(0, 0, 0,
@@ -112,26 +122,37 @@ void Client::render(ui::Frame &f) {
 
     f.withAlpha(
         linearTween(1, 0, gameFocusFactor) *
-            (gameUnderneath ? linearTween(0.5, 1, pageFocusFactor) : 1), [&]() {
-      pageRects = {};
-      drawPage(
-          f, PageType::Home, style.homeOffset,
-          "home", homePage);
-      drawPage(
-          f, PageType::Listing, style.listingOffset,
-          "server listing", listingPage);
-      drawPage(
-          f, PageType::Settings,
-          style.settingsOffset, "settings", settingsPage);
-      f.withAlpha(pageFocusFactor, [&]() { backButton.render(f); });
-    });
+            (gameUnderneath ? linearTween(0.5, 1, pageFocusFactor) : 1),
+        [&]() {
+          pageRects = {}; // populated by drawPage(), used as the click rects
+          // for event handling (TODO: potentially remove, if the actually
+          // useful click rects are always static, since we only allow
+          // clicking on pages when they're completely blurred)
+
+          drawPage(
+              f, PageType::Home, style.homeOffset,
+              "home", homePage);
+          drawPage(
+              f, PageType::Listing, style.listingOffset,
+              "server listing", listingPage);
+          drawPage(
+              f, PageType::Settings,
+              style.settingsOffset, "settings", settingsPage);
+
+          quitButton.text = gameUnderneath ? style.quitGameText :
+                            style.quitAppText;
+          f.withAlpha(linearTween(1, 0, pageFocusFactor),
+                      [&]() { quitButton.render(f); });
+          f.withAlpha(linearTween(0, 1, pageFocusFactor),
+                      [&]() { backButton.render(f); });
+        });
   }
 }
 
 bool Client::handle(const sf::Event &event) {
   if (shared.ui.gameFocused() and shared.game) {
     // events handled by the game
-    return shared.game->handle(event);
+    if (shared.game->handle(event)) return true;
   }
 
   if (shared.ui.pageFocused()) {
@@ -143,24 +164,29 @@ bool Client::handle(const sf::Event &event) {
   if (event.type == sf::Event::KeyPressed
       and event.key.code == sf::Keyboard::Escape) {
     // the escape key, unfocuses pages / focuses the game
-    if (!shared.ui.gameFocused() and !shared.ui.menuFocused()) {
-      referencePage(shared.ui.focusedPage).onLooseFocus();
-      shared.ui.unfocusPage();
-    } else if (shared.game) {
-      shared.game->onFocus();
-      shared.ui.focusGame();
-    }
+    if (!shared.ui.menuFocused()) {
+      unfocusPage();
+    } else focusGame();
     return true;
   }
 
   if (shared.ui.menuFocused()) {
+    // quit button is pressed
+    if (quitButton.handle(event)) return true;
+
     // pages are clicked in the menu
     if (event.type == sf::Event::MouseButtonReleased) {
       const sf::Vector2f mouseClick =
           {(float) event.mouseButton.x, (float) event.mouseButton.y};
 
       for (auto &rect : pageRects)
-        if (rect.first.contains(mouseClick)) focusPage(rect.second);
+        if (rect.first.contains(mouseClick)) {
+          focusPage(rect.second);
+          return true;
+        }
+
+      focusGame(); // clicked somewhere besides the pages
+      return true;
     }
   }
 
@@ -177,6 +203,11 @@ void Client::signalRead() {
   if (backButton.clickSignal) {
     unfocusPage();
   }
+
+  if (quitButton.clickSignal) {
+    if (shared.game) exitGame();
+    else quitting = true;
+  }
 }
 
 void Client::signalClear() {
@@ -186,6 +217,7 @@ void Client::signalClear() {
   settingsPage.signalClear();
 
   backButton.signalClear();
+  quitButton.signalClear();
 }
 
 void Client::beginGame(std::unique_ptr<Game> &&game) {
@@ -194,9 +226,13 @@ void Client::beginGame(std::unique_ptr<Game> &&game) {
   focusGame();
 }
 
+void Client::exitGame() {
+  if (shared.game) shared.game->doExit();
+}
+
 void Client::focusGame() {
   if (shared.game) {
-    shared.ui.unfocusPage();
+    unfocusPage();
     shared.ui.focusGame();
     shared.game->onFocus();
   }

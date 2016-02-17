@@ -16,9 +16,9 @@ public:
     sf::Vector2f textEntryDimensions{400, 60};
 
     sf::Color descColor = sf::Color(255, 255, 255);
-    sf::Vector2f nicknameDescPos{10, 10};
+    sf::Vector2f nicknameDescPos{100, 100};
     std::string nicknameDesc = "nickname:";
-    sf::Vector2f nicknameEntryPos{200, 10};
+    sf::Vector2f nicknameEntryPos{300, 100};
 
     Style() { }
   } style;

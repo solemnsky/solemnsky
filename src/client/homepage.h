@@ -9,15 +9,13 @@
 class HomePage: public Page {
  private:
   struct Style {
-    sf::Vector2f tutorialButtonPos{300, 300},
-        localhostButtonPos{300, 500};
+    sf::Vector2f tutorialButtonPos{500, 300},
+        localhostButtonPos{1100, 300};
 
-    std::string tutorialButtonDesc,
-        localhostButtonDesc;
+    std::string tutorialButtonDesc = "start tutorial",
+        localhostButtonDesc = "connect to localhost";
 
-    Style() :
-        tutorialButtonDesc("start tutorial"),
-        localhostButtonDesc("connect to localhost") { }
+    Style() { }
   } style;
 
   ui::Button tutorialButton;

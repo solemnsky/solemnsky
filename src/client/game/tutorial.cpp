@@ -1,12 +1,7 @@
 #include "tutorial.h"
 
-ui::Button::Style quitButtonStyle() {
-  return {};
-}
-
 Tutorial::Tutorial(ClientShared &state) :
     Game(state, "tutorial"),
-    quitButton({100, 50}, "quit tutorial", quitButtonStyle()),
     sky({}),
     renderSystem(&sky) {
   sky.linkSystem(&renderSystem);
@@ -34,7 +29,7 @@ void Tutorial::onChangeSettings(const SettingsDelta &settings) {
 }
 
 void Tutorial::doExit() {
-
+  quitting = true;
 }
 
 /**
@@ -42,7 +37,6 @@ void Tutorial::doExit() {
  */
 
 void Tutorial::tick(float delta) {
-  quitButton.tick(delta);
   if (shared.ui.gameFocused())
     sky.tick(delta); // if this were multiplayer of course
   // we wouldn't have this liberty
@@ -51,11 +45,9 @@ void Tutorial::tick(float delta) {
 void Tutorial::render(ui::Frame &f) {
   renderSystem.render(f, plane->vital
                          ? plane->vital->pos : sf::Vector2f(0, 0));
-  quitButton.render(f);
 }
 
 bool Tutorial::handle(const sf::Event &event) {
-  if (quitButton.handle(event)) return true;
   if (controller.handle(event)) {
     if (plane->vital) controller.setState(*plane->vital);
     return true;
@@ -70,10 +62,6 @@ bool Tutorial::handle(const sf::Event &event) {
   return false;
 }
 
-void Tutorial::signalRead() {
-  if (quitButton.clickSignal) quitting = true;
-}
+void Tutorial::signalRead() { }
 
-void Tutorial::signalClear() {
-  quitButton.signalClear();
-}
+void Tutorial::signalClear() { }
