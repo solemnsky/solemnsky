@@ -43,8 +43,8 @@ class MultiplayerClient: public Game {
    * Networking submethods.
    */
   void transmitServer(const sky::ClientPacket &packet);
-  // handle a network poll, assuming we're connected / initialized
-  void handleNetwork(const sky::ServerPacket &event);
+  // handle a network poll, assuming we're connected
+  bool processPacket(const sky::ServerPacket &event);
 
  public:
   MultiplayerClient(ClientShared &state,

@@ -17,14 +17,11 @@ Server::Server(const unsigned short port) :
  */
 
 void Server::broadcastToClients(const sky::ServerPacket &packet) {
-  appLog("To all: " + packet.dump());
   telegraph.transmitMult(host, host.peers, packet);
 }
 
 void Server::broadcastToClientsExcept(const sky::PID pid,
                                       const sky::ServerPacket &packet) {
-  appLog("To all except "
-             + std::to_string(pid) + ": " + packet.dump());
   telegraph.transmitMultPred(
       host, host.peers,
       [&](ENetPeer *peer) {
@@ -36,13 +33,6 @@ void Server::broadcastToClientsExcept(const sky::PID pid,
 
 void Server::transmitToClient(ENetPeer *const client,
                               const sky::ServerPacket &packet) {
-  std::string clientDesc = "[unconnected]";
-  if (sky::Player *player = playerFromPeer(client))
-    clientDesc = std::to_string(player->pid);
-
-  appLog(
-      "To client " + clientDesc + ": "
-          + packet.dump());
   telegraph.transmit(host, client, packet);
 }
 
@@ -52,15 +42,12 @@ sky::Player *Server::playerFromPeer(ENetPeer *peer) const {
   else return nullptr;
 }
 
-bool Server::processPacket(ENetPeer *client,
-                           const sky::ClientPacket &packet) {
+bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
   // received a packet from a connected peer
-
   using namespace sky;
 
   if (Player *player = playerFromPeer(client)) {
     const std::string &pidString = std::to_string(player->pid);
-    appLog("Client " + pidString + ": " + packet.dump());
 
     switch (packet.type) {
       case ClientPacket::Type::ReqDelta: {
@@ -73,36 +60,39 @@ bool Server::processPacket(ENetPeer *client,
         );
         arena.applyDelta(delta);
         broadcastToClients(ServerNotifyDelta(delta));
-        return true;
+        return true; // client send a ReqDelta
       }
+
       case ClientPacket::Type::Chat: {
         if (!all(packet.stringData))
           return false;
 
+        appLog("Chat \"" + player->nickname + "\": " + *packet.stringData);
         broadcastToClients(ServerNotifyMessage(*packet.stringData,
                                                player->pid));
-        return true;
+        return true; // client sent a Chat
       }
+
       case ClientPacket::Type::Ping: {
         transmitToClient(client, ServerPong());
-        return true;
+        return true; // client sent a Ping
       }
+
       default:
-        return false;
+        break;
     }
   } else {
     // client is still connecting, we need to do a ReqJoin / AckJoin
     // handshake and then distribute an ArenaDelta to the other clients
     if (packet.type == ClientPacket::Type::ReqJoin) {
-      if (!all(packet.stringData))
-        return false;
+      if (!all(packet.stringData)) return false;
 
       sky::Player &newPlayer = arena.connectPlayer();
       newPlayer.nickname = *packet.stringData;
       event.peer->data = &newPlayer;
 
       appLog("Client " + std::to_string(newPlayer.pid)
-                 + " entering in arena as \"" + *packet.stringData + "\".",
+                 + " connected as \"" + *packet.stringData + "\".",
              LogOrigin::Server);
       transmitToClient(
           client, ServerAckJoin(newPlayer.pid, arena.captureInitializer()));
@@ -110,8 +100,12 @@ bool Server::processPacket(ENetPeer *client,
       sky::ArenaDelta delta;
       delta.playerJoin = newPlayer;
       broadcastToClientsExcept(newPlayer.pid, ServerNotifyDelta(delta));
+
+      return true; // unregistered client sent a ReqJoin
     }
   }
+
+  return false;
 }
 
 /**
@@ -142,18 +136,21 @@ void Server::tick(float delta) {
       break;
     }
     case ENET_EVENT_TYPE_RECEIVE: {
-      bool success = true;
+      bool success = false;
       if (const auto &reception = telegraph.receive(event.packet)) {
-        if (!processPacket(event.peer, *reception))
-          success = false;
-      } else success = false;
+        if (processPacket(event.peer, *reception)) success = true;
+      }
 
       if (!success) {
         // something went wrong with the packet process
         if (sky::Player *player = playerFromPeer(event.peer))
           appLog("Received malformed packet from client "
-                     + std::to_string(player->pid) + "!");
-        else appLog("Received malformed packet from unregistered client!");
+                     + std::to_string(player->pid) + "!",
+                 LogOrigin::Server);
+        else
+          appLog(
+              "Received malformed packet from unregistered client!",
+              LogOrigin::Server);
       }
       break;
     }

@@ -26,35 +26,54 @@ MultiplayerClient::MultiplayerClient(ClientShared &state,
  */
 
 void MultiplayerClient::transmitServer(const sky::ClientPacket &packet) {
-  appLog("Transmitting: " + packet.dump());
   if (server) telegraph.transmit(host, server, packet);
 }
 
-void MultiplayerClient::handleNetwork(const sky::ServerPacket &packet) {
-  // at this point the whole enet / arena connection has established and
-  // we're not disconnecting.
-
+bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
+  // received a packet from the server
   using namespace sky;
 
+  if (!arena) {
+    // waiting for the arena connection request to be accepted
+    if (packet.type == ServerPacket::Type::AckJoin) {
+      if (!all(packet.arenaInitializer, packet.pid)) return false;
+
+      arena.emplace(*packet.arenaInitializer);
+      myRecord = arena->getRecord(*packet.pid);
+      appLog("Joined arena!", LogOrigin::Client);
+      return true; // server sent us an AckJoin when we're not registered
+    }
+  }
+
+  // we're in the arena
   switch (packet.type) {
     case ServerPacket::Type::Pong:
-      break;
+      return true; // received a pong from the server
+
     case ServerPacket::Type::NotifyDelta: {
+      appLog("got delta");
+      if (!all(packet.arenaDelta)) return false;
       arena->applyDelta(*packet.arenaDelta);
-      break;
+      appLog("applied delta");
+      return true; // server sent us a NotifyDelta
     }
+
     case ServerPacket::Type::NotifyMessage: {
+      if (!all(packet.stringData)) return false;
       if (packet.pid) {
         if (sky::Player *record = arena->getRecord(*packet.pid))
           messageLog.pushEntry(record->nickname + ": " + *packet.stringData);
         else messageLog.pushEntry("[unknown]: " + *packet.stringData);
       } else
         messageLog.pushEntry("[server]: " + *packet.stringData);
-      break;
+      return true; // server sent us a NotifyMessage
     }
+
     default:
       break;
   }
+
+  return false;
 }
 
 /**
@@ -125,23 +144,17 @@ void MultiplayerClient::tick(float delta) {
     }
 
     if (event.type == ENET_EVENT_TYPE_RECEIVE) {
-      const ServerPacket &packet = telegraph.receive(event.packet);
-      appLog("Receiving: " + packet.dump());
-
-      if (arena) {
-        // in the arena
-        handleNetwork(packet);
-      } else {
-        // waiting for the arena connection request to be accepted
-        if (packet.type == ServerPacket::Type::AckJoin) {
-          arena.emplace(*packet.arenaInitializer);
-          myRecord = arena->getRecord(*packet.pid);
-          appLog("Joined arena!", LogOrigin::Client);
-        }
+      bool success = false;
+      if (const auto reception = telegraph.receive(event.packet)) {
+        if (processPacket(*reception))
+          success = true;
       }
+
+      if (!success)
+        appLog("Received malformed packet from server!",
+               LogOrigin::Client);
     }
   }
-
 }
 
 void MultiplayerClient::render(ui::Frame &f) {

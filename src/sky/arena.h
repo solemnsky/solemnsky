@@ -1,9 +1,11 @@
 /**
  * A model of a multiplayer arena, (players + metadata + potential sky) held by
- * clients and servers. A server, during operation, holds an arena; a
- * multiplayer client constructs one from a network-transmitted
- * ArenaInitializer and keeps somewhat in sync with the server-side arena
- * model through deltas.
+ * clients and servers, along with serializable structures to communicate them
+ * over the network.
+ *
+ * A server, during operation, holds an arena; a multiplayer client constructs
+ * one from a network-transmitted ArenaInitializer and keeps somewhat in sync
+ * with the server-side arena model through deltas.
  */
 #ifndef SOLEMNSKY_ARENA_H
 #define SOLEMNSKY_ARENA_H
@@ -32,7 +34,7 @@ struct Player {
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<Player, TYPE>(RULE, &Player::PTR)
-const tg::Pack<Player> playerPack =
+static const tg::Pack<Player> playerPack =
     tg::ClassPack<Player>(
         member(PID, pid, pidPack),
         member(std::string, nickname, tg::stringPack)
@@ -53,7 +55,7 @@ struct PlayerDelta {
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<PlayerDelta, TYPE>(RULE, &PlayerDelta::PTR)
-const tg::Pack<PlayerDelta> playerDeltaPack =
+static const tg::Pack<PlayerDelta> playerDeltaPack =
     tg::ClassPack<PlayerDelta>(
         member(optional<std::string>, nickname, tg::optStringPack)
     );
