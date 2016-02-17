@@ -35,7 +35,7 @@ public:
   /**
    * Page interface.
    */
-  void onLooseFocus() override;
+  void onBlur() override;
   void onFocus() override;
   void onChangeSettings(const SettingsDelta &) override;
 

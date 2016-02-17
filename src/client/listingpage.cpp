@@ -3,7 +3,7 @@
 ListingPage::ListingPage(ClientShared &state) :
     Page(state) {}
 
-void ListingPage::onLooseFocus() {
+void ListingPage::onBlur() {
 
 }
 

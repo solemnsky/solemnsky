@@ -14,7 +14,7 @@ Tutorial::Tutorial(ClientShared &state) :
  * Game interface.
  */
 
-void Tutorial::onLooseFocus() {
+void Tutorial::onBlur() {
 
 }
 
@@ -52,13 +52,6 @@ bool Tutorial::handle(const sf::Event &event) {
     if (plane->vital) controller.setState(*plane->vital);
     return true;
   }
-
-  if (event.type == sf::Event::KeyPressed
-      && event.key.code == sf::Keyboard::Escape) {
-    shared.unfocusGame();
-    return true;
-  }
-
   return false;
 }
 

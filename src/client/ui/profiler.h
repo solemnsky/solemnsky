@@ -34,7 +34,7 @@ struct SamplerValue {
   const float mean;
 
   /**
-   * TODO: it's really very dumb to take stats on all the hundred or so
+   * TODO: it's really quite dumb to take stats on all the hundred or so
    * values in the rolling sampler every cycle, this could be hugely improved
    * if it is ever a bottleneck.
    */

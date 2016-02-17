@@ -9,7 +9,7 @@ HomePage::HomePage(ClientShared &clientState) :
     tutorialButton(style.tutorialButtonPos, style.tutorialButtonDesc),
     localhostButton(style.localhostButtonPos, style.localhostButtonDesc) { }
 
-void HomePage::onLooseFocus() {
+void HomePage::onBlur() {
   tutorialButton.reset();
   localhostButton.reset();
 }

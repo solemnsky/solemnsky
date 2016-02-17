@@ -18,7 +18,7 @@ public:
   /**
    * Page interface.
    */
-  void onLooseFocus() override;
+  void onBlur() override;
   void onFocus() override;
   virtual void onChangeSettings(const SettingsDelta &settings) override;
 

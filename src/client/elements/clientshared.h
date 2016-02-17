@@ -29,9 +29,9 @@ private:
   friend class Client;
 
   void focusGame();
-  void unfocusGame();
+  void blurGame();
   void focusPage(PageType page);
-  void unfocusPage();
+  void blurPage();
 
   void tick(float delta);
 

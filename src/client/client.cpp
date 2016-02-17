@@ -13,12 +13,22 @@ ui::Button::Style Client::Style::backButtonStyle() const {
 ui::Button::Style Client::Style::quitButtonStyle() const {
   ui::Button::Style style;
   style.fontSize = 50;
+  style.dimensions.x = 300;
+  return style;
+}
+
+ui::Button::Style Client::Style::aboutButtonStyle() const {
+  ui::Button::Style style;
+  style.fontSize = 50;
   return style;
 }
 
 Client::Client() :
-    backButton({1400, 800}, style.backButtonText, style.backButtonStyle()),
-    quitButton({200, 100}, "", style.quitButtonStyle()),
+    backButton(style.backButtonOffset, style.backButtonText,
+               style.backButtonStyle()),
+    quitButton(style.quitButtonOffset, "", style.quitButtonStyle()),
+    aboutButton(style.aboutButtonOffset, style.aboutButtonText,
+                style.aboutButtonStyle()),
 
     shared(this),
     homePage(shared),
@@ -68,9 +78,15 @@ void Client::drawPage(ui::Frame &f, const PageType type,
 
   f.withAlpha(alpha, [&]() {
     f.withAlpha(titleAlpha, [&]() {
-      f.drawText(sf::Vector2f(0, -40) + offsetAmnt * offset, {name}, 40);
+      f.drawText(
+          sf::Vector2f(
+              0, style.descriptionNegativeMargin - style.descriptionFontSize)
+              + offsetAmnt * offset,
+          {name},
+          style.descriptionFontSize);
     });
     f.withTransform(transform, [&]() {
+      f.drawRect({0, 0, 1600, 900}, style.pageUnderlayColor);
       page.render(f);
     });
   });
@@ -91,13 +107,14 @@ void Client::tick(float delta) {
     shared.game->tick(delta);
     if (shared.game->quitting) {
       shared.game.reset();
-      shared.ui.unfocusGame();
+      shared.ui.blurGame();
     }
   }
 
   forAllPages([&delta](Page &page) { page.tick(delta); });
   backButton.tick(delta);
   quitButton.tick(delta);
+  aboutButton.tick(delta);
 }
 
 void Client::render(ui::Frame &f) {
@@ -142,37 +159,51 @@ void Client::render(ui::Frame &f) {
           quitButton.text = gameUnderneath ? style.quitGameText :
                             style.quitAppText;
           f.withAlpha(linearTween(1, 0, pageFocusFactor),
-                      [&]() { quitButton.render(f); });
+                      [&]() {
+                        // buttons that fade out as the page focuses
+                        quitButton.render(f);
+                        aboutButton.render(f);
+                      });
           f.withAlpha(linearTween(0, 1, pageFocusFactor),
-                      [&]() { backButton.render(f); });
+                      [&]() {
+                        // buttons that fade in as the page focuses
+                        backButton.render(f);
+                      });
         });
   }
 }
 
 bool Client::handle(const sf::Event &event) {
   if (shared.ui.gameFocused() and shared.game) {
-    // events handled by the game
+    // game is focused
     if (shared.game->handle(event)) return true;
   }
 
   if (shared.ui.pageFocused()) {
-    // events handled by the back button / focused page
+    // page is focused
     if (backButton.handle(event)) return true;
     if (referencePage(shared.ui.focusedPage).handle(event)) return true;
   }
 
   if (event.type == sf::Event::KeyPressed
       and event.key.code == sf::Keyboard::Escape) {
-    // the escape key, unfocuses pages / focuses the game
+    // the escape key is pressed
+    if (shared.ui.gameFocused()) {
+      blurGame();
+      return true;
+    }
+
     if (!shared.ui.menuFocused()) {
-      unfocusPage();
+      blurPage();
     } else focusGame();
     return true;
   }
 
   if (shared.ui.menuFocused()) {
-    // quit button is pressed
+    // we're in the menu
+
     if (quitButton.handle(event)) return true;
+    if (aboutButton.handle(event)) return true;
 
     // pages are clicked in the menu
     if (event.type == sf::Event::MouseButtonReleased) {
@@ -201,12 +232,16 @@ void Client::signalRead() {
   settingsPage.signalRead();
 
   if (backButton.clickSignal) {
-    unfocusPage();
+    blurPage();
   }
 
   if (quitButton.clickSignal) {
     if (shared.game) exitGame();
     else quitting = true;
+  }
+
+  if (aboutButton.clickSignal) {
+    appLog("about message");
   }
 }
 
@@ -218,6 +253,13 @@ void Client::signalClear() {
 
   backButton.signalClear();
   quitButton.signalClear();
+  aboutButton.signalClear();
+}
+
+void Client::resetUI() {
+  backButton.reset();
+  quitButton.reset();
+  aboutButton.reset();
 }
 
 void Client::beginGame(std::unique_ptr<Game> &&game) {
@@ -231,24 +273,27 @@ void Client::exitGame() {
 }
 
 void Client::focusGame() {
+  resetUI();
   if (shared.game) {
-    unfocusPage();
+    blurPage();
     shared.ui.focusGame();
     shared.game->onFocus();
   }
 }
 
-void Client::unfocusGame() {
-  shared.ui.unfocusGame();
-  if (shared.game) shared.game->onLooseFocus();
+void Client::blurGame() {
+  shared.ui.blurGame();
+  if (shared.game) shared.game->onBlur();
 }
 
-void Client::unfocusPage() {
-  referencePage(shared.ui.focusedPage).onLooseFocus();
-  shared.ui.unfocusPage();
+void Client::blurPage() {
+  resetUI();
+  referencePage(shared.ui.focusedPage).onBlur();
+  shared.ui.blurPage();
 }
 
 void Client::focusPage(const PageType type) {
+  resetUI();
   referencePage(type).onFocus();
   shared.ui.focusPage(type);
 }

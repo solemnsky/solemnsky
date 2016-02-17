@@ -25,8 +25,8 @@ void Button::render(Frame &f) {
   const auto size = f.textSize(text, style.fontSize);
   f.drawText(
       sf::Vector2f(
-          body.left + (body.width / 2),
-          body.top + (body.height / 2)) - (size * 0.5f),
+          body.left + (body.width / 2) - (size.x / 2),
+          body.top - 5), // TODO: get text bounds to work
       {text}, style.fontSize, style.textColor
   );
   f.popAlpha();

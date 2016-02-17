@@ -16,11 +16,8 @@ enum class Res {
   Font, // fonts everywhere
 
   Title, // ui stuff
-  PageSelector,
-  HomeIcon,
-  SettingsIcon,
-  ListingIcon,
   MenuBackground,
+  Credits,
 
   PlayerSheet, // game stuff
 

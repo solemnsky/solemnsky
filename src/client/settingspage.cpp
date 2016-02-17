@@ -23,7 +23,7 @@ void SettingsPage::writeToSettings() {
  * Page interface.
  */
 
-void SettingsPage::onLooseFocus() {
+void SettingsPage::onBlur() {
   newSettings.nickname = nicknameChooser.contents;
 
   writeToSettings();

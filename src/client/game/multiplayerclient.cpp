@@ -77,7 +77,7 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
  * Game interface.
  */
 
-void MultiplayerClient::onLooseFocus() {
+void MultiplayerClient::onBlur() {
   chatEntry.reset();
 }
 

@@ -36,7 +36,7 @@ class Page: public ui::Control {
   virtual void attachClientState() { } // when client state is initialized
   // (this is necessary because of the Control::attachState() thing)
 
-  virtual void onLooseFocus() = 0;
+  virtual void onBlur() = 0;
   virtual void onFocus() = 0;
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
 
@@ -55,7 +55,7 @@ class Game: public ui::Control {
  public:
   Game(ClientShared &shared, const std::string &name);
 
-  virtual void onLooseFocus() = 0;
+  virtual void onBlur() = 0;
   virtual void onFocus() = 0;
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
 

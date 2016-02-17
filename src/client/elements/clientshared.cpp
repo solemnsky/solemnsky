@@ -15,7 +15,7 @@ void ClientUiState::focusGame() {
   gameFocusing = true;
 }
 
-void ClientUiState::unfocusGame() {
+void ClientUiState::blurGame() {
   gameFocusing = false;
 }
 
@@ -28,7 +28,7 @@ void ClientUiState::focusPage(PageType page) {
   }
 }
 
-void ClientUiState::unfocusPage() {
+void ClientUiState::blurPage() {
   pageFocusing = false;
 }
 
@@ -50,14 +50,15 @@ bool ClientUiState::menuFocused() const {
  */
 
 ClientShared::ClientShared(Client *client) :
-    client(client) { }
+    client(client),
+    uptime(0) { }
 
 void ClientShared::beginGame(std::unique_ptr<Game> &&game) {
   client->beginGame(std::move(game));
 }
 
 void ClientShared::unfocusGame() {
-  client->unfocusGame();
+  client->blurGame();
 }
 
 void ClientShared::exitGame() {
@@ -69,7 +70,7 @@ void ClientShared::focusPage(const PageType type) {
 }
 
 void ClientShared::unfocusPage() {
-  client->unfocusPage();
+  client->blurPage();
 }
 
 void ClientShared::changeSettings(const SettingsDelta &settings) {
