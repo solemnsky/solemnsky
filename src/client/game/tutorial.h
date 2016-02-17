@@ -23,11 +23,19 @@ public:
   Tutorial(ClientShared &state);
 
   /**
+   * Game interface.
+   */
+  void onLooseFocus() override;
+  void onFocus() override;
+  void onChangeSettings(const SettingsDelta &settings) override;
+  void doExit() override;
+
+  /**
    * Control interface.
    */
-  virtual void tick(float delta) override;
-  virtual void render(ui::Frame &f) override;
-  virtual bool handle(const sf::Event &event) override;
+  void tick(float delta) override;
+  void render(ui::Frame &f) override;
+  bool handle(const sf::Event &event) override;
 
   void signalRead() override;
   void signalClear() override;

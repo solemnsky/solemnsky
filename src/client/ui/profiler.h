@@ -34,7 +34,9 @@ struct SamplerValue {
   const float mean;
 
   /**
-   * Undefined for null sampler data.
+   * TODO: it's really very dumb to take stats on all the hundred or so
+   * values in the rolling sampler every cycle, this could be hugely improved
+   * if it is ever a bottleneck.
    */
   SamplerValue(RollingSampler<T>);
 

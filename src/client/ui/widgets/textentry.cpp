@@ -6,7 +6,9 @@ namespace ui {
 
 TextEntry::TextEntry(const sf::Vector2f &pos,
                      const std::string &description,
+                     const bool persistent,
                      const TextEntry::Style &style) :
+    persistent(persistent),
     pos(pos),
     cursor(0),
     heat(0, 1, 0),
@@ -51,7 +53,8 @@ void TextEntry::render(Frame &f) {
     f.drawRect(pos, pos + style.dimensions,
                mixColors(style.inactiveBgColor, style.hotBgColor, heat));
     f.drawText(pos + sf::Vector2f(style.sidePadding, 0),
-               {description}, style.fontSize, style.descriptionColor);
+               {persistent ? contents : description},
+               style.fontSize, style.descriptionColor);
   }
 }
 
@@ -131,12 +134,12 @@ void TextEntry::reset() {
 
 void TextEntry::focus() {
   isFocused = true;
+  if (persistent) cursor = (int) contents.size();
 }
 
 void TextEntry::unfocus() {
   isFocused = false;
-  cursor = 0;
-  contents = "";
+  if (!persistent) contents = "";
 }
 
 }

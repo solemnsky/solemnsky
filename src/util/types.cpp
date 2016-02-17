@@ -44,9 +44,15 @@ Clamped &Clamped::operator-=(const float x) {
 /**
  * Movement.
  */
-
 float movementValue(const Movement movement) {
-  return 0;
+  switch (movement) {
+    case Movement::Up:
+      return 1;
+    case Movement::Down:
+      return -1;
+    case Movement::None:
+      return 0;
+  }
 }
 
 /**

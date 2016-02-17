@@ -11,9 +11,35 @@ Tutorial::Tutorial(ClientShared &state) :
     renderSystem(&sky) {
   sky.linkSystem(&renderSystem);
 
-  plane = sky.joinPlane(0);
+  plane = &sky.joinPlane(0);
   sky.spawnPlane(0, {200, 200}, 0, {});
 }
+
+/**
+ * Game interface.
+ */
+
+void Tutorial::onLooseFocus() {
+
+}
+
+void Tutorial::onFocus() {
+
+}
+
+void Tutorial::onChangeSettings(const SettingsDelta &settings) {
+  if (settings.nickname) {
+    // a simple Sky doesn't hold nickname data!
+  }
+}
+
+void Tutorial::doExit() {
+
+}
+
+/**
+ * Control interface.
+ */
 
 void Tutorial::tick(float delta) {
   quitButton.tick(delta);
@@ -45,10 +71,9 @@ bool Tutorial::handle(const sf::Event &event) {
 }
 
 void Tutorial::signalRead() {
-  if (quitButton.clickSignal) concluded = true;
+  if (quitButton.clickSignal) quitting = true;
 }
 
 void Tutorial::signalClear() {
   quitButton.signalClear();
 }
-

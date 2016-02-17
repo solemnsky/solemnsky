@@ -11,6 +11,8 @@ void ListingPage::onFocus() {
 
 }
 
+void ListingPage::onChangeSettings(const SettingsDelta &settings) { }
+
 void ListingPage::tick(float) {
 
 }

@@ -74,3 +74,6 @@ void ClientShared::unfocusPage() {
   client->unfocusPage();
 }
 
+void ClientShared::onChangeSettings(const SettingsDelta &settings) {
+  client->onChangeSettings(settings);
+}

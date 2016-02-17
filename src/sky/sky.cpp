@@ -26,12 +26,12 @@ void Sky::linkSystem(Subsystem *subsystem) {
  * Handling planes.
  */
 
-Plane *Sky::joinPlane(const PID pid) {
+Plane &Sky::joinPlane(const PID pid) {
   planes.emplace(pid, std::move(PlaneHandle(this)));
 
-  PlaneHandle *plane = &planes.at(pid);
+  PlaneHandle &plane = planes.at(pid);
   for (auto system : subsystems) system->joinPlane(pid, plane);
-  return &plane->state;
+  return plane.state;
 }
 
 Plane *Sky::getPlane(const PID pid) {
@@ -53,14 +53,14 @@ void Sky::spawnPlane(const PID pid, const sf::Vector2f pos, const float rot,
                      const PlaneTuning &tuning) {
   if (auto *plane = getPlaneHandle(pid)) {
     plane->spawn(tuning, pos, rot);
-    for (auto system : subsystems) system->spawnPlane(pid, plane);
+    for (auto system : subsystems) system->spawnPlane(pid, *plane);
   }
 }
 
 void Sky::killPlane(const PID pid) {
   if (auto *plane = getPlaneHandle(pid)) {
     plane->kill();
-    for (auto system : subsystems) system->killPlane(pid, plane);
+    for (auto system : subsystems) system->killPlane(pid, *plane);
   }
 }
 

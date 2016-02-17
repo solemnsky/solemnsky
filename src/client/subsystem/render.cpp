@@ -15,9 +15,16 @@ PlaneAnimState::PlaneAnimState() :
     roll(0),
     orientation(false),
     flipState(0),
-    rollState(0) { }
+    rollState(90) { }
 
-void PlaneAnimState::tick(PlaneHandle *parent, const float delta) {
+void PlaneAnimState::spawn(const PlaneVital &vital) {
+  roll = 90;
+  orientation = Angle(vital.rot + 90) > 180;
+  flipState = 0;
+  rollState = 90;
+}
+
+void PlaneAnimState::tick(sky::PlaneHandle *parent, const float delta) {
   using namespace detail;
 
   auto vstate = parent->state.vital;
@@ -85,7 +92,7 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
 };
 
 void Render::renderPlane(
-    ui::Frame &f, const int pid, const PlaneHandle &plane) {
+    ui::Frame &f, const PID pid, const PlaneHandle &plane) {
   using namespace detail; // for rndrParam
   if (plane.state.vital) {
     const PlaneVital &vstate = *plane.state.vital;
@@ -126,14 +133,6 @@ void Render::renderPlane(
            mkBar(vstate.energy, rndrParam.energy)},
           rndrParam.barArea
       );
-
-//      f.drawText(
-//          {-100, -100},
-//          {"airspeed:" + std::to_string(vstate.airspeed),
-//           "forward vel: " +
-//           std::to_string((int) std::round(vstate.forwardVelocity()))
-//          }
-//      );
     });
   }
 }
@@ -176,7 +175,7 @@ void Render::tick(float delta) {
     pair.second.tick(sky->getPlaneHandle(pair.first), delta);
 }
 
-void Render::joinPlane(const PID pid, PlaneHandle *plane) {
+void Render::joinPlane(const PID pid, PlaneHandle &plane) {
   animState.emplace(pid, detail::PlaneAnimState());
 }
 
@@ -184,10 +183,10 @@ void Render::quitPlane(const PID pid) {
   animState.erase(pid);
 }
 
-void Render::spawnPlane(const PID pid, PlaneHandle *plane) {
+void Render::spawnPlane(const PID pid, PlaneHandle &plane) {
   animState.at(pid).reset();
 }
 
-void Render::killPlane(const PID pid, PlaneHandle *plane) { }
+void Render::killPlane(const PID pid, PlaneHandle &plane) { }
 
 }

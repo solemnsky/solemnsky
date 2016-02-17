@@ -15,6 +15,7 @@ public:
    */
   void onLooseFocus() override;
   void onFocus() override;
+  virtual void onChangeSettings(const SettingsDelta &settings) override;
 
   /**
    * Control interface.

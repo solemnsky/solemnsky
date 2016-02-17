@@ -51,10 +51,8 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
       return true; // received a pong from the server
 
     case ServerPacket::Type::NotifyDelta: {
-      appLog("got delta");
       if (!all(packet.arenaDelta)) return false;
       arena->applyDelta(*packet.arenaDelta);
-      appLog("applied delta");
       return true; // server sent us a NotifyDelta
     }
 
@@ -89,9 +87,18 @@ void MultiplayerClient::onFocus() {
 
 }
 
+void MultiplayerClient::onChangeSettings(const SettingsDelta &settings) {
+  if (settings.nickname) {
+    sky::PlayerDelta delta;
+    delta.nickname = *settings.nickname;
+    transmitServer(sky::ClientReqDelta(delta));
+    // request a nickname change
+  }
+}
+
 void MultiplayerClient::doExit() {
   if (!server) {
-    concluded = true;
+    quitting = true;
   } else {
     host.disconnect(server);
     appLog("Disconnecting from server...", LogOrigin::Client);
@@ -115,14 +122,14 @@ void MultiplayerClient::tick(float delta) {
   if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
     server = nullptr;
     appLog("Disconnected from server!", LogOrigin::Client);
-    concluded = true;
+    quitting = true;
     return;
   }
 
   if (disconnecting) {
     if (disconnectTimeout.cool(delta)) {
       appLog("Disconnecting from unresponsive server!", LogOrigin::Client);
-      concluded = true;
+      quitting = true;
     }
     return;
   }
@@ -138,7 +145,7 @@ void MultiplayerClient::tick(float delta) {
     if (!triedConnection) {
       // we have a link but haven't sent an arena connection request
       appLog("Asking to join arena...", LogOrigin::Client);
-      transmitServer(ClientReqJoin(shared.settings.preferredNickname));
+      transmitServer(ClientReqJoin(shared.settings.nickname));
       triedConnection = true;
       return;
     }

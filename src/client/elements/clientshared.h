@@ -79,6 +79,8 @@ public:
 
   void focusPage(const PageType type);
   void unfocusPage();
+
+  void onChangeSettings(const SettingsDelta &settings);
 };
 
 #endif //SOLEMNSKY_CLIENTSTATE_H

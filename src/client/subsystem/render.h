@@ -56,7 +56,8 @@ struct PlaneAnimState {
   /**
    * Mutating state.
    */
-  void tick(class PlaneHandle *parent, const float delta);
+  void spawn(const PlaneVital &vital);
+  void tick(PlaneHandle *parent, const float delta);
   void reset(); // when the plane respawns
   // death is animated in the a normal course of events, but respawning changes
   // everything anew
@@ -77,16 +78,16 @@ private:
   void renderBars(ui::Frame &f,
                   std::vector<std::pair<float, const sf::Color &>> bars,
                   sf::FloatRect area);
-  void renderPlane(ui::Frame &f, const int pid, const PlaneHandle &plane);
+  void renderPlane(ui::Frame &f, const PID pid, const PlaneHandle &plane);
 
   /**
    * Subsystem listeners.
    */
   void tick(float delta) override;
-  void joinPlane(const PID pid, PlaneHandle *plane) override;
+  void joinPlane(const PID pid, PlaneHandle &plane) override;
   void quitPlane(const PID pid) override;
-  void spawnPlane(const PID pid, PlaneHandle *plane) override;
-  void killPlane(const PID pid, PlaneHandle *plane) override;
+  void spawnPlane(const PID pid, PlaneHandle &plane) override;
+  void killPlane(const PID pid, PlaneHandle &plane) override;
 
 public:
   Render(Sky *sky);

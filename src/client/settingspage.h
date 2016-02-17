@@ -7,16 +7,37 @@
 #include "elements/elements.h"
 
 class SettingsPage : public Page {
+ private:
+  Settings newSettings; // for making deltas
+
 public:
+  struct Style {
+    int fontSize = 50;
+    sf::Vector2f textEntryDimensions{400, 60};
+
+    sf::Color descColor = sf::Color(255, 255, 255);
+    sf::Vector2f nicknameDescPos{10, 10};
+    std::string nicknameDesc = "nickname:";
+    sf::Vector2f nicknameEntryPos{200, 10};
+
+    Style() { }
+  } style;
+
   SettingsPage(ClientShared &state);
 
-  bool completeSignal; // user has completed entering settings
+  ui::TextEntry nicknameChooser;
+
+  /**
+   * Writing to settings.
+   */
+  void writeToSettings();
 
   /**
    * Page interface.
    */
   void onLooseFocus() override;
   void onFocus() override;
+  void onChangeSettings(const SettingsDelta &) override;
 
   /**
    * Control interface.
