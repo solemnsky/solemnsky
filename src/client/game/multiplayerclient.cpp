@@ -173,6 +173,14 @@ void MultiplayerClient::render(ui::Frame &f) {
   } else if (disconnecting) {
     f.drawText({400, 400}, {"Disconnecting..."}, 60, sf::Color::White);
   }
+
+  if (server and arena) {
+    std::vector<std::string> players;
+    for (sky::Player &player : arena->players)
+      players.push_back(player.nickname);
+
+    f.drawText({20, 500}, players);
+  }
 }
 
 bool MultiplayerClient::handle(const sf::Event &event) {

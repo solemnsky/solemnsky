@@ -26,7 +26,8 @@ class Client: public ui::Control {
         listingOffset{550.000, 495.250},
         quitButtonOffset{182.812, 610.875},
         aboutButtonOffset{1217.188, 610.875},
-        backButtonOffset{1400, 850};
+        closeButtonOffset{332.813, 850},
+        backButtonOffset{1067.18, 850};
     // see the schema in media/source2d/board.png
 
     sf::Color pageUnderlayColor{0, 0, 0, 20};
@@ -34,14 +35,17 @@ class Client: public ui::Control {
     int descriptionFontSize = 50;
     int descriptionNegativeMargin = 10;
 
-    ui::Button::Style backButtonStyle() const;
-    ui::Button::Style quitButtonStyle() const;
-    ui::Button::Style aboutButtonStyle() const;
+    ui::Button::Style highButtonStyle() const;
+    ui::Button::Style lowButtonStyle() const;
 
-    std::string backButtonText = "go back",
-        quitGameText = "quit game",
-        quitAppText = "quit solemnsky",
+    std::string backButtonText = "main menu",
+        quitButtonText = "quit",
+        closeButtonText = "close game",
         aboutButtonText = "about";
+
+    float menuInGameFade = 0.7; // the opacity of the UI when we open it
+    // by escaping from the game (this opacity factor dissapates when a page
+    // is focused)
 
     Style() { }
   } style;
@@ -49,10 +53,14 @@ class Client: public ui::Control {
   /**
    * Buttons.
    */
-  ui::Button backButton; // for exiting menus, lower right
-  ui::Button quitButton; // for exiting arena / quitting the game, top left
-  ui::Button aboutButton; // for seeing the about screen
+  ui::Button backButton, // for exiting menus, lower right
+      closeButton, // for closing the current game, lower left
+      quitButton, // quitting solemnsky
+      aboutButton; // for seeing the about screen
 
+  /**
+   * Shared state.
+   */
   ClientShared shared;
 
   /**

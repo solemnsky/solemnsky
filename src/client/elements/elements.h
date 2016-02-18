@@ -22,8 +22,7 @@ class Page: public ui::Control {
  private:
   const struct Style {
     float margins = 50; // 50 px of background margin
-    float xFactor = (1600.0f - 2 * margins) / 1600,
-        yFactor = (900.0f - 2 * margins) / 900;
+    sf::Color bgColor{136, 156, 255};
     Style() { }
   } style;
 
@@ -40,6 +39,9 @@ class Page: public ui::Control {
   virtual void onFocus() = 0;
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
 
+  /**
+   * General graphics.
+   */
   void drawBackground(ui::Frame &f);
 };
 

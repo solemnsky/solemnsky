@@ -149,8 +149,9 @@ bool TextEntry::handle(const sf::Event &event) {
     }
 
     if (event.type == sf::Event::KeyPressed) {
-      // don't repeat enter key
-      if (event.key.code != sf::Keyboard::Return)
+      // don't repeat enter key or escape key
+      if (event.key.code != sf::Keyboard::Return
+          and event.key.code != sf::Keyboard::Escape)
         pressedKeyboardEvent = event;
 
       if (handleKeyboardEvent(event)) return true;

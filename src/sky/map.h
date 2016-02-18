@@ -9,12 +9,12 @@
 
 namespace sky {
 
+using MapName = std::string;
+
 struct Map {
-  Map() : dimensions(3200, 900) { }
+  Map(const MapName &name);
 
   sf::Vector2f dimensions;
-
-  void loadFromFile(std::string filepath) { }
 };
 
 }

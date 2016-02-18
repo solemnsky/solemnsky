@@ -15,4 +15,5 @@
 sf::Color mixColors(
     const sf::Color color1, const sf::Color color2, const float degree);
 
+
 #endif //SOLEMNSKY_UTIL_H
