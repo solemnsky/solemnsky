@@ -35,15 +35,6 @@ void HomePage::render(ui::Frame &f) {
   const float actualCycleTime =
       ui::SamplerValue<float>(shared.appState->profiler->cycleTime).mean;
 
-  f.drawText({800, 600},
-             {"home page",
-              "welcome to solemnsky, " + shared.settings.nickname,
-              "uptime: " + std::to_string((int) (shared.uptime * 1000)) + "ms",
-              "max FPS: " + std::to_string((int) std::round(1 / cycleTime)),
-              "actual FPS: " +
-                  std::to_string((int) std::round(1 / actualCycleTime))
-             }, 40);
-
   tutorialButton.render(f);
   localhostButton.render(f);
 }

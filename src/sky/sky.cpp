@@ -3,11 +3,13 @@
 
 namespace sky {
 
-const tg::Pack<PID> pidPack = tg::BytePack<PID>();
-
 Sky::Sky(const Map &map) : map(map), physics(map) {
   CTOR_LOG("sky");
 }
+
+Sky::Sky(const SkyInitializer &initializer) :
+    map(initializer.mapName),
+    physics(map) { }
 
 Sky::~Sky() {
   DTOR_LOG("sky");

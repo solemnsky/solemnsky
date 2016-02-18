@@ -49,8 +49,6 @@ void SettingsPage::tick(float delta) {
 
 void SettingsPage::render(ui::Frame &f) {
   drawBackground(f);
-  f.drawText({800, 600},
-             {"settings page", "page where the user modifies settings"}, 40);
 
   f.drawText(style.nicknameDescPos, {style.nicknameDesc}, style.fontSize,
              style.descColor);

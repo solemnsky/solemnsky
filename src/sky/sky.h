@@ -15,7 +15,7 @@
 namespace sky {
 
 typedef unsigned int PID; // ID for elements in the game
-extern const tg::Pack<PID> pidPack;
+const static tg::Pack<PID> pidPack = tg::BytePack<PID>();
 
 /**
  * Subsystem abstraction, representing a module that attaches to Sky events
@@ -56,6 +56,33 @@ class Subsystem {
   // rather from non-virtual subclasses; we don't need a virtual dtor.
 };
 
+/**
+ * The stuff we need to recreate a Sky.
+ */
+struct SkyInitializer {
+  MapName mapName; // the map to load
+  std::map<PID, Plane> planes; // planes already in the arena
+};
+
+#define member(TYPE, PTR, RULE) \
+  tg::MemberRule<SkyInitializer, TYPE>(RULE, &SkyInitializer::PTR)
+const static tg::Pack<SkyInitializer> skyInitializerPack =
+    tg::ClassPack<SkyInitializer>(
+        member(MapName, mapName, tg::stringPack),
+        tg::MemberRule<SkyInitializer, std::map<PID, Plane>>(
+            tg::MapPack<PID, Plane>(pidPack, planePack),
+            &SkyInitializer::planes
+        )
+    );
+#undef member
+
+/**
+ * Changes that happened in a sky.
+ */
+struct SkyDelta {
+
+};
+
 /*
  * A Sky is the basic core of the game state. It is semantically subordinate to
  * an Arena, and exposes a simple interface for clients and servers alike for
@@ -68,9 +95,10 @@ class Sky {
 
  public:
   Sky(const Map &map);
+  Sky(const SkyInitializer &initializer);
   ~Sky();
 
-  const Map map;
+  const Map map; // physics uses this at construction
   Physics physics;
 
   /**
@@ -100,6 +128,7 @@ class Sky {
    */
   void tick(float delta); // delta in seconds *everywhere*
 };
+
 }
 
 #endif //SOLEMNSKY_SKY_H

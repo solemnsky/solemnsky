@@ -4,31 +4,29 @@
 /**
  * Client.
  */
-ui::Button::Style Client::Style::backButtonStyle() const {
+ui::Button::Style Client::Style::highButtonStyle() const {
   ui::Button::Style style;
   style.fontSize = 50;
+  style.dimensions.y = 70;
   return style;
 }
 
-ui::Button::Style Client::Style::quitButtonStyle() const {
+ui::Button::Style Client::Style::lowButtonStyle() const {
   ui::Button::Style style;
-  style.fontSize = 50;
+  style.fontSize = 40;
   style.dimensions.x = 300;
   return style;
 }
 
-ui::Button::Style Client::Style::aboutButtonStyle() const {
-  ui::Button::Style style;
-  style.fontSize = 50;
-  return style;
-}
-
 Client::Client() :
-    backButton(style.backButtonOffset, style.backButtonText,
-               style.backButtonStyle()),
-    quitButton(style.quitButtonOffset, "", style.quitButtonStyle()),
+    quitButton(style.quitButtonOffset, style.quitButtonText,
+               style.highButtonStyle()),
     aboutButton(style.aboutButtonOffset, style.aboutButtonText,
-                style.aboutButtonStyle()),
+                style.highButtonStyle()),
+    closeButton(style.closeButtonOffset, style.closeButtonText,
+                style.lowButtonStyle()),
+    backButton(style.backButtonOffset, style.backButtonText,
+               style.lowButtonStyle()),
 
     shared(this),
     homePage(shared),
@@ -112,9 +110,10 @@ void Client::tick(float delta) {
   }
 
   forAllPages([&delta](Page &page) { page.tick(delta); });
-  backButton.tick(delta);
   quitButton.tick(delta);
   aboutButton.tick(delta);
+  backButton.tick(delta);
+  closeButton.tick(delta);
 }
 
 void Client::render(ui::Frame &f) {
@@ -139,7 +138,9 @@ void Client::render(ui::Frame &f) {
 
     f.withAlpha(
         linearTween(1, 0, gameFocusFactor) *
-            (gameUnderneath ? linearTween(0.5, 1, pageFocusFactor) : 1),
+            (gameUnderneath ? linearTween(style.menuInGameFade, 1,
+                                          pageFocusFactor) :
+             1),
         [&]() {
           pageRects = {}; // populated by drawPage(), used as the click rects
           // for event handling (TODO: potentially remove, if the actually
@@ -156,8 +157,7 @@ void Client::render(ui::Frame &f) {
               f, PageType::Settings,
               style.settingsOffset, "settings", settingsPage);
 
-          quitButton.text = gameUnderneath ? style.quitGameText :
-                            style.quitAppText;
+          if (gameUnderneath) closeButton.render(f);
           f.withAlpha(linearTween(1, 0, pageFocusFactor),
                       [&]() {
                         // buttons that fade out as the page focuses
@@ -179,6 +179,10 @@ bool Client::handle(const sf::Event &event) {
     if (shared.game->handle(event)) return true;
   }
 
+  if (shared.game and (shared.ui.menuFocused() or shared.ui.pageFocused())) {
+    if (closeButton.handle(event)) return true;
+  }
+
   if (shared.ui.pageFocused()) {
     // page is focused
     if (backButton.handle(event)) return true;
@@ -188,14 +192,10 @@ bool Client::handle(const sf::Event &event) {
   if (event.type == sf::Event::KeyPressed
       and event.key.code == sf::Keyboard::Escape) {
     // the escape key is pressed
-    if (shared.ui.gameFocused()) {
-      blurGame();
-      return true;
-    }
-
-    if (!shared.ui.menuFocused()) {
-      blurPage();
-    } else focusGame();
+    if (shared.game) {
+      if (shared.ui.gameFocused()) blurGame();
+      else focusGame();
+    } else if (shared.ui.pageFocused()) blurPage();
     return true;
   }
 
@@ -243,6 +243,10 @@ void Client::signalRead() {
   if (aboutButton.clickSignal) {
     appLog("about message");
   }
+
+  if (closeButton.clickSignal) {
+    exitGame();
+  }
 }
 
 void Client::signalClear() {
@@ -254,12 +258,14 @@ void Client::signalClear() {
   backButton.signalClear();
   quitButton.signalClear();
   aboutButton.signalClear();
+  closeButton.signalClear();
 }
 
 void Client::resetUI() {
   backButton.reset();
   quitButton.reset();
   aboutButton.reset();
+  closeButton.reset();
 }
 
 void Client::beginGame(std::unique_ptr<Game> &&game) {
@@ -273,9 +279,8 @@ void Client::exitGame() {
 }
 
 void Client::focusGame() {
-  resetUI();
   if (shared.game) {
-    blurPage();
+    resetUI();
     shared.ui.focusGame();
     shared.game->onFocus();
   }

@@ -28,6 +28,7 @@ struct Player {
 
   PID pid;
   std::string nickname;
+  bool admin;
 
   bool operator==(const Player &record); // are PIDs equal?
 };
@@ -37,7 +38,8 @@ struct Player {
 static const tg::Pack<Player> playerPack =
     tg::ClassPack<Player>(
         member(PID, pid, pidPack),
-        member(std::string, nickname, tg::stringPack)
+        member(std::string, nickname, tg::stringPack),
+        member(bool, admin, tg::boolPack)
     );
 #undef member
 
@@ -49,17 +51,29 @@ struct PlayerDelta {
   PlayerDelta(const optional<std::string> &nickname);
 
   optional<std::string> nickname; // exists if nickname changed
-
-  // ... potentially other things ...
+  optional<bool> admin; // exists if admin state changed
 };
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<PlayerDelta, TYPE>(RULE, &PlayerDelta::PTR)
 static const tg::Pack<PlayerDelta> playerDeltaPack =
     tg::ClassPack<PlayerDelta>(
-        member(optional<std::string>, nickname, tg::optStringPack)
+        member(optional<std::string>, nickname, tg::optStringPack),
+        member(optional<bool>, admin, tg::OptionalPack<bool>(tg::boolPack))
     );
 #undef member
+
+/**
+ * ArenaMode: the mode of the arena.
+ */
+enum class ArenaMode {
+  Lobby, // lobby, to make teams
+  Game, // playing game
+  Score // viewing game results
+};
+
+static const tg::Pack<ArenaMode> arenaModePack =
+    tg::EnumPack<ArenaMode>(2);
 
 /**
  * The data a client needs when jumping into an arena. Further changes are
@@ -68,8 +82,17 @@ static const tg::Pack<PlayerDelta> playerDeltaPack =
 struct ArenaInitializer {
   ArenaInitializer(); // for unpacking
 
+  /**
+   * Initialize persistent data.
+   */
   std::vector<Player> playerRecords;
   std::string motd;
+
+  /**
+   * Initialize mode.
+   */
+  ArenaMode mode;
+  optional<SkyInitializer> skyInitializer;
 };
 
 #define member(TYPE, PTR, RULE) \
@@ -79,7 +102,8 @@ static const tg::Pack<ArenaInitializer> arenaInitializerPack =
         tg::MemberRule<ArenaInitializer, std::vector<Player>>(
             tg::VectorPack<Player>(playerPack),
             &ArenaInitializer::playerRecords),
-        member(std::string, motd, tg::stringPack)
+        member(std::string, motd, tg::stringPack),
+        member(ArenaMode, mode, arenaModePack)
     );
 #undef member
 
@@ -89,11 +113,17 @@ static const tg::Pack<ArenaInitializer> arenaInitializerPack =
 struct ArenaDelta {
   ArenaDelta(); // for unpacking
 
-  // exactly one of these is non-null
+  // delta in the players list: at most one of these exists
   optional<PID> playerQuit;
   optional<Player> playerJoin;
+
+  // deltas in the persistent state
   optional<std::pair<PID, PlayerDelta>> playerDelta;
   optional<std::string> motdDelta;
+
+  // mode delta, with potentially necessary mode initialization
+  optional<ArenaMode> arenaMode;
+  optional<SkyInitializer> skyInitializer; // if the game started
 };
 
 #define member(TYPE, PTR, RULE) \
@@ -106,10 +136,13 @@ static const tg::Pack<ArenaDelta> arenaDeltaPack =
         tg::MemberRule<ArenaDelta, optional<std::pair<PID, PlayerDelta>>>(
             tg::OptionalPack<std::pair<PID, PlayerDelta>>(
                 tg::PairPack<PID, PlayerDelta>(pidPack, playerDeltaPack)),
-            // oh boy
             &ArenaDelta::playerDelta
         ),
-        member(optional<std::string>, motdDelta, tg::optStringPack)
+        member(optional<std::string>, motdDelta, tg::optStringPack),
+        member(optional<ArenaMode>, arenaMode,
+               tg::OptionalPack<ArenaMode>(arenaModePack)),
+        member(optional<SkyInitializer>, skyInitializer,
+               tg::OptionalPack<SkyInitializer>(skyInitializerPack))
     );
 #undef member
 
@@ -122,12 +155,23 @@ class Arena {
   Arena(const ArenaInitializer &initializer);
 
   /**
-   * Data.
+   * Persistent state.
    */
   std::list<Player> players;
   std::string motd; // the arena MotD
 
-  // ... sky instantiation data ...
+  /**
+   * Modal state.
+   */
+  enum class Mode {
+    Lobby, Game, Score
+  } mode;
+
+  /**
+   * Game-specific state.
+   */
+  std::string nextMap;
+  optional<Sky> sky;
 
   /**
    * Shared API.
