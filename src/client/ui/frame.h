@@ -82,7 +82,8 @@ public:
                 const sf::Color &color = {});
 
   void drawText(const sf::Vector2f &pos,
-                const std::vector<std::string> &contents, const int size = 24,
+                const std::vector<std::string> &contents, // TODO: use iterators
+                const int size = 24,
                 const sf::Color &color = sf::Color::White,
                 const sf::Font &font = fontOf(Res::Font),
                 const sf::Text::Style &style = sf::Text::Regular);

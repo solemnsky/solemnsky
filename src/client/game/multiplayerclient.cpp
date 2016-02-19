@@ -179,7 +179,7 @@ void MultiplayerClient::render(ui::Frame &f) {
     for (sky::Player &player : arena->players)
       players.push_back(player.nickname);
 
-    f.drawText({20, 500}, players);
+    f.drawText({500, 20}, players);
   }
 }
 
