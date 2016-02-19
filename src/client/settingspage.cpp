@@ -67,5 +67,5 @@ void SettingsPage::signalRead() {
 }
 
 void SettingsPage::signalClear() {
-
+  nicknameChooser.signalClear();
 }

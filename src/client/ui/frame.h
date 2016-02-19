@@ -17,7 +17,7 @@ class Control;
 class Frame {
   friend void runSFML(std::function<std::unique_ptr<Control>()> initCtrl);
 
-private:
+ private:
   std::stack<sf::Transform> transformStack;
   std::stack<float> alphaStack;
 
@@ -30,7 +30,7 @@ private:
   void endDraw();
   void resize();
 
-public:
+ public:
   Frame(sf::RenderWindow &window);
 
   sf::RenderWindow &window; // might be useful for some settings sometimes
@@ -81,8 +81,16 @@ public:
   void drawRect(const sf::Vector2f &topLeft, const sf::Vector2f &bottomRight,
                 const sf::Color &color = {});
 
+  template<typename Iterator>
   void drawText(const sf::Vector2f &pos,
-                const std::vector<std::string> &contents, // TODO: use iterators
+                const Iterator beginString,
+                const Iterator endString,
+                const int size = 24,
+                const sf::Color &color = sf::Color::White,
+                const sf::Font &font = fontOf(Res::Font),
+                const sf::Text::Style &style = sf::Text::Regular);
+  void drawText(const sf::Vector2f &pos,
+                std::initializer_list<std::string> strings,
                 const int size = 24,
                 const sf::Color &color = sf::Color::White,
                 const sf::Font &font = fontOf(Res::Font),
@@ -95,5 +103,33 @@ public:
   sf::Vector2f textSize(const std::string contents, const int size = 24,
                         const sf::Font &font = fontOf(Res::Font));
 };
+
+template<typename Iterator>
+void Frame::drawText(const sf::Vector2f &pos,
+                     const Iterator beginString,
+                     const Iterator endString,
+                     const int size,
+                     const sf::Color &color,
+                     const sf::Font &font,
+                     const sf::Text::Style &style) {
+  float yOffset = 0;
+
+  for (Iterator i = beginString; i != endString; i++) {
+    const std::string &string = *i;
+
+    primCount++;
+    sf::Text text;
+    text.setFont(font);
+    text.setPosition(pos + sf::Vector2f(0, yOffset));
+    text.setString(string);
+    text.setCharacterSize((unsigned int) size);
+    text.setColor(alphaScaleColor(color));
+    text.setStyle(style);
+    window.draw(text, transformStack.top());
+
+    yOffset += textSize(string, size, font).y;
+  }
+}
+
 }
 #endif //SOLEMNSKY_FRAME_H

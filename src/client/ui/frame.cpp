@@ -122,26 +122,12 @@ void Frame::drawRect(const sf::Vector2f &topLeft,
 }
 
 void Frame::drawText(const sf::Vector2f &pos,
-                     const std::vector<std::string> &contents,
+                     const std::initializer_list<std::string> strings,
                      const int size,
                      const sf::Color &color,
                      const sf::Font &font,
                      const sf::Text::Style &style) {
-  float yOffset = 0;
-
-  for (const auto &string : contents) {
-    primCount++;
-    sf::Text text;
-    text.setFont(font);
-    text.setPosition(pos + sf::Vector2f(0, yOffset));
-    text.setString(string);
-    text.setCharacterSize((unsigned int) size);
-    text.setColor(alphaScaleColor(color));
-    text.setStyle(style);
-    window.draw(text, transformStack.top());
-
-    yOffset += textSize(string, size, font).y;
-  }
+  drawText(pos, strings.begin(), strings.end(), size, color, font, style);
 }
 
 void Frame::drawSprite(const sf::Texture &texture,
@@ -165,5 +151,4 @@ sf::Vector2f Frame::textSize(const std::string contents, const int size,
   const auto bounds = text.getLocalBounds();
   return sf::Vector2f(bounds.width, size); // bounds.height);
 }
-
 }

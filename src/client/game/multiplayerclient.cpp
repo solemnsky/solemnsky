@@ -1,4 +1,6 @@
 #include "multiplayerclient.h"
+
+#include "boost/iterator/function_input_iterator.hpp"
 #include "util/methods.h"
 
 MultiplayerClient::MultiplayerClient(ClientShared &state,
@@ -174,12 +176,13 @@ void MultiplayerClient::render(ui::Frame &f) {
     f.drawText({400, 400}, {"Disconnecting..."}, 60, sf::Color::White);
   }
 
+
   if (server and arena) {
     std::vector<std::string> players;
     for (sky::Player &player : arena->players)
       players.push_back(player.nickname);
-
-    f.drawText({500, 20}, players);
+    f.drawText({500, 20}, players.begin(), players.end());
+    // TODO: don't copy strings
   }
 }
 
