@@ -36,9 +36,9 @@
           borderopacity="1.0"
           inkscape:pageopacity="0.0"
           inkscape:pageshadow="2"
-          inkscape:zoom="0.64"
-          inkscape:cx="2594.6838"
-          inkscape:cy="1773.8006"
+          inkscape:zoom="0.16"
+          inkscape:cx="1993.4055"
+          inkscape:cy="-537.17835"
           inkscape:document-units="px"
           inkscape:current-layer="layer1"
           showgrid="false"
@@ -47,7 +47,7 @@
           inkscape:window-height="1017"
           inkscape:window-x="-8"
           inkscape:window-y="-8"
-          inkscape:window-maximized="1" />
+          inkscape:window-maximized="1"/>
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -64,19 +64,183 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <text
+       transform="matrix(0.99947793,-0.032309,0.032309,0.99947793,0,0)"
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:45.57533646px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-146.19717"
+       y="106.30598"
+       id="text4354-3"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4356-2"
+         x="-146.19717"
+         y="106.30598" /></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="3678.2693"
+       y="337.2085"
+       id="text4384"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4386"
+         x="3678.2693"
+         y="337.2085">title.png</tspan></text>
+    <rect
+            style="opacity:1;fill:#889cff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none"
+            id="rect4160"
+            width="1600"
+            height="900"
+            x="2989.1189"
+            y="381.89331"/>
+    <text
+       transform="matrix(0.99947793,-0.032309,0.032309,0.99947793,0,0)"
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:165.20075989px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="3389.2849"
+       y="976.93646"
+       id="text4156"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4158"
+         x="3389.2849"
+         y="976.93646">SolemnSky</tspan></text>
+    <text
+       transform="matrix(0.99947793,-0.032309,0.032309,0.99947793,0,0)"
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:79.79875183px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#eaeaea;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="3581.9297"
+       y="1038.0809"
+       id="text4354"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4356"
+         x="3581.9297"
+         y="1038.0809">development preview</tspan></text>
+    <g
+            id="g4435"
+            transform="translate(2838.8587,238.3699)">
+      <rect
+         y="1346.1122"
+         x="156.24998"
+         height="900"
+         width="1600"
+         id="rect4160-0"
+         style="opacity:1;fill:#818181;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4156-4"
+         y="1672.2678"
+         x="34.951935"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:364.05239868px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"
+         transform="matrix(0.99718158,-0.07502598,0.07502598,0.99718158,0,0)"><tspan
+           y="1672.2678"
+           x="34.951935"
+           id="tspan4158-8"
+           sodipodi:role="line">SolemnSky</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4354-5"
+         y="1731.8308"
+         x="1028.1838"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:79.79875183px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#c1c1c1;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"
+         transform="matrix(0.99723161,-0.07435807,0.07435807,0.99723161,0,0)"><tspan
+           y="1731.8308"
+           x="1028.1838"
+           id="tspan4356-4"
+           sodipodi:role="line">[development preview]</tspan></text>
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="3685.9939"
+       y="1503.7681"
+       id="text4699"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4701"
+         x="3685.9939"
+         y="1503.7681">menubackground.png</tspan></text>
+    <rect
+            style="opacity:1;fill:#889cff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none"
+            id="rect4160-4"
+            width="1600"
+            height="900"
+            x="4998.2339"
+            y="1096.9819"/>
+    <text
+       transform="matrix(0.99718158,-0.07502598,0.07502598,0.99718158,0,0)"
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:364.05239868px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="4881.98"
+       y="1787.1144"
+       id="text4156-4-2"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4158-8-6"
+         x="4881.98"
+         y="1787.1144">SolemnSky</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="5695.1089"
+       y="1037.6069"
+       id="text4240"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4242"
+         x="5695.1089"
+         y="1037.6069">credits.png</tspan></text>
+    <text
+       transform="matrix(0.99723161,-0.07435807,0.07435807,0.99723161,0,0)"
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:116.14476013px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="5063.752"
+       y="1865.5833"
+       id="text4354-5-6-5"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4356-4-6-9"
+         x="5063.752"
+         y="1865.5833">competitive multiplayer 2d planes</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="1629.5969"
+       y="-116.89513"
+       id="text4343"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4345"
+         x="1629.5969"
+         y="-116.89513">layout schema:</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="5276.3589"
+       y="1631.3569"
+       id="text4431"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4433"
+         x="5276.3589"
+         y="1631.3569">[credits go here once solemnsky is something to be proud of]</tspan></text>
     <g
             inkscape:export-ydpi="90"
             inkscape:export-xdpi="90"
             inkscape:export-filename="C:\Users\Chris\ClionProjects\solemnsky\media\render-2d\title.png"
             id="g4253-3"
-            transform="translate(2596.8156,-1230.5775)">
+            transform="translate(631.1906,1459.5783)">
       <rect
               y="14.189685"
               x="-631.19061"
               height="900"
               width="1600"
               id="rect4160-3"
-              style="opacity:1;fill:#889cff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none" />
+              style="opacity:1;fill:#889cff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none"/>
       <text
          sodipodi:linespacing="125%"
          id="text4156-8"
@@ -103,7 +267,7 @@
            sodipodi:role="line">development preview</tspan></text>
     </g>
     <g
-            transform="translate(1809.375,-2562.5)"
+            transform="translate(-156.25,127.6558)"
             id="g4435-0">
       <rect
               y="1346.1122"
@@ -137,172 +301,9 @@
            id="tspan4356-4-6"
            sodipodi:role="line">[development preview]</tspan></text>
     </g>
-    <text
-       transform="matrix(0.99947793,-0.032309,0.032309,0.99947793,0,0)"
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:45.57533646px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="-146.19717"
-       y="106.30598"
-       id="text4354-3"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4356-2"
-         x="-146.19717"
-         y="106.30598" /></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="689.15039"
-       y="107.6776"
-       id="text4384"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4386"
-         x="689.15039"
-         y="107.6776">title.png</tspan></text>
-    <rect
-            style="opacity:1;fill:#889cff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none"
-            id="rect4160"
-            width="1600"
-            height="900"
-            x="-2.7929686e-006"
-            y="152.3622"/>
-    <text
-       transform="matrix(0.99947793,-0.032309,0.032309,0.99947793,0,0)"
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:165.20075989px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="409.14243"
-       y="650.94971"
-       id="text4156"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4158"
-         x="409.14243"
-         y="650.94971">SolemnSky</tspan></text>
-    <text
-       transform="matrix(0.99947793,-0.032309,0.032309,0.99947793,0,0)"
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:79.79875183px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#eaeaea;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
-       x="601.78717"
-       y="712.0943"
-       id="text4354"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4356"
-         x="601.78717"
-         y="712.0943">development preview</tspan></text>
-    <g
-            id="g4435">
-      <rect
-         y="1346.1122"
-         x="156.24998"
-         height="900"
-         width="1600"
-         id="rect4160-0"
-         style="opacity:1;fill:#818181;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none" />
-      <text
-         sodipodi:linespacing="125%"
-         id="text4156-4"
-         y="1672.2678"
-         x="34.951935"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:364.05239868px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"
-         transform="matrix(0.99718158,-0.07502598,0.07502598,0.99718158,0,0)"><tspan
-           y="1672.2678"
-           x="34.951935"
-           id="tspan4158-8"
-           sodipodi:role="line">SolemnSky</tspan></text>
-      <text
-         sodipodi:linespacing="125%"
-         id="text4354-5"
-         y="1731.8308"
-         x="1028.1838"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:79.79875183px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#c1c1c1;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
-         xml:space="preserve"
-         transform="matrix(0.99723161,-0.07435807,0.07435807,0.99723161,0,0)"><tspan
-           y="1731.8308"
-           x="1028.1838"
-           id="tspan4356-4"
-           sodipodi:role="line">[development preview]</tspan></text>
-    </g>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="696.875"
-       y="1274.2372"
-       id="text4699"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4701"
-         x="696.875"
-         y="1274.2372">menubackground.png</tspan></text>
-    <rect
-            style="opacity:1;fill:#889cff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none"
-            id="rect4160-4"
-            width="1600"
-            height="900"
-            x="2159.375"
-            y="858.61218"/>
-    <text
-       transform="matrix(0.99718158,-0.07502598,0.07502598,0.99718158,0,0)"
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:364.05239868px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="2069.0063"
-       y="1336.4282"
-       id="text4156-4-2"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4158-8-6"
-         x="2069.0063"
-         y="1336.4282">SolemnSky</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="2856.25"
-       y="799.23718"
-       id="text4240"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4242"
-         x="2856.25"
-         y="799.23718">credits.png</tspan></text>
-    <text
-       transform="matrix(0.99723161,-0.07435807,0.07435807,0.99723161,0,0)"
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:116.14476013px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="2250.4771"
-       y="1416.7811"
-       id="text4354-5-6-5"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4356-4-6-9"
-         x="2250.4771"
-         y="1416.7811">competitive multiplayer 2d planes</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="2478.125"
-       y="-1310.1378"
-       id="text4343"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4345"
-         x="2478.125"
-         y="-1310.1378">layout schema:</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="2437.5"
-       y="1392.9872"
-       id="text4431"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4433"
-         x="2437.5"
-         y="1392.9872">[credits go here once solemnsky is something to be proud of]</tspan></text>
     <g
             id="g4616"
-            transform="translate(21.874985,1.625015)">
+            transform="translate(-1943.75,2691.7807)">
       <rect
               y="-1094.5128"
               x="2493.75"
@@ -323,18 +324,18 @@
             id="rect4534"
             width="200"
             height="50"
-            x="2148.4375"
-            y="-977.26282"/>
+            x="182.8125"
+            y="1712.8929"/>
     <rect
             style="fill:#000fd2;fill-opacity:1"
             id="rect4534-6"
             width="200"
             height="50"
-            x="3182.8125"
-            y="-977.26282"/>
+            x="1217.1875"
+            y="1712.8929"/>
     <g
             id="g4489-9"
-            transform="matrix(0.3125,0,0,0.3125,1961.1328,-187.04787)">
+            transform="matrix(0.3125,0,0,0.3125,-4.4922,2503.1078)">
       <g
               id="g4612"
               transform="translate(190,0)">
@@ -356,7 +357,7 @@
     </g>
     <g
             id="g4489-0"
-            transform="matrix(0.3125,0,0,0.3125,2754.8828,-187.04787)">
+            transform="matrix(0.3125,0,0,0.3125,789.2578,2503.1078)">
       <rect
               y="-1703.8877"
               x="409.375"
@@ -372,5 +373,171 @@
               id="rect4487-2"
               style="fill:#000000;fill-opacity:1"/>
     </g>
+    <rect
+            style="fill:#000fd2;fill-opacity:1"
+            id="rect4534-2"
+            width="200"
+            height="50"
+            x="332.8125"
+            y="2323.1516"/>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="331.16602"
+       y="2357.4099"
+       id="text4201"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4203"
+         x="331.16602"
+         y="2357.4099">closeButton</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:28.50232887px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="178.63892"
+       y="1742.2942"
+       id="text4201-0"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4203-0"
+         x="178.63892"
+         y="1742.2942">quitButton</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:28.50232887px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="1262.6831"
+       y="1748.4825"
+       id="text4201-0-0"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4203-0-0"
+         x="1262.6831"
+         y="1748.4825">aboutButton</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="675"
+       y="1764.3929"
+       id="text4505"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4507"
+         x="675"
+         y="1764.3929">listing</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="412.12891"
+       y="2141.0825"
+       id="text4505-1"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4507-0"
+         x="412.12891"
+         y="2141.0825">home</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="1059.375"
+       y="2142.5181"
+       id="text4527"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4529"
+         x="1059.375"
+         y="2142.5181">settings</tspan></text>
+    <g
+            id="g4646"
+            transform="translate(-2069.733,19.441306)">
+      <g
+              id="g4435-0-0"
+              transform="translate(1913.483,-1213.1913)">
+        <rect
+                style="opacity:1;fill:#818181;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none"
+                id="rect4160-0-8-5"
+                width="1600"
+                height="900"
+                x="156.24998"
+                y="1346.1122"/>
+        <text
+           transform="matrix(0.99718158,-0.07502598,0.07502598,0.99718158,0,0)"
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:364.05239868px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           x="34.951935"
+           y="1672.2678"
+           id="text4156-4-9-2"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan4158-8-2-8"
+             x="34.951935"
+             y="1672.2678">SolemnSky</tspan></text>
+        <text
+           transform="matrix(0.99723161,-0.07435807,0.07435807,0.99723161,0,0)"
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:79.79875183px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#c1c1c1;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           x="1028.1838"
+           y="1731.8308"
+           id="text4354-5-6-3"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan4356-4-6-1"
+             x="1028.1838"
+             y="1731.8308">[development preview]</tspan></text>
+      </g>
+    </g>
+    <rect
+            style="fill:#000fd2;fill-opacity:1"
+            id="rect4534-2-5"
+            width="200"
+            height="50"
+            x="332.81244"
+            y="997.74573"/>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="331.16595"
+       y="1036.004"
+       id="text4201-07"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4203-4"
+         x="331.16595"
+         y="1036.004">closeButton</tspan></text>
+    <rect
+            style="fill:#000fd2;fill-opacity:1"
+            id="rect4534-2-6-5"
+            width="200"
+            height="50"
+            x="1067.1874"
+            y="1002.3622"/>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="1065.5409"
+       y="1040.6205"
+       id="text4201-85-3"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4203-5-8"
+         x="1065.5409"
+         y="1040.6205">backButton</tspan></text>
+    <rect
+            style="fill:#ffffff;fill-opacity:1"
+            id="rect4346"
+            width="1400"
+            height="700"
+            x="99.999924"
+            y="252.36218"/>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:161.04896545px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="643.79388"
+       y="668.60651"
+       id="text4531"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4533"
+         x="643.79388"
+         y="668.60651">contents</tspan></text>
   </g>
 </svg>
