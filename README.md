@@ -21,12 +21,12 @@ After due consideration, we've chosen C++ as our language de résistance.
  
 ## roadmap
 
-LOC is the only true quantifier of project growth; therefore all roadmapping 
+LOC is the only honest quantifier of project growth; therefore all roadmapping 
  and growth extrapolation will be metricized in LOC and its derivatives. 
  Teeworlds (a comparable game written in a comparable source) has ~48,000 LOC;
- after due calculation, I'm aiming for a solid release of solemnsky at 
- ~30,000 LOC. I'm frightened to extrapolate solemnsky's release date 
- from this.
+ after due ~~hopeful guessing~~ calculation, I'm aiming for a solid release of 
+ solemnsky at ~30,000 LOC. Extrapolation is possible, but probably 
+ disheartening.
  
 ## licensing and credits
 
