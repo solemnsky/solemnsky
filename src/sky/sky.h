@@ -64,17 +64,7 @@ struct SkyInitializer {
   std::map<PID, Plane> planes; // planes already in the arena
 };
 
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<SkyInitializer, TYPE>(RULE, &SkyInitializer::PTR)
-const static tg::Pack<SkyInitializer> skyInitializerPack =
-    tg::ClassPack<SkyInitializer>(
-        member(MapName, mapName, tg::stringPack),
-        tg::MemberRule<SkyInitializer, std::map<PID, Plane>>(
-            tg::MapPack<PID, Plane>(pidPack, planePack),
-            &SkyInitializer::planes
-        )
-    );
-#undef member
+extern const tg::Pack<SkyInitializer> skyInitializerPack;
 
 /**
  * Changes that happened in a sky.

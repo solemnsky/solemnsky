@@ -53,55 +53,7 @@ struct PlaneTuning {
   float throttleSpeed = 1.5;
 };
 
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<PlaneTuning::Energy, TYPE>(RULE, &PlaneTuning::Energy::PTR)
-const static tg::Pack<PlaneTuning::Energy> planeTuningEnergyPack =
-    tg::ClassPack<PlaneTuning::Energy>(
-        member(float, thrustDrain, tg::floatPack),
-        member(float, recharge, tg::floatPack),
-        member(float, laserGun, tg::floatPack)
-    );
-#undef member
-
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<PlaneTuning::Stall, TYPE>(RULE, &PlaneTuning::Stall::PTR)
-const static tg::Pack<PlaneTuning::Stall> planeTuningStallPack =
-    tg::ClassPack<PlaneTuning::Stall>(
-        member(float, maxRotVel, tg::floatPack),
-        member(float, maxVel, tg::floatPack),
-        member(float, thrust, tg::floatPack),
-        member(float, damping, tg::floatPack),
-        member(float, threshold, tg::floatPack)
-    );
-#undef member
-
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<PlaneTuning::Flight, TYPE>(RULE, &PlaneTuning::Flight::PTR)
-const static tg::Pack<PlaneTuning::Flight> planeTuningFlightPack =
-    tg::ClassPack<PlaneTuning::Flight>(
-        member(float, maxRotVel, tg::floatPack),
-        member(float, airspeedFactor, tg::floatPack),
-        member(float, throttleInfluence, tg::floatPack),
-        member(float, throttleBreaking, tg::floatPack),
-        member(float, gravityEffect, tg::floatPack),
-        member(float, gravityEffect, tg::floatPack),
-        member(float, afterburnDrive, tg::floatPack),
-        member(float, leftoverDamping, tg::floatPack),
-        member(float, threshold, tg::floatPack)
-    );
-#undef member
-
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<PlaneTuning, TYPE>(RULE, &PlaneTuning::PTR)
-const static tg::Pack<PlaneTuning> planeTuningPack =
-    tg::ClassPack<PlaneTuning>(
-        member(sf::Vector2f, hitbox, tg::vectorPack),
-        member(PlaneTuning::Energy, energy, planeTuningEnergyPack),
-        member(PlaneTuning::Stall, stall, planeTuningStallPack),
-        member(PlaneTuning::Flight, flight, planeTuningFlightPack),
-        member(float, throttleSpeed, tg::floatPack)
-    );
-#undef member
+extern const tg::Pack<PlaneTuning> planeTuningPack;
 
 /**
  * State specific to a plane that is spawned, everything in here is expected
@@ -145,25 +97,7 @@ struct PlaneVital {
   float requestEnergy(const float reqEnergy);
 };
 
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<PlaneVital, TYPE>(RULE, &PlaneVital::PTR)
-const static tg::Pack<PlaneVital> planeVitalPack =
-    tg::ClassPack<PlaneVital>(
-        member(Clamped, rotCtrl, tg::clampedPack),
-        member(Movement, throtCtrl, tg::movementPack),
-        member(sf::Vector2f, pos, tg::vectorPack),
-        member(sf::Vector2f, vel, tg::vectorPack),
-        member(Angle, rot, tg::anglePack),
-        member(float, rotvel, tg::floatPack),
-        member(bool, stalled, tg::boolPack),
-        member(Clamped, afterburner, tg::clampedPack),
-        member(sf::Vector2f, leftoverVel, tg::vectorPack),
-        member(Clamped, airspeed, tg::clampedPack),
-        member(Clamped, throttle, tg::clampedPack),
-        member(Clamped, energy, tg::clampedPack),
-        member(Clamped, health, tg::clampedPack)
-    );
-#undef member
+extern const tg::Pack<PlaneVital> planeVitalPack;
 
 /**
  * A plane, expressed in a simple (copyable etc.) struct.
@@ -178,15 +112,7 @@ struct Plane {
   optional<PlaneVital> vital; // exists <=> plane is spawned
 };
 
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<Plane, TYPE>(RULE, &Plane::PTR)
-const static tg::Pack<Plane> planePack =
-    tg::ClassPack<Plane>(
-        member(PlaneTuning, tuning, planeTuningPack),
-        member(optional<PlaneVital>, vital,
-               tg::OptionalPack<PlaneVital>(planeVitalPack))
-    );
-#undef member
+extern const tg::Pack<Plane> planePack;
 
 /**
  * Handle for a plane, holds

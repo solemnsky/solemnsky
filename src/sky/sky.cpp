@@ -3,6 +3,26 @@
 
 namespace sky {
 
+/**
+ * SkyInitializer.
+ */
+
+#define member(TYPE, PTR, RULE) \
+  tg::MemberRule<SkyInitializer, TYPE>(RULE, &SkyInitializer::PTR)
+const tg::Pack<SkyInitializer> skyInitializerPack =
+    tg::ClassPack<SkyInitializer>(
+        member(MapName, mapName, tg::stringPack),
+        tg::MemberRule<SkyInitializer, std::map<PID, Plane>>(
+            tg::MapPack<PID, Plane>(pidPack, planePack),
+            &SkyInitializer::planes
+        )
+    );
+#undef member
+
+/**
+ * Sky.
+ */
+
 Sky::Sky(const Map &map) : map(map), physics(map) {
   CTOR_LOG("sky");
 }
@@ -16,17 +36,9 @@ Sky::~Sky() {
   planes.clear(); // destroy the planes before destroying the physics!
 }
 
-/****
- * Linking subsystems to the engine.
- */
-
 void Sky::linkSystem(Subsystem *subsystem) {
   subsystems.push_back(subsystem);
 }
-
-/****
- * Handling planes.
- */
 
 Plane &Sky::joinPlane(const PID pid) {
   planes.emplace(pid, std::move(PlaneHandle(this)));
@@ -66,10 +78,6 @@ void Sky::killPlane(const PID pid) {
   }
 }
 
-/****
- * Laser guns, cool right?
- */
-
 void Sky::fireLaser(const PID pid) {
   if (auto *state = getPlane(pid)) {
     if (state->vital->requestDiscreteEnergy(0.3)) {
@@ -77,10 +85,6 @@ void Sky::fireLaser(const PID pid) {
     }
   }
 }
-
-/****
- * Simulating.
- */
 
 void Sky::tick(float delta) {
   for (auto &elem : planes) {
