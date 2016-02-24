@@ -293,8 +293,7 @@ struct PairPack: public Pack<std::pair<First, Second>> {
           [firstRule, secondRule]
               (PacketReader &reader, std::pair<First, Second> &pair) -> bool {
             if (!firstRule.unpack(reader, pair.first)) return false;
-            if (!secondRule.unpack(reader, pair.second)) return false;
-            return true;
+            return secondRule.unpack(reader, pair.second);
           }
       ) { }
 };

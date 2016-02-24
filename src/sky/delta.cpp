@@ -18,13 +18,13 @@ void PlaneDelta::apply(Plane &plane) {
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<PlaneDelta, TYPE>(RULE, &PlaneDelta::PTR)
-const tg::Pack<PlaneDelta> planeDeltaPack =
+PlaneDeltaPack::PlaneDeltaPack() :
     tg::ClassPack<PlaneDelta>(
         member(optional<PlaneTuning>, tuningDelta,
-               tg::OptionalPack<PlaneTuning>(planeTuningPack)),
+               tg::OptionalPack<PlaneTuning>(PlaneTuningPack())),
         member(optional<PlaneVital>, vitalDelta,
-               tg::OptionalPack<PlaneVital>(planeVitalPack))
-    );
+               tg::OptionalPack<PlaneVital>(PlaneVitalPack()))
+    ) { }
 #undef member
 
 }

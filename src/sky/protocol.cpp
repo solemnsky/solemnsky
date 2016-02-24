@@ -21,14 +21,14 @@ std::string ClientPacket::dump() const {
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<ClientPacket, TYPE>(RULE, &ClientPacket::PTR)
-const tg::Pack<ClientPacket> clientPacketPack =
+ClientPacketPack::ClientPacketPack() :
     tg::ClassPack<ClientPacket>(
         member(ClientPacket::Type, type,
                tg::EnumPack<ClientPacket::Type>(3)),
         member(optional<std::string>, stringData, tg::optStringPack),
         member(optional<PlayerDelta>, playerDelta,
-               tg::OptionalPack<PlayerDelta>(playerDeltaPack))
-    );
+               tg::OptionalPack<PlayerDelta>(PlayerDeltaPack()))
+    ) { }
 #undef member
 
 /**
@@ -50,17 +50,17 @@ std::string ServerPacket::dump() const {
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<ServerPacket, TYPE>(RULE, &ServerPacket::PTR)
-const tg::Pack<ServerPacket> serverPacketPack =
+ServerPacketPack::ServerPacketPack() :
     tg::ClassPack<ServerPacket>(
         member(ServerPacket::Type, type,
                tg::EnumPack<ServerPacket::Type>(3)),
         member(optional<std::string>, stringData, tg::optStringPack),
         member(optional<PID>, pid, tg::OptionalPack<PID>(pidPack)),
         member(optional<ArenaInitializer>, arenaInitializer,
-               tg::OptionalPack<ArenaInitializer>(arenaInitializerPack)),
+               tg::OptionalPack<ArenaInitializer>(ArenaInitializerPack())),
         member(optional<sky::ArenaDelta>, arenaDelta,
-               tg::OptionalPack<sky::ArenaDelta>(sky::arenaDeltaPack))
-    );
+               tg::OptionalPack<sky::ArenaDelta>(ArenaDeltaPack()))
+    ) { }
 #undef member
 
 }

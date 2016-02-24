@@ -14,7 +14,9 @@ namespace sky {
   tg::MemberRule<PlaneTuning::Energy, TYPE>(RULE, &PlaneTuning::Energy::PTR)
 const static tg::Pack<PlaneTuning::Energy> planeTuningEnergyPack =
     tg::ClassPack<PlaneTuning::Energy>(
-        member(float, thrustDrain, tg::floatPack),
+        member(float,
+               thrustDrain,
+               tg::floatPack),
         member(float, recharge, tg::floatPack),
         member(float, laserGun, tg::floatPack)
     );
@@ -50,14 +52,14 @@ const static tg::Pack<PlaneTuning::Flight> planeTuningFlightPack =
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<PlaneTuning, TYPE>(RULE, &PlaneTuning::PTR)
-const tg::Pack<PlaneTuning> planeTuningPack =
+PlaneTuningPack::PlaneTuningPack() :
     tg::ClassPack<PlaneTuning>(
         member(sf::Vector2f, hitbox, tg::vectorPack),
         member(PlaneTuning::Energy, energy, planeTuningEnergyPack),
         member(PlaneTuning::Stall, stall, planeTuningStallPack),
         member(PlaneTuning::Flight, flight, planeTuningFlightPack),
         member(float, throttleSpeed, tg::floatPack)
-    );
+    ) { }
 #undef member
 
 /**
@@ -113,7 +115,7 @@ float PlaneVital::requestEnergy(const float reqEnergy) {
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<PlaneVital, TYPE>(RULE, &PlaneVital::PTR)
-const tg::Pack<PlaneVital> planeVitalPack =
+PlaneVitalPack::PlaneVitalPack() :
     tg::ClassPack<PlaneVital>(
         member(Clamped, rotCtrl, tg::clampedPack),
         member(Movement, throtCtrl, tg::movementPack),
@@ -128,7 +130,7 @@ const tg::Pack<PlaneVital> planeVitalPack =
         member(Clamped, throttle, tg::clampedPack),
         member(Clamped, energy, tg::clampedPack),
         member(Clamped, health, tg::clampedPack)
-    );
+    ) { }
 #undef member
 
 /**
@@ -137,14 +139,13 @@ const tg::Pack<PlaneVital> planeVitalPack =
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<Plane, TYPE>(RULE, &Plane::PTR)
-const tg::Pack<Plane> planePack =
+PlanePack::PlanePack() :
     tg::ClassPack<Plane>(
-        member(PlaneTuning, tuning, planeTuningPack),
+        member(PlaneTuning, tuning, PlaneTuningPack()),
         member(optional<PlaneVital>, vital,
-               tg::OptionalPack<PlaneVital>(planeVitalPack))
-    );
+               tg::OptionalPack<PlaneVital>(PlaneVitalPack()))
+    ) { }
 #undef member
-
 
 /****
  * PlaneHandle.
