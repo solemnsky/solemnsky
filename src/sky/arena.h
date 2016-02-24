@@ -33,7 +33,9 @@ struct Player {
   bool operator==(const Player &record); // are PIDs equal?
 };
 
-extern const tg::Pack<Player> playerPack;
+struct PlayerPack: public tg::ClassPack<Player> {
+  PlayerPack();
+};
 
 /**
  * A change in a Player.
@@ -46,7 +48,9 @@ struct PlayerDelta {
   optional<bool> admin; // exists if admin state changed
 };
 
-extern const tg::Pack<PlayerDelta> playerDeltaPack;
+struct PlayerDeltaPack: public tg::ClassPack<PlayerDelta> {
+  PlayerDeltaPack();
+};
 
 /**
  * ArenaMode: the mode of the arena.
@@ -80,7 +84,9 @@ struct ArenaInitializer {
   optional<SkyInitializer> skyInitializer;
 };
 
-extern const tg::Pack<ArenaInitializer> arenaInitializerPack;
+struct ArenaInitializerPack: public tg::ClassPack<ArenaInitializer> {
+  ArenaInitializerPack();
+};
 
 /**
  * A change that occurred in an Arena.
@@ -101,7 +107,9 @@ struct ArenaDelta {
   optional<SkyInitializer> skyInitializer; // if the game started
 };
 
-extern const tg::Pack<ArenaDelta> arenaDeltaPack;
+struct ArenaDeltaPack: public tg::ClassPack<ArenaDelta> {
+  ArenaDeltaPack();
+};
 
 /**
  * Arena.

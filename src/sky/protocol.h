@@ -41,7 +41,9 @@ struct ClientPacket {
   std::string dump() const;
 };
 
-extern const tg::Pack<ClientPacket> clientPacketPack;
+struct ClientPacketPack: public tg::ClassPack<ClientPacket> {
+  ClientPacketPack();
+};
 
 struct ClientPing: public ClientPacket {
   ClientPing() : ClientPacket(ClientPacket::Type::Ping) { }
@@ -96,7 +98,9 @@ struct ServerPacket {
   std::string dump() const;
 };
 
-extern const tg::Pack<ServerPacket> serverPacketPack;
+struct ServerPacketPack: public tg::ClassPack<ServerPacket> {
+  ServerPacketPack();
+};
 
 struct ServerPong: public ServerPacket {
   ServerPong() : ServerPacket(ServerPacket::Type::Pong) { }

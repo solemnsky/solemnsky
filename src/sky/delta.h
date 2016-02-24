@@ -22,7 +22,9 @@ struct PlaneDelta {
   void apply(Plane &plane);
 };
 
-extern const tg::Pack<PlaneDelta> planeDeltaPack;
+struct PlaneDeltaPack: public tg::ClassPack<PlaneDelta> {
+  PlaneDeltaPack();
+};
 
 }
 

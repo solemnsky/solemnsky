@@ -53,7 +53,9 @@ struct PlaneTuning {
   float throttleSpeed = 1.5;
 };
 
-extern const tg::Pack<PlaneTuning> planeTuningPack;
+struct PlaneTuningPack: public tg::ClassPack<PlaneTuning> {
+  PlaneTuningPack();
+};
 
 /**
  * State specific to a plane that is spawned, everything in here is expected
@@ -97,7 +99,7 @@ struct PlaneVital {
   float requestEnergy(const float reqEnergy);
 };
 
-extern const tg::Pack<PlaneVital> planeVitalPack;
+struct PlaneVitalPack: public tg::ClassPack<PlaneVital> { PlaneVitalPack(); };
 
 /**
  * A plane, expressed in a simple (copyable etc.) struct.
@@ -112,13 +114,15 @@ struct Plane {
   optional<PlaneVital> vital; // exists <=> plane is spawned
 };
 
-extern const tg::Pack<Plane> planePack;
+struct PlanePack: public tg::ClassPack<Plane> {
+  PlanePack();
+};
 
 /**
  * Handle for a plane, holds
  */
 class PlaneHandle {
-private:
+ private:
   sky::Sky *engine;
   Physics *physics;
   b2Body *body;
@@ -137,7 +141,7 @@ private:
              const float rot);
   void kill();
 
-public:
+ public:
   PlaneHandle(Sky *engine);
   ~PlaneHandle();
 

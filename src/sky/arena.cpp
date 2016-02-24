@@ -16,12 +16,12 @@ bool Player::operator==(const Player &record) {
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<Player, TYPE>(RULE, &Player::PTR)
-const tg::Pack<Player> playerPack =
+PlayerPack::PlayerPack() :
     tg::ClassPack<Player>(
         member(PID, pid, pidPack),
         member(std::string, nickname, tg::stringPack),
         member(bool, admin, tg::boolPack)
-    );
+    ) { }
 #undef member
 
 /**
@@ -34,11 +34,11 @@ PlayerDelta::PlayerDelta(const optional<std::string> &nickname) :
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<PlayerDelta, TYPE>(RULE, &PlayerDelta::PTR)
-const tg::Pack<PlayerDelta> playerDeltaPack =
+PlayerDeltaPack::PlayerDeltaPack() :
     tg::ClassPack<PlayerDelta>(
         member(optional<std::string>, nickname, tg::optStringPack),
         member(optional<bool>, admin, tg::OptionalPack<bool>(tg::boolPack))
-    );
+    ) { }
 #undef member
 
 /**
@@ -49,14 +49,14 @@ ArenaInitializer::ArenaInitializer() { }
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<ArenaInitializer, TYPE>(RULE, &ArenaInitializer::PTR)
-const tg::Pack<ArenaInitializer> arenaInitializerPack =
+ArenaInitializerPack::ArenaInitializerPack() :
     tg::ClassPack<ArenaInitializer>(
         tg::MemberRule<ArenaInitializer, std::vector<Player>>(
-            tg::VectorPack<Player>(playerPack),
+            tg::VectorPack<Player>(PlayerPack()),
             &ArenaInitializer::playerRecords),
         member(std::string, motd, tg::stringPack),
         member(ArenaMode, mode, arenaModePack)
-    );
+    ) { }
 #undef member
 
 /**
@@ -67,22 +67,22 @@ ArenaDelta::ArenaDelta() { }
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<ArenaDelta, TYPE>(RULE, &ArenaDelta::PTR)
-const tg::Pack<ArenaDelta> arenaDeltaPack =
+ArenaDeltaPack::ArenaDeltaPack() :
     tg::ClassPack<ArenaDelta>(
         member(optional<PID>, playerQuit, tg::OptionalPack<PID>(pidPack)),
         member(optional<Player>, playerJoin,
-               tg::OptionalPack<Player>(playerPack)),
+               tg::OptionalPack<Player>(PlayerPack())),
         tg::MemberRule<ArenaDelta, optional<std::pair<PID, PlayerDelta>>>(
             tg::OptionalPack<std::pair<PID, PlayerDelta>>(
-                tg::PairPack<PID, PlayerDelta>(pidPack, playerDeltaPack)),
+                tg::PairPack<PID, PlayerDelta>(pidPack, PlayerDeltaPack())),
             &ArenaDelta::playerDelta
         ),
         member(optional<std::string>, motdDelta, tg::optStringPack),
         member(optional<ArenaMode>, arenaMode,
                tg::OptionalPack<ArenaMode>(arenaModePack)),
         member(optional<SkyInitializer>, skyInitializer,
-               tg::OptionalPack<SkyInitializer>(skyInitializerPack))
-    );
+               tg::OptionalPack<SkyInitializer>(SkyInitializerPack()))
+    ) { }
 #undef member
 
 /**

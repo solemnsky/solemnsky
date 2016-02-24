@@ -158,6 +158,8 @@ TEST_F(PackTest, ListlikePack) {
 TEST_F(PackTest, ProtocolPack) {
   using namespace sky;
 
+  tg::Pack<ClientPacket> clientPacketPack = ClientPacketPack();
+
   ClientPacket packet = ClientReqJoin("nickname");
   tg::packInto(clientPacketPack, packet, buffer);
   tg::unpackInto(clientPacketPack, buffer, packet);

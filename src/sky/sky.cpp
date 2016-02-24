@@ -9,15 +9,22 @@ namespace sky {
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<SkyInitializer, TYPE>(RULE, &SkyInitializer::PTR)
-const tg::Pack<SkyInitializer> skyInitializerPack =
+SkyInitializerPack::SkyInitializerPack() :
     tg::ClassPack<SkyInitializer>(
         member(MapName, mapName, tg::stringPack),
         tg::MemberRule<SkyInitializer, std::map<PID, Plane>>(
-            tg::MapPack<PID, Plane>(pidPack, planePack),
+            tg::MapPack<PID, Plane>(pidPack, PlanePack()),
             &SkyInitializer::planes
         )
-    );
+    ) { }
 #undef member
+
+/**
+ * SkyDelta.
+ */
+
+SkyDeltaPack::SkyDeltaPack() :
+    tg::ClassPack<SkyDelta>() { }
 
 /**
  * Sky.

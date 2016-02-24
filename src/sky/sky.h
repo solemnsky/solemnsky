@@ -64,13 +64,19 @@ struct SkyInitializer {
   std::map<PID, Plane> planes; // planes already in the arena
 };
 
-extern const tg::Pack<SkyInitializer> skyInitializerPack;
+struct SkyInitializerPack: public tg::ClassPack<SkyInitializer> {
+  SkyInitializerPack();
+};
 
 /**
  * Changes that happened in a sky.
  */
 struct SkyDelta {
 
+};
+
+struct SkyDeltaPack: public tg::ClassPack<SkyDelta> {
+  SkyDeltaPack();
 };
 
 /*

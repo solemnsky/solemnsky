@@ -73,9 +73,9 @@ TEST_F(TelegraphTest, Protocol) {
   clientPeer = event.peer;
 
   tg::Telegraph<ServerPacket, ClientPacket> clientTelegraph{
-      serverPacketPack, clientPacketPack};
+      ServerPacketPack(), ClientPacketPack()};
   tg::Telegraph<ClientPacket, ServerPacket> serverTelegraph{
-      clientPacketPack, serverPacketPack};
+      ClientPacketPack(), ServerPacketPack()};
 
   clientTelegraph.transmit(client, serverPeer, ClientReqJoin("nickname"));
   event = processHosts(server, client);
