@@ -7,15 +7,15 @@ class ArenaTest: public testing::Test {
  public:
   tg::Packet buffer;
 
-  tg::Pack<sky::ServerPacket> serverPacketPack = sky::ServerPacketPack();
-  tg::Pack<sky::ArenaDelta> arenaDeltaPack = sky::ArenaDeltaPack();
+  const tg::Pack<sky::ServerPacket> serverPacketPack = sky::ServerPacketPack();
+  const tg::Pack<sky::ArenaDelta> arenaDeltaPack = sky::ArenaDeltaPack();
 };
 
 TEST_F(ArenaTest, ConnectionTest) {
   sky::Arena arena;
-  sky::Player &player1 = arena.connectPlayer();
+  sky::Player &player1 = arena.connectPlayer(nullptr);
   EXPECT_EQ(player1.pid, 1);
-  sky::Player &player2 = arena.connectPlayer();
+  sky::Player &player2 = arena.connectPlayer(nullptr);
   EXPECT_EQ(player2.pid, 2);
 
   player1.nickname = "asdf";
@@ -31,7 +31,7 @@ TEST_F(ArenaTest, ConnectionTest) {
 TEST_F(ArenaTest, InitializationTest) {
   sky::Arena arena;
   arena.motd = "test server";
-  sky::Player &player1 = arena.connectPlayer();
+  sky::Player &player1 = arena.connectPlayer(nullptr);
   player1.nickname = "somebody";
 
   sky::ArenaInitializer initializer = arena.captureInitializer();
@@ -51,7 +51,7 @@ TEST_F(ArenaTest, DeltaTest) {
   arena.motd = "test server";
 
   sky::ArenaDelta delta;
-  delta.motdDelta = "secret server";
+  delta.motd = "secret server";
   tg::packInto(arenaDeltaPack, delta, buffer);
   appLog(buffer.dump());
   arena.applyDelta(*tg::unpack(arenaDeltaPack, buffer));
@@ -60,7 +60,7 @@ TEST_F(ArenaTest, DeltaTest) {
   delta = {};
   sky::Player player(1);
   player.nickname = "somebody";
-  delta.playerJoin = player;
+  delta.join = player;
   tg::packInto(arenaDeltaPack, delta, buffer);
   appLog(buffer.dump());
   arena.applyDelta(*tg::unpack(arenaDeltaPack, buffer));
@@ -68,7 +68,7 @@ TEST_F(ArenaTest, DeltaTest) {
   EXPECT_EQ(arena.getRecord(1)->nickname, "somebody");
 
   delta = {};
-  delta.playerDelta = std::pair<sky::PID, sky::PlayerDelta>(
+  delta.player = std::pair<sky::PID, sky::PlayerDelta>(
       1, sky::PlayerDelta(std::string("somebody else")));
   tg::packInto(arenaDeltaPack, delta, buffer);
   appLog(buffer.dump());
@@ -76,10 +76,13 @@ TEST_F(ArenaTest, DeltaTest) {
   EXPECT_EQ(arena.getRecord(1)->nickname, "somebody else");
 
   delta = {};
-  delta.playerQuit = 1;
+  delta.quit = 1;
   tg::packInto(arenaDeltaPack, delta, buffer);
   appLog(buffer.dump());
   arena.applyDelta(*tg::unpack(arenaDeltaPack, buffer));
   EXPECT_EQ(arena.getRecord(1), nullptr);
 }
 
+TEST_F(ArenaTest, SkyTest) {
+  sky::Arena arena, remoteArena;
+}

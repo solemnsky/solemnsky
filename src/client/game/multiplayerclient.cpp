@@ -13,7 +13,7 @@ MultiplayerClient::MultiplayerClient(ClientShared &state,
 
     host(tg::HostType::Client),
     server(nullptr),
-    telegraph(sky::serverPacketPack, sky::clientPacketPack),
+    telegraph(sky::ServerPacketPack(), sky::ClientPacketPack()),
     pingCooldown(5),
     triedConnection(false),
     disconnecting(false),

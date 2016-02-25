@@ -58,7 +58,7 @@ struct PlayerDeltaPack: public tg::ClassPack<PlayerDelta> {
 enum class ArenaMode {
   Lobby, // lobby, to make teams
   Game, // playing game
-  Score // viewing game results
+  Scoring // viewing game results
 };
 
 static const tg::Pack<ArenaMode> arenaModePack =
@@ -82,6 +82,7 @@ struct ArenaInitializer {
    */
   ArenaMode mode;
   optional<SkyInitializer> skyInitializer;
+  std::string nextMap;
 };
 
 struct ArenaInitializerPack: public tg::ClassPack<ArenaInitializer> {
@@ -92,19 +93,19 @@ struct ArenaInitializerPack: public tg::ClassPack<ArenaInitializer> {
  * A change that occurred in an Arena.
  */
 struct ArenaDelta {
-  ArenaDelta(); // for unpacking
+  ArenaDelta();
 
-  // delta in the players list: at most one of these exists
-  optional<PID> playerQuit;
-  optional<Player> playerJoin;
+  // exactly one of these blocks has instantiated members
+  optional<PID> quit;
 
-  // deltas in the persistent state
-  optional<std::pair<PID, PlayerDelta>> playerDelta;
-  optional<std::string> motdDelta;
+  optional<Player> join;
 
-  // mode delta, with potentially necessary mode initialization
+  optional<std::pair<PID, PlayerDelta>> player;
+
+  optional<std::string> motd;
+
   optional<ArenaMode> arenaMode;
-  optional<SkyInitializer> skyInitializer; // if the game started
+  optional<SkyInitializer> skyInitializer;
 };
 
 struct ArenaDeltaPack: public tg::ClassPack<ArenaDelta> {
@@ -117,39 +118,33 @@ struct ArenaDeltaPack: public tg::ClassPack<ArenaDelta> {
 class Arena {
  public:
   Arena();
-  Arena(const ArenaInitializer &initializer);
 
   /**
-   * Persistent state.
+   * State.
    */
   std::list<Player> players;
-  std::string motd; // the arena MotD
+  std::string motd; // message of the day
 
-  /**
-   * Modal state.
-   */
-  enum class Mode {
-    Lobby, Game, Score
-  } mode;
-
-  /**
-   * Game-specific state.
-   */
-  std::string nextMap;
+  ArenaMode mode;
   optional<Sky> sky;
 
   /**
-   * Shared API.
+   * Initializers / Deltas.
    */
-  Player *getRecord(const PID pid);
-  void applyDelta(const ArenaDelta &);
+  bool applyInitializer(const ArenaInitializer &initializer);
+  bool applyDelta(const ArenaDelta &delta);
 
   /**
-   * For servers.
+   * General API.
    */
   Player &connectPlayer();
   void disconnectPlayer(const Player &record);
   void modifyPlayer(const PID pid, PlayerDelta &delta);
+  Player *getRecord(const PID pid);
+
+  void enterLobby();
+  void enterGame(const SkyInitializer &initializer);
+  void enterScoring();
 
   ArenaInitializer captureInitializer();
 };

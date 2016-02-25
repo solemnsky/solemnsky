@@ -7,7 +7,7 @@
 
 Server::Server(const unsigned short port) :
     host(tg::HostType::Server, port),
-    telegraph(sky::clientPacketPack, sky::serverPacketPack),
+    telegraph(sky::ClientPacketPack(), sky::ServerPacketPack()),
     running(true) {
   appLog("Starting server on port " + std::to_string(port),
          LogOrigin::Server);
@@ -56,7 +56,7 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
           return false;
 
         sky::ArenaDelta delta;
-        delta.playerDelta = std::pair<sky::PID, sky::PlayerDelta>(
+        delta.player = std::pair<sky::PID, sky::PlayerDelta>(
             player->pid, *packet.playerDelta
         );
         arena.applyDelta(delta);
@@ -99,7 +99,7 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
           client, ServerAckJoin(newPlayer.pid, arena.captureInitializer()));
 
       sky::ArenaDelta delta;
-      delta.playerJoin = newPlayer;
+      delta.join = newPlayer;
       broadcastToClientsExcept(newPlayer.pid, ServerNotifyDelta(delta));
 
       return true; // unregistered client sent a ReqJoin
@@ -128,7 +128,7 @@ void Server::tick(float delta) {
         appLog("Client disconnected, PID " + std::to_string(player->pid),
                LogOrigin::Server);
         sky::ArenaDelta arenaDelta;
-        arenaDelta.playerQuit = player->pid;
+        arenaDelta.quit = player->pid;
         broadcastToClientsExcept(
             player->pid,
             sky::ServerNotifyDelta(arenaDelta));

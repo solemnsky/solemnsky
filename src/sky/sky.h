@@ -10,6 +10,7 @@
 #include "physics.h"
 #include "flight.h"
 #include "map.h"
+#include "delta.h"
 #include "telegraph/pack.h"
 
 namespace sky {
@@ -57,9 +58,10 @@ class Subsystem {
 };
 
 /**
- * The stuff we need to recreate a Sky.
+ * The stuff we need to copy a sky over a connection.
  */
 struct SkyInitializer {
+  SkyInitializer();
   MapName mapName; // the map to load
   std::map<PID, Plane> planes; // planes already in the arena
 };
@@ -72,7 +74,8 @@ struct SkyInitializerPack: public tg::ClassPack<SkyInitializer> {
  * Changes that happened in a sky.
  */
 struct SkyDelta {
-
+  SkyDelta();
+  std::map<PID, PlaneDelta> planes;
 };
 
 struct SkyDeltaPack: public tg::ClassPack<SkyDelta> {
@@ -84,6 +87,9 @@ struct SkyDeltaPack: public tg::ClassPack<SkyDelta> {
  * an Arena, and exposes a simple interface for clients and servers alike for
  * all kinds of circumstances, from server-side simulation to replaying
  * recordings.
+ *
+ * Planes are added and removed to a Sky "all willy-nilly", holding
+ * persistent player records and such is the task of the Arena.
  */
 class Sky {
  private:
@@ -106,13 +112,11 @@ class Sky {
    * Planes.
    */
   std::map<PID, PlaneHandle> planes;
-  Plane &joinPlane(const PID pid);
   Plane *getPlane(const PID pid);
   PlaneHandle *getPlaneHandle(const PID pid);
-  void quitPlane(const PID pid);
-  void spawnPlane(const PID pid, const sf::Vector2f pos, const float rot,
-                  const PlaneTuning &tuning);
-  void killPlane(const PID pid);
+  void addPlane(const PID pid, const sf::Vector2f pos, const float rot,
+                const PlaneTuning &tuning);
+  void removePlane(const PID pid);
 
   /**
    * Laser guns: now in a cinema near you.
