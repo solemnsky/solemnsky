@@ -137,13 +137,17 @@ PlaneVitalPack::PlaneVitalPack() :
  * Plane.
  */
 
+Plane::Plane() { }
+
+Plane::Plane(const PlaneTuning &tuning, const PlaneVital &vital) :
+    tuning(tuning), vital(vital) { }
+
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<Plane, TYPE>(RULE, &Plane::PTR)
 PlanePack::PlanePack() :
     tg::ClassPack<Plane>(
         member(PlaneTuning, tuning, PlaneTuningPack()),
-        member(optional<PlaneVital>, vital,
-               tg::OptionalPack<PlaneVital>(PlaneVitalPack()))
+        member(optional<PlaneVital>, vital, PlaneVitalPack())
     ) { }
 #undef member
 
@@ -196,87 +200,85 @@ void PlaneHandle::readFromBody() {
 void PlaneHandle::tick(float delta) {
   auto &vstate = state.vital;
 
-  if (!vstate) return;
-
   // helpful synonyms
   const auto &tuning = state.tuning;
-  const float forwardVel(vstate->forwardVelocity()), velocity(
-      vstate->velocity());
+  const float forwardVel(vstate.forwardVelocity()), velocity(
+      vstate.velocity());
 
   // set rotation
-  vstate->rotvel = ((vstate->stalled) ?
-                    tuning.stall.maxRotVel :
-                    tuning.flight.maxRotVel) * vstate->rotCtrl;
+  vstate.rotvel = ((vstate.stalled) ?
+                   tuning.stall.maxRotVel :
+                   tuning.flight.maxRotVel) * vstate.rotCtrl;
 
-  vstate->energy += tuning.energy.recharge * delta;
-  vstate->afterburner = 0;
+  vstate.energy += tuning.energy.recharge * delta;
+  vstate.afterburner = 0;
 
-  if (vstate->stalled) {
+  if (vstate.stalled) {
     // afterburner
-    if (vstate->throtCtrl == Movement::Up) {
+    if (vstate.throtCtrl == Movement::Up) {
       const float thrustEfficacy =
-          vstate->requestEnergy(tuning.energy.thrustDrain * delta);
+          vstate.requestEnergy(tuning.energy.thrustDrain * delta);
 
-      vstate->vel +=
-          VecMath::fromAngle(vstate->rot) *
+      vstate.vel +=
+          VecMath::fromAngle(vstate.rot) *
               (delta * tuning.stall.thrust * thrustEfficacy);
-      vstate->afterburner = thrustEfficacy;
+      vstate.afterburner = thrustEfficacy;
     }
 
     // damping towards terminal velocity
     float excessVel = velocity - tuning.stall.maxVel;
     float dampingFactor = tuning.stall.maxVel / velocity;
     if (excessVel > 0)
-      vstate->vel = vstate->vel * dampingFactor *
+      vstate.vel = vstate.vel * dampingFactor *
           std::pow(tuning.stall.damping, delta);
   } else {
     // modify throttle and afterburner according to controls
-    vstate->throttle += movementValue(vstate->throtCtrl) * delta;
+    vstate.throttle += movementValue(vstate.throtCtrl) * delta;
     bool afterburning =
-        (vstate->throtCtrl == Movement::Up) && vstate->throttle == 1;
+        (vstate.throtCtrl == Movement::Up) && vstate.throttle == 1;
 
     // pick away at leftover velocity
-    vstate->leftoverVel *= std::pow(tuning.flight.leftoverDamping, delta);
+    vstate.leftoverVel *= std::pow(tuning.flight.leftoverDamping, delta);
 
-    // modify vstate->airspeed
+    // modify vstate.airspeed
     float speedMod = 0;
     speedMod +=
-        sin(toRad(vstate->rot)) * tuning.flight.gravityEffect * delta;
+        sin(toRad(vstate.rot)) * tuning.flight.gravityEffect * delta;
     if (afterburning) {
       const float thrustEfficacity =
-          vstate->requestEnergy(tuning.energy.thrustDrain * delta);
-      vstate->afterburner = thrustEfficacity;
+          vstate.requestEnergy(tuning.energy.thrustDrain * delta);
+      vstate.afterburner = thrustEfficacity;
       speedMod += tuning.flight.afterburnDrive * delta * thrustEfficacity;
     }
-    vstate->airspeed += speedMod;
+    vstate.airspeed += speedMod;
 
-    approach(vstate->airspeed,
-             (float) vstate->throttle * tuning.flight.throttleInfluence,
-             tuning.flight.throttleDrive * delta);
+    approach(vstate.airspeed,
+             (float) vstate.throttle * tuning.flight.throttleInfluence,
+             tuning.flight.throttleEffect * delta);
 
-    float targetSpeed = vstate->airspeed * tuning.flight.airspeedFactor;
+    float targetSpeed = vstate.airspeed * tuning.flight.airspeedFactor;
 
     // set velocity, according to target speed, rotation, and leftoverVel
-    vstate->vel = targetSpeed * VecMath::fromAngle(vstate->rot) +
-        vstate->leftoverVel;
+    vstate.vel = targetSpeed * VecMath::fromAngle(vstate.rot) +
+        vstate.leftoverVel;
   }
 
   // stall singularities
-  if (vstate->stalled) {
+  if (vstate.stalled) {
     if (forwardVel > tuning.stall.threshold) {
-      vstate->stalled = false;
-      vstate->leftoverVel =
-          vstate->vel - (forwardVel * VecMath::fromAngle(vstate->rot));
+      vstate.stalled = false;
+      vstate.leftoverVel =
+          vstate.vel - (forwardVel * VecMath::fromAngle(vstate.rot));
 
-      vstate->airspeed = forwardVel / tuning.flight.airspeedFactor;
-      vstate->throttle =
-          vstate->airspeed / tuning.flight.throttleInfluence;
+      vstate.airspeed = forwardVel / tuning.flight.airspeedFactor;
+      vstate.throttle =
+          vstate.airspeed / tuning.flight.throttleInfluence;
     }
   } else {
     if (forwardVel < tuning.flight.threshold) {
-      vstate->stalled = true;
-      vstate->throttle = 1;
-      vstate->airspeed = 0;
+      vstate.stalled = true;
+      vstate.throttle = 1;
+      vstate.airspeed = 0;
     }
   }
 }
@@ -286,28 +288,26 @@ PlaneHandle::PlaneHandle(Sky *engine) :
   CTOR_LOG("plane");
 }
 
+PlaneHandle::PlaneHandle(Sky *engine,
+                         const PlaneTuning &tuning,
+                         const sf::Vector2f pos,
+                         const float rot) :
+    engnine(engine), physics(&engine->physics), body(nullptr),
+    state() {
+
+  CTOR_LOG("PlaneHandle");
+}
+
+PlaneHandle::~PlaneHandle() {
+  physics->clrBody(body);
+  DTOR_LOG("PlaneHandle");
+};
+
+
 PlaneHandle::PlaneHandle(PlaneHandle &&handle) :
     engine(handle.engine),
     physics(handle.physics),
     body(handle.body),
     state(handle.state) { }
 
-PlaneHandle::~PlaneHandle() {
-  kill();
-  DTOR_LOG("plane");
-};
-
-void PlaneHandle::spawn(const PlaneTuning &tuning,
-                        const sf::Vector2f pos,
-                        const float rot) {
-  if (state.vital) kill();
-  state.vital.emplace(PlaneVital(tuning, pos, rot));
-  state.tuning = tuning;
-  writeToBody();
-}
-
-void PlaneHandle::kill() {
-  state.vital.reset();
-  writeToBody();
-}
 }

@@ -55,7 +55,8 @@ ArenaInitializerPack::ArenaInitializerPack() :
             tg::VectorPack<Player>(PlayerPack()),
             &ArenaInitializer::playerRecords),
         member(std::string, motd, tg::stringPack),
-        member(ArenaMode, mode, arenaModePack)
+        member(ArenaMode, mode, arenaModePack),
+        member(std::string, nextMap, tg::stringPack)
     ) { }
 #undef member
 
@@ -69,15 +70,15 @@ ArenaDelta::ArenaDelta() { }
   tg::MemberRule<ArenaDelta, TYPE>(RULE, &ArenaDelta::PTR)
 ArenaDeltaPack::ArenaDeltaPack() :
     tg::ClassPack<ArenaDelta>(
-        member(optional<PID>, playerQuit, tg::OptionalPack<PID>(pidPack)),
-        member(optional<Player>, playerJoin,
+        member(optional<PID>, quit, tg::OptionalPack<PID>(pidPack)),
+        member(optional<Player>, join,
                tg::OptionalPack<Player>(PlayerPack())),
         tg::MemberRule<ArenaDelta, optional<std::pair<PID, PlayerDelta>>>(
             tg::OptionalPack<std::pair<PID, PlayerDelta>>(
                 tg::PairPack<PID, PlayerDelta>(pidPack, PlayerDeltaPack())),
-            &ArenaDelta::playerDelta
+            &ArenaDelta::player
         ),
-        member(optional<std::string>, motdDelta, tg::optStringPack),
+        member(optional<std::string>, motd, tg::optStringPack),
         member(optional<ArenaMode>, arenaMode,
                tg::OptionalPack<ArenaMode>(arenaModePack)),
         member(optional<SkyInitializer>, skyInitializer,
@@ -91,23 +92,78 @@ ArenaDeltaPack::ArenaDeltaPack() :
 
 Arena::Arena() { }
 
-Arena::Arena(const ArenaInitializer &initializer) :
-    motd(initializer.motd),
-    players(initializer.playerRecords.begin(),
-            initializer.playerRecords.end()) { }
-
 /**
- * Shared API.
+ * Initializers / Deltas.
  */
 
-Player *Arena::getRecord(const PID pid) {
-  for (Player &record : players)
-    if (record.pid == pid) return &record;
-  return nullptr;
+bool Arena::applyInitializer(const ArenaInitializer &initializer) {
+  motd = initializer.motd;
+  players = std::list(initializer.playerRecords.begin(), initializer
+      .playerRecords.end());
+  mode = initializer.mode;
+  if (initializer.mode == ArenaMode::Game) {
+    if (!all(initializer.skyInitializer)) return false;
+    sky.emplace(sky::Sky(*initializer.skyInitializer));
+  }
+
+  return true;
 }
 
+bool Arena::applyDelta(const ArenaDelta &delta) {
+  if (delta.quit) {
+    players.remove_if([&](const Player &record) {
+      return record.pid == *delta.quit;
+    });
+    return true;
+  }
+
+  if (delta.join) {
+    if (Player *existingRecord = getRecord(delta.join->pid))
+      *existingRecord = *delta.join;
+    else players.push_back(*delta.join);
+    return true;
+  }
+
+  if (delta.player) {
+    if (Player *record = getRecord(delta.player->first)) {
+      if (delta.player->second.nickname)
+        record->nickname = *delta.player->second.nickname;
+      // ... potentially other things ...
+    }
+    return true;
+  }
+
+  if (delta.motd) {
+    motd = *delta.motd;
+    return true;
+  }
+
+  if (delta.arenaMode) {
+    ArenaMode newMode = *delta.arenaMode;
+    switch (newMode) {
+      case ArenaMode::Lobby: {
+        mode = newMode;
+        return true;
+      }
+      case ArenaMode::Game: {
+        if (!delta.skyInitializer) return false;
+        sky.emplace(sky::Sky(*delta.skyInitializer));
+        return true;
+      }
+      case ArenaMode::Scoring: {
+        mode = newMode;
+        // TODO: scoring information or something
+        return true;
+      }
+    }
+  }
+
+  return false; // no delta was provided, this counts as a malformation
+}
+
+
 /**
- * For servers.
+ * API.
  */
 
 Player &Arena::connectPlayer() {
@@ -129,6 +185,25 @@ void Arena::modifyPlayer(const PID pid, PlayerDelta &delta) {
 
 }
 
+Player *Arena::getRecord(const PID pid) {
+  for (Player &record : players)
+    if (record.pid == pid) return &record;
+  return nullptr;
+}
+
+void Arena::enterLobby() {
+  mode = ArenaMode::Lobby;
+}
+
+void Arena::enterGame(const SkyInitializer &initializer) {
+  mode = ArenaMode::Game;
+  sky.emplace(sky::Sky(initializer));
+}
+
+void Arena::enterScoring() {
+  mode = ArenaMode::Scoring;
+}
+
 ArenaInitializer Arena::captureInitializer() {
   ArenaInitializer initializer;
   initializer.playerRecords =
@@ -136,39 +211,6 @@ ArenaInitializer Arena::captureInitializer() {
   initializer.motd = motd;
 
   return initializer;
-}
-
-/**
- * For clients.
- */
-
-void Arena::applyDelta(const ArenaDelta &delta) {
-  if (const auto &quit = delta.playerQuit) {
-    players.remove_if([&](const Player &record) {
-      return record.pid == *quit;
-    });
-    return;
-  }
-
-  if (const auto &join = delta.playerJoin) {
-    if (Player *existingRecord = getRecord(join->pid))
-      *existingRecord = *join;
-    else players.push_back(*join);
-    return;
-  }
-
-  if (const auto &pdelta = delta.playerDelta) {
-    if (Player *record = getRecord(pdelta->first)) {
-      if (pdelta->second.nickname)
-        record->nickname = *pdelta->second.nickname;
-      // ... potentially other things ...
-    }
-    return;
-  }
-
-  if (const auto &newMotd = delta.motdDelta) {
-    motd = *newMotd;
-  }
 }
 
 }

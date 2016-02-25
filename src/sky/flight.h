@@ -42,8 +42,7 @@ struct PlaneTuning {
     float maxRotVel = 180,
         airspeedFactor = 330,
         throttleInfluence = 0.6,
-        throttleDrive = 0.3,
-        throttleBreaking = 1.1,
+        throttleEffect = 0.3,
         gravityEffect = 0.6,
         afterburnDrive = 0.9,
         leftoverDamping = 0.3;
@@ -69,9 +68,7 @@ struct PlaneVital {
 
   /**
    * Data.
-   * *** ALL float encapsulations from util should have equal parameters in
-   * all instances of PlaneVital. This is essential to serialization and
-   * sanity in general. ****
+   * Clamped values should have the same bounds in all instantiations.
    */
   Clamped rotCtrl; // controls
   Movement throtCtrl;
@@ -105,13 +102,11 @@ struct PlaneVitalPack: public tg::ClassPack<PlaneVital> { PlaneVitalPack(); };
  * A plane, expressed in a simple (copyable etc.) struct.
  */
 struct Plane {
-  Plane() = default;
+  Plane();
+  Plane(const PlaneTuning &tuning, const PlaneVital &vital);
 
-  /**
-   * Data.
-   */
   PlaneTuning tuning;
-  optional<PlaneVital> vital; // exists <=> plane is spawned
+  PlaneVital vital; // exists <=> plane is spawned
 };
 
 struct PlanePack: public tg::ClassPack<Plane> {
@@ -119,7 +114,8 @@ struct PlanePack: public tg::ClassPack<Plane> {
 };
 
 /**
- * Handle for a plane, holds
+ * Handle for a plane, manages the interface with box2d and in doing so holds
+ * a pointer, making it non-copyable.
  */
 class PlaneHandle {
  private:
@@ -136,13 +132,11 @@ class PlaneHandle {
   void readFromBody();
   void tick(float d);
 
-  void spawn(const PlaneTuning &tuning,
-             const sf::Vector2f pos,
-             const float rot);
-  void kill();
-
  public:
-  PlaneHandle(Sky *engine);
+  PlaneHandle(Sky *engine,
+              const PlaneTuning &tuning,
+              const sf::Vector2f pos,
+              const float rot);
   ~PlaneHandle();
 
   PlaneHandle(PlaneHandle &&);

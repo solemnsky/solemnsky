@@ -13,6 +13,14 @@ private:
   std::function<void(std::string &&)> logger;
 public:
   ServerLog(Sky *sky, std::function<void(std::string &&)> logger);
+
+
+ private:
+  virtual void tick(const float delta) override;
+  virtual void joinPlane(const PID pid, PlaneHandle &plane) override;
+  virtual void quitPlane(const PID pid) override;
+  virtual void spawnPlane(const PID pid, PlaneHandle &plane) override;
+  virtual void killPlane(const PID pid, PlaneHandle &plane) override;
 };
 }
 
