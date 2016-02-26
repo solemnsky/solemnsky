@@ -17,7 +17,7 @@ PlaneAnimState::PlaneAnimState() :
     flipState(0),
     rollState(90) { }
 
-void PlaneAnimState::spawn(const PlaneVital &vital) {
+void PlaneAnimState::spawn(const PlaneState &vital) {
   roll = 90;
   orientation = Angle(vital.rot + 90) > 180;
   flipState = 0;
@@ -91,7 +91,7 @@ void Render::renderPlane(
     ui::Frame &f, const PID pid, const PlaneHandle &plane) {
   using namespace detail; // for rndrParam
   if (plane.state.vital) {
-    const PlaneVital &vstate = *plane.state.vital;
+    const PlaneState &vstate = *plane.state.vital;
     const PlaneTuning &tuning = plane.state.tuning;
 
     detail::PlaneAnimState &planeAnimState = animState.at(pid);

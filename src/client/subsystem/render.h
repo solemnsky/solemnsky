@@ -56,7 +56,7 @@ struct PlaneAnimState {
   /**
    * Mutating state.
    */
-  void spawn(const PlaneVital &vital);
+  void spawn(const PlaneState &vital);
   void tick(PlaneHandle *parent, const float delta);
   // death is animated in the a normal course of events, but respawning changes
   // everything anew
@@ -85,7 +85,7 @@ class Render: public Subsystem {
   void tick(float delta) override;
   void joinPlane(const PID pid, PlaneHandle &plane) override;
   void quitPlane(const PID pid) override;
-  void spawnPlane(const PID pid, PlaneHandle &plane) override; // has PlaneVital
+  void spawnPlane(const PID pid, PlaneHandle &plane) override; // has PlaneState
   void killPlane(const PID pid, PlaneHandle &plane) override;
 
  public:

@@ -45,6 +45,8 @@ std::string ServerPacket::dump() const {
       return "NotifyDelta";
     case Type::NotifyMessage:
       return "NotifyMessage";
+    case Type::Snap:
+      return "Snap";
   }
 }
 

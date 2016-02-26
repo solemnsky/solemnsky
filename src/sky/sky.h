@@ -37,18 +37,12 @@ class Subsystem {
  private:
   friend class Sky;
 
-  // these are all in the past-tense, called after the action has completed
-  // in the engine: spawned and killed planes here are already spawned and
-  // killed, etc.
+  // Callbacks are triggered after the respective event occurred.
   virtual void tick(const float delta) { }
 
-  virtual void joinPlane(const PID pid, PlaneHandle &plane) { }
+  virtual void addPlane(const PID pid, Plane &plane) { }
 
-  virtual void quitPlane(const PID pid) { }
-
-  virtual void spawnPlane(const PID pid, PlaneHandle &plane) { }
-
-  virtual void killPlane(const PID pid, PlaneHandle &plane) { }
+  virtual void removePlane(const PID pid) { }
 
  public:
   Subsystem(Sky *sky) : sky(sky) { }
@@ -63,7 +57,7 @@ class Subsystem {
 struct SkyInitializer {
   SkyInitializer();
   MapName mapName; // the map to load
-  std::map<PID, Plane> planes; // planes already in the arena
+  std::map<PID, PlaneInitializer> planes; // planes already in the arena
 };
 
 struct SkyInitializerPack: public tg::ClassPack<SkyInitializer> {
@@ -71,15 +65,18 @@ struct SkyInitializerPack: public tg::ClassPack<SkyInitializer> {
 };
 
 /**
- * Changes that happened in a sky.
+ * A delta in the Sky. Since it holds essentially all the information
  */
-struct SkyDelta {
-  SkyDelta();
-  std::map<PID, PlaneDelta> planes;
+struct SkySnapshot {
+  SkySnapshot();
+
+  std::map<PID, PlaneInitializer> addedPlanes;
+  std::vector<PID> removedPlanes;
+  std::map<PID, PlaneState> planes;
 };
 
-struct SkyDeltaPack: public tg::ClassPack<SkyDelta> {
-  SkyDeltaPack();
+struct SkySnapshotPack: public tg::ClassPack<SkySnapshot> {
+  SkySnapshotPack();
 };
 
 /*
@@ -111,22 +108,25 @@ class Sky {
   /**
    * Planes.
    */
-  std::map<PID, PlaneHandle> planes;
+  std::map<PID, Plane> planes;
   Plane *getPlane(const PID pid);
-  PlaneHandle *getPlaneHandle(const PID pid);
-  void addPlane(const PID pid, const sf::Vector2f pos, const float rot,
-                const PlaneTuning &tuning);
+  Plane &addPlane(const PID pid,
+                  const PlaneTuning &tuning,
+                  const sf::Vector2f pos,
+                  const float rot);
   void removePlane(const PID pid);
-
-  /**
-   * Laser guns: now in a cinema near you.
-   */
   void fireLaser(const PID pid);
 
   /**
    * Simulating.
    */
   void tick(float delta); // delta in seconds *everywhere*
+
+  /**
+   * Initializers and deltas.
+   */
+  SkyInitializer captureInitializer();
+
 };
 
 }
