@@ -15,7 +15,7 @@ This is the solemnsky codebase; barring the contributions of a benevolent
 Our design process consists in simultaneously writing useful code and not 
  making everything into a great Big Ball of Mud (a surprisingly difficult task).
  
-After due consideration, we've chosen C++ as our language de résistance. 
+After due consideration, we've chosen C++ as our _langage de résistance_. 
  Eventually, we plan to use Lua for scripting, in order to make design 
  iteration faster and modding easier.
  
@@ -44,6 +44,6 @@ It's possible to build this project on most Windows, OSX, and Linux setups.
 Listed below are the particular setups that we test against.
 
 Windows: install http://nuwen.net/mingw.html -style MinGW, build with CLion.
-OSX: Just Works (tm), plus or minus libraries. (Probably.)
+OSX: Install Boost (homebrew works fine), and CMake to Xcode projects. You can build those.
 Linux: Should build easily, if you're having problems nix is a sure-fire way 
 to not have problems anymore (see default.nix in top-level).
