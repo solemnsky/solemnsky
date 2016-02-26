@@ -29,7 +29,7 @@ struct ClientPacket {
   ClientPacket(const Type type,
                const optional<std::string> &stringData = {},
                const optional<PlayerDelta> &playerDelta = {},
-               const optional<SkySnapshot> &snapshotData = {}) :
+               const optional<SkyDelta> &snapshotData = {}) :
       type(type),
       stringData(stringData),
       playerDelta(playerDelta),
@@ -38,7 +38,7 @@ struct ClientPacket {
   Type type;
   optional<std::string> stringData;
   optional<PlayerDelta> playerDelta;
-  optional<SkySnapshot> snapshotData;
+  optional<SkyDelta> snapshotData;
 
   // debug
   std::string dump() const;
@@ -68,7 +68,7 @@ struct ClientChat: public ClientPacket {
 };
 
 struct ClientTransmitSnap: public ClientPacket {
-  ClientTransmitSnap(const SkySnapshot &snapshot) :
+  ClientTransmitSnap(const SkyDelta &snapshot) :
       ClientPacket(ClientPacket::Type::Snap, {}, {}, snapshot) { }
 };
 
@@ -91,7 +91,7 @@ struct ServerPacket {
                const optional<PID> &pid = {},
                const optional<ArenaInitializer> &arena = {},
                const optional<ArenaDelta> &arenaDelta = {},
-               const optional<SkySnapshot> snapshotData) :
+               const optional<SkyDelta> snapshotData) :
       type(type),
       stringData(stringData),
       pid(pid),
@@ -103,7 +103,7 @@ struct ServerPacket {
   optional<PID> pid;
   optional<ArenaInitializer> arenaInitializer;
   optional<ArenaDelta> arenaDelta;
-  optional<SkySnapshot> snapshotData;
+  optional<SkyDelta> snapshotData;
 
   // debug
   std::string dump() const;
@@ -134,7 +134,7 @@ struct ServerNotifyMessage: public ServerPacket {
 };
 
 struct ServerSnap: public ServerPacket {
-  ServerSnap(const SkySnapshot &snapshot) :
+  ServerSnap(const SkyDelta &snapshot) :
       ServerPacket(ServerPacket::Type::Snap, {}, {}, {}, {}, snapshot) { }
 };
 

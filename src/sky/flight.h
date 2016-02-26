@@ -17,9 +17,9 @@ class Sky;
  * Tuning values describing how a plane flies.
  */
 struct PlaneTuning {
-  PlaneTuning() { }
+  PlaneTuning(); // constructs with sensible defaults
 
-  sf::Vector2f hitbox{110, 60}; // x axis parallel with flight
+  sf::Vector2f hitbox{110, 60}; // x axis parallel with flight direction
   float maxHealth = 10;
 
   struct Energy {
@@ -39,6 +39,7 @@ struct PlaneTuning {
 
   struct Flight {
     // mechanics when not stalled
+    // TODO: document this
     float maxRotVel = 180,
         airspeedFactor = 330,
         throttleInfluence = 0.6,
@@ -57,7 +58,7 @@ struct PlaneTuningPack: public tg::ClassPack<PlaneTuning> {
 };
 
 /**
- * The variable game state of a Plane.
+ * The (POD) variable game state of a Plane.
  */
 struct PlaneState {
   PlaneState(); // for packing
@@ -113,8 +114,7 @@ struct PlaneInitializerPack: public tg::ClassPack<PlaneInitializer> {
 };
 
 /**
- * A plane in the sky. Because it manages a Box2D body entity, it's
- * non-duplicatable.
+ * A plane in the sky. Manager of a a Box2D body entity, it's non-copyable.
  */
 class Plane {
  private:
@@ -123,15 +123,9 @@ class Plane {
   b2Body *body;
 
   /**
-   * State
-   */
-  const PlaneTuning tuning;
-  PlaneState state;
-
-  /**
    * State mutation.
    */
-  friend class Sky;
+  friend class Sky; // Sky calls these functions
 
   void writeToBody();
   void readFromBody();
@@ -142,12 +136,18 @@ class Plane {
         const PlaneTuning &tuning,
         const sf::Vector2f pos,
         const float rot);
-  Plane(Sky *engine, const PlaneInitializer &initializer);
+  Plane(Sky *parent, const PlaneInitializer &initializer);
   ~Plane();
 
   Plane(Plane &&) = delete;
   Plane(const Plane &) = delete;
   Plane &operator=(const Plane &) = delete;
+
+  /**
+   * State
+   */
+  const PlaneTuning tuning;
+  PlaneState state;
 
   /**
    * Initializer.

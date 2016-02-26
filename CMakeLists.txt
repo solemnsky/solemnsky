@@ -27,9 +27,6 @@ add_library(solemnsky STATIC
         src/sky/arena.cpp
         src/sky/arena.h
 
-        src/sky/delta.cpp
-        src/sky/delta.h
-
         src/sky/flight.cpp
         src/sky/flight.h
 
@@ -70,9 +67,6 @@ target_link_libraries(solemnsky
 
 ###### solemnsky_server
 add_executable(solemnsky_server
-        src/server/subsystem/deltacom.cpp
-        src/server/subsystem/deltacom.h
-
         src/server/subsystem/serverlog.cpp
         src/server/subsystem/serverlog.h
 

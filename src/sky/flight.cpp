@@ -10,6 +10,8 @@ namespace sky {
  * PlaneTuning.
  */
 
+PlaneTuning() { }
+
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<PlaneTuning::Energy, TYPE>(RULE, &PlaneTuning::Energy::PTR)
 const static tg::Pack<PlaneTuning::Energy> planeTuningEnergyPack =
@@ -174,7 +176,7 @@ Plane::Plane(Sky *parent,
   body->SetGravityScale(state.stalled ? 1 : 0);
 }
 
-Plane::Plane(Sky *engine, const PlaneInitializer &initializer) :
+Plane::Plane(Sky *parent, const PlaneInitializer &initializer) :
     parent(parent),
     physics(&parent->physics),
     body(physics->rectBody(initializer.tuning.hitbox)),
