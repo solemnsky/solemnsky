@@ -1,7 +1,6 @@
 /**
  * A model of a multiplayer arena, (players + metadata + potential sky) held by
- * clients and servers, along with serializable structures to communicate them
- * over the network.
+ * clients and servers.
  *
  * A server, during operation, holds an arena; a multiplayer client constructs
  * one from a network-transmitted ArenaInitializer and keeps somewhat in sync
@@ -38,7 +37,7 @@ struct PlayerPack: public tg::ClassPack<Player> {
 };
 
 /**
- * A change in a Player.
+ * A change in some Player.
  */
 struct PlayerDelta {
   PlayerDelta(); // for unpacking
@@ -53,7 +52,7 @@ struct PlayerDeltaPack: public tg::ClassPack<PlayerDelta> {
 };
 
 /**
- * ArenaMode: the mode of the arena.
+ * The mode of the arena; we cycle through these three modes.
  */
 enum class ArenaMode {
   Lobby, // lobby, to make teams
@@ -61,8 +60,7 @@ enum class ArenaMode {
   Scoring // viewing game results
 };
 
-static const tg::Pack<ArenaMode> arenaModePack =
-    tg::EnumPack<ArenaMode>(2);
+static const tg::Pack<ArenaMode> arenaModePack = tg::EnumPack<ArenaMode>(2);
 
 /**
  * The data a client needs when jumping into an arena. Further changes are

@@ -7,6 +7,8 @@ namespace sky {
  * SkyInitializer.
  */
 
+SkyInitializer::SkyInitializer() { }
+
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<SkyInitializer, TYPE>(RULE, &SkyInitializer::PTR)
 SkyInitializerPack::SkyInitializerPack() :
@@ -20,11 +22,13 @@ SkyInitializerPack::SkyInitializerPack() :
 #undef member
 
 /**
- * SkyDelta.
+ * Snapshot.
  */
 
+SkySnapshot::SkySnapshot() { }
+
 SkyDeltaPack::SkyDeltaPack() :
-    tg::ClassPack<SkyDelta>() { }
+    tg::ClassPack<SkySnapshot>() { }
 
 /**
  * Sky.
@@ -47,47 +51,26 @@ void Sky::linkSystem(Subsystem *subsystem) {
   subsystems.push_back(subsystem);
 }
 
-Plane &Sky::joinPlane(const PID pid) {
-  planes.emplace(pid, std::move(PlaneHandle(this)));
-
-  PlaneHandle &plane = planes.at(pid);
-  for (auto system : subsystems) system->joinPlane(pid, plane);
-  return plane.state;
-}
-
 Plane *Sky::getPlane(const PID pid) {
-  if (planes.find(pid) != planes.end()) return &planes.at(pid).state;
-  else return nullptr;
-}
-
-PlaneHandle *Sky::getPlaneHandle(const PID pid) {
   if (planes.find(pid) != planes.end()) return &planes.at(pid);
   else return nullptr;
 }
 
-void Sky::quitPlane(const PID pid) {
+Plane &Sky::addPlane(const PID pid,
+                     const PlaneTuning &tuning,
+                     const sf::Vector2f pos,
+                     const float rot) {
+  return (planes.emplace(pid, Plane(this, tuning, pos, rot))).first->second;
+}
+
+void Sky::removePlane(const PID pid) {
   planes.erase(pid);
-  for (auto system : subsystems) system->quitPlane(pid);
-}
-
-void Sky::spawnPlane(const PID pid, const sf::Vector2f pos, const float rot,
-                     const PlaneTuning &tuning) {
-  if (auto *plane = getPlaneHandle(pid)) {
-    plane->spawn(tuning, pos, rot);
-    for (auto system : subsystems) system->spawnPlane(pid, *plane);
-  }
-}
-
-void Sky::killPlane(const PID pid) {
-  if (auto *plane = getPlaneHandle(pid)) {
-    plane->kill();
-    for (auto system : subsystems) system->killPlane(pid, *plane);
-  }
+  for (auto system : subsystems) system->removePlane(pid);
 }
 
 void Sky::fireLaser(const PID pid) {
-  if (auto *state = getPlane(pid)) {
-    if (state->vital->requestDiscreteEnergy(0.3)) {
+  if (auto *plane = getPlane(pid)) {
+    if (plane->state.requestDiscreteEnergy(0.3)) {
       appLog("PEW PEW");
     }
   }
@@ -95,12 +78,12 @@ void Sky::fireLaser(const PID pid) {
 
 void Sky::tick(float delta) {
   for (auto &elem : planes) {
-    PlaneHandle &plane = elem.second;
+    Plane &plane = elem.second;
     plane.writeToBody();
   }
   physics.tick(delta);
   for (auto &elem : planes) {
-    PlaneHandle &plane = elem.second;
+    Plane &plane = elem.second;
     plane.readFromBody();
     plane.tick(delta);
   }

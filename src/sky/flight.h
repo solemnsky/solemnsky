@@ -57,12 +57,11 @@ struct PlaneTuningPack: public tg::ClassPack<PlaneTuning> {
 };
 
 /**
- * State specific to a plane that is spawned, everything in here is expected
- * to change very frequently, while it exists anyway.
+ * The variable game state of a Plane.
  */
-struct PlaneVital {
-  PlaneVital(); // for packing
-  PlaneVital(const PlaneTuning &tuning,
+struct PlaneState {
+  PlaneState(); // for packing
+  PlaneState(const PlaneTuning &tuning,
              const sf::Vector2f &pos,
              const float rot);
 
@@ -96,34 +95,40 @@ struct PlaneVital {
   float requestEnergy(const float reqEnergy);
 };
 
-struct PlaneVitalPack: public tg::ClassPack<PlaneVital> { PlaneVitalPack(); };
+struct PlaneStatePack: public tg::ClassPack<PlaneState> { PlaneStatePack(); };
 
 /**
- * A plane, expressed in a simple (copyable etc.) struct.
+ * Initializer to construct a new plane.
  */
-struct Plane {
-  Plane();
-  Plane(const PlaneTuning &tuning, const PlaneVital &vital);
+struct PlaneInitializer {
+  PlaneInitializer();
+  PlaneInitializer(const PlaneTuning &tuning, const PlaneState &state);
 
   PlaneTuning tuning;
-  PlaneVital vital; // exists <=> plane is spawned
+  PlaneState state;
 };
 
-struct PlanePack: public tg::ClassPack<Plane> {
-  PlanePack();
+struct PlaneInitializerPack: public tg::ClassPack<PlaneInitializer> {
+  PlaneInitializerPack();
 };
 
 /**
- * Handle for a plane, manages the interface with box2d and in doing so holds
- * a pointer, making it non-copyable.
+ * A plane in the sky. Because it manages a Box2D body entity, it's
+ * non-duplicatable.
  */
-class PlaneHandle {
+class Plane {
  private:
-  sky::Sky *engine;
+  sky::Sky *parent;
   Physics *physics;
   b2Body *body;
 
-  /*
+  /**
+   * State
+   */
+  const PlaneTuning tuning;
+  PlaneState state;
+
+  /**
    * State mutation.
    */
   friend class Sky;
@@ -133,18 +138,23 @@ class PlaneHandle {
   void tick(float d);
 
  public:
-  PlaneHandle(Sky *engine,
-              const PlaneTuning &tuning,
-              const sf::Vector2f pos,
-              const float rot);
-  ~PlaneHandle();
+  Plane(Sky *parent,
+        const PlaneTuning &tuning,
+        const sf::Vector2f pos,
+        const float rot);
+  Plane(Sky *engine, const PlaneInitializer &initializer);
+  ~Plane();
 
-  PlaneHandle(PlaneHandle &&);
-  PlaneHandle(const PlaneHandle &) = delete;
-  PlaneHandle &operator=(const PlaneHandle &) = delete;
+  Plane(Plane &&) = delete;
+  Plane(const Plane &) = delete;
+  Plane &operator=(const Plane &) = delete;
 
-  Plane state{};
+  /**
+   * Initializer.
+   */
+  PlaneInitializer captureInitializer() const;
 };
+
 }
 
 #endif //SOLEMNSKY_FLIGHT_H

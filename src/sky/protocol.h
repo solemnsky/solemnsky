@@ -6,7 +6,6 @@
 #define SOLEMNSKY_PROTOCOL_H
 
 #include "util/types.h"
-#include "delta.h"
 #include "telegraph/pack.h"
 #include "arena.h"
 #include <map>
@@ -21,21 +20,25 @@ struct ClientPacket {
     Ping, // request a pong, always available
     ReqJoin, // request to set your player data (enet is already connected)
     ReqDelta, // request a change to your player data
-    Chat // send a chat message
+    Chat, // send a chat message
+    Snap // transmit a server-bound game snapshot
   };
 
   ClientPacket() = default;
 
   ClientPacket(const Type type,
                const optional<std::string> &stringData = {},
-               const optional<PlayerDelta> &playerDelta = {}) :
+               const optional<PlayerDelta> &playerDelta = {},
+               const optional<SkySnapshot> &snapshotData = {}) :
       type(type),
       stringData(stringData),
-      playerDelta(playerDelta) { }
+      playerDelta(playerDelta),
+      type(snapshotData) { }
 
   Type type;
   optional<std::string> stringData;
   optional<PlayerDelta> playerDelta;
+  optional<SkySnapshot> snapshotData;
 
   // debug
   std::string dump() const;
@@ -64,6 +67,11 @@ struct ClientChat: public ClientPacket {
       ClientPacket(ClientPacket::Type::Chat, str) { }
 };
 
+struct ClientTransmitSnap: public ClientPacket {
+  ClientTransmitSnap(const SkySnapshot &snapshot) :
+      ClientPacket(ClientPacket::Type::Snap, {}, {}, snapshot) { }
+};
+
 /**
  * Protocol verbs for the server.
  */
@@ -72,7 +80,8 @@ struct ServerPacket {
     Pong,
     AckJoin, // acknowledge a ReqJoin, send ArenaInitializer
     NotifyDelta, // notify clients of a change in the arena
-    NotifyMessage // distribute message for all clients to log
+    NotifyMessage, // distribute message for all clients to log
+    Snap // transmit a client-bound snapshot
   };
 
   ServerPacket() = default;
@@ -81,7 +90,8 @@ struct ServerPacket {
                const optional<std::string> &stringData = {},
                const optional<PID> &pid = {},
                const optional<ArenaInitializer> &arena = {},
-               const optional<ArenaDelta> &arenaDelta = {}) :
+               const optional<ArenaDelta> &arenaDelta = {},
+               const optional<SkySnapshot> snapshotData) :
       type(type),
       stringData(stringData),
       pid(pid),
@@ -93,6 +103,7 @@ struct ServerPacket {
   optional<PID> pid;
   optional<ArenaInitializer> arenaInitializer;
   optional<ArenaDelta> arenaDelta;
+  optional<SkySnapshot> snapshotData;
 
   // debug
   std::string dump() const;
@@ -120,6 +131,11 @@ struct ServerNotifyMessage: public ServerPacket {
   ServerNotifyMessage(const std::string &message,
                       const optional<PID> pid = {}) :
       ServerPacket(ServerPacket::Type::NotifyMessage, message, pid) { }
+};
+
+struct ServerSnap: public ServerPacket {
+  ServerSnap(const SkySnapshot &snapshot) :
+      ServerPacket(ServerPacket::Type::Snap, {}, {}, {}, {}, snapshot) { }
 };
 
 }
