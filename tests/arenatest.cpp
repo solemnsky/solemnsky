@@ -13,36 +13,36 @@ class ArenaTest: public testing::Test {
 
 TEST_F(ArenaTest, ConnectionTest) {
   sky::Arena arena;
-  sky::Player &player1 = arena.connectPlayer(nullptr);
+  sky::Player &player1 = arena.connectPlayer();
   EXPECT_EQ(player1.pid, 1);
-  sky::Player &player2 = arena.connectPlayer(nullptr);
+  sky::Player &player2 = arena.connectPlayer();
   EXPECT_EQ(player2.pid, 2);
 
   player1.nickname = "asdf";
   player2.nickname = "fdsa";
-  EXPECT_EQ(arena.getRecord(1)->nickname, "asdf");
+  EXPECT_EQ(arena.getPlayer(1)->nickname, "asdf");
   arena.disconnectPlayer(player1);
-  EXPECT_EQ(arena.getRecord(1), nullptr);
-  EXPECT_EQ(arena.getRecord(2)->nickname, "fdsa");
+  EXPECT_EQ(arena.getPlayer(1), nullptr);
+  EXPECT_EQ(arena.getPlayer(2)->nickname, "fdsa");
   arena.disconnectPlayer(player2);
-  EXPECT_EQ(arena.getRecord(2), nullptr);
+  EXPECT_EQ(arena.getPlayer(2), nullptr);
 }
 
 TEST_F(ArenaTest, InitializationTest) {
   sky::Arena arena;
   arena.motd = "test server";
-  sky::Player &player1 = arena.connectPlayer(nullptr);
+  sky::Player &player1 = arena.connectPlayer();
   player1.nickname = "somebody";
 
   sky::ArenaInitializer initializer = arena.captureInitializer();
-  sky::ServerPacket ack = sky::ServerAckJoin(1, initializer);
+  sky::ServerPacket ack = sky::ServerPacket::AckJoin(1, initializer);
   tg::packInto(serverPacketPack, ack, buffer);
 
   sky::ServerPacket receivedAck =
       *tg::unpack(serverPacketPack, buffer);
-  sky::Arena remoteArena(*receivedAck.arenaInitializer);
-
-  EXPECT_EQ(remoteArena.getRecord(*receivedAck.pid)->nickname, "somebody");
+  sky::Arena remoteArena;
+  EXPECT_TRUE(remoteArena.applyInitializer(*receivedAck.arenaInitializer));
+  EXPECT_EQ(remoteArena.getPlayer(*receivedAck.pid)->nickname, "somebody");
   EXPECT_EQ(remoteArena.motd, "test server");
 }
 
@@ -50,37 +50,29 @@ TEST_F(ArenaTest, DeltaTest) {
   sky::Arena arena;
   arena.motd = "test server";
 
-  sky::ArenaDelta delta;
-  delta.motd = "secret server";
-  tg::packInto(arenaDeltaPack, delta, buffer);
+  tg::packInto(arenaDeltaPack, sky::ArenaDelta::Motd("secret server"), buffer);
   appLog(buffer.dump());
   arena.applyDelta(*tg::unpack(arenaDeltaPack, buffer));
   EXPECT_EQ(arena.motd, "secret server");
 
-  delta = {};
   sky::Player player(1);
   player.nickname = "somebody";
-  delta.join = player;
-  tg::packInto(arenaDeltaPack, delta, buffer);
+  tg::packInto(arenaDeltaPack, sky::ArenaDelta::Join(player), buffer);
   appLog(buffer.dump());
   arena.applyDelta(*tg::unpack(arenaDeltaPack, buffer));
-  EXPECT_NE(arena.getRecord(1), nullptr);
-  EXPECT_EQ(arena.getRecord(1)->nickname, "somebody");
+  EXPECT_NE(arena.getPlayer(1), nullptr);
+  EXPECT_EQ(arena.getPlayer(1)->nickname, "somebody");
 
-  delta = {};
-  delta.player = std::pair<sky::PID, sky::PlayerDelta>(
-      1, sky::PlayerDelta(std::string("somebody else")));
-  tg::packInto(arenaDeltaPack, delta, buffer);
+  sky::PlayerDelta playerDelta = sky::PlayerDelta(std::string("somebody else"));
+  tg::packInto(arenaDeltaPack, sky::ArenaDelta::Modify(1, playerDelta), buffer);
   appLog(buffer.dump());
   arena.applyDelta(*tg::unpack(arenaDeltaPack, buffer));
-  EXPECT_EQ(arena.getRecord(1)->nickname, "somebody else");
+  EXPECT_EQ(arena.getPlayer(1)->nickname, "somebody else");
 
-  delta = {};
-  delta.quit = 1;
-  tg::packInto(arenaDeltaPack, delta, buffer);
+  tg::packInto(arenaDeltaPack, sky::ArenaDelta::Quit(1), buffer);
   appLog(buffer.dump());
   arena.applyDelta(*tg::unpack(arenaDeltaPack, buffer));
-  EXPECT_EQ(arena.getRecord(1), nullptr);
+  EXPECT_EQ(arena.getPlayer(1), nullptr);
 }
 
 TEST_F(ArenaTest, SkyTest) {

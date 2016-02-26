@@ -77,13 +77,12 @@ TEST_F(TelegraphTest, Protocol) {
   tg::Telegraph<ClientPacket, ServerPacket> serverTelegraph{
       ClientPacketPack(), ServerPacketPack()};
 
-  clientTelegraph.transmit(client, serverPeer, ClientReqJoin("nickname"));
+  clientTelegraph.transmit(client, serverPeer,
+                           ClientPacket::ReqJoin("nickname"));
   event = processHosts(server, client);
-
-  const ClientPacket &targetPacket = ClientReqJoin("nickname");
   const optional<ClientPacket> &packet = serverTelegraph.receive(event.packet);
 
   EXPECT_EQ((bool) packet, true);
-  EXPECT_EQ(packet->type, targetPacket.type);
-  EXPECT_EQ(*packet->stringData, *targetPacket.stringData);
+  EXPECT_EQ(packet->type, ClientPacket::Type::ReqJoin);
+  EXPECT_EQ(*packet->stringData, "nickname");
 }

@@ -10,15 +10,13 @@ namespace sky {
  * PlaneTuning.
  */
 
-PlaneTuning() { }
+PlaneTuning::PlaneTuning() { }
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<PlaneTuning::Energy, TYPE>(RULE, &PlaneTuning::Energy::PTR)
 const static tg::Pack<PlaneTuning::Energy> planeTuningEnergyPack =
     tg::ClassPack<PlaneTuning::Energy>(
-        member(float,
-               thrustDrain,
-               tg::floatPack),
+        member(float, thrustDrain, tg::floatPack),
         member(float, recharge, tg::floatPack),
         member(float, laserGun, tg::floatPack)
     );
@@ -181,6 +179,15 @@ Plane::Plane(Sky *parent, const PlaneInitializer &initializer) :
     physics(&parent->physics),
     body(physics->rectBody(initializer.tuning.hitbox)),
     state(initializer.state) {
+  CTOR_LOG("Plane");
+}
+
+Plane::Plane(Plane &&plane) :
+    parent(plane.parent),
+    physics(plane.physics),
+    body(plane.body),
+    state(plane.state) {
+  plane.body = nullptr;
   CTOR_LOG("Plane");
 }
 

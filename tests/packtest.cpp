@@ -153,16 +153,24 @@ TEST_F(PackTest, ListlikePack) {
 }
 
 /**
- * Our protocol verb packing works correctly.
+ * Just a sanity test that protocol verb packing can work correctly.
  */
 TEST_F(PackTest, ProtocolPack) {
   using namespace sky;
 
   tg::Pack<ClientPacket> clientPacketPack = ClientPacketPack();
+  tg::Pack<ServerPacket> serverPacketPack = ServerPacketPack();
 
-  ClientPacket packet = ClientReqJoin("nickname");
+  ClientPacket packet = ClientPacket::ReqJoin("nickname");
   tg::packInto(clientPacketPack, packet, buffer);
   tg::unpackInto(clientPacketPack, buffer, packet);
   EXPECT_EQ(*packet.stringData, "nickname");
   EXPECT_EQ(packet.type, ClientPacket::Type::ReqJoin);
+
+  ServerPacket serverPacket =
+      ServerPacket::Message(ServerMessage::Broadcast("yeah"));
+  tg::packInto(serverPacketPack, serverPacket, buffer);
+  tg::unpackInto(serverPacketPack, buffer, serverPacket);
+  EXPECT_EQ(serverPacket.message->contents, "yeah");
+  EXPECT_EQ(serverPacket.type, ServerPacket::Type::Message);
 }

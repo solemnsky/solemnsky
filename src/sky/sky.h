@@ -92,10 +92,10 @@ class Sky {
  private:
   std::vector<Subsystem *> subsystems;
 
-  // this keeps track of PID values where planes are removed / added
-  // restructure.at(pid) == nullptr <=> at pid, there is no longer any Plane
-  // otherwise, restructure.at(pid) points to a plane that was recently added
-  // so we need to capture its initializer when we create a SkyDelta
+  // This keeps track of PID values where planes are removed / added.
+  // `restructure.at(pid) == nullptr` <=> At pid, there is no longer any Plane.
+  // Otherwise, restructure.at(pid) points to a plane that was recently added.
+  // Reset at each collectDelta.
   std::map<PID, Plane *> restructure;
 
  public:

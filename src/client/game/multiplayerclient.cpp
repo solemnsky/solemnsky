@@ -40,7 +40,7 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
       if (!all(packet.arenaInitializer, packet.pid)) return false;
 
       arena.emplace(*packet.arenaInitializer);
-      myRecord = arena->getRecord(*packet.pid);
+      myRecord = arena->getPlayer(*packet.pid);
       appLog("Joined arena!", LogOrigin::Client);
       return true; // server sent us an AckJoin when we're not registered
     }
@@ -51,21 +51,21 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
     case ServerPacket::Type::Pong:
       return true; // received a pong from the server
 
-    case ServerPacket::Type::NotifyDelta: {
+    case ServerPacket::Type::NoteArenaDelta: {
       if (!all(packet.arenaDelta)) return false;
       arena->applyDelta(*packet.arenaDelta);
       return true; // server sent us a NotifyDelta
     }
 
-    case ServerPacket::Type::NotifyMessage: {
+    case ServerPacket::Type::Message: {
       if (!all(packet.stringData)) return false;
       if (packet.pid) {
-        if (sky::Player *record = arena->getRecord(*packet.pid))
+        if (sky::Player *record = arena->getPlayer(*packet.pid))
           messageLog.pushEntry(record->nickname + ": " + *packet.stringData);
         else messageLog.pushEntry("[unknown]: " + *packet.stringData);
       } else
         messageLog.pushEntry("[server]: " + *packet.stringData);
-      return true; // server sent us a NotifyMessage
+      return true; // server sent us a Message
     }
 
     default:

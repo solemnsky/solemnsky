@@ -137,16 +137,16 @@ class Plane {
         const sf::Vector2f pos,
         const float rot);
   Plane(Sky *parent, const PlaneInitializer &initializer);
+  Plane(Plane &&plane);
   ~Plane();
 
-  Plane(Plane &&) = delete;
   Plane(const Plane &) = delete;
   Plane &operator=(const Plane &) = delete;
 
   /**
    * State
    */
-  const PlaneTuning tuning;
+  PlaneTuning tuning;
   PlaneState state;
 
   /**
