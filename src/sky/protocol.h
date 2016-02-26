@@ -18,58 +18,70 @@ namespace sky {
 struct ClientPacket {
   enum class Type {
     Ping, // request a pong, always available
-    ReqJoin, // request to set your player data (enet is already connected)
+    ReqJoin, // request joining in the arena, part of the connection protocol
     ReqDelta, // request a change to your player data
-    Chat, // send a chat message
-    Snap // transmit a server-bound game snapshot
+    ReqSpawn, // request to spawn
+    ReqKill, // request to die
+    NoteSkyDelta, // tell the server what you think is happening in the game
+    Chat // send a chat message
   };
 
-  ClientPacket() = default;
+  ClientPacket();
+  ClientPacket(
+      const Type type,
+      const optional<std::string> &stringData = {},
+      const optional<PlayerDelta> &playerDelta = {},
+      const optional<SkyDelta> &skyDelta = {});
 
-  ClientPacket(const Type type,
-               const optional<std::string> &stringData = {},
-               const optional<PlayerDelta> &playerDelta = {},
-               const optional<SkyDelta> &snapshotData = {}) :
-      type(type),
-      stringData(stringData),
-      playerDelta(playerDelta),
-      type(snapshotData) { }
 
   Type type;
   optional<std::string> stringData;
   optional<PlayerDelta> playerDelta;
-  optional<SkyDelta> snapshotData;
+  optional<SkyDelta> skyDelta;
 
-  // debug
   std::string dump() const;
+
+  static ClientPacket Ping();
+  static ClientPacket ReqJoin(const std::string &nickname);
+  static ClientPacket ReqDelta(const PlayerDelta &playerDelta);
+  static ClientPacket ReqSpawn();
+  static ClientPacket ReqKill();
+  static ClientPacket NoteSkyDelta(const SkyDelta &skyDelta);
+  static ClientPacket Chat(const std::string &message);
 };
 
 struct ClientPacketPack: public tg::ClassPack<ClientPacket> {
   ClientPacketPack();
 };
 
-struct ClientPing: public ClientPacket {
-  ClientPing() : ClientPacket(ClientPacket::Type::Ping) { }
+/**
+ * Messages from the server, of varied nature.
+ */
+struct ServerMessage {
+  enum class Type {
+    Chat, // a client said something
+    Broadcast // an important message to be displayed in big letters
+  };
+
+  ServerMessage();
+  ServerMessage(
+      const Type type,
+      std::string contents,
+      optional<std::string> from = {});
+
+  Type type;
+  optional<std::string> from; // who the message is from, potentially
+  std::string contents;
+
+  std::string dump() const;
+
+  static ServerMessage Chat(const std::string &from,
+                            const std::string &contents);
+  static ServerMessage Broadcast(const std::string &contents);
 };
 
-struct ClientReqJoin: public ClientPacket {
-  ClientReqJoin(const std::string &nickname) :
-      ClientPacket(ClientPacket::Type::ReqJoin, nickname) { }
-};
-
-struct ClientReqDelta: public ClientPacket {
-  ClientReqDelta(const PlayerDelta &playerDelta) :
-      ClientPacket(ClientPacket::Type::ReqDelta, {}, playerDelta) { }
-};
-
-struct ClientChat: public ClientPacket {
-  ClientChat(std::string &&str) :
-      ClientPacket(ClientPacket::Type::Chat, str) { }
-};
-
-struct ClientTransmitSnap: public ClientPacket {
-  ClientTransmitSnap(const SkyDelta &snapshot) :
-      ClientPacket(ClientPacket::Type::Snap, {}, {}, snapshot) { }
+struct ServerMessagePack: public tg::ClassPack<ServerMessage> {
+  ServerMessagePack();
 };
 
 /**
@@ -78,64 +90,40 @@ struct ClientTransmitSnap: public ClientPacket {
 struct ServerPacket {
   enum class Type {
     Pong,
+    Message, // message for a client to log
     AckJoin, // acknowledge a ReqJoin, send ArenaInitializer
-    NotifyDelta, // notify clients of a change in the arena
-    NotifyMessage, // distribute message for all clients to log
-    Snap // transmit a client-bound snapshot
+    NoteArenaDelta, // notify clients of a change in the arena
+    NoteSkyDelta // transmit a client-bound snapshot
   };
 
-  ServerPacket() = default;
-
-  ServerPacket(const Type type,
-               const optional<std::string> &stringData = {},
-               const optional<PID> &pid = {},
-               const optional<ArenaInitializer> &arena = {},
-               const optional<ArenaDelta> &arenaDelta = {},
-               const optional<SkyDelta> snapshotData) :
-      type(type),
-      stringData(stringData),
-      pid(pid),
-      arenaInitializer(arena),
-      arenaDelta(arenaDelta) { }
+  ServerPacket();
+  ServerPacket(
+      const Type type,
+      const optional<ServerMessage> &message = {},
+      const optional<PID> &pid = {},
+      const optional<ArenaInitializer> &arenaInitializer = {},
+      const optional<ArenaDelta> &arenaDelta = {},
+      const optional<SkyDelta> &skyDelta = {});
 
   Type type;
-  optional<std::string> stringData;
+  optional<ServerMessage> message;
   optional<PID> pid;
   optional<ArenaInitializer> arenaInitializer;
   optional<ArenaDelta> arenaDelta;
-  optional<SkyDelta> snapshotData;
+  optional<SkyDelta> skyDelta;
 
-  // debug
   std::string dump() const;
+
+  static ServerPacket Pong();
+  static ServerPacket Message(const ServerMessage &message);
+  static ServerPacket AckJoin(const PID pid,
+                              const ArenaInitializer &arenaInitializer);
+  static ServerPacket NoteArenaDelta(const ArenaDelta &arenaDelta);
+  static ServerPacket NoteSkyDelta();
 };
 
 struct ServerPacketPack: public tg::ClassPack<ServerPacket> {
   ServerPacketPack();
-};
-
-struct ServerPong: public ServerPacket {
-  ServerPong() : ServerPacket(ServerPacket::Type::Pong) { }
-};
-
-struct ServerAckJoin: public ServerPacket {
-  ServerAckJoin(const PID pid, const ArenaInitializer &arenaInitializer) :
-      ServerPacket(ServerPacket::Type::AckJoin, {}, pid, arenaInitializer) { }
-};
-
-struct ServerNotifyDelta: public ServerPacket {
-  ServerNotifyDelta(const ArenaDelta &arenaDelta) :
-      ServerPacket(ServerPacket::Type::NotifyDelta, {}, {}, {}, arenaDelta) { }
-};
-
-struct ServerNotifyMessage: public ServerPacket {
-  ServerNotifyMessage(const std::string &message,
-                      const optional<PID> pid = {}) :
-      ServerPacket(ServerPacket::Type::NotifyMessage, message, pid) { }
-};
-
-struct ServerSnap: public ServerPacket {
-  ServerSnap(const SkyDelta &snapshot) :
-      ServerPacket(ServerPacket::Type::Snap, {}, {}, {}, {}, snapshot) { }
 };
 
 }

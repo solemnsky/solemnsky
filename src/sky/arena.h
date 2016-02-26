@@ -19,6 +19,21 @@
 namespace sky {
 
 /**
+ * Difference in some Player.
+ */
+struct PlayerDelta {
+  PlayerDelta(); // for unpacking
+  PlayerDelta(const optional<std::string> &nickname);
+
+  optional<std::string> nickname; // exists if nickname changed
+  bool admin; // corresponds to new admin state
+};
+
+struct PlayerDeltaPack: public tg::ClassPack<PlayerDelta> {
+  PlayerDeltaPack();
+};
+
+/**
  * A player in the arena.
  */
 struct Player {
@@ -29,26 +44,11 @@ struct Player {
   std::string nickname;
   bool admin;
 
-  bool operator==(const Player &record); // are PIDs equal?
+  void applyDelta(const PlayerDelta &delta);
 };
 
 struct PlayerPack: public tg::ClassPack<Player> {
   PlayerPack();
-};
-
-/**
- * A change in some Player.
- */
-struct PlayerDelta {
-  PlayerDelta(); // for unpacking
-  PlayerDelta(const optional<std::string> &nickname);
-
-  optional<std::string> nickname; // exists if nickname changed
-  optional<bool> admin; // exists if admin state changed
-};
-
-struct PlayerDeltaPack: public tg::ClassPack<PlayerDelta> {
-  PlayerDeltaPack();
 };
 
 /**
@@ -69,15 +69,9 @@ static const tg::Pack<ArenaMode> arenaModePack = tg::EnumPack<ArenaMode>(2);
 struct ArenaInitializer {
   ArenaInitializer(); // for unpacking
 
-  /**
-   * Initialize persistent data.
-   */
   std::vector<Player> playerRecords;
   std::string motd;
 
-  /**
-   * Initialize mode.
-   */
   ArenaMode mode;
   optional<SkyInitializer> skyInitializer;
   std::string nextMap;
@@ -88,22 +82,41 @@ struct ArenaInitializerPack: public tg::ClassPack<ArenaInitializer> {
 };
 
 /**
- * A change that occurred in an Arena.
+ * Server-generated modification to the arena.
  */
 struct ArenaDelta {
+  enum class Type {
+    Quit, // a player quits
+    Join, // a player joints
+    Modify, // a player's data is modified
+    Motd, // the motd changes
+    Mode // the mode changes
+  };
+
   ArenaDelta();
+  ArenaDelta(const Type type,
+             const optional<PID> &quit = {},
+             const optional<Player> &join = {},
+             const optional<std::pair<PID, PlayerDelta>> &player = {},
+             const optional<std::string> motd = {},
+             const optional<ArenaMode> arenaMode = {},
+             const optional<SkyInitializer> skyInitializer = {});
 
-  // exactly one of these blocks has instantiated members
+
+  Type type;
   optional<PID> quit;
-
   optional<Player> join;
-
   optional<std::pair<PID, PlayerDelta>> player;
-
   optional<std::string> motd;
-
   optional<ArenaMode> arenaMode;
   optional<SkyInitializer> skyInitializer;
+
+  static ArenaDelta Quit(const PID pid);
+  static ArenaDelta Join(const Player &player);
+  static ArenaDelta Modify(const PID, const PlayerDelta &delta);
+  static ArenaDelta Motd(const std::string &motd);
+  static ArenaDelta Mode(const ArenaMode,
+                         const optional<SkyInitializer> &initializer = {});
 };
 
 struct ArenaDeltaPack: public tg::ClassPack<ArenaDelta> {
@@ -131,20 +144,15 @@ class Arena {
    */
   bool applyInitializer(const ArenaInitializer &initializer);
   bool applyDelta(const ArenaDelta &delta);
+  ArenaInitializer captureInitializer();
 
   /**
    * General API.
    */
   Player &connectPlayer();
   void disconnectPlayer(const Player &record);
-  void modifyPlayer(const PID pid, PlayerDelta &delta);
-  Player *getRecord(const PID pid);
+  Player *getPlayer(const PID pid);
 
-  void enterLobby();
-  void enterGame(const SkyInitializer &initializer);
-  void enterScoring();
-
-  ArenaInitializer captureInitializer();
 };
 
 }
