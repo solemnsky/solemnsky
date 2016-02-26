@@ -10,7 +10,6 @@
 #include "physics.h"
 #include "flight.h"
 #include "map.h"
-#include "delta.h"
 #include "telegraph/pack.h"
 
 namespace sky {
@@ -65,18 +64,19 @@ struct SkyInitializerPack: public tg::ClassPack<SkyInitializer> {
 };
 
 /**
- * A delta in the Sky. Since it holds essentially all the information
+ * Delta in a sky, like a snapshot but smarter.
  */
-struct SkySnapshot {
-  SkySnapshot();
+struct SkyDelta {
+  SkyDelta();
 
-  std::map<PID, PlaneInitializer> addedPlanes;
-  std::vector<PID> removedPlanes;
-  std::map<PID, PlaneState> planes;
+  // here we potentially remove / [re]add Planes
+  std::map<PID, optional<PlaneInitializer>> restructure;
+  // here we set the state of planes
+  std::map<PID, PlaneState> state;
 };
 
-struct SkySnapshotPack: public tg::ClassPack<SkySnapshot> {
-  SkySnapshotPack();
+struct SkyDeltaPack: public tg::ClassPack<SkyDelta> {
+  SkyDeltaPack();
 };
 
 /*
@@ -85,18 +85,25 @@ struct SkySnapshotPack: public tg::ClassPack<SkySnapshot> {
  * all kinds of circumstances, from server-side simulation to replaying
  * recordings.
  *
- * Planes are added and removed to a Sky "all willy-nilly", holding
+ * Planes are added and removed to a Sky "all willy-nilly"; holding
  * persistent player records and such is the task of the Arena.
  */
 class Sky {
  private:
   std::vector<Subsystem *> subsystems;
 
+  // this keeps track of PID values where planes are removed / added
+  // restructure.at(pid) == nullptr <=> at pid, there is no longer any Plane
+  // otherwise, restructure.at(pid) points to a plane that was recently added
+  // so we need to capture its initializer when we create a SkyDelta
+  std::map<PID, Plane *> restructure;
+
  public:
-  Sky(const Map &map);
+  Sky(const MapName &mapName);
   Sky(const SkyInitializer &initializer);
   ~Sky();
 
+  const MapName mapName;
   const Map map; // physics uses this at construction
   Physics physics;
 
@@ -126,7 +133,8 @@ class Sky {
    * Initializers and deltas.
    */
   SkyInitializer captureInitializer();
-
+  SkyDelta collectDelta();
+  void applyDelta(const SkyDelta &delta);
 };
 
 }
