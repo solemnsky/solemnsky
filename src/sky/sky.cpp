@@ -131,7 +131,7 @@ SkyDelta Sky::collectDelta() {
   for (const auto &pair : planes)
     delta.state.emplace(pair.first, pair.second.state);
   for (const auto &pair : restructure) {
-    if (pair.second) delta.restructure.emplace(pair.first, {})
+    if (!pair.second) delta.restructure.emplace(pair.first, {})
     else
       delta.restructure.emplace(pair.first, pair.second->captureInitializer());
   }
