@@ -130,7 +130,7 @@ ArenaDeltaPack::ArenaDeltaPack() :
         ),
         member(optional<std::string>, motd, tg::optStringPack),
         member(optional<ArenaMode>, arenaMode,
-               tg::OptionalPack<ArenaMode>(ArenaModePack())),
+               tg::OptionalPack<ArenaMode>(arenaModePack)),
         member(optional<SkyInitializer>, skyInitializer,
                tg::OptionalPack<SkyInitializer>(SkyInitializerPack()))
     ) { }
