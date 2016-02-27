@@ -125,14 +125,14 @@ ArenaDeltaPack::ArenaDeltaPack() :
                tg::OptionalPack<Player>(PlayerPack())),
         tg::MemberRule<ArenaDelta, optional<std::pair<PID, PlayerDelta>>>(
             tg::OptionalPack<std::pair<PID, PlayerDelta>>(
-                tg::PairPack<PID, PlayerDelta>(pidPack, playerDeltaPack)),
+                tg::PairPack<PID, PlayerDelta>(pidPack, PlayerDeltaPack())),
             &ArenaDelta::player
         ),
         member(optional<std::string>, motd, tg::optStringPack),
         member(optional<ArenaMode>, arenaMode,
-               tg::OptionalPack<ArenaMode>(arenaModePack)),
+               tg::OptionalPack<ArenaMode>(ArenaModePack())),
         member(optional<SkyInitializer>, skyInitializer,
-               tg::OptionalPack<SkyInitializer>(skyInitializerPack))
+               tg::OptionalPack<SkyInitializer>(SkyInitializerPack()))
     ) { }
 #undef member
 
