@@ -7,10 +7,9 @@
 
 Server::Server(const unsigned short port) :
     host(tg::HostType::Server, port),
-    telegraph(sky::ClientPacketPack(), sky::ServerPacketPack()),
+    telegraph(sky::clientPacketPack, sky::serverPacketPack),
     running(true) {
-  appLog("Starting server on port " + std::to_string(port),
-         LogOrigin::Server);
+  appLog("Starting server on port " + std::to_string(port), LogOrigin::Server);
 }
 
 /**
@@ -55,12 +54,14 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
         if (!all(packet.playerDelta))
           return false;
 
-        sky::ArenaDelta delta;
-        delta.player = std::pair<sky::PID, sky::PlayerDelta>(
-            player->pid, *packet.playerDelta
-        );
+        if (packet.playerDelta->admin && not player->admin)
+          return false; // client is asking too much ;)
+
+        sky::ArenaDelta delta = sky::ArenaDelta::Modify(
+            player->pid, *packet.playerDelta);
         arena.applyDelta(delta);
-        broadcastToClients(ServerNotifyDelta(delta));
+        broadcastToClients(ServerPacket::NoteArenaDelta(delta));
+
         return true; // client send a ReqDelta
       }
 
@@ -69,13 +70,14 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
           return false;
 
         appLog("Chat \"" + player->nickname + "\": " + *packet.stringData);
-        broadcastToClients(ServerNotifyMessage(*packet.stringData,
-                                               player->pid));
+        broadcastToClients(ServerPacket::Message(
+            ServerMessage::Chat(player->nickname, *packet.stringData)));
+
         return true; // client sent a Chat
       }
 
       case ClientPacket::Type::Ping: {
-        transmitToClient(client, ServerPong());
+        transmitToClient(client, ServerPacket::Pong());
         return true; // client sent a Ping
       }
 
@@ -95,12 +97,13 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
       appLog("Client " + std::to_string(newPlayer.pid)
                  + " connected as \"" + *packet.stringData + "\".",
              LogOrigin::Server);
-      transmitToClient(
-          client, ServerAckJoin(newPlayer.pid, arena.captureInitializer()));
 
-      sky::ArenaDelta delta;
-      delta.join = newPlayer;
-      broadcastToClientsExcept(newPlayer.pid, ServerNotifyDelta(delta));
+      transmitToClient(
+          client, ServerPacket::AckJoin(
+          newPlayer.pid, arena.captureInitializer()));
+      broadcastToClientsExcept(
+          newPlayer.pid, ServerPacket::NoteArenaDelta(
+          ArenaDelta::Join(newPlayer)));
 
       return true; // unregistered client sent a ReqJoin
     }
@@ -127,12 +130,13 @@ void Server::tick(float delta) {
       if (sky::Player *player = playerFromPeer(event.peer)) {
         appLog("Client disconnected, PID " + std::to_string(player->pid),
                LogOrigin::Server);
-        sky::ArenaDelta arenaDelta;
-        arenaDelta.quit = player->pid;
+
         broadcastToClientsExcept(
-            player->pid,
-            sky::ServerNotifyDelta(arenaDelta));
+            player->pid, sky::ServerPacket::NoteArenaDelta(
+            sky::ArenaDelta::Quit(player->pid)));
+
         arena.disconnectPlayer(*player);
+        event.peer->data = nullptr;
       }
       break;
     }

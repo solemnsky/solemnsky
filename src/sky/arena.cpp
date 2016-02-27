@@ -119,6 +119,7 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode,
   tg::MemberRule<ArenaDelta, TYPE>(RULE, &ArenaDelta::PTR)
 ArenaDeltaPack::ArenaDeltaPack() :
     tg::ClassPack<ArenaDelta>(
+        member(ArenaDelta::Type, type, tg::EnumPack<ArenaDelta::Type>(3)),
         member(optional<PID>, quit, tg::OptionalPack<PID>(pidPack)),
         member(optional<Player>, join,
                tg::OptionalPack<Player>(PlayerPack())),
@@ -209,9 +210,9 @@ bool Arena::applyDelta(const ArenaDelta &delta) {
 }
 
 ArenaInitializer Arena::captureInitializer() {
-  return ArenaInitializer(players, motd, mode,
-                          (mode == ArenaMode::Game)
-                          ? sky->captureInitializer() : {});
+  if (mode == ArenaMode::Game)
+    return ArenaInitializer(players, motd, mode, sky->captureInitializer());
+  else return ArenaInitializer(players, motd, mode, {});
 }
 
 Player &Arena::connectPlayer() {
