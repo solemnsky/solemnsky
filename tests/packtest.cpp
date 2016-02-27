@@ -55,28 +55,28 @@ TEST_F(PackTest, Rules) {
 
   const float testFloat = 5.23f;
   tg::packInto(floatPack, testFloat, buffer);
-  EXPECT_EQ(tg::unpack(floatPack, buffer), testFloat);
+  EXPECT_TRUE(tg::unpack(floatPack, buffer) == testFloat);
   EXPECT_EQ(buffer.size, sizeof(float));
 
   const std::string testString = "hello world";
   tg::packInto(stringPack, testString, buffer);
-  EXPECT_EQ(tg::unpack(stringPack, buffer), testString);
+  EXPECT_TRUE(tg::unpack(stringPack, buffer) == testString);
   EXPECT_EQ(buffer.size, testString.length() + 1); // 1 byte for length
 
   const optional<std::string> testValue = testString;
   tg::packInto(optPack, testValue, buffer);
-  EXPECT_EQ(tg::unpack(optPack, buffer), testValue);
+  EXPECT_TRUE(tg::unpack(optPack, buffer) == testValue);
   EXPECT_EQ(buffer.size, testString.length() + 2);
   // the 1 bit for optional state, bumps us into another byte
 
   const MyEnum testEnum = MyEnum::ValueC;
   tg::packInto(enumPack, testEnum, buffer);
-  EXPECT_EQ(tg::unpack(enumPack, buffer), testEnum);
+  EXPECT_TRUE(tg::unpack(enumPack, buffer) == testEnum);
   EXPECT_EQ(buffer.size, 1);
 
   const std::list<float> testList = {1, 2, 3, 4};
   tg::packInto(listPack, testList, buffer);
-  EXPECT_EQ(tg::unpack(listPack, buffer), testList);
+  EXPECT_TRUE(tg::unpack(listPack, buffer) == testList);
   EXPECT_EQ(buffer.size, (sizeof(float) * 4) + sizeof(size_t));
 }
 
@@ -102,7 +102,7 @@ TEST_F(PackTest, ClassPack) {
   myStruct.x = 5;
   tg::packInto(classPack, myStruct, buffer);
   MyStruct unpacked = *tg::unpack(classPack, buffer);
-  EXPECT_EQ(unpacked.y, myStruct.y);
+  EXPECT_TRUE(unpacked.y == myStruct.y);
   EXPECT_EQ(unpacked.x, myStruct.x);
 }
 
