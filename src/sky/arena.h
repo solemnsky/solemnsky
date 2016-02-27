@@ -107,7 +107,6 @@ struct ArenaDelta {
       const optional<ArenaMode> arenaMode = {},
       const optional<SkyInitializer> skyInitializer = {});
 
-
   Type type;
   optional<PID> quit;
   optional<Player> join;

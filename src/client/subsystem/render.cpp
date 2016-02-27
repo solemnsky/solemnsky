@@ -5,34 +5,27 @@
 #include "util/methods.h"
 
 namespace sky {
-namespace detail {
 
-/****
- * PlaneAnimState
+/**
+ * PlaneGraphics.
  */
 
-PlaneAnimState::PlaneAnimState() :
-    roll(0),
-    orientation(false),
+PlaneGraphics::PlaneGraphics(const PID pid, const Plane &parent) :
+    pid(pid),
+    parent(&parent),
+    roll(90),
+    orientation(Angle(parent.state.rot + 90) > 180),
     flipState(0),
-    rollState(90) { }
+    rollState(90),
+    destroyed(false) { }
 
-void PlaneAnimState::spawn(const PlaneState &vital) {
-  roll = 90;
-  orientation = Angle(vital.rot + 90) > 180;
-  flipState = 0;
-  rollState = 0;
-}
-
-void PlaneAnimState::tick(sky::PlaneHandle *parent, const float delta) {
+void PlaneGraphics::tick(const float delta) {
   using namespace detail;
 
-  auto vstate = parent->state.vital;
-
-  if (vstate) {
+  if (parent) {
     // potentially switch orientation
-    bool newOrientation = Angle(vstate->rot + 90) > 180;
-    if (vstate->rotCtrl == 0) orientation = newOrientation;
+    bool newOrientation = Angle(parent->state.rot + 90) > 180;
+    if (parent->state.rotCtrl == 0) orientation = newOrientation;
 
     // flipping (when orientation changes)
     approach(flipState, (const float) (orientation ? 1 : 0),
@@ -42,18 +35,24 @@ void PlaneAnimState::tick(sky::PlaneHandle *parent, const float delta) {
     else flipComponent = 90 + flipState * 180;
 
     // rolling (when rotation control is active)
-    approach<float>(rollState, vstate->rotCtrl,
+    approach<float>(rollState, parent->state.rotCtrl,
                     rndrParam.rollSpeed * delta);
 
     roll = flipComponent + rndrParam.rollAmount * rollState;
+  } else {
+    // TODO: death animation!
+    destroyed = true;
   }
 }
 
+void PlaneGraphics::removePlane(const PID removedPid) {
+  if (pid) {
+    if (removedPid == *pid) {
+      detatchmentState = parent->state;
+      parent = nullptr;
+    }
+  }
 }
-
-/****
- * Render submethods.
- */
 
 float Render::findView(
     const float viewWidth,
@@ -84,63 +83,79 @@ void Render::renderBars(ui::Frame &f,
 }
 
 std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
-  return std::pair<float, const sf::Color &>(x, c); // like seriously?
+  return std::pair<float, const sf::Color &>(x, c);
 };
 
-void Render::renderPlane(
-    ui::Frame &f, const PID pid, const PlaneHandle &plane) {
-  using namespace detail; // for rndrParam
-  if (plane.state.vital) {
-    const PlaneState &vstate = *plane.state.vital;
-    const PlaneTuning &tuning = plane.state.tuning;
+/**
+ * Render.
+ */
 
-    detail::PlaneAnimState &planeAnimState = animState.at(pid);
+void Render::renderPlaneGraphics(ui::Frame &f, const PlaneGraphics &graphics) {
+  using namespace detail; // for rndrParam
+
+  if (graphics.parent) {
+    const auto &state = graphics.parent->state;
+    const auto &tuning = graphics.parent->tuning;
 
     f.withTransform(
-        sf::Transform().translate(vstate.pos).rotate(vstate.rot), [&]() {
+        sf::Transform().translate(state.pos).rotate(state.rot), [&]() {
 
       f.withTransform(
-          sf::Transform().scale(vstate.afterburner, vstate.afterburner), [&]() {
-        f.drawRect(rndrParam.afterburnArea,
-                   sf::Color::Red);
+          sf::Transform().scale(state.afterburner, state.afterburner), [&]() {
+        f.drawRect(rndrParam.afterburnArea, sf::Color::Red);
       });
 
-      sheet.drawIndexAtRoll(f, sf::Vector2f(rndrParam.spriteSize,
-                                            rndrParam.spriteSize),
-                            planeAnimState.roll);
-
+      sheet.drawIndexAtRoll(
+          f, sf::Vector2f(rndrParam.spriteSize, rndrParam.spriteSize),
+          graphics.roll);
     });
 
-    f.withTransform(sf::Transform().translate(vstate.pos), [&]() {
-      typedef std::pair<float, sf::Color &> Bar;
-
+    f.withTransform(sf::Transform().translate(state.pos), [&]() {
       const float airspeedStall = tuning.flight.threshold /
-                                  tuning.flight.airspeedFactor;
+          tuning.flight.airspeedFactor;
       renderBars(
           f,
-          {mkBar(vstate.throttle,
-                 vstate.stalled ? rndrParam.throttleStall
-                                : rndrParam.throttle),
-           mkBar(vstate.stalled
-                 ? Clamped(0, 1, (vstate.forwardVelocity()) /
-                                 tuning.stall.threshold)
-                 : (vstate.airspeed - airspeedStall) / (1 - airspeedStall),
+          {mkBar(state.throttle,
+                 state.stalled ? rndrParam.throttleStall
+                               : rndrParam.throttle),
+           mkBar(state.stalled
+                 ? Clamped(0, 1, (state.forwardVelocity()) /
+                         tuning.stall.threshold)
+                 : (state.airspeed - airspeedStall) / (1 - airspeedStall),
                  rndrParam.health),
-           mkBar(vstate.energy, rndrParam.energy)},
+           mkBar(state.energy, rndrParam.energy)},
           rndrParam.barArea
       );
     });
+  } else {
+    // TODO: draw death animation
   }
 }
 
 Render::Render(Sky *sky) :
     Subsystem(sky),
     sheet(Res::PlayerSheet) {
-  CTOR_LOG("render subsystem");
+  CTOR_LOG("Render");
 }
 
 Render::~Render() {
-  DTOR_LOG("render subsystem");
+  DTOR_LOG("Render");
+}
+
+void Render::tick(float delta) {
+  std::remove_if(graphics.begin(), graphics.end(), [delta]
+      (PlaneGraphics &planeGraphics) {
+    planeGraphics.tick(delta);
+    return planeGraphics.destroyed;
+  });
+}
+
+void Render::addPlane(const PID pid, Plane &plane) {
+  graphics.push_back(PlaneGraphics(pid, plane));
+}
+
+void Render::removePlane(const PID pid) {
+  for (auto &planeGraphics : graphics) planeGraphics.removePlane(pid);
 }
 
 void Render::render(ui::Frame &f, const sf::Vector2f &pos) {
@@ -149,40 +164,17 @@ void Render::render(ui::Frame &f, const sf::Vector2f &pos) {
        -findView(900, sky->map.dimensions.y, pos.y)}
   ));
 
-  // implicitly draw a background in the {3200, 900} region
+  // draw a background in the {3200, 900} region
   f.drawSprite(textureOf(Res::Title),
                {0, 0}, {0, 0, 1600, 900});
   f.drawSprite(textureOf(Res::Title),
                {1600, 0}, {0, 0, 1600, 900});
 
-  for (auto &pair : sky->planes) {
-    renderPlane(f, pair.first, pair.second);
-  }
+  for (auto &planeGraphics : graphics)
+    renderPlaneGraphics(f, planeGraphics);
+
 
   f.popTransform();
 }
-
-/****
- * Subsystem listeners.
- */
-
-void Render::tick(float delta) {
-  for (auto &pair : animState)
-    pair.second.tick(sky->getPlaneHandle(pair.first), delta);
-}
-
-void Render::joinPlane(const PID pid, PlaneHandle &plane) {
-  animState.emplace(pid, detail::PlaneAnimState());
-}
-
-void Render::quitPlane(const PID pid) {
-  animState.erase(pid);
-}
-
-void Render::spawnPlane(const PID pid, PlaneHandle &plane) {
-  animState.at(pid).spawn(*plane.state.vital);
-}
-
-void Render::killPlane(const PID pid, PlaneHandle &plane) { }
 
 }

@@ -11,7 +11,6 @@
 #include <SFML/Graphics.hpp>
 
 namespace sky {
-namespace detail {
 
 const struct RndrParam {
   // might as well avoid magic values.. not sure if we'll want to refactor
@@ -39,33 +38,40 @@ const struct RndrParam {
 } rndrParam{};
 
 /**
- * Plain data structure with all the animation state of a plane, alive or not.
- * This is derived from the Plane over time after having been thrust
- * into existence at the joining of a plane into the sky, reset to default
- * at each respawn. It is is not necessary to sync this over the network.
+ * Represents a plane graphic on the display associated with our sky.
+ * Each plane is associated with a PlaneGraphics; however, since when a plane
+ * is removed, its graphics could stick around for a while in a death
+ * animation, a PlaneGraphics can exist detached from a Plane.
+ *
+ * The lifecycle of a PlaneGraphics is consistent: it is constructed with a
+ * Plane as a parent, which it attaches to; from that point on, it is tick()'d
+ * along with the Render subsystem; at some point, it detaches from
+ * the Plane when that plane is removed from the Sky, signaled by
+ * PlaneGraphics::detach(); finally, it sets 'destroyed' to true and is
+ * removed from the Render subsystem.
  */
-struct PlaneAnimState {
-  PlaneAnimState();
+struct PlaneGraphics {
+  PlaneGraphics(const PID pid, const Plane &parent);
+
+  const Plane *parent;
+  const optional<PID> pid;
+  optional<PlaneState> detatchmentState; // plane state at detachment
 
   Angle roll;
   bool orientation;
-
   float flipState; // these two values contribute to the roll
   float rollState;
+  bool destroyed; // true when the graphics has reached the singularity of
+  // non-existence and can be removed without anybody noticing
 
-  /**
-   * Mutating state.
-   */
-  void spawn(const PlaneState &vital);
-  void tick(PlaneHandle *parent, const float delta);
-  // death is animated in the a normal course of events, but respawning changes
-  // everything anew
+  void tick(const float delta);
+  // signal that a plane with a certain PID was removed
+  void removePlane(const PID removedPid);
 };
-}
 
 class Render: public Subsystem {
  private:
-  std::map<PID, detail::PlaneAnimState> animState;
+  std::vector<PlaneGraphics> graphics;
   const ui::SpriteSheet sheet;
 
   /**
@@ -77,16 +83,14 @@ class Render: public Subsystem {
   void renderBars(ui::Frame &f,
                   std::vector<std::pair<float, const sf::Color &>> bars,
                   sf::FloatRect area);
-  void renderPlane(ui::Frame &f, const PID pid, const PlaneHandle &plane);
+  void renderPlaneGraphics(ui::Frame &f, const PlaneGraphics &graphics);
 
   /**
    * Subsystem listeners.
    */
   void tick(float delta) override;
-  void joinPlane(const PID pid, PlaneHandle &plane) override;
-  void quitPlane(const PID pid) override;
-  void spawnPlane(const PID pid, PlaneHandle &plane) override; // has PlaneState
-  void killPlane(const PID pid, PlaneHandle &plane) override;
+  virtual void addPlane(const PID pid, Plane &plane) override;
+  virtual void removePlane(const PID pid) override;
 
  public:
   Render(Sky *sky);
@@ -96,7 +100,6 @@ class Render: public Subsystem {
    * Renders the game from a view centered on pos.
    */
   void render(ui::Frame &f, const sf::Vector2f &pos);
-
 };
 
 }
