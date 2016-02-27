@@ -52,10 +52,13 @@ const struct RndrParam {
  */
 struct PlaneGraphics {
   PlaneGraphics(const PID pid, const Plane &parent);
+  PlaneGraphics &operator=(PlaneGraphics &&);
+  PlaneGraphics(const PlaneGraphics &) = delete;
+  PlaneGraphics &operator=(const PlaneGraphics &) = delete;
+
 
   const Plane *parent;
-  const optional<PID> pid;
-  optional<PlaneState> detatchmentState; // plane state at detachment
+  optional<PID> pid;
 
   Angle roll;
   bool orientation;
@@ -71,7 +74,7 @@ struct PlaneGraphics {
 
 class Render: public Subsystem {
  private:
-  std::vector<PlaneGraphics> graphics;
+  std::list<PlaneGraphics> graphics;
   const ui::SpriteSheet sheet;
 
   /**

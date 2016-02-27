@@ -19,6 +19,17 @@ PlaneGraphics::PlaneGraphics(const PID pid, const Plane &parent) :
     rollState(90),
     destroyed(false) { }
 
+PlaneGraphics &PlaneGraphics::operator=(PlaneGraphics &&graphics) {
+  pid = graphics.pid;
+  parent = graphics.parent;
+  roll = graphics.roll;
+  orientation = graphics.orientation;
+  flipState = graphics.flipState;
+  rollState = graphics.rollState;
+  destroyed = graphics.destroyed;
+  return *this;
+}
+
 void PlaneGraphics::tick(const float delta) {
   using namespace detail;
 
@@ -40,7 +51,7 @@ void PlaneGraphics::tick(const float delta) {
 
     roll = flipComponent + rndrParam.rollAmount * rollState;
   } else {
-    // TODO: death animation!
+    // TODO: death animation: store last plane state, etc
     destroyed = true;
   }
 }
@@ -48,11 +59,15 @@ void PlaneGraphics::tick(const float delta) {
 void PlaneGraphics::removePlane(const PID removedPid) {
   if (pid) {
     if (removedPid == *pid) {
-      detatchmentState = parent->state;
       parent = nullptr;
+      destroyed = true;
     }
   }
 }
+
+/**
+ * Render.
+ */
 
 float Render::findView(
     const float viewWidth,
@@ -85,10 +100,6 @@ void Render::renderBars(ui::Frame &f,
 std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
   return std::pair<float, const sf::Color &>(x, c);
 };
-
-/**
- * Render.
- */
 
 void Render::renderPlaneGraphics(ui::Frame &f, const PlaneGraphics &graphics) {
   using namespace detail; // for rndrParam
@@ -128,7 +139,7 @@ void Render::renderPlaneGraphics(ui::Frame &f, const PlaneGraphics &graphics) {
       );
     });
   } else {
-    // TODO: draw death animation
+    // plane is dead
   }
 }
 
@@ -151,7 +162,7 @@ void Render::tick(float delta) {
 }
 
 void Render::addPlane(const PID pid, Plane &plane) {
-  graphics.push_back(PlaneGraphics(pid, plane));
+  graphics.emplace_back(pid, plane);
 }
 
 void Render::removePlane(const PID pid) {
