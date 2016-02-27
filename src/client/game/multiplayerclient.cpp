@@ -39,11 +39,16 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
     if (packet.type == ServerPacket::Type::AckJoin) {
       if (!all(packet.arenaInitializer, packet.pid)) return false;
 
-      arena.emplace(*packet.arenaInitializer);
+      arena.emplace();
+      if (!arena->applyInitializer(*packet.arenaInitializer)) {
+        arena.reset();
+        return false;
+      }
       myRecord = arena->getPlayer(*packet.pid);
       appLog("Joined arena!", LogOrigin::Client);
       return true; // server sent us an AckJoin when we're not registered
     }
+    return false; // something else was sent, dafuq?
   }
 
   // we're in the arena
@@ -51,28 +56,38 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
     case ServerPacket::Type::Pong:
       return true; // received a pong from the server
 
-    case ServerPacket::Type::NoteArenaDelta: {
-      if (!all(packet.arenaDelta)) return false;
-      arena->applyDelta(*packet.arenaDelta);
-      return true; // server sent us a NotifyDelta
-    }
-
     case ServerPacket::Type::Message: {
-      if (!all(packet.stringData)) return false;
-      if (packet.pid) {
-        if (sky::Player *record = arena->getPlayer(*packet.pid))
-          messageLog.pushEntry(record->nickname + ": " + *packet.stringData);
-        else messageLog.pushEntry("[unknown]: " + *packet.stringData);
-      } else
-        messageLog.pushEntry("[server]: " + *packet.stringData);
+      if (!packet.message) return false;
+      switch (packet.message->type) {
+        case ServerMessage::Type::Chat: {
+          if (!packet.message->from) return false;
+          messageLog.pushEntry(*packet.message->from +
+              ": " + packet.message->contents);
+          break;
+        }
+        case ServerMessage::Type::Broadcast: {
+          messageLog.pushEntry("[server]: " + packet.message->contents);
+          break;
+        }
+      }
       return true; // server sent us a Message
     }
 
-    default:
-      break;
+    case ServerPacket::Type::NoteArenaDelta: {
+      if (!packet.arenaDelta) return false;
+      arena->applyDelta(*packet.arenaDelta);
+      return true; // server sent us a NoteArenaDelta
+    }
+
+    case ServerPacket::Type::NoteSkyDelta: {
+      if (!packet.skyDelta) return false;
+      if (arena->sky) arena->sky->applyDelta(*packet.skyDelta);
+      return true; // server sent us a NoteSkyDelta
+    }
+    default: break;
   }
 
-  return false;
+  return false; // invalid packet type, considering we're in the arena
 }
 
 /**
@@ -89,9 +104,8 @@ void MultiplayerClient::onFocus() {
 
 void MultiplayerClient::onChangeSettings(const SettingsDelta &settings) {
   if (settings.nickname) {
-    sky::PlayerDelta delta;
-    delta.nickname = *settings.nickname;
-    transmitServer(sky::ClientReqDelta(delta));
+    sky::PlayerDelta delta(*settings.nickname);
+    transmitServer(sky::ClientPacket::ReqDelta(delta));
     // request a nickname change
   }
 }
@@ -144,7 +158,7 @@ void MultiplayerClient::tick(float delta) {
     if (!triedConnection) {
       // we have a link but haven't sent an arena connection request
       appLog("Asking to join arena...", LogOrigin::Client);
-      transmitServer(ClientReqJoin(shared.settings.nickname));
+      transmitServer(ClientPacket::ReqJoin(shared.settings.nickname));
       triedConnection = true;
       return;
     }
@@ -200,7 +214,7 @@ void MultiplayerClient::signalRead() {
   if (chatEntry.inputSignal) {
     if (arena)
       transmitServer(
-          sky::ClientChat(std::string(*chatEntry.inputSignal)));
+          sky::ClientPacket::Chat(std::string(*chatEntry.inputSignal)));
   }
 }
 
