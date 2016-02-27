@@ -148,12 +148,16 @@ class Plane {
 
   /**
    * State
+   * `tuning` should be treated as const; it's only not defined as such to
+   * allow Plane(Plane &&) to exist, which makes some matters a lot easier
    */
   PlaneTuning tuning;
   PlaneState state;
 
   /**
    * Initializer.
+   * For most game objects we also have a delta, but for our planes the delta
+   * resolution is just to copy PlaneState. TODO: make a smarter delta.
    */
   PlaneInitializer captureInitializer() const;
 };

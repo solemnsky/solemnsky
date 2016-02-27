@@ -87,14 +87,15 @@ Plane &Sky::addPlane(const PID pid,
                      const float rot) {
   Plane &plane =
       planes.emplace(pid, Plane(this, tuning, pos, rot)).first->second;
+  for (auto system : subsystems) system->addPlane(pid, plane);
   restructure[pid] = &plane;
   return plane;
 }
 
 void Sky::removePlane(const PID pid) {
+  for (auto system : subsystems) system->removePlane(pid);
   planes.erase(pid);
   restructure[pid] = nullptr;
-  for (auto system : subsystems) system->removePlane(pid);
 }
 
 void Sky::fireLaser(const PID pid) {

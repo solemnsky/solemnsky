@@ -36,11 +36,13 @@ class Subsystem {
  private:
   friend class Sky;
 
-  // Callbacks are triggered after the respective event occurred.
+  // post-tick
   virtual void tick(const float delta) { }
 
+  // post-add
   virtual void addPlane(const PID pid, Plane &plane) { }
 
+  // pre-remove
   virtual void removePlane(const PID pid) { }
 
  public:

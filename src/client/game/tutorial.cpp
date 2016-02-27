@@ -2,12 +2,11 @@
 
 Tutorial::Tutorial(ClientShared &state) :
     Game(state, "tutorial"),
-    sky({}),
+    sky("default_map_that_exists"),
     renderSystem(&sky) {
   sky.linkSystem(&renderSystem);
 
-  plane = &sky.joinPlane(0);
-  sky.spawnPlane(0, {200, 200}, 0, {});
+  plane = &sky.addPlane(0, {}, {200, 200}, 0);
 }
 
 /**
@@ -43,13 +42,12 @@ void Tutorial::tick(float delta) {
 }
 
 void Tutorial::render(ui::Frame &f) {
-  renderSystem.render(f, plane->vital
-                         ? plane->vital->pos : sf::Vector2f(0, 0));
+  renderSystem.render(f, plane ? plane->state.pos : sf::Vector2f(0, 0));
 }
 
 bool Tutorial::handle(const sf::Event &event) {
   if (controller.handle(event)) {
-    if (plane->vital) controller.setState(*plane->vital);
+    if (plane) controller.setState(plane->state);
     return true;
   }
   return false;
