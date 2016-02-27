@@ -16,7 +16,7 @@ SkyInitializerPack::SkyInitializerPack() :
         member(MapName, mapName, tg::stringPack),
         tg::MemberRule<SkyInitializer, std::map<PID, PlaneInitializer>>(
             tg::MapPack<PID, PlaneInitializer>(
-                pidPack, PlaneInitializerPack()),
+                pidPack, planeInitializerPack),
             &SkyInitializer::planes
         )
     ) { }
@@ -36,11 +36,11 @@ SkyDeltaPack::SkyDeltaPack() :
         tg::MemberRule<SkyDelta, std::map<PID, optional<PlaneInitializer>>>(
             tg::MapPack<PID, optional<PlaneInitializer>>(
                 pidPack,
-                tg::OptionalPack<PlaneInitializer>(PlaneInitializerPack())),
+                tg::OptionalPack<PlaneInitializer>(planeInitializerPack)),
             &SkyDelta::restructure
         ),
         tg::MemberRule<SkyDelta, std::map<PID, PlaneState>>(
-            tg::MapPack<PID, PlaneState>(pidPack, PlaneStatePack()),
+            tg::MapPack<PID, PlaneState>(pidPack, planeStatePack),
             &SkyDelta::state
         )
     ) { }

@@ -48,16 +48,25 @@ PlayerPack::PlayerPack() :
 
 ArenaInitializer::ArenaInitializer() { }
 
+ArenaInitializer::ArenaInitializer(
+    const std::list<Player> players,
+    const std::string &motd,
+    const ArenaMode mode,
+    const optional<SkyInitializer> skyInitializer) :
+    players(players.begin(), players.end()),
+    motd(motd),
+    mode(mode),
+    skyInitializer(skyInitializer) { }
+
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<ArenaInitializer, TYPE>(RULE, &ArenaInitializer::PTR)
 ArenaInitializerPack::ArenaInitializerPack() :
     tg::ClassPack<ArenaInitializer>(
         tg::MemberRule<ArenaInitializer, std::vector<Player>>(
-            tg::VectorPack<Player>(PlayerPack()),
-            &ArenaInitializer::playerRecords),
+            tg::VectorPack<Player>(playerPack),
+            &ArenaInitializer::players),
         member(std::string, motd, tg::stringPack),
-        member(ArenaMode, mode, arenaModePack),
-        member(std::string, nextMap, tg::stringPack)
+        member(ArenaMode, mode, arenaModePack)
     ) { }
 #undef member
 
@@ -65,13 +74,14 @@ ArenaInitializerPack::ArenaInitializerPack() :
  * ArenaDelta.
  */
 
-ArenaDelta::ArenaDelta(const ArenaDelta::Type type,
-                       const optional<PID> &quit,
-                       const optional<Player> &join,
-                       const optional<std::pair<PID, PlayerDelta>> &player,
-                       const optional<std::string> motd,
-                       const optional<ArenaMode> arenaMode,
-                       const optional<SkyInitializer> skyInitializer) :
+ArenaDelta::ArenaDelta(
+    const ArenaDelta::Type type,
+    const optional<PID> &quit,
+    const optional<Player> &join,
+    const optional<std::pair<PID, PlayerDelta>> &player,
+    const optional<std::string> motd,
+    const optional<ArenaMode> arenaMode,
+    const optional<SkyInitializer> skyInitializer) :
     type(type),
     quit(quit),
     join(join),
@@ -114,14 +124,14 @@ ArenaDeltaPack::ArenaDeltaPack() :
                tg::OptionalPack<Player>(PlayerPack())),
         tg::MemberRule<ArenaDelta, optional<std::pair<PID, PlayerDelta>>>(
             tg::OptionalPack<std::pair<PID, PlayerDelta>>(
-                tg::PairPack<PID, PlayerDelta>(pidPack, PlayerDeltaPack())),
+                tg::PairPack<PID, PlayerDelta>(pidPack, playerDeltaPack)),
             &ArenaDelta::player
         ),
         member(optional<std::string>, motd, tg::optStringPack),
         member(optional<ArenaMode>, arenaMode,
                tg::OptionalPack<ArenaMode>(arenaModePack)),
         member(optional<SkyInitializer>, skyInitializer,
-               tg::OptionalPack<SkyInitializer>(SkyInitializerPack()))
+               tg::OptionalPack<SkyInitializer>(skyInitializerPack))
     ) { }
 #undef member
 
@@ -133,8 +143,8 @@ Arena::Arena() { }
 
 bool Arena::applyInitializer(const ArenaInitializer &initializer) {
   motd = initializer.motd;
-  players = std::list<Player>(initializer.playerRecords.begin(),
-                              initializer.playerRecords.end());
+  players = std::list<Player>(initializer.players.begin(),
+                              initializer.players.end());
   mode = initializer.mode;
   if (initializer.mode == ArenaMode::Game) {
     if (!initializer.skyInitializer) return false;
@@ -199,12 +209,9 @@ bool Arena::applyDelta(const ArenaDelta &delta) {
 }
 
 ArenaInitializer Arena::captureInitializer() {
-  ArenaInitializer initializer;
-  initializer.playerRecords =
-      std::vector<Player>(players.begin(), players.end());
-  initializer.motd = motd;
-
-  return initializer;
+  return ArenaInitializer(players, motd, mode,
+                          (mode == ArenaMode::Game)
+                          ? sky->captureInitializer() : {});
 }
 
 Player &Arena::connectPlayer() {

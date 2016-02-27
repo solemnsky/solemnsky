@@ -29,9 +29,9 @@ struct PlayerDelta {
   bool admin; // corresponds to new admin state
 };
 
-struct PlayerDeltaPack: public tg::ClassPack<PlayerDelta> {
+static const struct PlayerDeltaPack: public tg::ClassPack<PlayerDelta> {
   PlayerDeltaPack();
-};
+} playerDeltaPack;
 
 /**
  * A player in the arena.
@@ -47,9 +47,9 @@ struct Player {
   void applyDelta(const PlayerDelta &delta);
 };
 
-struct PlayerPack: public tg::ClassPack<Player> {
+static const struct PlayerPack: public tg::ClassPack<Player> {
   PlayerPack();
-};
+} playerPack;
 
 /**
  * The mode of the arena; we cycle through these three modes.
@@ -68,18 +68,22 @@ static const tg::Pack<ArenaMode> arenaModePack = tg::EnumPack<ArenaMode>(2);
  */
 struct ArenaInitializer {
   ArenaInitializer(); // for unpacking
+  ArenaInitializer(
+      const std::list<Player> players,
+      const std::string &motd,
+      const ArenaMode mode,
+      const optional<SkyInitializer> skyInitializer);
 
-  std::vector<Player> playerRecords;
+  std::vector<Player> players;
   std::string motd;
-
   ArenaMode mode;
   optional<SkyInitializer> skyInitializer;
-  std::string nextMap;
 };
 
-struct ArenaInitializerPack: public tg::ClassPack<ArenaInitializer> {
+static const struct ArenaInitializerPack:
+    public tg::ClassPack<ArenaInitializer> {
   ArenaInitializerPack();
-};
+} arenaInitializerPack;
 
 /**
  * Server-generated modification to the arena.
@@ -94,13 +98,14 @@ struct ArenaDelta {
   };
 
   ArenaDelta();
-  ArenaDelta(const Type type,
-             const optional<PID> &quit = {},
-             const optional<Player> &join = {},
-             const optional<std::pair<PID, PlayerDelta>> &player = {},
-             const optional<std::string> motd = {},
-             const optional<ArenaMode> arenaMode = {},
-             const optional<SkyInitializer> skyInitializer = {});
+  ArenaDelta(
+      const Type type,
+      const optional<PID> &quit = {},
+      const optional<Player> &join = {},
+      const optional<std::pair<PID, PlayerDelta>> &player = {},
+      const optional<std::string> motd = {},
+      const optional<ArenaMode> arenaMode = {},
+      const optional<SkyInitializer> skyInitializer = {});
 
 
   Type type;
@@ -119,9 +124,9 @@ struct ArenaDelta {
                          const optional<SkyInitializer> &initializer = {});
 };
 
-struct ArenaDeltaPack: public tg::ClassPack<ArenaDelta> {
+static const struct ArenaDeltaPack: public tg::ClassPack<ArenaDelta> {
   ArenaDeltaPack();
-};
+} arenaDeltaPack;
 
 /**
  * Arena.
@@ -152,7 +157,6 @@ class Arena {
   Player &connectPlayer();
   void disconnectPlayer(const Player &record);
   Player *getPlayer(const PID pid);
-
 };
 
 }

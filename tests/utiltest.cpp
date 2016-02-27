@@ -2,10 +2,14 @@
 #include "gtest/gtest.h"
 
 /**
- * Extremely simple utils.
+ * The basic utilities we have in src/util.
  */
+class UtilTest: public testing::Test {
+ public:
+  UtilTest() { }
+};
 
-TEST(UtilTest, CooldownTest) {
+TEST_F(UtilTest, CooldownTest) {
   Cooldown x{1};
   EXPECT_FALSE(x.cool(0.6));
   EXPECT_TRUE(x.cool(0.5));
@@ -15,14 +19,14 @@ TEST(UtilTest, CooldownTest) {
   EXPECT_TRUE((bool) x);
 }
 
-TEST(UtilTest, ClampedTest) {
+TEST_F(UtilTest, ClampedTest) {
   Clamped x{-1, 1};
   EXPECT_EQ(x = 2, 1);
   EXPECT_EQ(x = 0, 0);
   EXPECT_EQ(x = -5, -1);
 }
 
-TEST(UtilTest, CyclicTest) {
+TEST_F(UtilTest, CyclicTest) {
   Cyclic x{-5, 5};
   EXPECT_EQ(x = -5, -5);
   EXPECT_EQ(x = 5, -5);
@@ -30,10 +34,9 @@ TEST(UtilTest, CyclicTest) {
   EXPECT_EQ(x = -7, 3);
 }
 
-TEST(UtilTest, AngleTest) {
+TEST_F(UtilTest, AngleTest) {
   Angle x;
   EXPECT_EQ(x = 360, 0);
   EXPECT_EQ(x = 400, 40);
   EXPECT_EQ(x = -10, 350);
 }
-

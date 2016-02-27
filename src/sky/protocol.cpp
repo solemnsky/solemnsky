@@ -72,7 +72,9 @@ ClientPacketPack::ClientPacketPack() :
                tg::EnumPack<ClientPacket::Type>(3)),
         member(optional<std::string>, stringData, tg::optStringPack),
         member(optional<PlayerDelta>, playerDelta,
-               tg::OptionalPack<PlayerDelta>(PlayerDeltaPack()))
+               tg::OptionalPack<PlayerDelta>(PlayerDeltaPack())),
+        member(optional<SkyDelta>, skyDelta,
+               tg::OptionalPack<SkyDelta>(skyDeltaPack))
     ) { }
 #undef member
 
@@ -170,11 +172,13 @@ ServerPacket ServerPacket::AckJoin(const PID pid,
 }
 
 ServerPacket ServerPacket::NoteArenaDelta(const ArenaDelta &arenaDelta) {
-  ServerPacket(ServerPacket::Type::NoteArenaDelta, {}, {}, {}, arenaDelta);
+  return ServerPacket(
+      ServerPacket::Type::NoteArenaDelta, {}, {}, {}, arenaDelta);
 }
 
-ServerPacket ServerPacket::NoteSkyDelta() {
-  return sky::ServerPacket();
+ServerPacket ServerPacket::NoteSkyDelta(const SkyDelta &skyDelta) {
+  return sky::ServerPacket(
+      ServerPacket::Type::NoteSkyDelta, {}, {}, {}, {}, skyDelta);
 }
 
 #define member(TYPE, PTR, RULE) \
@@ -182,11 +186,15 @@ ServerPacket ServerPacket::NoteSkyDelta() {
 ServerPacketPack::ServerPacketPack() :
     tg::ClassPack<ServerPacket>(
         member(ServerPacket::Type, type, tg::EnumPack<ServerPacket::Type>(3)),
+        member(optional<ServerMessage>, message,
+               tg::OptionalPack<ServerMessage>(ServerMessagePack())),
         member(optional<PID>, pid, tg::OptionalPack<PID>(pidPack)),
         member(optional<ArenaInitializer>, arenaInitializer,
                tg::OptionalPack<ArenaInitializer>(ArenaInitializerPack())),
         member(optional<ArenaDelta>, arenaDelta,
-               tg::OptionalPack<sky::ArenaDelta>(ArenaDeltaPack()))
+               tg::OptionalPack<ArenaDelta>(ArenaDeltaPack())),
+        member(optional<SkyDelta>, skyDelta,
+               tg::OptionalPack<SkyDelta>(skyDeltaPack))
     ) { }
 #undef member
 

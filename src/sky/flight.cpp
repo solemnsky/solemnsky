@@ -14,7 +14,7 @@ PlaneTuning::PlaneTuning() { }
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<PlaneTuning::Energy, TYPE>(RULE, &PlaneTuning::Energy::PTR)
-const static tg::Pack<PlaneTuning::Energy> planeTuningEnergyPack =
+static const tg::Pack<PlaneTuning::Energy> planeTuningEnergyPack =
     tg::ClassPack<PlaneTuning::Energy>(
         member(float, thrustDrain, tg::floatPack),
         member(float, recharge, tg::floatPack),
@@ -24,7 +24,7 @@ const static tg::Pack<PlaneTuning::Energy> planeTuningEnergyPack =
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<PlaneTuning::Stall, TYPE>(RULE, &PlaneTuning::Stall::PTR)
-const static tg::Pack<PlaneTuning::Stall> planeTuningStallPack =
+static const tg::Pack<PlaneTuning::Stall> planeTuningStallPack =
     tg::ClassPack<PlaneTuning::Stall>(
         member(float, maxRotVel, tg::floatPack),
         member(float, maxVel, tg::floatPack),
@@ -36,7 +36,7 @@ const static tg::Pack<PlaneTuning::Stall> planeTuningStallPack =
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<PlaneTuning::Flight, TYPE>(RULE, &PlaneTuning::Flight::PTR)
-const static tg::Pack<PlaneTuning::Flight> planeTuningFlightPack =
+static const tg::Pack<PlaneTuning::Flight> planeTuningFlightPack =
     tg::ClassPack<PlaneTuning::Flight>(
         member(float, maxRotVel, tg::floatPack),
         member(float, airspeedFactor, tg::floatPack),
@@ -148,8 +148,8 @@ PlaneInitializer::PlaneInitializer(
   tg::MemberRule<PlaneInitializer, TYPE>(RULE, &PlaneInitializer::PTR)
 PlaneInitializerPack::PlaneInitializerPack() :
     tg::ClassPack<PlaneInitializer>(
-        member(PlaneTuning, tuning, PlaneTuningPack()),
-        member(PlaneState, state, PlaneStatePack())
+        member(PlaneTuning, tuning, planeTuningPack),
+        member(PlaneState, state, planeStatePack)
     ) { }
 #undef member
 
