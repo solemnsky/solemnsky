@@ -74,7 +74,7 @@ ClientPacketPack::ClientPacketPack() :
         member(optional<PlayerDelta>, playerDelta,
                tg::OptionalPack<PlayerDelta>(PlayerDeltaPack())),
         member(optional<SkyDelta>, skyDelta,
-               tg::OptionalPack<SkyDelta>(skyDeltaPack))
+               tg::OptionalPack<SkyDelta>(SkyDeltaPack()))
     ) { }
 #undef member
 
@@ -194,7 +194,7 @@ ServerPacketPack::ServerPacketPack() :
         member(optional<ArenaDelta>, arenaDelta,
                tg::OptionalPack<ArenaDelta>(ArenaDeltaPack())),
         member(optional<SkyDelta>, skyDelta,
-               tg::OptionalPack<SkyDelta>(skyDeltaPack))
+               tg::OptionalPack<SkyDelta>(SkyDeltaPack()))
     ) { }
 #undef member
 

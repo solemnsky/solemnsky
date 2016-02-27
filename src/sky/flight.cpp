@@ -148,8 +148,8 @@ PlaneInitializer::PlaneInitializer(
   tg::MemberRule<PlaneInitializer, TYPE>(RULE, &PlaneInitializer::PTR)
 PlaneInitializerPack::PlaneInitializerPack() :
     tg::ClassPack<PlaneInitializer>(
-        member(PlaneTuning, tuning, planeTuningPack),
-        member(PlaneState, state, planeStatePack)
+        member(PlaneTuning, tuning, PlaneTuningPack()),
+        member(PlaneState, state, PlaneStatePack())
     ) { }
 #undef member
 
