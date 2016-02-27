@@ -302,15 +302,28 @@ struct PairPack: public Pack<std::pair<First, Second>> {
  * Instantiated Pack's.
  */
 
-extern const Pack<std::string> stringPack;
-extern const Pack<optional<std::string>> optStringPack;
-extern const Pack<bool> boolPack;
-extern const Pack<float> floatPack;
-extern const Pack<int> intPack;
-extern const Pack<sf::Vector2f> vectorPack;
-extern const Pack<Clamped> clampedPack;
-extern const Pack<Angle> anglePack;
-extern const Pack<Movement> movementPack;
+static const Pack<std::string> stringPack = StringPack();
+
+static const Pack<optional<std::string>> optStringPack =
+    OptionalPack<std::string>(stringPack);
+
+static const Pack<bool> boolPack = BoolPack();
+
+static const Pack<float> floatPack = BytePack<float>();
+
+static const Pack<int> intPack = BytePack<int>();
+
+static const Pack<sf::Vector2f> vectorPack =
+    ClassPack<sf::Vector2f>(
+        MemberRule<sf::Vector2f, float>(floatPack, &sf::Vector2f::x),
+        MemberRule<sf::Vector2f, float>(floatPack, &sf::Vector2f::y)
+    );
+
+static const Pack<Clamped> clampedPack = AssignPack<float, Clamped>(floatPack);
+
+static const Pack<Angle> anglePack = AssignPack<float, Angle>(floatPack);
+
+static const Pack<Movement> movementPack = EnumPack<Movement>(2);
 
 }
 
