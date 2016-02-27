@@ -63,7 +63,7 @@ ArenaInitializer::ArenaInitializer(
 ArenaInitializerPack::ArenaInitializerPack() :
     tg::ClassPack<ArenaInitializer>(
         tg::MemberRule<ArenaInitializer, std::vector<Player>>(
-            tg::VectorPack<Player>(playerPack),
+            tg::VectorPack<Player>(PlayerPack()),
             &ArenaInitializer::players),
         member(std::string, motd, tg::stringPack),
         member(ArenaMode, mode, arenaModePack)
