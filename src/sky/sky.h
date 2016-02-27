@@ -59,9 +59,9 @@ struct SkyInitializer {
   std::map<PID, PlaneInitializer> planes; // planes already in the arena
 };
 
-struct SkyInitializerPack: public tg::ClassPack<SkyInitializer> {
+static const struct SkyInitializerPack: public tg::ClassPack<SkyInitializer> {
   SkyInitializerPack();
-};
+} skyInitializerPack;
 
 /**
  * Delta in a sky, like a snapshot but smarter.
@@ -75,9 +75,9 @@ struct SkyDelta {
   std::map<PID, PlaneState> state;
 };
 
-struct SkyDeltaPack: public tg::ClassPack<SkyDelta> {
+static const struct SkyDeltaPack: public tg::ClassPack<SkyDelta> {
   SkyDeltaPack();
-};
+} skyDeltaPack;
 
 /*
  * A Sky is the basic core of the game state. It is semantically subordinate to

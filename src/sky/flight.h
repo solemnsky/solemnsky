@@ -53,9 +53,9 @@ struct PlaneTuning {
   float throttleSpeed = 1.5;
 };
 
-struct PlaneTuningPack: public tg::ClassPack<PlaneTuning> {
+static const struct PlaneTuningPack: public tg::ClassPack<PlaneTuning> {
   PlaneTuningPack();
-};
+} planeTuningPack;
 
 /**
  * The (POD) variable game state of a Plane.
@@ -96,7 +96,9 @@ struct PlaneState {
   float requestEnergy(const float reqEnergy);
 };
 
-struct PlaneStatePack: public tg::ClassPack<PlaneState> { PlaneStatePack(); };
+static const struct PlaneStatePack: public tg::ClassPack<PlaneState> {
+  PlaneStatePack();
+} planeStatePack;
 
 /**
  * Initializer to construct a new plane.
@@ -109,9 +111,10 @@ struct PlaneInitializer {
   PlaneState state;
 };
 
-struct PlaneInitializerPack: public tg::ClassPack<PlaneInitializer> {
+static const struct PlaneInitializerPack:
+    public tg::ClassPack<PlaneInitializer> {
   PlaneInitializerPack();
-};
+} planeInitializerPack;
 
 /**
  * A plane in the sky. Manager of a a Box2D body entity, it's non-copyable.

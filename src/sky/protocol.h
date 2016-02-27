@@ -50,9 +50,9 @@ struct ClientPacket {
   static ClientPacket Chat(const std::string &message);
 };
 
-struct ClientPacketPack: public tg::ClassPack<ClientPacket> {
+static const struct ClientPacketPack: public tg::ClassPack<ClientPacket> {
   ClientPacketPack();
-};
+} clientPacketPack;
 
 /**
  * Messages from the server, of varied nature.
@@ -80,9 +80,9 @@ struct ServerMessage {
   static ServerMessage Broadcast(const std::string &contents);
 };
 
-struct ServerMessagePack: public tg::ClassPack<ServerMessage> {
+static const struct ServerMessagePack: public tg::ClassPack<ServerMessage> {
   ServerMessagePack();
-};
+} serverMessagePack;
 
 /**
  * Protocol verbs for the server.
@@ -119,12 +119,12 @@ struct ServerPacket {
   static ServerPacket AckJoin(const PID pid,
                               const ArenaInitializer &arenaInitializer);
   static ServerPacket NoteArenaDelta(const ArenaDelta &arenaDelta);
-  static ServerPacket NoteSkyDelta();
+  static ServerPacket NoteSkyDelta(const SkyDelta &skyDelta);
 };
 
-struct ServerPacketPack: public tg::ClassPack<ServerPacket> {
+static const struct ServerPacketPack: public tg::ClassPack<ServerPacket> {
   ServerPacketPack();
-};
+} serverPacketPack;
 
 }
 

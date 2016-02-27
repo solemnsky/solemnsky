@@ -3,6 +3,9 @@
 #include "sky/protocol.h"
 #include "util/methods.h"
 
+/**
+ * Packets and Pack rules.
+ */
 class PackTest: public testing::Test {
  public:
   PackTest() { }
@@ -150,27 +153,4 @@ TEST_F(PackTest, ListlikePack) {
   std::vector<int> unpacked = *tg::unpack(vecPack, buffer);
   EXPECT_EQ(myVec, unpacked);
   EXPECT_EQ(buffer.size, sizeof(size_t) + 4 * sizeof(int));
-}
-
-/**
- * Just a sanity test that protocol verb packing can work correctly.
- */
-TEST_F(PackTest, ProtocolPack) {
-  using namespace sky;
-
-  tg::Pack<ClientPacket> clientPacketPack = ClientPacketPack();
-  tg::Pack<ServerPacket> serverPacketPack = ServerPacketPack();
-
-  ClientPacket packet = ClientPacket::ReqJoin("nickname");
-  tg::packInto(clientPacketPack, packet, buffer);
-  tg::unpackInto(clientPacketPack, buffer, packet);
-  EXPECT_EQ(*packet.stringData, "nickname");
-  EXPECT_EQ(packet.type, ClientPacket::Type::ReqJoin);
-
-  ServerPacket serverPacket =
-      ServerPacket::Message(ServerMessage::Broadcast("yeah"));
-  tg::packInto(serverPacketPack, serverPacket, buffer);
-  tg::unpackInto(serverPacketPack, buffer, serverPacket);
-  EXPECT_EQ(serverPacket.message->contents, "yeah");
-  EXPECT_EQ(serverPacket.type, ServerPacket::Type::Message);
 }

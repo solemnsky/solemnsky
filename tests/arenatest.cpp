@@ -1,16 +1,17 @@
 #include <gtest/gtest.h>
-#include <sky/protocol.h>
 #include "sky/arena.h"
-#include "util/methods.h"
 
+/**
+ * The Arena abstraction.
+ */
 class ArenaTest: public testing::Test {
  public:
   tg::Packet buffer;
-
-  const tg::Pack<sky::ServerPacket> serverPacketPack = sky::ServerPacketPack();
-  const tg::Pack<sky::ArenaDelta> arenaDeltaPack = sky::ArenaDeltaPack();
 };
 
+/**
+ * Players can be connected.
+ */
 TEST_F(ArenaTest, ConnectionTest) {
   sky::Arena arena;
   sky::Player &player1 = arena.connectPlayer();
@@ -28,53 +29,56 @@ TEST_F(ArenaTest, ConnectionTest) {
   EXPECT_EQ(arena.getPlayer(2), nullptr);
 }
 
-TEST_F(ArenaTest, InitializationTest) {
-  sky::Arena arena;
-  arena.motd = "test server";
-  sky::Player &player1 = arena.connectPlayer();
-  player1.nickname = "somebody";
-
-  sky::ArenaInitializer initializer = arena.captureInitializer();
-  sky::ServerPacket ack = sky::ServerPacket::AckJoin(1, initializer);
-  tg::packInto(serverPacketPack, ack, buffer);
-
-  sky::ServerPacket receivedAck =
-      *tg::unpack(serverPacketPack, buffer);
-  sky::Arena remoteArena;
-  EXPECT_TRUE(remoteArena.applyInitializer(*receivedAck.arenaInitializer));
-  EXPECT_EQ(remoteArena.getPlayer(*receivedAck.pid)->nickname, "somebody");
-  EXPECT_EQ(remoteArena.motd, "test server");
-}
-
+/**
+ * ArenaDeltas work correctly, and can be packed / unpacked.
+ */
 TEST_F(ArenaTest, DeltaTest) {
-  sky::Arena arena;
-  arena.motd = "test server";
+  sky::Arena homeArena, remoteArena;
 
-  tg::packInto(arenaDeltaPack, sky::ArenaDelta::Motd("secret server"), buffer);
-  appLog(buffer.dump());
-  arena.applyDelta(*tg::unpack(arenaDeltaPack, buffer));
-  EXPECT_EQ(arena.motd, "secret server");
+  sky::Player &player1 = homeArena.connectPlayer();
+  player1.nickname = "asdf";
 
-  sky::Player player(1);
-  player.nickname = "somebody";
-  tg::packInto(arenaDeltaPack, sky::ArenaDelta::Join(player), buffer);
-  appLog(buffer.dump());
-  arena.applyDelta(*tg::unpack(arenaDeltaPack, buffer));
-  EXPECT_NE(arena.getPlayer(1), nullptr);
-  EXPECT_EQ(arena.getPlayer(1)->nickname, "somebody");
+  tg::packInto(sky::arenaDeltaPack, sky::ArenaDelta::Join(player1), buffer);
+  optional<sky::ArenaDelta> joinDelta = tg::unpack(sky::arenaDeltaPack, buffer);
 
-  sky::PlayerDelta playerDelta = sky::PlayerDelta(std::string("somebody else"));
-  tg::packInto(arenaDeltaPack, sky::ArenaDelta::Modify(1, playerDelta), buffer);
-  appLog(buffer.dump());
-  arena.applyDelta(*tg::unpack(arenaDeltaPack, buffer));
-  EXPECT_EQ(arena.getPlayer(1)->nickname, "somebody else");
+  ASSERT_TRUE((bool) joinDelta);
+  ASSERT_TRUE(remoteArena.applyDelta(*joinDelta));
+  EXPECT_TRUE((bool) remoteArena.getPlayer(1));
+  EXPECT_EQ(remoteArena.getPlayer(1)->nickname, "asdf");
 
-  tg::packInto(arenaDeltaPack, sky::ArenaDelta::Quit(1), buffer);
-  appLog(buffer.dump());
-  arena.applyDelta(*tg::unpack(arenaDeltaPack, buffer));
-  EXPECT_EQ(arena.getPlayer(1), nullptr);
+  tg::packInto(sky::arenaDeltaPack, sky::ArenaDelta::Quit(1), buffer);
+  optional<sky::ArenaDelta> quitDelta = tg::unpack(sky::arenaDeltaPack, buffer);
+
+  ASSERT_TRUE((bool) quitDelta);
+  ASSERT_TRUE(remoteArena.applyDelta(*quitDelta));
+  EXPECT_FALSE((bool) remoteArena.getPlayer(1));
 }
 
-TEST_F(ArenaTest, SkyTest) {
-  sky::Arena arena, remoteArena;
+/**
+ * Arenas can be copied through ArenaInitializer; ArenaInitializer can be
+ * packed / unpacked.
+ */
+TEST_F(ArenaTest, InitializerTest) {
+  sky::Arena homeArena, remoteArena;
+
+  homeArena.motd = "secret arena";
+  sky::Player &player1 = homeArena.connectPlayer();
+  player1.nickname = "an admin";
+  player1.admin = true;
+  sky::Player &player2 = homeArena.connectPlayer();
+  player2.nickname = "somebody else";
+  homeArena.mode = sky::ArenaMode::Scoring;
+
+  tg::packInto(sky::arenaInitializerPack,
+               homeArena.captureInitializer(), buffer);
+  optional<sky::ArenaInitializer> initializer =
+      tg::unpack(sky::arenaInitializerPack, buffer);
+
+  ASSERT_TRUE((bool) initializer);
+  ASSERT_TRUE(remoteArena.applyInitializer(*initializer));
+  EXPECT_EQ(remoteArena.motd, "secret arena");
+  EXPECT_EQ(remoteArena.getPlayer(1)->nickname, "an admin");
+  EXPECT_EQ(remoteArena.getPlayer(1)->admin, true);
+  EXPECT_EQ(remoteArena.getPlayer(2)->nickname, "somebody else");
+  EXPECT_EQ(remoteArena.mode, sky::ArenaMode::Scoring);
 }
