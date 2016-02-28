@@ -16,6 +16,11 @@ class MultiplayerClient: public Game {
   struct Style {
     sf::Vector2i scoreOverlayDims{1330, 630};
     float scoreOverlayTopMargin = 100;
+
+    float lobbyPlayersOffset = 1305,
+        lobbyTopMargin = 205,
+        lobbyChatWidth = 1220,
+        lobbyFontSize = 40;
   } style;
 
   /**
@@ -47,6 +52,7 @@ class MultiplayerClient: public Game {
   ui::TextLog messageLog;
   bool scoreOverlayFocused;
 
+  void setUI(const sky::ArenaMode mode); // set some style state on widgets
   void renderLobby(ui::Frame &f);
   void renderGame(ui::Frame &f);
   void renderScoring(ui::Frame &f);

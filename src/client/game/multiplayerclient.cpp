@@ -1,7 +1,6 @@
 #include "multiplayerclient.h"
 
 #include "boost/iterator/function_input_iterator.hpp"
-#include "util/methods.h"
 
 MultiplayerClient::MultiplayerClient(ClientShared &state,
                                      const std::string &serverHostname,
@@ -26,12 +25,31 @@ MultiplayerClient::MultiplayerClient(ClientShared &state,
  * Graphics.
  */
 
+void MultiplayerClient::setUI(const sky::ArenaMode mode) {
+  switch (mode) {
+    case sky::ArenaMode::Lobby: {
+      messageLog.expanded = true;
+      messageLog.style.maxWidth = style.lobbyChatWidth;
+    }
+    case sky::ArenaMode::Game:
+      break;
+    case sky::ArenaMode::Scoring:
+      break;
+  }
+}
+
 void MultiplayerClient::renderLobby(ui::Frame &f) {
   f.drawSprite(textureOf(Res::Lobby), {0, 0}, {0, 0, 1600, 900});
+  std::vector<std::string> players;
+  for (sky::Player &player : arena->players)
+    players.push_back(player.nickname);
+  f.drawText({style.lobbyPlayersOffset, style.lobbyTopMargin},
+             players.begin(), players.end(), style.lobbyFontSize);
+  // TODO: don't copy strings
 }
 
 void MultiplayerClient::renderGame(ui::Frame &f) {
-  if (!all(arena, arena->sky, myPlayer))
+  if (!(arena and arena->sky))
     return;
   // trying to render without being in the arena, having a sky, and identifying
   // with a player
@@ -48,7 +66,7 @@ void MultiplayerClient::renderScoring(ui::Frame &f) {
 }
 
 void MultiplayerClient::renderScoreOverlay(ui::Frame &f) {
-  const static sf::Vector2f scoreOverlayPos = 0.5 *
+  const static sf::Vector2f scoreOverlayPos = 0.5f *
       sf::Vector2f(
           1600.0f - style.scoreOverlayDims.x,
           900.0f - style.scoreOverlayDims.y);
@@ -72,18 +90,25 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
   if (!arena) {
     // waiting for the arena connection request to be accepted
     if (packet.type == ServerPacket::Type::AckJoin) {
-      if (!all(packet.arenaInitializer, packet.pid)) return false;
+      if (!(packet.arenaInitializer and packet.pid))
+        return false;
 
       arena.emplace();
       if (!arena->applyInitializer(*packet.arenaInitializer)) {
         arena.reset();
         return false;
       }
+
       myPlayer = arena->getPlayer(*packet.pid);
+      setUI(arena->mode);
+      if (arena->mode == sky::ArenaMode::Game) {
+        renderSystem.emplace(&*arena->sky);
+      }
+
       appLog("Joined arena!", LogOrigin::Client);
       return true; // server sent us an AckJoin when we're not registered
     }
-    return false; // something else was sent, dafuq?
+    return false; // we're only interested in AckJoins until we're connected
   }
 
   // we're in the arena
@@ -110,11 +135,14 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
 
     case ServerPacket::Type::NoteArenaDelta: {
       if (!packet.arenaDelta) return false;
-      arena->applyDelta(*packet.arenaDelta);
+      if (!arena->applyDelta(*packet.arenaDelta)) return false;
 
-      // create a render subsystem if the game started
-      if (packet.arenaDelta->arenaMode == sky::ArenaMode::Game)
-        renderSystem.emplace(*arena->sky);
+      if (packet.arenaDelta->type == sky::ArenaDelta::Type::Mode) {
+        // things can happen when the mode changes...
+        setUI(arena->mode);
+        if (arena->mode == sky::ArenaMode::Game)
+          renderSystem.emplace(&*arena->sky);
+      }
 
       return true; // server sent us a NoteArenaDelta
     }
@@ -238,19 +266,18 @@ void MultiplayerClient::render(ui::Frame &f) {
   if (server and arena) {
     switch (arena->mode) {
       case sky::ArenaMode::Lobby: {
-        renderLobby();
+        renderLobby(f);
         break;
       }
-      case sky::ArenaMode::Game:
+      case sky::ArenaMode::Game: {
+        renderGame(f);
         break;
-      case sky::ArenaMode::Scoring:
+      }
+      case sky::ArenaMode::Scoring: {
+        renderScoring(f);
         break;
+      }
     }
-    std::vector<std::string> players;
-    for (sky::Player &player : arena->players)
-      players.push_back(player.nickname);
-    f.drawText({500, 20}, players.begin(), players.end());
-    // TODO: don't copy strings
   }
 }
 

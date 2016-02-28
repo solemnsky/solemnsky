@@ -43,15 +43,15 @@ sky::Player *Server::playerFromPeer(ENetPeer *peer) const {
 }
 
 bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
-  // received a packet from a connected peer
   using namespace sky;
+  // received a packet from a connected peer
 
   if (Player *player = playerFromPeer(client)) {
     const std::string &pidString = std::to_string(player->pid);
 
     switch (packet.type) {
       case ClientPacket::Type::ReqDelta: {
-        if (!all(packet.playerDelta))
+        if (!packet.playerDelta)
           return false;
 
         if (packet.playerDelta->admin && not player->admin)
@@ -66,7 +66,7 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
       }
 
       case ClientPacket::Type::Chat: {
-        if (!all(packet.stringData))
+        if (!packet.stringData)
           return false;
 
         appLog("Chat \"" + player->nickname + "\": " + *packet.stringData);
@@ -88,7 +88,7 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
     // client is still connecting, we need to do a ReqJoin / AckJoin
     // handshake and then distribute an ArenaDelta to the other clients
     if (packet.type == ClientPacket::Type::ReqJoin) {
-      if (!all(packet.stringData)) return false;
+      if (!packet.stringData) return false;
 
       sky::Player &newPlayer = arena.connectPlayer();
       newPlayer.nickname = *packet.stringData;
@@ -112,11 +112,13 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
   return false;
 }
 
-/**
- * Server tick.
- */
-
 void Server::tick(float delta) {
+  if (arena.sky) {
+    arena.sky->tick(delta);
+    broadcastToClients(sky::ServerPacket::NoteSkyDelta(
+        arena.sky->collectDelta()));
+  }
+
   event = host.poll();
   switch (event.type) {
     case ENET_EVENT_TYPE_NONE:

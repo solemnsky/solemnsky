@@ -32,6 +32,13 @@ enum class ResType {
 };
 
 struct ResRecord {
+  ResRecord(
+      std::string path,
+      ResType type,
+      bool isSheet,
+      int tileX = 0, int tileY = 0,
+      int countX = 0, int countY = 0);
+
   std::string path;
   ResType type;
 
@@ -39,45 +46,36 @@ struct ResRecord {
   bool isSheet;
   int tileX, tileY, countX, countY;
 
-  ResRecord(std::string path,
-            ResType type,
-            bool isSheet,
-            int tileX = 0, int tileY = 0, int countX = 0, int countY = 0) :
-      path(path),
-      type(type),
-      isSheet(isSheet),
-      tileX(tileX), tileY(tileY), countX(countX), countY(countY) { }
+  // get the real usable filesystem path to the resource
+  std::string realPath() const;
 };
 
-const std::string filepathTo(Res res);
-const ResRecord &recordOf(const Res res);
-
 /**
- * Access the resource manager object.
+ * Top-level functions to load resources, and then access pre-loaded data and
+ * ResRecord metadata from Res values.
  */
 void loadResources();
-const sf::Texture &textureOf(Res res);
-const sf::Font &fontOf(Res res);
-
-/****
- * Internal resource manager class.
- */
+const ResRecord &recordOf(const Res res);
+const sf::Texture &textureOf(const Res res);
+const sf::Font &fontOf(const Res res);
 
 namespace detail {
 
 class ResMan {
-private:
+ private:
   std::map<int, sf::Texture> textures;
   std::map<int, sf::Font> fonts;
+  std::vector<ResRecord> resRecords;
   bool initialized{false};
 
-public:
+ public:
   ResMan(); // make sure the resources are in order
 
   void loadRes();
 
-  const sf::Texture &recallTexture(Res res);
-  const sf::Font &recallFont(Res res);
+  const sf::Texture &textureOf(Res res);
+  const sf::Font &fontOf(Res res);
+  const ResRecord &recordOf(const Res res);
 };
 
 static ResMan resMan{};

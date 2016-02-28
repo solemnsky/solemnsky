@@ -23,7 +23,7 @@ private:
 public:
   SplashScreen(std::function<std::unique_ptr<Control>()> afterLoading) :
       afterLoading(afterLoading) {
-    font.loadFromFile(filepathTo(Res::Font));
+    font.loadFromFile(recordOf(Res::Font).realPath());
   }
 
   virtual void tick(float delta) override;

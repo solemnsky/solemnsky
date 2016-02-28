@@ -18,7 +18,7 @@ struct TextLogEntry {
 
 }
 
-class TextLog : public Control {
+class TextLog: public Control {
  public:
   struct Style {
     sf::Color textColor{255, 255, 255};
@@ -32,7 +32,7 @@ class TextLog : public Control {
     Style() { }
   } style;
 
-private:
+ private:
   double lifetime;
 
  public:
