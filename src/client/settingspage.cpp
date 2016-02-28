@@ -1,6 +1,7 @@
 #include "settingspage.h"
 
-ui::TextEntry::Style textEntryStyle(const SettingsPage::Style &style) {
+ui::TextEntry::Style SettingsPage::Style::textEntryStyle(
+    const SettingsPage::Style &style) {
   ui::TextEntry::Style textStyle;
   textStyle.fontSize = style.fontSize;
   textStyle.dimensions = style.textEntryDimensions;
@@ -11,7 +12,8 @@ SettingsPage::SettingsPage(ClientShared &state) :
     Page(state),
     style(),
     newSettings(shared.settings),
-    nicknameChooser(style.nicknameEntryPos, "", true, textEntryStyle(style)) {
+    nicknameChooser(style.nicknameEntryPos, "", true,
+                    style.textEntryStyle(style)) {
   nicknameChooser.contents = shared.settings.nickname;
 }
 

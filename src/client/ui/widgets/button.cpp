@@ -17,7 +17,6 @@ void Button::tick(float delta) {
 }
 
 void Button::render(Frame &f) {
-  f.pushAlpha(style.alpha);
   const auto body = getBody();
   if (!inPreClick)
     f.drawRect(body, mixColors(style.baseColor, style.hotColor, heat));
@@ -29,7 +28,6 @@ void Button::render(Frame &f) {
           body.top - 5), // TODO: get text bounds to work
       {text}, style.fontSize, style.textColor
   );
-  f.popAlpha();
 }
 
 bool Button::handle(const sf::Event &event) {

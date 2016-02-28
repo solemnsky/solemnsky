@@ -24,7 +24,6 @@ class Button : public Control {
 
     float heatRate = 10;
     int fontSize = 40;
-    float alpha = 1;
 
     Style() { }
   } style;

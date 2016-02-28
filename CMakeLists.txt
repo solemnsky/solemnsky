@@ -103,6 +103,9 @@ add_executable(solemnsky_client
         src/client/ui/widgets/button.cpp
         src/client/ui/widgets/button.h
 
+        src/client/ui/widgets/radiobutton.cpp
+        src/client/ui/widgets/radiobutton.h
+
         src/client/ui/widgets/textentry.cpp
         src/client/ui/widgets/textentry.h
 
