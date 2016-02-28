@@ -31,7 +31,7 @@ const static tg::Pack<PID> pidPack = tg::BytePack<PID>();
  */
 class Subsystem {
  protected:
-  Sky *sky; // pointer to the sky it's attached to
+  const Sky *sky; // pointer to the sky it's attached to
 
  private:
   friend class Sky;
@@ -46,7 +46,7 @@ class Subsystem {
   virtual void removePlane(const PID pid) { }
 
  public:
-  Subsystem(Sky *sky) : sky(sky) { }
+  Subsystem(const Sky *sky) : sky(sky) { }
 
   // a Subsystem's life is never managed from a handle to a Subsystem, but
   // rather from non-virtual subclasses; we don't need a virtual dtor.

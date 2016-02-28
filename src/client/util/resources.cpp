@@ -2,37 +2,68 @@
 #include "resources.h"
 #include "util/methods.h"
 
-const static std::vector<ResRecord>
-    resRecords{ // edit this side-by-side with resources.h
-    {"fonts/Atarian/SF Atarian System.ttf", ResType::Font, false},
+/**
+ * ResRecord.
+ */
 
-    {"render-2d/title.png", ResType::Texture, false},
-    {"render-2d/menubackground.png", ResType::Texture, false},
-    {"render-2d/credits.png", ResType::Texture, false},
-    {"render-2d/lobby.png", ResType::Texture, false},
-    {"render-2d/scoring.png", ResType::Texture, false},
-    {"render-2d/scoreoverlay.png", ResType::Texture, false},
+ResRecord::ResRecord(
+    std::string path,
+    ResType type,
+    bool isSheet,
+    int tileX, int tileY,
+    int countX, int countY)
+    : path(path),
+      type(type),
+      isSheet(isSheet),
+      tileX(tileX), tileY(tileY), countX(countX), countY(countY) { }
 
-    {"render-3d/test_1/player_200.png", ResType::Texture, true, 200, 200, 2, 15}
-};
+std::string ResRecord::realPath() const {
+  return "../../media/" + path;
+}
 
-const std::string filepathTo(const Res res) {
-  const ResRecord &record = recordOf(res);
-  return "../../media/" + record.path;
+/**
+ * Top-level functions.
+ */
+
+void loadResources() {
+  detail::resMan.loadRes();
 }
 
 const ResRecord &recordOf(const Res res) {
-  return resRecords[(unsigned long long int) res];
+  return detail::resMan.recordOf(res);
 }
 
-/****
- * ResMan
+const sf::Texture &textureOf(const Res res) {
+  return detail::resMan.textureOf(res);
+}
+
+const sf::Font &fontOf(const Res res) {
+  return detail::resMan.fontOf(res);
+}
+
+/**
+ * detail::ResMan.
  */
-
 namespace detail {
+ResMan::ResMan() :
+    resRecords{ // edit this side-by-side with resources.h
+        {"fonts/Atarian/SF Atarian System.ttf", ResType::Font, false},
 
-ResMan::ResMan() {
+        {"render-2d/title.png", ResType::Texture, false},
+        {"render-2d/menubackground.png", ResType::Texture, false},
+        {"render-2d/credits.png", ResType::Texture, false},
+        {"render-2d/lobby.png", ResType::Texture, false},
+        {"render-2d/scoring.png", ResType::Texture, false},
+        {"render-2d/scoreoverlay.png", ResType::Texture, false},
+
+        {"render-3d/test_1/player_200.png",
+         ResType::Texture, true, 200, 200, 2, 15}
+    } {
   assert(resRecords.size() == (size_t) Res::LAST);
+}
+
+const ResRecord &ResMan::recordOf(const Res res) {
+  return resRecords.at((size_t) res);
 }
 
 void ResMan::loadRes() {
@@ -52,7 +83,7 @@ void ResMan::loadRes() {
       case ResType::Font: {
         appLog("Loading font " + record.path + progress, LogOrigin::App);
         sf::Font font;
-        font.loadFromFile(filepathTo(res));
+        font.loadFromFile(record.realPath());
         fonts.emplace((int) res, std::move(font));
         break;
       }
@@ -61,7 +92,7 @@ void ResMan::loadRes() {
                LogOrigin::App);
 
         sf::Texture texture;
-        texture.loadFromFile(filepathTo(res));
+        texture.loadFromFile(record.realPath());
         textures.emplace((int) res, std::move(texture));
       }
     }
@@ -76,7 +107,7 @@ void ResMan::loadRes() {
   initialized = true;
 }
 
-const sf::Texture &ResMan::recallTexture(Res res) {
+const sf::Texture &ResMan::textureOf(Res res) {
   assert(initialized);
   const ResRecord &record(recordOf(res));
   if (record.type == ResType::Texture)
@@ -86,7 +117,7 @@ const sf::Texture &ResMan::recallTexture(Res res) {
   }
 }
 
-const sf::Font &ResMan::recallFont(Res res) {
+const sf::Font &ResMan::fontOf(Res res) {
   assert(initialized);
   const ResRecord &record(recordOf(res));
   if (record.type == ResType::Font)
@@ -95,15 +126,4 @@ const sf::Font &ResMan::recallFont(Res res) {
     appErrorLogic(record.path + " is not a font.");
   }
 }
-
-}
-
-void loadResources() { detail::resMan.loadRes(); }
-
-const sf::Texture &textureOf(Res res) {
-  return detail::resMan.recallTexture(res);
-}
-
-const sf::Font &fontOf(Res res) {
-  return detail::resMan.recallFont(res);
 }

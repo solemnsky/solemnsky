@@ -95,7 +95,7 @@ class RenderSystem: public Subsystem {
   virtual void removePlane(const PID pid) override;
 
  public:
-  RenderSystem(Sky *sky);
+  explicit RenderSystem(const Sky *sky);
   ~RenderSystem();
 
   /**
