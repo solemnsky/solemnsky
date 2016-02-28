@@ -98,11 +98,9 @@ void Sky::removePlane(const PID pid) {
   restructure[pid] = nullptr;
 }
 
-void Sky::fireLaser(const PID pid) {
-  if (auto *plane = getPlane(pid)) {
-    if (plane->state.requestDiscreteEnergy(0.3)) {
-      appLog("PEW PEW wait for somebody to implement this PEW PEW PEW");
-    }
+void Sky::fireLaser(Plane *const plane) {
+  if (plane->state.requestDiscreteEnergy(0.3)) {
+    appLog("PEW PEW wait for somebody to implement this PEW PEW PEW");
   }
 }
 

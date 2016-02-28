@@ -18,6 +18,9 @@ enum class Res {
   Title, // ui stuff
   MenuBackground,
   Credits,
+  Lobby,
+  Scoring,
+  ScoreOverlay,
 
   PlayerSheet, // game stuff
 
@@ -69,6 +72,8 @@ private:
   bool initialized{false};
 
 public:
+  ResMan(); // make sure the resources are in order
+
   void loadRes();
 
   const sf::Texture &recallTexture(Res res);

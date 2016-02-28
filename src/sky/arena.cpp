@@ -8,7 +8,7 @@ namespace sky {
 PlayerDelta::PlayerDelta() { }
 
 PlayerDelta::PlayerDelta(const optional<std::string> &nickname) :
-    nickname(nickname) { }
+    nickname(nickname), admin(false) { }
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<PlayerDelta, TYPE>(RULE, &PlayerDelta::PTR)
@@ -38,7 +38,7 @@ PlayerPack::PlayerPack() :
     tg::ClassPack<Player>(
         member(PID, pid, pidPack),
         member(std::string, nickname, tg::stringPack),
-        member(bool, admin, tg::boolPack)
+        member(bool, admin, tg::BoolPack())
     ) { }
 #undef member
 

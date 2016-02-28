@@ -88,8 +88,8 @@ add_executable(solemnsky_client
         src/client/elements/settings.cpp
         src/client/elements/settings.h
 
-        src/client/game/gamecontroller.cpp
-        src/client/game/gamecontroller.h
+        src/client/game/gamecontrols.cpp
+        src/client/game/gamecontrols.h
 
         src/client/game/multiplayerclient.cpp
         src/client/game/multiplayerclient.h
