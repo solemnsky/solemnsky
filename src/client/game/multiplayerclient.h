@@ -19,8 +19,8 @@ class MultiplayerClient: public Game {
 
     float lobbyPlayersOffset = 1305,
         lobbyTopMargin = 205,
-        lobbyChatWidth = 1220,
-        lobbyFontSize = 40;
+        lobbyChatWidth = 1220;
+    int lobbyFontSize = 40;
   } style;
 
   /**

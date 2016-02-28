@@ -4,6 +4,7 @@
 #ifndef SOLEMNSKY_SETTINGSPAGE_H
 #define SOLEMNSKY_SETTINGSPAGE_H
 
+#include <client/ui/widgets/radiobutton.h>
 #include "elements/elements.h"
 
 enum class SettingsPageTab {
@@ -22,6 +23,8 @@ class SettingsPage: public Page {
     std::string nicknameDesc = "nickname:";
     sf::Vector2f nicknameEntryPos{300, 100};
 
+    ui::TextEntry::Style textEntryStyle() const;
+
     float pageButtonHeight = 800;
     float
         generalButtonOffset = 1,
@@ -37,17 +40,24 @@ class SettingsPage: public Page {
   // delta when we want to distribute the new settings
 
   SettingsPageTab currentTab;
+
   ui::Button generalButton, playerButton, controlsButton;
+
+  ui::RadioButton debugChooser; // general tab
+  ui::TextEntry nicknameChooser; // player tab
+  /* stub */ // controls tab
+
+  /**
+   * Helpers
+   */
+  // invoke a function on every widget in a certain tab
+  void doForTabWidgets(
+      const SettingsPageTab tab, std::function<void(ui::Control &)> f);
+
+  void writeToSettings();
 
  public:
   SettingsPage(ClientShared &state);
-
-  ui::TextEntry nicknameChooser;
-
-  /**
-   * Writing to settings.
-   */
-  void writeToSettings();
 
   /**
    * Page interface.

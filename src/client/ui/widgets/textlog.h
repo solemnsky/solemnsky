@@ -28,6 +28,7 @@ class TextLog: public Control {
 
     float entryLifetime = 10;
     // for how long in seconds a log is displayed in unexpanded mode
+    float max
 
     Style() { }
   } style;

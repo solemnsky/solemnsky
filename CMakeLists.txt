@@ -144,7 +144,7 @@ add_executable(solemnsky_client
 
         src/client/settingspage.cpp
         src/client/settingspage.h
-        )
+        src/client/ui/widgets/keyselector.cpp src/client/ui/widgets/keyselector.cpp src/client/ui/widgets/keyselector.h)
 target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics
