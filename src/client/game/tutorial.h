@@ -7,12 +7,12 @@
 #include "client/elements/elements.h"
 #include "sky/sky.h"
 #include "client/subsystem/render.h"
-#include "gamecontroller.h"
+#include "gamecontrols.h"
 
 class Tutorial : public Game {
 private:
   sky::Sky sky;
-  sky::Render renderSystem;
+  sky::RenderSystem renderSystem;
   GameController controller;
 
   sky::Plane *plane;

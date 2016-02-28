@@ -5,7 +5,6 @@ Tutorial::Tutorial(ClientShared &state) :
     sky("default_map_that_exists"),
     renderSystem(&sky) {
   sky.linkSystem(&renderSystem);
-
   plane = &sky.addPlane(0, {}, {200, 200}, 0);
 }
 

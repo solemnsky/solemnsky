@@ -56,7 +56,6 @@ struct PlaneGraphics {
   PlaneGraphics(const PlaneGraphics &) = delete;
   PlaneGraphics &operator=(const PlaneGraphics &) = delete;
 
-
   const Plane *parent;
   optional<PID> pid;
 
@@ -72,7 +71,7 @@ struct PlaneGraphics {
   void removePlane(const PID removedPid);
 };
 
-class Render: public Subsystem {
+class RenderSystem: public Subsystem {
  private:
   std::list<PlaneGraphics> graphics;
   const ui::SpriteSheet sheet;
@@ -96,8 +95,8 @@ class Render: public Subsystem {
   virtual void removePlane(const PID pid) override;
 
  public:
-  Render(Sky *sky);
-  ~Render();
+  RenderSystem(Sky *sky);
+  ~RenderSystem();
 
   /**
    * Renders the game from a view centered on pos.

@@ -2,34 +2,26 @@
 #include "resources.h"
 #include "util/methods.h"
 
-const static std::vector<ResRecord> resRecords{ // edit this side-by-side with resources.h
-    {"fonts/Atarian/SF Atarian System.ttf",
-        ResType::Font,    false},
+const static std::vector<ResRecord>
+    resRecords{ // edit this side-by-side with resources.h
+    {"fonts/Atarian/SF Atarian System.ttf", ResType::Font, false},
 
-    {"render-2d/title.png",
-        ResType::Texture, false},
-    {"render-2d/menubackground.png",
-        ResType::Texture, false},
-    {"render-2d/credits.png",
-     ResType::Texture, false},
+    {"render-2d/title.png", ResType::Texture, false},
+    {"render-2d/menubackground.png", ResType::Texture, false},
+    {"render-2d/credits.png", ResType::Texture, false},
+    {"render-2d/lobby.png", ResType::Texture, false},
+    {"render-2d/scoring.png", ResType::Texture, false},
+    {"render-2d/scoreoverlay.png", ResType::Texture, false},
 
-    {"render-3d/test_1/player_200.png",
-        ResType::Texture, true, 200, 200, 2, 15}
-
+    {"render-3d/test_1/player_200.png", ResType::Texture, true, 200, 200, 2, 15}
 };
 
-static bool asserted{false}; // make sure we have enough entries in data
-#define ASSERT if (!asserted) { assert(resRecords.size() == (unsigned long long int) Res::LAST); asserted = true; }
-// TODO: move this check to compile-time? >_>
-
 const std::string filepathTo(const Res res) {
-  ASSERT;
   const ResRecord &record = recordOf(res);
   return "../../media/" + record.path;
 }
 
 const ResRecord &recordOf(const Res res) {
-  ASSERT;
   return resRecords[(unsigned long long int) res];
 }
 
@@ -39,6 +31,10 @@ const ResRecord &recordOf(const Res res) {
 
 namespace detail {
 
+ResMan::ResMan() {
+  assert(resRecords.size() == (size_t) Res::LAST);
+}
+
 void ResMan::loadRes() {
   if (initialized) return;
 
@@ -46,10 +42,11 @@ void ResMan::loadRes() {
   std::string progress;
   appLog("Loading resources ...", LogOrigin::App);
 
-  for (Res res = Res::Font; res < Res::LAST; res = (Res) (((int) res) + 1)) {
+  for (Res res = Res::Font; res < Res::LAST;
+       res = (Res) (((int) res) + 1)) {
     const ResRecord &record(recordOf(res));
     progress = " ... (" + std::to_string((int) res + 1) +
-               " of " + resCount + ")";
+        " of " + resCount + ")";
 
     switch (record.type) {
       case ResType::Font: {
@@ -60,7 +57,8 @@ void ResMan::loadRes() {
         break;
       }
       case ResType::Texture: {
-        appLog("Loading texture " + record.path + progress, LogOrigin::App);
+        appLog("Loading texture " + record.path + progress,
+               LogOrigin::App);
 
         sf::Texture texture;
         texture.loadFromFile(filepathTo(res));
@@ -106,4 +104,6 @@ const sf::Texture &textureOf(Res res) {
   return detail::resMan.recallTexture(res);
 }
 
-const sf::Font &fontOf(Res res) { return detail::resMan.recallFont(res); }
+const sf::Font &fontOf(Res res) {
+  return detail::resMan.recallFont(res);
+}

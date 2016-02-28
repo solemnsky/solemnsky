@@ -13,8 +13,10 @@
 
 class MultiplayerClient: public Game {
  private:
-  ui::TextEntry chatEntry;
-  ui::TextLog messageLog;
+  struct Style {
+    sf::Vector2i scoreOverlayDims{1330, 630};
+    float scoreOverlayTopMargin = 100;
+  } style;
 
   /**
    * Connection state / network stuff.
@@ -33,10 +35,22 @@ class MultiplayerClient: public Game {
 
   /**
    * Local model of the Arena / game state.
-   * Use with discretion until 'connected'.
    */
-  sky::Player *myRecord;
+  sky::Player *myPlayer;
   optional<sky::Arena> arena;
+  optional<sky::RenderSystem> renderSystem;
+
+  /**
+   * Graphics and UI.
+   */
+  ui::TextEntry chatEntry;
+  ui::TextLog messageLog;
+  bool scoreOverlayFocused;
+
+  void renderLobby(ui::Frame &f);
+  void renderGame(ui::Frame &f);
+  void renderScoring(ui::Frame &f);
+  void renderScoreOverlay(ui::Frame &f);
 
   /**
    * Networking submethods.

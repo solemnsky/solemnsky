@@ -94,6 +94,8 @@ class Sky {
  private:
   std::vector<Subsystem *> subsystems;
 
+  std::map<PID, Plane> planes;
+
   // This keeps track of PID values where planes are removed / added.
   // `restructure.at(pid) == nullptr` <=> At pid, there is no longer any Plane.
   // Otherwise, restructure.at(pid) points to a plane that was recently added.
@@ -115,20 +117,17 @@ class Sky {
   void linkSystem(Subsystem *);
 
   /**
-   * Planes.
+   * Interface.
    */
-  std::map<PID, Plane> planes;
   Plane *getPlane(const PID pid);
   Plane &addPlane(const PID pid,
                   const PlaneTuning &tuning,
                   const sf::Vector2f pos,
                   const float rot);
   void removePlane(const PID pid);
-  void fireLaser(const PID pid);
 
-  /**
-   * Simulating.
-   */
+  void fireLaser(Plane *const plane);
+
   void tick(float delta); // delta in seconds *everywhere*
 
   /**

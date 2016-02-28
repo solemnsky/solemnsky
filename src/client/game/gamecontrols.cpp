@@ -1,4 +1,4 @@
-#include "gamecontroller.h"
+#include "gamecontrols.h"
 
 void GameController::handleKey(bool &state, const sf::Event &event) {
   state = event.type == sf::Event::KeyPressed;

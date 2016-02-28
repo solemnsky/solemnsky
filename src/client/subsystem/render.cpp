@@ -16,7 +16,7 @@ PlaneGraphics::PlaneGraphics(const PID pid, const Plane &parent) :
     roll(90),
     orientation(Angle(parent.state.rot + 90) > 180),
     flipState(0),
-    rollState(90),
+    rollState(0),
     destroyed(false) { }
 
 PlaneGraphics &PlaneGraphics::operator=(PlaneGraphics &&graphics) {
@@ -31,8 +31,6 @@ PlaneGraphics &PlaneGraphics::operator=(PlaneGraphics &&graphics) {
 }
 
 void PlaneGraphics::tick(const float delta) {
-  using namespace detail;
-
   if (parent) {
     // potentially switch orientation
     bool newOrientation = Angle(parent->state.rot + 90) > 180;
@@ -66,10 +64,10 @@ void PlaneGraphics::removePlane(const PID removedPid) {
 }
 
 /**
- * Render.
+ * RenderSystem.
  */
 
-float Render::findView(
+float RenderSystem::findView(
     const float viewWidth,
     const float totalWidth,
     const float viewTarget) const {
@@ -80,9 +78,10 @@ float Render::findView(
   return viewTarget - (viewWidth / 2);
 }
 
-void Render::renderBars(ui::Frame &f,
-                        std::vector<std::pair<float, const sf::Color &>> bars,
-                        sf::FloatRect area) {
+void RenderSystem::renderBars(ui::Frame &f,
+                              std::vector<std::pair<float,
+                                                    const sf::Color &>> bars,
+                              sf::FloatRect area) {
   const float height = area.height / bars.size();
 
   sf::FloatRect barArea;
@@ -101,9 +100,8 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
   return std::pair<float, const sf::Color &>(x, c);
 };
 
-void Render::renderPlaneGraphics(ui::Frame &f, const PlaneGraphics &graphics) {
-  using namespace detail; // for rndrParam
-
+void RenderSystem::renderPlaneGraphics(ui::Frame &f,
+                                       const PlaneGraphics &graphics) {
   if (graphics.parent) {
     const auto &state = graphics.parent->state;
     const auto &tuning = graphics.parent->tuning;
@@ -143,17 +141,17 @@ void Render::renderPlaneGraphics(ui::Frame &f, const PlaneGraphics &graphics) {
   }
 }
 
-Render::Render(Sky *sky) :
+RenderSystem::RenderSystem(Sky *sky) :
     Subsystem(sky),
     sheet(Res::PlayerSheet) {
   CTOR_LOG("Render");
 }
 
-Render::~Render() {
+RenderSystem::~RenderSystem() {
   DTOR_LOG("Render");
 }
 
-void Render::tick(float delta) {
+void RenderSystem::tick(float delta) {
   std::remove_if(graphics.begin(), graphics.end(), [delta]
       (PlaneGraphics &planeGraphics) {
     planeGraphics.tick(delta);
@@ -161,21 +159,21 @@ void Render::tick(float delta) {
   });
 }
 
-void Render::addPlane(const PID pid, Plane &plane) {
+void RenderSystem::addPlane(const PID pid, Plane &plane) {
   graphics.emplace_back(pid, plane);
 }
 
-void Render::removePlane(const PID pid) {
+void RenderSystem::removePlane(const PID pid) {
   for (auto &planeGraphics : graphics) planeGraphics.removePlane(pid);
 }
 
-void Render::render(ui::Frame &f, const sf::Vector2f &pos) {
+void RenderSystem::render(ui::Frame &f, const sf::Vector2f &pos) {
   f.pushTransform(sf::Transform().translate(
       {-findView(1600, sky->map.dimensions.x, pos.x),
        -findView(900, sky->map.dimensions.y, pos.y)}
   ));
 
-  // draw a background in the {3200, 900} region
+  // TODO: give sky->map visual data, including background
   f.drawSprite(textureOf(Res::Title),
                {0, 0}, {0, 0, 1600, 900});
   f.drawSprite(textureOf(Res::Title),
@@ -183,7 +181,6 @@ void Render::render(ui::Frame &f, const sf::Vector2f &pos) {
 
   for (auto &planeGraphics : graphics)
     renderPlaneGraphics(f, planeGraphics);
-
 
   f.popTransform();
 }

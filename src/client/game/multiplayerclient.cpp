@@ -23,6 +23,41 @@ MultiplayerClient::MultiplayerClient(ClientShared &state,
 }
 
 /**
+ * Graphics.
+ */
+
+void MultiplayerClient::renderLobby(ui::Frame &f) {
+  f.drawSprite(textureOf(Res::Lobby), {0, 0}, {0, 0, 1600, 900});
+}
+
+void MultiplayerClient::renderGame(ui::Frame &f) {
+  if (!all(arena, arena->sky, myPlayer))
+    return;
+  // trying to render without being in the arena, having a sky, and identifying
+  // with a player
+
+  if (sky::Plane *plane = arena->sky->getPlane(myPlayer->pid)) {
+    renderSystem->render(f, plane->state.pos);
+  } else {
+    renderSystem->render(f, {0, 0}); // TODO: panning in spectator mode
+  }
+}
+
+void MultiplayerClient::renderScoring(ui::Frame &f) {
+  f.drawSprite(textureOf(Res::Lobby), {0, 0}, {0, 0, 1600, 900});
+}
+
+void MultiplayerClient::renderScoreOverlay(ui::Frame &f) {
+  const static sf::Vector2f scoreOverlayPos = 0.5 *
+      sf::Vector2f(
+          1600.0f - style.scoreOverlayDims.x,
+          900.0f - style.scoreOverlayDims.y);
+  f.drawSprite(
+      textureOf(Res::ScoreOverlay), scoreOverlayPos,
+      {0, 0, style.scoreOverlayDims.x, style.scoreOverlayDims.y});
+}
+
+/**
  * Networking submethods.
  */
 
@@ -44,7 +79,7 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
         arena.reset();
         return false;
       }
-      myRecord = arena->getPlayer(*packet.pid);
+      myPlayer = arena->getPlayer(*packet.pid);
       appLog("Joined arena!", LogOrigin::Client);
       return true; // server sent us an AckJoin when we're not registered
     }
@@ -76,6 +111,11 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
     case ServerPacket::Type::NoteArenaDelta: {
       if (!packet.arenaDelta) return false;
       arena->applyDelta(*packet.arenaDelta);
+
+      // create a render subsystem if the game started
+      if (packet.arenaDelta->arenaMode == sky::ArenaMode::Game)
+        renderSystem.emplace(*arena->sky);
+
       return true; // server sent us a NoteArenaDelta
     }
 
@@ -84,7 +124,8 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
       if (arena->sky) arena->sky->applyDelta(*packet.skyDelta);
       return true; // server sent us a NoteSkyDelta
     }
-    default: break;
+    default:
+      break;
   }
 
   return false; // invalid packet type, considering we're in the arena
@@ -131,6 +172,12 @@ void MultiplayerClient::tick(float delta) {
 
   using namespace sky;
 
+  /**
+   * Here we handle connections and disconnections from the server, and send
+   * the ReqJoin when we manage to make initial contact. All the rest of the
+   * protocol is implemented in processPack().
+   */
+
   event = host.poll();
   if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
     server = nullptr;
@@ -164,15 +211,9 @@ void MultiplayerClient::tick(float delta) {
     }
 
     if (event.type == ENET_EVENT_TYPE_RECEIVE) {
-      bool success = false;
-      if (const auto reception = telegraph.receive(event.packet)) {
-        if (processPacket(*reception))
-          success = true;
-      }
-
-      if (!success)
-        appLog("Received malformed packet from server!",
-               LogOrigin::Client);
+      if (const auto reception =
+          telegraph.receive(event.packet)) if (processPacket(*reception)) return;
+      appLog("Received malformed packet from server!", LogOrigin::Client);
     }
   }
 }
@@ -186,11 +227,25 @@ void MultiplayerClient::render(ui::Frame &f) {
 
   if (!server) {
     f.drawText({400, 400}, {"Connecting..."}, 60, sf::Color::White);
-  } else if (disconnecting) {
+    return;
+  }
+
+  if (disconnecting) {
     f.drawText({400, 400}, {"Disconnecting..."}, 60, sf::Color::White);
+    return;
   }
 
   if (server and arena) {
+    switch (arena->mode) {
+      case sky::ArenaMode::Lobby: {
+        renderLobby();
+        break;
+      }
+      case sky::ArenaMode::Game:
+        break;
+      case sky::ArenaMode::Scoring:
+        break;
+    }
     std::vector<std::string> players;
     for (sky::Player &player : arena->players)
       players.push_back(player.nickname);
@@ -221,5 +276,3 @@ void MultiplayerClient::signalRead() {
 void MultiplayerClient::signalClear() {
   chatEntry.signalClear();
 }
-
-

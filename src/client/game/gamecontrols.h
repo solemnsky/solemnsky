@@ -1,11 +1,18 @@
 /**
- * Manager for user game control input.
+ * User input actions in the game.
  */
 #ifndef SOLEMNSKY_GAMECONTROLLER_H
 #define SOLEMNSKY_GAMECONTROLLER_H
 
 #include "client/util/sfmlutil.h"
 #include "sky/flight.h"
+
+/**
+ * A
+ */
+enum class GameControl {
+
+};
 
 class GameController {
 private:
