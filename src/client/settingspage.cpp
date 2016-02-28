@@ -1,21 +1,50 @@
 #include "settingspage.h"
 
-ui::TextEntry::Style SettingsPage::Style::textEntryStyle(
-    const SettingsPage::Style &style) {
+ui::TextEntry::Style SettingsPage::Style::textEntryStyle() const {
   ui::TextEntry::Style textStyle;
-  textStyle.fontSize = style.fontSize;
-  textStyle.dimensions = style.textEntryDimensions;
+  textStyle.fontSize = fontSize;
+  textStyle.dimensions = textEntryDimensions;
   return textStyle;
 }
 
 SettingsPage::SettingsPage(ClientShared &state) :
     Page(state),
-    style(),
+
+    currentTab(SettingsPageTab::General),
+    generalButton(
+        {style.pageButtonHeight, style.generalButtonOffset}, "general"),
+    playerButton(
+        {style.pageButtonHeight, style.playerButtonOffset}, "player"),
+    controlsButton(
+        {style.pageButtonHeight, style.controlsButtonOffset}, "controls"),
+
+    debugChooser(),
+    nicknameChooser(),
+
     newSettings(shared.settings),
     nicknameChooser(style.nicknameEntryPos, "", true,
-                    style.textEntryStyle(style)) {
+                    style.textEntryStyle()) {
   nicknameChooser.contents = shared.settings.nickname;
 }
+
+void SettingsPage::doForTabWidgets(
+    const SettingsPageTab tab,
+    std::function<void(ui::Control &)> f) {
+  switch (tab) {
+    case SettingsPageTab::General: {
+      f(debugChooser);
+      break;
+    }
+    case SettingsPageTab::Player: {
+      f(nicknameChooser);
+      break;
+    }
+    case SettingsPageTab::Controls: {
+      break;
+    }
+  }
+}
+
 
 void SettingsPage::writeToSettings() {
   shared.changeSettings(SettingsDelta(shared.settings, newSettings));
