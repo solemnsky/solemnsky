@@ -6,11 +6,13 @@
 
 #include "elements/elements.h"
 
-class SettingsPage : public Page {
- private:
-  Settings newSettings; // for making deltas
+enum class SettingsPageTab {
+  General, Player, Controls
+};
 
-public:
+
+class SettingsPage: public Page {
+ public:
   struct Style {
     int fontSize = 50;
     sf::Vector2f textEntryDimensions{400, 60};
@@ -20,9 +22,24 @@ public:
     std::string nicknameDesc = "nickname:";
     sf::Vector2f nicknameEntryPos{300, 100};
 
+    float pageButtonHeight = 800;
+    float
+        generalButtonOffset = 1,
+        playerButtonOffset = 1,
+        controlsButtonOffset = 1;
+
     Style() { }
   } style;
 
+ private:
+  Settings newSettings;
+  // we write the user-edited settings to this cache and then construct a
+  // delta when we want to distribute the new settings
+
+  SettingsPageTab currentTab;
+  ui::Button generalButton, playerButton, controlsButton;
+
+ public:
   SettingsPage(ClientShared &state);
 
   ui::TextEntry nicknameChooser;
