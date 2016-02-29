@@ -5,7 +5,8 @@
  */
 
 Settings::Settings() :
-    nickname("nameless plane") { }
+    nickname("nameless plane"),
+    debug(false) { }
 
 bool Settings::readFromFile(std::string filepath) {
   return true;

@@ -19,7 +19,8 @@ Button::Style Checkbox::makeButtonStyle() const {
 Checkbox::Checkbox(const sf::Vector2f &pos,
                    const ui::Checkbox::Style &style) :
     style(style),
-    button(pos, "", makeButtonStyle()) { }
+    button(pos, "", makeButtonStyle()),
+    value(false) { }
 
 void Checkbox::tick(float delta) {
   button.tick(delta);
@@ -49,9 +50,9 @@ void Checkbox::reset() {
   button.reset();
 }
 
-void Checkbox::setValue(const bool value) {
-  this->value = value;
-  button.text = value ? "x" : " ";
+void Checkbox::setValue(const bool newValue) {
+  value = newValue;
+  button.text = newValue ? "x" : " ";
 }
 
 bool Checkbox::getValue() const {

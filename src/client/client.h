@@ -26,13 +26,13 @@ class Client: public ui::Control {
         listingOffset{550.000, 495.250},
         quitButtonOffset{182.812, 610.875},
         aboutButtonOffset{1217.188, 610.875},
-        closeButtonOffset{332.813, 850},
+        closeButtonOffset{1300, 0},
         backButtonOffset{1067.18, 850};
     // see the schema in media/source2d/board.png
 
     sf::Color pageUnderlayColor{0, 0, 0, 20};
 
-    int descriptionFontSize = 50;
+    int descriptionFontSize = 50; // bits of text that describe things
     int descriptionNegativeMargin = 10;
 
     ui::Button::Style highButtonStyle() const;

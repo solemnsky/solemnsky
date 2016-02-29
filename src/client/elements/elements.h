@@ -6,6 +6,7 @@
 #define SOLEMNSKY_PAGE_H
 
 #include "clientshared.h"
+#include "client/ui/widgets/widgets.h"
 
 /**
  * Pages are the portals through which users interface with the game
@@ -64,7 +65,7 @@ class Game: public ui::Control {
   // try to exit, set Control::conclude flag eventually
   virtual void doExit() = 0;
 
-  std::string name; // description of the game
+  std::string description; // description of the game
   std::string status; // brief status of the game
 };
 

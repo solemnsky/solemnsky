@@ -14,7 +14,11 @@ OptionWidget::OptionWidget(
     pos(pos),
     strOption(option),
     textEntry(std::make_shared<ui::TextEntry>(
-        pos + style.entryOffset, name, true, style.textEntryStyle) { }
+        pos + style.entryOffset, "", true, style.textEntryStyle)),
+    name(name),
+    tooltip(tooltip) {
+  onChangeSettings();
+}
 
 OptionWidget::OptionWidget(
     bool *option, const sf::Vector2f &pos,
@@ -22,7 +26,11 @@ OptionWidget::OptionWidget(
     pos(pos),
     boolOption(option),
     checkbox(std::make_shared<ui::Checkbox>(
-        pos + style.entryOffset, name, true, style.checkboxStyle)) { }
+        pos + style.entryOffset, style.checkboxStyle)),
+    name(name),
+    tooltip(tooltip) {
+  onChangeSettings();
+}
 
 void OptionWidget::onChangeSettings() {
   if (textEntry) {
@@ -36,7 +44,7 @@ void OptionWidget::onChangeSettings() {
 void OptionWidget::onBlur() {
   if (textEntry) {
     *strOption = textEntry->contents;
-    textEntry.reset();
+    textEntry->reset();
     return;
   }
   if (checkbox) {
@@ -52,18 +60,18 @@ void OptionWidget::tick(float delta) {
 }
 
 void OptionWidget::render(ui::Frame &f) {
+  f.drawText(pos, {name}, style.fontSize);
   if (textEntry) return textEntry->render(f);
-  if (checkbox) return checkbox->render(f);
+  else return checkbox->render(f);
 }
 
 bool OptionWidget::handle(const sf::Event &event) {
   if (textEntry) return textEntry->handle(event);
-  if (checkbox) return checkbox->handle(event);
+  else return checkbox->handle(event);
 }
 
 void OptionWidget::signalRead() {
   if (textEntry) {
-    textEntry->signalRead();
     if (textEntry->inputSignal) *strOption = *textEntry->inputSignal;
     return;
   }
@@ -90,11 +98,11 @@ SettingsPage::SettingsPage(ClientShared &state) :
 
     currentTab(SettingsPageTab::General),
     generalButton(
-        {style.pageButtonHeight, style.generalButtonOffset}, "general"),
+        {style.generalButtonOffset, style.pageButtonHeight}, "general"),
     playerButton(
-        {style.pageButtonHeight, style.playerButtonOffset}, "player"),
+        {style.playerButtonOffset, style.pageButtonHeight}, "player"),
     controlsButton(
-        {style.pageButtonHeight, style.controlsButtonOffset}, "controls"),
+        {style.controlsButtonOffset, style.pageButtonHeight}, "controls"),
 
     debugOption(&newSettings.enableDebug, style.debugChooserPos,
                 "debug", "display debug information"),
@@ -123,6 +131,12 @@ void SettingsPage::doForWidgets(
       break;
     }
   }
+}
+
+void SettingsPage::doForButtons(std::function<void(ui::Control &)> f) {
+  f(generalButton);
+  f(playerButton);
+  f(controlsButton);
 }
 
 /**
@@ -155,29 +169,29 @@ void SettingsPage::tick(float delta) {
   doForWidgets(currentTab, [delta](OptionWidget &widget) {
     widget.tick(delta);
   });
+
+  generalButton.tick(delta);
+  playerButton.tick(delta);
+  controlsButton.tick(delta);
 }
 
 void SettingsPage::render(ui::Frame &f) {
   drawBackground(f);
 
-  doForWidgets(currentTab, [&f](OptionWidget &widget) {
-    widget.render(f);
-  });
-
-  generalButton.render(f);
-  playerButton.render(f);
-  controlsButton.render(f);
+  doForWidgets(currentTab, [&f](auto &widget) { widget.render(f); });
+  doForButtons([&f](auto &button) { button.render(f); });
 }
 
 bool SettingsPage::handle(const sf::Event &event) {
-  bool widgetHandle = false;
-  doForWidgets(currentTab, [&](OptionWidget &widget) {
-    if (!widgetHandle) widgetHandle = widget.handle(event);
+  bool eventHandled = false;
+  doForWidgets(currentTab, [&](auto &widget) {
+    if (!eventHandled) eventHandled = widget.handle(event);
   });
-  if (widgetHandle) return true;
-  if (generalButton.handle(event)) return true;
-  if (playerButton.handle(event)) return true;
-  return controlsButton.handle(event);
+  if (eventHandled) return true;
+  doForButtons([&](auto &button) {
+    if (!eventHandled) eventHandled = button.handle(event);
+  });
+  return eventHandled;
 }
 
 void SettingsPage::switchToTab(const SettingsPageTab newTab) {
@@ -211,7 +225,5 @@ void SettingsPage::signalClear() {
     widget.signalClear();
   });
 
-  generalButton.signalClear();
-  generalButton.playerButton();
-  generalButton.controlsButton();
+  doForButtons([](auto &button) { button.signalClear(); });
 }
