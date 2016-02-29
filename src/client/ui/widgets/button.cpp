@@ -73,6 +73,7 @@ void Button::setActive(const bool active) {
 
 void Button::reset() {
   isHot = false;
+  heat = 0;
 }
 
 }
