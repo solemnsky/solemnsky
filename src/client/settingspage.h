@@ -29,6 +29,7 @@ class OptionWidget: public ui::Control {
 
  private:
   sf::Vector2f pos;
+  std::string name, tooltip;
 
   // invariant: exactly one of these pairs is non-null
   std::string *strOption;
@@ -63,21 +64,15 @@ class SettingsPage: public Page {
  private:
   const struct Style {
 
-    sf::Vector2f widgetDescriptionOffset{};
-
-    sf::Vector2f debugChooserPos{}; // general tab
-    std::string debugChooserDesc = "debug";
-
-    sf::Vector2f nicknameChooserPos{}; // player tab
-    std::string nicknameChooserDesc = "nickname";
-
+    sf::Vector2f debugChooserPos{100, 100}; // general tab
+    sf::Vector2f nicknameChooserPos{100, 100}; // player tab
     /* stub */ // controls tab
 
     float pageButtonHeight = 800;
     float
-        generalButtonOffset = 1,
-        playerButtonOffset = 1,
-        controlsButtonOffset = 1;
+        generalButtonOffset = 200,
+        playerButtonOffset = 500,
+        controlsButtonOffset = 800;
 
     Style() { }
   } style;
@@ -101,12 +96,12 @@ class SettingsPage: public Page {
   /**
    * Helpers
    */
-  // invoke a function on every widget in a certain tab
   void doForWidgets(
       const optional<SettingsPageTab> tab, // if null, apply to all widgets
       std::function<void(OptionWidget &)> f);
+  void doForButtons(
+      std::function<void(ui::Control &)> f);
   void switchToTab(const SettingsPageTab newTab);
-  void writeToSettings(); // write the
 
  public:
   SettingsPage(ClientShared &state);

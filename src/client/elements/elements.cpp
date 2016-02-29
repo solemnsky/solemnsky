@@ -18,4 +18,4 @@ void Page::drawBackground(ui::Frame &f) {
 Game::Game(ClientShared &shared,
            const std::string &name) :
     shared(shared),
-    name(name) { }
+    description(name) { }

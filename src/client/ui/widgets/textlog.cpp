@@ -44,6 +44,7 @@ bool TextLog::handle(const sf::Event &event) {
 }
 
 void TextLog::pushEntry(std::string &&text) {
+  if (entries.size() == style.maxEntries) entries.erase(entries.begin());
   entries.push_back(detail::TextLogEntry(std::move(text), lifetime));
 }
 

@@ -1,5 +1,4 @@
 #include "client.h"
-#include "util/methods.h"
 
 /**
  * Client.
@@ -143,9 +142,9 @@ void Client::render(ui::Frame &f) {
              1),
         [&]() {
           pageRects = {}; // populated by drawPage(), used as the click rects
-          // for event handling (TODO: potentially remove, if the actually
-          // useful click rects are always static, since we only allow
-          // clicking on pages when they're completely blurred)
+          // for event handling (TODO: remove if the actually useful click rects
+          // are always static provided we only allow clicking on pages when
+          // they're completely blurred)
 
           drawPage(
               f, PageType::Home, style.homeOffset,
@@ -157,18 +156,27 @@ void Client::render(ui::Frame &f) {
               f, PageType::Settings,
               style.settingsOffset, "settings", settingsPage);
 
-          if (gameUnderneath) closeButton.render(f);
-          f.withAlpha(linearTween(1, 0, pageFocusFactor),
-                      [&]() {
-                        // buttons that fade out as the page focuses
-                        quitButton.render(f);
-                        aboutButton.render(f);
-                      });
-          f.withAlpha(linearTween(0, 1, pageFocusFactor),
-                      [&]() {
-                        // buttons that fade in as the page focuses
-                        backButton.render(f);
-                      });
+          if (gameUnderneath) {
+            const float descLength = f.textSize(shared.game->description,
+                                                style.descriptionFontSize).x;
+            f.drawText(
+                {style.closeButtonOffset.x - descLength, 0},
+                {shared.game->description}, style.descriptionFontSize);
+            closeButton.render(f);
+          }
+          f.withAlpha(
+              linearTween(1, 0, pageFocusFactor),
+              [&]() {
+                // buttons that fade out as the page focuses
+                quitButton.render(f);
+                aboutButton.render(f);
+              });
+          f.withAlpha(
+              linearTween(0, 1, pageFocusFactor),
+              [&]() {
+                // buttons that fade in as the page focuses
+                backButton.render(f);
+              });
         });
   }
 }

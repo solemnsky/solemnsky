@@ -73,11 +73,4 @@ public:
 void runSFML(std::function<std::unique_ptr<Control>()> initCtrl);
 }
 
-// wigets
-#include "widgets/button.h"
-#include "widgets/checkbox.h"
-#include "widgets/keyselector.h"
-#include "widgets/textentry.h"
-#include "widgets/textlog.h"
-
 #endif // SOLEMNSKY_CONTROL_H

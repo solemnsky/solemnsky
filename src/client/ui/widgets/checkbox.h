@@ -7,6 +7,7 @@
 #define SOLEMNSKY_CHECKBOX_H
 
 #include "client/ui/control.h"
+#include "button.h"
 
 namespace ui {
 
@@ -45,7 +46,7 @@ class Checkbox: public ui::Control {
   /**
    * Signals and UI values.
    */
-  void setValue(const bool value);
+  void setValue(const bool newValue);
   bool getValue() const;
 
   bool clickSignal;
