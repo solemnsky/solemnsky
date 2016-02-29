@@ -45,6 +45,10 @@ void Checkbox::signalClear() {
   clickSignal = false;
 }
 
+void Checkbox::reset() {
+  button.reset();
+}
+
 void Checkbox::setValue(const bool value) {
   this->value = value;
   button.text = value ? "x" : " ";

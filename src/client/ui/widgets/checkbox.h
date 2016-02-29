@@ -38,6 +38,11 @@ class Checkbox: public ui::Control {
   void signalClear() override;
 
   /**
+   * UI methods.
+   */
+  void reset();
+
+  /**
    * Signals and UI values.
    */
   void setValue(const bool value);
