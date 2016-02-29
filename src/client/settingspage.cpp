@@ -36,6 +36,13 @@ void OptionWidget::onChangeSettings() {
 void OptionWidget::onBlur() {
   if (textEntry) {
     *strOption = textEntry->contents;
+    textEntry.reset();
+    return;
+  }
+  if (checkbox) {
+    *boolOption = checkbox->getValue();
+    checkbox->reset();
+    return;
   }
 }
 
@@ -96,7 +103,7 @@ SettingsPage::SettingsPage(ClientShared &state) :
 
 void SettingsPage::doForWidgets(
     const optional<SettingsPageTab> tab,
-    std::function<void(ui::Control &)> f) {
+    std::function<void(OptionWidget & )> f) {
   if (!tab) {
     f(debugOption);
     f(nicknameOption);
@@ -118,19 +125,15 @@ void SettingsPage::doForWidgets(
   }
 }
 
-void SettingsPage::writeToSettings() {
-  shared.changeSettings(SettingsDelta(shared.settings, newSettings));
-}
-
 /**
  * Page interface.
  */
 
 void SettingsPage::onBlur() {
-  doForWidgets({}, ())
-
-  writeToSettings();
-  nicknameChooser.reset();
+  doForWidgets({}, [](OptionWidget &widget) {
+    widget.onBlur();
+  });
+  shared.changeSettings(SettingsDelta(shared.settings, newSettings));
 }
 
 void SettingsPage::onFocus() {
@@ -138,8 +141,10 @@ void SettingsPage::onFocus() {
 }
 
 void SettingsPage::onChangeSettings(const SettingsDelta &delta) {
-  if (delta.nickname) nicknameChooser.contents = *delta.nickname;
   newSettings = shared.settings;
+  doForWidgets({}, [](OptionWidget &widget) {
+    widget.onChangeSettings();
+  });
 }
 
 /**
@@ -147,28 +152,66 @@ void SettingsPage::onChangeSettings(const SettingsDelta &delta) {
  */
 
 void SettingsPage::tick(float delta) {
-  nicknameChooser.tick(delta);
+  doForWidgets(currentTab, [delta](OptionWidget &widget) {
+    widget.tick(delta);
+  });
 }
 
 void SettingsPage::render(ui::Frame &f) {
   drawBackground(f);
 
-  f.drawText(style.nicknameDescPos, {style.nicknameDesc}, style.fontSize,
-             style.descColor);
-  nicknameChooser.render(f);
+  doForWidgets(currentTab, [&f](OptionWidget &widget) {
+    widget.render(f);
+  });
+
+  generalButton.render(f);
+  playerButton.render(f);
+  controlsButton.render(f);
 }
 
 bool SettingsPage::handle(const sf::Event &event) {
-  return nicknameChooser.handle(event);
+  bool widgetHandle = false;
+  doForWidgets(currentTab, [&](OptionWidget &widget) {
+    if (!widgetHandle) widgetHandle = widget.handle(event);
+  });
+  if (widgetHandle) return true;
+  if (generalButton.handle(event)) return true;
+  if (playerButton.handle(event)) return true;
+  return controlsButton.handle(event);
+}
+
+void SettingsPage::switchToTab(const SettingsPageTab newTab) {
+  doForWidgets(currentTab, [](OptionWidget &widget) {
+    widget.onBlur();
+  });
+  currentTab = newTab;
 }
 
 void SettingsPage::signalRead() {
-  if (nicknameChooser.inputSignal) {
-    newSettings.nickname = nicknameChooser.contents;
-    writeToSettings();
+  doForWidgets({}, [](OptionWidget &widget) {
+    widget.signalRead();
+  });
+
+  if (generalButton.clickSignal) {
+    switchToTab(SettingsPageTab::General);
+    return;
+  }
+  if (playerButton.clickSignal) {
+    switchToTab(SettingsPageTab::Player);
+    return;
+  }
+  if (controlsButton.clickSignal) {
+    switchToTab(SettingsPageTab::Controls);
+    return;
   }
 }
 
 void SettingsPage::signalClear() {
-  nicknameChooser.signalClear();
+  doForWidgets({}, [](OptionWidget &widget) {
+    widget.signalClear();
+  });
+
+  generalButton.signalClear();
+  generalButton.playerButton();
+  generalButton.controlsButton();
 }

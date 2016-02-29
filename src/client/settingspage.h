@@ -57,7 +57,6 @@ class OptionWidget: public ui::Control {
   bool handle(const sf::Event &event) override;
   void signalRead() override;
   void signalClear() override;
-
 };
 
 class SettingsPage: public Page {
@@ -105,9 +104,9 @@ class SettingsPage: public Page {
   // invoke a function on every widget in a certain tab
   void doForWidgets(
       const optional<SettingsPageTab> tab, // if null, apply to all widgets
-      std::function<void(ui::Control &)> f);
-
-  void writeToSettings();
+      std::function<void(OptionWidget &)> f);
+  void switchToTab(const SettingsPageTab newTab);
+  void writeToSettings(); // write the
 
  public:
   SettingsPage(ClientShared &state);
