@@ -107,7 +107,9 @@ SettingsPage::SettingsPage(ClientShared &state) :
     debugOption(&newSettings.enableDebug, style.debugChooserPos,
                 "debug", "display debug information"),
     nicknameOption(&newSettings.nickname, style.nicknameChooserPos,
-                   "nickname", "your nickname in-game") { }
+                   "nickname", "your nickname in-game") {
+  switchToTab(currentTab); // set the button styling
+}
 
 void SettingsPage::doForWidgets(
     const optional<SettingsPageTab> tab,
@@ -137,6 +139,17 @@ void SettingsPage::doForButtons(std::function<void(ui::Control &)> f) {
   f(generalButton);
   f(playerButton);
   f(controlsButton);
+}
+
+ui::Button &SettingsPage::referenceButton(const SettingsPageTab tab) {
+  switch (tab) {
+    case SettingsPageTab::General:
+      return generalButton;
+    case SettingsPageTab::Player:
+      return playerButton;
+    case SettingsPageTab::Controls:
+      return controlsButton;
+  }
 }
 
 /**
@@ -195,6 +208,14 @@ bool SettingsPage::handle(const sf::Event &event) {
 }
 
 void SettingsPage::switchToTab(const SettingsPageTab newTab) {
+  auto &oldButton = referenceButton(currentTab),
+      &newButton = referenceButton(newTab);
+
+  oldButton.setActive(true);
+  oldButton.style.baseColor = style.unselectedTabButtonColor;
+  newButton.setActive(false);
+  newButton.style.baseColor = style.selectedTabButtonColor;
+
   doForWidgets(currentTab, [](OptionWidget &widget) {
     widget.onBlur();
   });

@@ -74,6 +74,10 @@ class SettingsPage: public Page {
         playerButtonOffset = 500,
         controlsButtonOffset = 800;
 
+    sf::Color selectedTabButtonColor{100, 100, 100},
+        unselectedTabButtonColor{132, 173, 181};
+    // color of the selected tab button
+
     Style() { }
   } style;
 
@@ -101,6 +105,7 @@ class SettingsPage: public Page {
       std::function<void(OptionWidget &)> f);
   void doForButtons(
       std::function<void(ui::Control &)> f);
+  ui::Button &referenceButton(const SettingsPageTab tab);
   void switchToTab(const SettingsPageTab newTab);
 
  public:
