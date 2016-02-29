@@ -11,11 +11,13 @@ Button::Button(const sf::Vector2f &pos, const std::string &text,
                const Style &style) :
     pos(pos), text(text), style(style),
     heat(0, 1, 0),
+    active(true),
     isHot(false),
     clickSignal(false) { }
 
 void Button::tick(float delta) {
-  heat += (isHot ? 1 : -1) * delta * style.heatRate;
+  if (active)
+    heat += (isHot ? 1 : -1) * delta * style.heatRate;
 }
 
 void Button::render(Frame &f) {
@@ -39,6 +41,7 @@ bool Button::handle(const sf::Event &event) {
     isHot = body.contains(pt);
     return isHot;
   }
+
   if (event.type == sf::Event::MouseButtonPressed or
       event.type == sf::Event::MouseButtonReleased) {
     bool clicking = event.type == sf::Event::MouseButtonPressed;
@@ -46,11 +49,13 @@ bool Button::handle(const sf::Event &event) {
 
     isHot = body.contains(pt);
 
-    if (clicking) {
-      inPreClick = isHot;
-    } else {
-      inPreClick = false;
-      if (isHot) clickSignal = true;
+    if (active) {
+      if (clicking) {
+        inPreClick = isHot;
+      } else {
+        inPreClick = false;
+        if (isHot) clickSignal = true;
+      }
     }
     return isHot;
   }
@@ -61,8 +66,13 @@ void Button::signalClear() {
   clickSignal = false;
 }
 
+void Button::setActive(const bool active) {
+  reset();
+  this->active = active;
+}
+
 void Button::reset() {
   isHot = false;
 }
-}
 
+}

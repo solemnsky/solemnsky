@@ -31,6 +31,7 @@ class Button : public Control {
 private:
   Clamped heat;
   bool inPreClick{false};
+  bool active;
 
   sf::FloatRect getBody();
 
@@ -55,6 +56,7 @@ public:
   /**
    * UI methods.
    */
+  void setActive(const bool active);
   void reset(); // reset animation
 
   /**

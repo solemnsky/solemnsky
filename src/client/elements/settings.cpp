@@ -6,7 +6,7 @@
 
 Settings::Settings() :
     nickname("nameless plane"),
-    debug(false) { }
+    enableDebug(false) { }
 
 bool Settings::readFromFile(std::string filepath) {
   return true;
