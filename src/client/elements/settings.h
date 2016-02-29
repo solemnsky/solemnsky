@@ -39,6 +39,7 @@ struct SettingsDelta {
   /**
    * Data.
    */
+  optional<bool> enableDebug;
   optional<std::string> nickname;
 };
 

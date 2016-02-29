@@ -289,6 +289,7 @@ void Client::exitGame() {
 void Client::focusGame() {
   if (shared.game) {
     resetUI();
+    if (shared.ui.pageFocused()) referencePage(shared.ui.focusedPage).onBlur();
     shared.ui.focusGame();
     shared.game->onFocus();
   }

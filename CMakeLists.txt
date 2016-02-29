@@ -23,7 +23,7 @@ include_directories(
 )
 
 ###### libsolemnsky, for common use by client and server
-add_library(solemnsky STATIC
+add_library(solemnsky SHARED
         src/sky/arena.cpp
         src/sky/arena.h
 
