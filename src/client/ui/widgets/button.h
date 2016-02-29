@@ -43,6 +43,7 @@ public:
   sf::Vector2f pos;
   std::string text; // what the button has to say
 
+
   /**
    * Control implementation.
    */
@@ -59,8 +60,8 @@ public:
   /**
    * UI state and signals, read-only.
    */
-  bool isHot{false};
-  bool clickSignal{false};
+  bool isHot;
+  bool clickSignal;
 };
 
 }

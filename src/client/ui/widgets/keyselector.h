@@ -19,7 +19,6 @@ class KeySelector: public ui::Control {
 
  public:
   KeySelector() = default;
-  KeySelector(pos)
 };
 
 }
