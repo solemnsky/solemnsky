@@ -27,8 +27,11 @@ SettingsDelta::SettingsDelta(const Settings &oldSettings,
                              const Settings &newSettings) {
   if (oldSettings.nickname != newSettings.nickname)
     nickname = newSettings.nickname;
+  if (oldSettings.enableDebug != newSettings.enableDebug)
+    enableDebug = newSettings.enableDebug;
 }
 
 void SettingsDelta::apply(Settings &settings) const {
   if (nickname) settings.nickname = *nickname;
+  if (enableDebug) settings.enableDebug = *enableDebug;
 }
