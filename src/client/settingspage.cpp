@@ -1,14 +1,85 @@
 #include "settingspage.h"
 
-ui::TextEntry::Style SettingsPage::Style::textEntryStyle() const {
-  ui::TextEntry::Style textStyle;
-  textStyle.fontSize = fontSize;
-  textStyle.dimensions = textEntryDimensions;
-  return textStyle;
+/**
+ * OptionWidget.
+ */
+
+OptionWidget::Style::Style() {
+  checkboxStyle.dimensions = 40;
 }
+
+OptionWidget::OptionWidget(
+    std::string *option, const sf::Vector2f &pos,
+    const std::string &name, const std::string &tooltip) :
+    pos(pos),
+    strOption(option),
+    textEntry(std::make_shared<ui::TextEntry>(
+        pos + style.entryOffset, name, true, style.textEntryStyle) { }
+
+OptionWidget::OptionWidget(
+    bool *option, const sf::Vector2f &pos,
+    const std::string &name, const std::string &tooltip) :
+    pos(pos),
+    boolOption(option),
+    checkbox(std::make_shared<ui::Checkbox>(
+        pos + style.entryOffset, name, true, style.checkboxStyle)) { }
+
+void OptionWidget::onChangeSettings() {
+  if (textEntry) {
+    textEntry->contents = *strOption;
+  }
+  if (checkbox) {
+    checkbox->setValue(*boolOption);
+  }
+}
+
+void OptionWidget::onBlur() {
+  if (textEntry) {
+    *strOption = textEntry->contents;
+  }
+}
+
+void OptionWidget::tick(float delta) {
+  if (textEntry) return textEntry->tick(delta);
+  if (checkbox) return checkbox->tick(delta);
+}
+
+void OptionWidget::render(ui::Frame &f) {
+  if (textEntry) return textEntry->render(f);
+  if (checkbox) return checkbox->render(f);
+}
+
+bool OptionWidget::handle(const sf::Event &event) {
+  if (textEntry) return textEntry->handle(event);
+  if (checkbox) return checkbox->handle(event);
+}
+
+void OptionWidget::signalRead() {
+  if (textEntry) {
+    textEntry->signalRead();
+    if (textEntry->inputSignal) *strOption = *textEntry->inputSignal;
+    return;
+  }
+
+  if (checkbox) {
+    checkbox->signalRead();
+    if (checkbox->clickSignal) *boolOption = checkbox->getValue();
+  }
+}
+
+void OptionWidget::signalClear() {
+  if (textEntry) return textEntry->signalClear();
+  if (checkbox) return checkbox->signalClear();
+}
+
+/**
+ * SettingsPage.
+ */
 
 SettingsPage::SettingsPage(ClientShared &state) :
     Page(state),
+
+    newSettings(shared.settings),
 
     currentTab(SettingsPageTab::General),
     generalButton(
@@ -18,25 +89,27 @@ SettingsPage::SettingsPage(ClientShared &state) :
     controlsButton(
         {style.pageButtonHeight, style.controlsButtonOffset}, "controls"),
 
-    debugChooser(),
-    nicknameChooser(),
+    debugOption(&newSettings.enableDebug, style.debugChooserPos,
+                "debug", "display debug information"),
+    nicknameOption(&newSettings.nickname, style.nicknameChooserPos,
+                   "nickname", "your nickname in-game") { }
 
-    newSettings(shared.settings),
-    nicknameChooser(style.nicknameEntryPos, "", true,
-                    style.textEntryStyle()) {
-  nicknameChooser.contents = shared.settings.nickname;
-}
-
-void SettingsPage::doForTabWidgets(
-    const SettingsPageTab tab,
+void SettingsPage::doForWidgets(
+    const optional<SettingsPageTab> tab,
     std::function<void(ui::Control &)> f) {
-  switch (tab) {
+  if (!tab) {
+    f(debugOption);
+    f(nicknameOption);
+    return;
+  }
+
+  switch (*tab) {
     case SettingsPageTab::General: {
-      f(debugChooser);
+      f(debugOption);
       break;
     }
     case SettingsPageTab::Player: {
-      f(nicknameChooser);
+      f(nicknameOption);
       break;
     }
     case SettingsPageTab::Controls: {
@@ -44,7 +117,6 @@ void SettingsPage::doForTabWidgets(
     }
   }
 }
-
 
 void SettingsPage::writeToSettings() {
   shared.changeSettings(SettingsDelta(shared.settings, newSettings));
@@ -55,7 +127,7 @@ void SettingsPage::writeToSettings() {
  */
 
 void SettingsPage::onBlur() {
-  newSettings.nickname = nicknameChooser.contents;
+  doForWidgets({}, ())
 
   writeToSettings();
   nicknameChooser.reset();

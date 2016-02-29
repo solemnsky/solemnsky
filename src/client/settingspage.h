@@ -4,26 +4,75 @@
 #ifndef SOLEMNSKY_SETTINGSPAGE_H
 #define SOLEMNSKY_SETTINGSPAGE_H
 
-#include <client/ui/widgets/radiobutton.h>
 #include "elements/elements.h"
 
 enum class SettingsPageTab {
   General, Player, Controls
 };
 
+/**
+ * Widget that manages the description / tooltip / entry device for an option
+ * in the settings. Can be any of a number of option types.
+ */
+class OptionWidget: public ui::Control {
+ public:
+  const struct Style {
+    int fontSize = 50;
+    ui::TextEntry::Style textEntryStyle;
+    ui::Checkbox::Style checkboxStyle;
+
+    sf::Color descriptionColor = sf::Color(255, 255, 255);
+    sf::Vector2f entryOffset{200, 0};
+
+    Style();
+  } style;
+
+ private:
+  sf::Vector2f pos;
+
+  // invariant: exactly one of these pairs is non-null
+  std::string *strOption;
+  std::shared_ptr<ui::TextEntry> textEntry;
+
+  bool *boolOption;
+  std::shared_ptr<ui::Checkbox> checkbox;
+
+ public:
+  OptionWidget() = delete;
+  // a widget that chooses a string, using a TextEntry
+  OptionWidget(std::string *option, const sf::Vector2f &pos,
+               const std::string &name, const std::string &tooltip);
+  // a widget that chooses a bool, using a Checkbox
+  OptionWidget(bool *option, const sf::Vector2f &pos,
+               const std::string &name, const std::string &tooltip);
+
+  void onChangeSettings();
+  void onBlur(); // reset your UI state and write the option
+
+  /**
+   * Control interface.
+   */
+  void tick(float delta) override;
+  void render(ui::Frame &f) override;
+  bool handle(const sf::Event &event) override;
+  void signalRead() override;
+  void signalClear() override;
+
+};
 
 class SettingsPage: public Page {
- public:
-  struct Style {
-    int fontSize = 50;
-    sf::Vector2f textEntryDimensions{400, 60};
+ private:
+  const struct Style {
 
-    sf::Color descColor = sf::Color(255, 255, 255);
-    sf::Vector2f nicknameDescPos{100, 100};
-    std::string nicknameDesc = "nickname:";
-    sf::Vector2f nicknameEntryPos{300, 100};
+    sf::Vector2f widgetDescriptionOffset{};
 
-    ui::TextEntry::Style textEntryStyle() const;
+    sf::Vector2f debugChooserPos{}; // general tab
+    std::string debugChooserDesc = "debug";
+
+    sf::Vector2f nicknameChooserPos{}; // player tab
+    std::string nicknameChooserDesc = "nickname";
+
+    /* stub */ // controls tab
 
     float pageButtonHeight = 800;
     float
@@ -34,7 +83,6 @@ class SettingsPage: public Page {
     Style() { }
   } style;
 
- private:
   Settings newSettings;
   // we write the user-edited settings to this cache and then construct a
   // delta when we want to distribute the new settings
@@ -42,17 +90,22 @@ class SettingsPage: public Page {
   SettingsPageTab currentTab;
 
   ui::Button generalButton, playerButton, controlsButton;
+  // buttons we use to change tab
 
-  ui::RadioButton debugChooser; // general tab
-  ui::TextEntry nicknameChooser; // player tab
-  /* stub */ // controls tab
+  // options on general tab
+  OptionWidget debugOption;
+  // options on player tab
+  OptionWidget nicknameOption;
+  // options on controls tab
+  // stub
 
   /**
    * Helpers
    */
   // invoke a function on every widget in a certain tab
-  void doForTabWidgets(
-      const SettingsPageTab tab, std::function<void(ui::Control &)> f);
+  void doForWidgets(
+      const optional<SettingsPageTab> tab, // if null, apply to all widgets
+      std::function<void(ui::Control &)> f);
 
   void writeToSettings();
 

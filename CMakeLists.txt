@@ -103,8 +103,11 @@ add_executable(solemnsky_client
         src/client/ui/widgets/button.cpp
         src/client/ui/widgets/button.h
 
-        src/client/ui/widgets/radiobutton.cpp
-        src/client/ui/widgets/radiobutton.h
+        src/client/ui/widgets/checkbox.cpp
+        src/client/ui/widgets/checkbox.h
+
+        src/client/ui/widgets/keyselector.cpp
+        src/client/ui/widgets/keyselector.h
 
         src/client/ui/widgets/textentry.cpp
         src/client/ui/widgets/textentry.h
@@ -144,7 +147,7 @@ add_executable(solemnsky_client
 
         src/client/settingspage.cpp
         src/client/settingspage.h
-        src/client/ui/widgets/keyselector.cpp src/client/ui/widgets/keyselector.cpp src/client/ui/widgets/keyselector.h)
+        )
 target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics

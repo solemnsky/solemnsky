@@ -18,6 +18,7 @@ struct Settings {
   bool readFromFile(std::string filepath);
   bool writeToFile(std::string filepath);
 
+  bool enableDebug;
   std::string nickname;
 };
 
