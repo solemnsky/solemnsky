@@ -10,7 +10,7 @@ namespace ui {
 
 namespace detail {
 struct TextLogEntry {
-  TextLogEntry(std::string &&text, const double time);
+  TextLogEntry(const std::string &text, const double time);
 
   std::string text;
   double time;

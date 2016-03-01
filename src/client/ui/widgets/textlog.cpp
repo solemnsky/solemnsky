@@ -8,7 +8,7 @@ namespace ui {
 
 namespace detail {
 
-TextLogEntry::TextLogEntry(std::string &&text, const double time) :
+TextLogEntry::TextLogEntry(const std::string &text, const double time) :
     text(std::move(text)), time(time) { }
 
 }
@@ -45,7 +45,7 @@ bool TextLog::handle(const sf::Event &event) {
 
 void TextLog::pushEntry(const std::string &text) {
   if (entries.size() == style.maxEntries) entries.erase(entries.begin());
-  entries.push_back(detail::TextLogEntry(std::move(text), lifetime));
+  entries.push_back(detail::TextLogEntry(text, lifetime));
 }
 
 }
