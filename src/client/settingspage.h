@@ -17,12 +17,11 @@ enum class SettingsPageTab {
 class OptionWidget: public ui::Control {
  public:
   const struct Style {
-    int fontSize = 50;
+    int fontSize;
     ui::TextEntry::Style textEntryStyle;
     ui::Checkbox::Style checkboxStyle;
-
-    sf::Color descriptionColor = sf::Color(255, 255, 255);
-    sf::Vector2f entryOffset{200, 0};
+    sf::Color descriptionColor;
+    sf::Vector2f entryOffset;
 
     Style();
   } style;
@@ -63,22 +62,19 @@ class OptionWidget: public ui::Control {
 class SettingsPage: public Page {
  private:
   const struct Style {
-
-    sf::Vector2f debugChooserPos{100, 100}; // general tab
-    sf::Vector2f nicknameChooserPos{100, 100}; // player tab
+    sf::Vector2f debugChooserPos; // general tab
+    sf::Vector2f nicknameChooserPos; // player tab
     /* stub */ // controls tab
-
-    float pageButtonHeight = 800;
+    float pageButtonHeight;
     float
-        generalButtonOffset = 200,
-        playerButtonOffset = 500,
-        controlsButtonOffset = 800;
-
-    sf::Color selectedTabButtonColor{100, 100, 100},
-        unselectedTabButtonColor{132, 173, 181};
+        generalButtonOffset,
+        playerButtonOffset,
+        controlsButtonOffset;
+    sf::Color selectedTabButtonColor,
+        unselectedTabButtonColor;
     // color of the selected tab button
 
-    Style() { }
+    Style();
   } style;
 
   Settings newSettings;

@@ -44,9 +44,10 @@ sky::Player *Server::playerFromPeer(ENetPeer *peer) const {
 
 bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
   using namespace sky;
-  // received a packet from a connected peer
+  // received a packet from a connected enet peer
 
   if (Player *player = playerFromPeer(client)) {
+    // the player has joined the arena
     const std::string &pidString = std::to_string(player->pid);
 
     switch (packet.type) {
@@ -63,6 +64,31 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
         broadcastToClients(ServerPacket::NoteArenaDelta(delta));
 
         return true; // client send a ReqDelta
+      }
+
+      case ClientPacket::Type::ReqTeamChange: {
+        player->ready = true;
+        sky::PlayerDelta delta(*player);
+        delta.ready = true;
+        broadcastToClients(sky::ServerPacket::NoteArenaDelta(
+            sky::ArenaDelta::Modify(player->pid, delta)
+        ));
+        return true;
+      }
+
+      case ClientPacket::Type::ReqSpawn: {
+        return true;
+      }
+
+      case ClientPacket::Type::ReqKill: {
+        return true;
+      }
+
+      case ClientPacket::Type::NoteSkyDelta: {
+        if (!packet.skyDelta) return false;
+        if (arena.sky)
+          arena.sky->applyDelta(*packet.skyDelta);
+        return true;
       }
 
       case ClientPacket::Type::Chat: {
@@ -86,7 +112,8 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
     }
   } else {
     // client is still connecting, we need to do a ReqJoin / AckJoin
-    // handshake and then distribute an ArenaDelta to the other clients
+    // handshake, distribute an ArenaDelta to the other clients, and attach
+    // a sky::Player to the enet peer
     if (packet.type == ClientPacket::Type::ReqJoin) {
       if (!packet.stringData) return false;
 
@@ -100,10 +127,10 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
 
       transmitToClient(
           client, ServerPacket::AckJoin(
-          newPlayer.pid, arena.captureInitializer()));
+              newPlayer.pid, arena.captureInitializer()));
       broadcastToClientsExcept(
           newPlayer.pid, ServerPacket::NoteArenaDelta(
-          ArenaDelta::Join(newPlayer)));
+              ArenaDelta::Join(newPlayer)));
 
       return true; // unregistered client sent a ReqJoin
     }
@@ -135,7 +162,7 @@ void Server::tick(float delta) {
 
         broadcastToClientsExcept(
             player->pid, sky::ServerPacket::NoteArenaDelta(
-            sky::ArenaDelta::Quit(player->pid)));
+                sky::ArenaDelta::Quit(player->pid)));
 
         arena.disconnectPlayer(*player);
         event.peer->data = nullptr;

@@ -56,7 +56,7 @@ class TextLog: public Control {
    * UI methods.
    */
   bool expanded; // set this
-  void pushEntry(std::string &&text);
+  void pushEntry(const std::string &text);
 };
 
 }

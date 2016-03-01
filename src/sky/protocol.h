@@ -22,6 +22,7 @@ struct ClientPacket {
     ReqDelta, // request a change to your player data
     ReqSpawn, // request to spawn
     ReqKill, // request to die
+    ReqTeamChange, // request to change team / spectator mode
     NoteSkyDelta, // tell the server what you think is happening in the game
     Chat // send a chat message
   };
@@ -31,13 +32,14 @@ struct ClientPacket {
       const Type type,
       const optional<std::string> &stringData = {},
       const optional<PlayerDelta> &playerDelta = {},
-      const optional<SkyDelta> &skyDelta = {});
-
+      const optional<SkyDelta> &skyDelta = {},
+      const optional<Team> team = {});
 
   Type type;
   optional<std::string> stringData;
   optional<PlayerDelta> playerDelta;
   optional<SkyDelta> skyDelta;
+  optional<Team> team;
 
   std::string dump() const;
 
@@ -46,6 +48,7 @@ struct ClientPacket {
   static ClientPacket ReqDelta(const PlayerDelta &playerDelta);
   static ClientPacket ReqSpawn();
   static ClientPacket ReqKill();
+  static ClientPacket ReqTeamChange(const Team team);
   static ClientPacket NoteSkyDelta(const SkyDelta &skyDelta);
   static ClientPacket Chat(const std::string &message);
 };

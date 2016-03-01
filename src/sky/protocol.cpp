@@ -11,11 +11,13 @@ ClientPacket::ClientPacket(
     const Type type,
     const optional<std::string> &stringData,
     const optional<PlayerDelta> &playerDelta,
-    const optional<SkyDelta> &skyDelta) :
+    const optional<SkyDelta> &skyDelta,
+    const optional<Team> team) :
     type(type),
     stringData(stringData),
     playerDelta(playerDelta),
-    skyDelta(skyDelta) { }
+    skyDelta(skyDelta),
+    team(team) { }
 
 std::string ClientPacket::dump() const {
   switch (type) {
@@ -25,6 +27,8 @@ std::string ClientPacket::dump() const {
       return "ReqJoin";
     case Type::ReqDelta:
       return "ReqDelta";
+    case Type::ReqTeamChange:
+      return "ReqTeamChange";
     case Type::ReqSpawn:
       return "ReqSpawn";
     case Type::ReqKill:
@@ -46,6 +50,11 @@ ClientPacket ClientPacket::ReqJoin(const std::string &nickname) {
 
 ClientPacket ClientPacket::ReqDelta(const PlayerDelta &playerDelta) {
   return ClientPacket(ClientPacket::Type::ReqDelta, {}, playerDelta);
+}
+
+ClientPacket ClientPacket::ReqTeamChange(const Team team) {
+  return ClientPacket(ClientPacket::Type::ReqTeamChange,
+                      {}, {}, {}, team);
 }
 
 ClientPacket ClientPacket::ReqSpawn() {

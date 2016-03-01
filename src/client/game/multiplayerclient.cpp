@@ -1,14 +1,29 @@
 #include "multiplayerclient.h"
 
-#include "boost/iterator/function_input_iterator.hpp"
+MultiplayerClient::Style::Style() :
+    scoreOverlayDims{1330, 630},
+    chatPos(20, 850),
+    messageLogPos(20, 840),
+    readyButtonPos(lobbyChatWidth + 10, lobbyTopMargin),
+    scoreOverlayTopMargin(100),
+    lobbyPlayersOffset(1250),
+    lobbyTopMargin(205),
+    lobbyChatWidth(1250),
+    gameChatWidth(500),
+    lobbyFontSize(40),
+    playerSpecColor(255, 255, 255),
+    playerJoinedColor(0, 255, 0),
+    readyButtonActiveDesc("ready!"),
+    readyButtonDeactiveDesc("cancel") { }
 
 MultiplayerClient::MultiplayerClient(ClientShared &state,
                                      const std::string &serverHostname,
                                      const unsigned short serverPort) :
     Game(state, "multiplayer"),
 
-    chatEntry({20, 850}, "[enter] to chat"),
-    messageLog({20, 840}),
+    chatEntry(style.chatPos, "[enter] to chat"),
+    messageLog(style.messageLogPos),
+    readyButton(style.readyButtonPos, "ready"),
 
     host(tg::HostType::Client),
     server(nullptr),
@@ -32,6 +47,8 @@ void MultiplayerClient::setUI(const sky::ArenaMode mode) {
       messageLog.style.maxWidth = style.lobbyChatWidth;
     }
     case sky::ArenaMode::Game:
+      messageLog.expanded = false;
+      messageLog.style.maxWidth = style.gameChatWidth;
       break;
     case sky::ArenaMode::Scoring:
       break;
@@ -40,25 +57,33 @@ void MultiplayerClient::setUI(const sky::ArenaMode mode) {
 
 void MultiplayerClient::renderLobby(ui::Frame &f) {
   f.drawSprite(textureOf(Res::Lobby), {0, 0}, {0, 0, 1600, 900});
-  std::vector<std::string> players;
-  for (sky::Player &player : arena->players)
-    players.push_back(player.nickname);
-  f.drawText({style.lobbyPlayersOffset, style.lobbyTopMargin},
-             players.begin(), players.end(), style.lobbyFontSize);
+  int i = 0;
+  sf::Color color;
+  for (sky::Player &player : arena->players) {
+    f.drawText(
+        {style.lobbyPlayersOffset,
+         style.lobbyTopMargin + (i * style.lobbyFontSize)},
+        {player.nickname}, style.lobbyFontSize,
+        (player.team == 0) ? style.playerSpecColor : style.playerJoinedColor);
+    i++;
+  }
   // TODO: don't copy strings
+
+  messageLog.render(f);
+  chatEntry.render(f);
+  readyButton.render(f);
 }
 
 void MultiplayerClient::renderGame(ui::Frame &f) {
-  if (!(arena and arena->sky))
-    return;
-  // trying to render without being in the arena, having a sky, and identifying
-  // with a player
-
+  // arena and arena->sky exist
   if (sky::Plane *plane = arena->sky->getPlane(myPlayer->pid)) {
     renderSystem->render(f, plane->state.pos);
   } else {
     renderSystem->render(f, {0, 0}); // TODO: panning in spectator mode
   }
+
+  messageLog.render(f);
+  chatEntry.render(f);
 }
 
 void MultiplayerClient::renderScoring(ui::Frame &f) {
@@ -84,7 +109,9 @@ void MultiplayerClient::transmitServer(const sky::ClientPacket &packet) {
 }
 
 bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
-  // received a packet from the server
+  /**
+   * Here we deal with server protocol packets.
+   */
   using namespace sky;
 
   if (!arena) {
@@ -96,37 +123,43 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
       arena.emplace();
       if (!arena->applyInitializer(*packet.arenaInitializer)) {
         arena.reset();
-        return false;
+        return false; // initializer didn't work
       }
 
       myPlayer = arena->getPlayer(*packet.pid);
+      if (!myPlayer) {
+        arena.reset();
+        return false; // pid invalid
+      }
+
       setUI(arena->mode);
       if (arena->mode == sky::ArenaMode::Game) {
         renderSystem.emplace(&*arena->sky);
       }
 
       appLog("Joined arena!", LogOrigin::Client);
-      return true; // server sent us an AckJoin when we're not registered
+      return true;
     }
     return false; // we're only interested in AckJoins until we're connected
   }
 
   // we're in the arena
   switch (packet.type) {
-    case ServerPacket::Type::Pong:
+    case ServerPacket::Type::Pong: {
       return true; // received a pong from the server
+    }
 
     case ServerPacket::Type::Message: {
       if (!packet.message) return false;
       switch (packet.message->type) {
         case ServerMessage::Type::Chat: {
           if (!packet.message->from) return false;
-          messageLog.pushEntry(*packet.message->from +
+          messageLog.pushEntry("[chat]" + *packet.message->from +
               ": " + packet.message->contents);
           break;
         }
         case ServerMessage::Type::Broadcast: {
-          messageLog.pushEntry("[server]: " + packet.message->contents);
+          messageLog.pushEntry(packet.message->contents);
           break;
         }
       }
@@ -138,7 +171,7 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
       if (!arena->applyDelta(*packet.arenaDelta)) return false;
 
       if (packet.arenaDelta->type == sky::ArenaDelta::Type::Mode) {
-        // things can happen when the mode changes...
+        // we want to listen for changes in the mode
         setUI(arena->mode);
         if (arena->mode == sky::ArenaMode::Game)
           renderSystem.emplace(&*arena->sky);
@@ -152,6 +185,7 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
       if (arena->sky) arena->sky->applyDelta(*packet.skyDelta);
       return true; // server sent us a NoteSkyDelta
     }
+
     default:
       break;
   }
@@ -165,6 +199,7 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
 
 void MultiplayerClient::onBlur() {
   chatEntry.reset();
+  readyButton.reset();
 }
 
 void MultiplayerClient::onFocus() {
@@ -173,7 +208,8 @@ void MultiplayerClient::onFocus() {
 
 void MultiplayerClient::onChangeSettings(const SettingsDelta &settings) {
   if (settings.nickname) {
-    sky::PlayerDelta delta(*settings.nickname);
+    sky::PlayerDelta delta(*myPlayer);
+    delta.nickname = *settings.nickname;
     transmitServer(sky::ClientPacket::ReqDelta(delta));
     // request a nickname change
   }
@@ -197,6 +233,7 @@ void MultiplayerClient::doExit() {
 void MultiplayerClient::tick(float delta) {
   chatEntry.tick(delta);
   messageLog.tick(delta);
+  readyButton.tick(delta);
 
   using namespace sky;
 
@@ -283,6 +320,7 @@ void MultiplayerClient::render(ui::Frame &f) {
 
 bool MultiplayerClient::handle(const sf::Event &event) {
   if (chatEntry.handle(event)) return true;
+  if (readyButton.handle(event)) return true;
   if (event.type == sf::Event::EventType::KeyPressed) {
     if (event.key.code == sf::Keyboard::Return) {
       chatEntry.focus();
@@ -293,13 +331,16 @@ bool MultiplayerClient::handle(const sf::Event &event) {
 }
 
 void MultiplayerClient::signalRead() {
-  if (chatEntry.inputSignal) {
-    if (arena)
+  if (arena) {
+    if (chatEntry.inputSignal)
       transmitServer(
           sky::ClientPacket::Chat(std::string(*chatEntry.inputSignal)));
+    if (readyButton.clickSignal)
+      transmitServer(sky::ClientPacket::ReqTeamChange(1));
   }
 }
 
 void MultiplayerClient::signalClear() {
   chatEntry.signalClear();
+  readyButton.signalClear();
 }

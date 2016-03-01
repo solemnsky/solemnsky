@@ -18,15 +18,18 @@
 
 namespace sky {
 
+typedef unsigned char Team; // 0 spec, 1 left, 2 right
+
 /**
- * Difference in some Player.
+ * Compact way to change a player to a new state.
  */
 struct PlayerDelta {
   PlayerDelta(); // for unpacking
-  PlayerDelta(const optional<std::string> &nickname);
+  PlayerDelta(const class Player &player); // set non-optional values
 
-  optional<std::string> nickname; // exists if nickname changed
-  bool admin; // corresponds to new admin state
+  optional<std::string> nickname;
+  bool admin; // these values are non-optional
+  optional<Team> team; // 0 is spectator, 1 left, 2 right
 };
 
 static const struct PlayerDeltaPack: public tg::ClassPack<PlayerDelta> {
@@ -43,6 +46,7 @@ struct Player {
   PID pid;
   std::string nickname;
   bool admin;
+  Team team;
 
   void applyDelta(const PlayerDelta &delta);
 };

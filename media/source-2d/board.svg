@@ -66,25 +66,25 @@
        inkscape:persp3d-origin="372.04724 : 350.7874 : 1"
        id="perspective4449" />
     <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4327"
-       id="linearGradient4333"
-       x1="4787.5"
-       y1="2864.8623"
-       x2="6009.375"
-       y2="2864.8623"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.99846547,0,0,1,7.3465473,0)" />
+            inkscape:collect="always"
+            xlink:href="#linearGradient4327"
+            id="linearGradient4333"
+            x1="4787.5"
+            y1="2864.8623"
+            x2="6009.375"
+            y2="2864.8623"
+            gradientUnits="userSpaceOnUse"
+            gradientTransform="matrix(0.99846547,0,0,1,206.22033,-79.549513)"/>
     <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4327"
-       id="linearGradient4335"
-       x1="6075"
-       y1="2864.8623"
-       x2="6387.5"
-       y2="2864.8623"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.96,0,0,1,255.5,0)" />
+            inkscape:collect="always"
+            xlink:href="#linearGradient4327"
+            id="linearGradient4335"
+            x1="6075"
+            y1="2864.8623"
+            x2="6387.5"
+            y2="2864.8623"
+            gradientUnits="userSpaceOnUse"
+            gradientTransform="matrix(0.96,0,0,1,454.37378,-79.549513)"/>
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient4548"
@@ -105,24 +105,24 @@
        gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="0.22627417"
-     inkscape:cx="3597.4495"
-     inkscape:cy="-1116.3145"
-     inkscape:document-units="px"
-     inkscape:current-layer="g4564"
-     showgrid="false"
-     showborder="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1017"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1" />
+          id="base"
+          pagecolor="#ffffff"
+          bordercolor="#666666"
+          borderopacity="1.0"
+          inkscape:pageopacity="0.0"
+          inkscape:pageshadow="2"
+          inkscape:zoom="0.22627417"
+          inkscape:cx="3167.9627"
+          inkscape:cy="-714.15872"
+          inkscape:document-units="px"
+          inkscape:current-layer="layer1"
+          showgrid="false"
+          showborder="false"
+          inkscape:window-width="1920"
+          inkscape:window-height="1017"
+          inkscape:window-x="-8"
+          inkscape:window-y="-8"
+          inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -448,24 +448,28 @@
          id="rect4487-2"
          style="fill:#000000;fill-opacity:1" />
     </g>
-    <rect
-       style="fill:#000fd2;fill-opacity:1"
-       id="rect4534-2"
-       width="200"
-       height="50"
-       x="332.8125"
-       y="2323.1516" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="331.16602"
-       y="2357.4099"
-       id="text4201"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4203"
+    <g
+            id="g4268"
+            transform="translate(963.43299,-852.94755)">
+      <rect
+              y="2323.1516"
+              x="332.8125"
+              height="50"
+              width="200"
+              id="rect4534-2"
+              style="fill:#000fd2;fill-opacity:1"/>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4201"
+         y="2357.4099"
          x="331.16602"
-         y="2357.4099">closeButton</tspan></text>
+         style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="2357.4099"
+           x="331.16602"
+           id="tspan4203"
+           sodipodi:role="line">closeButton</tspan></text>
+    </g>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:28.50232887px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -614,68 +618,61 @@
          id="tspan4533"
          x="643.79388"
          y="668.60651">contents</tspan></text>
-    <g
-       id="g4418"
-       transform="translate(198.87378,-79.549513)"
-       inkscape:export-filename="C:\Users\Chris\Documents\solemnsky\media\render-2d\lobby.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90">
-      <rect
-         y="2339.8623"
-         x="4787.5"
-         height="900"
-         width="1600"
-         id="rect4160-2"
-         style="opacity:1;fill:#889cff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none" />
-      <rect
-         y="2489.8623"
-         x="4787.5"
-         height="750"
-         width="1220"
-         id="rect4242"
-         style="fill:url(#linearGradient4333);fill-opacity:1" />
-      <rect
-         y="2489.8623"
-         x="6087.5"
-         height="750"
-         width="300"
-         id="rect4242-2"
-         style="fill:url(#linearGradient4335);fill-opacity:1" />
-      <text
-         sodipodi:linespacing="125%"
-         id="text4283"
-         y="2532.4949"
-         x="4784.1694"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:79.93610382px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           y="2532.4949"
-           x="4784.1694"
-           id="tspan4285"
-           sodipodi:role="line">chat</tspan></text>
-      <text
-         sodipodi:linespacing="125%"
-         id="text4283-9"
-         y="2521.5574"
-         x="6244.0923"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:59.42829132px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           y="2521.5574"
-           x="6244.0923"
-           id="tspan4285-1"
-           sodipodi:role="line">players</tspan></text>
-      <text
-         transform="matrix(0.99800603,-0.06311867,0.06311867,0.99800603,0,0)"
-         sodipodi:linespacing="125%"
-         id="text4283-9-9"
-         y="2804.4031"
-         x="5281.4106"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:129.22799683px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           y="2804.4031"
-           x="5281.4106"
-           id="tspan4285-1-9"
-           sodipodi:role="line">LOBBY</tspan></text>
-    </g>
+    <rect
+            style="opacity:1;fill:#889cff;fill-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none"
+            id="rect4160-2"
+            width="1600"
+            height="900"
+            x="4986.374"
+            y="2260.3127"/>
+    <rect
+            style="fill:url(#linearGradient4333);fill-opacity:1"
+            id="rect4242"
+            width="1220"
+            height="750"
+            x="4986.374"
+            y="2410.3127"/>
+    <rect
+            style="fill:url(#linearGradient4335);fill-opacity:1"
+            id="rect4242-2"
+            width="300"
+            height="750"
+            x="6286.374"
+            y="2410.3127"/>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:79.93610382px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="4983.0435"
+       y="2452.9453"
+       id="text4283"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4285"
+         x="4983.0435"
+         y="2452.9453">chat</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:59.42829132px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="6442.9663"
+       y="2442.0078"
+       id="text4283-9"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4285-1"
+         x="6442.9663"
+         y="2442.0078">players</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:129.22799683px;line-height:125%;font-family:'SF Atarian System';-inkscape-font-specification:'SF Atarian System, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="5484.9092"
+       y="2737.5649"
+       id="text4283-9-9"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.99800603,-0.06311867,0.06311867,0.99800603,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan4285-1-9"
+         x="5484.9092"
+         y="2737.5649">LOBBY</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -737,8 +734,11 @@
          x="3102.9026"
          y="3268.4563">a new game will start shortly</tspan></text>
     <g
-       id="g4564"
-       transform="translate(37.5,0)">
+            id="g4564"
+            transform="translate(37.5,0)"
+            inkscape:export-filename="C:\Users\Chris\Documents\solemnsky\media\render-2d\scoreoverlay.png"
+            inkscape:export-xdpi="90"
+            inkscape:export-ydpi="90">
       <rect
          y="2929.3933"
          x="1005.5398"
