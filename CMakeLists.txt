@@ -123,9 +123,6 @@ add_executable(solemnsky_client
         src/client/ui/frame.cpp
         src/client/ui/frame.h
 
-        src/client/ui/profiler.cpp
-        src/client/ui/profiler.h
-
         src/client/ui/sheet.cpp
         src/client/ui/sheet.h
 

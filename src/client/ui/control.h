@@ -19,6 +19,22 @@
 namespace ui {
 
 /**
+ * Manager for performance profile data collected by the game loop.
+ */
+class Profiler {
+ private:
+
+ public:
+  const int size;
+  Profiler(int size);
+
+  RollingSampler<float> cycleTime;
+  RollingSampler<float> logicTime;
+  RollingSampler<float> renderTime;
+  RollingSampler<int> primCount;
+};
+
+/**
  * Various lower level settings and SFML-provided state for us to access
  * occasionally.
  */
@@ -67,8 +83,7 @@ public:
 };
 
 /**
- * Shows a splash screen while loading resources and then jumps into the
- * Control we supplied.
+ * Runs a top-level ui::Control, resulting in a full app.
  */
 void runSFML(std::function<std::unique_ptr<Control>()> initCtrl);
 }
