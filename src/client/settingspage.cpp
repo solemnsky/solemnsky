@@ -4,7 +4,10 @@
  * OptionWidget.
  */
 
-OptionWidget::Style::Style() {
+OptionWidget::Style::Style() :
+    fontSize(50),
+    descriptionColor(255, 255, 255),
+    entryOffset(200, -20) {
   checkboxStyle.dimensions = 40;
 }
 
@@ -90,6 +93,16 @@ void OptionWidget::signalClear() {
 /**
  * SettingsPage.
  */
+
+SettingsPage::Style::Style() :
+    debugChooserPos(100, 100),
+    nicknameChooserPos(100, 100),
+    pageButtonHeight(800),
+    generalButtonOffset(700 / 6),
+    playerButtonOffset(generalButtonOffset + 300 + 700 / 3),
+    controlsButtonOffset(playerButtonOffset + 300 + 700 / 3),
+    selectedTabButtonColor(100, 100, 100),
+    unselectedTabButtonColor(132, 173, 181) { }
 
 SettingsPage::SettingsPage(ClientShared &state) :
     Page(state),

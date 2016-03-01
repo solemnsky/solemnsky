@@ -7,15 +7,17 @@ namespace sky {
  */
 PlayerDelta::PlayerDelta() { }
 
-PlayerDelta::PlayerDelta(const optional<std::string> &nickname) :
-    nickname(nickname), admin(false) { }
+PlayerDelta::PlayerDelta(const Player &player) :
+    admin(player.admin) { }
 
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<PlayerDelta, TYPE>(RULE, &PlayerDelta::PTR)
 PlayerDeltaPack::PlayerDeltaPack() :
     tg::ClassPack<PlayerDelta>(
         member(optional<std::string>, nickname, tg::optStringPack),
-        member(bool, admin, tg::boolPack)
+        member(bool, admin, tg::boolPack),
+        member(optional<Team>, team,
+               tg::OptionalPack<Team>(tg::BytePack<Team>()))
     ) { }
 #undef member
 
@@ -28,8 +30,9 @@ Player::Player(const sky::PID pid) :
     pid(pid), admin(false) { }
 
 void Player::applyDelta(const PlayerDelta &delta) {
-  admin = delta.admin;
   if (delta.nickname) nickname = *delta.nickname;
+  admin = delta.admin;
+  if (delta.team) team = *delta.team;
 }
 
 #define member(TYPE, PTR, RULE) \
@@ -38,7 +41,8 @@ PlayerPack::PlayerPack() :
     tg::ClassPack<Player>(
         member(PID, pid, pidPack),
         member(std::string, nickname, tg::stringPack),
-        member(bool, admin, tg::BoolPack())
+        member(bool, admin, tg::boolPack),
+        member(Team, team, tg::BytePack<Team>())
     ) { }
 #undef member
 

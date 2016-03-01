@@ -14,13 +14,19 @@
 class MultiplayerClient: public Game {
  private:
   struct Style {
-    sf::Vector2i scoreOverlayDims{1330, 630};
-    float scoreOverlayTopMargin = 100;
-
-    float lobbyPlayersOffset = 1305,
-        lobbyTopMargin = 205,
-        lobbyChatWidth = 1220;
-    int lobbyFontSize = 40;
+    sf::Vector2i scoreOverlayDims;
+    sf::Vector2f chatPos,
+        messageLogPos,
+        readyButtonPos;
+    float scoreOverlayTopMargin;
+    float lobbyPlayersOffset,
+        lobbyTopMargin,
+        lobbyChatWidth,
+        gameChatWidth;
+    int lobbyFontSize;
+    sf::Color playerSpecColor, playerJoinedColor;
+    std::string readyButtonActiveDesc, readyButtonDeactiveDesc;
+    Style();
   } style;
 
   /**
@@ -50,6 +56,7 @@ class MultiplayerClient: public Game {
    */
   ui::TextEntry chatEntry;
   ui::TextLog messageLog;
+  ui::Button readyButton;
   bool scoreOverlayFocused;
 
   void setUI(const sky::ArenaMode mode); // set some style state on widgets
