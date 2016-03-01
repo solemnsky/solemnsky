@@ -9,7 +9,7 @@ namespace ui {
 namespace detail {
 
 TextLogEntry::TextLogEntry(const std::string &text, const double time) :
-    text(std::move(text)), time(time) { }
+    text(text), time(time) { }
 
 }
 

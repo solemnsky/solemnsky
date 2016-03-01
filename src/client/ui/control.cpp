@@ -5,15 +5,28 @@
 #include "telegraph/telegraph.h"
 #include "control.h"
 
-namespace {
-/****
- * transformEvent
+namespace ui {
+
+/**
+ * Profiler.
+ */
+
+Profiler::Profiler(int size) :
+    cycleTime{size}, logicTime{size}, renderTime{size}, primCount{size},
+    size{size} {
+  cycleTime.push(0), cycleTime.push(0), renderTime.push(0), primCount.push(0);
+  // for safety
+}
+
+/**
+ * runSFML.
+ */
+
+/**
  * Fakes a transformation of any potential position-related values on an
- * event. The fact that these position-related values are all ints makes me
- * feel like we should make our own event type, just out of respect for
- * semantics. However, this doesn't realistically do us anything as long as
- * the window dimensions are less than 1600x900. I suppose I expect to come
- * back to this sometime in the future when everybody's using 4k displays...
+ * event. Unfortunately this doesn't preserve precision, but the alternative
+ * would be to wrap sf::Event... it's not worth it, at least until people
+ * complain about issues on their 4k systems.
  */
 sf::Event transformEvent(const sf::Transform trans,
                          const sf::Event event) {
@@ -50,20 +63,11 @@ sf::Event transformEvent(const sf::Transform trans,
       newEvent.mouseButton = newMouseButton;
     }
 
-    // it almost feels like the SFML API doesn't want us to touch this.. ^^
-
     return newEvent;
   }
 
   return event;
 }
-}
-
-namespace ui {
-
-/****
- * runSFML
- */
 
 void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
   std::unique_ptr<Control> ctrl =

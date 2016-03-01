@@ -67,9 +67,10 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
       }
 
       case ClientPacket::Type::ReqTeamChange: {
-        player->ready = true;
+        if (!packet.team) return false;
+        player->team = *packet.team;
         sky::PlayerDelta delta(*player);
-        delta.ready = true;
+        delta.team = *packet.team;
         broadcastToClients(sky::ServerPacket::NoteArenaDelta(
             sky::ArenaDelta::Modify(player->pid, delta)
         ));

@@ -11,6 +11,39 @@
 #include "sky/arena.h"
 #include "client/subsystem/render.h"
 
+/**
+ * Central state of the multiplayer client; connection info, Arena model,
+ * telegraph, basic methods, latency tracking, etc.
+ */
+class MultiplayerClientState {
+
+};
+
+/**
+ * Interface of the client when the Arena is in lobby mode.
+ */
+class MultiplayerLobby: public ui::Control {
+ private:
+ public:
+
+};
+
+/**
+ * Interface of the client when the Arena is in game mode.
+ */
+class MultiplayerGame: public ui::Control {
+ private:
+ public:
+};
+
+/**
+ * Interface of the client when the Arena is in scoring mode.
+ */
+class MultiplayerScoring: public ui::Control {
+ private:
+ public:
+};
+
 class MultiplayerClient: public Game {
  private:
   struct Style {
