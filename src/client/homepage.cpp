@@ -1,6 +1,6 @@
 #include "homepage.h"
 #include "util/methods.h"
-#include "client/game/multiplayerclient.h"
+#include "client/multiplayer/multiplayerclient.h"
 #include "client/game/tutorial.h"
 
 HomePage::HomePage(ClientShared &clientState) :

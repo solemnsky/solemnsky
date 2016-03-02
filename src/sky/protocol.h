@@ -23,7 +23,7 @@ struct ClientPacket {
     ReqSpawn, // request to spawn
     ReqKill, // request to die
     ReqTeamChange, // request to change team / spectator mode
-    NoteSkyDelta, // tell the server what you think is happening in the game
+    NoteSkyDelta, // tell the server what you think is happening in the tutorial
     Chat // send a chat message
   };
 

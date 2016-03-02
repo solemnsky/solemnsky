@@ -19,7 +19,7 @@
 namespace ui {
 
 /**
- * Manager for performance profile data collected by the game loop.
+ * Manager for performance profile data collected by the tutorial loop.
  */
 class Profiler {
  private:

@@ -22,7 +22,7 @@ enum class Res {
   Scoring,
   ScoreOverlay,
 
-  PlayerSheet, // game stuff
+  PlayerSheet, // tutorial stuff
 
   LAST // for checking number of resources defined
 };

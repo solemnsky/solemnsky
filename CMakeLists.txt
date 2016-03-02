@@ -88,14 +88,14 @@ add_executable(solemnsky_client
         src/client/elements/settings.cpp
         src/client/elements/settings.h
 
-        src/client/game/gamecontrols.cpp
-        src/client/game/gamecontrols.h
+        src/client/tutorial/gamecontrols.cpp
+        src/client/tutorial/gamecontrols.h
 
-        src/client/game/multiplayerclient.cpp
-        src/client/game/multiplayerclient.h
+        src/client/multiplayer/multiplayerclient.cpp
+        src/client/multiplayer/multiplayerclient.h
 
-        src/client/game/tutorial.cpp
-        src/client/game/tutorial.h
+        src/client/tutorial/tutorial.cpp
+        src/client/tutorial/tutorial.h
 
         src/client/subsystem/render.cpp
         src/client/subsystem/render.h
@@ -146,7 +146,7 @@ add_executable(solemnsky_client
 
         src/client/settingspage.cpp
         src/client/settingspage.h
-        )
+        src/client/multiplayer/multiplayershared.cpp src/client/multiplayer/multiplayershared.h src/client/multiplayer/multiplayerui.cpp src/client/multiplayer/multiplayerui.h)
 target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics

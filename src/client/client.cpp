@@ -119,7 +119,7 @@ void Client::render(ui::Frame &f) {
   bool gameUnderneath = (bool) shared.game;
   const float gameFocusFactor = shared.ui.gameFocusFactor,
       pageFocusFactor = shared.ui.pageFocusFactor;
-  // gameFocusFactor: 0 means game is blurred, 1 means the game is focused
+  // gameFocusFactor: 0 means tutorial is blurred, 1 means the tutorial is focused
   // pageFocusFactor: 0 means we're in the menu, 1 means a page focused
 
   if (shared.ui.gameFocused()) {
@@ -183,7 +183,7 @@ void Client::render(ui::Frame &f) {
 
 bool Client::handle(const sf::Event &event) {
   if (shared.ui.gameFocused() and shared.game) {
-    // game is focused
+    // tutorial is focused
     if (shared.game->handle(event)) return true;
   }
 
