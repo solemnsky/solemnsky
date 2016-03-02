@@ -61,7 +61,7 @@ public:
   double uptime;
 
   /**
-   * The game.
+   * The tutorial.
    */
   std::unique_ptr<class Game> game;
 

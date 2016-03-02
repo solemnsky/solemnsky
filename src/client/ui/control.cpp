@@ -99,7 +99,7 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
   appLog("Finished creating window.", LogOrigin::App);
 
   /**
-   * Create appState, start game loop.
+   * Create appState, start tutorial loop.
    */
   appLog("Running application...", LogOrigin::App);
 
@@ -119,7 +119,7 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
     /*
      * Ticking
      * Here our goal is to execute a logic routine as many times as it needs
-     * to simulate the game that passed during the time we slept.
+     * to simulate the tutorial that passed during the time we slept.
      */
     cycleDelta = cycleClock.restart().asSeconds();
     profiler.cycleTime.push(cycleDelta);

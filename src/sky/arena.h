@@ -60,8 +60,8 @@ static const struct PlayerPack: public tg::ClassPack<Player> {
  */
 enum class ArenaMode {
   Lobby, // lobby, to make teams
-  Game, // playing game
-  Scoring // viewing game results
+  Game, // playing tutorial
+  Scoring // viewing tutorial results
 };
 
 static const tg::Pack<ArenaMode> arenaModePack = tg::EnumPack<ArenaMode>(2);

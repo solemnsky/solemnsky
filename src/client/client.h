@@ -11,7 +11,7 @@
 
 /**
  * The main client app.
- * Its various components (the various pages and potential running game) are
+ * Its various components (the various pages and potential running tutorial) are
  * neatly modularized; see client/elements/elements.h. This is simply the glue
  * that brings everything together.
  */
@@ -40,11 +40,11 @@ class Client: public ui::Control {
 
     std::string backButtonText = "main menu",
         quitButtonText = "quit",
-        closeButtonText = "close game",
+        closeButtonText = "close tutorial",
         aboutButtonText = "about";
 
     float menuInGameFade = 0.7; // the opacity of the UI when we open it
-    // by escaping from the game (this opacity factor dissapates when a page
+    // by escaping from the tutorial (this opacity factor dissapates when a page
     // is focused)
 
     Style() { }
@@ -54,7 +54,7 @@ class Client: public ui::Control {
    * Buttons.
    */
   ui::Button backButton, // for exiting menus, lower right
-      closeButton, // for closing the current game, lower left
+      closeButton, // for closing the current tutorial, lower left
       quitButton, // quitting solemnsky
       aboutButton; // for seeing the about screen
 

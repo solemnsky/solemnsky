@@ -1,5 +1,12 @@
 #include "multiplayerclient.h"
 
+/**
+ * MultiplayerClientShared.
+ */
+
+/**
+ * MultiplayerClient.
+ */
 MultiplayerClient::Style::Style() :
     scoreOverlayDims{1330, 630},
     chatPos(20, 850),
@@ -23,22 +30,9 @@ MultiplayerClient::MultiplayerClient(ClientShared &state,
 
     chatEntry(style.chatPos, "[enter] to chat"),
     messageLog(style.messageLogPos),
-    readyButton(style.readyButtonPos, "ready"),
-
-    host(tg::HostType::Client),
-    server(nullptr),
-    telegraph(sky::ServerPacketPack(), sky::ClientPacketPack()),
-    pingCooldown(5),
-    triedConnection(false),
-    disconnecting(false),
-    disconnectTimeout(1) {
-  host.connect(serverHostname, serverPort);
+    readyButton(style.readyButtonPos, "ready") {
   messageLog.expanded = true;
 }
-
-/**
- * Graphics.
- */
 
 void MultiplayerClient::setUI(const sky::ArenaMode mode) {
   switch (mode) {
@@ -105,7 +99,6 @@ void MultiplayerClient::renderScoreOverlay(ui::Frame &f) {
  */
 
 void MultiplayerClient::transmitServer(const sky::ClientPacket &packet) {
-  if (server) telegraph.transmit(host, server, packet);
 }
 
 bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {

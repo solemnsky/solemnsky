@@ -120,7 +120,7 @@ SettingsPage::SettingsPage(ClientShared &state) :
     debugOption(&newSettings.enableDebug, style.debugChooserPos,
                 "debug", "display debug information"),
     nicknameOption(&newSettings.nickname, style.nicknameChooserPos,
-                   "nickname", "your nickname in-game") {
+                   "nickname", "your nickname in-tutorial") {
   switchToTab(currentTab); // set the button styling
 }
 

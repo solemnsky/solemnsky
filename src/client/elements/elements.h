@@ -9,8 +9,8 @@
 #include "client/ui/widgets/widgets.h"
 
 /**
- * Pages are the portals through which users interface with the game
- * periphery: looking for servers, editing settings, loading game records, etc.
+ * Pages are the portals through which users interface with the tutorial
+ * periphery: looking for servers, editing settings, loading tutorial records, etc.
  *
  * We have three pages in our menu interface. They are all persistent, in
  * that they always exist, with their state and tick() operations, whether they
@@ -32,6 +32,8 @@ class Page: public ui::Control {
 
  public:
   Page(ClientShared &state);
+  // a page's lifetime is never handled by a reference to a Page
+  // so we need no virtual dtor
 
   virtual void attachClientState() { } // when client state is initialized
   // (this is necessary because of the Control::attachState() thing)
@@ -47,9 +49,7 @@ class Page: public ui::Control {
 };
 
 /**
- * There is exactly one place for a Game -- in the unique_ptr<Game> of the
- * global ClientState. At any moment the game may or may not exist -- if it
- * exists, it
+ * The game being played.
  */
 class Game: public ui::Control {
  protected:
@@ -57,6 +57,7 @@ class Game: public ui::Control {
 
  public:
   Game(ClientShared &shared, const std::string &name);
+  virtual ~Game() { }
 
   virtual void onBlur() = 0;
   virtual void onFocus() = 0;
@@ -65,8 +66,8 @@ class Game: public ui::Control {
   // try to exit, set Control::conclude flag eventually
   virtual void doExit() = 0;
 
-  std::string description; // description of the game
-  std::string status; // brief status of the game
+  std::string description; // description of the tutorial
+  std::string status; // brief status of the tutorial
 };
 
 #endif //SOLEMNSKY_PAGE_H
