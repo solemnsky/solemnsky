@@ -14,7 +14,6 @@
  * the game to start.
  */
 class MultiplayerLobby: public MultiplayerMode {
- private:
  public:
   MultiplayerLobby(MultiplayerShared &shared);
 
