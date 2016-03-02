@@ -14,8 +14,8 @@ class MultiplayerClient: public Game {
   /**
    * Shared state and the currently active mode interface.
    */
-  MultiplayerShared mShared;
-  std::unique_ptr<MultiplayerMode> mode;
+  MultiplayerConnection mShared;
+  std::unique_ptr<MultiplayerView> mode;
 
   /**
    * Networking stuff that we don't need to share with the mode.
@@ -24,7 +24,6 @@ class MultiplayerClient: public Game {
   ENetEvent netEvent;
   bool disconnecting;
   bool triedConnection; // have we sent a verbs requesting connection yet?
-  bool disconnecting;
   Cooldown disconnectTimeout;
 
  public:

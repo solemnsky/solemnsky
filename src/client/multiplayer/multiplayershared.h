@@ -11,9 +11,9 @@
 #include "sky/protocol.h"
 #include "client/elements/elements.h"
 
-struct MultiplayerShared {
-  MultiplayerShared(const std::string &serverHostname,
-                    const unsigned short serverPort);
+struct MultiplayerConnection {
+  MultiplayerConnection(const std::string &serverHostname,
+                        const unsigned short serverPort);
   /**
    * Connection state.
    */
@@ -37,7 +37,7 @@ struct MultiplayerShared {
  * The interface for the client in a certain Arena mode; comes with style
  * tuning values.
  */
-class MultiplayerMode: public ui::Control {
+class MultiplayerView: public ui::Control {
  protected:
   struct Style {
     sf::Vector2i scoreOverlayDims;
@@ -56,12 +56,12 @@ class MultiplayerMode: public ui::Control {
   } style;
 
   ClientShared &shared; // shared state from the client application
-  MultiplayerShared &mShared;
+  MultiplayerConnection &mShared;
   // shared state pertinant to the multiplayer system
 
  public:
-  MultiplayerMode(ClientShared &shared, MultiplayerShared &mShared);
-  virtual ~MultiplayerMode() { }
+  MultiplayerView(ClientShared &shared, MultiplayerConnection &mShared);
+  virtual ~MultiplayerView() { }
 
   virtual void onBlur() = 0;
   virtual void onFocus() = 0;

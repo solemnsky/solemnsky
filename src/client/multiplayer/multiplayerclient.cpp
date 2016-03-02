@@ -149,9 +149,9 @@ void MultiplayerClient::tick(float delta) {
    *
    */
 
-  netEvent = shared.host.poll();
+  netEvent = mShared.host.poll();
   if (netEvent.type == ENET_EVENT_TYPE_DISCONNECT) {
-    shared.server = nullptr;
+    mShared.server = nullptr;
     appLog("Disconnected from server!", LogOrigin::Client);
     quitting = true;
     return;
@@ -165,10 +165,10 @@ void MultiplayerClient::tick(float delta) {
     return;
   }
 
-  if (!server) {
+  if (!mShared.server) {
     // still trying to connect to the server...
-    if (event.type == ENET_EVENT_TYPE_CONNECT) {
-      server = event.peer;
+    if (netEvent.type == ENET_EVENT_TYPE_CONNECT) {
+      mShared.server = netEvent.peer;
       appLog("Connected to server!", LogOrigin::Client);
     }
   } else {

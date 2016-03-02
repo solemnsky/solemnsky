@@ -13,9 +13,9 @@
  * In the lobby, we can talk to people, see teams, change teams, and vote for
  * the game to start.
  */
-class MultiplayerLobby: public MultiplayerMode {
+class MultiplayerLobby: public MultiplayerView {
  public:
-  MultiplayerLobby(MultiplayerShared &shared);
+  MultiplayerLobby(MultiplayerConnection &shared);
 
  private:
   void tick(float delta) override;
@@ -28,12 +28,12 @@ class MultiplayerLobby: public MultiplayerMode {
  * point of the screen; peripharies include a chat / message interface, and a
  * score screen you can call up with tab.
  */
-class MultiplayerGame: public MultiplayerMode {
+class MultiplayerGame: public MultiplayerView {
  private:
   sky::RenderSystem renderSystem;
 
  public:
-  MultiplayerGame(MultiplayerShared &shared);
+  MultiplayerGame(MultiplayerConnection &shared);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;
@@ -44,11 +44,11 @@ class MultiplayerGame: public MultiplayerMode {
  * At the scoring screen, we display the score and players talk about how
  * they were carrying their team.
  */
-class MultiplayerScoring: public MultiplayerMode {
+class MultiplayerScoring: public MultiplayerView {
  private:
 
  public:
-  MultiplayerScoring(MultiplayerShared &shared);
+  MultiplayerScoring(MultiplayerConnection &shared);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;

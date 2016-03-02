@@ -1,9 +1,9 @@
 #include "multiplayershared.h"
 
 /**
- * MultiplayerShared.
+ * MultiplayerConnection.
  */
-MultiplayerShared::MultiplayerShared(
+MultiplayerConnection::MultiplayerConnection(
     const std::string &serverHostname,
     const unsigned short serverPort) :
     host(tg::HostType::Client),
@@ -16,15 +16,15 @@ MultiplayerShared::MultiplayerShared(
   host.connect(serverHostname, serverPort);
 }
 
-void MultiplayerShared::transmitServer(const sky::ClientPacket &packet) {
+void MultiplayerConnection::transmitServer(const sky::ClientPacket &packet) {
   if (server) telegraph.transmit(host, server, packet);
 }
 
 /**
- * MultiplayerMode.
+ * MultiplayerView.
  */
 
-MultiplayerMode::Style::Style() :
+MultiplayerView::Style::Style() :
     scoreOverlayDims{1330, 630},
     chatPos(20, 850),
     messageLogPos(20, 840),
@@ -40,9 +40,9 @@ MultiplayerMode::Style::Style() :
     readyButtonActiveDesc("ready!"),
     readyButtonDeactiveDesc("cancel") { }
 
-MultiplayerMode::MultiplayerMode(
+MultiplayerView::MultiplayerView(
     ClientShared &shared,
-    MultiplayerShared &mShared) :
+    MultiplayerConnection &mShared) :
     shared(shared),
     mShared(mShared) { }
 
