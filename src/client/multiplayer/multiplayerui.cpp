@@ -4,8 +4,8 @@
  * MultiplayerLobby.
  */
 
-MultiplayerLobby::MultiplayerLobby(MultiplayerShared &shared) :
-    MultiplayerMode(shared) { }
+MultiplayerLobby::MultiplayerLobby(MultiplayerConnection &shared) :
+    MultiplayerView(shared) { }
 
 void MultiplayerLobby::tick(float delta) {
 
@@ -38,8 +38,8 @@ bool MultiplayerLobby::handle(const sf::Event &event) {
  * MultiplayerGame.
  */
 
-MultiplayerGame::MultiplayerGame(MultiplayerShared &shared) :
-    MultiplayerMode(shared),
+MultiplayerGame::MultiplayerGame(MultiplayerConnection &shared) :
+    MultiplayerView(shared),
     renderSystem(shared.arena.sky.get_ptr()) { }
 
 void MultiplayerGame::tick(float delta) {
@@ -49,7 +49,7 @@ void MultiplayerGame::tick(float delta) {
 void MultiplayerGame::render(ui::Frame &f) {
 
   // arena and arena->sky exist
-  if (sky::Plane *plane = arena->sky->getPlane(myPlayer->pid)) {
+  if (sky::Plane *plane = mShared.arena->sky->getPlane(myPlayer->pid)) {
     renderSystem->render(f, plane->state.pos);
   } else {
     renderSystem->render(f, {0, 0}); // TODO: panning in spectator mode
@@ -76,8 +76,8 @@ bool MultiplayerGame::handle(const sf::Event &event) {
  * MultiplayerScoring.
  */
 
-MultiplayerScoring::MultiplayerScoring(MultiplayerShared &shared) :
-    MultiplayerMode(shared) { }
+MultiplayerScoring::MultiplayerScoring(MultiplayerConnection &shared) :
+    MultiplayerView(shared) { }
 
 void MultiplayerScoring::tick(float delta) {
 
