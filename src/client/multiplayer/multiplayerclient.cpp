@@ -7,99 +7,24 @@
 /**
  * MultiplayerClient.
  */
-MultiplayerClient::Style::Style() :
-    scoreOverlayDims{1330, 630},
-    chatPos(20, 850),
-    messageLogPos(20, 840),
-    readyButtonPos(lobbyChatWidth + 10, lobbyTopMargin),
-    scoreOverlayTopMargin(100),
-    lobbyPlayersOffset(1250),
-    lobbyTopMargin(205),
-    lobbyChatWidth(1250),
-    gameChatWidth(500),
-    lobbyFontSize(40),
-    playerSpecColor(255, 255, 255),
-    playerJoinedColor(0, 255, 0),
-    readyButtonActiveDesc("ready!"),
-    readyButtonDeactiveDesc("cancel") { }
-
 MultiplayerClient::MultiplayerClient(ClientShared &state,
                                      const std::string &serverHostname,
                                      const unsigned short serverPort) :
     Game(state, "multiplayer"),
 
+    mShared(serverHostname, serverPort),
     chatEntry(style.chatPos, "[enter] to chat"),
     messageLog(style.messageLogPos),
     readyButton(style.readyButtonPos, "ready") {
   messageLog.expanded = true;
 }
 
-void MultiplayerClient::setUI(const sky::ArenaMode mode) {
-  switch (mode) {
-    case sky::ArenaMode::Lobby: {
-      messageLog.expanded = true;
-      messageLog.style.maxWidth = style.lobbyChatWidth;
-    }
-    case sky::ArenaMode::Game:
-      messageLog.expanded = false;
-      messageLog.style.maxWidth = style.gameChatWidth;
-      break;
-    case sky::ArenaMode::Scoring:
-      break;
-  }
-}
-
-void MultiplayerClient::renderLobby(ui::Frame &f) {
-  f.drawSprite(textureOf(Res::Lobby), {0, 0}, {0, 0, 1600, 900});
-  int i = 0;
-  sf::Color color;
-  for (sky::Player &player : arena->players) {
-    f.drawText(
-        {style.lobbyPlayersOffset,
-         style.lobbyTopMargin + (i * style.lobbyFontSize)},
-        {player.nickname}, style.lobbyFontSize,
-        (player.team == 0) ? style.playerSpecColor : style.playerJoinedColor);
-    i++;
-  }
-  // TODO: don't copy strings
-
-  messageLog.render(f);
-  chatEntry.render(f);
-  readyButton.render(f);
-}
-
-void MultiplayerClient::renderGame(ui::Frame &f) {
-  // arena and arena->sky exist
-  if (sky::Plane *plane = arena->sky->getPlane(myPlayer->pid)) {
-    renderSystem->render(f, plane->state.pos);
-  } else {
-    renderSystem->render(f, {0, 0}); // TODO: panning in spectator mode
-  }
-
-  messageLog.render(f);
-  chatEntry.render(f);
-}
-
-void MultiplayerClient::renderScoring(ui::Frame &f) {
-  f.drawSprite(textureOf(Res::Lobby), {0, 0}, {0, 0, 1600, 900});
-}
-
 void MultiplayerClient::renderScoreOverlay(ui::Frame &f) {
-  const static sf::Vector2f scoreOverlayPos = 0.5f *
-      sf::Vector2f(
-          1600.0f - style.scoreOverlayDims.x,
-          900.0f - style.scoreOverlayDims.y);
-  f.drawSprite(
-      textureOf(Res::ScoreOverlay), scoreOverlayPos,
-      {0, 0, style.scoreOverlayDims.x, style.scoreOverlayDims.y});
 }
 
 /**
  * Networking submethods.
  */
-
-void MultiplayerClient::transmitServer(const sky::ClientPacket &packet) {
-}
 
 bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
   /**
@@ -107,13 +32,13 @@ bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
    */
   using namespace sky;
 
-  if (!arena) {
+  if (!mShared.arena) {
     // waiting for the arena connection request to be accepted
     if (packet.type == ServerPacket::Type::AckJoin) {
       if (!(packet.arenaInitializer and packet.pid))
         return false;
 
-      arena.emplace();
+      shared.arena.emplace();
       if (!arena->applyInitializer(*packet.arenaInitializer)) {
         arena.reset();
         return false; // initializer didn't work
@@ -201,51 +126,39 @@ void MultiplayerClient::onFocus() {
 
 void MultiplayerClient::onChangeSettings(const SettingsDelta &settings) {
   if (settings.nickname) {
-    sky::PlayerDelta delta(*myPlayer);
+    sky::PlayerDelta delta(*shared.myPlayer);
     delta.nickname = *settings.nickname;
-    transmitServer(sky::ClientPacket::ReqDelta(delta));
+    shared.transmitServer(sky::ClientPacket::ReqDelta(delta));
     // request a nickname change
   }
 }
 
 void MultiplayerClient::doExit() {
-  if (!server) {
+  if (!shared.server) {
     quitting = true;
   } else {
-    host.disconnect(server);
+    shared.host.disconnect(shared.server);
     appLog("Disconnecting from server...", LogOrigin::Client);
-    disconnecting = true;
-    disconnectTimeout.reset();
+    shared.disconnecting = true;
+    shared.disconnectTimeout.reset();
   }
 }
 
-/**
- * Control interface.
- */
-
 void MultiplayerClient::tick(float delta) {
-  chatEntry.tick(delta);
-  messageLog.tick(delta);
-  readyButton.tick(delta);
-
-  using namespace sky;
-
   /**
-   * Here we handle connections and disconnections from the server, and send
-   * the ReqJoin when we manage to make initial contact. All the rest of the
-   * protocol is implemented in processPack().
+   *
    */
 
-  event = host.poll();
-  if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
-    server = nullptr;
+  netEvent = shared.host.poll();
+  if (netEvent.type == ENET_EVENT_TYPE_DISCONNECT) {
+    shared.server = nullptr;
     appLog("Disconnected from server!", LogOrigin::Client);
     quitting = true;
     return;
   }
 
-  if (disconnecting) {
-    if (disconnectTimeout.cool(delta)) {
+  if (shared.disconnecting) {
+    if (shared.disconnectTimeout.cool(delta)) {
       appLog("Disconnecting from unresponsive server!", LogOrigin::Client);
       quitting = true;
     }

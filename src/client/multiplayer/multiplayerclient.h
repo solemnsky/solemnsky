@@ -11,30 +11,21 @@
  */
 class MultiplayerClient: public Game {
  private:
-  struct Style {
-    sf::Vector2i scoreOverlayDims;
-    sf::Vector2f chatPos,
-        messageLogPos,
-        readyButtonPos;
-    float scoreOverlayTopMargin;
-    float lobbyPlayersOffset,
-        lobbyTopMargin,
-        lobbyChatWidth,
-        gameChatWidth;
-    int lobbyFontSize;
-    sf::Color playerSpecColor, playerJoinedColor;
-    std::string readyButtonActiveDesc, readyButtonDeactiveDesc;
-    Style();
-  } style;
+  /**
+   * Shared state and the currently active mode interface.
+   */
+  MultiplayerShared mShared;
+  std::unique_ptr<MultiplayerMode> mode;
 
   /**
-   * Shared state.
+   * Networking stuff that we don't need to share with the mode.
    */
-  MultiplayerShared shared;
-
-  /**
-   * Graphics and UI.
-   */
+  Cooldown pingCooldown;
+  ENetEvent netEvent;
+  bool disconnecting;
+  bool triedConnection; // have we sent a verbs requesting connection yet?
+  bool disconnecting;
+  Cooldown disconnectTimeout;
 
  public:
   MultiplayerClient(ClientShared &state,
