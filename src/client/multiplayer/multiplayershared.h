@@ -11,7 +11,21 @@
 #include "sky/protocol.h"
 #include "client/elements/elements.h"
 
-struct MultiplayerConnection {
+/**
+ * A connection to a server; manages the enet connection state, follows the
+ * protocol to maintain a sky::Arena up-to-date, and exposes poll() and
+ */
+class MultiplayerConnection {
+ private:
+  ENetEvent event;
+
+  tg::Telegraph<sky::ServerPacket, sky::ClientPacket> telegraph;
+  bool askedConnection, disconnecting;
+  Cooldown disconnectTimeout;
+
+  bool processPacket(const sky::ServerPacket &packet);
+
+ public:
   MultiplayerConnection(const std::string &serverHostname,
                         const unsigned short serverPort);
   /**
@@ -19,7 +33,7 @@ struct MultiplayerConnection {
    */
   tg::Host host;
   ENetPeer *server;
-  tg::Telegraph<sky::ServerPacket, sky::ClientPacket> telegraph;
+  bool disconnected;
 
   /**
    * Arena.
@@ -30,7 +44,9 @@ struct MultiplayerConnection {
   /**
    * Methods.
    */
-  void transmitServer(const sky::ClientPacket &packet);
+  void transmit(const sky::ClientPacket &packet);
+  optional<sky::ServerPacket> poll(const float delta);
+  void disconnect();
 };
 
 /**
@@ -56,8 +72,8 @@ class MultiplayerView: public ui::Control {
   } style;
 
   ClientShared &shared; // shared state from the client application
-  MultiplayerConnection &mShared;
-  // shared state pertinant to the multiplayer system
+  MultiplayerConnection &connection;
+  // shared state pertinent to the multiplayer system
 
  public:
   MultiplayerView(ClientShared &shared, MultiplayerConnection &mShared);
