@@ -49,7 +49,7 @@ void MultiplayerGame::tick(float delta) {
 void MultiplayerGame::render(ui::Frame &f) {
 
   // arena and arena->sky exist
-  if (sky::Plane *plane = mShared.arena->sky->getPlane(myPlayer->pid)) {
+  if (sky::Plane *plane = connection.arena->sky->getPlane(myPlayer->pid)) {
     renderSystem->render(f, plane->state.pos);
   } else {
     renderSystem->render(f, {0, 0}); // TODO: panning in spectator mode
