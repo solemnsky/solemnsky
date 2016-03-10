@@ -175,24 +175,18 @@ class VerifyStructure {
   virtual bool verifyStructure() const = 0;
 };
 
-/**
- * Verify the presence of a variadic list of optional<> fields, which, in the
- * case that they are VerifyStructure subclasses, are verified.
- */
-template<typename... Fields>
-bool verifyFields(optional<VerifyStructure> &field, Fields... fields) {
-  if (!field) return false;
-  if (field->verifyStructure()) return false;
-  return verifyFields(fields...);
-};
+bool verifyValue(const VerifyStructure &x);
+
+template<typename X>
+bool verifyValue(const X &x) { return true; }
+
+bool verifyFields();
 
 template<typename Field, typename... Fields>
 bool verifyFields(Field &field, Fields... fields) {
   if (!field) return false;
+  if (!verifyValue(*field)) return false;
   return verifyFields(fields...);
 };
-
-template<>
-bool verifyFields() { return true; }
 
 #endif //SOLEMNSKY_VALUE_H
