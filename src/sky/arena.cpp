@@ -62,6 +62,18 @@ ArenaInitializer::ArenaInitializer(
     mode(mode),
     skyInitializer(skyInitializer) { }
 
+bool ArenaInitializer::verifyStructure() const {
+  switch (mode) {
+    case ArenaMode::Lobby:
+      return true;
+    case ArenaMode::Game:
+      return verifyFields(skyInitializer);
+    case ArenaMode::Scoring:
+      return true;
+  }
+  return false;
+}
+
 #define member(TYPE, PTR, RULE) \
   tg::MemberRule<ArenaInitializer, TYPE>(RULE, &ArenaInitializer::PTR)
 ArenaInitializerPack::ArenaInitializerPack() :
@@ -77,6 +89,8 @@ ArenaInitializerPack::ArenaInitializerPack() :
 /**
  * ArenaDelta.
  */
+
+ArenaDelta::ArenaDelta() { }
 
 ArenaDelta::ArenaDelta(
     const ArenaDelta::Type type,
@@ -94,7 +108,22 @@ ArenaDelta::ArenaDelta(
     arenaMode(arenaMode),
     skyInitializer(skyInitializer) { }
 
-ArenaDelta::ArenaDelta() { }
+bool ArenaDelta::verifyStructure() const {
+  switch (type) {
+    case Type::Quit:
+      return verifyFields(quit);
+    case Type::Join:
+      return verifyFields(join);
+    case Type::Modify:
+      return verifyFields(player);
+    case Type::Motd:
+      break;
+      return verifyFields(motd);
+    case Type::Mode:
+      return verifyFields(arenaMode, skyInitializer);
+  }
+  return false;
+}
 
 ArenaDelta ArenaDelta::Quit(const PID pid) {
   return ArenaDelta(ArenaDelta::Type::Quit, pid);
@@ -146,71 +175,38 @@ ArenaDeltaPack::ArenaDeltaPack() :
 
 Arena::Arena() { }
 
-bool Arena::applyInitializer(const ArenaInitializer &initializer) {
+void Arena::applyInitializer(const ArenaInitializer &initializer) {
   motd = initializer.motd;
   players = std::list<Player>(initializer.players.begin(),
                               initializer.players.end());
   mode = initializer.mode;
   if (initializer.mode == ArenaMode::Game) {
-    if (!initializer.skyInitializer) return false;
     sky.emplace(*initializer.skyInitializer);
   }
-
-  return true;
 }
 
-bool Arena::applyDelta(const ArenaDelta &delta) {
+void Arena::applyDelta(const ArenaDelta &delta) {
   switch (delta.type) {
-    case ArenaDelta::Type::Quit: {
-      if (!delta.quit) return false;
+    case ArenaDelta::Type::Quit:
       players.remove_if([&](const Player &record) {
         return record.pid == *delta.quit;
       });
-      return true;
-    }
     case ArenaDelta::Type::Join: {
-      if (!delta.join) return false;
       if (Player *existingRecord = getPlayer(delta.join->pid))
         *existingRecord = *delta.join;
       else players.push_back(*delta.join);
-      return true;
     }
-    case ArenaDelta::Type::Modify: {
-      if (!delta.player) return false;
+    case ArenaDelta::Type::Modify:
       if (Player *player = getPlayer(delta.player->first)) {
         player->applyDelta(delta.player->second);
-        return true;
       }
-      return false;
-    }
-    case ArenaDelta::Type::Motd: {
-      if (!delta.motd) return false;
+    case ArenaDelta::Type::Motd:
       motd = *delta.motd;
-      return true;
-    }
     case ArenaDelta::Type::Mode: {
-      if (!delta.arenaMode) return false;
-      ArenaMode newMode = *delta.arenaMode;
-      switch (newMode) {
-        case ArenaMode::Lobby: {
-          mode = newMode;
-          return true;
-        }
-        case ArenaMode::Game: {
-          if (!delta.skyInitializer) return false;
-          sky.emplace(*delta.skyInitializer);
-          return true;
-        }
-        case ArenaMode::Scoring: {
-          mode = newMode;
-          // TODO: scoring information or something
-          return true;
-        }
-      }
-      return false; // type is out of bounds
+      mode = *delta.arenaMode;
+      if (mode == ArenaMode::Game) sky.emplace(*delta.skyInitializer);
     }
   }
-  return false; // type is out of bounds
 }
 
 ArenaInitializer Arena::captureInitializer() {

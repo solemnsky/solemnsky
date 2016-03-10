@@ -19,24 +19,24 @@ ClientPacket::ClientPacket(
     skyDelta(skyDelta),
     team(team) { }
 
-std::string ClientPacket::dump() const {
+bool ClientPacket::verifyStructure() const {
   switch (type) {
     case Type::Ping:
-      return "Ping";
+      return hasFields(this);
     case Type::ReqJoin:
-      return "ReqJoin";
+      return fieldsExist(this, &ClientPacket::stringData);
     case Type::ReqDelta:
-      return "ReqDelta";
+      return fieldsExist(this, &ClientPacket::playerDelta);
     case Type::ReqTeamChange:
-      return "ReqTeamChange";
+      return fieldsExist(this, &ClientPacket::team);
     case Type::ReqSpawn:
-      return "ReqSpawn";
+      return hasFields(this);
     case Type::ReqKill:
-      return "ReqKill";
+      return hasFields(this);
     case Type::NoteSkyDelta:
-      return "NoteSkyDelta";
+      return fieldsExist(this, &ClientPacket::skyDelta);
     case Type::Chat:
-      return "Chat";
+      return fieldsExist(this, &ClientPacket::stringData);
   }
 }
 
@@ -100,15 +100,12 @@ ServerMessage::ServerMessage(const ServerMessage::Type type,
 
 ServerMessage::ServerMessage() { }
 
-std::string ServerMessage::dump() const {
+bool ServerMessage::verifyStructure() const {
   switch (type) {
+    case Type::Chat:
+      return verifyFields(from);
     case Type::Broadcast:
-      return "[broadcast] \"" + contents + "\"";
-    case Type::Chat: {
-      if (from)
-        return "[chat|" + *from + "] \"" + contents + "\"";
-      else return "[malformed message]";
-    }
+      return true;
   }
 }
 
@@ -152,18 +149,18 @@ ServerPacket::ServerPacket(
 
 ServerPacket::ServerPacket() { }
 
-std::string ServerPacket::dump() const {
+bool ServerPacket::verifyStructure() const {
   switch (type) {
     case Type::Pong:
-      return "Pong";
-    case Type::AckJoin:
-      return "AckJoin";
-    case Type::NoteArenaDelta:
-      return "ArenaDelta";
+      return true;
     case Type::Message:
-      return "Message";
+      return verifyFields(message);
+    case Type::AckJoin:
+      return verifyFields(pid, arenaInitializer);
+    case Type::NoteArenaDelta:
+      return verifyFields(arenaDelta);
     case Type::NoteSkyDelta:
-      return "NoteSkyDelta";
+      return verifyFields(skyDelta);
   }
 }
 

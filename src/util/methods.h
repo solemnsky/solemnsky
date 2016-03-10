@@ -7,6 +7,7 @@
 #include <SFML/System.hpp>
 #include <Box2D/Box2D.h>
 #include <functional>
+#include "types.h"
 
 /****
  * Canonical log messages with some handy formatting.
@@ -56,5 +57,6 @@ float toDeg(const float x);
  */
 
 float linearTween(const float begin, const float end, const float time);
+
 
 #endif //SOLEMNSKY_METHODS_H

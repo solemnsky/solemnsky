@@ -70,6 +70,7 @@ class Host {
 /**
  * Simple helper to hold some boring buffers and help transmit / receive packets
  * serialized with our Pack system.
+ * ReceiveType must implement VerifyStructure.
  */
 template<typename ReceiveType, typename TransmitType>
 class Telegraph {
@@ -131,9 +132,14 @@ class Telegraph {
     packetBuffer.setSize(packet->dataLength);
     unsigned char *raw = packetBuffer.getRaw();
     for (size_t i = 0; i < packet->dataLength; i++) raw[i] = packet->data[i];
-    if (unpackInto(receiveRule, packetBuffer, receiveBuffer))
-      return receiveBuffer;
-    else return {};
+    if (unpackInto(receiveRule, packetBuffer, receiveBuffer)) {
+      if (!receiveBuffer.verifyStructure()) {
+        appLog("Malformed packet: structure invariants were violated!");
+      } else return receiveBuffer;
+    } else {
+      appLog("Malformed packet: failed to decode!");
+    }
+    return {};
   }
 };
 
