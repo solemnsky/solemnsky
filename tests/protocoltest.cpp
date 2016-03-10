@@ -18,7 +18,7 @@ TEST_F(ProtocolTest, ClientPacket) {
   sky::ClientPacket packet = sky::ClientPacket::ReqJoin("asdf");
   EXPECT_TRUE(packet.verifyStructure());
   packet.stringData.reset();
-  EXPECT_FALSE(packet.verifyStructure());
+  EXPECT_FALSE(verifyValue(packet));
 
   sky::ServerPacket sPacket =
       sky::ServerPacket::Message(

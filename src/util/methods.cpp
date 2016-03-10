@@ -85,3 +85,16 @@ float linearTween(const float begin, const float end, const float time) {
                       std::max(begin, end), begin + time * (end - begin));
 }
 
+/**
+ * Handy stuff.
+ */
+
+template<>
+bool verifyValue<VerifyStructure>(const VerifyStructure &x) {
+  return x.verifyStructure();
+}
+
+bool verifyFields() {
+  return true;
+}
+

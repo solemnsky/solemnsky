@@ -175,18 +175,4 @@ class VerifyStructure {
   virtual bool verifyStructure() const = 0;
 };
 
-bool verifyValue(const VerifyStructure &x);
-
-template<typename X>
-bool verifyValue(const X &x) { return true; }
-
-bool verifyFields();
-
-template<typename Field, typename... Fields>
-bool verifyFields(Field &field, Fields... fields) {
-  if (!field) return false;
-  if (!verifyValue(*field)) return false;
-  return verifyFields(fields...);
-};
-
 #endif //SOLEMNSKY_VALUE_H
