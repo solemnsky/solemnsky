@@ -22,21 +22,21 @@ ClientPacket::ClientPacket(
 bool ClientPacket::verifyStructure() const {
   switch (type) {
     case Type::Ping:
-      return hasFields(this);
+      return true;
     case Type::ReqJoin:
-      return fieldsExist(this, &ClientPacket::stringData);
+      return verifyFields(stringData);
     case Type::ReqDelta:
-      return fieldsExist(this, &ClientPacket::playerDelta);
+      return verifyFields(playerDelta);
     case Type::ReqTeamChange:
-      return fieldsExist(this, &ClientPacket::team);
+      return verifyFields(team);
     case Type::ReqSpawn:
-      return hasFields(this);
+      return true;
     case Type::ReqKill:
-      return hasFields(this);
+      return true;
     case Type::NoteSkyDelta:
-      return fieldsExist(this, &ClientPacket::skyDelta);
+      return verifyFields(skyDelta);
     case Type::Chat:
-      return fieldsExist(this, &ClientPacket::stringData);
+      return verifyFields(stringData);
   }
 }
 

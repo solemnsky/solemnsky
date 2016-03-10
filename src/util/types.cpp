@@ -119,3 +119,7 @@ sf::Vector2f Angle::toVector() {
   const float rad = toRad(value);
   return sf::Vector2f((float) cos(rad), (float) sin(rad));
 }
+
+bool verifyValue(const VerifyStructure &x) { return x.verifyStructure(); }
+
+bool verifyFields() { return true; }
