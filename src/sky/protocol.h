@@ -15,7 +15,7 @@ namespace sky {
 /**
  * Protocol verbs for the client.
  */
-struct ClientPacket {
+struct ClientPacket: public VerifyStructure {
   enum class Type {
     Ping, // request a pong, always available
     ReqJoin, // request joining in the arena, part of the connection protocol
@@ -41,7 +41,7 @@ struct ClientPacket {
   optional<SkyDelta> skyDelta;
   optional<Team> team;
 
-  std::string dump() const;
+  bool verifyStructure() const override;
 
   static ClientPacket Ping();
   static ClientPacket ReqJoin(const std::string &nickname);
@@ -60,7 +60,7 @@ static const struct ClientPacketPack: public tg::ClassPack<ClientPacket> {
 /**
  * Messages from the server, of varied nature.
  */
-struct ServerMessage {
+struct ServerMessage: public VerifyStructure {
   enum class Type {
     Chat, // a client said something
     Broadcast // an important message to be displayed in big letters
@@ -76,7 +76,7 @@ struct ServerMessage {
   optional<std::string> from; // who the message is from, potentially
   std::string contents;
 
-  std::string dump() const;
+  bool verifyStructure() const override;
 
   static ServerMessage Chat(const std::string &from,
                             const std::string &contents);
@@ -90,7 +90,7 @@ static const struct ServerMessagePack: public tg::ClassPack<ServerMessage> {
 /**
  * Protocol verbs for the server.
  */
-struct ServerPacket {
+struct ServerPacket: public VerifyStructure {
   enum class Type {
     Pong,
     Message, // message for a client to log
@@ -115,7 +115,7 @@ struct ServerPacket {
   optional<ArenaDelta> arenaDelta;
   optional<SkyDelta> skyDelta;
 
-  std::string dump() const;
+  bool verifyStructure() const override;
 
   static ServerPacket Pong();
   static ServerPacket Message(const ServerMessage &message);

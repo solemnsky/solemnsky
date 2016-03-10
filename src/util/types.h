@@ -78,7 +78,7 @@ bool approach(T &x, const T target, const T amount) {
  * Floats that are used for a 'cooldown' effect.
  */
 struct Cooldown {
-public:
+ public:
   float cooldown;
   float period;
 
@@ -94,10 +94,10 @@ public:
  * Floats that always snap back to a certain range. ([min, max])
  */
 struct Clamped {
-private:
+ private:
   float value;
 
-public:
+ public:
   float min, max;
 
   Clamped() = delete;
@@ -115,9 +115,9 @@ public:
  * Floats that always cycle back to a certain range when assigned. ([min, max[)
  */
 struct Cyclic {
-private:
+ private:
   float value;
-public:
+ public:
   float min, max;
 
   Cyclic() = delete;
@@ -148,9 +148,9 @@ float movementValue(const Movement movement);
  * Angle value: represents an angle in degrees.
  */
 struct Angle {
-private:
+ private:
   Cyclic value;
-public:
+ public:
   inline Angle() : Angle(0) { }
   Angle(const float x);
   Angle(const sf::Vector2f &);
@@ -163,5 +163,36 @@ public:
 
   inline operator float() const { return value; }
 };
+
+/**
+ * Some types have certain invariant structures that can be violated in
+ * instances unpacked from Packets. This is a tidy infrastructure to verify
+ * these invariants (for instance, our ad-hoc sum types in protocol.h).
+ */
+
+class VerifyStructure {
+ public:
+  virtual bool verifyStructure() const = 0;
+};
+
+/**
+ * Verify the presence of a variadic list of optional<> fields, which, in the
+ * case that they are VerifyStructure subclasses, are verified.
+ */
+template<typename... Fields>
+bool verifyFields(optional<VerifyStructure> &field, Fields... fields) {
+  if (!field) return false;
+  if (field->verifyStructure()) return false;
+  return verifyFields(fields...);
+};
+
+template<typename Field, typename... Fields>
+bool verifyFields(Field &field, Fields... fields) {
+  if (!field) return false;
+  return verifyFields(fields...);
+};
+
+template<>
+bool verifyFields() { return true; }
 
 #endif //SOLEMNSKY_VALUE_H

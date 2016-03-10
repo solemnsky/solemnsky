@@ -70,7 +70,7 @@ static const tg::Pack<ArenaMode> arenaModePack = tg::EnumPack<ArenaMode>(2);
  * The data a client needs when jumping into an arena. Further changes are
  * transmitted through ArenaDelta's.
  */
-struct ArenaInitializer {
+struct ArenaInitializer: public VerifyStructure {
   ArenaInitializer(); // for unpacking
   ArenaInitializer(
       const std::list<Player> players,
@@ -82,6 +82,8 @@ struct ArenaInitializer {
   std::string motd;
   ArenaMode mode;
   optional<SkyInitializer> skyInitializer;
+
+  bool verifyStructure() const override;
 };
 
 static const struct ArenaInitializerPack:
@@ -92,7 +94,7 @@ static const struct ArenaInitializerPack:
 /**
  * Server-generated modification to the arena.
  */
-struct ArenaDelta {
+struct ArenaDelta: public VerifyStructure {
   enum class Type {
     Quit, // a player quits
     Join, // a player joints
@@ -118,6 +120,8 @@ struct ArenaDelta {
   optional<std::string> motd;
   optional<ArenaMode> arenaMode;
   optional<SkyInitializer> skyInitializer;
+
+  bool verifyStructure() const override;
 
   static ArenaDelta Quit(const PID pid);
   static ArenaDelta Join(const Player &player);
@@ -150,8 +154,8 @@ class Arena {
   /**
    * Initializers / Deltas.
    */
-  bool applyInitializer(const ArenaInitializer &initializer);
-  bool applyDelta(const ArenaDelta &delta);
+  void applyInitializer(const ArenaInitializer &initializer);
+  void applyDelta(const ArenaDelta &delta);
   ArenaInitializer captureInitializer();
 
   /**

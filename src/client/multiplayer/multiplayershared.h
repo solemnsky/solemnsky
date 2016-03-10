@@ -44,6 +44,7 @@ class MultiplayerConnection {
   /**
    * Methods.
    */
+  bool isConnected() const;
   void transmit(const sky::ClientPacket &packet);
   optional<sky::ServerPacket> poll(const float delta);
   void disconnect();

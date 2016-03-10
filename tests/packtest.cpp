@@ -107,22 +107,6 @@ TEST_F(PackTest, ClassPack) {
 }
 
 /**
- * Rules can fail when their input packets are malformed / too small.
- */
-TEST_F(PackTest, FailTest) {
-  // a packet that doesn't have a null terminating character can't be read as
-  // a string
-  tg::packInto(tg::boolPack, true, buffer);
-  optional<std::string> unpackedStr = tg::unpack(tg::stringPack, buffer);
-  EXPECT_EQ((bool) unpackedStr, false);
-
-  // an int can't be read from a packet without 4 bytes
-  tg::packInto(tg::BytePack<unsigned short int>(), (unsigned short) 0, buffer);
-  optional<int> unpackedInt = tg::unpack(tg::intPack, buffer);
-  EXPECT_EQ((bool) unpackedInt, false);
-}
-
-/**
  * Our MapPack rule works correctly.
  */
 TEST_F(PackTest, MapPack) {
@@ -154,3 +138,20 @@ TEST_F(PackTest, ListlikePack) {
   EXPECT_EQ(myVec, unpacked);
   EXPECT_EQ(buffer.size, sizeof(size_t) + 4 * sizeof(int));
 }
+
+/**
+ * Rules can fail when their input packets are malformed / too small.
+ */
+TEST_F(PackTest, FailTest) {
+  // a packet that doesn't have a null terminating character can't be read as
+  // a string
+  tg::packInto(tg::boolPack, true, buffer);
+  optional<std::string> unpackedStr = tg::unpack(tg::stringPack, buffer);
+  EXPECT_EQ((bool) unpackedStr, false);
+
+  // an int can't be read from a packet without 4 bytes
+  tg::packInto(tg::BytePack<unsigned short int>(), (unsigned short) 0, buffer);
+  optional<int> unpackedInt = tg::unpack(tg::intPack, buffer);
+  EXPECT_EQ((bool) unpackedInt, false);
+}
+

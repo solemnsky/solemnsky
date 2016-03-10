@@ -12,19 +12,11 @@
 class MultiplayerClient: public Game {
  private:
   /**
-   * Shared state and the currently active mode interface.
+   * Arena connection state / protocol implementation and the current
+   * (mode-specific) interface that we show the user.
    */
-  MultiplayerConnection mShared;
-  std::unique_ptr<MultiplayerView> mode;
-
-  /**
-   * Networking stuff that we don't need to share with the mode.
-   */
-  Cooldown pingCooldown;
-  ENetEvent netEvent;
-  bool disconnecting;
-  bool triedConnection; // have we sent a verbs requesting connection yet?
-  Cooldown disconnectTimeout;
+  MultiplayerConnection connection;
+  std::unique_ptr<MultiplayerView> view;
 
  public:
   MultiplayerClient(ClientShared &state,

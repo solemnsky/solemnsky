@@ -11,43 +11,30 @@ MultiplayerClient::MultiplayerClient(ClientShared &state,
                                      const std::string &serverHostname,
                                      const unsigned short serverPort) :
     Game(state, "multiplayer"),
-
-    mShared(serverHostname, serverPort),
-    chatEntry(style.chatPos, "[enter] to chat"),
-    messageLog(style.messageLogPos),
-    readyButton(style.readyButtonPos, "ready") {
-  messageLog.expanded = true;
-}
-
-void MultiplayerClient::renderScoreOverlay(ui::Frame &f) {
-}
-
-/**
- * Networking submethods.
- */
-
-bool MultiplayerClient::processPacket(const sky::ServerPacket &packet) {
-}
+    connection(serverHostname, serverPort) { }
 
 /**
  * Game interface.
  */
 
 void MultiplayerClient::onBlur() {
-  chatEntry.reset();
-  readyButton.reset();
+  view->onBlur();
 }
 
 void MultiplayerClient::onFocus() {
-
+  view->onFocus();
 }
 
 void MultiplayerClient::onChangeSettings(const SettingsDelta &settings) {
-  if (settings.nickname) {
-    sky::PlayerDelta delta(*shared.myPlayer);
-    delta.nickname = *settings.nickname;
-    shared.transmitServer(sky::ClientPacket::ReqDelta(delta));
-    // request a nickname change
+  view->onChangeSettings(settings);
+
+  if (connection.myPlayer) {
+    if (settings.nickname) {
+      sky::PlayerDelta delta(*connection.myPlayer);
+      delta.nickname = *settings.nickname;
+      connection.transmit(sky::ClientPacket::ReqDelta(delta));
+      // request a nickname change
+    }
   }
 }
 

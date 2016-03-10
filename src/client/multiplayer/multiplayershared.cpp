@@ -3,53 +3,26 @@
 /**
  * MultiplayerConnection.
  */
-MultiplayerConnection::MultiplayerConnection(
-    const std::string &serverHostname,
-    const unsigned short serverPort) :
-    server(nullptr),
-    telegraph(sky::ServerPacketPack(), sky::ClientPacketPack()),
-    askedConnection(true), disconnecting(false),
-    disconnectTimeout(5),
-    host(tg::HostType::Client),
-    server(nullptr),
-    disconnected(false),
-    myPlayer(nullptr) {
-  host.connect(serverHostname, serverPort);
-}
-
-void MultiplayerConnection::transmit(const sky::ClientPacket &packet) {
-  if (server) telegraph.transmit(host, server, packet);
-}
 
 bool MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
   using namespace sky;
 
   if (!myPlayer) {
     // waiting for the arena connection request to be accepted
+
     if (packet.type == ServerPacket::Type::AckJoin) {
-      if (!(packet.arenaInitializer and packet.pid))
-        return false;
-
-      shared.arena.emplace();
-      if (!arena->applyInitializer(*packet.arenaInitializer)) {
-        arena.reset();
+      if (!arena.applyInitializer(*packet.arenaInitializer))
         return false; // initializer didn't work
-      }
 
-      myPlayer = arena->getPlayer(*packet.pid);
+      myPlayer = arena.getPlayer(*packet.pid);
       if (!myPlayer) {
-        arena.reset();
         return false; // pid invalid
-      }
-
-      setUI(arena->mode);
-      if (arena->mode == sky::ArenaMode::Game) {
-        renderSystem.emplace(&*arena->sky);
       }
 
       appLog("Joined arena!", LogOrigin::Client);
       return true;
     }
+
     return false; // we're only interested in AckJoins until we're connected
   }
 
@@ -77,7 +50,6 @@ bool MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
     }
 
     case ServerPacket::Type::NoteArenaDelta: {
-      if (!packet.arenaDelta) return false;
       if (!arena->applyDelta(*packet.arenaDelta)) return false;
 
       if (packet.arenaDelta->type == sky::ArenaDelta::Type::Mode) {
@@ -101,6 +73,28 @@ bool MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
   }
 
   return false; // invalid packet type, considering we're in the arena
+}
+
+MultiplayerConnection::MultiplayerConnection(
+    const std::string &serverHostname,
+    const unsigned short serverPort) :
+    server(nullptr),
+    telegraph(sky::ServerPacketPack(), sky::ClientPacketPack()),
+    askedConnection(true), disconnecting(false),
+    disconnectTimeout(5),
+    host(tg::HostType::Client),
+    server(nullptr),
+    disconnected(false),
+    myPlayer(nullptr) {
+  host.connect(serverHostname, serverPort);
+}
+
+bool MultiplayerConnection::isConnected() const {
+  return (bool) myPlayer;
+}
+
+void MultiplayerConnection::transmit(const sky::ClientPacket &packet) {
+  if (server) telegraph.transmit(host, server, packet);
 }
 
 optional<sky::ServerPacket> MultiplayerConnection::poll(const float delta) {
