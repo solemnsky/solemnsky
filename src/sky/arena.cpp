@@ -117,7 +117,6 @@ bool ArenaDelta::verifyStructure() const {
     case Type::Modify:
       return verifyFields(player);
     case Type::Motd:
-      break;
       return verifyFields(motd);
     case Type::Mode:
       return verifyFields(arenaMode, skyInitializer);
@@ -187,21 +186,28 @@ void Arena::applyInitializer(const ArenaInitializer &initializer) {
 
 void Arena::applyDelta(const ArenaDelta &delta) {
   switch (delta.type) {
-    case ArenaDelta::Type::Quit:
+    case ArenaDelta::Type::Quit: {
       players.remove_if([&](const Player &record) {
         return record.pid == *delta.quit;
       });
+      break;
+    }
     case ArenaDelta::Type::Join: {
       if (Player *existingRecord = getPlayer(delta.join->pid))
         *existingRecord = *delta.join;
       else players.push_back(*delta.join);
+      break;
     }
-    case ArenaDelta::Type::Modify:
+    case ArenaDelta::Type::Modify: {
       if (Player *player = getPlayer(delta.player->first)) {
         player->applyDelta(delta.player->second);
       }
-    case ArenaDelta::Type::Motd:
+      break;
+    }
+    case ArenaDelta::Type::Motd: {
       motd = *delta.motd;
+      break;
+    }
     case ArenaDelta::Type::Mode: {
       mode = *delta.arenaMode;
       if (mode == ArenaMode::Game) sky.emplace(*delta.skyInitializer);

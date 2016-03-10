@@ -42,7 +42,8 @@ TEST_F(ArenaTest, DeltaTest) {
   optional<sky::ArenaDelta> joinDelta = tg::unpack(sky::arenaDeltaPack, buffer);
 
   ASSERT_TRUE((bool) joinDelta);
-  ASSERT_TRUE(remoteArena.applyDelta(*joinDelta));
+  ASSERT_TRUE(joinDelta->verifyStructure());
+  remoteArena.applyDelta(*joinDelta);
   EXPECT_TRUE((bool) remoteArena.getPlayer(1));
   EXPECT_EQ(remoteArena.getPlayer(1)->nickname, "asdf");
 
@@ -50,7 +51,8 @@ TEST_F(ArenaTest, DeltaTest) {
   optional<sky::ArenaDelta> quitDelta = tg::unpack(sky::arenaDeltaPack, buffer);
 
   ASSERT_TRUE((bool) quitDelta);
-  ASSERT_TRUE(remoteArena.applyDelta(*quitDelta));
+  ASSERT_TRUE(quitDelta->verifyStructure());
+  remoteArena.applyDelta(*quitDelta);
   EXPECT_FALSE((bool) remoteArena.getPlayer(1));
 }
 
@@ -75,7 +77,7 @@ TEST_F(ArenaTest, InitializerTest) {
       tg::unpack(sky::arenaInitializerPack, buffer);
 
   ASSERT_TRUE((bool) initializer);
-  ASSERT_TRUE(remoteArena.applyInitializer(*initializer));
+  remoteArena.applyInitializer(*initializer);
   EXPECT_EQ(remoteArena.motd, "secret arena");
   EXPECT_EQ(remoteArena.getPlayer(1)->nickname, "an admin");
   EXPECT_EQ(remoteArena.getPlayer(1)->admin, true);

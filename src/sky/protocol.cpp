@@ -38,6 +38,7 @@ bool ClientPacket::verifyStructure() const {
     case Type::Chat:
       return verifyFields(stringData);
   }
+  return false;
 }
 
 ClientPacket ClientPacket::Ping() {
@@ -101,12 +102,14 @@ ServerMessage::ServerMessage(const ServerMessage::Type type,
 ServerMessage::ServerMessage() { }
 
 bool ServerMessage::verifyStructure() const {
+  appLog("checking structure");
   switch (type) {
     case Type::Chat:
       return verifyFields(from);
     case Type::Broadcast:
       return true;
   }
+  return false;
 }
 
 ServerMessage ServerMessage::Chat(const std::string &from,
@@ -153,8 +156,10 @@ bool ServerPacket::verifyStructure() const {
   switch (type) {
     case Type::Pong:
       return true;
-    case Type::Message:
+    case Type::Message: {
+      appLog("verifying message...");
       return verifyFields(message);
+    }
     case Type::AckJoin:
       return verifyFields(pid, arenaInitializer);
     case Type::NoteArenaDelta:
@@ -162,6 +167,7 @@ bool ServerPacket::verifyStructure() const {
     case Type::NoteSkyDelta:
       return verifyFields(skyDelta);
   }
+  return false;
 }
 
 ServerPacket ServerPacket::Pong() {
