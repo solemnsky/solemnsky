@@ -133,7 +133,7 @@ class Telegraph {
     unsigned char *raw = packetBuffer.getRaw();
     for (size_t i = 0; i < packet->dataLength; i++) raw[i] = packet->data[i];
     if (unpackInto(receiveRule, packetBuffer, receiveBuffer)) {
-      if (!receiveBuffer.verifyStructure()) {
+      if (!verifyValue(receiveBuffer)) {
         appLog("Malformed packet: structure invariants were violated!");
       } else return receiveBuffer;
     } else {

@@ -120,6 +120,10 @@ sf::Vector2f Angle::toVector() {
   return sf::Vector2f((float) cos(rad), (float) sin(rad));
 }
 
-bool verifyValue(const VerifyStructure &x) { return x.verifyStructure(); }
+bool verifyValue(const VerifyStructure &x) {
+  return x.verifyStructure();
+}
 
-bool verifyFields() { return true; }
+bool verifyFields() {
+  return true;
+}
