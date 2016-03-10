@@ -58,5 +58,25 @@ float toDeg(const float x);
 
 float linearTween(const float begin, const float end, const float time);
 
+/**
+ * Handy stuff.
+ */
+
+template<typename X>
+bool verifyValue(const X &x) {
+  return false;
+}
+
+template<>
+bool verifyValue<VerifyStructure>(const VerifyStructure &x);
+
+bool verifyFields();
+
+template<typename Field, typename... Fields>
+bool verifyFields(Field &field, Fields... fields) {
+  if (!field) return false;
+  if (!verifyValue(*field)) return false;
+  return verifyFields(fields...);
+};
 
 #endif //SOLEMNSKY_METHODS_H
