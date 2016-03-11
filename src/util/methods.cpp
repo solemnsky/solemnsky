@@ -89,11 +89,6 @@ float linearTween(const float begin, const float end, const float time) {
  * Handy stuff.
  */
 
-template<>
-bool verifyValue<VerifyStructure>(const VerifyStructure &x) {
-  return x.verifyStructure();
-}
-
 bool verifyFields() {
   return true;
 }
