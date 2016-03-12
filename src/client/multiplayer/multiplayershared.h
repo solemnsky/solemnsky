@@ -32,6 +32,7 @@ class MultiplayerConnection {
       ClientShared &shared,
       const std::string &serverHostname,
       const unsigned short serverPort);
+
   /**
    * Connection state.
    */
@@ -40,7 +41,7 @@ class MultiplayerConnection {
   bool disconnected, disconnecting;
 
   /**
-   * Arena.
+   * Game state.
    */
   sky::Player *myPlayer;
   sky::Arena arena;
@@ -49,19 +50,19 @@ class MultiplayerConnection {
   /**
    * Methods.
    */
-  bool isConnected() const;
   void transmit(const sky::ClientPacket &packet);
   optional<sky::ServerPacket> poll(const float delta);
   void disconnect();
 };
 
 /**
- * The interface for the client in a certain Arena mode; comes with style
- * tuning values.
+ * The interface for the client in a certain Arena mode; given that the
+ * interface is modal, we should write it in modes.
  */
 class MultiplayerView: public ui::Control {
  protected:
   struct Style {
+    // uniform style values
     sf::Vector2i scoreOverlayDims;
     sf::Vector2f chatPos,
         messageLogPos,
@@ -77,9 +78,9 @@ class MultiplayerView: public ui::Control {
     Style();
   } style;
 
-  ClientShared &shared; // shared state from the client application
+  // shared state
+  ClientShared &shared;
   MultiplayerConnection &connection;
-  // shared state pertinent to the multiplayer system
 
  public:
   MultiplayerView(ClientShared &shared, MultiplayerConnection &connection);
@@ -89,11 +90,6 @@ class MultiplayerView: public ui::Control {
   virtual void onFocus() = 0;
   virtual void onPacket(const sky::ServerPacket &packet) = 0;
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
-  virtual void doExit() = 0; // try to exit eventually
-
-  /**
-   * All the ui::Control virtual functions remain virtual.
-   */
 };
 
 #endif //SOLEMNSKY_MULTIPLAYERSHARED_H

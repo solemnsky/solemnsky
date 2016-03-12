@@ -1,12 +1,11 @@
 /**
- * The multiplayer UI expressed in the form of MultiplayerSubmodes for the
+ * The modal multiplayer UI expressed in the form of MultiplayerViews for the
  * arena lobby, game, and scoring screen.
  */
 #ifndef SOLEMNSKY_MULTIPLAYERUI_H_H
 #define SOLEMNSKY_MULTIPLAYERUI_H_H
 
 #include "multiplayershared.h"
-#include "sky/
 #include "client/subsystem/render.h"
 
 /**
@@ -17,7 +16,7 @@ class MultiplayerLobby: public MultiplayerView {
  private:
 
  public:
-  MultiplayerLobby(MultiplayerConnection &shared);
+  MultiplayerLobby(ClientShared &shared, MultiplayerConnection &connection);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;
@@ -27,12 +26,11 @@ class MultiplayerLobby: public MultiplayerView {
   virtual void onFocus() override;
   virtual void onPacket(const sky::ServerPacket &packet) override;
   virtual void onChangeSettings(const SettingsDelta &settings) override;
-  virtual void doExit() override;
 };
 
 /**
  * In the game, the rendered representation of the game is the central
- * point of the screen; peripharies include a chat / message interface, and a
+ * point of the screen; peripheries include a chat / message interface, and a
  * score screen you can call up with tab.
  */
 class MultiplayerGame: public MultiplayerView {
@@ -40,7 +38,7 @@ class MultiplayerGame: public MultiplayerView {
   sky::RenderSystem renderSystem;
 
  public:
-  MultiplayerGame(MultiplayerConnection &shared);
+  MultiplayerGame(ClientShared &shared, MultiplayerConnection &connection);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;
@@ -50,7 +48,6 @@ class MultiplayerGame: public MultiplayerView {
   virtual void onFocus() override;
   virtual void onPacket(const sky::ServerPacket &packet) override;
   virtual void onChangeSettings(const SettingsDelta &settings) override;
-  virtual void doExit() override;
 };
 
 /**
@@ -61,7 +58,7 @@ class MultiplayerScoring: public MultiplayerView {
  private:
 
  public:
-  MultiplayerScoring(MultiplayerConnection &shared);
+  MultiplayerScoring(ClientShared &shared, MultiplayerConnection &connection);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;
@@ -71,7 +68,6 @@ class MultiplayerScoring: public MultiplayerView {
   virtual void onFocus() override;
   virtual void onPacket(const sky::ServerPacket &packet) override;
   virtual void onChangeSettings(const SettingsDelta &settings) override;
-  virtual void doExit() override;
 };
 
 #endif //SOLEMNSKY_MULTIPLAYERUI_H_H

@@ -4,8 +4,9 @@
  * MultiplayerLobby.
  */
 
-MultiplayerLobby::MultiplayerLobby(MultiplayerConnection &shared) :
-    MultiplayerView(shared) { }
+MultiplayerLobby::MultiplayerLobby(
+    ClientShared &shared, MultiplayerConnection &connection) :
+    MultiplayerView(shared, connection) { }
 
 void MultiplayerLobby::tick(float delta) {
 
@@ -13,71 +14,73 @@ void MultiplayerLobby::tick(float delta) {
 
 void MultiplayerLobby::render(ui::Frame &f) {
   f.drawSprite(textureOf(Res::Lobby), {0, 0}, {0, 0, 1600, 900});
-  int i = 0;
-  sf::Color color;
-  for (sky::Player &player : shared.arena->players) {
-    f.drawText(
-        {style.lobbyPlayersOffset,
-         style.lobbyTopMargin + (i * style.lobbyFontSize)},
-        {player.nickname}, style.lobbyFontSize,
-        (player.team == 0) ? style.playerSpecColor : style.playerJoinedColor);
-    i++;
-  }
-  // TODO: don't copy strings
-
-  messageLog.render(f);
-  chatEntry.render(f);
-  readyButton.render(f);
 }
 
 bool MultiplayerLobby::handle(const sf::Event &event) {
   return false;
 }
 
+void MultiplayerLobby::onBlur() {
+
+}
+
+void MultiplayerLobby::onFocus() {
+
+}
+
+void MultiplayerLobby::onPacket(const sky::ServerPacket &packet) {
+
+}
+
+void MultiplayerLobby::onChangeSettings(const SettingsDelta &settings) {
+
+}
+
 /**
  * MultiplayerGame.
  */
 
-MultiplayerGame::MultiplayerGame(MultiplayerConnection &shared) :
-    MultiplayerView(shared),
-    renderSystem(shared.arena.sky.get_ptr()) { }
+MultiplayerGame::MultiplayerGame(
+    ClientShared &shared, MultiplayerConnection &connection) :
+    MultiplayerView(shared, connection),
+    renderSystem(connection.arena.sky.get_ptr()) { }
 
 void MultiplayerGame::tick(float delta) {
 
 }
 
 void MultiplayerGame::render(ui::Frame &f) {
-
-  // arena and arena->sky exist
-  if (sky::Plane *plane = connection.arena->sky->getPlane(myPlayer->pid)) {
-    renderSystem->render(f, plane->state.pos);
-  } else {
-    renderSystem->render(f, {0, 0}); // TODO: panning in spectator mode
-  }
-
-  // score overlay
-  const static sf::Vector2f scoreOverlayPos = 0.5f *
-      sf::Vector2f(
-          1600.0f - style.scoreOverlayDims.x,
-          900.0f - style.scoreOverlayDims.y);
-  f.drawSprite(
-      textureOf(Res::ScoreOverlay), scoreOverlayPos,
-      {0, 0, style.scoreOverlayDims.x, style.scoreOverlayDims.y});
-
-  messageLog.render(f);
-  chatEntry.render(f);
+  f.drawSprite(textureOf(Res::Title), {0, 0}, {0, 0, 1600, 900});
 }
 
 bool MultiplayerGame::handle(const sf::Event &event) {
   return false;
 }
 
+
+void MultiplayerGame::onBlur() {
+
+}
+
+void MultiplayerGame::onFocus() {
+
+}
+
+void MultiplayerGame::onPacket(const sky::ServerPacket &packet) {
+
+}
+
+void MultiplayerGame::onChangeSettings(const SettingsDelta &settings) {
+
+}
+
 /**
  * MultiplayerScoring.
  */
 
-MultiplayerScoring::MultiplayerScoring(MultiplayerConnection &shared) :
-    MultiplayerView(shared) { }
+MultiplayerScoring::MultiplayerScoring(
+    ClientShared &shared, MultiplayerConnection &connection) :
+    MultiplayerView(shared, connection) { }
 
 void MultiplayerScoring::tick(float delta) {
 
@@ -89,4 +92,20 @@ void MultiplayerScoring::render(ui::Frame &f) {
 
 bool MultiplayerScoring::handle(const sf::Event &event) {
   return false;
+}
+
+void MultiplayerScoring::onBlur() {
+
+}
+
+void MultiplayerScoring::onFocus() {
+
+}
+
+void MultiplayerScoring::onPacket(const sky::ServerPacket &packet) {
+
+}
+
+void MultiplayerScoring::onChangeSettings(const SettingsDelta &settings) {
+
 }

@@ -9,7 +9,7 @@
 /**
  * Top-level multiplayer client.
  */
-class MultiplayerClient: public Game {
+class Multiplayer: public Game {
  private:
   /**
    * Arena connection state / protocol implementation and the current
@@ -20,9 +20,9 @@ class MultiplayerClient: public Game {
   void switchView();
 
  public:
-  MultiplayerClient(ClientShared &state,
-                    const std::string &serverHostname,
-                    const unsigned short serverPort);
+  Multiplayer(ClientShared &shared,
+              const std::string &serverHostname,
+              const unsigned short serverPort);
 
   /**
    * Game interface.

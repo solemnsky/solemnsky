@@ -13,25 +13,21 @@
 #include <functional>
 #include <memory>
 #include "frame.h"
-#include "profiler.h"
+#include "util/types.h"
 #include "signal.h"
 
 namespace ui {
 
 /**
- * Manager for performance profile data collected by the tutorial loop.
+ * Manager for performance profile data collected by the game loop.
  */
-class Profiler {
- private:
-
- public:
-  const int size;
+struct Profiler {
   Profiler(int size);
 
-  RollingSampler<float> cycleTime;
-  RollingSampler<float> logicTime;
-  RollingSampler<float> renderTime;
-  RollingSampler<int> primCount;
+  RollingSampler cycleTime;
+  RollingSampler logicTime;
+  RollingSampler renderTime;
+  RollingSampler primCount;
 };
 
 /**
@@ -39,21 +35,21 @@ class Profiler {
  * occasionally.
  */
 struct AppState {
-  AppState(sf::RenderWindow *const window,
-           Profiler *const profiler) :
+  AppState(const sf::RenderWindow &window,
+           const Profiler &profiler) :
       window(window), profiler(profiler) { }
 
-  sf::RenderWindow *const window;
-  Profiler *const profiler;
+  const sf::RenderWindow &window;
+  const Profiler &profiler;
 };
 
 class Control {
-private:
-public:
+ private:
+ public:
   virtual ~Control() { }
 
   /**
-   * SFML window, safe to use in any of the callback functions iff you're a
+   * Safe to use in any of the callback functions iff you're a
    * top-level control.
    */
   AppState *appState;
