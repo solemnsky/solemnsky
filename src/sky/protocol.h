@@ -6,7 +6,6 @@
 #define SOLEMNSKY_PROTOCOL_H
 
 #include "util/types.h"
-#include "telegraph/pack.h"
 #include "arena.h"
 #include <map>
 
@@ -53,10 +52,6 @@ struct ClientPacket: public VerifyStructure {
   static ClientPacket Chat(const std::string &message);
 };
 
-static const struct ClientPacketPack: public tg::ClassPack<ClientPacket> {
-  ClientPacketPack();
-} clientPacketPack;
-
 /**
  * Messages from the server, of varied nature.
  */
@@ -82,10 +77,6 @@ struct ServerMessage: public VerifyStructure {
                             const std::string &contents);
   static ServerMessage Broadcast(const std::string &contents);
 };
-
-static const struct ServerMessagePack: public tg::ClassPack<ServerMessage> {
-  ServerMessagePack();
-} serverMessagePack;
 
 /**
  * Protocol verbs for the server.
@@ -124,10 +115,6 @@ struct ServerPacket: public VerifyStructure {
   static ServerPacket NoteArenaDelta(const ArenaDelta &arenaDelta);
   static ServerPacket NoteSkyDelta(const SkyDelta &skyDelta);
 };
-
-static const struct ServerPacketPack: public tg::ClassPack<ServerPacket> {
-  ServerPacketPack();
-} serverPacketPack;
 
 }
 

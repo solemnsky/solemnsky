@@ -1,4 +1,5 @@
 #include "arena.h"
+#include "util/methods.h"
 
 namespace sky {
 
@@ -9,17 +10,6 @@ PlayerDelta::PlayerDelta() { }
 
 PlayerDelta::PlayerDelta(const Player &player) :
     admin(player.admin) { }
-
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<PlayerDelta, TYPE>(RULE, &PlayerDelta::PTR)
-PlayerDeltaPack::PlayerDeltaPack() :
-    tg::ClassPack<PlayerDelta>(
-        member(optional<std::string>, nickname, tg::optStringPack),
-        member(bool, admin, tg::boolPack),
-        member(optional<Team>, team,
-               tg::OptionalPack<Team>(tg::BytePack<Team>()))
-    ) { }
-#undef member
 
 /**
  * Player.
@@ -34,17 +24,6 @@ void Player::applyDelta(const PlayerDelta &delta) {
   admin = delta.admin;
   if (delta.team) team = *delta.team;
 }
-
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<Player, TYPE>(RULE, &Player::PTR)
-PlayerPack::PlayerPack() :
-    tg::ClassPack<Player>(
-        member(PID, pid, pidPack),
-        member(std::string, nickname, tg::stringPack),
-        member(bool, admin, tg::boolPack),
-        member(Team, team, tg::BytePack<Team>())
-    ) { }
-#undef member
 
 /**
  * ArenaInitializer.
@@ -73,18 +52,6 @@ bool ArenaInitializer::verifyStructure() const {
   }
   return false;
 }
-
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<ArenaInitializer, TYPE>(RULE, &ArenaInitializer::PTR)
-ArenaInitializerPack::ArenaInitializerPack() :
-    tg::ClassPack<ArenaInitializer>(
-        tg::MemberRule<ArenaInitializer, std::vector<Player>>(
-            tg::VectorPack<Player>(PlayerPack()),
-            &ArenaInitializer::players),
-        member(std::string, motd, tg::stringPack),
-        member(ArenaMode, mode, arenaModePack)
-    ) { }
-#undef member
 
 /**
  * ArenaDelta.
@@ -146,27 +113,6 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode,
   return ArenaDelta(ArenaDelta::Type::Mode, {}, {}, {}, {},
                     arenaMode, initializer);
 }
-
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<ArenaDelta, TYPE>(RULE, &ArenaDelta::PTR)
-ArenaDeltaPack::ArenaDeltaPack() :
-    tg::ClassPack<ArenaDelta>(
-        member(ArenaDelta::Type, type, tg::EnumPack<ArenaDelta::Type>(3)),
-        member(optional<PID>, quit, tg::OptionalPack<PID>(pidPack)),
-        member(optional<Player>, join,
-               tg::OptionalPack<Player>(PlayerPack())),
-        tg::MemberRule<ArenaDelta, optional<std::pair<PID, PlayerDelta>>>(
-            tg::OptionalPack<std::pair<PID, PlayerDelta>>(
-                tg::PairPack<PID, PlayerDelta>(pidPack, PlayerDeltaPack())),
-            &ArenaDelta::player
-        ),
-        member(optional<std::string>, motd, tg::optStringPack),
-        member(optional<ArenaMode>, arenaMode,
-               tg::OptionalPack<ArenaMode>(arenaModePack)),
-        member(optional<SkyInitializer>, skyInitializer,
-               tg::OptionalPack<SkyInitializer>(SkyInitializerPack()))
-    ) { }
-#undef member
 
 /**
  * Arena.

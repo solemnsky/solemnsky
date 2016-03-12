@@ -3,7 +3,7 @@
 
 #include "sky/sky.h"
 #include "sky/arena.h"
-#include "telegraph/telegraph.h"
+#include "util/telegraph.h"
 #include "sky/protocol.h"
 #include "sky/arena.h"
 #include <iostream>

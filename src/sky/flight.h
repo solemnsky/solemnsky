@@ -7,7 +7,6 @@
 #include <Box2D/Box2D.h>
 #include "physics.h"
 #include "util/types.h"
-#include "telegraph/pack.h"
 
 namespace sky {
 
@@ -53,10 +52,6 @@ struct PlaneTuning {
   float throttleSpeed = 1.5;
 };
 
-static const struct PlaneTuningPack: public tg::ClassPack<PlaneTuning> {
-  PlaneTuningPack();
-} planeTuningPack;
-
 /**
  * The (POD) variable game state of a Plane.
  */
@@ -96,10 +91,6 @@ struct PlaneState {
   float requestEnergy(const float reqEnergy);
 };
 
-static const struct PlaneStatePack: public tg::ClassPack<PlaneState> {
-  PlaneStatePack();
-} planeStatePack;
-
 /**
  * Initializer to construct a new plane.
  */
@@ -110,11 +101,6 @@ struct PlaneInitializer {
   PlaneTuning tuning;
   PlaneState state;
 };
-
-static const struct PlaneInitializerPack:
-    public tg::ClassPack<PlaneInitializer> {
-  PlaneInitializerPack();
-} planeInitializerPack;
 
 /**
  * A plane in the sky. Manager of a a Box2D body entity, it's non-copyable.

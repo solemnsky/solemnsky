@@ -1,13 +1,13 @@
 /**
- * Little helper object for sending / receiving through enetcpp; manages
- * serialization buffers and such.
+ * Helpers for managing enet hosts (tg::Host) and sending / receiving
+ * cereal-serialized objects over them (tg::Telegraph).
  */
 #ifndef SOLEMNSKY_TELEGRAPH_H
 #define SOLEMNSKY_TELEGRAPH_H
 
 #include "enet/enet.h"
 #include "util/types.h"
-#include "pack.h"
+#include <sstream>
 #include "util/methods.h"
 #include <boost/range/iterator_range_core.hpp>
 
@@ -32,9 +32,6 @@ struct UsageFlag {
  */
 enum class HostType { Client, Server };
 
-/**
- * General encapsulation of a ENetHost.
- */
 class Host {
  private:
   ENetHost *host;
@@ -68,24 +65,17 @@ class Host {
 };
 
 /**
- * Simple helper to hold some boring buffers and help transmit / receive packets
- * serialized with our Pack system.
- * ReceiveType must implement VerifyStructure.
+ * Verifies structure of received packets with VerifyStructure.
  */
 template<typename ReceiveType, typename TransmitType>
 class Telegraph {
  private:
   ReceiveType receiveBuffer;
 
-  Pack<ReceiveType> receiveRule;
-  Pack<TransmitType> transmitRule;
-
  public:
-  Packet packetBuffer;
+  std::stringstream dataBuffer;
 
-  Telegraph() = delete;
-  Telegraph(Pack<ReceiveType> receiveRule, Pack<TransmitType> transmitRule) :
-      receiveRule(receiveRule), transmitRule(transmitRule) { }
+  Telegraph() = default;
 
   /**
    * Transmit a packet to one peer.
@@ -94,9 +84,9 @@ class Telegraph {
       Host &host, ENetPeer *const peer,
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
-    packInto(transmitRule, value, packetBuffer);
-    host.transmit(peer, packetBuffer.getRaw(), packetBuffer.getSize(),
-                  flag);
+//    packInto(transmitRule, value, packetBuffer);
+//    host.transmit(peer, packetBuffer.getRaw(), packetBuffer.getSize(),
+//                  flag);
   }
 
   /**
@@ -106,9 +96,9 @@ class Telegraph {
       Host &host, const std::vector<ENetPeer *> &peers,
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
-    packInto(transmitRule, value, packetBuffer);
-    for (ENetPeer *peer : peers)
-      host.transmit(peer, packetBuffer.getRaw(), packetBuffer.getSize(), flag);
+//    packInto(transmitRule, value, packetBuffer);
+//    for (ENetPeer *peer : peers)
+//      host.transmit(peer, packetBuffer.getRaw(), packetBuffer.getSize(), flag);
   }
 
   /**
@@ -120,25 +110,25 @@ class Telegraph {
       std::function<bool(ENetPeer *)> predicate,
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
-    packInto(transmitRule, value, packetBuffer);
-    for (ENetPeer *peer : peers) {
-      if (predicate(peer))
-        host.transmit(
-            peer, packetBuffer.getRaw(), packetBuffer.getSize(), flag);
-    }
+//    packInto(transmitRule, value, packetBuffer);
+//    for (ENetPeer *peer : peers) {
+//      if (predicate(peer))
+//        host.transmit(
+//            peer, packetBuffer.getRaw(), packetBuffer.getSize(), flag);
+//    }
   }
 
   optional<ReceiveType> receive(const ENetPacket *packet) {
-    packetBuffer.setSize(packet->dataLength);
-    unsigned char *raw = packetBuffer.getRaw();
-    for (size_t i = 0; i < packet->dataLength; i++) raw[i] = packet->data[i];
-    if (unpackInto(receiveRule, packetBuffer, receiveBuffer)) {
-      if (!verifyValue(receiveBuffer)) {
-        appLog("Malformed packet: structure invariants were violated!");
-      } else return receiveBuffer;
-    } else {
-      appLog("Malformed packet: failed to decode!");
-    }
+//    packetBuffer.setSize(packet->dataLength);
+//    unsigned char *raw = packetBuffer.getRaw();
+//    for (size_t i = 0; i < packet->dataLength; i++) raw[i] = packet->data[i];
+//    if (unpackInto(receiveRule, packetBuffer, receiveBuffer)) {
+//      if (!verifyValue(receiveBuffer)) {
+//        appLog("Malformed packet: structure invariants were violated!");
+//      } else return receiveBuffer;
+//    } else {
+//      appLog("Malformed packet: failed to decode!");
+//    }
     return {};
   }
 };

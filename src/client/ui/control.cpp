@@ -2,7 +2,7 @@
 
 #include "splash.h"
 #include "util/methods.h"
-#include "telegraph/telegraph.h"
+#include "util/telegraph.h"
 #include "control.h"
 
 namespace ui {
