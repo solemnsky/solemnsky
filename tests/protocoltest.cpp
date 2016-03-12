@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "sky/protocol.h"
 #include "util/methods.h"
+#include <cereal/archives/binary.hpp>
 
 /**
  * Our multiplayer protocol structs (ServerPacket, ClientPacket) and
@@ -10,6 +11,26 @@ class ProtocolTest: public testing::Test {
  public:
   ProtocolTest() { }
 };
+
+/**
+ * Cereal works like we expect it to.
+ */
+TEST_F(ProtocolTest, Cereal) {
+  std::stringstream stream;
+  sky::PlaneTuning someTuning;
+  someTuning.energy.laserGun = 0.5; // hax dude
+
+  cereal::BinaryOutputArchive output(stream);
+  cereal::BinaryInputArchive input(stream);
+
+  output(someTuning);
+  std::cout << stream.str();
+  std::endl(std::cout);
+
+  someTuning.energy.laserGun = 1;
+  input(someTuning);
+  EXPECT_EQ(someTuning.energy.laserGun, 0.5);
+}
 
 /**
  * Invariant violations can be caught in protocol packets.

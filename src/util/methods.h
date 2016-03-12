@@ -59,7 +59,7 @@ float toDeg(const float x);
 float linearTween(const float begin, const float end, const float time);
 
 /**
- * Handy stuff.
+ * VerifyStructure helpers.
  */
 
 template<typename X>
@@ -78,6 +78,7 @@ bool verifyValue(
   return true;
 }
 
+// certify that a bunch of optional fields are instantiated and are valid
 bool verifyFields();
 
 template<typename Field, typename... Fields>
