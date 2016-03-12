@@ -65,6 +65,7 @@ float linearTween(const float begin, const float end, const float time);
 template<typename X,
     typename std::enable_if<std::is_base_of<VerifyStructure, X>::value>::type>
 bool verifyValue(const X &x) {
+  appLog("Caught VerifyStructure.");
   return x.verifyStructure();
 }
 

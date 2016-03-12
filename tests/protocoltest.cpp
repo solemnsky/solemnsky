@@ -12,9 +12,9 @@ class ProtocolTest: public testing::Test {
 };
 
 /**
- * Invariant violations can be caught.
+ * Invariant violations can be caught in protocol packets.
  */
-TEST_F(ProtocolTest, ClientPacket) {
+TEST_F(ProtocolTest, InvariantTest) {
   sky::ClientPacket packet = sky::ClientPacket::ReqJoin("asdf");
   EXPECT_TRUE(packet.verifyStructure());
   packet.stringData.reset();
