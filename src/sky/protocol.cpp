@@ -89,7 +89,6 @@ ServerMessage::ServerMessage(const ServerMessage::Type type,
 ServerMessage::ServerMessage() { }
 
 bool ServerMessage::verifyStructure() const {
-  appLog("checking structure");
   switch (type) {
     case Type::Chat:
       return verifyFields(from);

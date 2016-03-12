@@ -13,33 +13,38 @@
 
 /**
  * A connection to a server; manages the enet connection state, follows the
- * protocol to maintain a sky::Arena up-to-date, and exposes poll() and
+ * protocol to maintain a sky::Arena up-to-date, and maintains a message log.
  */
 class MultiplayerConnection {
  private:
+  ClientShared &shared;
+
   ENetEvent event;
 
-  tg::Telegraph<sky::ServerPacket, sky::ClientPacket> telegraph;
-  bool askedConnection, disconnecting;
+  tg::Telegraph<sky::ServerPacket> telegraph;
+  bool askedConnection;
   Cooldown disconnectTimeout;
 
   bool processPacket(const sky::ServerPacket &packet);
 
  public:
-  MultiplayerConnection(const std::string &serverHostname,
-                        const unsigned short serverPort);
+  MultiplayerConnection(
+      ClientShared &shared,
+      const std::string &serverHostname,
+      const unsigned short serverPort);
   /**
    * Connection state.
    */
   tg::Host host;
   ENetPeer *server;
-  bool disconnected;
+  bool disconnected, disconnecting;
 
   /**
    * Arena.
    */
   sky::Player *myPlayer;
   sky::Arena arena;
+  std::vector<std::string> messageLog;
 
   /**
    * Methods.
@@ -77,11 +82,12 @@ class MultiplayerView: public ui::Control {
   // shared state pertinent to the multiplayer system
 
  public:
-  MultiplayerView(ClientShared &shared, MultiplayerConnection &mShared);
+  MultiplayerView(ClientShared &shared, MultiplayerConnection &connection);
   virtual ~MultiplayerView() { }
 
   virtual void onBlur() = 0;
   virtual void onFocus() = 0;
+  virtual void onPacket(const sky::ServerPacket &packet) = 0;
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
   virtual void doExit() = 0; // try to exit eventually
 

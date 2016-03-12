@@ -1,17 +1,31 @@
 #include "multiplayerclient.h"
 
 /**
- * MultiplayerClientShared.
- */
-
-/**
  * MultiplayerClient.
  */
+
+void MultiplayerClient::switchView() {
+  switch (connection.arena.mode) {
+    case sky::ArenaMode::Lobby: {
+      view = std::make_unique<MultiplayerLobby>(shared);
+      break;
+    }
+    case sky::ArenaMode::Game: {
+      view = std::make_unique<MultiplayerGame>(shared);
+      break;
+    }
+    case sky::ArenaMode::Scoring: {
+      view = std::make_unique<MultiplayerScoring>(shared);
+      break;
+    }
+  }
+}
+
 MultiplayerClient::MultiplayerClient(ClientShared &state,
                                      const std::string &serverHostname,
                                      const unsigned short serverPort) :
     Game(state, "multiplayer"),
-    connection(serverHostname, serverPort) { }
+    connection(<#initializer#>, serverHostname, serverPort) { }
 
 /**
  * Game interface.
@@ -39,71 +53,54 @@ void MultiplayerClient::onChangeSettings(const SettingsDelta &settings) {
 }
 
 void MultiplayerClient::doExit() {
-  if (!shared.server) {
+  if (connection.disconnected) {
+    appLog("Disconnected!", LogOrigin::Client);
     quitting = true;
   } else {
-    shared.host.disconnect(shared.server);
+    connection.disconnect();
     appLog("Disconnecting from server...", LogOrigin::Client);
-    shared.disconnecting = true;
-    shared.disconnectTimeout.reset();
   }
 }
 
 void MultiplayerClient::tick(float delta) {
-  /**
-   *
-   */
+  optional<sky::ServerPacket> packet = connection.poll(delta);
 
+  // handle a potential mode change
+  if (packet) {
+    if (packet->type == sky::ServerPacket::Type::NoteArenaDelta) {
+      if (packet->arenaDelta->type == sky::ArenaDelta::Type::Mode) {
+        switchView();
+      }
+    }
+  }
+
+  if (view) {
+    view->tick(delta);
+    if (packet) view->onPacket(*packet);
+  }
 }
 
 void MultiplayerClient::render(ui::Frame &f) {
-  if (server && !disconnecting)
-    f.drawSprite(textureOf(Res::Title), {0, 0}, {0, 0, 1600, 900});
-
-  chatEntry.render(f);
-  messageLog.render(f);
-
-  if (!server) {
-    f.drawText({400, 400}, {"Connecting..."}, 60, sf::Color::White);
-    return;
-  }
-
-  if (disconnecting) {
-    f.drawText({400, 400}, {"Disconnecting..."}, 60, sf::Color::White);
-    return;
-  }
-
-  if (server and arena) {
-    switch (arena->mode) {
-      case sky::ArenaMode::Lobby: {
-        renderLobby(f);
-        break;
-      }
-      case sky::ArenaMode::Game: {
-        renderGame(f);
-        break;
-      }
-      case sky::ArenaMode::Scoring: {
-        renderScoring(f);
-        break;
-      }
+  if (!connection.server) {
+    if (connection.disconnecting) {
+      f.drawText({400, 400}, {"Disconnecting..."}, 60, sf::Color::White);
+      return;
+    } else {
+      f.drawText({400, 400}, {"Connecting..."}, 60, sf::Color::White);
+      return;
     }
   }
+
+  if (view) view->render(f);
 }
 
 bool MultiplayerClient::handle(const sf::Event &event) {
-  if (chatEntry.handle(event)) return true;
-  if (readyButton.handle(event)) return true;
-  if (event.type == sf::Event::EventType::KeyPressed) {
-    if (event.key.code == sf::Keyboard::Return) {
-      chatEntry.focus();
-      return true;
-    }
-  }
+  if (view) return view->handle(event);
   return false;
 }
 
 void MultiplayerClient::signalRead() {
+  if (view) view->signalRead();
   if (arena) {
     if (chatEntry.inputSignal)
       transmitServer(
@@ -114,6 +111,7 @@ void MultiplayerClient::signalRead() {
 }
 
 void MultiplayerClient::signalClear() {
-  chatEntry.signalClear();
-  readyButton.signalClear();
+  if (view) view->signalClear();
 }
+
+

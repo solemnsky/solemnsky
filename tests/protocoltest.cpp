@@ -46,20 +46,31 @@ TEST_F(ProtocolTest, Cereal) {
  * Protocol elements serialize correctly.
  */
 TEST_F(ProtocolTest, CerealProtocol) {
-  output(sky::ClientPacket::ReqJoin("hey"));
-  appLog(stream.str());
-  sky::ClientPacket packet;
-  input(packet);
-  EXPECT_TRUE(packet.verifyStructure());
-  EXPECT_EQ(packet.type, sky::ClientPacket::Type::ReqJoin);
-  EXPECT_TRUE((bool) packet.stringData);
-  EXPECT_EQ(*packet.stringData, "hey");
+  {
+    output(sky::ClientPacket::ReqJoin("hey"));
+    appLog(stream.str());
+    sky::ClientPacket packet;
+    input(packet);
+    EXPECT_TRUE(packet.verifyStructure());
+    EXPECT_EQ(packet.type, sky::ClientPacket::Type::ReqJoin);
+    EXPECT_TRUE((bool) packet.stringData);
+    EXPECT_EQ(*packet.stringData, "hey");
+  }
+
+  {
+    output(sky::ClientPacket::ReqSpawn());
+    appLog(stream.str());
+    sky::ClientPacket packet;
+    input(packet);
+    EXPECT_TRUE(packet.verifyStructure());
+    EXPECT_EQ(packet.type, sky::ClientPacket::Type::ReqSpawn);
+  }
 }
 
 /**
  * Invariant violations can be caught in protocol packets.
  */
-TEST_F(ProtocolTest, InvariantTest) {
+TEST_F(ProtocolTest, Invariant) {
   sky::ClientPacket packet = sky::ClientPacket::ReqJoin("asdf");
   EXPECT_TRUE(packet.verifyStructure());
   packet.stringData.reset();
@@ -70,5 +81,5 @@ TEST_F(ProtocolTest, InvariantTest) {
           sky::ServerMessage::Broadcast("some broadcast"));
   EXPECT_TRUE(sPacket.verifyStructure());
   sPacket.message->type = sky::ServerMessage::Type::Chat;
-//  EXPECT_FALSE(sPacket.verifyStructure()); // TODO: make this work
+  EXPECT_FALSE(sPacket.verifyStructure()); // TODO: make this work
 }

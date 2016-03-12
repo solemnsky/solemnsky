@@ -14,13 +14,20 @@
  * the game to start.
  */
 class MultiplayerLobby: public MultiplayerView {
+ private:
+
  public:
   MultiplayerLobby(MultiplayerConnection &shared);
 
- private:
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
+
+  virtual void onBlur() override;
+  virtual void onFocus() override;
+  virtual void onPacket(const sky::ServerPacket &packet) override;
+  virtual void onChangeSettings(const SettingsDelta &settings) override;
+  virtual void doExit() override;
 };
 
 /**
@@ -38,6 +45,12 @@ class MultiplayerGame: public MultiplayerView {
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
+
+  virtual void onBlur() override;
+  virtual void onFocus() override;
+  virtual void onPacket(const sky::ServerPacket &packet) override;
+  virtual void onChangeSettings(const SettingsDelta &settings) override;
+  virtual void doExit() override;
 };
 
 /**
@@ -53,6 +66,12 @@ class MultiplayerScoring: public MultiplayerView {
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
+
+  virtual void onBlur() override;
+  virtual void onFocus() override;
+  virtual void onPacket(const sky::ServerPacket &packet) override;
+  virtual void onChangeSettings(const SettingsDelta &settings) override;
+  virtual void doExit() override;
 };
 
 #endif //SOLEMNSKY_MULTIPLAYERUI_H_H
