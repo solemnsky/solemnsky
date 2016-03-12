@@ -9,6 +9,18 @@ class UtilTest: public testing::Test {
   UtilTest() { }
 };
 
+TEST_F(UtilTest, RollingSamplerTest) {
+  RollingSampler sampler(3);
+  sampler.push(5);
+  sampler.push(6);
+  sampler.push(7);
+  EXPECT_EQ(sampler.min(), 5);
+  EXPECT_EQ(sampler.max(), 7);
+  EXPECT_EQ(sampler.average(), 6);
+  sampler.push(8);
+  EXPECT_EQ(sampler.min(), 6);
+}
+
 TEST_F(UtilTest, CooldownTest) {
   Cooldown x{1};
   EXPECT_FALSE(x.cool(0.6));

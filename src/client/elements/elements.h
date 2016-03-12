@@ -49,7 +49,8 @@ class Page: public ui::Control {
 };
 
 /**
- * The game being played.
+ * An interface where the user plays a game of some sort; a tutorial, a
+ * multiplayer match, etc.
  */
 class Game: public ui::Control {
  protected:
@@ -63,11 +64,13 @@ class Game: public ui::Control {
   virtual void onFocus() = 0;
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
 
-  // try to exit, set Control::conclude flag eventually
+  // try to exit, set Control::quitting flag eventually
+  // (a multiplayer connection may want to do this at its leisure to
+  // disconnect gracefully)
   virtual void doExit() = 0;
 
-  std::string description; // description of the tutorial
-  std::string status; // brief status of the tutorial
+  std::string description; // description of the game
+  std::string status; // brief status of the game
 };
 
 #endif //SOLEMNSKY_PAGE_H

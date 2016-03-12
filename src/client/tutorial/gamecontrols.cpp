@@ -33,9 +33,9 @@ bool GameController::handle(const sf::Event &event) {
 }
 
 void GameController::setState(sky::PlaneState &state) {
-  state.rotCtrl = 0;
-  if (leftCtrl) state.rotCtrl = -1;
-  if (rightCtrl) state.rotCtrl += 1;
+  state.rotCtrl = Movement::None;
+  if (leftCtrl) state.rotCtrl = Movement::Down;
+  if (rightCtrl) state.rotCtrl = Movement::Up;
   state.throtCtrl = Movement::None;
   if (upCtrl) state.throtCtrl = Movement::Up;
   if (downCtrl) state.throtCtrl = Movement::Down;

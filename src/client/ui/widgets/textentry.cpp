@@ -11,13 +11,13 @@ TextEntry::TextEntry(const sf::Vector2f &pos,
     persistent(persistent),
     pos(pos),
     cursor(0),
-    heat(0, 1, 0),
+    heat(0),
     description(description),
     style(style),
 
     pressedKeyboardEvent(),
     repeatActivate(0.3),
-    repeatCooldown(0.06), // TODO: Cooldown's don't compensate for
+    repeatCooldown(0.06), // TODO: Cooldowns don't compensate for
     // wrap-around, making their behaviour erratic when the tick interval
     // approaches the cooldown interval
 

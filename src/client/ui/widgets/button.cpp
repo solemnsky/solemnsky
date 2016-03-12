@@ -10,14 +10,13 @@ sf::FloatRect Button::getBody() {
 Button::Button(const sf::Vector2f &pos, const std::string &text,
                const Style &style) :
     pos(pos), text(text), style(style),
-    heat(0, 1, 0),
+    heat(0),
     active(true),
     isHot(false),
     clickSignal(false) { }
 
 void Button::tick(float delta) {
-  if (active)
-    heat += (isHot ? 1 : -1) * delta * style.heatRate;
+  if (active) heat += (isHot ? 1 : -1) * delta * style.heatRate;
 }
 
 void Button::render(Frame &f) {

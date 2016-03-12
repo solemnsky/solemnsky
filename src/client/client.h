@@ -4,7 +4,8 @@
 #ifndef SOLEMNSKY_CLIENT_H
 #define SOLEMNSKY_CLIENT_H
 
-#include "game/tutorial.h"
+#include "tutorial/tutorial.h"
+#include "client/multiplayer/multiplayer.h"
 #include "homepage.h"
 #include "settingspage.h"
 #include "listingpage.h"

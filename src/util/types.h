@@ -99,6 +99,27 @@ bool approach(T &x, const T target, const T amount) {
   return approach<T, T>(x, target, amount);
 }
 
+/**
+ * RollingSampler.
+ * TODO: optimize this if necessary
+ */
+
+class RollingSampler {
+ private:
+  std::vector<float> data;
+  const int maxMemory;
+
+ public:
+  RollingSampler() = delete;
+  RollingSampler(const int maxMemory);
+
+  void push(const float value);
+
+  float average() const;
+  float max() const;
+  float min() const;
+};
+
 /****
  * Float-augmentation types.
  * Below we have a series of types that build a wrapper around a float,

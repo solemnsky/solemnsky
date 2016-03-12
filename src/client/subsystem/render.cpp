@@ -34,7 +34,7 @@ void PlaneGraphics::tick(const float delta) {
   if (parent) {
     // potentially switch orientation
     bool newOrientation = Angle(parent->state.rot + 90) > 180;
-    if (parent->state.rotCtrl == 0) orientation = newOrientation;
+    if (parent->state.rotCtrl == Movement::None) orientation = newOrientation;
 
     // flipping (when orientation changes)
     approach(flipState, (const float) (orientation ? 1 : 0),
@@ -44,8 +44,8 @@ void PlaneGraphics::tick(const float delta) {
     else flipComponent = 90 + flipState * 180;
 
     // rolling (when rotation control is active)
-    approach<float>(rollState, parent->state.rotCtrl,
-                    rndrParam.rollSpeed * delta);
+    approach(rollState, movementValue(parent->state.rotCtrl),
+             rndrParam.rollSpeed * delta);
 
     roll = flipComponent + rndrParam.rollAmount * rollState;
   } else {
@@ -128,8 +128,8 @@ void RenderSystem::renderPlaneGraphics(ui::Frame &f,
                  state.stalled ? rndrParam.throttleStall
                                : rndrParam.throttle),
            mkBar(state.stalled
-                 ? Clamped(0, 1, (state.forwardVelocity()) /
-                         tuning.stall.threshold)
+                 ? clamp<float>(0, 1, ((state.forwardVelocity()) / tuning.stall
+                         .threshold))
                  : (state.airspeed - airspeedStall) / (1 - airspeedStall),
                  rndrParam.health),
            mkBar(state.energy, rndrParam.energy)},

@@ -1,7 +1,36 @@
-#define _USE_MATH_DEFINES // for M_PI
 #include "types.h"
+#define _USE_MATH_DEFINES // for M_PI
 #include <cmath>
 #include "methods.h"
+
+/**
+ * RollingSampler.
+ */
+
+RollingSampler::RollingSampler(const int maxMemory) :
+    maxMemory(maxMemory) {
+  push(0);
+}
+
+void RollingSampler::push(const float value) {
+  if (data.size() >= maxMemory) {
+    data.erase(data.begin());
+  }
+  data.push_back(value);
+}
+
+float RollingSampler::average() const {
+  return std::accumulate(data.begin(), data.end(), 0, std::plus<float>())
+      / data.size();
+}
+
+float RollingSampler::max() const {
+  return *std::max_element(data.begin(), data.end());
+}
+
+float RollingSampler::min() const {
+  return *std::min_element(data.begin(), data.end());
+}
 
 /**
  * Cooldown.

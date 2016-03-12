@@ -8,15 +8,13 @@
 namespace ui {
 
 /**
- * Profiler.
+ * RollingSampler and Profiler.
  */
 
+
 Profiler::Profiler(int size) :
-    cycleTime{size}, logicTime{size}, renderTime{size}, primCount{size},
-    size{size} {
-  cycleTime.push(0), cycleTime.push(0), renderTime.push(0), primCount.push(0);
-  // for safety
-}
+    cycleTime(size), logicTime(size),
+    renderTime(size), primCount(size) { }
 
 /**
  * runSFML.
@@ -32,7 +30,7 @@ sf::Event transformEvent(const sf::Transform trans,
                          const sf::Event event) {
   const bool mouseMoved(event.type == sf::Event::MouseMoved),
       mousePressed(event.type == sf::Event::MouseButtonPressed ||
-                   event.type == sf::Event::MouseButtonReleased),
+      event.type == sf::Event::MouseButtonReleased),
       mouseSomething(mouseMoved || mousePressed);
 
   if (mouseSomething) {
@@ -103,8 +101,7 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
    */
   appLog("Running application...", LogOrigin::App);
 
-  AppState appState(&window, &profiler);
-
+  AppState appState(window, profiler);
   ctrl->appState = &appState;
   ctrl->attachState();
 

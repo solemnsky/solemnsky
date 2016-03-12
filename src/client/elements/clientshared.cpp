@@ -8,8 +8,8 @@ ClientUiState::ClientUiState() :
     focusedPage(PageType::Home),
     gameFocusing(false),
     pageFocusing(false),
-    pageFocusFactor(0, 1, 0),
-    gameFocusFactor(0, 1, 0) { }
+    pageFocusFactor(0),
+    gameFocusFactor(0) { }
 
 void ClientUiState::focusGame() {
   gameFocusing = true;

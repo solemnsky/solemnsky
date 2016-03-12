@@ -5,6 +5,7 @@
 #define SOLEMNSKY_GRAPHICS_H
 
 #include "client/util/resources.h"
+#include <list>
 #include "client/ui/control.h"
 #include "client/ui/sheet.h"
 #include "sky/sky.h"

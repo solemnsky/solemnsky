@@ -1,7 +1,7 @@
 #include "homepage.h"
 #include "util/methods.h"
-#include "client/multiplayer/multiplayerclient.h"
-#include "client/game/tutorial.h"
+#include "client/multiplayer/multiplayer.h"
+#include "client/tutorial/tutorial.h"
 
 HomePage::HomePage(ClientShared &clientState) :
     Page(clientState),
@@ -29,11 +29,10 @@ void HomePage::render(ui::Frame &f) {
   drawBackground(f);
 
   const float cycleTime =
-      ui::SamplerValue<float>(shared.appState->profiler->logicTime).mean +
-          ui::SamplerValue<float>(shared.appState->profiler->renderTime).mean;
+      shared.appState->profiler.logicTime.average() +
+          shared.appState->profiler.renderTime.average();
 
-  const float actualCycleTime =
-      ui::SamplerValue<float>(shared.appState->profiler->cycleTime).mean;
+  const float actualCycleTime = shared.appState->profiler.cycleTime.average();
 
   tutorialButton.render(f);
   localhostButton.render(f);
@@ -50,7 +49,7 @@ void HomePage::signalRead() {
 
   if (localhostButton.clickSignal)
     shared.beginGame(
-        std::make_unique<MultiplayerClient>(shared, "localhost", 4242));
+        std::make_unique<Multiplayer>(shared, "localhost", 4242));
 
 }
 
