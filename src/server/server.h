@@ -20,7 +20,7 @@ class Server {
    * Connection stuff.
    */
   tg::Host host;
-  tg::Telegraph<sky::ClientPacket, sky::ServerPacket> telegraph;
+  tg::Telegraph<sky::ClientPacket> telegraph;
   ENetEvent event;
   std::vector<ENetPeer *> connectingPeers;
 

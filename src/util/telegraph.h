@@ -14,10 +14,6 @@
 
 namespace tg {
 
-namespace detail {
-static int enetUsageCount = 0;
-}
-
 /**
  * ENet functionality can be used iff one of these is alive.
  * We need this because of enet's global state initialization /
@@ -72,14 +68,19 @@ template<typename ReceiveType>
 class Telegraph {
  private:
   ReceiveType receiveBuffer;
-  std::stringstream dataBuffer;
-  cereal::BinaryOutputArchive output;
-  cereal::BinaryInputArchive input;
 
  public:
-  Telegraph() : output(dataBuffer), input(dataBuffer) { }
+  Telegraph() { }
 
   // TODO: use the stringstream less stupidly?
+
+  template<typename TransmitType>
+  std::string outputToString(const TransmitType &x) {
+    std::stringstream outputStream;
+    cereal::BinaryOutputArchive output(outputStream);
+    output(x);
+    return outputStream.str();
+  }
 
   /**
    * Transmit a packet to one peer.
@@ -89,9 +90,8 @@ class Telegraph {
       Host &host, ENetPeer *const peer,
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
-    dataBuffer.clear();
-    output(value);
-    std::string data = dataBuffer.str();
+    std::string data = outputToString(value);
+    appLog("Transmitting : " + data);
     host.transmit(peer, (unsigned char *) data.c_str(), data.size(), flag);
   }
 
@@ -103,9 +103,8 @@ class Telegraph {
       Host &host, const std::vector<ENetPeer *> &peers,
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
-    dataBuffer.clear();
-    output(value);
-    std::string data = dataBuffer.str();
+    std::string data = outputToString(value);
+    appLog("Transmitting : " + data);
     for (ENetPeer *peer : peers)
       host.transmit(peer, (unsigned char *) data.c_str(), data.size(), flag);
   }
@@ -120,17 +119,18 @@ class Telegraph {
       std::function<bool(ENetPeer *)> predicate,
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
-    dataBuffer.clear();
-    output(value);
-    std::string data = dataBuffer.str();
+    std::string data = outputToString(value);
+    appLog("Transmitting : " + data);
     for (ENetPeer *peer : peers)
       if (predicate(peer))
         host.transmit(peer, (unsigned char *) data.c_str(), data.size(), flag);
   }
 
   optional<ReceiveType> receive(const ENetPacket *packet) {
-    dataBuffer.clear();
-    dataBuffer.write((const char *) packet->data, packet->dataLength);
+    std::string data((const char *) packet->data, packet->dataLength);
+    appLog("Receiving : " + data);
+    std::stringstream inputStream(data);
+    cereal::BinaryInputArchive input(inputStream);
     try {
       input(receiveBuffer);
       if (!verifyValue(receiveBuffer)) {

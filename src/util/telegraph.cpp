@@ -6,7 +6,7 @@ namespace tg {
 /**
  * UsageFlag.
  */
-using detail::enetUsageCount;
+static int enetUsageCount = 0;
 
 UsageFlag::UsageFlag() {
   enetUsageCount++;

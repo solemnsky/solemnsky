@@ -11,14 +11,8 @@ bool MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
     // waiting for the arena connection request to be accepted
 
     if (packet.type == ServerPacket::Type::AckJoin) {
-      if (!arena.applyInitializer(*packet.arenaInitializer))
-        return false; // initializer didn't work
-
+      arena.applyInitializer(*packet.arenaInitializer);
       myPlayer = arena.getPlayer(*packet.pid);
-      if (!myPlayer) {
-        return false; // pid invalid
-      }
-
       appLog("Joined arena!", LogOrigin::Client);
       return true;
     }
@@ -33,53 +27,44 @@ bool MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
     }
 
     case ServerPacket::Type::Message: {
-      if (!packet.message) return false;
       switch (packet.message->type) {
         case ServerMessage::Type::Chat: {
-          if (!packet.message->from) return false;
-          messageLog.pushEntry("[chat]" + *packet.message->from +
+          messageLog.push_back("[chat] " + *packet.message->from +
               ": " + packet.message->contents);
           break;
         }
         case ServerMessage::Type::Broadcast: {
-          messageLog.pushEntry(packet.message->contents);
+          messageLog.push_back("[server] : " + packet.message->contents);
           break;
         }
       }
-      return true; // server sent us a Message
+      return true;
     }
 
     case ServerPacket::Type::NoteArenaDelta: {
-      if (!arena->applyDelta(*packet.arenaDelta)) return false;
-
-      if (packet.arenaDelta->type == sky::ArenaDelta::Type::Mode) {
-        // we want to listen for changes in the mode
-        setUI(arena->mode);
-        if (arena->mode == sky::ArenaMode::Game)
-          renderSystem.emplace(&*arena->sky);
-      }
-
-      return true; // server sent us a NoteArenaDelta
+      arena.applyDelta(*packet.arenaDelta);
+      return true;
     }
 
     case ServerPacket::Type::NoteSkyDelta: {
-      if (!packet.skyDelta) return false;
-      if (arena->sky) arena->sky->applyDelta(*packet.skyDelta);
-      return true; // server sent us a NoteSkyDelta
+      if (arena.sky) arena.sky->applyDelta(*packet.skyDelta);
+      return true;
     }
 
     default:
       break;
   }
-
-  return false; // invalid packet type, considering we're in the arena
+  return false;
 }
 
 MultiplayerConnection::MultiplayerConnection(
+    ClientShared &shared,
     const std::string &serverHostname,
     const unsigned short serverPort) :
+
+    shared(shared),
     server(nullptr),
-    telegraph(sky::ServerPacketPack(), sky::ClientPacketPack()),
+    telegraph(),
     askedConnection(true), disconnecting(false),
     disconnectTimeout(5),
     host(tg::HostType::Client),
@@ -108,8 +93,8 @@ optional<sky::ServerPacket> MultiplayerConnection::poll(const float delta) {
 
   if (disconnecting) {
     if (disconnectTimeout.cool(delta)) {
-      appLog("Disconnecting from unresponsive server!", LogOrigin::Client);
-      disconnected = true;;
+      appLog("Disconnected from unresponsive server!", LogOrigin::Client);
+      disconnected = true;
     }
     return {};
   }
@@ -132,17 +117,19 @@ optional<sky::ServerPacket> MultiplayerConnection::poll(const float delta) {
 
     if (event.type == ENET_EVENT_TYPE_RECEIVE) {
       if (const auto reception = telegraph.receive(event.packet)) {
-        if (processPacket(*reception)) return;
+        // connected to enet, receiving a protocol packet
+        if (processPacket(*reception)) return *reception;
       }
-      appLog("Received malformed packet from server!", LogOrigin::Client);
     }
   }
+
+  return {};
 }
 
 void MultiplayerConnection::disconnect() {
-
+  host.disconnect(server);
+  disconnectTimeout.reset();
 }
-
 
 /**
  * MultiplayerView.
@@ -166,7 +153,7 @@ MultiplayerView::Style::Style() :
 
 MultiplayerView::MultiplayerView(
     ClientShared &shared,
-    MultiplayerConnection &mShared) :
+    MultiplayerConnection &connection) :
     shared(shared),
-    connection(mShared) { }
+    connection(connection) { }
 

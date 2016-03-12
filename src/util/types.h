@@ -49,6 +49,7 @@ void serialize(Archive &ar, sf::Vector2f &x) {
 #include <cereal/types/string.hpp>
 #include <cereal/types/vector.hpp>
 #include <cereal/types/map.hpp>
+#include <cereal/types/utility.hpp>
 
 /**
  * Useful functions.
@@ -208,5 +209,21 @@ class VerifyStructure {
  public:
   virtual bool verifyStructure() const = 0;
 };
+
+template<typename X>
+bool verifyValue(
+    const X &x,
+    typename std::enable_if<std::is_base_of<
+        VerifyStructure, X>::value>::type * = 0) {
+  return x.verifyStructure();
+}
+
+template<typename X>
+bool verifyValue(
+    const X &x,
+    typename std::enable_if<!std::is_base_of<
+        VerifyStructure, X>::value>::type * = 0) {
+  return true;
+}
 
 #endif //SOLEMNSKY_VALUE_H

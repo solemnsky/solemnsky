@@ -17,6 +17,7 @@ class MultiplayerClient: public Game {
    */
   MultiplayerConnection connection;
   std::unique_ptr<MultiplayerView> view;
+  void switchView();
 
  public:
   MultiplayerClient(ClientShared &state,
