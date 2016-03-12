@@ -18,6 +18,15 @@ class Sky;
 struct PlaneTuning {
   PlaneTuning(); // constructs with sensible defaults
 
+  template<class Archive>
+  void serialize(Archive &ar) {
+    ar(energy.thrustDrain, energy.recharge, energy.laserGun);
+    ar(stall.maxRotVel, stall.maxVel, stall.thrust, stall.damping);
+    ar(flight.maxRotVel, flight.airspeedFactor, flight.throttleInfluence,
+       flight.throttleEffect, flight.gravityEffect, flight.afterburnDrive,
+       flight.leftoverDamping, flight.threshold, throttleSpeed);
+  }
+
   sf::Vector2f hitbox{110, 60}; // x axis parallel with flight direction
   float maxHealth = 10;
 
@@ -61,11 +70,17 @@ struct PlaneState {
              const sf::Vector2f &pos,
              const float rot);
 
+  template<class Archive>
+  void serialize(Archive &ar) {
+    ar(rotCtrl, throtCtrl, pos, vel, rot, rotvel, stalled, afterburner,
+       leftoverVel, airspeed, throttle, energy, health);
+  }
+
   /**
    * Data.
    * Clamped values should have the same bounds in all instantiations.
    */
-  Clamped rotCtrl; // controls
+  Movement rotCtrl; // controls
   Movement throtCtrl;
 
   sf::Vector2f pos, vel; // physical values
@@ -97,6 +112,9 @@ struct PlaneState {
 struct PlaneInitializer {
   PlaneInitializer();
   PlaneInitializer(const PlaneTuning &tuning, const PlaneState &state);
+
+  template<typename Archive>
+  void serialize(Archive &ar) { ar(tuning, state); }
 
   PlaneTuning tuning;
   PlaneState state;

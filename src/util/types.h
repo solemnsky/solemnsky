@@ -8,6 +8,7 @@
 #define SOLEMNSKY_VALUE_H
 
 #include <vector>
+#include <ratio>
 #include <cmath>
 #include <SFML/System.hpp>
 #include <boost/optional.hpp>
@@ -69,9 +70,7 @@ bool approach(T &x, const T target, const T amount) {
 /****
  * Float-augmentation types.
  * Below we have a series of types that build a wrapper around a float,
- * constricting the way in which it can be used. *Pretend that the settings
- * you pass to their ctors are template variables*: e.g. a Clamped member of
- * a class can be expected to have the same bounds in every instance.
+ * constricting the way in which it can be used.
  */
 
 /**
@@ -91,19 +90,15 @@ struct Cooldown {
 };
 
 /**
- * Floats that always snap back to a certain range. ([min, max])
+ * Float in the [0, 1] range.
  */
 struct Clamped {
  private:
   float value;
 
  public:
-  float min, max;
-
-  Clamped() = delete;
-
-  Clamped(const float min, const float max);
-  Clamped(const float min, const float max, const float value);
+  Clamped();
+  Clamped(const float value);
   Clamped &operator=(const float x);
   Clamped &operator+=(const float x);
   Clamped &operator-=(const float x);
@@ -166,7 +161,7 @@ struct Angle {
 
 /**
  * Some types have certain invariant structures that can be violated in
- * instances received from the network. This is a tidy infrastructure to verify
+ * instances received from the network. This is a tidy way to verify
  * these invariants (for instance, our ad-hoc sum types in protocol.h).
  */
 

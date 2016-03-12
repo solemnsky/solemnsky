@@ -6,6 +6,7 @@
 /**
  * Cooldown.
  */
+
 void Cooldown::reset() { cooldown = period; }
 
 void Cooldown::prime() { cooldown = 0; }
@@ -20,24 +21,23 @@ Cooldown::Cooldown(const float period) : period(period), cooldown(period) { }
 /**
  * Clamped.
  */
-Clamped::Clamped(const float min, const float max) :
-    min(min), max(max), value(min) { }
 
-Clamped::Clamped(const float min, const float max, const float value) :
-    min(min), max(max), value(clamp(min, max, value)) { }
+Clamped::Clamped() : value(0) { }
+
+Clamped::Clamped(const float value) :
+    value(clamp(0.0f, 1.0f, value)) { }
 
 Clamped &Clamped::operator=(const float x) {
-  value = clamp(min, max, x);
-  return *this;
+  return operator=(Clamped(x));
 }
 
 Clamped &Clamped::operator+=(const float x) {
-  value = clamp(min, max, value + x);
+  value = std::min(1.0f, value + x);
   return *this;
 }
 
 Clamped &Clamped::operator-=(const float x) {
-  value = clamp(min, max, value - x);
+  value = std::max(0.0f, value - x);
   return *this;
 }
 
@@ -56,9 +56,9 @@ float movementValue(const Movement movement) {
 }
 
 /**
- * Cyclic: this code could be combined with Clamped if I were using value
- * templates, which would make things complicated quickly.
+ * Cyclic.
  */
+
 Cyclic::Cyclic(const float min, const float max) :
     min(min), max(max), value(min) { }
 
@@ -95,6 +95,7 @@ float cyclicDistance(const Cyclic x, const float y) {
 /**
  * Angle.
  */
+
 Angle::Angle(const float x) : value(0, 360, x) { }
 
 Angle::Angle(const sf::Vector2f &vec) :

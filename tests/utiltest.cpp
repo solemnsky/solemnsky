@@ -20,10 +20,10 @@ TEST_F(UtilTest, CooldownTest) {
 }
 
 TEST_F(UtilTest, ClampedTest) {
-  Clamped x{-1, 1};
+  Clamped x;
   EXPECT_EQ(x = 2, 1);
-  EXPECT_EQ(x = 0, 0);
-  EXPECT_EQ(x = -5, -1);
+  EXPECT_EQ(x += 0.5, 1);
+  EXPECT_EQ(x -= 0.4, 0.6f);
 }
 
 TEST_F(UtilTest, CyclicTest) {
@@ -32,6 +32,7 @@ TEST_F(UtilTest, CyclicTest) {
   EXPECT_EQ(x = 5, -5);
   EXPECT_EQ(x = 6, -4);
   EXPECT_EQ(x = -7, 3);
+  EXPECT_EQ(cyclicDistance(x, -5), 2);
 }
 
 TEST_F(UtilTest, AngleTest) {

@@ -58,6 +58,8 @@ TEST_F(TelegraphTest, TransmitReceive) {
  * Sanity check that protocol verbs can be transmitted over the network.
  */
 TEST_F(TelegraphTest, Protocol) {
+  tg::UsageFlag flag;
+
   using namespace sky;
 
   tg::Host server(tg::HostType::Server, 4242);

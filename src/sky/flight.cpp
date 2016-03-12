@@ -16,18 +16,12 @@ PlaneTuning::PlaneTuning() { }
  * PlaneState.
  */
 
-PlaneState::PlaneState() :
-    rotCtrl(-1, 1),
-    afterburner(0, 1),
-    airspeed(0, 1),
-    throttle(0, 1),
-    energy(0, 1),
-    health(0, 1) { }
+PlaneState::PlaneState() { }
 
 PlaneState::PlaneState(const PlaneTuning &tuning,
                        const sf::Vector2f &pos,
                        const float rot) :
-    rotCtrl(-1, 1, 0),
+    rotCtrl(Movement::None),
     throtCtrl(Movement::None),
 
     pos(pos),
@@ -35,13 +29,13 @@ PlaneState::PlaneState(const PlaneTuning &tuning,
     rot(rot),
     rotvel(0),
 
-    stalled(false), afterburner(0, 1, 0),
-    airspeed(0, 1, tuning.flight.throttleInfluence),
+    stalled(false), afterburner(0),
+    airspeed(tuning.flight.throttleInfluence),
     leftoverVel(0, 0),
-    throttle(0, 1, 1),
+    throttle(1),
 
-    energy(0, 1, 1),
-    health(0, 1, 1) { }
+    energy(1),
+    health(1) { }
 
 float PlaneState::forwardVelocity() const {
   return velocity() * (const float) cos(toRad(rot) - std::atan2(vel.y, vel.x));
@@ -143,7 +137,7 @@ void Plane::tick(float delta) {
   // set rotation
   state.rotvel = ((state.stalled) ?
                   tuning.stall.maxRotVel :
-                  tuning.flight.maxRotVel) * state.rotCtrl;
+                  tuning.flight.maxRotVel) * movementValue(state.rotCtrl);
 
   state.energy += tuning.energy.recharge * delta;
   state.afterburner = 0;

@@ -85,10 +85,6 @@ float linearTween(const float begin, const float end, const float time) {
                       std::max(begin, end), begin + time * (end - begin));
 }
 
-/**
- * Handy stuff.
- */
-
 bool verifyFields() {
   return true;
 }
