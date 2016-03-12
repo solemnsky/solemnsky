@@ -52,72 +52,58 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
 
     switch (packet.type) {
       case ClientPacket::Type::ReqDelta: {
-        if (!packet.playerDelta)
-          return false;
-
         if (packet.playerDelta->admin && not player->admin)
           return false; // client is asking too much ;)
-
         sky::ArenaDelta delta = sky::ArenaDelta::Modify(
             player->pid, *packet.playerDelta);
         arena.applyDelta(delta);
         broadcastToClients(ServerPacket::NoteArenaDelta(delta));
-
-        return true; // client send a ReqDelta
+        break;
       }
 
       case ClientPacket::Type::ReqTeamChange: {
-        if (!packet.team) return false;
         player->team = *packet.team;
         sky::PlayerDelta delta(*player);
         delta.team = *packet.team;
         broadcastToClients(sky::ServerPacket::NoteArenaDelta(
-            sky::ArenaDelta::Modify(player->pid, delta)
-        ));
-        return true;
+            sky::ArenaDelta::Modify(player->pid, delta)));
+        break;
       }
 
       case ClientPacket::Type::ReqSpawn: {
-        return true;
+        break;
       }
 
       case ClientPacket::Type::ReqKill: {
-        return true;
+        break;
       }
 
       case ClientPacket::Type::NoteSkyDelta: {
-        if (!packet.skyDelta) return false;
-        if (arena.sky)
-          arena.sky->applyDelta(*packet.skyDelta);
-        return true;
+        if (!arena.sky) return false;
+        arena.sky->applyDelta(*packet.skyDelta);
+        break;
       }
 
       case ClientPacket::Type::Chat: {
-        if (!packet.stringData)
-          return false;
-
         appLog("Chat \"" + player->nickname + "\": " + *packet.stringData);
         broadcastToClients(ServerPacket::Message(
             ServerMessage::Chat(player->nickname, *packet.stringData)));
-
-        return true; // client sent a Chat
+        break;
       }
 
       case ClientPacket::Type::Ping: {
         transmitToClient(client, ServerPacket::Pong());
-        return true; // client sent a Ping
+        break;
       }
 
       default:
-        break;
+        return false;
     }
   } else {
     // client is still connecting, we need to do a ReqJoin / AckJoin
     // handshake, distribute an ArenaDelta to the other clients, and attach
     // a sky::Player to the enet peer
     if (packet.type == ClientPacket::Type::ReqJoin) {
-      if (!packet.stringData) return false;
-
       sky::Player &newPlayer = arena.connectPlayer();
       newPlayer.nickname = *packet.stringData;
       event.peer->data = &newPlayer;
@@ -132,12 +118,10 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
       broadcastToClientsExcept(
           newPlayer.pid, ServerPacket::NoteArenaDelta(
               ArenaDelta::Join(newPlayer)));
-
-      return true; // unregistered client sent a ReqJoin
     }
   }
 
-  return false;
+  return true;
 }
 
 void Server::tick(float delta) {

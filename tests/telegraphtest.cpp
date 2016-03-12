@@ -41,17 +41,17 @@ TEST_F(TelegraphTest, TransmitReceive) {
 
   // connected
 
-//  tg::Telegraph<std::string, std::string> telegraph;
-//
-//  telegraph.transmit(client, serverPeer, "hey there");
-//  event = processHosts(server, client);
-//  EXPECT_EQ(event.type, ENET_EVENT_TYPE_RECEIVE); // server receives packet
-//  EXPECT_EQ(*telegraph.receive(event.packet), "hey there");
-//
-//  telegraph.transmit(server, clientPeer, "hey, I got your message ;D");
-//  event = processHosts(client, server);
-//  EXPECT_EQ(event.type, ENET_EVENT_TYPE_RECEIVE); // client receives packet
-//  EXPECT_EQ(*telegraph.receive(event.packet), "hey, I got your message ;D");
+  tg::Telegraph<std::string, std::string> telegraph;
+
+  telegraph.transmit(client, serverPeer, "hey there");
+  event = processHosts(server, client);
+  EXPECT_EQ(event.type, ENET_EVENT_TYPE_RECEIVE); // server receives packet
+  EXPECT_EQ(*telegraph.receive(event.packet), "hey there");
+
+  telegraph.transmit(server, clientPeer, "hey, I got your message ;D");
+  event = processHosts(client, server);
+  EXPECT_EQ(event.type, ENET_EVENT_TYPE_RECEIVE); // client receives packet
+  EXPECT_EQ(*telegraph.receive(event.packet), "hey, I got your message ;D");
 }
 
 /**
