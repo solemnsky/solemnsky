@@ -155,3 +155,9 @@ TEST_F(PackTest, FailTest) {
   EXPECT_EQ((bool) unpackedInt, false);
 }
 
+/**
+ * We can pack large objects without spending a stupid amount of time.
+ */
+TEST_F(PackTest, SpeedTest) {
+  // a ArenaDelta::Join is fairly large
+}
