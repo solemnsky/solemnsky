@@ -68,14 +68,9 @@ MultiplayerConnection::MultiplayerConnection(
     askedConnection(true), disconnecting(false),
     disconnectTimeout(5),
     host(tg::HostType::Client),
-    server(nullptr),
     disconnected(false),
     myPlayer(nullptr) {
   host.connect(serverHostname, serverPort);
-}
-
-bool MultiplayerConnection::isConnected() const {
-  return (bool) myPlayer;
 }
 
 void MultiplayerConnection::transmit(const sky::ClientPacket &packet) {
