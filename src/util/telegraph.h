@@ -66,9 +66,9 @@ class Host {
 };
 
 /**
- * Verifies structure of received packets with VerifyStructure.
+ * Helps us send / receive data through a tg::Host.
  */
-template<typename ReceiveType, typename TransmitType>
+template<typename ReceiveType>
 class Telegraph {
  private:
   ReceiveType receiveBuffer;
@@ -77,16 +77,19 @@ class Telegraph {
   cereal::BinaryInputArchive input;
 
  public:
-
   Telegraph() : output(dataBuffer), input(dataBuffer) { }
+
+  // TODO: use the stringstream less stupidly?
 
   /**
    * Transmit a packet to one peer.
    */
+  template<typename TransmitType>
   void transmit(
       Host &host, ENetPeer *const peer,
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
+    dataBuffer.clear();
     output(value);
     std::string data = dataBuffer.str();
     host.transmit(peer, (unsigned char *) data.c_str(), data.size(), flag);
@@ -95,10 +98,12 @@ class Telegraph {
   /**
    * Transmit same packet to an iterator range of peers.
    */
+  template<typename TransmitType>
   void transmitMult(
       Host &host, const std::vector<ENetPeer *> &peers,
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
+    dataBuffer.clear();
     output(value);
     std::string data = dataBuffer.str();
     for (ENetPeer *peer : peers)
@@ -109,11 +114,13 @@ class Telegraph {
    * Transmit same packet to the peers in an iterator range of peers
    * that satisfy a predicate.
    */
+  template<typename TransmitType>
   void transmitMultPred(
       Host &host, const std::vector<ENetPeer *> &peers,
       std::function<bool(ENetPeer *)> predicate,
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
+    dataBuffer.clear();
     output(value);
     std::string data = dataBuffer.str();
     for (ENetPeer *peer : peers)
@@ -122,16 +129,16 @@ class Telegraph {
   }
 
   optional<ReceiveType> receive(const ENetPacket *packet) {
-    dataBuffer << packet->data;
+    dataBuffer.clear();
+    dataBuffer.write((const char *) packet->data, packet->dataLength);
     try {
       input(receiveBuffer);
       if (!verifyValue(receiveBuffer)) {
-        appLog("Malformed packet: violated invariants!");
+        appLog("Malformed packet: violated invariants!", LogOrigin::Network);
       } else return receiveBuffer;
     } catch (...) {
-      appLog("Malformed packet: failed to decode!");
+      appLog("Malformed packet: failed to decode!", LogOrigin::Network);
     }
-
     return {};
   }
 };
