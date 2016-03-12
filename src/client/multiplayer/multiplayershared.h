@@ -6,7 +6,7 @@
 #define SOLEMNSKY_MULTIPLAYERSHARED_H
 
 #include "client/ui/control.h"
-#include "telegraph/telegraph.h"
+#include "util/telegraph.h"
 #include "sky/arena.h"
 #include "sky/protocol.h"
 #include "client/elements/elements.h"

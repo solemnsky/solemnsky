@@ -9,42 +9,11 @@ namespace sky {
 
 SkyInitializer::SkyInitializer() { }
 
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<SkyInitializer, TYPE>(RULE, &SkyInitializer::PTR)
-SkyInitializerPack::SkyInitializerPack() :
-    tg::ClassPack<SkyInitializer>(
-        member(MapName, mapName, tg::stringPack),
-        tg::MemberRule<SkyInitializer, std::map<PID, PlaneInitializer>>(
-            tg::MapPack<PID, PlaneInitializer>(
-                pidPack, PlaneInitializerPack()),
-            &SkyInitializer::planes
-        )
-    ) { }
-#undef member
-
 /**
  * Snapshot.
  */
 
 SkyDelta::SkyDelta() { }
-
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<SkyDelta, TYPE>(RULE, &SkyDelta::PTR)
-SkyDeltaPack::SkyDeltaPack() :
-    tg::ClassPack<SkyDelta>(
-        // I'm glad I'm not implementing this without abstractions
-        tg::MemberRule<SkyDelta, std::map<PID, optional<PlaneInitializer>>>(
-            tg::MapPack<PID, optional<PlaneInitializer>>(
-                pidPack,
-                tg::OptionalPack<PlaneInitializer>(PlaneInitializerPack())),
-            &SkyDelta::restructure
-        ),
-        tg::MemberRule<SkyDelta, std::map<PID, PlaneState>>(
-            tg::MapPack<PID, PlaneState>(pidPack, PlaneStatePack()),
-            &SkyDelta::state
-        )
-    ) { }
-#undef member
 
 /**
  * Sky.

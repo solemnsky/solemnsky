@@ -166,7 +166,7 @@ struct Angle {
 
 /**
  * Some types have certain invariant structures that can be violated in
- * instances unpacked from Packets. This is a tidy infrastructure to verify
+ * instances received from the network. This is a tidy infrastructure to verify
  * these invariants (for instance, our ad-hoc sum types in protocol.h).
  */
 

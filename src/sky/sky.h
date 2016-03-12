@@ -10,12 +10,10 @@
 #include "physics.h"
 #include "flight.h"
 #include "map.h"
-#include "telegraph/pack.h"
 
 namespace sky {
 
 typedef unsigned int PID; // ID for elements in the game
-const static tg::Pack<PID> pidPack = tg::BytePack<PID>();
 
 /**
  * Subsystem abstraction, representing a module that attaches to Sky events
@@ -61,10 +59,6 @@ struct SkyInitializer {
   std::map<PID, PlaneInitializer> planes; // planes already in the arena
 };
 
-static const struct SkyInitializerPack: public tg::ClassPack<SkyInitializer> {
-  SkyInitializerPack();
-} skyInitializerPack;
-
 /**
  * Delta in a sky, like a snapshot but smarter.
  */
@@ -76,10 +70,6 @@ struct SkyDelta {
   // here we set the state of planes
   std::map<PID, PlaneState> state;
 };
-
-static const struct SkyDeltaPack: public tg::ClassPack<SkyDelta> {
-  SkyDeltaPack();
-} skyDeltaPack;
 
 /*
  * A Sky is the basic core of the game state. It is semantically subordinate to

@@ -1,4 +1,5 @@
 #include "protocol.h"
+#include "util/methods.h"
 
 namespace sky {
 
@@ -74,20 +75,6 @@ ClientPacket ClientPacket::Chat(const std::string &message) {
   return ClientPacket(ClientPacket::Type::Chat, message);
 }
 
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<ClientPacket, TYPE>(RULE, &ClientPacket::PTR)
-ClientPacketPack::ClientPacketPack() :
-    tg::ClassPack<ClientPacket>(
-        member(ClientPacket::Type, type,
-               tg::EnumPack<ClientPacket::Type>(3)),
-        member(optional<std::string>, stringData, tg::optStringPack),
-        member(optional<PlayerDelta>, playerDelta,
-               tg::OptionalPack<PlayerDelta>(PlayerDeltaPack())),
-        member(optional<SkyDelta>, skyDelta,
-               tg::OptionalPack<SkyDelta>(SkyDeltaPack()))
-    ) { }
-#undef member
-
 /**
  * ServerMessage.
  */
@@ -121,17 +108,6 @@ ServerMessage ServerMessage::Broadcast(const std::string &contents) {
   return ServerMessage(ServerMessage::Type::Broadcast, contents);
 }
 
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<ServerMessage, TYPE>(RULE, &ServerMessage::PTR)
-ServerMessagePack::ServerMessagePack() :
-    tg::ClassPack<ServerMessage>(
-        member(ServerMessage::Type, type,
-               tg::EnumPack<ServerMessage::Type>(1)),
-        member(optional<std::string>, from, tg::optStringPack),
-        member(std::string, contents, tg::stringPack)
-    ) { }
-#undef member
-
 /**
  * ServerPacket.
  */
@@ -157,7 +133,6 @@ bool ServerPacket::verifyStructure() const {
     case Type::Pong:
       return true;
     case Type::Message: {
-      appLog("verifying message...");
       return verifyFields(message);
     }
     case Type::AckJoin:
@@ -192,22 +167,5 @@ ServerPacket ServerPacket::NoteSkyDelta(const SkyDelta &skyDelta) {
   return sky::ServerPacket(
       ServerPacket::Type::NoteSkyDelta, {}, {}, {}, {}, skyDelta);
 }
-
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<ServerPacket, TYPE>(RULE, &ServerPacket::PTR)
-ServerPacketPack::ServerPacketPack() :
-    tg::ClassPack<ServerPacket>(
-        member(ServerPacket::Type, type, tg::EnumPack<ServerPacket::Type>(3)),
-        member(optional<ServerMessage>, message,
-               tg::OptionalPack<ServerMessage>(ServerMessagePack())),
-        member(optional<PID>, pid, tg::OptionalPack<PID>(pidPack)),
-        member(optional<ArenaInitializer>, arenaInitializer,
-               tg::OptionalPack<ArenaInitializer>(ArenaInitializerPack())),
-        member(optional<ArenaDelta>, arenaDelta,
-               tg::OptionalPack<ArenaDelta>(ArenaDeltaPack())),
-        member(optional<SkyDelta>, skyDelta,
-               tg::OptionalPack<SkyDelta>(SkyDeltaPack()))
-    ) { }
-#undef member
 
 }

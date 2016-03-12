@@ -12,57 +12,6 @@ namespace sky {
 
 PlaneTuning::PlaneTuning() { }
 
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<PlaneTuning::Energy, TYPE>(RULE, &PlaneTuning::Energy::PTR)
-static const tg::Pack<PlaneTuning::Energy> planeTuningEnergyPack =
-    tg::ClassPack<PlaneTuning::Energy>(
-        member(float, thrustDrain, tg::floatPack),
-        member(float, recharge, tg::floatPack),
-        member(float, laserGun, tg::floatPack)
-    );
-#undef member
-
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<PlaneTuning::Stall, TYPE>(RULE, &PlaneTuning::Stall::PTR)
-static const tg::Pack<PlaneTuning::Stall> planeTuningStallPack =
-    tg::ClassPack<PlaneTuning::Stall>(
-        member(float, maxRotVel, tg::floatPack),
-        member(float, maxVel, tg::floatPack),
-        member(float, thrust, tg::floatPack),
-        member(float, damping, tg::floatPack),
-        member(float, threshold, tg::floatPack)
-    );
-#undef member
-
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<PlaneTuning::Flight, TYPE>(RULE, &PlaneTuning::Flight::PTR)
-static const tg::Pack<PlaneTuning::Flight> planeTuningFlightPack =
-    tg::ClassPack<PlaneTuning::Flight>(
-        member(float, maxRotVel, tg::floatPack),
-        member(float, airspeedFactor, tg::floatPack),
-        member(float, throttleInfluence, tg::floatPack),
-        member(float, throttleEffect, tg::floatPack),
-        member(float, gravityEffect, tg::floatPack),
-        member(float, gravityEffect, tg::floatPack),
-        member(float, afterburnDrive, tg::floatPack),
-        member(float, leftoverDamping, tg::floatPack),
-        member(float, threshold, tg::floatPack)
-    );
-#undef member
-
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<PlaneTuning, TYPE>(RULE, &PlaneTuning::PTR)
-PlaneTuningPack::PlaneTuningPack() :
-    tg::ClassPack<PlaneTuning>(
-        member(sf::Vector2f, hitbox, tg::vectorPack),
-        member(PlaneTuning::Energy, energy, planeTuningEnergyPack),
-        member(PlaneTuning::Stall, stall, planeTuningStallPack),
-        member(PlaneTuning::Flight, flight, planeTuningFlightPack),
-        member(float, throttleSpeed, tg::floatPack)
-        // this is what we call "big data" around here
-    ) { }
-#undef member
-
 /**
  * PlaneState.
  */
@@ -114,26 +63,6 @@ float PlaneState::requestEnergy(const float reqEnergy) {
   return (initEnergy - energy) / reqEnergy;
 }
 
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<PlaneState, TYPE>(RULE, &PlaneState::PTR)
-PlaneStatePack::PlaneStatePack() :
-    tg::ClassPack<PlaneState>(
-        member(Clamped, rotCtrl, tg::clampedPack),
-        member(Movement, throtCtrl, tg::movementPack),
-        member(sf::Vector2f, pos, tg::vectorPack),
-        member(sf::Vector2f, vel, tg::vectorPack),
-        member(Angle, rot, tg::anglePack),
-        member(float, rotvel, tg::floatPack),
-        member(bool, stalled, tg::boolPack),
-        member(Clamped, afterburner, tg::clampedPack),
-        member(sf::Vector2f, leftoverVel, tg::vectorPack),
-        member(Clamped, airspeed, tg::clampedPack),
-        member(Clamped, throttle, tg::clampedPack),
-        member(Clamped, energy, tg::clampedPack),
-        member(Clamped, health, tg::clampedPack)
-    ) { }
-#undef member
-
 /**
  * PlaneInitializer.
  */
@@ -143,15 +72,6 @@ PlaneInitializer::PlaneInitializer() { }
 PlaneInitializer::PlaneInitializer(
     const PlaneTuning &tuning, const PlaneState &state) :
     tuning(tuning), state(state) { }
-
-#define member(TYPE, PTR, RULE) \
-  tg::MemberRule<PlaneInitializer, TYPE>(RULE, &PlaneInitializer::PTR)
-PlaneInitializerPack::PlaneInitializerPack() :
-    tg::ClassPack<PlaneInitializer>(
-        member(PlaneTuning, tuning, PlaneTuningPack()),
-        member(PlaneState, state, PlaneStatePack())
-    ) { }
-#undef member
 
 /**
  * Plane.

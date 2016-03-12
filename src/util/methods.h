@@ -62,15 +62,19 @@ float linearTween(const float begin, const float end, const float time);
  * Handy stuff.
  */
 
-template<typename X,
-    typename std::enable_if<std::is_base_of<VerifyStructure, X>::value>::type>
-bool verifyValue(const X &x) {
-  appLog("Caught VerifyStructure.");
+template<typename X>
+bool verifyValue(
+    const X &x,
+    typename std::enable_if<std::is_base_of<
+        VerifyStructure, X>::value>::type * = 0) {
   return x.verifyStructure();
 }
 
 template<typename X>
-bool verifyValue(const X &x) {
+bool verifyValue(
+    const X &x,
+    typename std::enable_if<!std::is_base_of<
+        VerifyStructure, X>::value>::type * = 0) {
   return true;
 }
 

@@ -11,7 +11,6 @@
 
 #include "util/types.h"
 #include "sky.h"
-#include "telegraph/pack.h"
 #include <map>
 #include <list>
 #include <vector>
@@ -32,10 +31,6 @@ struct PlayerDelta {
   optional<Team> team; // 0 is spectator, 1 left, 2 right
 };
 
-static const struct PlayerDeltaPack: public tg::ClassPack<PlayerDelta> {
-  PlayerDeltaPack();
-} playerDeltaPack;
-
 /**
  * A player in the arena.
  */
@@ -51,10 +46,6 @@ struct Player {
   void applyDelta(const PlayerDelta &delta);
 };
 
-static const struct PlayerPack: public tg::ClassPack<Player> {
-  PlayerPack();
-} playerPack;
-
 /**
  * The mode of the arena; we cycle through these three modes.
  */
@@ -63,8 +54,6 @@ enum class ArenaMode {
   Game, // playing tutorial
   Scoring // viewing tutorial results
 };
-
-static const tg::Pack<ArenaMode> arenaModePack = tg::EnumPack<ArenaMode>(2);
 
 /**
  * The data a client needs when jumping into an arena. Further changes are
@@ -85,11 +74,6 @@ struct ArenaInitializer: public VerifyStructure {
 
   bool verifyStructure() const override;
 };
-
-static const struct ArenaInitializerPack:
-    public tg::ClassPack<ArenaInitializer> {
-  ArenaInitializerPack();
-} arenaInitializerPack;
 
 /**
  * Server-generated modification to the arena.
@@ -130,10 +114,6 @@ struct ArenaDelta: public VerifyStructure {
   static ArenaDelta Mode(const ArenaMode,
                          const optional<SkyInitializer> &initializer = {});
 };
-
-static const struct ArenaDeltaPack: public tg::ClassPack<ArenaDelta> {
-  ArenaDeltaPack();
-} arenaDeltaPack;
 
 /**
  * Arena.

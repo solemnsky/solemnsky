@@ -18,7 +18,7 @@ include_directories(
         thirdparty/SFML/include/
         thirdparty/Box2D/Box2D/
         thirdparty/enet/include/
-        #        thirdparty/enetpp/include/
+        thirdparty/cereal/
         "${Boost_INCLUDE_DIRS}"
 )
 
@@ -42,17 +42,11 @@ add_library(solemnsky SHARED
         src/sky/sky.cpp
         src/sky/sky.h
 
-        src/telegraph/pack.cpp
-        src/telegraph/pack.h
-
-        src/telegraph/packet.cpp
-        src/telegraph/packet.h
-
-        src/telegraph/telegraph.cpp
-        src/telegraph/telegraph.h
-
         src/util/methods.cpp
         src/util/methods.h
+
+        src/util/telegraph.cpp
+        src/util/telegraph.h
 
         src/util/types.cpp
         src/util/types.h
