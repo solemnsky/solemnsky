@@ -26,6 +26,11 @@ struct ClientPacket: public VerifyStructure {
     Chat // send a chat message
   };
 
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(type, stringData, playerDelta, skyDelta, team);
+  }
+
   ClientPacket();
   ClientPacket(
       const Type type,
@@ -67,6 +72,11 @@ struct ServerMessage: public VerifyStructure {
       std::string contents,
       optional<std::string> from = {});
 
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(type, from, contents);
+  }
+
   Type type;
   optional<std::string> from; // who the message is from, potentially
   std::string contents;
@@ -98,6 +108,11 @@ struct ServerPacket: public VerifyStructure {
       const optional<ArenaInitializer> &arenaInitializer = {},
       const optional<ArenaDelta> &arenaDelta = {},
       const optional<SkyDelta> &skyDelta = {});
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(type, message, pid, arenaInitializer, arenaDelta, skyDelta);
+  }
 
   Type type;
   optional<ServerMessage> message;

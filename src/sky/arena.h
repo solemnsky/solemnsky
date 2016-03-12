@@ -26,6 +26,11 @@ struct PlayerDelta {
   PlayerDelta(); // for unpacking
   PlayerDelta(const class Player &player); // set non-optional values
 
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(nickname, admin, team);
+  }
+
   optional<std::string> nickname;
   bool admin; // these values are non-optional
   optional<Team> team; // 0 is spectator, 1 left, 2 right
@@ -37,6 +42,11 @@ struct PlayerDelta {
 struct Player {
   Player(); // for unpacking
   Player(const PID pid);
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(pid, nickname, admin, team);
+  }
 
   PID pid;
   std::string nickname;
@@ -67,6 +77,11 @@ struct ArenaInitializer: public VerifyStructure {
       const ArenaMode mode,
       const optional<SkyInitializer> skyInitializer);
 
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(players, motd, mode, skyInitializer);
+  }
+
   std::vector<Player> players;
   std::string motd;
   ArenaMode mode;
@@ -96,6 +111,11 @@ struct ArenaDelta: public VerifyStructure {
       const optional<std::string> motd = {},
       const optional<ArenaMode> arenaMode = {},
       const optional<SkyInitializer> skyInitializer = {});
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(type, quit, join, player, motd, arenaMode, skyInitializer);
+  }
 
   Type type;
   optional<PID> quit;

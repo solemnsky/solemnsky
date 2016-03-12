@@ -20,6 +20,37 @@
 using boost::optional;
 
 /**
+ * Cereal rules, in both meanings of the word.
+ */
+
+template<typename Archive, typename T>
+void save(Archive &ar, const optional<T> &x) {
+  if (x) {
+    ar(true);
+    ar(*x);
+  } else ar(false);
+};
+
+template<typename Archive, typename T>
+void load(Archive &ar, optional<T> &x) {
+  bool flag(false);
+  ar(flag);
+  if (flag) {
+    x.emplace();
+    ar(*x);
+  } else x.reset();
+};
+
+template<typename Archive>
+void serialize(Archive &ar, sf::Vector2f &x) {
+  ar(x.x, x.y);
+}
+
+#include <cereal/types/string.hpp>
+#include <cereal/types/vector.hpp>
+#include <cereal/types/map.hpp>
+
+/**
  * Useful functions.
  */
 template<typename T>
@@ -103,6 +134,9 @@ struct Clamped {
   Clamped &operator+=(const float x);
   Clamped &operator-=(const float x);
 
+  template<typename Archive>
+  void serialize(Archive &ar) { ar(value); }
+
   inline operator float() const { return value; }
 };
 
@@ -111,6 +145,8 @@ struct Clamped {
  */
 struct Cyclic {
  private:
+  friend class Angle;
+
   float value;
  public:
   float min, max;
@@ -149,6 +185,9 @@ struct Angle {
   inline Angle() : Angle(0) { }
   Angle(const float x);
   Angle(const sf::Vector2f &);
+
+  template<typename Archive>
+  void serialize(Archive &ar) { ar(value.value); }
 
   Angle &operator=(const float x);
   Angle &operator+=(const float x);

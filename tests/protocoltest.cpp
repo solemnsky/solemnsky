@@ -9,27 +9,51 @@
  */
 class ProtocolTest: public testing::Test {
  public:
-  ProtocolTest() { }
+  std::stringstream stream;
+  cereal::BinaryOutputArchive output;
+  cereal::BinaryInputArchive input;
+
+  ProtocolTest() :
+      output(stream), input(stream) { }
 };
 
 /**
  * Cereal works like we expect it to.
  */
+
 TEST_F(ProtocolTest, Cereal) {
-  std::stringstream stream;
+  // optionals: small, custom type
+  output(optional<int>(6));
+  appLog(stream.str());
+  optional<int> x;
+  input(x);
+  EXPECT_TRUE((bool) x);
+  EXPECT_EQ(*x, 6);
+
+  // PlaneTuning: large, automatic type
   sky::PlaneTuning someTuning;
   someTuning.energy.laserGun = 0.5; // hax dude
 
-  cereal::BinaryOutputArchive output(stream);
-  cereal::BinaryInputArchive input(stream);
-
   output(someTuning);
-  std::cout << stream.str();
-  std::endl(std::cout);
+  appLog(stream.str());
 
   someTuning.energy.laserGun = 1;
   input(someTuning);
   EXPECT_EQ(someTuning.energy.laserGun, 0.5);
+}
+
+/**
+ * Protocol elements serialize correctly.
+ */
+TEST_F(ProtocolTest, CerealProtocol) {
+  output(sky::ClientPacket::ReqJoin("hey"));
+  appLog(stream.str());
+  sky::ClientPacket packet;
+  input(packet);
+  EXPECT_TRUE(packet.verifyStructure());
+  EXPECT_EQ(packet.type, sky::ClientPacket::Type::ReqJoin);
+  EXPECT_TRUE((bool) packet.stringData);
+  EXPECT_EQ(*packet.stringData, "hey");
 }
 
 /**

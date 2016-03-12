@@ -55,6 +55,12 @@ class Subsystem {
  */
 struct SkyInitializer {
   SkyInitializer();
+  template<typename Archive>
+
+  void serialize(Archive &ar) {
+    ar(mapName, planes);
+  }
+
   MapName mapName; // the map to load
   std::map<PID, PlaneInitializer> planes; // planes already in the arena
 };
@@ -64,6 +70,11 @@ struct SkyInitializer {
  */
 struct SkyDelta {
   SkyDelta();
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(restructure, state);
+  }
 
   // here we potentially remove / [re]add Planes
   std::map<PID, optional<PlaneInitializer>> restructure;
