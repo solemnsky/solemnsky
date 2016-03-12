@@ -41,7 +41,7 @@ TEST_F(TelegraphTest, TransmitReceive) {
 
   // connected
 
-  tg::Telegraph<std::string, std::string> telegraph;
+  tg::Telegraph<std::string> telegraph;
 
   telegraph.transmit(client, serverPeer, "hey there");
   event = processHosts(server, client);
@@ -75,8 +75,8 @@ TEST_F(TelegraphTest, Protocol) {
 
   // connected
 
-//  tg::Telegraph<ServerPacket, ClientPacket> clientTelegraph;
-//  tg::Telegraph<ClientPacket, ServerPacket> serverTelegraph;
+//  tg::Telegraph<ServerPacket> clientTelegraph;
+//  tg::Telegraph<ClientPacket> serverTelegraph;
 //
 //  clientTelegraph.transmit(
 //      client, serverPeer, ClientPacket::ReqJoin("nickname"));
