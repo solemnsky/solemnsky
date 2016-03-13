@@ -80,6 +80,8 @@ void MultiplayerConnection::transmit(const sky::ClientPacket &packet) {
 }
 
 optional<sky::ServerPacket> MultiplayerConnection::poll(const float delta) {
+  if (disconnected) return {};
+
   event = host.poll();
   if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
     server = nullptr;
@@ -124,9 +126,13 @@ optional<sky::ServerPacket> MultiplayerConnection::poll(const float delta) {
 }
 
 void MultiplayerConnection::disconnect() {
-  host.disconnect(server);
-  disconnecting = true;
-  disconnectTimeout.reset();
+  if (server) {
+    host.disconnect(server);
+    disconnecting = true;
+    disconnectTimeout.reset();
+  } else {
+    disconnected = true;
+  }
 }
 
 /**

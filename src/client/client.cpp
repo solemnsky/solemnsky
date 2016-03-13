@@ -165,9 +165,10 @@ void Client::render(ui::Frame &f) {
               style.menu.settingsOffset, "settings", settingsPage);
 
           if (gameUnderneath) {
+            const std::string statusStr = "(" + shared.game->status + ") ";
             const float descLength = f.textSize(shared.game->description,
                                                 style.menu.descSize).x,
-                statusLength = f.textSize(shared.game->status,
+                statusLength = f.textSize(statusStr,
                                           style.menu.descSize).x;
             f.drawText(
                 {style.menu.closeButtonOffset.x - descLength - statusLength -
@@ -175,7 +176,7 @@ void Client::render(ui::Frame &f) {
                 {shared.game->description}, style.menu.descSize);
             f.drawText(
                 {style.menu.closeButtonOffset.x - statusLength, 0},
-                {shared.game->status}, style.menu.descSize,
+                {statusStr}, style.menu.descSize,
                 style.menu.statusFontColor);
             closeButton.render(f);
           }
