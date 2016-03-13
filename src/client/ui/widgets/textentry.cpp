@@ -4,10 +4,28 @@
 
 namespace ui {
 
-TextEntry::TextEntry(const sf::Vector2f &pos,
+ui::TextEntry::Style::Style(
+    const sf::Color &inactiveColor,
+    const sf::Color &hotColor,
+    const sf::Color &focusedColor,
+    const sf::Color &descriptionColor,
+    const sf::Color &textColor,
+    const sf::Vector2f &dimensions,
+    const int fontSize,
+    const float heatRate) :
+    inactiveColor(inactiveColor),
+    hotColor(hotColor),
+    focusedColor(focusedColor),
+    descriptionColor(descriptionColor),
+    textColor(textColor),
+    dimensions(dimensions),
+    fontSize(fontSize),
+    heatRate(heatRate) { }
+
+TextEntry::TextEntry(const Style &style,
+                     const sf::Vector2f &pos,
                      const std::string &description,
-                     const bool persistent,
-                     const TextEntry::Style &style) :
+                     const bool persistent) :
     persistent(persistent),
     pos(pos),
     cursor(0),
@@ -94,17 +112,17 @@ void TextEntry::render(Frame &f) {
     const sf::Vector2f textDims(
         f.textSize(contents.substr(0, (size_t) cursor), style.fontSize));
     const float scroll =
-        (textDims.x > (style.dimensions.x + style.sidePadding))
-        ? textDims.x - style.dimensions.x + 2 * style.sidePadding : 0;
+        (textDims.x > (style.dimensions.x + sidePadding))
+        ? textDims.x - style.dimensions.x + 2 * sidePadding : 0;
 
-    f.drawRect({}, style.dimensions, style.focusedBgColor);
-    f.drawText(sf::Vector2f(style.sidePadding - scroll, 0),
+    f.drawRect({}, style.dimensions, style.focusedColor);
+    f.drawText(sf::Vector2f(sidePadding - scroll, 0),
                {contents}, style.fontSize, style.textColor);
 
     f.drawRect(
-        {style.sidePadding + textDims.x - scroll, 0},
-        {style.sidePadding + textDims.x - scroll +
-            style.cursorWidth, style.dimensions.y},
+        {sidePadding + textDims.x - scroll, 0},
+        {sidePadding + textDims.x - scroll +
+            cursorWidth, style.dimensions.y},
         style.textColor);
 
     // TODO: clipping out of bounds text
@@ -112,8 +130,8 @@ void TextEntry::render(Frame &f) {
     f.popTransform();
   } else {
     f.drawRect(pos, pos + style.dimensions,
-               mixColors(style.inactiveBgColor, style.hotBgColor, heat));
-    f.drawText(pos + sf::Vector2f(style.sidePadding, 0),
+               mixColors(style.inactiveColor, style.hotColor, heat));
+    f.drawText(pos + sf::Vector2f(sidePadding, 0),
                {persistent ? contents : description},
                style.fontSize, style.descriptionColor);
   }
@@ -187,4 +205,5 @@ void TextEntry::unfocus() {
 }
 
 }
+
 

@@ -7,14 +7,18 @@
  */
 
 Client::Client() :
-    quitButton(style.menu.quitButtonOffset, style.menu.quitButtonText,
-               style.menu.highButtonStyle),
-    aboutButton(style.menu.aboutButtonOffset, style.menu.aboutButtonText,
-                style.menu.highButtonStyle),
-    closeButton(style.menu.closeButtonOffset, style.menu.closeButtonText,
-                style.menu.lowButtonStyle),
-    backButton(style.menu.backButtonOffset, style.menu.backButtonText,
-               style.menu.lowButtonStyle),
+    quitButton(style.menu.highButtonStyle,
+               style.menu.quitButtonOffset,
+               style.menu.quitButtonText),
+    aboutButton(style.menu.highButtonStyle,
+                style.menu.aboutButtonOffset,
+                style.menu.aboutButtonText),
+    closeButton(style.menu.lowButtonStyle,
+                style.menu.closeButtonOffset,
+                style.menu.closeButtonText),
+    backButton(style.menu.lowButtonStyle,
+               style.menu.backButtonOffset,
+               style.menu.backButtonText),
 
     shared(this),
     homePage(shared),
@@ -70,7 +74,7 @@ void Client::drawPage(ui::Frame &f, const PageType type,
               0, style.menu.pageDescMargin - style.menu.descSize)
               + offsetAmnt * offset,
           {name},
-          style..menu.descSize);
+          style.menu.descSize);
     });
     f.withTransform(transform, [&]() {
       f.drawRect({0, 0, 1600, 900}, style.menu.pageUnderlayColor);
@@ -110,6 +114,16 @@ void Client::tick(float delta) {
 }
 
 void Client::render(ui::Frame &f) {
+  if (shared.settings.enableDebug) {
+    const float cycleTime =
+        shared.appState->profiler.logicTime.average() +
+            shared.appState->profiler.renderTime.average();
+
+    const float actualCycleTime = shared.appState->profiler.cycleTime.average();
+
+    // TODO: cute debug HUD
+  }
+
   bool gameUnderneath = (bool) shared.game;
   const float gameFocusFactor = shared.ui.gameFocusFactor,
       pageFocusFactor = shared.ui.pageFocusFactor;

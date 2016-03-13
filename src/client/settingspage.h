@@ -15,17 +15,6 @@ enum class SettingsPageTab {
  * in the settings. Can be any of a number of option types.
  */
 class OptionWidget: public ui::Control {
- public:
-  const struct Style {
-    int fontSize;
-    ui::TextEntry::Style textEntryStyle;
-    ui::Checkbox::Style checkboxStyle;
-    sf::Color descriptionColor;
-    sf::Vector2f entryOffset;
-
-    Style();
-  } style;
-
  private:
   sf::Vector2f pos;
   std::string name, tooltip;
@@ -61,21 +50,6 @@ class OptionWidget: public ui::Control {
 
 class SettingsPage: public Page {
  private:
-  const struct Style {
-    sf::Vector2f debugChooserPos; // general tab
-    sf::Vector2f nicknameChooserPos; // player tab
-    /* stub */ // controls tab
-    float pageButtonHeight;
-    float
-        generalButtonOffset,
-        playerButtonOffset,
-        controlsButtonOffset;
-    sf::Color selectedTabButtonColor,
-        unselectedTabButtonColor;
-    // color of the selected tab button
-
-    Style();
-  } style;
 
   Settings newSettings;
   // we write the user-edited settings to this cache and then construct a

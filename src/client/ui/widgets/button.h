@@ -22,13 +22,13 @@ class Button: public Control {
     int fontSize;
 
     Style() = delete;
-    Style(sf::Color baseColor,
-          sf::Color hotColor,
-          sf::Color clickedColor,
-          sf::Color textColor,
-          sf::Vector2f dimensions,
-          float heatRate,
-          int fontSize);
+    Style(const sf::Color &baseColor,
+          const sf::Color &hotColor,
+          const sf::Color &clickedColor,
+          const sf::Color &textColor,
+          const sf::Vector2f &dimensions,
+          const float heatRate,
+          const int fontSize);
   } style;
 
  private:
@@ -40,9 +40,9 @@ class Button: public Control {
 
  public:
   Button() = delete;
-  Button(const sf::Vector2f &pos,
-         const std::string &text,
-         const Style &style);
+  Button(const Style &style,
+         const sf::Vector2f &pos,
+         const std::string &text);
 
   sf::Vector2f pos;
   std::string text; // what the button has to say

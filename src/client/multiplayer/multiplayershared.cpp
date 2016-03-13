@@ -132,21 +132,6 @@ void MultiplayerConnection::disconnect() {
  * MultiplayerView.
  */
 
-MultiplayerView::Style::Style() :
-    scoreOverlayDims{1330, 630},
-    chatPos(20, 850),
-    messageLogPos(20, 840),
-    readyButtonPos(lobbyChatWidth + 10, lobbyTopMargin),
-    scoreOverlayTopMargin(100),
-    lobbyPlayersOffset(1250),
-    lobbyTopMargin(205),
-    lobbyChatWidth(1250),
-    gameChatWidth(500),
-    lobbyFontSize(40),
-    playerSpecColor(255, 255, 255),
-    playerJoinedColor(0, 255, 0),
-    readyButtonActiveDesc("ready!"),
-    readyButtonDeactiveDesc("cancel") { }
 
 MultiplayerView::MultiplayerView(
     sky::ArenaMode target,

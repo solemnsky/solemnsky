@@ -20,13 +20,6 @@
  * implementation.
  */
 class Page: public ui::Control {
- private:
-  const struct Style {
-    float margins = 50; // 50 px of background margin
-    sf::Color bgColor{136, 156, 255};
-    Style() { }
-  } style;
-
  protected:
   ClientShared &shared;
 

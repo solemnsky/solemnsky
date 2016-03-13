@@ -32,6 +32,7 @@ enum class ResType {
 };
 
 struct ResRecord {
+  ResRecord() = delete;
   ResRecord(
       std::string path,
       ResType type,
@@ -69,7 +70,7 @@ class ResMan {
   bool initialized{false};
 
  public:
-  ResMan(); // make sure the resources are in order
+  ResMan();
 
   void loadRes();
 

@@ -4,15 +4,13 @@
 
 namespace ui {
 
-ui::Button::Style::Style(
-    sf::Color baseColor,
-    sf::Color hotColor,
-    sf::Color clickedColor,
-    sf::Color textColor,
-    sf::Vector2f dimensions,
-    float heatRate,
-    int fontSize) :
-
+Button::Style::Style(const sf::Color &baseColor,
+                     const sf::Color &hotColor,
+                     const sf::Color &clickedColor,
+                     const sf::Color &textColor,
+                     const sf::Vector2f &dimensions,
+                     const float heatRate,
+                     const int fontSize) :
     baseColor(baseColor),
     hotColor(hotColor),
     clickedColor(clickedColor),
@@ -25,8 +23,10 @@ sf::FloatRect Button::getBody() {
   return sf::FloatRect(pos, style.dimensions);
 }
 
-Button::Button(const sf::Vector2f &pos, const std::string &text,
-               const Style &style) :
+Button::Button(const Style &style,
+               const sf::Vector2f &pos,
+               const std::string &text)
+    :
     pos(pos), text(text), style(style),
     heat(0),
     active(true),

@@ -1,15 +1,9 @@
 #include "settingspage.h"
+#include "elements/style.h"
 
 /**
  * OptionWidget.
  */
-
-OptionWidget::Style::Style() :
-    fontSize(50),
-    descriptionColor(255, 255, 255),
-    entryOffset(200, 20) {
-  checkboxStyle.dimensions = 40;
-}
 
 OptionWidget::OptionWidget(
     std::string *option, const sf::Vector2f &pos,
@@ -17,7 +11,8 @@ OptionWidget::OptionWidget(
     pos(pos),
     strOption(option),
     textEntry(std::make_shared<ui::TextEntry>(
-        pos + style.entryOffset, "", true, style.textEntryStyle)),
+        style.settings.textEntry,
+        pos + style.settings.entryOffset, "", true)),
     name(name),
     tooltip(tooltip) {
   onChangeSettings();
@@ -29,9 +24,8 @@ OptionWidget::OptionWidget(
     pos(pos),
     boolOption(option),
     checkbox(std::make_shared<ui::Checkbox>(
-        pos + style.entryOffset, style.checkboxStyle)),
-    name(name),
-    tooltip(tooltip) {
+        style.settings.checkbox,
+        pos + style.settings.entryOffset)) {
   onChangeSettings();
 }
 
@@ -63,7 +57,7 @@ void OptionWidget::tick(float delta) {
 }
 
 void OptionWidget::render(ui::Frame &f) {
-  f.drawText(pos, {name}, style.fontSize);
+  f.drawText(pos, {name}, style.base.normalFontSize, style.base.textColor);
   if (textEntry) return textEntry->render(f);
   else return checkbox->render(f);
 }
@@ -94,32 +88,28 @@ void OptionWidget::signalClear() {
  * SettingsPage.
  */
 
-SettingsPage::Style::Style() :
-    debugChooserPos(100, 100),
-    nicknameChooserPos(100, 100),
-    pageButtonHeight(800),
-    generalButtonOffset(700 / 6),
-    playerButtonOffset(generalButtonOffset + 300 + 700 / 3),
-    controlsButtonOffset(playerButtonOffset + 300 + 700 / 3),
-    selectedTabButtonColor(100, 100, 100),
-    unselectedTabButtonColor(132, 173, 181) { }
-
 SettingsPage::SettingsPage(ClientShared &state) :
     Page(state),
 
     newSettings(shared.settings),
 
     currentTab(SettingsPageTab::General),
-    generalButton(
-        {style.generalButtonOffset, style.pageButtonHeight}, "general"),
-    playerButton(
-        {style.playerButtonOffset, style.pageButtonHeight}, "player"),
-    controlsButton(
-        {style.controlsButtonOffset, style.pageButtonHeight}, "controls"),
+    generalButton(style.base.normalButton,
+                  {style.settings.generalButtonOffset,
+                   style.settings.pageButtonHeight},
+                  "general"),
+    playerButton(style.base.normalButton,
+                 {style.settings.playerButtonOffset,
+                  style.settings.pageButtonHeight},
+                 "player"),
+    controlsButton(style.base.normalButton,
+                   {style.settings.controlsButtonOffset,
+                    style.settings.pageButtonHeight},
+                   "controls"),
 
-    debugOption(&newSettings.enableDebug, style.debugChooserPos,
+    debugOption(&newSettings.enableDebug, style.settings.debugChooserPos,
                 "debug", "display debug information"),
-    nicknameOption(&newSettings.nickname, style.nicknameChooserPos,
+    nicknameOption(&newSettings.nickname, style.settings.nicknameChooserPos,
                    "nickname", "your nickname in-tutorial") {
   switchToTab(currentTab); // set the button styling
 }
@@ -225,9 +215,9 @@ void SettingsPage::switchToTab(const SettingsPageTab newTab) {
       &newButton = referenceButton(newTab);
 
   oldButton.setActive(true);
-  oldButton.style.baseColor = style.unselectedTabButtonColor;
+  oldButton.style.baseColor = style.settings.unselectedTabButtonColor;
   newButton.setActive(false);
-  newButton.style.baseColor = style.selectedTabButtonColor;
+  newButton.style.baseColor = style.settings.selectedTabButtonColor;
 
   doForWidgets(currentTab, [](OptionWidget &widget) {
     widget.onBlur();

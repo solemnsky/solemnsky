@@ -6,21 +6,11 @@
 
 namespace ui {
 
-Checkbox::Style::Style() {
-  baseButtonStyle.dimensions = {40, 40};
-}
-
-Button::Style Checkbox::makeButtonStyle() const {
-  Button::Style bstyle(style.baseButtonStyle);
-  bstyle.dimensions = {style.dimensions, style.dimensions};
-  return bstyle;
-}
-
-Checkbox::Checkbox(const sf::Vector2f &pos,
-                   const ui::Checkbox::Style &style) :
-    style(style),
-    button(pos, "", makeButtonStyle()),
-    value(false) { }
+Checkbox::Checkbox(const ui::Button::Style &style,
+                   const sf::Vector2f &pos) :
+    button(style, pos, ""),
+    value(false),
+    clickSignal(button.clickSignal) { }
 
 void Checkbox::tick(float delta) {
   button.tick(delta);
@@ -36,14 +26,12 @@ bool Checkbox::handle(const sf::Event &event) {
 
 void Checkbox::signalRead() {
   if (button.clickSignal) {
-    clickSignal = true;
     setValue(!value);
   }
 }
 
 void Checkbox::signalClear() {
   button.signalClear();
-  clickSignal = false;
 }
 
 void Checkbox::reset() {
