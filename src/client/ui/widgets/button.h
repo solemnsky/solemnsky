@@ -12,34 +12,37 @@ namespace ui {
 /**
  * A rectangular button.
  */
-class Button : public Control {
+class Button: public Control {
  public:
   struct Style {
-    sf::Color baseColor{132, 173, 181},
-        hotColor{92, 189, 206},
-        clickedColor{63, 208, 234},
-        textColor{255, 255, 255};
+    sf::Color baseColor, hotColor, clickedColor, textColor;
+    sf::Vector2f dimensions;
 
-    sf::Vector2f dimensions{200, 50};
+    float heatRate;
+    int fontSize;
 
-    float heatRate = 10;
-    int fontSize = 40;
-
-    Style() { }
+    Style() = delete;
+    Style(sf::Color baseColor,
+          sf::Color hotColor,
+          sf::Color clickedColor,
+          sf::Color textColor,
+          sf::Vector2f dimensions,
+          float heatRate,
+          int fontSize);
   } style;
 
-private:
+ private:
   Clamped heat;
   bool inPreClick{false};
   bool active;
 
   sf::FloatRect getBody();
 
-public:
+ public:
   Button() = delete;
   Button(const sf::Vector2f &pos,
          const std::string &text,
-         const Style &style = {});
+         const Style &style);
 
   sf::Vector2f pos;
   std::string text; // what the button has to say

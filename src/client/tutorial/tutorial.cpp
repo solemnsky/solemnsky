@@ -6,6 +6,7 @@ Tutorial::Tutorial(ClientShared &state) :
     renderSystem(&sky) {
   sky.linkSystem(&renderSystem);
   plane = &sky.addPlane(0, {}, {200, 200}, 0);
+  status = "some status";
 }
 
 /**

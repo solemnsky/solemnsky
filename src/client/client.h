@@ -18,39 +18,6 @@
  */
 class Client: public ui::Control {
  private:
-  const struct Style {
-    float unfocusedPageScale;
-
-    sf::Vector2f
-        homeOffset,
-        settingsOffset,
-        listingOffset,
-        quitButtonOffset,
-        aboutButtonOffset,
-        closeButtonOffset,
-        backButtonOffset;
-    // see the schema in media/source2d/board.png
-
-    sf::Color pageUnderlayColor, statusFontColor;
-
-    int descriptionFontSize, // bits of text that describe things
-        descriptionNegativeMargin;
-
-    ui::Button::Style highButtonStyle;
-    ui::Button::Style lowButtonStyle;
-
-    std::string backButtonText,
-        closeButtonText,
-        quitButtonText,
-        aboutButtonText;
-
-    float menuInGameFade; // the opacity of the UI when we open it
-    // by escaping from the tutorial (this opacity factor dissipates when a page
-    // is focused)
-
-    Style();
-  } style;
-
   /**
    * Buttons.
    */

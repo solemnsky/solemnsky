@@ -8,16 +8,6 @@
 
 class HomePage: public Page {
  private:
-  struct Style {
-    sf::Vector2f tutorialButtonPos{500, 300},
-        localhostButtonPos{1100, 300};
-
-    std::string tutorialButtonDesc = "start tutorial",
-        localhostButtonDesc = "connect to localhost";
-
-    Style() { }
-  } style;
-
   ui::Button tutorialButton;
   ui::Button localhostButton;
 
