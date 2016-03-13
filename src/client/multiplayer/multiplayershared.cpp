@@ -66,7 +66,7 @@ MultiplayerConnection::MultiplayerConnection(
     shared(shared),
     server(nullptr),
     telegraph(),
-    askedConnection(true),
+    askedConnection(false),
     disconnectTimeout(5),
     host(tg::HostType::Client),
     disconnected(false), disconnecting(false),
@@ -125,6 +125,7 @@ optional<sky::ServerPacket> MultiplayerConnection::poll(const float delta) {
 
 void MultiplayerConnection::disconnect() {
   host.disconnect(server);
+  disconnecting = true;
   disconnectTimeout.reset();
 }
 
