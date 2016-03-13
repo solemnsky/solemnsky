@@ -38,6 +38,7 @@ class MultiplayerConnection {
    */
   tg::Host host;
   ENetPeer *server;
+  bool connected; // connected to the arena
   bool disconnected, disconnecting;
 
   /**
@@ -83,8 +84,13 @@ class MultiplayerView: public ui::Control {
   MultiplayerConnection &connection;
 
  public:
-  MultiplayerView(ClientShared &shared, MultiplayerConnection &connection);
+  MultiplayerView(
+      sky::ArenaMode target,
+      ClientShared &shared,
+      MultiplayerConnection &connection);
   virtual ~MultiplayerView() { }
+
+  const sky::ArenaMode target; // the target of this view
 
   virtual void onBlur() = 0;
   virtual void onFocus() = 0;

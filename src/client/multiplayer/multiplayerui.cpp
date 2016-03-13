@@ -6,7 +6,7 @@
 
 MultiplayerLobby::MultiplayerLobby(
     ClientShared &shared, MultiplayerConnection &connection) :
-    MultiplayerView(shared, connection) { }
+    MultiplayerView(sky::ArenaMode::Lobby, shared, connection) { }
 
 void MultiplayerLobby::tick(float delta) {
 
@@ -42,7 +42,7 @@ void MultiplayerLobby::onChangeSettings(const SettingsDelta &settings) {
 
 MultiplayerGame::MultiplayerGame(
     ClientShared &shared, MultiplayerConnection &connection) :
-    MultiplayerView(shared, connection),
+    MultiplayerView(sky::ArenaMode::Game, shared, connection),
     renderSystem(connection.arena.sky.get_ptr()) { }
 
 void MultiplayerGame::tick(float delta) {
@@ -80,7 +80,7 @@ void MultiplayerGame::onChangeSettings(const SettingsDelta &settings) {
 
 MultiplayerScoring::MultiplayerScoring(
     ClientShared &shared, MultiplayerConnection &connection) :
-    MultiplayerView(shared, connection) { }
+    MultiplayerView(sky::ArenaMode::Scoring, shared, connection) { }
 
 void MultiplayerScoring::tick(float delta) {
 
