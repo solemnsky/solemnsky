@@ -1,13 +1,17 @@
 #include "homepage.h"
 #include "util/methods.h"
+#include "elements/style.h"
 #include "client/multiplayer/multiplayer.h"
 #include "client/tutorial/tutorial.h"
 
 HomePage::HomePage(ClientShared &clientState) :
     Page(clientState),
-    style(),
-    tutorialButton(style.tutorialButtonPos, style.tutorialButtonDesc),
-    localhostButton(style.localhostButtonPos, style.localhostButtonDesc) { }
+    tutorialButton(style.base.normalButton,
+                   style.home.tutorialButtonPos,
+                   style.home.tutorialButtonDesc),
+    localhostButton(style.base.normalButton,
+                    style.home.localhostButtonPos,
+                    style.home.localhostButtonDesc) { }
 
 void HomePage::onBlur() {
   tutorialButton.reset();
@@ -28,12 +32,6 @@ void HomePage::onChangeSettings(const SettingsDelta &settings) {
 void HomePage::render(ui::Frame &f) {
   drawBackground(f);
 
-  const float cycleTime =
-      shared.appState->profiler.logicTime.average() +
-          shared.appState->profiler.renderTime.average();
-
-  const float actualCycleTime = shared.appState->profiler.cycleTime.average();
-
   tutorialButton.render(f);
   localhostButton.render(f);
 }
@@ -50,7 +48,6 @@ void HomePage::signalRead() {
   if (localhostButton.clickSignal)
     shared.beginGame(
         std::make_unique<Multiplayer>(shared, "localhost", 4242));
-
 }
 
 void HomePage::signalClear() {

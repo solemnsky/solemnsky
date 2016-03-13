@@ -1,4 +1,5 @@
 #include "elements.h"
+#include "style.h"
 
 /**
  * Page.
@@ -7,8 +8,9 @@
 Page::Page(ClientShared &state) : shared(state) { }
 
 void Page::drawBackground(ui::Frame &f) {
-  f.drawRect({style.margins, style.margins},
-             {1600 - style.margins, 900 - style.margins}, style.bgColor);
+  const float margins = style.base.pageMargins;
+  f.drawRect({margins, margins},
+             {1600 - margins, 900 - margins}, style.base.pageBgColor);
 }
 
 /**

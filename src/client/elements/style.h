@@ -9,7 +9,7 @@
 #include "client/ui/control.h"
 #include "client/ui/widgets/widgets.h"
 
-static struct Style {
+const static struct Style {
   /**
    * Basic style consistencies.
    */
@@ -17,13 +17,21 @@ static struct Style {
     sf::Color buttonColor,
         buttonHotColor,
         buttonPressedColor,
-        textColor;
+        textColor,
+        textAreaForeground,
+        textAreaBackground;
     // TODO: organise color usage
+    float heatRate; // inverse of time it takes for a UI element to 'heat up'
 
-    int smallFontSize, normalFontSize, largeFontSize, hugeFontSize;
+    int smallFontSize, normalFontSize, largeFontSize;
+
+    float pageMargins;
+    sf::Color pageBgColor;
 
     ui::Button::Style normalButton;
     ui::Button::Style greyedButton;
+    ui::TextEntry::Style normalTextEntry;
+    ui::Checkbox::Style normalCheckbox;
 
     Base();
   } base;
@@ -66,17 +74,69 @@ static struct Style {
   } menu;
 
   /**
-   * The welcoming home page!
+   * The welcoming home page.
    */
   struct Home {
-    sf::Vector2f tutorialButtonPos{500, 300},
-        localhostButtonPos{1100, 300};
+    sf::Vector2f tutorialButtonPos,
+        localhostButtonPos;
 
-    std::string tutorialButtonDesc = "start tutorial",
-        localhostButtonDesc = "connect to localhost";
+    std::string tutorialButtonDesc,
+        localhostButtonDesc;
 
     Home(const Base &base);
   } home;
+
+  /**
+   * The function-packed settings page.
+   */
+  struct Settings {
+    ui::TextEntry::Style textEntry;
+    ui::Checkbox::Style checkbox;
+    sf::Vector2f entryOffset;
+
+    sf::Vector2f debugChooserPos; // general tab
+    sf::Vector2f nicknameChooserPos; // player tab
+    /* stub */ // controls tab
+    float pageButtonHeight;
+    float generalButtonOffset,
+        playerButtonOffset,
+        controlsButtonOffset;
+    sf::Color selectedTabButtonColor, unselectedTabButtonColor;
+    // color of the selected tab button
+
+    Settings(const Base &base);
+  } settings;
+
+  /**
+   * The rather important server listing page.
+   */
+  struct Listing {
+    // stub
+    Listing();
+  } listing;
+
+  /**
+   * The action-packed multiplayer client.
+   */
+  struct Multi {
+    sf::Vector2i scoreOverlayDims;
+    float scoreOverlayTopMargin;
+    int lobbyFontSize;
+
+    float lobbyPlayersOffset,
+        lobbyTopMargin,
+        lobbyChatWidth,
+        gameChatWidth;
+
+    sf::Vector2f chatPos,
+        messageLogPos,
+        readyButtonPos;
+
+    sf::Color playerSpecColor, playerJoinedColor;
+    std::string readyButtonActiveDesc, readyButtonDeactiveDesc;
+
+    Multi(const Base &base);
+  } multi;
 
   Style();
 } style;

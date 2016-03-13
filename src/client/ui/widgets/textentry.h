@@ -13,21 +13,30 @@ namespace ui {
 class TextEntry : public Control {
  public:
   struct Style {
-    sf::Color inactiveBgColor{142, 183, 191}, // background when inactive
-        hotBgColor{162, 203, 211}, // background when active (hot)
-        focusedBgColor{255, 255, 255},
+    sf::Color inactiveColor{142, 183, 191}, // background when inactive
+        hotColor{162, 203, 211}, // background when active (hot)
+        focusedColor{255, 255, 255},
         descriptionColor{100, 100, 100}, // description text
         textColor{0, 0, 0}; // text
     sf::Vector2f dimensions{500, 40};
-    float cursorWidth = 5;
-    float sidePadding = 10;
     int fontSize = 30;
     float heatRate = 10;
 
-    Style() { }
+    Style() = delete;
+    Style(const sf::Color &inactiveColor,
+          const sf::Color &hotColor,
+          const sf::Color &focusedColor,
+          const sf::Color &descriptionColor,
+          const sf::Color &textColor,
+          const sf::Vector2f &dimensions,
+          const int fontSize,
+          const float heatRate);
   } style;
 
  private:
+  // magic values
+  const float cursorWidth = 5, sidePadding = 10;
+
   Clamped heat;
 
   float scroll;
@@ -42,12 +51,11 @@ class TextEntry : public Control {
   bool handleKeyboardEvent(const sf::Event &event);
 
  public:
-
   TextEntry() = delete;
-  TextEntry(const sf::Vector2f &pos,
+  TextEntry(const Style &style,
+            const sf::Vector2f &pos,
             const std::string &description = "",
-            const bool persistent = false,
-            const Style &style = {});
+            const bool persistent = false);
 
   bool persistent; // text is persistent, doesn't reset on focus change / entry
   // and the displayed description is the contents

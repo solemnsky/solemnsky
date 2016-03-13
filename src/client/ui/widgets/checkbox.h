@@ -1,6 +1,6 @@
 /**
- * A checkbox with a description, useful in our settings page. Just a button
- * in a wrapper.
+ * A checkbox, especially useful in our settings page. Just a button
+ * in a wrapper actually.
  */
 
 #ifndef SOLEMNSKY_CHECKBOX_H
@@ -12,22 +12,16 @@
 namespace ui {
 
 class Checkbox: public ui::Control {
- public:
-  struct Style {
-    Button::Style baseButtonStyle;
-    float dimensions = 40; // we make the button a square with these dimensions
-    Style();
-  } style;
  private:
-  Button::Style makeButtonStyle() const;
   Button button;
-
   bool value;
 
  public:
+  typedef Button::Style Style;
+
   Checkbox() = delete;
-  Checkbox(const sf::Vector2f &pos,
-           const Style &style = {});
+  Checkbox(const Style &style,
+           const sf::Vector2f &pos);
 
   /**
    * Control interface.
@@ -49,7 +43,7 @@ class Checkbox: public ui::Control {
   void setValue(const bool newValue);
   bool getValue() const;
 
-  bool clickSignal;
+  bool &clickSignal;
 };
 
 }

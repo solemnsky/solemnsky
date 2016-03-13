@@ -62,22 +62,6 @@ class MultiplayerConnection {
  */
 class MultiplayerView: public ui::Control {
  protected:
-  struct Style {
-    // uniform style values
-    sf::Vector2i scoreOverlayDims;
-    sf::Vector2f chatPos,
-        messageLogPos,
-        readyButtonPos;
-    float scoreOverlayTopMargin;
-    float lobbyPlayersOffset,
-        lobbyTopMargin,
-        lobbyChatWidth,
-        gameChatWidth;
-    int lobbyFontSize;
-    sf::Color playerSpecColor, playerJoinedColor;
-    std::string readyButtonActiveDesc, readyButtonDeactiveDesc;
-    Style();
-  } style;
 
   // shared state
   ClientShared &shared;
