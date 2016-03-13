@@ -1,52 +1,26 @@
 #include "client.h"
+#include "elements/style.h"
 #include "util/methods.h"
 
 /**
  * Client.
  */
-Client::Style::Style() :
-    unfocusedPageScale(500.0f / 1600.0f),
-
-    homeOffset(182.812, 121.875),
-    settingsOffset(917.187, 121.875),
-    listingOffset(550.000, 495.250),
-    quitButtonOffset(182.812, 610.875),
-    aboutButtonOffset(1217.188, 610.875),
-    closeButtonOffset(1300, 0),
-    backButtonOffset(1067.18, 850),
-
-    pageUnderlayColor(0, 0, 0, 20),
-    statusFontColor(100, 100, 100),
-
-    descriptionFontSize(50),
-    descriptionNegativeMargin(10),
-
-    backButtonText("main menu"),
-    closeButtonText("close game"),
-    quitButtonText("quit"),
-    aboutButtonText("about"),
-    menuInGameFade(0.7) {
-  highButtonStyle.fontSize = 50;
-  highButtonStyle.dimensions.y = 70;
-
-  lowButtonStyle.fontSize = 40;
-  lowButtonStyle.dimensions.x = 300;
-}
 
 Client::Client() :
-    quitButton(style.quitButtonOffset, style.quitButtonText,
-               style.highButtonStyle),
-    aboutButton(style.aboutButtonOffset, style.aboutButtonText,
-                style.highButtonStyle),
-    closeButton(style.closeButtonOffset, "",
-                style.lowButtonStyle),
-    backButton(style.backButtonOffset, style.backButtonText,
-               style.lowButtonStyle),
+    quitButton(style.menu.quitButtonOffset, style.menu.quitButtonText,
+               style.menu.highButtonStyle),
+    aboutButton(style.menu.aboutButtonOffset, style.menu.aboutButtonText,
+                style.menu.highButtonStyle),
+    closeButton(style.menu.closeButtonOffset, style.menu.closeButtonText,
+                style.menu.lowButtonStyle),
+    backButton(style.menu.backButtonOffset, style.menu.backButtonText,
+               style.menu.lowButtonStyle),
 
     shared(this),
     homePage(shared),
     listingPage(shared),
-    settingsPage(shared) { }
+    settingsPage(shared),
+    tryingToQuit(false) { }
 
 void Client::forAllPages(std::function<void(Page &)> f) {
   f(homePage);
@@ -73,13 +47,13 @@ void Client::drawPage(ui::Frame &f, const PageType type,
   float alpha, scale, offsetAmnt, titleAlpha;
   if (type == shared.ui.focusedPage) {
     alpha = 1;
-    scale = linearTween(style.unfocusedPageScale, 1,
+    scale = linearTween(style.menu.unfocusedPageScale, 1,
                         focusFactor);
     offsetAmnt = linearTween(1, 0, focusFactor);
     titleAlpha = linearTween(1, 0, focusFactor);
   } else {
     alpha = linearTween(1, 0, focusFactor);
-    scale = style.unfocusedPageScale;
+    scale = style.menu.unfocusedPageScale;
     offsetAmnt = 1;
     titleAlpha = 1;
   }
@@ -93,13 +67,13 @@ void Client::drawPage(ui::Frame &f, const PageType type,
     f.withAlpha(titleAlpha, [&]() {
       f.drawText(
           sf::Vector2f(
-              0, style.descriptionNegativeMargin - style.descriptionFontSize)
+              0, style.menu.pageDescMargin - style.menu.descSize)
               + offsetAmnt * offset,
           {name},
-          style.descriptionFontSize);
+          style..menu.descSize);
     });
     f.withTransform(transform, [&]() {
-      f.drawRect({0, 0, 1600, 900}, style.pageUnderlayColor);
+      f.drawRect({0, 0, 1600, 900}, style.menu.pageUnderlayColor);
       page.render(f);
     });
   });
@@ -157,7 +131,7 @@ void Client::render(ui::Frame &f) {
 
     f.withAlpha(
         linearTween(1, 0, gameFocusFactor) *
-            (gameUnderneath ? linearTween(style.menuInGameFade, 1,
+            (gameUnderneath ? linearTween(style.menu.menuInGameFade, 1,
                                           pageFocusFactor) :
              1),
         [&]() {
@@ -167,27 +141,28 @@ void Client::render(ui::Frame &f) {
           // they're completely blurred)
 
           drawPage(
-              f, PageType::Home, style.homeOffset,
+              f, PageType::Home, style.menu.homeOffset,
               "home", homePage);
           drawPage(
-              f, PageType::Listing, style.listingOffset,
+              f, PageType::Listing, style.menu.listingOffset,
               "server listing", listingPage);
           drawPage(
               f, PageType::Settings,
-              style.settingsOffset, "settings", settingsPage);
+              style.menu.settingsOffset, "settings", settingsPage);
 
           if (gameUnderneath) {
             const float descLength = f.textSize(shared.game->description,
-                                                style.descriptionFontSize).x,
+                                                style.menu.descSize).x,
                 statusLength = f.textSize(shared.game->status,
-                                          style.descriptionFontSize).x;
+                                          style.menu.descSize).x;
             f.drawText(
-                {style.closeButtonOffset.x - descLength - statusLength - 10, 0},
-                {shared.game->description}, style.descriptionFontSize);
+                {style.menu.closeButtonOffset.x - descLength - statusLength -
+                    10, 0},
+                {shared.game->description}, style.menu.descSize);
             f.drawText(
-                {style.closeButtonOffset.x - statusLength, 0},
-                {shared.game->status}, style.descriptionFontSize,
-                style.statusFontColor);
+                {style.menu.closeButtonOffset.x - statusLength, 0},
+                {shared.game->status}, style.menu.descSize,
+                style.menu.statusFontColor);
             closeButton.render(f);
           }
           f.withAlpha(
@@ -348,6 +323,7 @@ void Client::changeSettings(const SettingsDelta &settings) {
 }
 
 int main() {
+  // and He said,
   ui::runSFML([]() { return std::make_unique<Client>(); });
+  // and lo, there appeared a client
 }
-

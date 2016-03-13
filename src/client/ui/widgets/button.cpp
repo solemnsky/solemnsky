@@ -4,6 +4,23 @@
 
 namespace ui {
 
+ui::Button::Style::Style(
+    sf::Color baseColor,
+    sf::Color hotColor,
+    sf::Color clickedColor,
+    sf::Color textColor,
+    sf::Vector2f dimensions,
+    float heatRate,
+    int fontSize) :
+
+    baseColor(baseColor),
+    hotColor(hotColor),
+    clickedColor(clickedColor),
+    textColor(textColor),
+    dimensions(dimensions),
+    heatRate(heatRate),
+    fontSize(fontSize) { }
+
 sf::FloatRect Button::getBody() {
   return sf::FloatRect(pos, style.dimensions);
 }
@@ -77,3 +94,4 @@ void Button::reset() {
 }
 
 }
+
