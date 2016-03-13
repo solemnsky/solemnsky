@@ -44,7 +44,6 @@ public:
   sf::Vector2f pos;
   std::string text; // what the button has to say
 
-
   /**
    * Control implementation.
    */

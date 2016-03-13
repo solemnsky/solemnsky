@@ -7,7 +7,7 @@
 OptionWidget::Style::Style() :
     fontSize(50),
     descriptionColor(255, 255, 255),
-    entryOffset(200, -20) {
+    entryOffset(200, 20) {
   checkboxStyle.dimensions = 40;
 }
 

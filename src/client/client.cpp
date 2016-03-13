@@ -4,29 +4,44 @@
 /**
  * Client.
  */
-ui::Button::Style Client::Style::highButtonStyle() const {
-  ui::Button::Style style;
-  style.fontSize = 50;
-  style.dimensions.y = 70;
-  return style;
-}
+Client::Style::Style() :
+    unfocusedPageScale(500.0f / 1600.0f),
 
-ui::Button::Style Client::Style::lowButtonStyle() const {
-  ui::Button::Style style;
-  style.fontSize = 40;
-  style.dimensions.x = 300;
-  return style;
+    homeOffset(182.812, 121.875),
+    settingsOffset(917.187, 121.875),
+    listingOffset(550.000, 495.250),
+    quitButtonOffset(182.812, 610.875),
+    aboutButtonOffset(1217.188, 610.875),
+    closeButtonOffset(1300, 0),
+    backButtonOffset(1067.18, 850),
+
+    pageUnderlayColor(0, 0, 0, 20),
+    statusFontColor(100, 100, 100),
+
+    descriptionFontSize(50),
+    descriptionNegativeMargin(10),
+
+    backButtonText("main menu"),
+    closeButtonText("close game"),
+    quitButtonText("quit"),
+    aboutButtonText("about"),
+    menuInGameFade(0.7) {
+  highButtonStyle.fontSize = 50;
+  highButtonStyle.dimensions.y = 70;
+
+  lowButtonStyle.fontSize = 40;
+  lowButtonStyle.dimensions.x = 300;
 }
 
 Client::Client() :
     quitButton(style.quitButtonOffset, style.quitButtonText,
-               style.highButtonStyle()),
+               style.highButtonStyle),
     aboutButton(style.aboutButtonOffset, style.aboutButtonText,
-                style.highButtonStyle()),
-    closeButton(style.closeButtonOffset, style.closeButtonText,
-                style.lowButtonStyle()),
+                style.highButtonStyle),
+    closeButton(style.closeButtonOffset, "",
+                style.lowButtonStyle),
     backButton(style.backButtonOffset, style.backButtonText,
-               style.lowButtonStyle()),
+               style.lowButtonStyle),
 
     shared(this),
     homePage(shared),
@@ -104,6 +119,10 @@ void Client::tick(float delta) {
   if (shared.game) {
     shared.game->tick(delta);
     if (shared.game->quitting) {
+      if (tryingToQuit) {
+        quitting = true;
+        return;
+      }
       shared.game.reset();
       shared.ui.blurGame();
     }
@@ -159,10 +178,16 @@ void Client::render(ui::Frame &f) {
 
           if (gameUnderneath) {
             const float descLength = f.textSize(shared.game->description,
-                                                style.descriptionFontSize).x;
+                                                style.descriptionFontSize).x,
+                statusLength = f.textSize(shared.game->status,
+                                          style.descriptionFontSize).x;
             f.drawText(
-                {style.closeButtonOffset.x - descLength, 0},
+                {style.closeButtonOffset.x - descLength - statusLength - 10, 0},
                 {shared.game->description}, style.descriptionFontSize);
+            f.drawText(
+                {style.closeButtonOffset.x - statusLength, 0},
+                {shared.game->status}, style.descriptionFontSize,
+                style.statusFontColor);
             closeButton.render(f);
           }
           f.withAlpha(
@@ -184,7 +209,6 @@ void Client::render(ui::Frame &f) {
 
 bool Client::handle(const sf::Event &event) {
   if (shared.ui.gameFocused() and shared.game) {
-    // tutorial is focused
     if (shared.game->handle(event)) return true;
   }
 
@@ -193,7 +217,6 @@ bool Client::handle(const sf::Event &event) {
   }
 
   if (shared.ui.pageFocused()) {
-    // page is focused
     if (backButton.handle(event)) return true;
     if (referencePage(shared.ui.focusedPage).handle(event)) return true;
   }
@@ -204,7 +227,7 @@ bool Client::handle(const sf::Event &event) {
     if (shared.game) {
       if (shared.ui.gameFocused()) blurGame();
       else focusGame();
-    } else if (shared.ui.pageFocused()) blurPage();
+    } else blurPage();
     return true;
   }
 
@@ -245,7 +268,10 @@ void Client::signalRead() {
   }
 
   if (quitButton.clickSignal) {
-    if (shared.game) exitGame();
+    if (shared.game) {
+      tryingToQuit = true;
+      exitGame();
+    }
     else quitting = true;
   }
 

@@ -36,6 +36,7 @@ TEST_F(UtilTest, ClampedTest) {
   EXPECT_EQ(x = 2, 1);
   EXPECT_EQ(x += 0.5, 1);
   EXPECT_EQ(x -= 0.4, 0.6f);
+  EXPECT_EQ(x -= 0.7, 0);
 }
 
 TEST_F(UtilTest, CyclicTest) {

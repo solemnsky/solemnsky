@@ -4,7 +4,7 @@
  * Multiplayer.
  */
 
-void Multiplayer::switchView() {
+void Multiplayer::updateView() {
   switch (connection.arena.mode) {
     case sky::ArenaMode::Lobby: {
       view = std::make_unique<MultiplayerLobby>(shared, connection);
@@ -33,15 +33,15 @@ Multiplayer::Multiplayer(ClientShared &shared,
  */
 
 void Multiplayer::onBlur() {
-  view->onBlur();
+  if (view) view->onBlur();
 }
 
 void Multiplayer::onFocus() {
-  view->onFocus();
+  if (view) view->onFocus();
 }
 
 void Multiplayer::onChangeSettings(const SettingsDelta &settings) {
-  view->onChangeSettings(settings);
+  if (view) view->onChangeSettings(settings);
 
   if (connection.myPlayer) {
     if (settings.nickname) {
@@ -64,16 +64,8 @@ void Multiplayer::tick(float delta) {
     return;
   }
 
-  // handle a potential mode change
-  if (packet) {
-    if (packet->type == sky::ServerPacket::Type::NoteArenaDelta) {
-      if (packet->arenaDelta->type == sky::ArenaDelta::Type::Mode) {
-        switchView();
-      }
-    }
-  }
-
-  if (view) {
+  if (connection.connected) {
+    if (!view or view->target != connection.arena.mode) updateView();
     view->tick(delta);
     if (packet) view->onPacket(*packet);
   }

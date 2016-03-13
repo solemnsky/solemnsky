@@ -19,36 +19,36 @@
 class Client: public ui::Control {
  private:
   const struct Style {
-    float unfocusedPageScale = 500.0f / 1600.0f;
+    float unfocusedPageScale;
 
     sf::Vector2f
-        homeOffset{182.812, 121.875},
-        settingsOffset{917.187, 121.875},
-        listingOffset{550.000, 495.250},
-        quitButtonOffset{182.812, 610.875},
-        aboutButtonOffset{1217.188, 610.875},
-        closeButtonOffset{1300, 0},
-        backButtonOffset{1067.18, 850};
+        homeOffset,
+        settingsOffset,
+        listingOffset,
+        quitButtonOffset,
+        aboutButtonOffset,
+        closeButtonOffset,
+        backButtonOffset;
     // see the schema in media/source2d/board.png
 
-    sf::Color pageUnderlayColor{0, 0, 0, 20};
+    sf::Color pageUnderlayColor, statusFontColor;
 
-    int descriptionFontSize = 50; // bits of text that describe things
-    int descriptionNegativeMargin = 10;
+    int descriptionFontSize, // bits of text that describe things
+        descriptionNegativeMargin;
 
-    ui::Button::Style highButtonStyle() const;
-    ui::Button::Style lowButtonStyle() const;
+    ui::Button::Style highButtonStyle;
+    ui::Button::Style lowButtonStyle;
 
-    std::string backButtonText = "main menu",
-        quitButtonText = "quit",
-        closeButtonText = "close tutorial",
-        aboutButtonText = "about";
+    std::string backButtonText,
+        closeButtonText,
+        quitButtonText,
+        aboutButtonText;
 
-    float menuInGameFade = 0.7; // the opacity of the UI when we open it
-    // by escaping from the tutorial (this opacity factor dissapates when a page
+    float menuInGameFade; // the opacity of the UI when we open it
+    // by escaping from the tutorial (this opacity factor dissipates when a page
     // is focused)
 
-    Style() { }
+    Style();
   } style;
 
   /**
@@ -65,13 +65,15 @@ class Client: public ui::Control {
   ClientShared shared;
 
   /**
-   * Pages.
+   * UI stuff.
    */
   HomePage homePage;
   ListingPage listingPage;
   SettingsPage settingsPage;
 
   std::vector<std::pair<sf::FloatRect, PageType>> pageRects;
+
+  bool tryingToQuit; // trying to exit, waiting on the game to close
 
   /**
    * Helpers.

@@ -14,6 +14,7 @@ bool MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
       arena.applyInitializer(*packet.arenaInitializer);
       myPlayer = arena.getPlayer(*packet.pid);
       appLog("Joined arena!", LogOrigin::Client);
+      connected = true;
       return true;
     }
 
@@ -65,10 +66,11 @@ MultiplayerConnection::MultiplayerConnection(
     shared(shared),
     server(nullptr),
     telegraph(),
-    askedConnection(true), disconnecting(false),
+    askedConnection(true),
     disconnectTimeout(5),
     host(tg::HostType::Client),
-    disconnected(false),
+    disconnected(false), disconnecting(false),
+    connected(false),
     myPlayer(nullptr) {
   host.connect(serverHostname, serverPort);
 }
@@ -147,8 +149,10 @@ MultiplayerView::Style::Style() :
     readyButtonDeactiveDesc("cancel") { }
 
 MultiplayerView::MultiplayerView(
+    sky::ArenaMode target,
     ClientShared &shared,
     MultiplayerConnection &connection) :
+    target(target),
     shared(shared),
     connection(connection) { }
 
