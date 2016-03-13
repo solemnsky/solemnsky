@@ -59,8 +59,8 @@ void Multiplayer::doExit() {
 
 void Multiplayer::tick(float delta) {
   optional<sky::ServerPacket> packet = connection.poll(delta);
-  if (connection.disconnected) {
-    quitting = true;
+  if (connection.disconnecting) {
+    if (connection.disconnected) quitting = true;
     return;
   }
 
