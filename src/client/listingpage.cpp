@@ -3,14 +3,6 @@
 ListingPage::ListingPage(ClientShared &state) :
     Page(state) {}
 
-void ListingPage::onBlur() {
-
-}
-
-void ListingPage::onFocus() {
-
-}
-
 void ListingPage::onChangeSettings(const SettingsDelta &settings) { }
 
 void ListingPage::tick(float) {
@@ -23,5 +15,9 @@ void ListingPage::render(ui::Frame &f) {
 
 bool ListingPage::handle(const sf::Event &event) {
   return false;
+}
+
+void ListingPage::reset() {
+
 }
 

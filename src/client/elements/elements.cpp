@@ -5,7 +5,7 @@
  * Page.
  */
 
-Page::Page(ClientShared &state) : shared(state) { }
+Page::Page(ClientShared &shared) : shared(shared) { }
 
 void Page::drawBackground(ui::Frame &f) {
   const float margins = style.base.pageMargins;

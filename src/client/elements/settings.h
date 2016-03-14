@@ -15,8 +15,8 @@
 struct Settings {
   Settings(); // initialize with meaningful default settings
 
-  bool readFromFile(std::string filepath);
-  bool writeToFile(std::string filepath);
+  void readFromFile(std::string filepath);
+  void writeToFile(std::string filepath);
 
   bool enableDebug;
   std::string nickname;

@@ -13,8 +13,6 @@ public:
   /**
    * Page interface.
    */
-  void onBlur() override;
-  void onFocus() override;
   virtual void onChangeSettings(const SettingsDelta &settings) override;
 
   /**
@@ -23,6 +21,7 @@ public:
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
+  void reset() override;
 };
 
 #endif //SOLEMNSKY_LISTINGPAGE_H

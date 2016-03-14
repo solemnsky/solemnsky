@@ -14,6 +14,11 @@
  */
 class MultiplayerLobby: public MultiplayerView {
  private:
+  ui::Button joinButton;
+  ui::Button spectateButton;
+  ui::TextEntry chatInput;
+
+  std::vector<ui::Control *> myControls;
 
  public:
   MultiplayerLobby(ClientShared &shared, MultiplayerConnection &connection);
@@ -21,11 +26,12 @@ class MultiplayerLobby: public MultiplayerView {
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
+  void reset() override;
+  void signalRead() override;
+  void signalClear() override;
 
-  virtual void onBlur() override;
-  virtual void onFocus() override;
-  virtual void onPacket(const sky::ServerPacket &packet) override;
-  virtual void onChangeSettings(const SettingsDelta &settings) override;
+  void onPacket(const sky::ServerPacket &packet) override;
+  void onChangeSettings(const SettingsDelta &settings) override;
 };
 
 /**
@@ -44,10 +50,8 @@ class MultiplayerGame: public MultiplayerView {
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
 
-  virtual void onBlur() override;
-  virtual void onFocus() override;
-  virtual void onPacket(const sky::ServerPacket &packet) override;
-  virtual void onChangeSettings(const SettingsDelta &settings) override;
+  void onPacket(const sky::ServerPacket &packet) override;
+  void onChangeSettings(const SettingsDelta &settings) override;
 };
 
 /**
@@ -64,10 +68,8 @@ class MultiplayerScoring: public MultiplayerView {
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
 
-  virtual void onBlur() override;
-  virtual void onFocus() override;
-  virtual void onPacket(const sky::ServerPacket &packet) override;
-  virtual void onChangeSettings(const SettingsDelta &settings) override;
+  void onPacket(const sky::ServerPacket &packet) override;
+  void onChangeSettings(const SettingsDelta &settings) override;
 };
 
 #endif //SOLEMNSKY_MULTIPLAYERUI_H_H

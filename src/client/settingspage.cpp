@@ -85,15 +85,149 @@ void OptionWidget::signalClear() {
 }
 
 /**
+ * SettingsTab.
+ */
+
+SettingsTab::SettingsTab(Settings &newSettings,
+                         ClientShared &state) :
+    Page(state),
+    newSettings(newSettings) { }
+
+/**
+ * GeneralTab.
+ */
+
+GeneralTab::GeneralTab(Settings &newSettings, ClientShared &state) :
+    SettingsTab(newSettings, state),
+    debugOption(&newSettings.enableDebug, style.settings.debugChooserPos,
+                "debug", "display debug information") {
+  areChildren({&debugOption});
+}
+
+void GeneralTab::tick(float delta) {
+  ui::Control::tick(delta);
+}
+
+void GeneralTab::render(ui::Frame &f) {
+  ui::Control::render(f);
+}
+
+bool GeneralTab::handle(const sf::Event &event) {
+  return ui::Control::handle(event);
+}
+
+void GeneralTab::reset() {
+  ui::Control::reset();
+}
+
+void GeneralTab::signalRead() {
+  ui::Control::signalRead();
+}
+
+void GeneralTab::signalClear() {
+  ui::Control::signalClear();
+}
+
+void GeneralTab::onChangeSettings(const SettingsDelta &) {
+
+}
+
+void GeneralTab::onBlur() {
+
+}
+
+/**
+ * PlayerTab.
+ */
+
+PlayerTab::PlayerTab(Settings &newSettings, ClientShared &state) :
+    SettingsTab(newSettings, state),
+    nicknameOption(&newSettings.nickname, style.settings.nicknameChooserPos,
+                   "nickname", "your nickname in-tutorial") {
+  areChildren({&nicknameOption});
+}
+
+void PlayerTab::tick(float delta) {
+  ui::Control::tick(delta);
+}
+
+void PlayerTab::render(ui::Frame &f) {
+  ui::Control::render(f);
+}
+
+bool PlayerTab::handle(const sf::Event &event) {
+  return ui::Control::handle(event);
+}
+
+void PlayerTab::reset() {
+  ui::Control::reset();
+}
+
+void PlayerTab::signalRead() {
+  ui::Control::signalRead();
+}
+
+void PlayerTab::signalClear() {
+  ui::Control::signalClear();
+}
+
+void PlayerTab::onChangeSettings(const SettingsDelta &) {
+
+}
+
+void PlayerTab::onBlur() {
+
+}
+
+/**
+ *
+ */
+
+
+ControlsTab::ControlsTab(Settings &newSettings, ClientShared &state) :
+    SettingsTab(newSettings, state) { }
+
+void ControlsTab::tick(float delta) {
+  ui::Control::tick(delta);
+}
+
+void ControlsTab::render(ui::Frame &f) {
+  ui::Control::render(f);
+}
+
+bool ControlsTab::handle(const sf::Event &event) {
+  return ui::Control::handle(event);
+}
+
+void ControlsTab::reset() {
+  ui::Control::reset();
+}
+
+void ControlsTab::signalRead() {
+  ui::Control::signalRead();
+}
+
+void ControlsTab::signalClear() {
+  ui::Control::signalClear();
+}
+
+void ControlsTab::onChangeSettings(const SettingsDelta &) {
+
+}
+
+void ControlsTab::onBlur() {
+
+}
+
+/**
  * SettingsPage.
  */
 
-SettingsPage::SettingsPage(ClientShared &state) :
-    Page(state),
+SettingsPage::SettingsPage(ClientShared &shared) :
+    Page(shared),
 
     newSettings(shared.settings),
 
-    currentTab(SettingsPageTab::General),
     generalButton(style.base.normalButton,
                   {style.settings.generalButtonOffset,
                    style.settings.pageButtonHeight},
@@ -107,147 +241,73 @@ SettingsPage::SettingsPage(ClientShared &state) :
                     style.settings.pageButtonHeight},
                    "controls"),
 
-    debugOption(&newSettings.enableDebug, style.settings.debugChooserPos,
-                "debug", "display debug information"),
-    nicknameOption(&newSettings.nickname, style.settings.nicknameChooserPos,
-                   "nickname", "your nickname in-tutorial") {
+    generalTab(newSettings, shared),
+    playerTab(newSettings, shared),
+    controlsTab(newSettings, shared),
+    currentTab((ControlsTab *) &generalTab) {
+  areChildren(
+      {&generalButton, &playerButton, &controlsButton});
   switchToTab(currentTab); // set the button styling
 }
 
-void SettingsPage::doForWidgets(
-    const optional<SettingsPageTab> tab,
-    std::function<void(OptionWidget & )> f) {
-  if (!tab) {
-    f(debugOption);
-    f(nicknameOption);
-    return;
-  }
-
-  switch (*tab) {
-    case SettingsPageTab::General: {
-      f(debugOption);
-      break;
-    }
-    case SettingsPageTab::Player: {
-      f(nicknameOption);
-      break;
-    }
-    case SettingsPageTab::Controls: {
-      break;
-    }
-  }
-}
-
-void SettingsPage::doForButtons(std::function<void(ui::Control &)> f) {
-  f(generalButton);
-  f(playerButton);
-  f(controlsButton);
-}
-
-ui::Button &SettingsPage::referenceButton(const SettingsPageTab tab) {
-  switch (tab) {
-    case SettingsPageTab::General:
-      return generalButton;
-    case SettingsPageTab::Player:
-      return playerButton;
-    case SettingsPageTab::Controls:
-      return controlsButton;
-  }
-}
-
-/**
- * Page interface.
- */
-
-void SettingsPage::onBlur() {
-  doForWidgets({}, [](OptionWidget &widget) {
-    widget.onBlur();
-  });
-  shared.changeSettings(SettingsDelta(shared.settings, newSettings));
-}
-
-void SettingsPage::onFocus() {
-
-}
-
-void SettingsPage::onChangeSettings(const SettingsDelta &delta) {
-  newSettings = shared.settings;
-  doForWidgets({}, [](OptionWidget &widget) {
-    widget.onChangeSettings();
-  });
-}
-
-/**
- * Game interface.
- */
-
 void SettingsPage::tick(float delta) {
-  doForWidgets(currentTab, [delta](OptionWidget &widget) {
-    widget.tick(delta);
-  });
-
-  generalButton.tick(delta);
-  playerButton.tick(delta);
-  controlsButton.tick(delta);
+  currentTab->tick(delta);
+  ui::Control::tick(delta);
 }
 
 void SettingsPage::render(ui::Frame &f) {
   drawBackground(f);
-
-  doForWidgets(currentTab, [&f](auto &widget) { widget.render(f); });
-  doForButtons([&f](auto &button) { button.render(f); });
+  currentTab->render(f);
+  ui::Control::render(f);
 }
 
 bool SettingsPage::handle(const sf::Event &event) {
-  bool eventHandled = false;
-  doForWidgets(currentTab, [&](auto &widget) {
-    if (!eventHandled) eventHandled = widget.handle(event);
-  });
-  if (eventHandled) return true;
-  doForButtons([&](auto &button) {
-    if (!eventHandled) eventHandled = button.handle(event);
-  });
-  return eventHandled;
+  if (currentTab->handle(event)) return true;
+  return ui::Control::handle(event);
 }
 
-void SettingsPage::switchToTab(const SettingsPageTab newTab) {
-  auto &oldButton = referenceButton(currentTab),
-      &newButton = referenceButton(newTab);
+void SettingsPage::switchToTab(SettingsTab *const newTab) {
+  newTab->button->setActive(true);
+  newTab->button->style.baseColor = style.settings.unselectedTabButtonColor;
+  currentTab->button->setActive(false);
+  currentTab->button->style.baseColor = style.settings.selectedTabButtonColor;
 
-  oldButton.setActive(true);
-  oldButton.style.baseColor = style.settings.unselectedTabButtonColor;
-  newButton.setActive(false);
-  newButton.style.baseColor = style.settings.selectedTabButtonColor;
-
-  doForWidgets(currentTab, [](OptionWidget &widget) {
-    widget.onBlur();
-  });
+  currentTab->onBlur();
   currentTab = newTab;
 }
 
-void SettingsPage::signalRead() {
-  doForWidgets({}, [](OptionWidget &widget) {
-    widget.signalRead();
-  });
+void SettingsPage::reset() {
+  ui::Control::reset();
+}
 
+void SettingsPage::signalRead() {
+  ui::Control::signalRead();
+  currentTab->signalRead();
   if (generalButton.clickSignal) {
-    switchToTab(SettingsPageTab::General);
+    switchToTab(&generalTab);
     return;
   }
   if (playerButton.clickSignal) {
-    switchToTab(SettingsPageTab::Player);
+    switchToTab(&playerTab);
     return;
   }
   if (controlsButton.clickSignal) {
-    switchToTab(SettingsPageTab::Controls);
+    switchToTab(&controlsTab);
     return;
   }
 }
 
 void SettingsPage::signalClear() {
-  doForWidgets({}, [](OptionWidget &widget) {
-    widget.signalClear();
-  });
-
-  doForButtons([](auto &button) { button.signalClear(); });
+  ui::Control::signalClear();
+  currentTab->signalClear();
 }
+
+void SettingsPage::onBlur() {
+
+}
+
+void SettingsPage::onChangeSettings(const SettingsDelta &delta) {
+  newSettings = shared.settings;
+  currentTab->onChangeSettings(delta);
+}
+
