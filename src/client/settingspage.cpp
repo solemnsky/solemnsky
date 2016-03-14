@@ -244,7 +244,7 @@ SettingsPage::SettingsPage(ClientShared &shared) :
     generalTab(newSettings, shared),
     playerTab(newSettings, shared),
     controlsTab(newSettings, shared),
-    currentTab((ControlsTab *) &generalTab) {
+    currentTab((SettingsTab *) &generalTab) {
   areChildren(
       {&generalButton, &playerButton, &controlsButton});
   switchToTab(currentTab); // set the button styling
