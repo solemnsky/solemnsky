@@ -45,6 +45,13 @@ struct AppState {
 
 class Control {
  private:
+ protected:
+  std::vector<Control *> children;
+
+  inline void areChildren(std::initializer_list<Control *> controls) {
+    for (auto control : controls) children.push_back(control);
+  }
+
  public:
   virtual ~Control() { }
 
@@ -66,16 +73,14 @@ class Control {
   /**
    * Callbacks to the app loop.
    */
-  virtual void tick(float delta) = 0;
-  virtual void render(Frame &f) = 0;
-  virtual bool handle(const sf::Event &event) = 0;
+  virtual void tick(float delta);
+  virtual void render(Frame &f);
+  virtual bool handle(const sf::Event &event);
+  virtual void reset(); // reset UI elements
   // return true to prevent propogation
 
-  /**
-   * Signal framework.
-   */
-  virtual void signalRead() { }; // process signals
-  virtual void signalClear() { }; // clear signals
+  virtual void signalRead();;
+  virtual void signalClear();;
 };
 
 /**

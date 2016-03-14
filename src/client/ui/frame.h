@@ -74,6 +74,15 @@ class Frame {
         });
   }
 
+  inline void drawText(const sf::Vector2f pos,
+                       const std::string &string,
+                       const int size = 24,
+                       const sf::Color &color = sf::Color::White,
+                       const sf::Font &font = fontOf(Res::Font),
+                       const sf::Text::Style &style = sf::Text::Regular) {
+    drawText(pos, {string}, size, color, font, style);
+  }
+
   // non-inline methods
   void drawCircle(const sf::Vector2f &pos, const float radius,
                   const sf::Color &color = {});

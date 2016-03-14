@@ -7,6 +7,37 @@
 
 namespace ui {
 
+
+/**
+ * Control.
+ */
+
+void ui::Control::tick(float delta) {
+  for (auto child : children) child->tick(delta);
+}
+
+void Control::render(Frame &f) {
+  for (auto child : children) child->render(f);
+}
+
+bool Control::handle(const sf::Event &event) {
+  for (auto child : children) if (child->handle(event)) return true;
+  return false;
+}
+
+void Control::reset() {
+  for (auto child : children) child->reset();
+}
+
+void Control::signalRead() { // process signals
+  for (auto child : children) child->signalRead();
+}
+
+void Control::signalClear() { // clear signals
+  for (auto child : children) child->signalClear();
+}
+
+
 /**
  * RollingSampler and Profiler.
  */
@@ -142,6 +173,8 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
         appLog("Caught close signal.", LogOrigin::App);
         window.close();
       }
+
+      if (event.type == sf::Event::LostFocus) ctrl->reset();
 
       if (event.type != sf::Event::MouseWheelScrolled) { // fk mouse wheels
         ctrl->handle(transformEvent(frame.windowToFrame, event));

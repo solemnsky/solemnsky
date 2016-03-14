@@ -62,7 +62,6 @@ class MultiplayerConnection {
  */
 class MultiplayerView: public ui::Control {
  protected:
-
   // shared state
   ClientShared &shared;
   MultiplayerConnection &connection;
@@ -76,8 +75,6 @@ class MultiplayerView: public ui::Control {
 
   const sky::ArenaMode target; // the target of this view
 
-  virtual void onBlur() = 0;
-  virtual void onFocus() = 0;
   virtual void onPacket(const sky::ServerPacket &packet) = 0;
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
 };

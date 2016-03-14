@@ -24,7 +24,10 @@ Client::Client() :
     homePage(shared),
     listingPage(shared),
     settingsPage(shared),
-    tryingToQuit(false) { }
+    tryingToQuit(false) {
+  areChildren({&quitButton, &aboutButton, &closeButton, &backButton,
+               &homePage, &listingPage, &settingsPage});
+}
 
 void Client::forAllPages(std::function<void(Page &)> f) {
   f(homePage);
@@ -91,6 +94,8 @@ void Client::attachState() {
 }
 
 void Client::tick(float delta) {
+  ui::Control::tick(delta);
+
   shared.uptime += delta;
   shared.ui.tick(delta);
 
@@ -105,12 +110,6 @@ void Client::tick(float delta) {
       shared.ui.blurGame();
     }
   }
-
-  forAllPages([&delta](Page &page) { page.tick(delta); });
-  quitButton.tick(delta);
-  aboutButton.tick(delta);
-  backButton.tick(delta);
-  closeButton.tick(delta);
 }
 
 void Client::render(ui::Frame &f) {
@@ -246,12 +245,13 @@ bool Client::handle(const sf::Event &event) {
   return false;
 }
 
-void Client::signalRead() {
-  if (shared.game) shared.game->signalRead();
+void Client::reset() {
+  ui::Control::reset();
+}
 
-  homePage.signalRead();
-  listingPage.signalRead();
-  settingsPage.signalRead();
+void Client::signalRead() {
+  ui::Control::signalRead();
+  if (shared.game) shared.game->signalRead();
 
   if (backButton.clickSignal) {
     blurPage();
@@ -276,14 +276,7 @@ void Client::signalRead() {
 
 void Client::signalClear() {
   if (shared.game) shared.game->signalClear();
-  homePage.signalClear();
-  listingPage.signalClear();
-  settingsPage.signalClear();
-
-  backButton.signalClear();
-  quitButton.signalClear();
-  aboutButton.signalClear();
-  closeButton.signalClear();
+  ui::Control::signalClear();
 }
 
 void Client::resetUI() {
@@ -305,7 +298,7 @@ void Client::exitGame() {
 
 void Client::focusGame() {
   if (shared.game) {
-    resetUI();
+    reset();
     if (shared.ui.pageFocused()) referencePage(shared.ui.focusedPage).onBlur();
     shared.ui.focusGame();
     shared.game->onFocus();
@@ -318,14 +311,12 @@ void Client::blurGame() {
 }
 
 void Client::blurPage() {
-  resetUI();
-  referencePage(shared.ui.focusedPage).onBlur();
+  reset();
   shared.ui.blurPage();
 }
 
 void Client::focusPage(const PageType type) {
   resetUI();
-  referencePage(type).onFocus();
   shared.ui.focusPage(type);
 }
 

@@ -1,4 +1,5 @@
 #include "multiplayerui.h"
+#include "client/elements/style.h"
 
 /**
  * MultiplayerLobby.
@@ -6,26 +7,50 @@
 
 MultiplayerLobby::MultiplayerLobby(
     ClientShared &shared, MultiplayerConnection &connection) :
-    MultiplayerView(sky::ArenaMode::Lobby, shared, connection) { }
+    MultiplayerView(sky::ArenaMode::Lobby, shared, connection),
+
+    joinButton(style.base.normalButton, style.multi.readyButtonPos, "join"),
+    spectateButton(style.base.normalButton, style.multi.readyButtonPos,
+                   "spectate"),
+    chatInput(style.base.normalTextEntry, style.multi.chatPos, "write here") {
+  areChildren({&joinButton, &spectateButton, &chatInput});
+}
 
 void MultiplayerLobby::tick(float delta) {
-
+  ui::Control::tick(delta);
 }
 
 void MultiplayerLobby::render(ui::Frame &f) {
   f.drawSprite(textureOf(Res::Lobby), {0, 0}, {0, 0, 1600, 900});
+
+  float offset = 0;
+  for (const auto &str : connection.messageLog) {
+    offset -= style.base.normalFontSize;
+    f.drawText(style.multi.messageLogPos + sf::Vector2f(0, offset),
+               str, style.base.normalFontSize);
+  }
+
+  ui::Control::render(f);
 }
 
 bool MultiplayerLobby::handle(const sf::Event &event) {
-  return false;
+  return ui::Control::handle(event);
 }
 
-void MultiplayerLobby::onBlur() {
-
+void MultiplayerLobby::reset() {
+  ui::Control::reset();
 }
 
-void MultiplayerLobby::onFocus() {
+void MultiplayerLobby::signalRead() {
+  ui::Control::signalRead();
+  if (joinButton.clickSignal)
+    connection.transmit(sky::ClientPacket::ReqTeamChange(1));
+  if (spectateButton.clickSignal)
+    connection.transmit(sky::ClientPacket::ReqTeamChange(1));
+}
 
+void MultiplayerLobby::signalClear() {
+  ui::Control::signalClear();
 }
 
 void MultiplayerLobby::onPacket(const sky::ServerPacket &packet) {

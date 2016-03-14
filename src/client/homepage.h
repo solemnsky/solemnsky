@@ -17,8 +17,6 @@ class HomePage: public Page {
   /**
    * Page interface.
    */
-  void onBlur() override;
-  void onFocus() override;
   void onChangeSettings(const SettingsDelta &settings) override;
 
   /**
@@ -27,6 +25,7 @@ class HomePage: public Page {
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
+  void reset() override;
 
   void signalRead() override;
   void signalClear() override;

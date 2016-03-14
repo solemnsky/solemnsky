@@ -24,16 +24,14 @@ class Page: public ui::Control {
   ClientShared &shared;
 
  public:
-  Page(ClientShared &state);
+  Page(ClientShared &shared);
   // a page's lifetime is never handled by a reference to a Page
   // so we need no virtual dtor
 
   virtual void attachClientState() { } // when client state is initialized
   // (this is necessary because of the Control::attachState() thing)
-
-  virtual void onBlur() = 0;
-  virtual void onFocus() = 0;
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
+  virtual void onBlur() = 0;
 
   /**
    * General graphics.
@@ -53,8 +51,6 @@ class Game: public ui::Control {
   Game(ClientShared &shared, const std::string &name);
   virtual ~Game() { }
 
-  virtual void onBlur() = 0;
-  virtual void onFocus() = 0;
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
 
   // try to exit, set Control::quitting flag eventually

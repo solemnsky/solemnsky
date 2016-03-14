@@ -11,18 +11,12 @@ HomePage::HomePage(ClientShared &clientState) :
                    style.home.tutorialButtonDesc),
     localhostButton(style.base.normalButton,
                     style.home.localhostButtonPos,
-                    style.home.localhostButtonDesc) { }
-
-void HomePage::onBlur() {
-  tutorialButton.reset();
-  localhostButton.reset();
+                    style.home.localhostButtonDesc) {
+  areChildren({&tutorialButton, &localhostButton});
 }
 
-void HomePage::onFocus() { }
-
 void HomePage::tick(float delta) {
-  tutorialButton.tick(delta);
-  localhostButton.tick(delta);
+  ui::Control::tick(delta);
 }
 
 void HomePage::onChangeSettings(const SettingsDelta &settings) {
@@ -31,17 +25,20 @@ void HomePage::onChangeSettings(const SettingsDelta &settings) {
 
 void HomePage::render(ui::Frame &f) {
   drawBackground(f);
-
-  tutorialButton.render(f);
-  localhostButton.render(f);
+  ui::Control::render(f);
 }
 
 bool HomePage::handle(const sf::Event &event) {
-  if (tutorialButton.handle(event)) return true;
-  return localhostButton.handle(event);
+  return ui::Control::handle(event);
+}
+
+void HomePage::reset() {
+  ui::Control::reset();
 }
 
 void HomePage::signalRead() {
+  ui::Control::signalRead();
+
   if (tutorialButton.clickSignal)
     shared.beginGame(std::make_unique<Tutorial>(shared));
 
@@ -51,7 +48,6 @@ void HomePage::signalRead() {
 }
 
 void HomePage::signalClear() {
-  tutorialButton.signalClear();
-  localhostButton.signalClear();
+  ui::Control::signalClear();
 }
 

@@ -6,10 +6,6 @@
 
 #include "elements/elements.h"
 
-enum class SettingsPageTab {
-  General, Player, Controls
-};
-
 /**
  * Widget that manages the description / tooltip / entry device for an option
  * in the settings. Can be any of a number of option types.
@@ -48,55 +44,89 @@ class OptionWidget: public ui::Control {
   void signalClear() override;
 };
 
-class SettingsPage: public Page {
+class SettingsTab: public Page {
  private:
-
-  Settings newSettings;
-  // we write the user-edited settings to this cache and then construct a
-  // delta when we want to distribute the new settings
-
-  SettingsPageTab currentTab;
-
-  ui::Button generalButton, playerButton, controlsButton;
-  // buttons we use to change tab
-
-  // options on general tab
-  OptionWidget debugOption;
-  // options on player tab
-  OptionWidget nicknameOption;
-  // options on controls tab
-  // stub
-
-  /**
-   * Helpers
-   */
-  void doForWidgets(
-      const optional<SettingsPageTab> tab, // if null, apply to all widgets
-      std::function<void(OptionWidget &)> f);
-  void doForButtons(
-      std::function<void(ui::Control &)> f);
-  ui::Button &referenceButton(const SettingsPageTab tab);
-  void switchToTab(const SettingsPageTab newTab);
-
+  Settings &newSettings;
  public:
-  SettingsPage(ClientShared &state);
+  SettingsTab(Settings &newSettings,
+              ClientShared &state);
+};
 
-  /**
-   * Page interface.
-   */
-  void onBlur() override;
-  void onFocus() override;
-  void onChangeSettings(const SettingsDelta &) override;
+class GeneralTab: public SettingsTab {
+ private:
+  OptionWidget debugOption;
+ public:
+  GeneralTab(Settings &newSettings, ClientShared &state);
 
-  /**
-   * Control interface.
-   */
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
-
+  void reset() override;
   void signalRead() override;
   void signalClear() override;
+
+  void onChangeSettings(const SettingsDelta &) override;
+  void onBlur() override;
+};
+
+class PlayerTab: public SettingsTab {
+ private:
+  OptionWidget nicknameOption;
+ public:
+  PlayerTab(Settings &newSettings, ClientShared &state);
+
+  void tick(float delta) override;
+  void render(ui::Frame &f) override;
+  bool handle(const sf::Event &event) override;
+  void reset() override;
+  void signalRead() override;
+  void signalClear() override;
+
+  void onChangeSettings(const SettingsDelta &) override;
+  void onBlur() override;
+};
+
+class ControlsTab: public SettingsTab {
+ private:
+ public:
+  ControlsTab(Settings &newSettings, ClientShared &state);
+
+  void tick(float delta) override;
+  void render(ui::Frame &f) override;
+  bool handle(const sf::Event &event) override;
+  void reset() override;
+  void signalRead() override;
+  void signalClear() override;
+
+  void onChangeSettings(const SettingsDelta &) override;
+  void onBlur() override;
+};
+
+class SettingsPage: public Page {
+ private:
+  Settings newSettings;
+
+  ui::Button generalButton, playerButton, controlsButton;
+
+  GeneralTab generalTab;
+  PlayerTab playerTab;
+  ControlsTab controlsTab;
+  SettingsTab *currentTab;
+
+  void switchToTab(SettingsTab *const newTab);
+
+ public:
+  SettingsPage(ClientShared &shared);
+
+  void tick(float delta) override;
+  void render(ui::Frame &f) override;
+  bool handle(const sf::Event &event) override;
+  void reset() override;
+  void signalRead() override;
+  void signalClear() override;
+
+  void onChangeSettings(const SettingsDelta &) override;
+  void onBlur() override;
 };
 
 #endif //SOLEMNSKY_SETTINGSPAGE_H
