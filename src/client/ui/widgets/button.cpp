@@ -28,12 +28,11 @@ sf::FloatRect Button::getBody() {
 Button::Button(const Style &style,
                const sf::Vector2f &pos,
                const std::string &text)
-    :
-    pos(pos), text(text), style(style),
-    heat(0),
-    active(true),
-    isHot(false),
-    clickSignal(false) { }
+    : pos(pos), text(text), style(style),
+      heat(0),
+      active(true),
+      isHot(false),
+      clickSignal(false) { }
 
 void Button::tick(float delta) {
   if (active) heat += (isHot ? 1 : -1) * delta * style.heatRate;
@@ -90,9 +89,9 @@ void Button::signalClear() {
   clickSignal = false;
 }
 
-void Button::setActive(const bool active) {
+void Button::setActive(const bool newActive) {
   reset();
-  this->active = active;
+  active = newActive;
 }
 
 void Button::reset() {

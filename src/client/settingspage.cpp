@@ -1,5 +1,6 @@
 #include "settingspage.h"
 #include "elements/style.h"
+#include "util/methods.h"
 
 /**
  * OptionWidget.
@@ -58,8 +59,8 @@ void OptionWidget::tick(float delta) {
 
 void OptionWidget::render(ui::Frame &f) {
   f.drawText(pos, {name}, style.base.normalFontSize, style.base.textColor);
-  if (textEntry) return textEntry->render(f);
-  else return checkbox->render(f);
+  if (textEntry) textEntry->render(f);
+  else checkbox->render(f);
 }
 
 bool OptionWidget::handle(const sf::Event &event) {
@@ -271,8 +272,8 @@ bool SettingsPage::handle(const sf::Event &event) {
 }
 
 void SettingsPage::switchToTab(SettingsTab *const newTab) {
-  newTab->selectorButton->setActive(true);
-  currentTab->selectorButton->setActive(false);
+  newTab->selectorButton->setActive(false);
+  currentTab->selectorButton->setActive(true);
   currentTab->onBlur();
   currentTab = newTab;
 }
@@ -304,7 +305,7 @@ void SettingsPage::signalClear() {
 }
 
 void SettingsPage::onBlur() {
-
+  shared.changeSettings(SettingsDelta(shared.settings, newSettings));
 }
 
 void SettingsPage::onChangeSettings(const SettingsDelta &delta) {

@@ -10,7 +10,7 @@ MultiplayerLobby::MultiplayerLobby(
     MultiplayerView(sky::ArenaMode::Lobby, shared, connection),
 
     joinButton(style.base.normalButton, style.multi.readyButtonPos, "join"),
-    spectateButton(style.base.normalButton, style.multi.readyButtonPos,
+    spectateButton(style.base.normalButton, style.multi.spectateButtonPos,
                    "spectate"),
     chatInput(style.base.normalTextEntry, style.multi.chatPos, "write here") {
   areChildren({&joinButton, &spectateButton, &chatInput});
@@ -24,10 +24,11 @@ void MultiplayerLobby::render(ui::Frame &f) {
   f.drawSprite(textureOf(Res::Lobby), {0, 0}, {0, 0, 1600, 900});
 
   float offset = 0;
-  for (const auto &str : connection.messageLog) {
+  for (auto iter = connection.messageLog.rbegin();
+       iter < connection.messageLog.rend(); iter++) {
     offset -= style.base.normalFontSize;
     f.drawText(style.multi.messageLogPos + sf::Vector2f(0, offset),
-               str, style.base.normalFontSize);
+               *iter, style.base.normalFontSize);
   }
 
   ui::Control::render(f);
@@ -47,6 +48,8 @@ void MultiplayerLobby::signalRead() {
     connection.transmit(sky::ClientPacket::ReqTeamChange(1));
   if (spectateButton.clickSignal)
     connection.transmit(sky::ClientPacket::ReqTeamChange(1));
+  if (chatInput.inputSignal)
+    connection.transmit(sky::ClientPacket::Chat(*chatInput.inputSignal));
 }
 
 void MultiplayerLobby::signalClear() {

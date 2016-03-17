@@ -130,7 +130,8 @@ const static struct Style {
 
     sf::Vector2f chatPos,
         messageLogPos,
-        readyButtonPos;
+        readyButtonPos,
+        spectateButtonPos;
 
     sf::Color playerSpecColor, playerJoinedColor;
     std::string readyButtonActiveDesc, readyButtonDeactiveDesc;
