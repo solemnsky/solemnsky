@@ -116,7 +116,7 @@ void TextEntry::render(Frame &f) {
         ? textDims.x - style.dimensions.x + 2 * sidePadding : 0;
 
     f.drawRect({}, style.dimensions, style.focusedColor);
-    f.drawText(sf::Vector2f(sidePadding - scroll, 0),
+    f.drawText(sf::Vector2f(sidePadding - scroll, -5),
                {contents}, style.fontSize, style.textColor);
 
     f.drawRect(
@@ -131,7 +131,7 @@ void TextEntry::render(Frame &f) {
   } else {
     f.drawRect(pos, pos + style.dimensions,
                mixColors(style.inactiveColor, style.hotColor, heat));
-    f.drawText(pos + sf::Vector2f(sidePadding, 0),
+    f.drawText(pos + sf::Vector2f(sidePadding, -5),
                {persistent ? contents : description},
                style.fontSize, style.descriptionColor);
   }

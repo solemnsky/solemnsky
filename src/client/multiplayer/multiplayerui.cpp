@@ -31,6 +31,14 @@ void MultiplayerLobby::render(ui::Frame &f) {
                *iter, style.base.normalFontSize);
   }
 
+  offset = 0;
+  for (const sky::Player &player : connection.arena.players) {
+    offset += style.base.normalFontSize;
+    f.drawText(style.multi.playerListPos + sf::Vector2f(0, offset),
+               player.nickname, style.base.normalFontSize,
+               (player.team == 1) ? sf::Color::Red : sf::Color::Black);
+  }
+
   ui::Control::render(f);
 }
 
@@ -47,7 +55,7 @@ void MultiplayerLobby::signalRead() {
   if (joinButton.clickSignal)
     connection.transmit(sky::ClientPacket::ReqTeamChange(1));
   if (spectateButton.clickSignal)
-    connection.transmit(sky::ClientPacket::ReqTeamChange(1));
+    connection.transmit(sky::ClientPacket::ReqTeamChange(0));
   if (chatInput.inputSignal)
     connection.transmit(sky::ClientPacket::Chat(*chatInput.inputSignal));
 }

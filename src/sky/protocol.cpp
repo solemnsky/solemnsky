@@ -81,7 +81,7 @@ ClientPacket ClientPacket::Chat(const std::string &message) {
 
 ServerMessage::ServerMessage(const ServerMessage::Type type,
                              std::string contents,
-                             optional<std::string> from) :
+                             optional<PID> from) :
     type(type),
     contents(contents),
     from(from) { }
@@ -98,7 +98,7 @@ bool ServerMessage::verifyStructure() const {
   return false;
 }
 
-ServerMessage ServerMessage::Chat(const std::string &from,
+ServerMessage ServerMessage::Chat(const PID &from,
                                   const std::string &contents) {
   return ServerMessage(ServerMessage::Type::Chat, contents, from);
 }

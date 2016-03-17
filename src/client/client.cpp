@@ -84,8 +84,6 @@ void Client::drawPage(ui::Frame &f, const PageType type,
       page.render(f);
     });
   });
-
-  pageRects.push_back({transform.transformRect({0, 0, 1600, 900}), type});
 }
 
 void Client::attachState() {
@@ -148,11 +146,6 @@ void Client::render(ui::Frame &f) {
                                           pageFocusFactor) :
              1),
         [&]() {
-          pageRects = {}; // populated by drawPage(), used as the click rects
-          // for event handling (TODO: remove if the actually useful click rects
-          // are always static provided we only allow clicking on pages when
-          // they're completely blurred)
-
           drawPage(
               f, PageType::Home, style.menu.homeOffset,
               "home", homePage);
@@ -231,11 +224,19 @@ bool Client::handle(const sf::Event &event) {
       const sf::Vector2f mouseClick =
           {(float) event.mouseButton.x, (float) event.mouseButton.y};
 
-      for (auto &rect : pageRects)
+      for (const std::pair<sf::FloatRect, PageType> &rect : {
+          std::pair<sf::FloatRect, PageType>(
+              style.menu.homeArea, PageType::Home),
+          std::pair<sf::FloatRect, PageType>(
+              style.menu.settingsArea, PageType::Settings),
+          std::pair<sf::FloatRect, PageType>(
+              style.menu.listingArea, PageType::Listing)
+      }) {
         if (rect.first.contains(mouseClick)) {
           focusPage(rect.second);
           return true;
         }
+      }
 
       focusGame(); // clicked somewhere besides the pages
       return true;
