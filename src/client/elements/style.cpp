@@ -94,12 +94,13 @@ Style::Multi::Multi(const Style::Base &base) :
 
     lobbyPlayersOffset(1250),
     lobbyTopMargin(205),
-    lobbyChatWidth(1250),
+    lobbyChatWidth(1000),
     gameChatWidth(500),
 
     chatPos(20, 850),
     messageLogPos(20, 840),
     readyButtonPos(lobbyChatWidth + 10, lobbyTopMargin),
+    spectateButtonPos(readyButtonPos + sf::Vector2f(0, 100)),
 
     playerSpecColor(255, 255, 255),
     playerJoinedColor(0, 255, 0),

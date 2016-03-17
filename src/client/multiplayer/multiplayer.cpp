@@ -88,6 +88,10 @@ bool Multiplayer::handle(const sf::Event &event) {
   return false;
 }
 
+void Multiplayer::reset() {
+  if (view) view->reset();
+}
+
 void Multiplayer::signalRead() {
   if (view) view->signalRead();
 }

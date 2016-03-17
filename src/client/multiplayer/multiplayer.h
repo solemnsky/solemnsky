@@ -38,6 +38,7 @@ class Multiplayer: public Game {
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
+  void reset() override;
   void signalRead() override;
   void signalClear() override;
 };

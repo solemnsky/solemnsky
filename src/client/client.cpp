@@ -247,6 +247,8 @@ bool Client::handle(const sf::Event &event) {
 
 void Client::reset() {
   ui::Control::reset();
+  if (shared.game) shared.game->reset();
+  referencePage(shared.ui.focusedPage).reset();
 }
 
 void Client::signalRead() {
@@ -296,7 +298,10 @@ void Client::focusGame() {
 
 void Client::blurGame() {
   shared.ui.blurGame();
-  if (shared.game) shared.game->onBlur();
+  if (shared.game) {
+    shared.game->reset();
+    shared.game->onBlur();
+  }
 }
 
 void Client::exitGame() {
@@ -308,6 +313,7 @@ void Client::focusPage(const PageType type) {
 }
 
 void Client::blurPage() {
+  referencePage(shared.ui.focusedPage).reset();
   shared.ui.blurPage();
 }
 
