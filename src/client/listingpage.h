@@ -13,7 +13,8 @@ public:
   /**
    * Page interface.
    */
-  virtual void onChangeSettings(const SettingsDelta &settings) override;
+  void onChangeSettings(const SettingsDelta &settings) override;
+  void onBlur() override;
 
   /**
    * Control interface.

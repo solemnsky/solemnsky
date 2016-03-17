@@ -88,17 +88,20 @@ void OptionWidget::signalClear() {
  * SettingsTab.
  */
 
-SettingsTab::SettingsTab(Settings &newSettings,
+SettingsTab::SettingsTab(ui::Button *const selectorButton,
+                         Settings &newSettings,
                          ClientShared &state) :
     Page(state),
+    selectorButton(selectorButton),
     newSettings(newSettings) { }
 
 /**
  * GeneralTab.
  */
 
-GeneralTab::GeneralTab(Settings &newSettings, ClientShared &state) :
-    SettingsTab(newSettings, state),
+GeneralTab::GeneralTab(ui::Button *const selectorButton,
+                       Settings &newSettings, ClientShared &state) :
+    SettingsTab(selectorButton, newSettings, state),
     debugOption(&newSettings.enableDebug, style.settings.debugChooserPos,
                 "debug", "display debug information") {
   areChildren({&debugOption});
@@ -140,8 +143,9 @@ void GeneralTab::onBlur() {
  * PlayerTab.
  */
 
-PlayerTab::PlayerTab(Settings &newSettings, ClientShared &state) :
-    SettingsTab(newSettings, state),
+PlayerTab::PlayerTab(ui::Button *const selectorButton,
+                     Settings &newSettings, ClientShared &state) :
+    SettingsTab(selectorButton, newSettings, state),
     nicknameOption(&newSettings.nickname, style.settings.nicknameChooserPos,
                    "nickname", "your nickname in-tutorial") {
   areChildren({&nicknameOption});
@@ -180,12 +184,12 @@ void PlayerTab::onBlur() {
 }
 
 /**
- *
+ * ControlsTab.
  */
 
-
-ControlsTab::ControlsTab(Settings &newSettings, ClientShared &state) :
-    SettingsTab(newSettings, state) { }
+ControlsTab::ControlsTab(ui::Button *const selectorButton,
+                         Settings &newSettings, ClientShared &state) :
+    SettingsTab(selectorButton, newSettings, state) { }
 
 void ControlsTab::tick(float delta) {
   ui::Control::tick(delta);
@@ -241,13 +245,13 @@ SettingsPage::SettingsPage(ClientShared &shared) :
                     style.settings.pageButtonHeight},
                    "controls"),
 
-    generalTab(newSettings, shared),
-    playerTab(newSettings, shared),
-    controlsTab(newSettings, shared),
+    generalTab(&generalButton, newSettings, shared),
+    playerTab(&playerButton, newSettings, shared),
+    controlsTab(&controlsButton, newSettings, shared),
     currentTab((SettingsTab *) &generalTab) {
   areChildren(
       {&generalButton, &playerButton, &controlsButton});
-  switchToTab(currentTab); // set the button styling
+  currentTab->selectorButton->setActive(false);
 }
 
 void SettingsPage::tick(float delta) {
@@ -267,11 +271,8 @@ bool SettingsPage::handle(const sf::Event &event) {
 }
 
 void SettingsPage::switchToTab(SettingsTab *const newTab) {
-  newTab->button->setActive(true);
-  newTab->button->style.baseColor = style.settings.unselectedTabButtonColor;
-  currentTab->button->setActive(false);
-  currentTab->button->style.baseColor = style.settings.selectedTabButtonColor;
-
+  newTab->selectorButton->setActive(true);
+  currentTab->selectorButton->setActive(false);
   currentTab->onBlur();
   currentTab = newTab;
 }

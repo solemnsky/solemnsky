@@ -17,6 +17,7 @@ const static struct Style {
     sf::Color buttonColor,
         buttonHotColor,
         buttonPressedColor,
+        buttonInactiveColor,
         textColor,
         textAreaForeground,
         textAreaBackground;
@@ -29,7 +30,6 @@ const static struct Style {
     sf::Color pageBgColor;
 
     ui::Button::Style normalButton;
-    ui::Button::Style greyedButton;
     ui::TextEntry::Style normalTextEntry;
     ui::Checkbox::Style normalCheckbox;
 

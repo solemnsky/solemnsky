@@ -57,8 +57,12 @@ void ClientShared::beginGame(std::unique_ptr<Game> &&game) {
   client->beginGame(std::move(game));
 }
 
-void ClientShared::unfocusGame() {
+void ClientShared::blurGame() {
   client->blurGame();
+}
+
+void ClientShared::focusGame() {
+  client->focusGame();
 }
 
 void ClientShared::exitGame() {
@@ -69,7 +73,7 @@ void ClientShared::focusPage(const PageType type) {
   client->focusPage(type);
 }
 
-void ClientShared::unfocusPage() {
+void ClientShared::blurPage() {
   client->blurPage();
 }
 

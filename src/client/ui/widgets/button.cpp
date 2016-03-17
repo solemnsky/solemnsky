@@ -7,6 +7,7 @@ namespace ui {
 Button::Style::Style(const sf::Color &baseColor,
                      const sf::Color &hotColor,
                      const sf::Color &clickedColor,
+                     const sf::Color &inactiveColor,
                      const sf::Color &textColor,
                      const sf::Vector2f &dimensions,
                      const float heatRate,
@@ -14,6 +15,7 @@ Button::Style::Style(const sf::Color &baseColor,
     baseColor(baseColor),
     hotColor(hotColor),
     clickedColor(clickedColor),
+    inactiveColor(inactiveColor),
     textColor(textColor),
     dimensions(dimensions),
     heatRate(heatRate),
@@ -39,9 +41,14 @@ void Button::tick(float delta) {
 
 void Button::render(Frame &f) {
   const auto body = getBody();
-  if (!inPreClick)
-    f.drawRect(body, mixColors(style.baseColor, style.hotColor, heat));
-  else f.drawRect(body, style.clickedColor);
+  if (!active) {
+    f.drawRect(body, style.inactiveColor);
+  } else {
+    if (!inPreClick)
+      f.drawRect(body, mixColors(style.baseColor, style.hotColor, heat));
+    else f.drawRect(body, style.clickedColor);
+  }
+
   const auto size = f.textSize(text, style.fontSize);
   f.drawText(
       sf::Vector2f(

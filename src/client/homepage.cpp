@@ -23,6 +23,10 @@ void HomePage::onChangeSettings(const SettingsDelta &settings) {
 
 }
 
+void HomePage::onBlur() {
+
+}
+
 void HomePage::render(ui::Frame &f) {
   drawBackground(f);
   ui::Control::render(f);
@@ -50,4 +54,6 @@ void HomePage::signalRead() {
 void HomePage::signalClear() {
   ui::Control::signalClear();
 }
+
+
 

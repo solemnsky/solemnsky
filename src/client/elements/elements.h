@@ -41,7 +41,7 @@ class Page: public ui::Control {
 
 /**
  * An interface where the user plays a game of some sort; a tutorial, a
- * multiplayer match, etc.
+ * multiplayer match, a scrim against bots, etc.
  */
 class Game: public ui::Control {
  protected:
@@ -52,13 +52,14 @@ class Game: public ui::Control {
   virtual ~Game() { }
 
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
-
+  virtual void onBlur() = 0;
+  virtual void onFocus() = 0;
   // try to exit, set Control::quitting flag eventually
   // (a multiplayer connection may want to do this at its leisure to
   // disconnect gracefully)
   virtual void doExit() = 0;
 
-  std::string description; // description of the game
+  std::string name; // identifier of the type of game being played
   std::string status; // brief status of the game
 };
 

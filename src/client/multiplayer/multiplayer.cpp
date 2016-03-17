@@ -32,14 +32,6 @@ Multiplayer::Multiplayer(ClientShared &shared,
  * Game interface.
  */
 
-void Multiplayer::onBlur() {
-  if (view) view->onBlur();
-}
-
-void Multiplayer::onFocus() {
-  if (view) view->onFocus();
-}
-
 void Multiplayer::onChangeSettings(const SettingsDelta &settings) {
   if (view) view->onChangeSettings(settings);
 
@@ -51,6 +43,14 @@ void Multiplayer::onChangeSettings(const SettingsDelta &settings) {
       // request a nickname change
     }
   }
+}
+
+void Multiplayer::onBlur() {
+
+}
+
+void Multiplayer::onFocus() {
+
 }
 
 void Multiplayer::doExit() {
