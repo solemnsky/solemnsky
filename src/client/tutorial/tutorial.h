@@ -1,9 +1,7 @@
 /**
- * The
+ * A tutorial to introduce new players to the mechanics.
  */
-#ifndef SOLEMNSKY_TUTORIAL_H
-#define SOLEMNSKY_TUTORIAL_H
-
+#pragma once
 #include "client/elements/elements.h"
 #include "sky/sky.h"
 #include "client/subsystem/render.h"
@@ -38,5 +36,3 @@ public:
   void signalRead() override;
   void signalClear() override;
 };
-
-#endif //SOLEMNSKY_TUTORIAL_H

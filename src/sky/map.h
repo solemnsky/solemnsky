@@ -1,9 +1,7 @@
 /**
- * Maps; physical environment and graphics information.
+ * The static environment in which a Sky plays out.
  */
-#ifndef SOLEMNSKY_MAP_H
-#define SOLEMNSKY_MAP_H
-
+#pragma once
 #include <SFML/System.hpp>
 #include <string>
 
@@ -14,9 +12,9 @@ using MapName = std::string;
 struct Map {
   Map(const MapName &name);
 
+  // stub: awaiting broad design decisions
+
   sf::Vector2f dimensions;
 };
 
 }
-
-#endif //SOLEMNSKY_MAP_H

@@ -1,9 +1,7 @@
 /**
- * Page where the user checks server listings / views stats.
+ * Server listing page.
  */
-#ifndef SOLEMNSKY_LISTINGPAGE_H
-#define SOLEMNSKY_LISTINGPAGE_H
-
+#pragma once
 #include "elements/elements.h"
 
 class ListingPage : public Page {
@@ -24,5 +22,3 @@ public:
   bool handle(const sf::Event &event) override;
   void reset() override;
 };
-
-#endif //SOLEMNSKY_LISTINGPAGE_H

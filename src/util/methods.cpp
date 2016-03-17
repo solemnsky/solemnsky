@@ -30,6 +30,12 @@ void appLog(const std::string &contents, const LogOrigin origin) {
   std::stringstream stream(contents);
   std::string line;
 
+  if (contents == "") {
+    std::cout << showTime() + "[" + prefixes[(int) origin];
+    std::endl(std::cout);
+    return;
+  }
+
   bool isFirstLine(true);
   while (getline(stream, line, '\n')) {
     if (isFirstLine) {

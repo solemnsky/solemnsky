@@ -1,23 +1,17 @@
 /**
- * Abstract base classes for the structures that compose our interface -- pages
- * and games.
+ * Clearly divided classes of interfaces that make up the client.
  */
-#ifndef SOLEMNSKY_PAGE_H
-#define SOLEMNSKY_PAGE_H
-
+#pragma once
 #include "clientshared.h"
-#include "client/ui/widgets/widgets.h"
 
 /**
  * Pages are the portals through which users interface with the tutorial
- * periphery: looking for servers, editing settings, loading tutorial records, etc.
+ * periphery: looking for servers, editing settings, loading tutorial records,
+ * etc.
  *
  * We have three pages in our menu interface. They are all persistent, in
  * that they always exist, with their state and tick() operations, whether they
  * are displayed or not.
- *
- * Pages may have multiple tabs: that is delegated to their particular
- * implementation.
  */
 class Page: public ui::Control {
  protected:
@@ -28,20 +22,16 @@ class Page: public ui::Control {
   // a page's lifetime is never handled by a reference to a Page
   // so we need no virtual dtor
 
-  virtual void attachClientState() { } // when client state is initialized
-  // (this is necessary because of the Control::attachState() thing)
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
   virtual void onBlur() = 0;
 
-  /**
-   * General graphics.
-   */
   void drawBackground(ui::Frame &f);
 };
 
 /**
- * An interface where the user plays a game of some sort; a tutorial, a
- * multiplayer match, a scrim against bots, etc.
+ * A game, when it exists, occupies a singular position in the client. There
+ * are various game-like interfaces we can provide: a tutorial, a multiplayer
+ * client, etc.
  */
 class Game: public ui::Control {
  protected:
@@ -62,5 +52,3 @@ class Game: public ui::Control {
   std::string name; // identifier of the type of game being played
   std::string status; // brief status of the game
 };
-
-#endif //SOLEMNSKY_PAGE_H

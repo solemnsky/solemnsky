@@ -1,10 +1,7 @@
 /**
- * The core game engine / game state manager, along with an abstraction for
- * building subsystems that link into callbacks and augment its functionality.
+ * Core game state. The sky, really. Subordinate to Arena.
  */
-#ifndef SOLEMNSKY_SKY_H
-#define SOLEMNSKY_SKY_H
-
+#pragma once
 #include <map>
 #include <memory>
 #include "physics.h"
@@ -140,5 +137,3 @@ class Sky {
 };
 
 }
-
-#endif //SOLEMNSKY_SKY_H

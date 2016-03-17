@@ -26,7 +26,9 @@ OptionWidget::OptionWidget(
     boolOption(option),
     checkbox(std::make_shared<ui::Checkbox>(
         style.settings.checkbox,
-        pos + style.settings.entryOffset)) {
+        pos + style.settings.entryOffset)),
+    name(name),
+    tooltip(tooltip) {
   onChangeSettings();
 }
 
@@ -58,7 +60,6 @@ void OptionWidget::tick(float delta) {
 }
 
 void OptionWidget::render(ui::Frame &f) {
-  appLog(pos);
   f.drawText(pos, {name}, style.base.normalFontSize, style.base.textColor);
   if (textEntry) textEntry->render(f);
   else checkbox->render(f);

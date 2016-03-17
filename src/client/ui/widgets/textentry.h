@@ -1,10 +1,7 @@
 /**
- * Generic, highly customizable text entry, with cursor and mouse interaction
- * and fancy stuff like that.
+ * The ubiquitous text entry.
  */
-#ifndef SOLEMNSKY_TEXTENTRY_H
-#define SOLEMNSKY_TEXTENTRY_H
-
+#pragma once
 #include "util/types.h"
 #include "client/ui/control.h"
 
@@ -88,5 +85,3 @@ class TextEntry : public Control {
 };
 
 }
-
-#endif //SOLEMNSKY_TEXTENTRY_H

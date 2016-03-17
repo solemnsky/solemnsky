@@ -1,10 +1,7 @@
 /**
- * Datatypes representing multiplayer protocol messages; also associated Pack<>
- * rules. There are the things that zip across the network.
+ * Protocol verbs constituting the network protocol.
  */
-#ifndef SOLEMNSKY_PROTOCOL_H
-#define SOLEMNSKY_PROTOCOL_H
-
+#pragma once
 #include "util/types.h"
 #include "arena.h"
 #include <map>
@@ -132,5 +129,3 @@ struct ServerPacket: public VerifyStructure {
 };
 
 }
-
-#endif //SOLEMNSKY_PROTOCOL_H

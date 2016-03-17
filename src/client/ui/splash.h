@@ -1,10 +1,7 @@
 /**
- * Splash screen, a cover for loading our resources (resources.h).
- * This runs implicitly on runSFML.
+ * Splash screen to cover loading resources.
  */
-#ifndef SOLEMNSKY_SPLASH_H
-#define SOLEMNSKY_SPLASH_H
-
+#pragma once
 #include <memory>
 #include "client/ui/control.h"
 
@@ -33,5 +30,3 @@ public:
 }
 
 }
-
-#endif //SOLEMNSKY_SPLASH_H

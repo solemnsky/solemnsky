@@ -1,10 +1,7 @@
 /**
- * Represents a screen / framebuffer to which you can draw stuff on a
- * per-update basis. Supports handy things like transform / alpha stacks.
+ * A screen we can draw to.
  */
-#ifndef SOLEMNSKY_FRAME_H
-#define SOLEMNSKY_FRAME_H
-
+#pragma once
 #include <memory>
 #include <stack>
 #include <SFML/Graphics.hpp>
@@ -141,4 +138,3 @@ void Frame::drawText(const sf::Vector2f &pos,
 }
 
 }
-#endif //SOLEMNSKY_FRAME_H

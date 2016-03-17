@@ -1,9 +1,7 @@
 /**
- * The render subsystem, managing plane animation state and drawing methods.
+ * Rendering the sky.
  */
-#ifndef SOLEMNSKY_GRAPHICS_H
-#define SOLEMNSKY_GRAPHICS_H
-
+#pragma once
 #include "client/util/resources.h"
 #include <list>
 #include "client/ui/control.h"
@@ -106,5 +104,3 @@ class RenderSystem: public Subsystem {
 };
 
 }
-
-#endif //SOLEMNSKY_GRAPHICS_H

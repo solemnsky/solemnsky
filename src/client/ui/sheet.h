@@ -1,9 +1,7 @@
 /**
- * Abstraction over our much beloved spritesheets (for planes, weapons etc).
+ * A spritesheet.
  */
-#ifndef SOLEMNSKY_SHEET_H
-#define SOLEMNSKY_SHEET_H
-
+#pragma once
 #include "frame.h"
 #include "util/types.h"
 
@@ -34,5 +32,3 @@ public:
       ui::Frame &f, const sf::Vector2f &dims, const Angle deg) const;
 };
 }
-
-#endif //SOLEMNSKY_SHEET_H

@@ -13,7 +13,6 @@ class Server {
   tg::UsageFlag flag; // for enet global state
 
   double uptime;
-
   sky::Arena arena;
 
   /**
@@ -25,30 +24,20 @@ class Server {
   std::vector<ENetPeer *> connectingPeers;
 
   /**
-   * Packet processing subroutines.
+   * Network logic.
    */
-
   void broadcastToClients(const sky::ServerPacket &packet);
   void broadcastToClientsExcept(const sky::PID pid,
                                 const sky::ServerPacket &packet);
   void transmitToClient(ENetPeer *const client,
                         const sky::ServerPacket &packet);
-
-  // every peer has a record in the arena associated with it
   sky::Player *playerFromPeer(ENetPeer *peer) const;
-
-  // we process a packet sent from a connected client
   bool processPacket(ENetPeer *client, const sky::ClientPacket &packet);
 
  public:
   Server(const unsigned short port);
 
-  /**
-   * Server tick.
-   */
   void tick(float delta);
-
-  bool running;
 };
 
 int main();

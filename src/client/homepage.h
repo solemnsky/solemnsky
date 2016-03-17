@@ -1,10 +1,11 @@
 /**
- * Page where the user receives the comforts of home.
+ * Home page.
  */
 #ifndef SOLEMNSKY_HOMEPAGE_H
 #define SOLEMNSKY_HOMEPAGE_H
 
 #include "elements/elements.h"
+#include "ui/widgets/widgets.h"
 
 class HomePage: public Page {
  private:

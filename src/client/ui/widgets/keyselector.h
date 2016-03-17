@@ -1,10 +1,7 @@
 /**
- * A little widget used to
+ * Widget used to select a keyboard key.
  */
-
-#ifndef SOLEMNSKY_KEYSELECTOR_H
-#define SOLEMNSKY_KEYSELECTOR_H
-
+#pragma once
 #include "client/ui/control.h"
 
 namespace ui {
@@ -21,5 +18,3 @@ class KeySelector: public ui::Control {
 };
 
 }
-
-#endif //SOLEMNSKY_KEYSELECTOR_H

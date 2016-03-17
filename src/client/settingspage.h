@@ -1,10 +1,9 @@
 /**
- * Page where the user modifies settings.
+ * Settings page.
  */
-#ifndef SOLEMNSKY_SETTINGSPAGE_H
-#define SOLEMNSKY_SETTINGSPAGE_H
-
+#pragma once
 #include "elements/elements.h"
+#include "ui/widgets/widgets.h"
 
 /**
  * Widget that manages the description / tooltip / entry device for an option
@@ -135,5 +134,3 @@ class SettingsPage: public Page {
   void onChangeSettings(const SettingsDelta &) override;
   void onBlur() override;
 };
-
-#endif //SOLEMNSKY_SETTINGSPAGE_H
