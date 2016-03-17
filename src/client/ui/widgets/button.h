@@ -1,9 +1,7 @@
 /**
- * Buttons!
+ * The ubiquitous button.
  */
-#ifndef SOLEMNSKY_BUTTON_H
-#define SOLEMNSKY_BUTTON_H
-
+#pragma once
 #include "client/ui/control.h"
 #include "util/types.h"
 
@@ -70,5 +68,3 @@ class Button: public Control {
 };
 
 }
-
-#endif //SOLEMNSKY_BUTTON_H

@@ -1,9 +1,7 @@
 /**
  * Utilities in the form of methods; useful for definitions.
  */
-#ifndef SOLEMNSKY_METHODS_H
-#define SOLEMNSKY_METHODS_H
-
+#pragma once
 #include <SFML/System.hpp>
 #include <Box2D/Box2D.h>
 #include <functional>
@@ -35,11 +33,11 @@ void appErrorRuntime(const std::string &contents); // log and throw
  * Log cereal-serializable types, hooray.
  */
 template<typename T>
-void appLog(const T &x, const LogOrigin origin = LogOrigin::None) {
+void appLogValue(const T &x) {
   std::stringstream stream;
   cereal::JSONOutputArchive archive(stream);
   archive(x);
-  appLog(stream.str(), origin);
+  appLog(stream.str());
 }
 
 /**
@@ -82,5 +80,3 @@ bool verifyFields(Field &field, Fields... fields) {
   if (!verifyValue(*field)) return false;
   return verifyFields(fields...);
 };
-
-#endif //SOLEMNSKY_METHODS_H

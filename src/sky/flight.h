@@ -1,9 +1,7 @@
 /**
- * Data structures / simulation and box2d integration for planes.
+ * The flight! Also the landing, and everything else.
  */
-#ifndef SOLEMNSKY_FLIGHT_H
-#define SOLEMNSKY_FLIGHT_H
-
+#pragma once
 #include <Box2D/Box2D.h>
 #include "physics.h"
 #include "util/types.h"
@@ -167,5 +165,3 @@ class Plane {
 };
 
 }
-
-#endif //SOLEMNSKY_FLIGHT_H

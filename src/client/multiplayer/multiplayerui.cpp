@@ -12,7 +12,8 @@ MultiplayerLobby::MultiplayerLobby(
     joinButton(style.base.normalButton, style.multi.readyButtonPos, "join"),
     spectateButton(style.base.normalButton, style.multi.spectateButtonPos,
                    "spectate"),
-    chatInput(style.base.normalTextEntry, style.multi.chatPos, "write here") {
+    chatInput(style.base.normalTextEntry,
+              style.multi.chatPos, "[enter to chat]") {
   areChildren({&joinButton, &spectateButton, &chatInput});
 }
 
@@ -43,7 +44,15 @@ void MultiplayerLobby::render(ui::Frame &f) {
 }
 
 bool MultiplayerLobby::handle(const sf::Event &event) {
-  return ui::Control::handle(event);
+  if (ui::Control::handle(event)) return true;
+
+  if (event.type == sf::Event::KeyPressed) {
+    if (event.key.code == sf::Keyboard::Return) {
+      chatInput.focus();
+      return true;
+    }
+  }
+  return false;
 }
 
 void MultiplayerLobby::reset() {

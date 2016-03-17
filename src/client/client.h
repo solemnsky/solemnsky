@@ -1,9 +1,7 @@
 /**
- * Top-level client, designed to connect the end-user to the Sky efficiently.
+ * The client top-level; connects the user to the game.
  */
-#ifndef SOLEMNSKY_CLIENT_H
-#define SOLEMNSKY_CLIENT_H
-
+#pragma once
 #include "tutorial/tutorial.h"
 #include "multiplayer/multiplayer.h"
 #include "homepage.h"
@@ -77,5 +75,3 @@ class Client: public ui::Control {
 };
 
 int main();
-
-#endif //SOLEMNSKY_CLIENT_H

@@ -1,12 +1,7 @@
 /**
  * Utilities in the form of types, useful for declarations.
- *
- * Everything here is covered by unit testing; see the respective tests for
- * usage example.
  */
-#ifndef SOLEMNSKY_VALUE_H
-#define SOLEMNSKY_VALUE_H
-
+#pragma once
 #include <vector>
 #include <ratio>
 #include <cmath>
@@ -246,5 +241,3 @@ bool verifyValue(
         VerifyStructure, X>::value>::type * = 0) {
   return true;
 }
-
-#endif //SOLEMNSKY_VALUE_H

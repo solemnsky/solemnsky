@@ -1,9 +1,7 @@
 /**
- * Top-level multiplayer client, to play a game on a server.
+ * Play a game on a server.
  */
-#ifndef SOLEMNSKY_MULTICLIENT_H
-#define SOLEMNSKY_MULTICLIENT_H
-
+#pragma once
 #include "multiplayerui.h"
 
 /**
@@ -42,5 +40,3 @@ class Multiplayer: public Game {
   void signalRead() override;
   void signalClear() override;
 };
-
-#endif //SOLEMNSKY_MULTICLIENT_H

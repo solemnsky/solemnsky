@@ -1,10 +1,7 @@
 /**
- * Helpers for managing enet hosts (tg::Host) and sending / receiving
- * cereal-serialized objects over them (tg::Telegraph).
+ * Network utilities.
  */
-#ifndef SOLEMNSKY_TELEGRAPH_H
-#define SOLEMNSKY_TELEGRAPH_H
-
+#pragma once
 #include "enet/enet.h"
 #include "util/types.h"
 #include <sstream>
@@ -140,5 +137,3 @@ class Telegraph {
 };
 
 }
-
-#endif //SOLEMNSKY_TELEGRAPH_H

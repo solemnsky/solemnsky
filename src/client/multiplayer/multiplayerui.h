@@ -1,11 +1,9 @@
 /**
- * The modal multiplayer UI expressed in the form of MultiplayerViews for the
- * arena lobby, game, and scoring screen.
+ * The various interfaces the multiplayer client can show.
  */
-#ifndef SOLEMNSKY_MULTIPLAYERUI_H_H
-#define SOLEMNSKY_MULTIPLAYERUI_H_H
-
+#pragma once
 #include "multiplayershared.h"
+#include "client/ui/widgets/widgets.h"
 #include "client/subsystem/render.h"
 
 /**
@@ -75,5 +73,3 @@ class MultiplayerScoring: public MultiplayerView {
   void onPacket(const sky::ServerPacket &packet) override;
   void onChangeSettings(const SettingsDelta &settings) override;
 };
-
-#endif //SOLEMNSKY_MULTIPLAYERUI_H_H

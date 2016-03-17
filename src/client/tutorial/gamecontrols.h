@@ -1,9 +1,7 @@
 /**
- * User input actions in the game.
+ * TODO: refactor this along with key bindings
  */
-#ifndef SOLEMNSKY_GAMECONTROLLER_H
-#define SOLEMNSKY_GAMECONTROLLER_H
-
+#pragma once
 #include "client/util/sfmlutil.h"
 #include "sky/flight.h"
 
@@ -24,5 +22,3 @@ public:
   bool handle(const sf::Event &event);
   void setState(sky::PlaneState &state);
 };
-
-#endif //SOLEMNSKY_GAMECONTROLLER_H

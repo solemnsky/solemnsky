@@ -1,13 +1,7 @@
 /**
- * Physics manager, wrapping box2d, making our lives easier in small ways.
- *
- * Do you know how many CLion linting errors I get trying to use the Box2D API?
- * A lot of CLion linting errors, that's how many.
+ * Physics manager; wraps box2d.
  */
-
-#ifndef SOLEMNSKY_PHYSICS_H
-#define SOLEMNSKY_PHYSICS_H
-
+#pragma once
 #include <Box2D/Box2D.h>
 #include "map.h"
 
@@ -22,12 +16,12 @@ public:
   ~Physics();
 
   const struct Settings {
-    Settings() = default;
+    Settings() { }
 
     int velocityIterations = 8, positionIterations = 3;
     float distanceScale = 100;
     float gravity = 150;
-  } settings{};
+  } settings;
 
   const sf::Vector2f dims;
 

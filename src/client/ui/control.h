@@ -1,12 +1,7 @@
 /**
- * The concept of a Control object is the basis of our UI abstraction.
- * Nothing interesting or tricky here, just an interface that supports ticking
- * with time, rendering to a ui::Frame, handling user input events from
- * SFML, and giving its place to another Control.
+ * The core of our UI abstraction.
  */
-#ifndef SOLEMNSKY_CONTROL_H
-#define SOLEMNSKY_CONTROL_H
-
+#pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <stack>
@@ -88,5 +83,3 @@ class Control {
  */
 void runSFML(std::function<std::unique_ptr<Control>()> initCtrl);
 }
-
-#endif // SOLEMNSKY_CONTROL_H

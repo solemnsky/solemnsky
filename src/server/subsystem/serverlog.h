@@ -1,9 +1,7 @@
 /**
- * Subsystem that logs engine events to some place.
+ * Logs sky events.
  */
-#ifndef SOLEMNSKY_SERVERLOG_H
-#define SOLEMNSKY_SERVERLOG_H
-
+#pragma once
 #include "sky/sky.h"
 #include "util/types.h"
 
@@ -20,5 +18,3 @@ public:
   virtual void removePlane(const PID pid) override;
 };
 }
-
-#endif //SOLEMNSKY_SERVERLOG_H

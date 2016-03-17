@@ -1,11 +1,7 @@
 /**
- * Stylesheet with all the style values for everything in the client, so our
- * code can be a bit less cluttered with arbitrary definitions.
+ * Style settings.
  */
-
-#ifndef SOLEMNSKY_STYLE_H
-#define SOLEMNSKY_STYLE_H
-
+#pragma once
 #include "client/ui/control.h"
 #include "client/ui/widgets/widgets.h"
 
@@ -148,5 +144,3 @@ const static struct Style {
 
   Style();
 } style;
-
-#endif //SOLEMNSKY_STYLE_H

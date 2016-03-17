@@ -1,14 +1,7 @@
 /**
- * A model of a multiplayer arena, (players + metadata + potential sky) held by
- * clients and servers.
- *
- * A server, during operation, holds an arena; a multiplayer client constructs
- * one from a network-transmitted ArenaInitializer and keeps somewhat in sync
- * with the server-side arena model through deltas.
+ * Continuous state of a game server.
  */
-#ifndef SOLEMNSKY_ARENA_H
-#define SOLEMNSKY_ARENA_H
-
+#pragma once
 #include "util/types.h"
 #include "sky.h"
 #include <map>
@@ -136,7 +129,7 @@ struct ArenaDelta: public VerifyStructure {
 };
 
 /**
- * Arena.
+ * A model of an abstracted server. Used by both server and client.
  */
 class Arena {
  public:
@@ -167,5 +160,3 @@ class Arena {
 };
 
 }
-
-#endif //SOLEMNSKY_ARENA_H

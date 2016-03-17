@@ -1,9 +1,5 @@
 #include "checkbox.h"
 
-/**
- * Checkbox.
- */
-
 namespace ui {
 
 Checkbox::Checkbox(const ui::Button::Style &style,

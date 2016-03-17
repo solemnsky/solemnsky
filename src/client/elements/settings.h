@@ -1,11 +1,7 @@
 /**
- * Managing settings, changes in settings, reading and writing settings to
- * disk. Settings are anything that changes how the client works and should
- * be expected to be saved to disk.
+ * Configuration values, persistent across reboots.
  */
-#ifndef SOLEMNSKY_SETTINGS_H
-#define SOLEMNSKY_SETTINGS_H
-
+#pragma once
 #include "util/types.h"
 
 /**
@@ -42,6 +38,3 @@ struct SettingsDelta {
   optional<bool> enableDebug;
   optional<std::string> nickname;
 };
-
-
-#endif //SOLEMNSKY_SETTINGS_H

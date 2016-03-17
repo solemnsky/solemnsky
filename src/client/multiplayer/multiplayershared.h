@@ -1,10 +1,7 @@
 /**
- * The shared core of the multiplayer client; the greatest common denominator
- * of all 3 client modes (the lobby, the game, and the scoring screen).
+ * Where the vaguely complex multiplayer client converges.
  */
-#ifndef SOLEMNSKY_MULTIPLAYERSHARED_H
-#define SOLEMNSKY_MULTIPLAYERSHARED_H
-
+#pragma once
 #include "client/ui/control.h"
 #include "util/telegraph.h"
 #include "sky/arena.h"
@@ -78,5 +75,3 @@ class MultiplayerView: public ui::Control {
   virtual void onPacket(const sky::ServerPacket &packet) = 0;
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
 };
-
-#endif //SOLEMNSKY_MULTIPLAYERSHARED_H

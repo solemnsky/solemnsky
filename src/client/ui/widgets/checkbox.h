@@ -1,11 +1,7 @@
 /**
- * A checkbox, especially useful in our settings page. Just a button
- * in a wrapper actually.
+ * The ubiquitous checkbox.
  */
-
-#ifndef SOLEMNSKY_CHECKBOX_H
-#define SOLEMNSKY_CHECKBOX_H
-
+#pragma once
 #include "client/ui/control.h"
 #include "button.h"
 
@@ -47,5 +43,3 @@ class Checkbox: public ui::Control {
 };
 
 }
-
-#endif //SOLEMNSKY_CHECKBOX_H

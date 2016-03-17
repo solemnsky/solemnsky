@@ -81,7 +81,7 @@ Style::Home::Home(const Style::Base &base) :
 Style::Settings::Settings(const Style::Base &base) :
     textEntry(base.normalTextEntry),
     checkbox(base.normalCheckbox),
-    entryOffset(200, 20),
+    entryOffset(150, 4),
 
     debugChooserPos(100, 100),
     nicknameChooserPos(100, 100),
@@ -101,13 +101,13 @@ Style::Multi::Multi(const Style::Base &base) :
 
     lobbyPlayersOffset(1250),
     lobbyTopMargin(205),
-    lobbyChatWidth(1000),
+    lobbyChatWidth(900),
     gameChatWidth(500),
 
     chatPos(20, 850),
     messageLogPos(20, 840),
-    playerListPos(1250, 100),
-    readyButtonPos(lobbyChatWidth + 10, lobbyTopMargin),
+    playerListPos(1250, 150),
+    readyButtonPos(lobbyChatWidth + 100, lobbyTopMargin),
     spectateButtonPos(readyButtonPos + sf::Vector2f(0, 100)),
 
     playerSpecColor(255, 255, 255),
@@ -121,4 +121,3 @@ Style::Style() :
     home(base),
     settings(base),
     multi(base) { }
-
