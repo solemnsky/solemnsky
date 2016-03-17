@@ -30,8 +30,19 @@ bool MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
     case ServerPacket::Type::Message: {
       switch (packet.message->type) {
         case ServerMessage::Type::Chat: {
-          messageLog.push_back("[chat] " + *packet.message->from +
-              ": " + packet.message->contents);
+          bool playerFound = false;
+          for (const sky::Player &player : arena.players) {
+            if (player.pid == *packet.message->from) {
+              messageLog.push_back("[chat] " + player.nickname +
+                  ": " + packet.message->contents);
+              playerFound = true;
+              break;
+            }
+          }
+          if (!playerFound) {
+            messageLog.push_back("[chat] <unknown player> : " +
+                packet.message->contents);
+          }
           break;
         }
         case ServerMessage::Type::Broadcast: {

@@ -70,7 +70,7 @@ struct ServerMessage: public VerifyStructure {
   ServerMessage(
       const Type type,
       std::string contents,
-      optional<std::string> from = {});
+      optional<PID> from = {});
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -78,12 +78,12 @@ struct ServerMessage: public VerifyStructure {
   }
 
   Type type;
-  optional<std::string> from; // who the message is from, potentially
+  optional<PID> from; // who the message is from, potentially
   std::string contents;
 
   bool verifyStructure() const override;
 
-  static ServerMessage Chat(const std::string &from,
+  static ServerMessage Chat(const PID &from,
                             const std::string &contents);
   static ServerMessage Broadcast(const std::string &contents);
 };

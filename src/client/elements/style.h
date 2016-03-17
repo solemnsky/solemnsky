@@ -14,6 +14,8 @@ const static struct Style {
    * Basic style consistencies.
    */
   struct Base {
+    sf::Vector2f pageSize;
+
     sf::Color buttonColor,
         buttonHotColor,
         buttonPressedColor,
@@ -52,6 +54,10 @@ const static struct Style {
         aboutButtonOffset,
         closeButtonOffset,
         backButtonOffset;
+    sf::FloatRect
+        homeArea,
+        settingsArea,
+        listingArea;
 
     sf::Color pageUnderlayColor, statusFontColor;
 
@@ -130,6 +136,7 @@ const static struct Style {
 
     sf::Vector2f chatPos,
         messageLogPos,
+        playerListPos,
         readyButtonPos,
         spectateButtonPos;
 

@@ -37,9 +37,6 @@ class Client: public ui::Control {
   HomePage homePage;
   ListingPage listingPage;
   SettingsPage settingsPage;
-
-  std::vector<std::pair<sf::FloatRect, PageType>> pageRects;
-
   bool tryingToQuit; // trying to exit, waiting on the game to close
 
   /**

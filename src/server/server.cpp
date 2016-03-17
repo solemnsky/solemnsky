@@ -86,7 +86,7 @@ bool Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
       case ClientPacket::Type::Chat: {
         appLog("Chat \"" + player->nickname + "\": " + *packet.stringData);
         broadcastToClients(ServerPacket::Message(
-            ServerMessage::Chat(player->nickname, *packet.stringData)));
+            ServerMessage::Chat(player->pid, *packet.stringData)));
         break;
       }
 

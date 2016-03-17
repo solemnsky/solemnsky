@@ -5,6 +5,8 @@
 #include "style.h"
 
 Style::Base::Base() :
+    pageSize(1600, 900),
+
     buttonColor(132, 173, 181), // blue
     buttonHotColor(92, 189, 206), // hot blue
     buttonPressedColor(63, 208, 234), // less hot blue
@@ -39,12 +41,17 @@ Style::Menu::Menu(const Style::Base &base) :
     homeOffset(182.812, 121.875),
     settingsOffset(917.187, 121.875),
     listingOffset(550.000, 495.250),
+
     quitButtonOffset(182.812, 610.875),
     aboutButtonOffset(1217.188, 610.875),
     closeButtonOffset(1300, 0),
     backButtonOffset(1067.18, 850),
     pageUnderlayColor(0, 0, 0, 20),
     statusFontColor(200, 200, 200),
+
+    homeArea(homeOffset, base.pageSize * unfocusedPageScale),
+    settingsArea(settingsOffset, base.pageSize * unfocusedPageScale),
+    listingArea(listingOffset, base.pageSize * unfocusedPageScale),
 
     descSize(base.normalFontSize),
 
@@ -99,6 +106,7 @@ Style::Multi::Multi(const Style::Base &base) :
 
     chatPos(20, 850),
     messageLogPos(20, 840),
+    playerListPos(1250, 100),
     readyButtonPos(lobbyChatWidth + 10, lobbyTopMargin),
     spectateButtonPos(readyButtonPos + sf::Vector2f(0, 100)),
 

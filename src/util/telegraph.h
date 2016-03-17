@@ -91,7 +91,6 @@ class Telegraph {
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
     std::string data = outputToString(value);
-    appLog("Transmitting : " + data);
     host.transmit(peer, (unsigned char *) data.c_str(), data.size(), flag);
   }
 
@@ -104,7 +103,6 @@ class Telegraph {
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
     std::string data = outputToString(value);
-    appLog("Transmitting : " + data);
     for (ENetPeer *peer : peers)
       host.transmit(peer, (unsigned char *) data.c_str(), data.size(), flag);
   }
@@ -120,7 +118,6 @@ class Telegraph {
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
     std::string data = outputToString(value);
-    appLog("Transmitting : " + data);
     for (ENetPeer *peer : peers)
       if (predicate(peer))
         host.transmit(peer, (unsigned char *) data.c_str(), data.size(), flag);
@@ -128,7 +125,6 @@ class Telegraph {
 
   optional<ReceiveType> receive(const ENetPacket *packet) {
     std::string data((const char *) packet->data, packet->dataLength);
-    appLog("Receiving : " + data);
     std::stringstream inputStream(data);
     cereal::BinaryInputArchive input(inputStream);
     try {
