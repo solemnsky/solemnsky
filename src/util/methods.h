@@ -8,6 +8,7 @@
 #include <Box2D/Box2D.h>
 #include <functional>
 #include "types.h"
+#include <cereal/archives/json.hpp>
 
 /****
  * Canonical log messages with some handy formatting.
@@ -29,6 +30,17 @@ enum class LogOrigin {
 void appLog(const std::string &contents, const LogOrigin = LogOrigin::None);
 void appErrorLogic(const std::string &contents); // log and throw
 void appErrorRuntime(const std::string &contents); // log and throw
+
+/**
+ * Log cereal-serializable types, hooray.
+ */
+template<typename T>
+void appLog(const T &x, const LogOrigin origin = LogOrigin::None) {
+  std::stringstream stream;
+  cereal::JSONOutputArchive archive(stream);
+  archive(x);
+  appLog(stream.str(), origin);
+}
 
 /**
  * Logging for memory leaks.

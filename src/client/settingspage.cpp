@@ -58,6 +58,7 @@ void OptionWidget::tick(float delta) {
 }
 
 void OptionWidget::render(ui::Frame &f) {
+  appLog(pos);
   f.drawText(pos, {name}, style.base.normalFontSize, style.base.textColor);
   if (textEntry) textEntry->render(f);
   else checkbox->render(f);
