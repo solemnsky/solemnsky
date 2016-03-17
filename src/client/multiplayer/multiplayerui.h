@@ -49,6 +49,8 @@ class MultiplayerGame: public MultiplayerView {
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
+  void signalRead() override;
+  void signalClear() override;
 
   void onPacket(const sky::ServerPacket &packet) override;
   void onChangeSettings(const SettingsDelta &settings) override;
@@ -67,6 +69,8 @@ class MultiplayerScoring: public MultiplayerView {
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
+  void signalRead() override;
+  void signalClear() override;
 
   void onPacket(const sky::ServerPacket &packet) override;
   void onChangeSettings(const SettingsDelta &settings) override;

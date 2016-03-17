@@ -8,6 +8,7 @@ Style::Base::Base() :
     buttonColor(132, 173, 181), // blue
     buttonHotColor(92, 189, 206), // hot blue
     buttonPressedColor(63, 208, 234), // less hot blue
+    buttonInactiveColor(200, 200, 200),
     textColor(255, 255, 255), // not blue
     textAreaForeground(0, 0, 0),
     textAreaBackground(255, 255, 255),
@@ -21,15 +22,15 @@ Style::Base::Base() :
     pageMargins(50),
     pageBgColor{136, 156, 255},
 
-    normalButton(buttonColor, buttonHotColor, buttonPressedColor, textColor,
-                 {200, 50}, heatRate, normalFontSize),
-    greyedButton(buttonColor, buttonHotColor, buttonPressedColor, textColor,
+    normalButton(buttonColor, buttonHotColor, buttonPressedColor,
+                 buttonInactiveColor, textColor,
                  {200, 50}, heatRate, normalFontSize),
 
     normalTextEntry(buttonColor, buttonHotColor, textAreaBackground,
                     textColor, textAreaForeground, {500, 40},
                     normalFontSize, heatRate),
-    normalCheckbox(buttonColor, buttonHotColor, buttonPressedColor, textColor,
+    normalCheckbox(buttonColor, buttonHotColor, buttonPressedColor,
+                   buttonInactiveColor, textColor,
                    {40, 40}, heatRate, normalFontSize) { }
 
 Style::Menu::Menu(const Style::Base &base) :

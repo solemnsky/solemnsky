@@ -13,18 +13,18 @@ Tutorial::Tutorial(ClientShared &state) :
  * Game interface.
  */
 
+void Tutorial::onChangeSettings(const SettingsDelta &settings) {
+  if (settings.nickname) {
+    // a simple Sky doesn't hold nickname data!
+  }
+}
+
 void Tutorial::onBlur() {
 
 }
 
 void Tutorial::onFocus() {
 
-}
-
-void Tutorial::onChangeSettings(const SettingsDelta &settings) {
-  if (settings.nickname) {
-    // a simple Sky doesn't hold nickname data!
-  }
 }
 
 void Tutorial::doExit() {
@@ -53,6 +53,14 @@ bool Tutorial::handle(const sf::Event &event) {
   return false;
 }
 
-void Tutorial::signalRead() { }
+void Tutorial::reset() {
+  ui::Control::reset();
+}
 
-void Tutorial::signalClear() { }
+void Tutorial::signalRead() {
+  ui::Control::signalRead();
+}
+
+void Tutorial::signalClear() {
+  ui::Control::signalClear();
+}

@@ -48,15 +48,20 @@ class SettingsTab: public Page {
  private:
   Settings &newSettings;
  public:
-  SettingsTab(Settings &newSettings,
+  SettingsTab() = delete;
+  SettingsTab(ui::Button *const selectorButton,
+              Settings &newSettings,
               ClientShared &state);
+
+  ui::Button *const selectorButton;
 };
 
 class GeneralTab: public SettingsTab {
  private:
   OptionWidget debugOption;
  public:
-  GeneralTab(Settings &newSettings, ClientShared &state);
+  GeneralTab(ui::Button *const selectorButton,
+             Settings &newSettings, ClientShared &state);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;
@@ -73,7 +78,8 @@ class PlayerTab: public SettingsTab {
  private:
   OptionWidget nicknameOption;
  public:
-  PlayerTab(Settings &newSettings, ClientShared &state);
+  PlayerTab(ui::Button *const selectorButtom,
+            Settings &newSettings, ClientShared &state);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;
@@ -89,7 +95,8 @@ class PlayerTab: public SettingsTab {
 class ControlsTab: public SettingsTab {
  private:
  public:
-  ControlsTab(Settings &newSettings, ClientShared &state);
+  ControlsTab(ui::Button *const selectorButton,
+              Settings &newSettings, ClientShared &state);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;

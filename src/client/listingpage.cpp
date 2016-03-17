@@ -5,6 +5,10 @@ ListingPage::ListingPage(ClientShared &state) :
 
 void ListingPage::onChangeSettings(const SettingsDelta &settings) { }
 
+void ListingPage::onBlur() {
+
+}
+
 void ListingPage::tick(float) {
 
 }

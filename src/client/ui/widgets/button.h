@@ -15,7 +15,7 @@ namespace ui {
 class Button: public Control {
  public:
   struct Style {
-    sf::Color baseColor, hotColor, clickedColor, textColor;
+    sf::Color baseColor, hotColor, clickedColor, inactiveColor, textColor;
     sf::Vector2f dimensions;
 
     float heatRate;
@@ -25,6 +25,7 @@ class Button: public Control {
     Style(const sf::Color &baseColor,
           const sf::Color &hotColor,
           const sf::Color &clickedColor,
+          const sf::Color &inactiveColor,
           const sf::Color &textColor,
           const sf::Vector2f &dimensions,
           const float heatRate,

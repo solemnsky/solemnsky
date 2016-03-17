@@ -61,7 +61,7 @@ public:
   double uptime;
 
   /**
-   * The tutorial.
+   * The game.
    */
   std::unique_ptr<class Game> game;
 
@@ -71,14 +71,15 @@ public:
   ClientUiState ui;
 
   /**
-   * UI methods, propogating through the whole Client.
+   * UI methods, callbacks to top-level Client.
    */
   void beginGame(std::unique_ptr<Game> &&game);
-  void unfocusGame();
+  void blurGame();
+  void focusGame();
   void exitGame();
 
   void focusPage(const PageType type);
-  void unfocusPage();
+  void blurPage();
 
   void changeSettings(const SettingsDelta &settings);
 };

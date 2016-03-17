@@ -23,9 +23,9 @@ public:
   /**
    * Game interface.
    */
+  void onChangeSettings(const SettingsDelta &settings) override;
   void onBlur() override;
   void onFocus() override;
-  void onChangeSettings(const SettingsDelta &settings) override;
   void doExit() override;
 
   /**
@@ -34,7 +34,7 @@ public:
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
-
+  void reset() override;
   void signalRead() override;
   void signalClear() override;
 };

@@ -82,13 +82,12 @@ bool MultiplayerGame::handle(const sf::Event &event) {
   return false;
 }
 
-
-void MultiplayerGame::onBlur() {
-
+void MultiplayerGame::signalRead() {
+  ui::Control::signalRead();
 }
 
-void MultiplayerGame::onFocus() {
-
+void MultiplayerGame::signalClear() {
+  ui::Control::signalClear();
 }
 
 void MultiplayerGame::onPacket(const sky::ServerPacket &packet) {
@@ -119,12 +118,12 @@ bool MultiplayerScoring::handle(const sf::Event &event) {
   return false;
 }
 
-void MultiplayerScoring::onBlur() {
-
+void MultiplayerScoring::signalRead() {
+  ui::Control::signalRead();
 }
 
-void MultiplayerScoring::onFocus() {
-
+void MultiplayerScoring::signalClear() {
+  ui::Control::signalClear();
 }
 
 void MultiplayerScoring::onPacket(const sky::ServerPacket &packet) {

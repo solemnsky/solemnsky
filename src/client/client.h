@@ -5,7 +5,7 @@
 #define SOLEMNSKY_CLIENT_H
 
 #include "tutorial/tutorial.h"
-#include "client/multiplayer/multiplayer.h"
+#include "multiplayer/multiplayer.h"
 #include "homepage.h"
 #include "settingspage.h"
 #include "listingpage.h"
@@ -54,26 +54,24 @@ class Client: public ui::Control {
  public:
   Client();
 
+  /**
+   * Control interface.
+   */
   void attachState() override;
-
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
   void reset() override;
-
   void signalRead() override;
   void signalClear() override;
 
   /**
    * UI methods.
    */
-  void resetUI();
-
   void beginGame(std::unique_ptr<Game> &&game);
-  void exitGame();
-
   void focusGame();
   void blurGame();
+  void exitGame();
 
   void focusPage(const PageType type);
   void blurPage();

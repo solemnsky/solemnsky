@@ -165,14 +165,14 @@ void Client::render(ui::Frame &f) {
 
           if (gameUnderneath) {
             const std::string statusStr = "(" + shared.game->status + ") ";
-            const float descLength = f.textSize(shared.game->description,
+            const float descLength = f.textSize(shared.game->name,
                                                 style.menu.descSize).x,
                 statusLength = f.textSize(statusStr,
                                           style.menu.descSize).x;
             f.drawText(
                 {style.menu.closeButtonOffset.x - descLength - statusLength -
                     10, 0},
-                {shared.game->description}, style.menu.descSize);
+                {shared.game->name}, style.menu.descSize);
             f.drawText(
                 {style.menu.closeButtonOffset.x - statusLength, 0},
                 {statusStr}, style.menu.descSize,
@@ -279,21 +279,10 @@ void Client::signalClear() {
   ui::Control::signalClear();
 }
 
-void Client::resetUI() {
-  backButton.reset();
-  quitButton.reset();
-  aboutButton.reset();
-  closeButton.reset();
-}
-
 void Client::beginGame(std::unique_ptr<Game> &&game) {
   shared.ui.focusGame();
   shared.game = std::move(game);
   focusGame();
-}
-
-void Client::exitGame() {
-  if (shared.game) shared.game->doExit();
 }
 
 void Client::focusGame() {
@@ -310,14 +299,16 @@ void Client::blurGame() {
   if (shared.game) shared.game->onBlur();
 }
 
-void Client::blurPage() {
-  reset();
-  shared.ui.blurPage();
+void Client::exitGame() {
+  if (shared.game) shared.game->doExit();
 }
 
 void Client::focusPage(const PageType type) {
-  resetUI();
   shared.ui.focusPage(type);
+}
+
+void Client::blurPage() {
+  shared.ui.blurPage();
 }
 
 void Client::changeSettings(const SettingsDelta &settings) {
