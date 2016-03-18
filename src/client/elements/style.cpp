@@ -107,8 +107,8 @@ Style::Multi::Multi(const Style::Base &base) :
     chatPos(20, 850),
     messageLogPos(20, 840),
     playerListPos(1250, 150),
-    readyButtonPos(lobbyChatWidth + 100, lobbyTopMargin),
-    spectateButtonPos(readyButtonPos + sf::Vector2f(0, 100)),
+    lobbyButtonPos(lobbyChatWidth + 100, lobbyTopMargin),
+    lobbyButtonSep(0, 100),
 
     playerSpecColor(255, 255, 255),
     playerJoinedColor(0, 255, 0),

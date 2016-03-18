@@ -1,5 +1,5 @@
 /**
- * Continuous state of a game server.
+ * Shared model of a multiplayer game arena.
  */
 #pragma once
 #include "util/types.h"
@@ -10,14 +10,14 @@
 
 namespace sky {
 
-typedef unsigned char Team; // 0 spec, 1 left, 2 right
+typedef unsigned char Team; // 0 spec, 1 red, 2 blue
 
 /**
- * Compact way to change a player to a new state.
+ * Delta in a Player.
  */
 struct PlayerDelta {
   PlayerDelta(); // for unpacking
-  PlayerDelta(const class Player &player); // set non-optional values
+  PlayerDelta(const class Player &player);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -25,12 +25,12 @@ struct PlayerDelta {
   }
 
   optional<std::string> nickname;
-  bool admin; // these values are non-optional
+  bool admin;
   optional<Team> team; // 0 is spectator, 1 left, 2 right
 };
 
 /**
- * A player in the arena.
+ * A player in the arena, with static data.
  */
 struct Player {
   Player(); // for unpacking
@@ -59,8 +59,7 @@ enum class ArenaMode {
 };
 
 /**
- * The data a client needs when jumping into an arena. Further changes are
- * transmitted through ArenaDelta's.
+ * Initialize a new remote Arena.
  */
 struct ArenaInitializer: public VerifyStructure {
   ArenaInitializer(); // for unpacking
@@ -84,7 +83,7 @@ struct ArenaInitializer: public VerifyStructure {
 };
 
 /**
- * Server-generated modification to the arena.
+ * Delta in some arena state,
  */
 struct ArenaDelta: public VerifyStructure {
   enum class Type {
@@ -129,9 +128,13 @@ struct ArenaDelta: public VerifyStructure {
 };
 
 /**
- * A model of an abstracted server. Used by both server and client.
+ * A model of a game arena, with utilities to help syncing it over a network.
+ * Used by both server and client.
  */
 class Arena {
+ private:
+  PID allocPid() const;
+  std::string allocNickname(const std::string &requested) const;
  public:
   Arena();
 
@@ -145,16 +148,16 @@ class Arena {
   optional<Sky> sky;
 
   /**
-   * Initializers / Deltas.
+   * Initializers / deltas.
    */
   void applyInitializer(const ArenaInitializer &initializer);
-  void applyDelta(const ArenaDelta &delta);
+  optional<struct ClientEvent> applyDelta(const ArenaDelta &delta);
   ArenaInitializer captureInitializer();
 
   /**
-   * General API.
+   * General API. Used by the server.
    */
-  Player &connectPlayer();
+  Player &connectPlayer(const std::string &requestedNick);
   void disconnectPlayer(const Player &record);
   Player *getPlayer(const PID pid);
 };

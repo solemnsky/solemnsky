@@ -9,12 +9,16 @@ MultiplayerLobby::MultiplayerLobby(
     ClientShared &shared, MultiplayerConnection &connection) :
     MultiplayerView(sky::ArenaMode::Lobby, shared, connection),
 
-    joinButton(style.base.normalButton, style.multi.readyButtonPos, "join"),
-    spectateButton(style.base.normalButton, style.multi.spectateButtonPos,
-                   "spectate"),
+    specButton(style.base.normalButton, style.multi.lobbyButtonPos, "spectate"),
+    redButton(style.base.normalButton,
+              style.multi.lobbyButtonPos + style.multi.lobbyButtonSep,
+              "join red"),
+    blueButton(style.base.normalButton,
+               style.multi.lobbyButtonPos + 2.0f * style.multi.lobbyButtonSep,
+               "join blue"),
     chatInput(style.base.normalTextEntry,
               style.multi.chatPos, "[enter to chat]") {
-  areChildren({&joinButton, &spectateButton, &chatInput});
+  areChildren({&specButton, &redButton, &blueButton, &chatInput});
 }
 
 void MultiplayerLobby::tick(float delta) {
@@ -25,11 +29,11 @@ void MultiplayerLobby::render(ui::Frame &f) {
   f.drawSprite(textureOf(Res::Lobby), {0, 0}, {0, 0, 1600, 900});
 
   float offset = 0;
-  for (auto iter = connection.messageLog.rbegin();
-       iter < connection.messageLog.rend(); iter++) {
+  for (auto iter = connection.eventLog.rbegin();
+       iter < connection.eventLog.rend(); iter++) {
     offset -= style.base.normalFontSize;
     f.drawText(style.multi.messageLogPos + sf::Vector2f(0, offset),
-               *iter, style.base.normalFontSize);
+               (sky::ClientEvent(*iter)).print(), style.base.normalFontSize);
   }
 
   offset = 0;
@@ -61,10 +65,12 @@ void MultiplayerLobby::reset() {
 
 void MultiplayerLobby::signalRead() {
   ui::Control::signalRead();
-  if (joinButton.clickSignal)
-    connection.transmit(sky::ClientPacket::ReqTeamChange(1));
-  if (spectateButton.clickSignal)
+  if (specButton.clickSignal)
     connection.transmit(sky::ClientPacket::ReqTeamChange(0));
+  if (redButton.clickSignal)
+    connection.transmit(sky::ClientPacket::ReqTeamChange(1));
+  if (blueButton.clickSignal)
+    connection.transmit(sky::ClientPacket::ReqTeamChange(2));
   if (chatInput.inputSignal)
     connection.transmit(sky::ClientPacket::Chat(*chatInput.inputSignal));
 }

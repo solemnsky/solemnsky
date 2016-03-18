@@ -1,8 +1,9 @@
 /**
- * Where the vaguely complex multiplayer client converges.
+ * Where the multiplayer client converges.
  */
 #pragma once
 #include "client/ui/control.h"
+#include "sky/event.h"
 #include "util/telegraph.h"
 #include "sky/arena.h"
 #include "sky/protocol.h"
@@ -22,7 +23,7 @@ class MultiplayerConnection {
   bool askedConnection;
   Cooldown disconnectTimeout;
 
-  bool processPacket(const sky::ServerPacket &packet);
+  void processPacket(const sky::ServerPacket &packet);
 
  public:
   MultiplayerConnection(
@@ -43,7 +44,7 @@ class MultiplayerConnection {
    */
   sky::Player *myPlayer;
   sky::Arena arena;
-  std::vector<std::string> messageLog;
+  std::vector<sky::ClientEvent> eventLog;
 
   /**
    * Methods.

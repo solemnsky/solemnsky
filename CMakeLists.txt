@@ -27,6 +27,9 @@ add_library(solemnsky SHARED
         src/sky/arena.cpp
         src/sky/arena.h
 
+        src/sky/event.cpp
+        src/sky/event.h
+
         src/sky/flight.cpp
         src/sky/flight.h
 
@@ -35,6 +38,9 @@ add_library(solemnsky SHARED
 
         src/sky/physics.cpp
         src/sky/physics.h
+
+        src/sky/props.cpp
+        src/sky/props.h
 
         src/sky/protocol.cpp
         src/sky/protocol.h
@@ -50,7 +56,7 @@ add_library(solemnsky SHARED
 
         src/util/types.cpp
         src/util/types.h
-        src/sky/props.cpp src/sky/props.h)
+        )
 target_link_libraries(solemnsky
         enet
         sfml-system

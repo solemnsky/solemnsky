@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "sky/arena.h"
+#include "sky/event.h"
 
 /**
  * The Arena abstraction.
@@ -13,56 +14,80 @@ class ArenaTest: public testing::Test {
  */
 TEST_F(ArenaTest, ConnectionTest) {
   sky::Arena arena;
-  sky::Player &player1 = arena.connectPlayer();
-  EXPECT_EQ(player1.pid, 1);
-  sky::Player &player2 = arena.connectPlayer();
-  EXPECT_EQ(player2.pid, 2);
+  sky::Player &player1 = arena.connectPlayer("asdf");
+  EXPECT_EQ(player1.pid, 0);
+  sky::Player &player2 = arena.connectPlayer("fdsa");
+  EXPECT_EQ(player2.pid, 1);
 
-  player1.nickname = "asdf";
-  player2.nickname = "fdsa";
-  EXPECT_EQ(arena.getPlayer(1)->nickname, "asdf");
+  EXPECT_EQ(arena.getPlayer(0)->nickname, "asdf");
   arena.disconnectPlayer(player1);
-  EXPECT_EQ(arena.getPlayer(1), nullptr);
-  EXPECT_EQ(arena.getPlayer(2)->nickname, "fdsa");
+  EXPECT_EQ(arena.getPlayer(0), nullptr);
+  EXPECT_EQ(arena.getPlayer(1)->nickname, "fdsa");
   arena.disconnectPlayer(player2);
-  EXPECT_EQ(arena.getPlayer(2), nullptr);
+  EXPECT_EQ(arena.getPlayer(1), nullptr);
 }
 
 /**
  * ArenaDeltas work correctly.
  */
 TEST_F(ArenaTest, DeltaTest) {
-  sky::Arena homeArena, remoteArena;
+  sky::Arena clientArena, serverArena;
 
-  sky::Player &player1 = homeArena.connectPlayer();
-  player1.nickname = "asdf";
+  sky::Player &player1 = serverArena.connectPlayer("asdf");
 
-  remoteArena.applyDelta(sky::ArenaDelta::Join(player1));
-  EXPECT_TRUE((bool) remoteArena.getPlayer(1));
-  EXPECT_EQ(remoteArena.getPlayer(1)->nickname, "asdf");
+  clientArena.applyDelta(sky::ArenaDelta::Join(player1));
+  EXPECT_TRUE((bool) clientArena.getPlayer(0));
+  EXPECT_EQ(clientArena.getPlayer(0)->nickname, "asdf");
 
-  remoteArena.applyDelta(sky::ArenaDelta::Quit(1));
-  EXPECT_FALSE((bool) remoteArena.getPlayer(1));
+  clientArena.applyDelta(sky::ArenaDelta::Quit(0));
+  EXPECT_FALSE((bool) clientArena.getPlayer(0));
 }
 
 /**
  * Arenas can be copied through ArenaInitializer.
  */
 TEST_F(ArenaTest, InitializerTest) {
-  sky::Arena homeArena, remoteArena;
+  sky::Arena clientArena, serverArena;
 
-  homeArena.motd = "secret arena";
-  sky::Player &player1 = homeArena.connectPlayer();
-  player1.nickname = "an admin";
+  serverArena.motd = "secret arena";
+  sky::Player &player1 = serverArena.connectPlayer("an admin");
   player1.admin = true;
-  sky::Player &player2 = homeArena.connectPlayer();
-  player2.nickname = "somebody else";
-  homeArena.mode = sky::ArenaMode::Scoring;
+  sky::Player &player2 = serverArena.connectPlayer("somebody else");
+  serverArena.mode = sky::ArenaMode::Scoring;
 
-  remoteArena.applyInitializer(homeArena.captureInitializer());
-  EXPECT_EQ(remoteArena.motd, "secret arena");
-  EXPECT_EQ(remoteArena.getPlayer(1)->nickname, "an admin");
-  EXPECT_EQ(remoteArena.getPlayer(1)->admin, true);
-  EXPECT_EQ(remoteArena.getPlayer(2)->nickname, "somebody else");
-  EXPECT_EQ(remoteArena.mode, sky::ArenaMode::Scoring);
+  clientArena.applyInitializer(serverArena.captureInitializer());
+  EXPECT_EQ(clientArena.motd, "secret arena");
+  EXPECT_EQ(clientArena.getPlayer(0)->nickname, "an admin");
+  EXPECT_EQ(clientArena.getPlayer(0)->admin, true);
+  EXPECT_EQ(clientArena.getPlayer(1)->nickname, "somebody else");
+  EXPECT_EQ(clientArena.mode, sky::ArenaMode::Scoring);
+}
+
+/**
+ * Arenas give ClientEvents on delta application; for clients.
+ */
+TEST_F(ArenaTest, EventTest) {
+  sky::Arena clientArena, serverArena;
+  sky::Player &player = serverArena.connectPlayer("nickname");
+
+  {
+    optional<sky::ClientEvent> event =
+        clientArena.applyDelta(sky::ArenaDelta::Join(player));
+
+    ASSERT_TRUE((bool) event);
+    EXPECT_EQ(*event->name, "nickname");
+    EXPECT_EQ(event->type, sky::ClientEvent::Type::Join);
+  }
+
+  {
+    sky::PlayerDelta playerDelta(player);
+    playerDelta.nickname = "new nickname";
+    optional<sky::ClientEvent> event =
+        clientArena.applyDelta(sky::ArenaDelta::Modify(0, playerDelta));
+
+    ASSERT_TRUE((bool) event);
+    EXPECT_EQ(*event->newName, "new nickname");
+    EXPECT_EQ(*event->name, "nickname");
+    EXPECT_EQ(event->type, sky::ClientEvent::Type::NickChange);
+  }
 }

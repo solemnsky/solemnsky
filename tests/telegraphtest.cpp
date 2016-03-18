@@ -112,7 +112,7 @@ TEST_F(TelegraphTest, Invariant) {
 
   {
     sky::ClientPacket malformedPacket = sky::ClientPacket::Chat("asdf");
-    malformedPacket.stringData.reset();
+    malformedPacket.stringData.reset(); // necessary field
     clientTelegraph.transmit(client, serverPeer, malformedPacket);
     event = processHosts(server, client);
     const optional<ServerPacket> &packet =

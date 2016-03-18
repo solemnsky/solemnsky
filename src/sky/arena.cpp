@@ -1,5 +1,7 @@
 #include "arena.h"
+#include <algorithm>
 #include "util/methods.h"
+#include "event.h"
 
 namespace sky {
 
@@ -120,6 +122,19 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode,
 
 Arena::Arena() { }
 
+
+PID Arena::allocPid() const {
+  if (players.empty()) return 0;
+  PID maxPid = 0;
+  for (const auto &player : players) maxPid = std::max(player.pid, maxPid);
+  return maxPid + 1;
+}
+
+std::string Arena::allocNickname(const std::string &requested) const {
+  // TODO: no duplicate nicknames
+  return requested;
+}
+
 void Arena::applyInitializer(const ArenaInitializer &initializer) {
   motd = initializer.motd;
   players = std::list<Player>(initializer.players.begin(),
@@ -130,23 +145,34 @@ void Arena::applyInitializer(const ArenaInitializer &initializer) {
   }
 }
 
-void Arena::applyDelta(const ArenaDelta &delta) {
+optional<ClientEvent> Arena::applyDelta(const ArenaDelta &delta) {
   switch (delta.type) {
     case ArenaDelta::Type::Quit: {
+      optional<std::string> playerQuit;
       players.remove_if([&](const Player &record) {
-        return record.pid == *delta.quit;
+        if (record.pid == *delta.quit) {
+          playerQuit = record.nickname;
+          return true;
+        };
+        return false;
       });
+      if (playerQuit) {
+        return {ClientEvent::Quit(*playerQuit)};
+      }
       break;
     }
     case ArenaDelta::Type::Join: {
       if (Player *existingRecord = getPlayer(delta.join->pid))
         *existingRecord = *delta.join;
       else players.push_back(*delta.join);
-      break;
+      return {ClientEvent::Join(delta.join->nickname)};
     }
     case ArenaDelta::Type::Modify: {
       if (Player *player = getPlayer(delta.player->first)) {
+        std::string oldName = player->nickname;
         player->applyDelta(delta.player->second);
+        if (player->nickname != oldName)
+          return {ClientEvent::NickChange(oldName, player->nickname)};
       }
       break;
     }
@@ -156,9 +182,16 @@ void Arena::applyDelta(const ArenaDelta &delta) {
     }
     case ArenaDelta::Type::Mode: {
       mode = *delta.arenaMode;
-      if (mode == ArenaMode::Game) sky.emplace(*delta.skyInitializer);
+      if (mode == ArenaMode::Lobby) return ClientEvent::LobbyStart();
+      if (mode == ArenaMode::Scoring) return ClientEvent::ScoringStart();
+      if (mode == ArenaMode::Game) {
+        sky.emplace(*delta.skyInitializer);
+        return ClientEvent::GameStart(delta.skyInitializer->mapName);
+      }
+      break;
     }
   }
+  return {};
 }
 
 ArenaInitializer Arena::captureInitializer() {
@@ -167,13 +200,14 @@ ArenaInitializer Arena::captureInitializer() {
   else return ArenaInitializer(players, motd, mode, {});
 }
 
-Player &Arena::connectPlayer() {
-  PID maxPid = 0;
-  for (auto &player : players) {
-    maxPid = std::max(player.pid, maxPid);
-  }
-  players.push_back(Player(maxPid + 1));
-  return players.back();
+Player &Arena::connectPlayer(const std::string &requestedNick) {
+  PID pid = allocPid();
+  std::string nickname = allocNickname(requestedNick);
+  players.emplace_back(Player());
+  Player &newPlayer = players.back();
+  newPlayer.nickname = nickname;
+  newPlayer.pid = pid;
+  return newPlayer;
 }
 
 void Arena::disconnectPlayer(const Player &record) {
