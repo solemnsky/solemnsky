@@ -115,9 +115,6 @@ add_executable(solemnsky_client
         src/client/ui/widgets/textentry.cpp
         src/client/ui/widgets/textentry.h
 
-        src/client/ui/widgets/textlog.cpp
-        src/client/ui/widgets/textlog.h
-
         src/client/ui/widgets/widgets.h
 
         src/client/ui/control.cpp

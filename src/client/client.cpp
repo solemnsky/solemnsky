@@ -88,7 +88,7 @@ void Client::drawPage(ui::Frame &f, const PageType type,
 
 void Client::attachState() {
   shared.appState = appState;
-  forAllPages([](Page &page) { page.attachClientState(); });
+  forAllPages([](Page &page) { page.attachState(); });
 }
 
 void Client::tick(float delta) {
