@@ -10,7 +10,11 @@
 
 namespace sky {
 
+/**
+ * Basic types.
+ */
 typedef unsigned int PID; // ID for elements in the game
+typedef unsigned char Team; // 0 spec, 1 red, 2 blue
 
 /**
  * Subsystem abstraction, representing a module that attaches to Sky events

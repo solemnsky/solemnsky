@@ -106,4 +106,9 @@ ENetEvent Host::poll() {
   return event;
 }
 
+std::string printAddress(const ENetAddress &addr) {
+  // TODO
+  return "<address>";
+}
+
 }

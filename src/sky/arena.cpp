@@ -131,8 +131,37 @@ PID Arena::allocPid() const {
 }
 
 std::string Arena::allocNickname(const std::string &requested) const {
-  // TODO: no duplicate nicknames
-  return requested;
+  std::stringstream readStream;
+  int nickNumber;
+  const size_t rsize = requested.size();
+
+  const size_t reqSize = rsize;
+  std::vector<int> usedNumbers;
+  for (const auto &player : players) {
+    const std::string &name = player.nickname;
+    if (name.size() < rsize) continue;
+    if (name.substr(0, rsize) != requested) continue;
+
+    if (name == requested) {
+      usedNumbers.push_back(0);
+      continue;
+    }
+
+    readStream.str(name.substr(rsize));
+    if (readStream.get() != '(') continue;
+    readStream >> nickNumber;
+    if (!readStream.good()) continue;
+    if (readStream.get() != ')') continue;
+    if (!readStream.eof()) continue;
+
+    usedNumbers.push_back(nickNumber);
+  }
+
+  if (usedNumbers.empty()) return requested;
+
+  int maxNum = 0;
+  for (const int val : usedNumbers) maxNum = std::max(val, maxNum);
+  return requested + "(" + std::to_string(maxNum + 1) + ")";
 }
 
 void Arena::applyInitializer(const ArenaInitializer &initializer) {
@@ -169,10 +198,14 @@ optional<ClientEvent> Arena::applyDelta(const ArenaDelta &delta) {
     }
     case ArenaDelta::Type::Modify: {
       if (Player *player = getPlayer(delta.player->first)) {
+        Team oldTeam = player->team;
         std::string oldName = player->nickname;
         player->applyDelta(delta.player->second);
         if (player->nickname != oldName)
           return {ClientEvent::NickChange(oldName, player->nickname)};
+        if (player->team != oldTeam)
+          return {ClientEvent::TeamChange(player->nickname, oldTeam,
+                                          player->team)};
       }
       break;
     }

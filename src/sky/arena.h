@@ -4,13 +4,12 @@
 #pragma once
 #include "util/types.h"
 #include "sky.h"
+#include "event.h"
 #include <map>
 #include <list>
 #include <vector>
 
 namespace sky {
-
-typedef unsigned char Team; // 0 spec, 1 red, 2 blue
 
 /**
  * Delta in a Player.
@@ -127,6 +126,7 @@ struct ArenaDelta: public VerifyStructure {
                          const optional<SkyInitializer> &initializer = {});
 };
 
+
 /**
  * A model of a game arena, with utilities to help syncing it over a network.
  * Used by both server and client.
@@ -151,7 +151,7 @@ class Arena {
    * Initializers / deltas.
    */
   void applyInitializer(const ArenaInitializer &initializer);
-  optional<struct ClientEvent> applyDelta(const ArenaDelta &delta);
+  optional<ClientEvent> applyDelta(const ArenaDelta &delta);
   ArenaInitializer captureInitializer();
 
   /**
