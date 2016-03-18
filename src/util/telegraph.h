@@ -136,4 +136,6 @@ class Telegraph {
   }
 };
 
+std::string printAddress(const ENetAddress &addr);
+
 }

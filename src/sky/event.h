@@ -1,20 +1,12 @@
 /**
- * Things that happen; implied by various systems, from the Arena to the Sky.
+ * Things that happen.
  */
 #pragma once
-#include "arena.h"
-
+#include "sky.h"
 namespace sky {
 
 /**
- * An event useful on the server-side, useful for debug logs.
- */
-struct ServerEvent {
-  // stub
-};
-
-/**
- * An event useful on the client-side, useful for on-screen logs.
+ * Events that a client observes.
  */
 struct ClientEvent {
   enum class Type {

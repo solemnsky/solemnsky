@@ -38,6 +38,7 @@ class Server {
   Server(const unsigned short port);
 
   void tick(float delta);
+  bool running;
 };
 
 int main();

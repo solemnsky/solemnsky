@@ -14,6 +14,11 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
       myPlayer = arena.getPlayer(*packet.pid);
       appLog("Joined arena!", LogOrigin::Client);
       connected = true;
+      if (host.peers.size() == 1) {
+        eventLog.push_back(sky::ClientEvent::Connect(
+            "(haven't implemented server names lol)",
+            tg::printAddress(host.peers[0]->address)));
+      }
     }
     return;
   }
@@ -67,7 +72,6 @@ MultiplayerConnection::MultiplayerConnection(
     ClientShared &shared,
     const std::string &serverHostname,
     const unsigned short serverPort) :
-
     shared(shared),
     server(nullptr),
     telegraph(),

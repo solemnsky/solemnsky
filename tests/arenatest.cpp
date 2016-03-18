@@ -16,13 +16,13 @@ TEST_F(ArenaTest, ConnectionTest) {
   sky::Arena arena;
   sky::Player &player1 = arena.connectPlayer("asdf");
   EXPECT_EQ(player1.pid, 0);
-  sky::Player &player2 = arena.connectPlayer("fdsa");
+  sky::Player &player2 = arena.connectPlayer("asdf");
   EXPECT_EQ(player2.pid, 1);
 
   EXPECT_EQ(arena.getPlayer(0)->nickname, "asdf");
   arena.disconnectPlayer(player1);
   EXPECT_EQ(arena.getPlayer(0), nullptr);
-  EXPECT_EQ(arena.getPlayer(1)->nickname, "fdsa");
+  EXPECT_EQ(arena.getPlayer(1)->nickname, "asdf(1)");
   arena.disconnectPlayer(player2);
   EXPECT_EQ(arena.getPlayer(1), nullptr);
 }
