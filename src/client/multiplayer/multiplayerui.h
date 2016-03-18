@@ -12,8 +12,9 @@
  */
 class MultiplayerLobby: public MultiplayerView {
  private:
-  ui::Button joinButton;
-  ui::Button spectateButton;
+  ui::Button specButton;
+  ui::Button redButton;
+  ui::Button blueButton;
   ui::TextEntry chatInput;
 
   std::vector<ui::Control *> myControls;

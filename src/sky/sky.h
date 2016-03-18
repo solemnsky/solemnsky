@@ -73,9 +73,9 @@ struct SkyDelta {
     ar(restructure, state);
   }
 
-  // here we potentially remove / [re]add Planes
+  // we potentially remove / [re]add Planes
   std::map<PID, optional<PlaneInitializer>> restructure;
-  // here we set the state of planes
+  // we set the state of planes
   std::map<PID, PlaneState> state;
 };
 

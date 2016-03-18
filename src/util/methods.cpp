@@ -95,3 +95,6 @@ bool verifyFields() {
   return true;
 }
 
+std::string inQuotes(const std::string &str) {
+  return "\"" + str + "\"";
+}

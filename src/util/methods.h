@@ -80,3 +80,9 @@ bool verifyFields(Field &field, Fields... fields) {
   if (!verifyValue(*field)) return false;
   return verifyFields(fields...);
 };
+
+/**
+ * Random stuff.
+ */
+
+std::string inQuotes(const std::string &str);

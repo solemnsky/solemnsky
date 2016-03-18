@@ -4,69 +4,63 @@
  * MultiplayerConnection.
  */
 
-bool MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
+void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
   using namespace sky;
 
   if (!myPlayer) {
     // waiting for the arena connection request to be accepted
-
     if (packet.type == ServerPacket::Type::AckJoin) {
       arena.applyInitializer(*packet.arenaInitializer);
       myPlayer = arena.getPlayer(*packet.pid);
       appLog("Joined arena!", LogOrigin::Client);
       connected = true;
-      return true;
     }
-
-    return false; // we're only interested in AckJoins until we're connected
+    return;
   }
 
   // we're in the arena
   switch (packet.type) {
     case ServerPacket::Type::Pong: {
-      return true; // received a pong from the server
+      break;
     }
 
     case ServerPacket::Type::Message: {
       switch (packet.message->type) {
         case ServerMessage::Type::Chat: {
-          bool playerFound = false;
-          for (const sky::Player &player : arena.players) {
-            if (player.pid == *packet.message->from) {
-              messageLog.push_back("[chat] " + player.nickname +
-                  ": " + packet.message->contents);
-              playerFound = true;
-              break;
-            }
-          }
-          if (!playerFound) {
-            messageLog.push_back("[chat] <unknown player> : " +
-                packet.message->contents);
+          if (sky::Player *player = arena.getPlayer(*packet.message->from)) {
+            eventLog.push_back(sky::ClientEvent::Chat(
+                player->nickname, packet.message->contents));
+          } else {
+            eventLog.push_back(sky::ClientEvent::Chat(
+                "<unknown>", packet.message->contents));
           }
           break;
         }
         case ServerMessage::Type::Broadcast: {
-          messageLog.push_back("[server] : " + packet.message->contents);
+          eventLog.push_back(sky::ClientEvent::Broadcast(
+              packet.message->contents));
           break;
         }
       }
-      return true;
+      break;
     }
 
     case ServerPacket::Type::NoteArenaDelta: {
-      arena.applyDelta(*packet.arenaDelta);
-      return true;
+      if (optional<sky::ClientEvent> event =
+          arena.applyDelta(*packet.arenaDelta)) {
+        eventLog.push_back(*event);
+      }
+      break;
     }
 
     case ServerPacket::Type::NoteSkyDelta: {
       if (arena.sky) arena.sky->applyDelta(*packet.skyDelta);
-      return true;
+      break;
     }
 
     default:
       break;
   }
-  return false;
 }
 
 MultiplayerConnection::MultiplayerConnection(
@@ -128,7 +122,8 @@ optional<sky::ServerPacket> MultiplayerConnection::poll(const float delta) {
     if (event.type == ENET_EVENT_TYPE_RECEIVE) {
       if (const auto reception = telegraph.receive(event.packet)) {
         // connected to enet, receiving a protocol packet
-        if (processPacket(*reception)) return *reception;
+        processPacket(*reception);
+        return *reception;
       }
     }
   }
