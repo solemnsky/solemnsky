@@ -8,15 +8,7 @@ namespace sky {
  */
 
 ClientPacket::ClientPacket() { }
-ClientPacket::ClientPacket(
-    const Type type,
-    const optional<std::string> &stringData,
-    const optional<PlayerDelta> &playerDelta,
-    const optional<SkyDelta> &skyDelta) :
-    type(type),
-    stringData(stringData),
-    playerDelta(playerDelta),
-    skyDelta(skyDelta) { }
+ClientPacket::ClientPacket(const Type type) : type(type) { }
 
 bool ClientPacket::verifyStructure() const {
   switch (type) {
@@ -43,15 +35,21 @@ ClientPacket ClientPacket::Ping() {
 }
 
 ClientPacket ClientPacket::ReqJoin(const std::string &nickname) {
-  return ClientPacket(ClientPacket::Type::ReqJoin, nickname);
+  ClientPacket packet(Type::ReqJoin);
+  packet.stringData = nickname;
+  return packet;
 }
 
 ClientPacket ClientPacket::ReqPlayerDelta(const PlayerDelta &playerDelta) {
-  return ClientPacket(ClientPacket::Type::ReqPlayerDelta, {}, playerDelta);
+  ClientPacket packet(Type::ReqPlayerDelta);
+  packet.playerDelta = playerDelta;
+  return packet;
 }
 
 ClientPacket ClientPacket::ReqSkyDelta(const SkyDelta &skyDelta) {
-  return ClientPacket(ClientPacket::Type::ReqSkyDelta, {}, {}, skyDelta);
+  ClientPacket packet(Type::ReqSkyDelta);
+  packet.skyDelta = skyDelta;
+  return packet;
 }
 
 ClientPacket ClientPacket::ReqSpawn() {
@@ -63,21 +61,18 @@ ClientPacket ClientPacket::ReqKill() {
 }
 
 ClientPacket ClientPacket::Chat(const std::string &message) {
-  return ClientPacket(ClientPacket::Type::Chat, message);
+  ClientPacket packet(Type::Chat);
+  packet.stringData = message;
+  return packet;
 }
 
 /**
  * ServerMessage.
  */
 
-ServerMessage::ServerMessage(const ServerMessage::Type type,
-                             std::string contents,
-                             optional<PID> from) :
-    type(type),
-    contents(contents),
-    from(from) { }
-
 ServerMessage::ServerMessage() { }
+
+ServerMessage::ServerMessage(const Type type) : type(type) { }
 
 bool ServerMessage::verifyStructure() const {
   switch (type) {
@@ -91,30 +86,25 @@ bool ServerMessage::verifyStructure() const {
 
 ServerMessage ServerMessage::Chat(const PID &from,
                                   const std::string &contents) {
-  return ServerMessage(ServerMessage::Type::Chat, contents, from);
+  ServerMessage message(Type::Chat);
+  message.from = from;
+  message.contents = contents;
+  return message;
 }
 
 ServerMessage ServerMessage::Broadcast(const std::string &contents) {
-  return ServerMessage(ServerMessage::Type::Broadcast, contents);
+  ServerMessage message(Type::Broadcast);
+  message.contents = contents;
+  return message;
 }
 
 /**
  * ServerPacket.
  */
 
-ServerPacket::ServerPacket(
-    const ServerPacket::Type type,
-    const optional<ServerMessage> &message,
-    const optional<PID> &pid,
-    const optional<ArenaInitializer> &init,
-    const optional<ArenaDelta> &delta) :
-    type(type),
-    message(message),
-    pid(pid),
-    init(init),
-    delta(delta) { }
-
 ServerPacket::ServerPacket() { }
+
+ServerPacket::ServerPacket(const Type type) : type(type) { }
 
 bool ServerPacket::verifyStructure() const {
   switch (type) {
@@ -136,15 +126,22 @@ ServerPacket ServerPacket::Pong() {
 }
 
 ServerPacket ServerPacket::Message(const ServerMessage &message) {
-  return ServerPacket(ServerPacket::Type::Message, message);
+  ServerPacket packet(Type::Message);
+  packet.message = message;
+  return packet;
 }
 
 ServerPacket ServerPacket::Init(const PID pid, const ArenaInitializer &init) {
-  return ServerPacket(ServerPacket::Type::Init, {}, pid, init);
+  ServerPacket packet(Type::Init);
+  packet.pid = pid;
+  packet.init = init;
+  return packet;
 }
 
 ServerPacket ServerPacket::Delta(const ArenaDelta &delta) {
-  return ServerPacket(ServerPacket::Type::Delta, {}, {}, {}, delta);
+  ServerPacket packet(Type::Delta);
+  packet.delta = delta;
+  return packet;
 }
 
 }
