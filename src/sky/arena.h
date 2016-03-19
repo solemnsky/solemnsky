@@ -105,28 +105,26 @@ struct ArenaDelta: public VerifyStructure {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    using namespace cereal;
     ar(type);
     switch (type) {
       case Type::Quit: {
-        ar(make_nvp("quit", quit));
+        ar(quit);
         break;
       }
       case Type::Join: {
-        ar(make_nvp("quit", join));
+        ar(join);
         break;
       }
       case Type::Modify: {
-        ar(make_nvp("player", player));
+        ar(player);
         break;
       }
       case Type::Motd: {
-        ar(make_nvp("motd", motd));
+        ar(motd);
         break;
       }
       case Type::Mode: {
-        ar(make_nvp("arenaMode", arenaMode),
-           make_nvp("skyInitializer", skyInitializer));
+        ar(arenaMode, skyInitializer);
         break;
       }
     }

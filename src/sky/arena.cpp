@@ -19,7 +19,7 @@ PlayerDelta::PlayerDelta(const Player &player) :
 Player::Player() { }
 
 Player::Player(const sky::PID pid) :
-    pid(pid), admin(false) { }
+    pid(pid), admin(false), team(0) { }
 
 void Player::applyDelta(const PlayerDelta &delta) {
   if (delta.nickname) nickname = *delta.nickname;
@@ -236,10 +236,9 @@ ArenaInitializer Arena::captureInitializer() {
 Player &Arena::connectPlayer(const std::string &requestedNick) {
   PID pid = allocPid();
   std::string nickname = allocNickname(requestedNick);
-  players.emplace_back(Player());
+  players.emplace_back(Player(pid));
   Player &newPlayer = players.back();
   newPlayer.nickname = nickname;
-  newPlayer.pid = pid;
   return newPlayer;
 }
 
