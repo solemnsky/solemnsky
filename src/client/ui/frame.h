@@ -73,12 +73,12 @@ class Frame {
   }
 
   inline float drawText(const sf::Vector2f pos, const std::string &string,
-                        const TextProperties &prop = TextProperties::normal){
+                        const TextProperties &prop = TextProperties::normal) {
     return drawText(pos, {string}, prop);
   }
   inline float drawText(const sf::Vector2f pos, const std::string &string,
                         const int size,
-                        const sf::Color &col = sf::Color::White){
+                        const sf::Color &col = sf::Color::White) {
     auto p = TextProperties::normal;
     p.size = size;
     p.color = col;
@@ -94,12 +94,12 @@ class Frame {
 
   template<typename Iterator>
   float drawText(const sf::Vector2f &pos,
-                const Iterator beginString,
-                const Iterator endString,
-                const TextProperties &prop = TextProperties::normal);
+                 const Iterator beginString,
+                 const Iterator endString,
+                 const TextProperties &prop = TextProperties::normal);
   float drawText(const sf::Vector2f &pos,
-                std::initializer_list<std::string> strings,
-                const TextProperties &prop = TextProperties::normal);
+                 std::initializer_list<std::string> strings,
+                 const TextProperties &prop = TextProperties::normal);
 
   void drawSprite(const sf::Texture &texture, const sf::Vector2f &pos,
                   const sf::IntRect &portion);
@@ -112,9 +112,9 @@ class Frame {
 
 template<typename Iterator>
 float Frame::drawText(const sf::Vector2f &pos,
-                     const Iterator beginString,
-                     const Iterator endString,
-                     const TextProperties &prop){
+                      const Iterator beginString,
+                      const Iterator endString,
+                      const TextProperties &prop) {
   float yOffset = 0;
 
   for (Iterator i = beginString; i != endString; i++) {
@@ -122,23 +122,23 @@ float Frame::drawText(const sf::Vector2f &pos,
 
     primCount++;
     sf::Text text;
-    text.setFont(prop.font);
+    text.setFont(*prop.font);
     text.setCharacterSize((unsigned int) prop.size);
     text.setStyle(prop.style);
     text.setString(string);
 
     int lines = 1;
 
-    if (prop.maxWidth > 0){
-      int width = text.getLocalBounds().width;
-      if (width > prop.maxWidth){
+    if (prop.maxWidth > 0) {
+      int width = (int) text.getLocalBounds().width;
+      if (width > prop.maxWidth) {
         size_t prev = std::string::npos;
         int check = (width % prop.maxWidth) +
-                    (width / prop.maxWidth) * prop.maxWidth;
+            (width / prop.maxWidth) * prop.maxWidth;
         size_t p;
-        while ((p = string.find_last_of(' ', prev)) != std::string::npos){
-          int charPos = text.findCharacterPos(p).x;
-          if (charPos - check < 0){
+        while ((p = string.find_last_of(' ', prev)) != std::string::npos) {
+          int charPos = (int) text.findCharacterPos(p).x;
+          if (charPos - check < 0) {
             string.insert(p, "\n");
             check -= prop.maxWidth;
             lines++;
@@ -154,7 +154,7 @@ float Frame::drawText(const sf::Vector2f &pos,
     text.setColor(alphaScaleColor(prop.color));
     window.draw(text, transformStack.top());
 
-    yOffset += textSize(string, prop.size, prop.font).y;
+    yOffset += textSize(string, prop.size, *prop.font).y;
   }
 
   return yOffset;
