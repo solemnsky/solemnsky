@@ -9,8 +9,8 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
 
   if (!myPlayer) {
     // waiting for the arena connection request to be accepted
-    if (packet.type == ServerPacket::Type::AckJoin) {
-      arena.applyInitializer(*packet.arenaInitializer);
+    if (packet.type == ServerPacket::Type::Init) {
+      arena.applyInitializer(*packet.init);
       myPlayer = arena.getPlayer(*packet.pid);
       appLog("Joined arena!", LogOrigin::Client);
       connected = true;
@@ -50,15 +50,15 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
       break;
     }
 
-    case ServerPacket::Type::NoteArenaDelta: {
+    case ServerPacket::Type::Delta: {
       if (optional<sky::ClientEvent> event =
-          arena.applyDelta(*packet.arenaDelta)) {
+          arena.applyDelta(*packet.delta)) {
         eventLog.push_back(*event);
       }
       break;
     }
 
-    case ServerPacket::Type::NoteSkyDelta: {
+    case ServerPacket::Type::DeltaSky: {
       if (arena.sky) arena.sky->applyDelta(*packet.skyDelta);
       break;
     }
@@ -145,10 +145,17 @@ void MultiplayerConnection::disconnect() {
   }
 }
 
+void MultiplayerConnection::requestTeamChange(sky::Team team) {
+  if (myPlayer) {
+    sky::PlayerDelta delta(*myPlayer);
+    delta.team = team;
+    transmit(sky::ClientPacket::ReqPlayerDelta(delta));
+  }
+}
+
 /**
  * MultiplayerView.
  */
-
 
 MultiplayerView::MultiplayerView(
     sky::ArenaMode target,

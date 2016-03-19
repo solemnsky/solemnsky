@@ -52,19 +52,23 @@ class MultiplayerConnection {
   void transmit(const sky::ClientPacket &packet);
   optional<sky::ServerPacket> poll(const float delta);
   void disconnect();
+
+  void requestTeamChange(const sky::Team team);
 };
 
 /**
  * The interface for the client in a certain Arena mode; given that the
  * interface is modal, we should write it in modes.
+ *
+ * These classes act assuming that the connection is active
+ * (conneciton.myPlayer is not null).
  */
 class MultiplayerView: public ui::Control {
- protected:
+ public:
   // shared state
   ClientShared &shared;
   MultiplayerConnection &connection;
 
- public:
   MultiplayerView(
       sky::ArenaMode target,
       ClientShared &shared,
