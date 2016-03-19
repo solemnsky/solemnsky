@@ -57,11 +57,7 @@ struct ClientPacket: public VerifyStructure {
   }
 
   ClientPacket();
-  ClientPacket(
-      const Type type,
-      const optional<std::string> &stringData = {},
-      const optional<PlayerDelta> &playerDelta = {},
-      const optional<SkyDelta> &skyDelta = {});
+  ClientPacket(const Type type);
 
   Type type;
   optional<std::string> stringData;
@@ -89,10 +85,7 @@ struct ServerMessage: public VerifyStructure {
   };
 
   ServerMessage();
-  ServerMessage(
-      const Type type,
-      std::string contents,
-      optional<PID> from = {});
+  ServerMessage(const Type type);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -132,11 +125,7 @@ struct ServerPacket: public VerifyStructure {
   };
 
   ServerPacket();
-  ServerPacket(const ServerPacket::Type type,
-               const optional<ServerMessage> &message = {},
-               const optional<PID> &pid = {},
-               const optional<ArenaInitializer> &init = {},
-               const optional<ArenaDelta> &delta = {});
+  ServerPacket(const Type type);
 
   template<typename Archive>
   void serialize(Archive &ar) {

@@ -33,13 +33,10 @@ void Player::applyDelta(const PlayerDelta &delta) {
 
 ArenaInitializer::ArenaInitializer() { }
 
-ArenaInitializer::ArenaInitializer(
-    const std::list<Player> players,
-    const std::string &motd,
-    const ArenaMode mode) :
-    players(players.begin(), players.end()),
-    motd(motd),
-    mode(mode) { }
+bool ArenaInitializer::verifyStructure() const {
+  if (mode == ArenaMode::Game) return verifyFields(skyInitializer);
+  return true;
+}
 
 /**
  * ArenaDelta.
@@ -47,20 +44,7 @@ ArenaInitializer::ArenaInitializer(
 
 ArenaDelta::ArenaDelta() { }
 
-ArenaDelta::ArenaDelta(
-    const ArenaDelta::Type type,
-    const optional<PID> &quit,
-    const optional<Player> &join,
-    const optional<std::pair<PID, PlayerDelta>> &player,
-    const optional<std::string> &motd,
-    const optional<ArenaMode> &arenaMode,
-    const optional<SkyInitializer> &initializer) :
-    type(type),
-    quit(quit),
-    join(join),
-    player(player),
-    motd(motd),
-    arenaMode(arenaMode) { }
+ArenaDelta::ArenaDelta(const ArenaDelta::Type type) : type(type) { }
 
 bool ArenaDelta::verifyStructure() const {
   switch (type) {
@@ -75,33 +59,43 @@ bool ArenaDelta::verifyStructure() const {
     case Type::Mode:
       if (!verifyFields(arenaMode)) return false;
       if (*arenaMode == ArenaMode::Game)
-        return verifyFields(initializer);
+        return verifyFields(skyInitializer);
       else return true;
   }
   return false;
 }
 
 ArenaDelta ArenaDelta::Quit(const PID pid) {
-  return ArenaDelta(ArenaDelta::Type::Quit, pid);
+  ArenaDelta delta(Type::Quit);
+  delta.quit = pid;
+  return delta;
+
 }
 
 ArenaDelta ArenaDelta::Join(const Player &player) {
-  return ArenaDelta(ArenaDelta::Type::Join, {}, player);
+  ArenaDelta delta(Type::Join);
+  delta.join = player;
+  return delta;
 }
 
-ArenaDelta ArenaDelta::Modify(const PID pid, const PlayerDelta &delta) {
-  return ArenaDelta(ArenaDelta::Type::Modify, {}, {},
-                    std::pair<PID, PlayerDelta>(pid, delta));
+ArenaDelta ArenaDelta::Modify(const PID pid, const PlayerDelta &pDelta) {
+  ArenaDelta delta(Type::Modify);
+  delta.player = std::pair<PID, PlayerDelta>(pid, pDelta);
+  return delta;
 }
 
 ArenaDelta ArenaDelta::Motd(const std::string &motd) {
-  return ArenaDelta(ArenaDelta::Type::Motd, {}, {}, {}, motd);
+  ArenaDelta delta(Type::Motd);
+  delta.motd = motd;
+  return delta;
 }
 
 ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode,
-                            const optional<SkyInitializer> &initializer) {
-  return ArenaDelta(ArenaDelta::Type::Mode, {}, {}, {}, {},
-                    arenaMode, initializer);
+                            const optional<SkyInitializer> &skyInitializer) {
+  ArenaDelta delta(Type::Mode);
+  delta.arenaMode = arenaMode;
+  delta.skyInitializer = skyInitializer;
+  return delta;
 }
 
 /**

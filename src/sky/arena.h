@@ -62,11 +62,6 @@ enum class ArenaMode {
  */
 struct ArenaInitializer: public VerifyStructure {
   ArenaInitializer(); // for unpacking
-  ArenaInitializer(
-      const std::list<Player> players,
-      const std::string &motd,
-      const ArenaMode mode,
-      optional<SkyInitializer> skyInitializer);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -78,11 +73,11 @@ struct ArenaInitializer: public VerifyStructure {
   std::string motd;
   ArenaMode mode;
 
-  const verifyStructure() const override;
+  bool verifyStructure() const override;
 };
 
 /**
- * Delta in some arena state,
+ * Delta in some arena state.
  */
 struct ArenaDelta: public VerifyStructure {
   enum class Type {
@@ -94,13 +89,7 @@ struct ArenaDelta: public VerifyStructure {
   };
 
   ArenaDelta();
-  ArenaDelta(
-      const Type type,
-      const optional<PID> &quit = {},
-      const optional<Player> &join = {},
-      const optional<std::pair<PID, PlayerDelta>> &player = {},
-      const optional<std::string> motd = {},
-      const optional<ArenaMode> arenaMode = {});
+  ArenaDelta(const Type type);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -123,7 +112,7 @@ struct ArenaDelta: public VerifyStructure {
         break;
       }
       case Type::Mode: {
-        ar(arenaMode, initializer);
+        ar(arenaMode, skyInitializer);
         break;
       }
     }
@@ -135,16 +124,16 @@ struct ArenaDelta: public VerifyStructure {
   optional<std::pair<PID, PlayerDelta>> player;
   optional<std::string> motd;
   optional<ArenaMode> arenaMode;
-  optional<SkyInitializer> initializer;
+  optional<SkyInitializer> skyInitializer;
 
   bool verifyStructure() const override;
 
   static ArenaDelta Quit(const PID pid);
   static ArenaDelta Join(const Player &player);
-  static ArenaDelta Modify(const PID, const PlayerDelta &delta);
+  static ArenaDelta Modify(const PID, const PlayerDelta &pDelta);
   static ArenaDelta Motd(const std::string &motd);
-  static ArenaDelta Mode(const ArenaMode,
-                         const optional<SkyInitializer> &initializer = {});
+  static ArenaDelta Mode(const ArenaMode mode,
+                         const optional<SkyInitializer> &skyInitializer = {});
 };
 
 /**
