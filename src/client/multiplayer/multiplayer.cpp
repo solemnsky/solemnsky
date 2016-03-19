@@ -66,10 +66,14 @@ void Multiplayer::tick(float delta) {
 void Multiplayer::render(ui::Frame &f) {
   if (!connection.server) {
     if (connection.disconnecting) {
-      f.drawText({400, 400}, {"Disconnecting..."}, 60, sf::Color::White);
+      auto p = ui::TextProperties::normal;
+      p.size = 60;
+      f.drawText({400, 400}, {"Disconnecting..."}, p);
       return;
     } else {
-      f.drawText({400, 400}, {"Connecting..."}, 60, sf::Color::White);
+      auto p = ui::TextProperties::normal;
+      p.size = 60;
+      f.drawText({400, 400}, {"Connecting..."}, p);
       return;
     }
   }

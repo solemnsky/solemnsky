@@ -123,14 +123,8 @@ void Frame::drawRect(const sf::Vector2f &topLeft,
 
 float Frame::drawText(const sf::Vector2f &pos,
                      const std::initializer_list<std::string> strings,
-                     const int size,
-                     const sf::Color &color,
-                     const int maxWidth,
-                     const bool alignBottom,
-                     const sf::Font &font,
-                     const sf::Text::Style &style) {
-  return drawText(pos, strings.begin(), strings.end(), size,
-           color, maxWidth, alignBottom, font, style);
+                     const TextProperties& prop){
+  return drawText(pos, strings.begin(), strings.end(), prop);
 }
 
 void Frame::drawSprite(const sf::Texture &texture,
