@@ -35,6 +35,15 @@ const static struct Style {
   } base;
 
   /**
+   * Splash screen.
+   */
+  struct Splash {
+  ui::TextProperties loadingText;
+
+  Splash();
+  } splash;
+
+  /**
    * Top-level interface, implemented by Client.
    */
   struct Menu {

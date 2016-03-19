@@ -12,7 +12,43 @@
 namespace ui {
 class Control;
 
+/**
+ * Properties determining how text is drawn.
+ */
+struct TextProperties {
+TextProperties() = default;
+
+int size = 24;
+sf::Color color = sf::Color::White;
+int maxWidth = 0;
+bool alignBottom = false;
+sf::Font const *font = &fontOf(Res::Font);
+sf::Text::Style style = sf::Text::Regular;
+};
+
+/**
+ * Class corresponding to the rendering of a portion of text.
+ */
+class TextRender {
+private:
+friend class Frame;
+TextRender(const sf::Vector2f &pos, const TextProperties &properties);
+
+// parameters
+class Frame *parent;
+const sf::Vector2f &pos;
+const TextProperties &properties;
+
+// state
+float yOffset;
+int lines = 1;
+public:
+void draw(const std::string &str);
+void setColor(const sf::Color &);
+};
+
 class Frame {
+friend class TextRender;
   friend void runSFML(std::function<std::unique_ptr<Control>()> initCtrl);
 
  private:
@@ -73,16 +109,11 @@ class Frame {
   }
 
   inline float drawText(const sf::Vector2f pos, const std::string &string,
-                        const TextProperties &prop = TextProperties::normal) {
-    return drawText(pos, {string}, prop);
-  }
-  inline float drawText(const sf::Vector2f pos, const std::string &string,
-                        const int size,
-                        const sf::Color &col = sf::Color::White) {
-    auto p = TextProperties::normal;
-    p.size = size;
-    p.color = col;
-    return drawText(pos, {string}, p);
+  const TextProperties &prop = {
+  }) {
+  return drawText(pos,[&string](TextRender &render) {
+  render.draw(string);
+  }, prop);
   }
 
   // non-inline methods
@@ -92,14 +123,10 @@ class Frame {
   void drawRect(const sf::Vector2f &topLeft, const sf::Vector2f &bottomRight,
                 const sf::Color &color = {});
 
-  template<typename Iterator>
   float drawText(const sf::Vector2f &pos,
-                 const Iterator beginString,
-                 const Iterator endString,
-                 const TextProperties &prop = TextProperties::normal);
-  float drawText(const sf::Vector2f &pos,
-                 std::initializer_list<std::string> strings,
-                 const TextProperties &prop = TextProperties::normal);
+  std::function<void(TextRender &)> f,
+  const TextProperties &prop = {
+  });
 
   void drawSprite(const sf::Texture &texture, const sf::Vector2f &pos,
                   const sf::IntRect &portion);
@@ -109,55 +136,5 @@ class Frame {
                         const sf::Font &font = fontOf(Res::Font));
 
 };
-
-template<typename Iterator>
-float Frame::drawText(const sf::Vector2f &pos,
-                      const Iterator beginString,
-                      const Iterator endString,
-                      const TextProperties &prop) {
-  float yOffset = 0;
-
-  for (Iterator i = beginString; i != endString; i++) {
-    std::string string = *i;
-
-    primCount++;
-    sf::Text text;
-    text.setFont(*prop.font);
-    text.setCharacterSize((unsigned int) prop.size);
-    text.setStyle(prop.style);
-    text.setString(string);
-
-    int lines = 1;
-
-    if (prop.maxWidth > 0) {
-      int width = (int) text.getLocalBounds().width;
-      if (width > prop.maxWidth) {
-        size_t prev = std::string::npos;
-        int check = (width % prop.maxWidth) +
-            (width / prop.maxWidth) * prop.maxWidth;
-        size_t p;
-        while ((p = string.find_last_of(' ', prev)) != std::string::npos) {
-          int charPos = (int) text.findCharacterPos(p).x;
-          if (charPos - check < 0) {
-            string.insert(p, "\n");
-            check -= prop.maxWidth;
-            lines++;
-            if (check < prop.maxWidth) break;
-          }
-          prev = p - 1;
-        }
-        text.setString(string);
-      }
-    }
-
-    text.setPosition(pos + sf::Vector2f(0, yOffset));
-    text.setColor(alphaScaleColor(prop.color));
-    window.draw(text, transformStack.top());
-
-    yOffset += textSize(string, prop.size, *prop.font).y;
-  }
-
-  return yOffset;
-}
 
 }
