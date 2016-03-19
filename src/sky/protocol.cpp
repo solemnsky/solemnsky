@@ -144,4 +144,10 @@ ServerPacket ServerPacket::Delta(const ArenaDelta &delta) {
   return packet;
 }
 
+ServerPacket ServerPacket::DeltaSky(const SkyDelta &skyDelta) {
+  ServerPacket packet(Type::DeltaSky);
+  packet.skyDelta = skyDelta;
+  return packet;
+}
+
 }
