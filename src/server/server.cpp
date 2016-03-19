@@ -64,7 +64,6 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
         break;
       }
 
-
       case ClientPacket::Type::ReqSpawn: {
         break;
       }
@@ -101,10 +100,10 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
              LogOrigin::Server);
 
       transmitToClient(
-          client, ServerPacket::AckJoin(
+          client, ServerPacket::Init(
               newPlayer.pid, arena.captureInitializer()));
       broadcastToClientsExcept(
-          newPlayer.pid, ServerPacket::NoteArenaDelta(
+          newPlayer.pid, ServerPacket::Delta(
               ArenaDelta::Join(newPlayer)));
     }
   }
@@ -113,7 +112,7 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
 void Server::tick(float delta) {
   if (arena.sky) {
     arena.sky->tick(delta);
-    broadcastToClients(sky::ServerPacket::NoteSkyDelta(
+    broadcastToClients(sky::ServerPacket::Delta(
         arena.sky->collectDelta()));
   }
 
@@ -132,7 +131,7 @@ void Server::tick(float delta) {
                LogOrigin::Server);
 
         broadcastToClientsExcept(
-            player->pid, sky::ServerPacket::NoteArenaDelta(
+            player->pid, sky::ServerPacket::Delta(
                 sky::ArenaDelta::Quit(player->pid)));
 
         arena.disconnectPlayer(*player);

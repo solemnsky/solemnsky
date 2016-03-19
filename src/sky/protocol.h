@@ -121,7 +121,8 @@ struct ServerPacket: public VerifyStructure {
     Pong,
     Message, // message for a client to log
     Init, // acknowledge a ReqJoin, send ArenaInitializer
-    Delta, // notify clients of a change in the arena
+    Delta, // broadcast a change in the Arena
+    DeltaSky, // broadcast a change in the Arena's sky
   };
 
   ServerPacket();
@@ -145,6 +146,10 @@ struct ServerPacket: public VerifyStructure {
         ar(delta);
         break;
       }
+      case Type::DeltaSky: {
+        ar(skyDelta);
+        break;
+      }
     }
   }
 
@@ -153,6 +158,7 @@ struct ServerPacket: public VerifyStructure {
   optional<PID> pid;
   optional<ArenaInitializer> init;
   optional<ArenaDelta> delta;
+  optional<SkyDelta> skyDelta;
 
   bool verifyStructure() const override;
 
@@ -160,6 +166,7 @@ struct ServerPacket: public VerifyStructure {
   static ServerPacket Message(const ServerMessage &message);
   static ServerPacket Init(const PID pid, const ArenaInitializer &init);
   static ServerPacket Delta(const ArenaDelta &delta);
+  static ServerPacket DeltaSky(const SkyDelta &skyDelta);
 };
 
 }
