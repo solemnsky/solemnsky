@@ -36,7 +36,7 @@ Style::Base::Base() :
                    {40, 40}, heatRate, normalFontSize) { }
 
 Style::Splash::Splash() {
-loadingText.size = 50;
+  loadingText.size = 50;
 }
 
 Style::Menu::Menu(const Style::Base &base) :

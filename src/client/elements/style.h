@@ -38,9 +38,9 @@ const static struct Style {
    * Splash screen.
    */
   struct Splash {
-  ui::TextProperties loadingText;
+    ui::TextProperties loadingText;
 
-  Splash();
+    Splash();
   } splash;
 
   /**
