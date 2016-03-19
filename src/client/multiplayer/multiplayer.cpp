@@ -1,4 +1,5 @@
 #include "multiplayer.h"
+#include "client/elements/style.h"
 #include "multiplayerlobby.h"
 #include "multiplayergame.h"
 #include "multiplayerscoring.h"
@@ -69,14 +70,10 @@ void Multiplayer::tick(float delta) {
 void Multiplayer::render(ui::Frame &f) {
   if (!connection.server) {
     if (connection.disconnecting) {
-      auto p = ui::TextProperties::normal;
-      p.size = 60;
-      f.drawText({400, 400}, {"Disconnecting..."}, p);
+      f.drawText({400, 400}, "Disconnecting...", style.normalText);
       return;
     } else {
-      auto p = ui::TextProperties::normal;
-      p.size = 60;
-      f.drawText({400, 400}, {"Connecting..."}, p);
+      f.drawText({400, 400}, {"Connecting..."}, style.normalText);
       return;
     }
   }

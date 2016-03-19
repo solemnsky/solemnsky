@@ -12,6 +12,8 @@ const static struct Style {
   struct Base {
     sf::Vector2f pageSize;
 
+    ui::TextProperties normalText;
+
     sf::Color buttonColor,
         buttonHotColor,
         buttonPressedColor,

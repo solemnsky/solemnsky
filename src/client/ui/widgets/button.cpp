@@ -11,7 +11,7 @@ Button::Style::Style(const sf::Color &baseColor,
                      const sf::Color &textColor,
                      const sf::Vector2f &dimensions,
                      const float heatRate,
-                     const int fontSize) :
+                     const TextProperties &textProp) :
     baseColor(baseColor),
     hotColor(hotColor),
     clickedColor(clickedColor),
@@ -19,7 +19,7 @@ Button::Style::Style(const sf::Color &baseColor,
     textColor(textColor),
     dimensions(dimensions),
     heatRate(heatRate),
-    fontSize(fontSize) { }
+    textProp(textProp) { }
 
 sf::FloatRect Button::getBody() {
   return sf::FloatRect(pos, style.dimensions);
@@ -48,13 +48,12 @@ void Button::render(Frame &f) {
     else f.drawRect(body, style.clickedColor);
   }
 
-  const auto size = f.textSize(text, style.fontSize);
+  const auto size = f.textSize(text, style.textProp.size);
   f.drawText(
       sf::Vector2f(
           body.left + (body.width / 2) - (size.x / 2),
           body.top - 5), // TODO: get text bounds to work
-      {text}, style.fontSize, style.textColor
-  );
+      text, style.textProp);
 }
 
 bool Button::handle(const sf::Event &event) {

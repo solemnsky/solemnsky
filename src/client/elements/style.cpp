@@ -26,14 +26,14 @@ Style::Base::Base() :
 
     normalButton(buttonColor, buttonHotColor, buttonPressedColor,
                  buttonInactiveColor, textColor,
-                 {200, 50}, heatRate, normalFontSize),
+                 {200, 50}, heatRate, normalText),
 
     normalTextEntry(buttonColor, buttonHotColor, textAreaBackground,
                     textColor, textAreaForeground, {500, 40},
                     normalFontSize, heatRate),
     normalCheckbox(buttonColor, buttonHotColor, buttonPressedColor,
                    buttonInactiveColor, textColor,
-                   {40, 40}, heatRate, normalFontSize) { }
+                   {40, 40}, heatRate, normalText) { }
 
 Style::Splash::Splash() {
   loadingText.size = 50;
