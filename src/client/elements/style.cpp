@@ -35,6 +35,10 @@ Style::Base::Base() :
                    buttonInactiveColor, textColor,
                    {40, 40}, heatRate, normalFontSize) { }
 
+Style::Splash::Splash() {
+loadingText.size = 50;
+}
+
 Style::Menu::Menu(const Style::Base &base) :
     unfocusedPageScale(500.0f / 1600.0f),
 
@@ -121,3 +125,5 @@ Style::Style() :
     home(base),
     settings(base),
     multi(base) { }
+
+
