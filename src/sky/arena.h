@@ -105,7 +105,31 @@ struct ArenaDelta: public VerifyStructure {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(type, quit, join, player, motd, arenaMode, skyInitializer);
+    using namespace cereal;
+    ar(type);
+    switch (type) {
+      case Type::Quit: {
+        ar(make_nvp("quit", quit));
+        break;
+      }
+      case Type::Join: {
+        ar(make_nvp("quit", join));
+        break;
+      }
+      case Type::Modify: {
+        ar(make_nvp("player", player));
+        break;
+      }
+      case Type::Motd: {
+        ar(make_nvp("motd", motd));
+        break;
+      }
+      case Type::Mode: {
+        ar(make_nvp("arenaMode", arenaMode),
+           make_nvp("skyInitializer", skyInitializer));
+        break;
+      }
+    }
   }
 
   Type type;
@@ -125,7 +149,6 @@ struct ArenaDelta: public VerifyStructure {
   static ArenaDelta Mode(const ArenaMode,
                          const optional<SkyInitializer> &initializer = {});
 };
-
 
 /**
  * A model of a game arena, with utilities to help syncing it over a network.

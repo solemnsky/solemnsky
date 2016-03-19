@@ -4,20 +4,14 @@
  * Multiplayer.
  */
 
-void Multiplayer::updateView() {
+std::unique_ptr<MultiplayerView> Multiplayer::mkView() {
   switch (connection.arena.mode) {
-    case sky::ArenaMode::Lobby: {
-      view = std::make_unique<MultiplayerLobby>(shared, connection);
-      break;
-    }
-    case sky::ArenaMode::Game: {
-      view = std::make_unique<MultiplayerGame>(shared, connection);
-      break;
-    }
-    case sky::ArenaMode::Scoring: {
-      view = std::make_unique<MultiplayerScoring>(shared, connection);
-      break;
-    }
+    case sky::ArenaMode::Lobby:
+      return std::make_unique<MultiplayerLobby>(shared, connection);
+    case sky::ArenaMode::Game:
+      return std::make_unique<MultiplayerGame>(shared, connection);
+    case sky::ArenaMode::Scoring:
+      return std::make_unique<MultiplayerScoring>(shared, connection);
   }
 }
 
@@ -63,7 +57,7 @@ void Multiplayer::tick(float delta) {
   if (connection.disconnecting) return;
 
   if (connection.connected) {
-    if (!view or view->target != connection.arena.mode) updateView();
+    if (!view or view->target != connection.arena.mode) view = mkView();
     view->tick(delta);
     if (packet) view->onPacket(*packet);
   }

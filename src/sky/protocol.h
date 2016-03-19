@@ -25,7 +25,36 @@ struct ClientPacket: public VerifyStructure {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(type, stringData, playerDelta, skyDelta, team);
+    ar(type);
+    switch (type) {
+      case Type::Ping: {
+        break;
+      }
+      case Type::ReqJoin: {
+        ar(stringData);
+        break;
+      }
+      case Type::ReqDelta: {
+        ar(playerDelta);
+        break;
+      }
+      case Type::ReqSpawn: {
+        break;
+      }
+      case Type::ReqKill: {
+        break;
+      }
+      case Type::ReqTeamChange: {
+        ar(team);
+        break;
+      }
+      case Type::NoteSkyDelta: {
+        ar(skyDelta);
+      }
+      case Type::Chat: {
+        ar(stringData);
+      }
+    }
   }
 
   ClientPacket();
@@ -71,7 +100,17 @@ struct ServerMessage: public VerifyStructure {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(type, from, contents);
+    ar(type);
+    switch (type) {
+      case Type::Chat: {
+        ar(from, contents);
+        break;
+      }
+      case Type::Broadcast: {
+        ar(contents);
+        break;
+      }
+    }
   }
 
   Type type;
@@ -108,7 +147,27 @@ struct ServerPacket: public VerifyStructure {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(type, message, pid, arenaInitializer, arenaDelta, skyDelta);
+    ar(type);
+    switch (type) {
+      case Type::Pong:
+        break;
+      case Type::Message: {
+        ar(message);
+        break;
+      }
+      case Type::AckJoin: {
+        ar(pid, arenaInitializer);
+        break;
+      }
+      case Type::NoteArenaDelta: {
+        ar(arenaDelta);
+        break;
+      }
+      case Type::NoteSkyDelta: {
+        ar(skyDelta);
+        break;
+      }
+    }
   }
 
   Type type;
