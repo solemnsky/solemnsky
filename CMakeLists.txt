@@ -97,8 +97,8 @@ add_executable(solemnsky_client
         src/client/multiplayer/multiplayershared.cpp
         src/client/multiplayer/multiplayershared.h
 
-        src/client/multiplayer/multiplayerui.cpp
-        src/client/multiplayer/multiplayerui.h
+        src/client/multiplayer/multiplayerscoring.cpp
+        src/client/multiplayer/multiplayerscoring.h
 
         src/client/subsystem/render.cpp
         src/client/subsystem/render.h
@@ -152,7 +152,7 @@ add_executable(solemnsky_client
 
         src/client/settingspage.cpp
         src/client/settingspage.h
-        )
+        src/client/multiplayer/multiplayerlobby.cpp src/client/multiplayer/multiplayerlobby.h src/client/multiplayer/multiplayergame.cpp src/client/multiplayer/multiplayergame.h)
 target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics
