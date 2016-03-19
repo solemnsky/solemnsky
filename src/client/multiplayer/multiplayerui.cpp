@@ -98,14 +98,24 @@ void MultiplayerLobby::onChangeSettings(const SettingsDelta &settings) {
 MultiplayerGame::MultiplayerGame(
     ClientShared &shared, MultiplayerConnection &connection) :
     MultiplayerView(sky::ArenaMode::Game, shared, connection),
-    renderSystem(connection.arena.sky.get_ptr()) { }
+    renderSystem(connection.arena.sky.get_ptr()),
+    skyDeltaUpdate(0.1) { }
 
 void MultiplayerGame::tick(float delta) {
-
+  if (skyDeltaUpdate.cool(delta)) {
+    skyDeltaUpdate.reset();
+    connection.transmit(sky::ClientPacket::NoteSkyDelta(
+        sky.collectDelta()
+    ));
+  }
 }
 
 void MultiplayerGame::render(ui::Frame &f) {
-  f.drawSprite(textureOf(Res::Title), {0, 0}, {0, 0, 1600, 900});
+  if (sky::Plane *plane =
+      sky.getPlane(connection.myPlayer->pid)) {
+    renderSystem.render(f, plane->state.pos);
+  } else renderSystem.render(f, {0, 0});
+
   f.drawText({300, 300}, "need to implement this");
 }
 

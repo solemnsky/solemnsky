@@ -218,8 +218,8 @@ optional<ClientEvent> Arena::applyDelta(const ArenaDelta &delta) {
       if (mode == ArenaMode::Lobby) return ClientEvent::LobbyStart();
       if (mode == ArenaMode::Scoring) return ClientEvent::ScoringStart();
       if (mode == ArenaMode::Game) {
-        sky.emplace(*delta.skyInitializer);
-        return ClientEvent::GameStart(delta.skyInitializer->mapName);
+        sky = *delta.skyInitializer;
+        return ClientEvent::GameStart(sky->mapName);
       }
       break;
     }
@@ -229,7 +229,7 @@ optional<ClientEvent> Arena::applyDelta(const ArenaDelta &delta) {
 
 ArenaInitializer Arena::captureInitializer() {
   if (mode == ArenaMode::Game)
-    return ArenaInitializer(players, motd, mode, sky->captureInitializer());
+    return ArenaInitializer(players, motd, mode, sky);
   else return ArenaInitializer(players, motd, mode, {});
 }
 

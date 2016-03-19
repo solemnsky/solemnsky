@@ -166,7 +166,8 @@ class Arena {
   std::string motd; // message of the day
 
   ArenaMode mode;
-  optional<Sky> sky;
+  optional<SkyInitializer> sky; // if we're in the Game mode,
+  // have a SkyInitializer available
 
   /**
    * Initializers / deltas.
