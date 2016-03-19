@@ -106,6 +106,7 @@ void MultiplayerGame::tick(float delta) {
 
 void MultiplayerGame::render(ui::Frame &f) {
   f.drawSprite(textureOf(Res::Title), {0, 0}, {0, 0, 1600, 900});
+  f.drawText({300, 300}, "need to implement this");
 }
 
 bool MultiplayerGame::handle(const sf::Event &event) {

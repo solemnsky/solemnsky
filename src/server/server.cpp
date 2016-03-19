@@ -10,6 +10,7 @@ Server::Server(const unsigned short port) :
     host(tg::HostType::Server, port),
     running(true) {
   appLog("Starting server on port " + std::to_string(port), LogOrigin::Server);
+  arena.mode = sky::ArenaMode::Game;
 }
 
 void Server::broadcastToClients(const sky::ServerPacket &packet) {
