@@ -7,6 +7,7 @@
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include "client/util/resources.h"
+#include "client/ui/textprop.h"
 
 namespace ui {
 class Control;
@@ -71,15 +72,17 @@ class Frame {
         });
   }
 
-  inline float drawText(const sf::Vector2f pos,
-                       const std::string &string,
-                       const int size = 24,
-                       const sf::Color &color = sf::Color::White,
-                       const int maxWidth = 0,
-                       const bool alignBottom = false,
-                       const sf::Font &font = fontOf(Res::Font),
-                       const sf::Text::Style &style = sf::Text::Regular) {
-    return drawText(pos, {string}, size, color, maxWidth, alignBottom, font, style);
+  inline float drawText(const sf::Vector2f pos, const std::string &string,
+                        const TextProperties &prop = TextProperties::normal){
+    return drawText(pos, {string}, prop);
+  }
+  inline float drawText(const sf::Vector2f pos, const std::string &string,
+                        const int size,
+                        const sf::Color &col = sf::Color::White){
+    auto p = TextProperties::normal;
+    p.size = size;
+    p.color = col;
+    return drawText(pos, {string}, p);
   }
 
   // non-inline methods
@@ -93,20 +96,10 @@ class Frame {
   float drawText(const sf::Vector2f &pos,
                 const Iterator beginString,
                 const Iterator endString,
-                const int size = 24,
-                const sf::Color &color = sf::Color::White,
-                const int maxWidth = 0,
-                const bool alignBottom = false,
-                const sf::Font &font = fontOf(Res::Font),
-                const sf::Text::Style &style = sf::Text::Regular);
+                const TextProperties &prop = TextProperties::normal);
   float drawText(const sf::Vector2f &pos,
                 std::initializer_list<std::string> strings,
-                const int size = 24,
-                const sf::Color &color = sf::Color::White,
-                const int maxWidth = 0,
-                const bool alignBottom = false,
-                const sf::Font &font = fontOf(Res::Font),
-                const sf::Text::Style &style = sf::Text::Regular);
+                const TextProperties &prop = TextProperties::normal);
 
   void drawSprite(const sf::Texture &texture, const sf::Vector2f &pos,
                   const sf::IntRect &portion);
@@ -121,12 +114,7 @@ template<typename Iterator>
 float Frame::drawText(const sf::Vector2f &pos,
                      const Iterator beginString,
                      const Iterator endString,
-                     const int size,
-                     const sf::Color &color,
-                     int maxWidth,
-                     const bool alignBottom,
-                     const sf::Font &font,
-                     const sf::Text::Style &style){
+                     const TextProperties &prop){
   float yOffset = 0;
 
   for (Iterator i = beginString; i != endString; i++) {
@@ -134,27 +122,27 @@ float Frame::drawText(const sf::Vector2f &pos,
 
     primCount++;
     sf::Text text;
-    text.setFont(font);
-    text.setCharacterSize((unsigned int) size);
-    text.setStyle(style);
+    text.setFont(prop.font);
+    text.setCharacterSize((unsigned int) prop.size);
+    text.setStyle(prop.style);
     text.setString(string);
 
     int lines = 1;
 
-    if (maxWidth > 0){
+    if (prop.maxWidth > 0){
       int width = text.getLocalBounds().width;
-      if (width > maxWidth){
-        if (maxWidth < 1) maxWidth = 100;
+      if (width > prop.maxWidth){
         size_t prev = std::string::npos;
-        int check = (width % maxWidth) + (width / maxWidth) * maxWidth;
+        int check = (width % prop.maxWidth) +
+                    (width / prop.maxWidth) * prop.maxWidth;
         size_t p;
         while ((p = string.find_last_of(' ', prev)) != std::string::npos){
           int charPos = text.findCharacterPos(p).x;
           if (charPos - check < 0){
             string.insert(p, "\n");
-            check -= maxWidth;
+            check -= prop.maxWidth;
             lines++;
-            if (check < maxWidth) break;
+            if (check < prop.maxWidth) break;
           }
           prev = p - 1;
         }
@@ -163,10 +151,10 @@ float Frame::drawText(const sf::Vector2f &pos,
     }
 
     text.setPosition(pos + sf::Vector2f(0, yOffset));
-    text.setColor(alphaScaleColor(color));
+    text.setColor(alphaScaleColor(prop.color));
     window.draw(text, transformStack.top());
 
-    yOffset += textSize(string, size, font).y;
+    yOffset += textSize(string, prop.size, prop.font).y;
   }
 
   return yOffset;
