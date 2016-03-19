@@ -50,6 +50,7 @@ struct ClientPacket: public VerifyStructure {
       }
       case Type::NoteSkyDelta: {
         ar(skyDelta);
+        break;
       }
       case Type::Chat: {
         ar(stringData);
