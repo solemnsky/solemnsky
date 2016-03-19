@@ -5,14 +5,17 @@
 #include <SFML/Graphics.hpp>
 #include "client/util/resources.h"
 
-namespace ui{
-struct TextProperties{
+namespace ui {
+
+struct TextProperties {
   static const TextProperties normal;
+
   int size = 24;
   sf::Color color = sf::Color::White;
   int maxWidth = 0;
   bool alignBottom = false;
-  sf::Font const& font = fontOf(Res::Font);
+  sf::Font const *font = &fontOf(Res::Font);
   sf::Text::Style style = sf::Text::Regular;
 };
+
 }
