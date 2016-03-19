@@ -38,9 +38,30 @@ class MultiplayerLobby: public MultiplayerView {
  * point of the screen; peripheries include a chat / message interface, and a
  * score screen you can call up with tab.
  */
+
+// subsystem listener for the MultiplayerGame
+class MultiplayerGame;
+class MultiplayerGameListener: public sky::Subsystem {
+ private:
+  MultiplayerGame &parent;
+
+  virtual void tick(const float delta) override;
+  virtual void addPlane(const sky::PID pid, sky::Plane &plane) override;
+  virtual void removePlane(const sky::PID pid) override;
+ public:
+  MultiplayerGameListener(const Sky *sky, MultiplayerGame &parent);
+};
+
 class MultiplayerGame: public MultiplayerView {
  private:
+  // sky and subsystems
+  sky::Sky sky;
   sky::RenderSystem renderSystem;
+  MultiplayerGameListener listener;
+
+  // state and stuff
+  sf::Vector2f panning;
+  Cooldown skyDeltaUpdate;
 
  public:
   MultiplayerGame(ClientShared &shared, MultiplayerConnection &connection);
