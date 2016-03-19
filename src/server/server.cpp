@@ -10,8 +10,8 @@ Server::Server(const unsigned short port) :
     host(tg::HostType::Server, port),
     running(true) {
   appLog("Starting server on port " + std::to_string(port), LogOrigin::Server);
+  sky.emplace("some map");
   arena.mode = sky::ArenaMode::Game;
-  arena.sky.emplace("some map");
 }
 
 void Server::broadcastToClients(const sky::ServerPacket &packet) {
@@ -49,7 +49,7 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
     const std::string &pidString = std::to_string(player->pid);
 
     switch (packet.type) {
-      case ClientPacket::Type::ReqDelta: {
+      case ClientPacket::Type::ReqPlayerDelta: {
         appLog("got delta");
         if (packet.playerDelta->admin && not player->admin) return;
         sky::ArenaDelta delta = sky::ArenaDelta::Modify(

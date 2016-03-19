@@ -19,6 +19,7 @@ MultiplayerLobby::MultiplayerLobby(
     chatInput(style.base.normalTextEntry,
               style.multi.chatPos, "[enter to chat]") {
   areChildren({&specButton, &redButton, &blueButton, &chatInput});
+  connection.eventLog.push_back(sky::ClientEvent::LobbyStart());
 }
 
 void MultiplayerLobby::tick(float delta) {
@@ -98,13 +99,14 @@ void MultiplayerLobby::onChangeSettings(const SettingsDelta &settings) {
 MultiplayerGame::MultiplayerGame(
     ClientShared &shared, MultiplayerConnection &connection) :
     MultiplayerView(sky::ArenaMode::Game, shared, connection),
-    renderSystem(connection.arena.sky.get_ptr()),
-    skyDeltaUpdate(0.1) { }
+    skyDeltaUpdate(0.1) {
+  connection.transmit(sky::ClientPacket::ReqSky());
+}
 
 void MultiplayerGame::tick(float delta) {
   if (skyDeltaUpdate.cool(delta)) {
     skyDeltaUpdate.reset();
-    connection.transmit(sky::ClientPacket::NoteSkyDelta(
+    connection.transmit(sky::ClientPacket::ReqSkyDelta(
         sky.collectDelta()
     ));
   }
@@ -145,7 +147,9 @@ void MultiplayerGame::onChangeSettings(const SettingsDelta &settings) {
 
 MultiplayerScoring::MultiplayerScoring(
     ClientShared &shared, MultiplayerConnection &connection) :
-    MultiplayerView(sky::ArenaMode::Scoring, shared, connection) { }
+    MultiplayerView(sky::ArenaMode::Scoring, shared, connection) {
+  connection.eventLog.push_back(sky::ClientEvent::ScoringStart());
+}
 
 void MultiplayerScoring::tick(float delta) {
 
