@@ -15,7 +15,7 @@ class Multiplayer: public Game {
    */
   MultiplayerConnection connection;
   std::unique_ptr<MultiplayerView> view;
-  void updateView();
+  std::unique_ptr<MultiplayerView> mkView();
 
  public:
   Multiplayer(ClientShared &shared,

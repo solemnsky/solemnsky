@@ -32,7 +32,7 @@ class Server {
   void transmitToClient(ENetPeer *const client,
                         const sky::ServerPacket &packet);
   sky::Player *playerFromPeer(ENetPeer *peer) const;
-  bool processPacket(ENetPeer *client, const sky::ClientPacket &packet);
+  void processPacket(ENetPeer *client, const sky::ClientPacket &packet);
 
  public:
   Server(const unsigned short port);
