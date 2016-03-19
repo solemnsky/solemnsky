@@ -85,6 +85,7 @@ ClientEvent ClientEvent::TeamChange(const std::string &name,
                                     const Team oldTeam,
                                     const Team newTeam) {
   ClientEvent event(Type::TeamChange);
+  event.name = name;
   event.oldTeam = oldTeam;
   event.newTeam = newTeam;
   return event;
