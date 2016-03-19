@@ -1,4 +1,7 @@
 #include "multiplayer.h"
+#include "multiplayerlobby.h"
+#include "multiplayergame.h"
+#include "multiplayerscoring.h"
 
 /**
  * Multiplayer.

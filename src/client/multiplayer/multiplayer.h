@@ -2,7 +2,7 @@
  * Play a game on a server.
  */
 #pragma once
-#include "multiplayerui.h"
+#include "multiplayershared.h"
 
 /**
  * Top-level multiplayer client.
