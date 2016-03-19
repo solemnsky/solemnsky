@@ -71,13 +71,15 @@ class Frame {
         });
   }
 
-  inline void drawText(const sf::Vector2f pos,
+  inline float drawText(const sf::Vector2f pos,
                        const std::string &string,
                        const int size = 24,
                        const sf::Color &color = sf::Color::White,
+                       const int maxWidth = 0,
+                       const bool alignBottom = false,
                        const sf::Font &font = fontOf(Res::Font),
                        const sf::Text::Style &style = sf::Text::Regular) {
-    drawText(pos, {string}, size, color, font, style);
+    return drawText(pos, {string}, size, color, maxWidth, alignBottom, font, style);
   }
 
   // non-inline methods
@@ -88,17 +90,21 @@ class Frame {
                 const sf::Color &color = {});
 
   template<typename Iterator>
-  void drawText(const sf::Vector2f &pos,
+  float drawText(const sf::Vector2f &pos,
                 const Iterator beginString,
                 const Iterator endString,
                 const int size = 24,
                 const sf::Color &color = sf::Color::White,
+                const int maxWidth = 0,
+                const bool alignBottom = false,
                 const sf::Font &font = fontOf(Res::Font),
                 const sf::Text::Style &style = sf::Text::Regular);
-  void drawText(const sf::Vector2f &pos,
+  float drawText(const sf::Vector2f &pos,
                 std::initializer_list<std::string> strings,
                 const int size = 24,
                 const sf::Color &color = sf::Color::White,
+                const int maxWidth = 0,
+                const bool alignBottom = false,
                 const sf::Font &font = fontOf(Res::Font),
                 const sf::Text::Style &style = sf::Text::Regular);
 
@@ -108,33 +114,62 @@ class Frame {
   // text sizes
   sf::Vector2f textSize(const std::string contents, const int size = 24,
                         const sf::Font &font = fontOf(Res::Font));
+
 };
 
 template<typename Iterator>
-void Frame::drawText(const sf::Vector2f &pos,
+float Frame::drawText(const sf::Vector2f &pos,
                      const Iterator beginString,
                      const Iterator endString,
                      const int size,
                      const sf::Color &color,
+                     int maxWidth,
+                     const bool alignBottom,
                      const sf::Font &font,
-                     const sf::Text::Style &style) {
+                     const sf::Text::Style &style){
   float yOffset = 0;
 
   for (Iterator i = beginString; i != endString; i++) {
-    const std::string &string = *i;
+    std::string string = *i;
 
     primCount++;
     sf::Text text;
     text.setFont(font);
-    text.setPosition(pos + sf::Vector2f(0, yOffset));
-    text.setString(string);
     text.setCharacterSize((unsigned int) size);
-    text.setColor(alphaScaleColor(color));
     text.setStyle(style);
+    text.setString(string);
+
+    int lines = 1;
+
+    if (maxWidth > 0){
+      int width = text.getLocalBounds().width;
+      if (width > maxWidth){
+        if (maxWidth < 1) maxWidth = 100;
+        size_t prev = std::string::npos;
+        int check = (width % maxWidth) + (width / maxWidth) * maxWidth;
+        size_t p;
+        while ((p = string.find_last_of(' ', prev)) != std::string::npos){
+          int charPos = text.findCharacterPos(p).x;
+          if (charPos - check < 0){
+            string.insert(p, "\n");
+            check -= maxWidth;
+            lines++;
+            if (check < maxWidth) break;
+          }
+          prev = p - 1;
+        }
+        text.setString(string);
+      }
+    }
+
+    text.setPosition(pos + sf::Vector2f(0, yOffset));
+    text.setColor(alphaScaleColor(color));
     window.draw(text, transformStack.top());
 
     yOffset += textSize(string, size, font).y;
   }
+
+  return yOffset;
 }
 
 }

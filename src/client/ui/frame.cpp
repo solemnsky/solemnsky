@@ -121,13 +121,16 @@ void Frame::drawRect(const sf::Vector2f &topLeft,
   window.draw(rect, transformStack.top());
 }
 
-void Frame::drawText(const sf::Vector2f &pos,
+float Frame::drawText(const sf::Vector2f &pos,
                      const std::initializer_list<std::string> strings,
                      const int size,
                      const sf::Color &color,
+                     const int maxWidth,
+                     const bool alignBottom,
                      const sf::Font &font,
                      const sf::Text::Style &style) {
-  drawText(pos, strings.begin(), strings.end(), size, color, font, style);
+  return drawText(pos, strings.begin(), strings.end(), size,
+           color, maxWidth, alignBottom, font, style);
 }
 
 void Frame::drawSprite(const sf::Texture &texture,

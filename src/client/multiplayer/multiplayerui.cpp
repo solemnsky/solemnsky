@@ -31,9 +31,9 @@ void MultiplayerLobby::render(ui::Frame &f) {
   float offset = 0;
   for (auto iter = connection.eventLog.rbegin();
        iter < connection.eventLog.rend(); iter++) {
-    offset -= style.base.normalFontSize;
-    f.drawText(style.multi.messageLogPos + sf::Vector2f(0, offset),
-               (sky::ClientEvent(*iter)).print(), style.base.normalFontSize);
+    offset -= f.drawText(style.multi.messageLogPos + sf::Vector2f(0, offset),
+               (sky::ClientEvent(*iter)).print(), style.base.normalFontSize,
+               sf::Color::White, 500, true);
   }
 
   offset = 0;
