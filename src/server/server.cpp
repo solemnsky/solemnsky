@@ -112,8 +112,8 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
 void Server::tick(float delta) {
   if (arena.sky) {
     arena.sky->tick(delta);
-    broadcastToClients(sky::ServerPacket::Delta(
-        arena.sky->collectDelta()));
+//    broadcastToClients(sky::ServerPacket::Delta(
+//        arena.sky->collectDelta()));
   }
 
   event = host.poll();
