@@ -98,3 +98,17 @@ bool verifyFields() {
 std::string inQuotes(const std::string &str) {
   return "\"" + str + "\"";
 }
+
+int smallestUnused(std::vector<int> &vec) {
+  // TODO: this could be faster
+  std::sort(vec.begin(), vec.end());
+  int v = 0;
+  for (const int x : vec) {
+    if (x == v) {
+      v++;
+      continue;
+    }
+    break;
+  }
+  return v;
+};

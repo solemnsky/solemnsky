@@ -1,5 +1,7 @@
 #include "util/types.h"
+#include "util/methods.h"
 #include "gtest/gtest.h"
+#include <vector>
 
 /**
  * The basic utilities we have in src/util.
@@ -53,4 +55,13 @@ TEST_F(UtilTest, AngleTest) {
   EXPECT_EQ(x = 360, 0);
   EXPECT_EQ(x = 400, 40);
   EXPECT_EQ(x = -10, 350);
+}
+
+TEST_F(UtilTest, AllocTest) {
+  std::vector<int> x = {3, 1, 0};
+  EXPECT_EQ(smallestUnused(x), 2);
+  x = {2, 1, 0};
+  EXPECT_EQ(smallestUnused(x), 3);
+  x = {2, 1, 3};
+  EXPECT_EQ(smallestUnused(x), 0);
 }

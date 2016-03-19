@@ -106,10 +106,9 @@ Arena::Arena() { }
 
 
 PID Arena::allocPid() const {
-  if (players.empty()) return 0;
-  PID maxPid = 0;
-  for (const auto &player : players) maxPid = std::max(player.pid, maxPid);
-  return maxPid + 1;
+  std::vector<int> usedPids;
+  for (const auto &player : players) usedPids.push_back(player.pid);
+  return (PID) smallestUnused(usedPids);
 }
 
 std::string Arena::allocNickname(const std::string &requested) const {
@@ -119,8 +118,10 @@ std::string Arena::allocNickname(const std::string &requested) const {
 
   const size_t reqSize = rsize;
   std::vector<int> usedNumbers;
+
   for (const auto &player : players) {
     const std::string &name = player.nickname;
+    appLog("Checking name: " + name);
     if (name.size() < rsize) continue;
     if (name.substr(0, rsize) != requested) continue;
 
@@ -130,10 +131,12 @@ std::string Arena::allocNickname(const std::string &requested) const {
     }
 
     readStream.str(name.substr(rsize));
+
     if (readStream.get() != '(') continue;
     readStream >> nickNumber;
     if (!readStream.good()) continue;
     if (readStream.get() != ')') continue;
+    readStream.get();
     if (!readStream.eof()) continue;
 
     usedNumbers.push_back(nickNumber);
@@ -141,9 +144,7 @@ std::string Arena::allocNickname(const std::string &requested) const {
 
   if (usedNumbers.empty()) return requested;
 
-  int maxNum = 0;
-  for (const int val : usedNumbers) maxNum = std::max(val, maxNum);
-  return requested + "(" + std::to_string(maxNum + 1) + ")";
+  return requested + "(" + std::to_string(smallestUnused(usedNumbers)) + ")";
 }
 
 void Arena::applyInitializer(const ArenaInitializer &initializer) {
@@ -151,6 +152,7 @@ void Arena::applyInitializer(const ArenaInitializer &initializer) {
   players = std::list<Player>(initializer.players.begin(),
                               initializer.players.end());
   mode = initializer.mode;
+  if (mode == ArenaMode::Game) sky.emplace(*initializer.skyInitializer);
 }
 
 optional<ClientEvent> Arena::applyDelta(const ArenaDelta &delta) {
@@ -194,6 +196,8 @@ optional<ClientEvent> Arena::applyDelta(const ArenaDelta &delta) {
     }
     case ArenaDelta::Type::Mode: {
       mode = *delta.arenaMode;
+      if (mode == ArenaMode::Game) sky.emplace(*delta.skyInitializer);
+      else sky.reset();
       break;
     }
   }
@@ -201,9 +205,14 @@ optional<ClientEvent> Arena::applyDelta(const ArenaDelta &delta) {
 }
 
 ArenaInitializer Arena::captureInitializer() {
-  if (mode == ArenaMode::Game)
-    return ArenaInitializer(players, motd, mode, sky);
-  else return ArenaInitializer(players, motd, mode, {});
+  ArenaInitializer initializer;
+  initializer.players =
+      std::vector<Player>(players.begin(), players.end());
+  initializer.motd = motd;
+  initializer.mode = mode;
+  if (sky)
+    initializer.skyInitializer = sky->captureInitializer();
+  return initializer;
 }
 
 Player &Arena::connectPlayer(const std::string &requestedNick) {

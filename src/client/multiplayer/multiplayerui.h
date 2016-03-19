@@ -42,8 +42,7 @@ class MultiplayerLobby: public MultiplayerView {
 
 class MultiplayerGame: public MultiplayerView {
  private:
-  // sky and render subsystem
-  std::unique_ptr<sky::Sky> sky;
+  // render subsystem
   std::unique_ptr<sky::RenderSystem> renderSystem;
 
   // state and stuff
