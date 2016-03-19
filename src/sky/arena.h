@@ -66,19 +66,19 @@ struct ArenaInitializer: public VerifyStructure {
       const std::list<Player> players,
       const std::string &motd,
       const ArenaMode mode,
-      const optional<SkyInitializer> skyInitializer);
+      optional<SkyInitializer> skyInitializer);
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(players, motd, mode, skyInitializer);
+    ar(skyInitializer, players, motd, mode);
   }
 
+  optional<SkyInitializer> skyInitializer;
   std::vector<Player> players;
   std::string motd;
   ArenaMode mode;
-  optional<SkyInitializer> skyInitializer;
 
-  bool verifyStructure() const override;
+  const verifyStructure() const override;
 };
 
 /**
@@ -100,8 +100,7 @@ struct ArenaDelta: public VerifyStructure {
       const optional<Player> &join = {},
       const optional<std::pair<PID, PlayerDelta>> &player = {},
       const optional<std::string> motd = {},
-      const optional<ArenaMode> arenaMode = {},
-      const optional<SkyInitializer> skyInitializer = {});
+      const optional<ArenaMode> arenaMode = {});
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -124,7 +123,7 @@ struct ArenaDelta: public VerifyStructure {
         break;
       }
       case Type::Mode: {
-        ar(arenaMode, skyInitializer);
+        ar(arenaMode, initializer);
         break;
       }
     }
@@ -136,7 +135,7 @@ struct ArenaDelta: public VerifyStructure {
   optional<std::pair<PID, PlayerDelta>> player;
   optional<std::string> motd;
   optional<ArenaMode> arenaMode;
-  optional<SkyInitializer> skyInitializer;
+  optional<SkyInitializer> initializer;
 
   bool verifyStructure() const override;
 
@@ -166,8 +165,7 @@ class Arena {
   std::string motd; // message of the day
 
   ArenaMode mode;
-  optional<SkyInitializer> sky; // if we're in the Game mode,
-  // have a SkyInitializer available
+  optional<Sky> sky;
 
   /**
    * Initializers / deltas.

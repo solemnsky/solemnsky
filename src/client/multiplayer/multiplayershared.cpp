@@ -9,7 +9,7 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
 
   if (!myPlayer) {
     // waiting for the arena connection request to be accepted
-    if (packet.type == ServerPacket::Type::AckJoin) {
+    if (packet.type == ServerPacket::Type::ArenaJoin) {
       arena.applyInitializer(*packet.arenaInitializer);
       myPlayer = arena.getPlayer(*packet.pid);
       appLog("Joined arena!", LogOrigin::Client);
@@ -50,7 +50,7 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
       break;
     }
 
-    case ServerPacket::Type::NoteArenaDelta: {
+    case ServerPacket::Type::ArenaDelta: {
       if (optional<sky::ClientEvent> event =
           arena.applyDelta(*packet.arenaDelta)) {
         eventLog.push_back(*event);

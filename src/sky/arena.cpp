@@ -36,24 +36,10 @@ ArenaInitializer::ArenaInitializer() { }
 ArenaInitializer::ArenaInitializer(
     const std::list<Player> players,
     const std::string &motd,
-    const ArenaMode mode,
-    const optional<SkyInitializer> skyInitializer) :
+    const ArenaMode mode) :
     players(players.begin(), players.end()),
     motd(motd),
-    mode(mode),
-    skyInitializer(skyInitializer) { }
-
-bool ArenaInitializer::verifyStructure() const {
-  switch (mode) {
-    case ArenaMode::Lobby:
-      return true;
-    case ArenaMode::Game:
-      return verifyFields(skyInitializer);
-    case ArenaMode::Scoring:
-      return true;
-  }
-  return false;
-}
+    mode(mode) { }
 
 /**
  * ArenaDelta.
@@ -66,16 +52,15 @@ ArenaDelta::ArenaDelta(
     const optional<PID> &quit,
     const optional<Player> &join,
     const optional<std::pair<PID, PlayerDelta>> &player,
-    const optional<std::string> motd,
-    const optional<ArenaMode> arenaMode,
-    const optional<SkyInitializer> skyInitializer) :
+    const optional<std::string> &motd,
+    const optional<ArenaMode> &arenaMode,
+    const optional<SkyInitializer> &initializer) :
     type(type),
     quit(quit),
     join(join),
     player(player),
     motd(motd),
-    arenaMode(arenaMode),
-    skyInitializer(skyInitializer) { }
+    arenaMode(arenaMode) { }
 
 bool ArenaDelta::verifyStructure() const {
   switch (type) {
@@ -88,7 +73,10 @@ bool ArenaDelta::verifyStructure() const {
     case Type::Motd:
       return verifyFields(motd);
     case Type::Mode:
-      return verifyFields(arenaMode, skyInitializer);
+      if (!verifyFields(arenaMode)) return false;
+      if (*arenaMode == ArenaMode::Game)
+        return verifyFields(initializer);
+      else return true;
   }
   return false;
 }
@@ -169,9 +157,6 @@ void Arena::applyInitializer(const ArenaInitializer &initializer) {
   players = std::list<Player>(initializer.players.begin(),
                               initializer.players.end());
   mode = initializer.mode;
-  if (initializer.mode == ArenaMode::Game) {
-    sky.emplace(*initializer.skyInitializer);
-  }
 }
 
 optional<ClientEvent> Arena::applyDelta(const ArenaDelta &delta) {
@@ -215,12 +200,6 @@ optional<ClientEvent> Arena::applyDelta(const ArenaDelta &delta) {
     }
     case ArenaDelta::Type::Mode: {
       mode = *delta.arenaMode;
-      if (mode == ArenaMode::Lobby) return ClientEvent::LobbyStart();
-      if (mode == ArenaMode::Scoring) return ClientEvent::ScoringStart();
-      if (mode == ArenaMode::Game) {
-        sky = *delta.skyInitializer;
-        return ClientEvent::GameStart(sky->mapName);
-      }
       break;
     }
   }

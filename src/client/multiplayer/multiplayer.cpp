@@ -33,7 +33,7 @@ void Multiplayer::onChangeSettings(const SettingsDelta &settings) {
     if (settings.nickname) {
       sky::PlayerDelta delta(*connection.myPlayer);
       delta.nickname = *settings.nickname;
-      connection.transmit(sky::ClientPacket::ReqDelta(delta));
+      connection.transmit(sky::ClientPacket::ReqPlayerDelta(delta));
       // request a nickname change
     }
   }

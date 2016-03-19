@@ -12,13 +12,11 @@ ClientPacket::ClientPacket(
     const Type type,
     const optional<std::string> &stringData,
     const optional<PlayerDelta> &playerDelta,
-    const optional<SkyDelta> &skyDelta,
-    const optional<Team> team) :
+    const optional<SkyDelta> &skyDelta) :
     type(type),
     stringData(stringData),
     playerDelta(playerDelta),
-    skyDelta(skyDelta),
-    team(team) { }
+    skyDelta(skyDelta) { }
 
 bool ClientPacket::verifyStructure() const {
   switch (type) {
@@ -26,16 +24,14 @@ bool ClientPacket::verifyStructure() const {
       return true;
     case Type::ReqJoin:
       return verifyFields(stringData);
-    case Type::ReqDelta:
+    case Type::ReqPlayerDelta:
       return verifyFields(playerDelta);
-    case Type::ReqTeamChange:
-      return verifyFields(team);
+    case Type::ReqSkyDelta:
+      return verifyFields(skyDelta);
     case Type::ReqSpawn:
       return true;
     case Type::ReqKill:
       return true;
-    case Type::NoteSkyDelta:
-      return verifyFields(skyDelta);
     case Type::Chat:
       return verifyFields(stringData);
   }
@@ -50,13 +46,12 @@ ClientPacket ClientPacket::ReqJoin(const std::string &nickname) {
   return ClientPacket(ClientPacket::Type::ReqJoin, nickname);
 }
 
-ClientPacket ClientPacket::ReqDelta(const PlayerDelta &playerDelta) {
-  return ClientPacket(ClientPacket::Type::ReqDelta, {}, playerDelta);
+ClientPacket ClientPacket::ReqPlayerDelta(const PlayerDelta &playerDelta) {
+  return ClientPacket(ClientPacket::Type::ReqPlayerDelta, {}, playerDelta);
 }
 
-ClientPacket ClientPacket::ReqTeamChange(const Team team) {
-  return ClientPacket(ClientPacket::Type::ReqTeamChange,
-                      {}, {}, {}, team);
+ClientPacket ClientPacket::ReqSkyDelta(const SkyDelta &skyDelta) {
+  return ClientPacket(ClientPacket::Type::ReqSkyDelta, {}, {}, skyDelta);
 }
 
 ClientPacket ClientPacket::ReqSpawn() {
@@ -65,10 +60,6 @@ ClientPacket ClientPacket::ReqSpawn() {
 
 ClientPacket ClientPacket::ReqKill() {
   return ClientPacket(ClientPacket::Type::ReqKill);
-}
-
-ClientPacket ClientPacket::NoteSkyDelta(const SkyDelta &skyDelta) {
-  return ClientPacket(ClientPacket::Type::NoteSkyDelta, {}, {}, skyDelta);
 }
 
 ClientPacket ClientPacket::Chat(const std::string &message) {
@@ -115,15 +106,13 @@ ServerPacket::ServerPacket(
     const ServerPacket::Type type,
     const optional<ServerMessage> &message,
     const optional<PID> &pid,
-    const optional<ArenaInitializer> &arenaInitializer,
-    const optional<ArenaDelta> &arenaDelta,
-    const optional<SkyDelta> &skyDelta) :
+    const optional<ArenaInitializer> &init,
+    const optional<ArenaDelta> &delta) :
     type(type),
     message(message),
     pid(pid),
-    arenaInitializer(arenaInitializer),
-    arenaDelta(arenaDelta),
-    skyDelta(skyDelta) { }
+    init(init),
+    delta(delta) { }
 
 ServerPacket::ServerPacket() { }
 
@@ -134,12 +123,10 @@ bool ServerPacket::verifyStructure() const {
     case Type::Message: {
       return verifyFields(message);
     }
-    case Type::AckJoin:
-      return verifyFields(pid, arenaInitializer);
-    case Type::NoteArenaDelta:
-      return verifyFields(arenaDelta);
-    case Type::NoteSkyDelta:
-      return verifyFields(skyDelta);
+    case Type::Init:
+      return verifyFields(pid, init);
+    case Type::Delta:
+      return verifyFields(delta);
   }
   return false;
 }
@@ -152,19 +139,12 @@ ServerPacket ServerPacket::Message(const ServerMessage &message) {
   return ServerPacket(ServerPacket::Type::Message, message);
 }
 
-ServerPacket ServerPacket::AckJoin(const PID pid,
-                                   const ArenaInitializer &arenaInitializer) {
-  return ServerPacket(ServerPacket::Type::AckJoin, {}, pid, arenaInitializer);
+ServerPacket ServerPacket::Init(const PID pid, const ArenaInitializer &init) {
+  return ServerPacket(ServerPacket::Type::Init, {}, pid, init);
 }
 
-ServerPacket ServerPacket::NoteArenaDelta(const ArenaDelta &arenaDelta) {
-  return ServerPacket(
-      ServerPacket::Type::NoteArenaDelta, {}, {}, {}, arenaDelta);
-}
-
-ServerPacket ServerPacket::NoteSkyDelta(const SkyDelta &skyDelta) {
-  return sky::ServerPacket(
-      ServerPacket::Type::NoteSkyDelta, {}, {}, {}, {}, skyDelta);
+ServerPacket ServerPacket::Delta(const ArenaDelta &delta) {
+  return ServerPacket(ServerPacket::Type::Delta, {}, {}, {}, delta);
 }
 
 }

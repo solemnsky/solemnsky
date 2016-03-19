@@ -59,12 +59,11 @@ class MultiplayerConnection {
  * interface is modal, we should write it in modes.
  */
 class MultiplayerView: public ui::Control {
- protected:
+ public:
   // shared state
   ClientShared &shared;
   MultiplayerConnection &connection;
 
- public:
   MultiplayerView(
       sky::ArenaMode target,
       ClientShared &shared,

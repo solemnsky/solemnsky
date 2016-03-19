@@ -15,11 +15,13 @@ struct ClientPacket: public VerifyStructure {
   enum class Type {
     Ping, // request a pong, always available
     ReqJoin, // request joining in the arena, part of the connection protocol
-    ReqDelta, // request a change to your player data
+
+    ReqPlayerDelta, // request a change to your player data
+    ReqSkyDelta, // request to modify the Sky
+
     ReqSpawn, // request to spawn
     ReqKill, // request to die
-    ReqTeamChange, // request to change team / spectator mode
-    NoteSkyDelta, // tell the server what you think is happening in the tutorial
+
     Chat // send a chat message
   };
 
@@ -34,22 +36,18 @@ struct ClientPacket: public VerifyStructure {
         ar(stringData);
         break;
       }
-      case Type::ReqDelta: {
+      case Type::ReqPlayerDelta: {
         ar(playerDelta);
+        break;
+      }
+      case Type::ReqSkyDelta: {
+        ar(skyDelta);
         break;
       }
       case Type::ReqSpawn: {
         break;
       }
       case Type::ReqKill: {
-        break;
-      }
-      case Type::ReqTeamChange: {
-        ar(team);
-        break;
-      }
-      case Type::NoteSkyDelta: {
-        ar(skyDelta);
         break;
       }
       case Type::Chat: {
@@ -63,24 +61,21 @@ struct ClientPacket: public VerifyStructure {
       const Type type,
       const optional<std::string> &stringData = {},
       const optional<PlayerDelta> &playerDelta = {},
-      const optional<SkyDelta> &skyDelta = {},
-      const optional<Team> team = {});
+      const optional<SkyDelta> &skyDelta = {});
 
   Type type;
   optional<std::string> stringData;
   optional<PlayerDelta> playerDelta;
   optional<SkyDelta> skyDelta;
-  optional<Team> team;
 
   bool verifyStructure() const override;
 
   static ClientPacket Ping();
   static ClientPacket ReqJoin(const std::string &nickname);
-  static ClientPacket ReqDelta(const PlayerDelta &playerDelta);
+  static ClientPacket ReqPlayerDelta(const PlayerDelta &playerDelta);
+  static ClientPacket ReqSkyDelta(const SkyDelta &skyDelta);
   static ClientPacket ReqSpawn();
   static ClientPacket ReqKill();
-  static ClientPacket ReqTeamChange(const Team team);
-  static ClientPacket NoteSkyDelta(const SkyDelta &skyDelta);
   static ClientPacket Chat(const std::string &message);
 };
 
@@ -132,19 +127,16 @@ struct ServerPacket: public VerifyStructure {
   enum class Type {
     Pong,
     Message, // message for a client to log
-    AckJoin, // acknowledge a ReqJoin, send ArenaInitializer
-    NoteArenaDelta, // notify clients of a change in the arena
-    NoteSkyDelta // transmit a client-bound snapshot
+    Init, // acknowledge a ReqJoin, send ArenaInitializer
+    Delta, // notify clients of a change in the arena
   };
 
   ServerPacket();
-  ServerPacket(
-      const Type type,
-      const optional<ServerMessage> &message = {},
-      const optional<PID> &pid = {},
-      const optional<ArenaInitializer> &arenaInitializer = {},
-      const optional<ArenaDelta> &arenaDelta = {},
-      const optional<SkyDelta> &skyDelta = {});
+  ServerPacket(const ServerPacket::Type type,
+               const optional<ServerMessage> &message = {},
+               const optional<PID> &pid = {},
+               const optional<ArenaInitializer> &init = {},
+               const optional<ArenaDelta> &delta = {});
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -156,16 +148,12 @@ struct ServerPacket: public VerifyStructure {
         ar(message);
         break;
       }
-      case Type::AckJoin: {
-        ar(pid, arenaInitializer);
+      case Type::Init: {
+        ar(pid, init);
         break;
       }
-      case Type::NoteArenaDelta: {
-        ar(arenaDelta);
-        break;
-      }
-      case Type::NoteSkyDelta: {
-        ar(skyDelta);
+      case Type::Delta: {
+        ar(delta);
         break;
       }
     }
@@ -174,18 +162,15 @@ struct ServerPacket: public VerifyStructure {
   Type type;
   optional<ServerMessage> message;
   optional<PID> pid;
-  optional<ArenaInitializer> arenaInitializer;
-  optional<ArenaDelta> arenaDelta;
-  optional<SkyDelta> skyDelta;
+  optional<ArenaInitializer> init;
+  optional<ArenaDelta> delta;
 
   bool verifyStructure() const override;
 
   static ServerPacket Pong();
   static ServerPacket Message(const ServerMessage &message);
-  static ServerPacket AckJoin(const PID pid,
-                              const ArenaInitializer &arenaInitializer);
-  static ServerPacket NoteArenaDelta(const ArenaDelta &arenaDelta);
-  static ServerPacket NoteSkyDelta(const SkyDelta &skyDelta);
+  static ServerPacket Init(const PID pid, const ArenaInitializer &init);
+  static ServerPacket Delta(const ArenaDelta &delta);
 };
 
 }
