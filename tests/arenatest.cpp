@@ -10,7 +10,7 @@ class ArenaTest: public testing::Test {
 };
 
 /**
- * Players can be connected.
+ * Players can be connected and nicknames / PIDs are allocated correctly.
  */
 TEST_F(ArenaTest, ConnectionTest) {
   sky::Arena arena;
@@ -18,13 +18,18 @@ TEST_F(ArenaTest, ConnectionTest) {
   EXPECT_EQ(player1.pid, 0);
   sky::Player &player2 = arena.connectPlayer("asdf");
   EXPECT_EQ(player2.pid, 1);
+  sky::Player &player3 = arena.connectPlayer("asdf");
+  EXPECT_EQ(player2.pid, 1);
 
   EXPECT_EQ(arena.getPlayer(0)->nickname, "asdf");
+  EXPECT_EQ(arena.getPlayer(1)->nickname, "asdf(1)");
+  EXPECT_EQ(arena.getPlayer(2)->nickname, "asdf(2)");
+
   arena.disconnectPlayer(player1);
   EXPECT_EQ(arena.getPlayer(0), nullptr);
-  EXPECT_EQ(arena.getPlayer(1)->nickname, "asdf(1)");
-  arena.disconnectPlayer(player2);
-  EXPECT_EQ(arena.getPlayer(1), nullptr);
+
+  sky::Player &player4 = arena.connectPlayer("fdsa");
+  EXPECT_EQ(arena.getPlayer(0)->nickname, "fdsa");
 }
 
 /**
@@ -61,6 +66,22 @@ TEST_F(ArenaTest, InitializerTest) {
   EXPECT_EQ(clientArena.getPlayer(0)->admin, true);
   EXPECT_EQ(clientArena.getPlayer(1)->nickname, "somebody else");
   EXPECT_EQ(clientArena.mode, sky::ArenaMode::Scoring);
+}
+
+/**
+ * Arenas correctly manage their Skies.
+ */
+TEST_F(ArenaTest, SkyTest) {
+  sky::Arena clientArena, serverArena;
+
+  serverArena.mode = sky::ArenaMode::Game;
+  serverArena.sky.emplace("some map");
+
+  clientArena.applyInitializer(serverArena.captureInitializer());
+  EXPECT_TRUE(bool(clientArena.sky));
+
+  clientArena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Scoring));
+  EXPECT_FALSE(bool(clientArena.sky));
 }
 
 /**
