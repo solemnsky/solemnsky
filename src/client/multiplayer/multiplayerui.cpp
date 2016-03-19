@@ -37,11 +37,15 @@ void MultiplayerLobby::render(ui::Frame &f) {
   }
 
   offset = 0;
+  sf::Color teamColor;
   for (const sky::Player &player : connection.arena.players) {
     offset += style.base.normalFontSize;
+    teamColor = sf::Color::Black;
+    if (player.team == 1) teamColor = sf::Color::Red;
+    if (player.team == 2) teamColor = sf::Color::Blue;
     f.drawText(style.multi.playerListPos + sf::Vector2f(0, offset),
                player.nickname, style.base.normalFontSize,
-               (player.team == 1) ? sf::Color::Red : sf::Color::Black);
+               teamColor);
   }
 
   ui::Control::render(f);
