@@ -16,39 +16,39 @@ class Control;
  * Properties determining how text is drawn.
  */
 struct TextProperties {
-TextProperties() = default;
+  TextProperties() = default;
 
-int size = 24;
-sf::Color color = sf::Color::White;
-int maxWidth = 0;
-bool alignBottom = false;
-sf::Font const *font = &fontOf(Res::Font);
-sf::Text::Style style = sf::Text::Regular;
+  int size = 24;
+  sf::Color color = sf::Color::White;
+  int maxWidth = 0;
+  bool alignBottom = false;
+  sf::Font const *font = &fontOf(Res::Font);
+  sf::Text::Style style = sf::Text::Regular;
 };
 
 /**
  * Class corresponding to the rendering of a portion of text.
  */
 class TextRender {
-private:
-friend class Frame;
-TextRender(const sf::Vector2f &pos, const TextProperties &properties);
+ private:
+  friend class Frame;
+  TextRender(const sf::Vector2f &pos, const TextProperties &properties);
 
-// parameters
-class Frame *parent;
-const sf::Vector2f &pos;
-const TextProperties &properties;
+  // parameters
+  class Frame *parent;
+  const sf::Vector2f &pos;
+  const TextProperties &properties;
 
-// state
-float yOffset;
-int lines = 1;
-public:
-void draw(const std::string &str);
-void setColor(const sf::Color &);
+  // state
+  float yOffset;
+  int lines = 1;
+ public:
+  void draw(const std::string &str);
+  void setColor(const sf::Color &);
 };
 
 class Frame {
-friend class TextRender;
+  friend class TextRender;
   friend void runSFML(std::function<std::unique_ptr<Control>()> initCtrl);
 
  private:
@@ -109,11 +109,10 @@ friend class TextRender;
   }
 
   inline float drawText(const sf::Vector2f pos, const std::string &string,
-  const TextProperties &prop = {
-  }) {
-  return drawText(pos,[&string](TextRender &render) {
-  render.draw(string);
-  }, prop);
+                        const TextProperties &prop = {}) {
+    return drawText(pos, [&string](TextRender &render) {
+      render.draw(string);
+    }, prop);
   }
 
   // non-inline methods
@@ -124,9 +123,8 @@ friend class TextRender;
                 const sf::Color &color = {});
 
   float drawText(const sf::Vector2f &pos,
-  std::function<void(TextRender &)> f,
-  const TextProperties &prop = {
-  });
+                 std::function<void(TextRender &)> f,
+                 const TextProperties &prop = {});
 
   void drawSprite(const sf::Texture &texture, const sf::Vector2f &pos,
                   const sf::IntRect &portion);

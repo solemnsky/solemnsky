@@ -9,49 +9,48 @@ namespace ui {
  */
 
 TextRender::TextRender(const sf::Vector2f &pos,
-const TextProperties &properties) :
-pos(pos), properties(properties), yOffset(0), lines(1) {
-}
+                       const TextProperties &properties) :
+    pos(pos), properties(properties), yOffset(0), lines(1) { }
 
 void TextRender::draw(const std::string &str) {
-parent->primCount++;
+  parent->primCount++;
 
-sf::Text text;
-text.setFont(*properties.font);
-text.setCharacterSize((unsigned int) properties.size);
-text.setStyle(properties.style);
-text.setString(str);
+  sf::Text text;
+  text.setFont(*properties.font);
+  text.setCharacterSize((unsigned int) properties.size);
+  text.setStyle(properties.style);
+  text.setString(str);
 
-if (properties.maxWidth > 0) {
-int width = (int) text.getLocalBounds().width;
-if (width > properties.maxWidth) {
-size_t prev = std::string::npos;
-int check = (width % properties.maxWidth) +
-(width / properties.maxWidth) * properties.maxWidth;
-size_t p;
-while ((p = str.find_last_of(' ', prev)) != std::string::npos) {
-int charPos = (int) text.findCharacterPos(p).x;
-if (charPos - check < 0) {
-str.insert(p, "\n");
-check -= properties.maxWidth;
-lines++;
-if (check < properties.maxWidth) break;
-}
-prev = p - 1;
-}
-text.setString(str);
-}
-}
+  if (properties.maxWidth > 0) {
+    int width = (int) text.getLocalBounds().width;
+    if (width > properties.maxWidth) {
+      size_t prev = std::string::npos;
+      int check = (width % properties.maxWidth) +
+          (width / properties.maxWidth) * properties.maxWidth;
+      size_t p;
+      while ((p = str.find_last_of(' ', prev)) != std::string::npos) {
+        int charPos = (int) text.findCharacterPos(p).x;
+        if (charPos - check < 0) {
+          str.insert(p, "\n");
+          check -= properties.maxWidth;
+          lines++;
+          if (check < properties.maxWidth) break;
+        }
+        prev = p - 1;
+      }
+      text.setString(str);
+    }
+  }
 
-text.setPosition(pos + sf::Vector2f(0, yOffset));
-text.setColor(parent->alphaScaleColor(properties.color));
-parent->window.draw(text, parent->transformStack.top());
+  text.setPosition(pos + sf::Vector2f(0, yOffset));
+  text.setColor(parent->alphaScaleColor(properties.color));
+  parent->window.draw(text, parent->transformStack.top());
 
-yOffset += parent->textSize(str, properties.size, *properties.font).y;
+  yOffset += parent->textSize(str, properties.size, *properties.font).y;
 }
 
 void TextRender::setColor(const sf::Color &) {
-// stub
+  // stub
 }
 
 /**
@@ -176,11 +175,11 @@ void Frame::drawRect(const sf::Vector2f &topLeft,
 }
 
 float Frame::drawText(const sf::Vector2f &pos,
-std::function<void(TextRender &)> f,
-const TextProperties &prop) {
-TextRender render(pos, prop);
-f(render);
-return render.yOffset;
+                      std::function<void(TextRender &)> f,
+                      const TextProperties &prop) {
+  TextRender render(pos, prop);
+  f(render);
+  return render.yOffset;
 }
 
 void Frame::drawSprite(const sf::Texture &texture,
@@ -191,10 +190,10 @@ void Frame::drawSprite(const sf::Texture &texture,
   sprite.setTexture(texture);
   sprite.setPosition(pos);
   sprite.setTextureRect(portion);
-sprite.setColor(sf::Color(255,
-255,
-255,
-(sf::Uint8) (255 * alphaStack.top())));
+  sprite.setColor(sf::Color(255,
+                            255,
+                            255,
+                            (sf::Uint8) (255 * alphaStack.top())));
   window.draw(sprite, transformStack.top());
 }
 

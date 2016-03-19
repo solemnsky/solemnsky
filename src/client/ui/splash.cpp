@@ -1,6 +1,5 @@
 #include "splash.h"
-#include
- "client/elements/style.h"
+#include "client/elements/style.h"
 
 namespace ui {
 
@@ -13,9 +12,7 @@ void SplashScreen::tick(float delta) {
 }
 
 void SplashScreen::render(ui::Frame &f) {
-  f.drawText({
-  800, 450
-  }, "loading resources...", style.splash.loadingText);
+  f.drawText({800, 450}, "loading resources...", style.splash.loadingText);
   screenDrawn = true;
 }
 
