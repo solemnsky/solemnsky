@@ -10,6 +10,7 @@
  * In the lobby, we can talk to people, see teams, change teams, and vote for
  * the game to start.
  */
+
 class MultiplayerLobby: public MultiplayerView {
  private:
   ui::Button specButton;
@@ -37,13 +38,26 @@ class MultiplayerLobby: public MultiplayerView {
  * In the game, the rendered representation of the game is the central
  * point of the screen; peripheries include a chat / message interface, and a
  * score screen you can call up with tab.
+ *
+ * MultiplayerGame assumes connection.arena.sky exists. This is safe, but if
+ * it's violated *bad things* happen.
  */
+
 class MultiplayerGame: public MultiplayerView {
  private:
+  // sky and render subsystem
+  sky::Sky &sky;
   sky::RenderSystem renderSystem;
 
+  // state and stuff
+  sf::Vector2f panning;
+  Cooldown skyDeltaUpdate;
+
+  bool skyDied() const;
+
  public:
-  MultiplayerGame(ClientShared &shared, MultiplayerConnection &connection);
+  MultiplayerGame(ClientShared &shared,
+                  MultiplayerConnection &connection);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;

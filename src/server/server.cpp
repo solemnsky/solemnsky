@@ -47,22 +47,20 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
     const std::string &pidString = std::to_string(player->pid);
 
     switch (packet.type) {
-      case ClientPacket::Type::ReqDelta: {
+      case ClientPacket::Type::ReqPlayerDelta: {
         appLog("got delta");
         if (packet.playerDelta->admin && not player->admin) return;
+        // more restrictions here
         sky::ArenaDelta delta = sky::ArenaDelta::Modify(
             player->pid, *packet.playerDelta);
         arena.applyDelta(delta);
-        broadcastToClients(ServerPacket::NoteArenaDelta(delta));
+        broadcastToClients(ServerPacket::Delta(delta));
         break;
       }
 
-      case ClientPacket::Type::ReqTeamChange: {
-        player->team = *packet.team;
-        sky::PlayerDelta delta(*player);
-        delta.team = *packet.team;
-        broadcastToClients(sky::ServerPacket::NoteArenaDelta(
-            sky::ArenaDelta::Modify(player->pid, delta)));
+      case ClientPacket::Type::ReqSkyDelta: {
+        if (!arena.sky) return;
+        arena.sky->applyDelta(*packet.skyDelta);
         break;
       }
 
@@ -71,12 +69,6 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
       }
 
       case ClientPacket::Type::ReqKill: {
-        break;
-      }
-
-      case ClientPacket::Type::NoteSkyDelta: {
-        if (!arena.sky) return;
-        arena.sky->applyDelta(*packet.skyDelta);
         break;
       }
 
@@ -108,10 +100,10 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
              LogOrigin::Server);
 
       transmitToClient(
-          client, ServerPacket::AckJoin(
+          client, ServerPacket::Init(
               newPlayer.pid, arena.captureInitializer()));
       broadcastToClientsExcept(
-          newPlayer.pid, ServerPacket::NoteArenaDelta(
+          newPlayer.pid, ServerPacket::Delta(
               ArenaDelta::Join(newPlayer)));
     }
   }
@@ -120,8 +112,8 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
 void Server::tick(float delta) {
   if (arena.sky) {
     arena.sky->tick(delta);
-    broadcastToClients(sky::ServerPacket::NoteSkyDelta(
-        arena.sky->collectDelta()));
+//    broadcastToClients(sky::ServerPacket::Delta(
+//        arena.sky->collectDelta()));
   }
 
   event = host.poll();
@@ -139,7 +131,7 @@ void Server::tick(float delta) {
                LogOrigin::Server);
 
         broadcastToClientsExcept(
-            player->pid, sky::ServerPacket::NoteArenaDelta(
+            player->pid, sky::ServerPacket::Delta(
                 sky::ArenaDelta::Quit(player->pid)));
 
         arena.disconnectPlayer(*player);

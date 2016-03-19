@@ -13,6 +13,7 @@ class Server {
   tg::UsageFlag flag; // for enet global state
 
   double uptime;
+  optional<sky::Sky> sky;
   sky::Arena arena;
 
   /**

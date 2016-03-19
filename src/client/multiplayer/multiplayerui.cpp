@@ -19,6 +19,7 @@ MultiplayerLobby::MultiplayerLobby(
     chatInput(style.base.normalTextEntry,
               style.multi.chatPos, "[enter to chat]") {
   areChildren({&specButton, &redButton, &blueButton, &chatInput});
+  connection.eventLog.push_back(sky::ClientEvent::LobbyStart());
 }
 
 void MultiplayerLobby::tick(float delta) {
@@ -69,12 +70,15 @@ void MultiplayerLobby::reset() {
 
 void MultiplayerLobby::signalRead() {
   ui::Control::signalRead();
+
+  sky::PlayerDelta delta(*connection.myPlayer);
+
   if (specButton.clickSignal)
-    connection.transmit(sky::ClientPacket::ReqTeamChange(0));
+    connection.requestTeamChange(0);
   if (redButton.clickSignal)
-    connection.transmit(sky::ClientPacket::ReqTeamChange(1));
+    connection.requestTeamChange(1);
   if (blueButton.clickSignal)
-    connection.transmit(sky::ClientPacket::ReqTeamChange(2));
+    connection.requestTeamChange(2);
   if (chatInput.inputSignal)
     connection.transmit(sky::ClientPacket::Chat(*chatInput.inputSignal));
 }
@@ -98,14 +102,32 @@ void MultiplayerLobby::onChangeSettings(const SettingsDelta &settings) {
 MultiplayerGame::MultiplayerGame(
     ClientShared &shared, MultiplayerConnection &connection) :
     MultiplayerView(sky::ArenaMode::Game, shared, connection),
-    renderSystem(connection.arena.sky.get_ptr()) { }
+    sky(*connection.arena.sky),
+    renderSystem(&sky),
+    skyDeltaUpdate(0.1) {
+  sky.linkSystem(&renderSystem);
+}
+
+bool MultiplayerGame::skyDied() const {
+  return !connection.arena.sky;
+}
 
 void MultiplayerGame::tick(float delta) {
-
+  if (skyDeltaUpdate.cool(delta)) {
+    skyDeltaUpdate.reset();
+    connection.transmit(sky::ClientPacket::ReqSkyDelta(
+        sky.collectDelta()
+    ));
+  }
 }
 
 void MultiplayerGame::render(ui::Frame &f) {
-  f.drawSprite(textureOf(Res::Title), {0, 0}, {0, 0, 1600, 900});
+  if (sky::Plane *plane =
+      sky.getPlane(connection.myPlayer->pid)) {
+    renderSystem.render(f, plane->state.pos);
+  } else renderSystem.render(f, {0, 0});
+
+  f.drawText({300, 300}, "need to implement this");
 }
 
 bool MultiplayerGame::handle(const sf::Event &event) {
@@ -134,7 +156,9 @@ void MultiplayerGame::onChangeSettings(const SettingsDelta &settings) {
 
 MultiplayerScoring::MultiplayerScoring(
     ClientShared &shared, MultiplayerConnection &connection) :
-    MultiplayerView(sky::ArenaMode::Scoring, shared, connection) { }
+    MultiplayerView(sky::ArenaMode::Scoring, shared, connection) {
+  connection.eventLog.push_back(sky::ClientEvent::ScoringStart());
+}
 
 void MultiplayerScoring::tick(float delta) {
 

@@ -33,26 +33,9 @@ void Player::applyDelta(const PlayerDelta &delta) {
 
 ArenaInitializer::ArenaInitializer() { }
 
-ArenaInitializer::ArenaInitializer(
-    const std::list<Player> players,
-    const std::string &motd,
-    const ArenaMode mode,
-    const optional<SkyInitializer> skyInitializer) :
-    players(players.begin(), players.end()),
-    motd(motd),
-    mode(mode),
-    skyInitializer(skyInitializer) { }
-
 bool ArenaInitializer::verifyStructure() const {
-  switch (mode) {
-    case ArenaMode::Lobby:
-      return true;
-    case ArenaMode::Game:
-      return verifyFields(skyInitializer);
-    case ArenaMode::Scoring:
-      return true;
-  }
-  return false;
+  if (mode == ArenaMode::Game) return verifyFields(skyInitializer);
+  return true;
 }
 
 /**
@@ -61,21 +44,7 @@ bool ArenaInitializer::verifyStructure() const {
 
 ArenaDelta::ArenaDelta() { }
 
-ArenaDelta::ArenaDelta(
-    const ArenaDelta::Type type,
-    const optional<PID> &quit,
-    const optional<Player> &join,
-    const optional<std::pair<PID, PlayerDelta>> &player,
-    const optional<std::string> motd,
-    const optional<ArenaMode> arenaMode,
-    const optional<SkyInitializer> skyInitializer) :
-    type(type),
-    quit(quit),
-    join(join),
-    player(player),
-    motd(motd),
-    arenaMode(arenaMode),
-    skyInitializer(skyInitializer) { }
+ArenaDelta::ArenaDelta(const ArenaDelta::Type type) : type(type) { }
 
 bool ArenaDelta::verifyStructure() const {
   switch (type) {
@@ -88,32 +57,45 @@ bool ArenaDelta::verifyStructure() const {
     case Type::Motd:
       return verifyFields(motd);
     case Type::Mode:
-      return verifyFields(arenaMode, skyInitializer);
+      if (!verifyFields(arenaMode)) return false;
+      if (*arenaMode == ArenaMode::Game)
+        return verifyFields(skyInitializer);
+      else return true;
   }
   return false;
 }
 
 ArenaDelta ArenaDelta::Quit(const PID pid) {
-  return ArenaDelta(ArenaDelta::Type::Quit, pid);
+  ArenaDelta delta(Type::Quit);
+  delta.quit = pid;
+  return delta;
+
 }
 
 ArenaDelta ArenaDelta::Join(const Player &player) {
-  return ArenaDelta(ArenaDelta::Type::Join, {}, player);
+  ArenaDelta delta(Type::Join);
+  delta.join = player;
+  return delta;
 }
 
-ArenaDelta ArenaDelta::Modify(const PID pid, const PlayerDelta &delta) {
-  return ArenaDelta(ArenaDelta::Type::Modify, {}, {},
-                    std::pair<PID, PlayerDelta>(pid, delta));
+ArenaDelta ArenaDelta::Modify(const PID pid, const PlayerDelta &pDelta) {
+  ArenaDelta delta(Type::Modify);
+  delta.player = std::pair<PID, PlayerDelta>(pid, pDelta);
+  return delta;
 }
 
 ArenaDelta ArenaDelta::Motd(const std::string &motd) {
-  return ArenaDelta(ArenaDelta::Type::Motd, {}, {}, {}, motd);
+  ArenaDelta delta(Type::Motd);
+  delta.motd = motd;
+  return delta;
 }
 
 ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode,
-                            const optional<SkyInitializer> &initializer) {
-  return ArenaDelta(ArenaDelta::Type::Mode, {}, {}, {}, {},
-                    arenaMode, initializer);
+                            const optional<SkyInitializer> &skyInitializer) {
+  ArenaDelta delta(Type::Mode);
+  delta.arenaMode = arenaMode;
+  delta.skyInitializer = skyInitializer;
+  return delta;
 }
 
 /**
@@ -124,10 +106,9 @@ Arena::Arena() { }
 
 
 PID Arena::allocPid() const {
-  if (players.empty()) return 0;
-  PID maxPid = 0;
-  for (const auto &player : players) maxPid = std::max(player.pid, maxPid);
-  return maxPid + 1;
+  std::vector<int> usedPids;
+  for (const auto &player : players) usedPids.push_back(player.pid);
+  return (PID) smallestUnused(usedPids);
 }
 
 std::string Arena::allocNickname(const std::string &requested) const {
@@ -137,8 +118,10 @@ std::string Arena::allocNickname(const std::string &requested) const {
 
   const size_t reqSize = rsize;
   std::vector<int> usedNumbers;
+
   for (const auto &player : players) {
     const std::string &name = player.nickname;
+    appLog("Checking name: " + name);
     if (name.size() < rsize) continue;
     if (name.substr(0, rsize) != requested) continue;
 
@@ -148,10 +131,12 @@ std::string Arena::allocNickname(const std::string &requested) const {
     }
 
     readStream.str(name.substr(rsize));
+
     if (readStream.get() != '(') continue;
     readStream >> nickNumber;
     if (!readStream.good()) continue;
     if (readStream.get() != ')') continue;
+    readStream.get();
     if (!readStream.eof()) continue;
 
     usedNumbers.push_back(nickNumber);
@@ -159,9 +144,7 @@ std::string Arena::allocNickname(const std::string &requested) const {
 
   if (usedNumbers.empty()) return requested;
 
-  int maxNum = 0;
-  for (const int val : usedNumbers) maxNum = std::max(val, maxNum);
-  return requested + "(" + std::to_string(maxNum + 1) + ")";
+  return requested + "(" + std::to_string(smallestUnused(usedNumbers)) + ")";
 }
 
 void Arena::applyInitializer(const ArenaInitializer &initializer) {
@@ -169,9 +152,7 @@ void Arena::applyInitializer(const ArenaInitializer &initializer) {
   players = std::list<Player>(initializer.players.begin(),
                               initializer.players.end());
   mode = initializer.mode;
-  if (initializer.mode == ArenaMode::Game) {
-    sky.emplace(*initializer.skyInitializer);
-  }
+  if (mode == ArenaMode::Game) sky.emplace(*initializer.skyInitializer);
 }
 
 optional<ClientEvent> Arena::applyDelta(const ArenaDelta &delta) {
@@ -215,12 +196,8 @@ optional<ClientEvent> Arena::applyDelta(const ArenaDelta &delta) {
     }
     case ArenaDelta::Type::Mode: {
       mode = *delta.arenaMode;
-      if (mode == ArenaMode::Lobby) return ClientEvent::LobbyStart();
-      if (mode == ArenaMode::Scoring) return ClientEvent::ScoringStart();
-      if (mode == ArenaMode::Game) {
-        sky.emplace(*delta.skyInitializer);
-        return ClientEvent::GameStart(delta.skyInitializer->mapName);
-      }
+      if (mode == ArenaMode::Game) sky.emplace(*delta.skyInitializer);
+      else sky.reset();
       break;
     }
   }
@@ -228,9 +205,14 @@ optional<ClientEvent> Arena::applyDelta(const ArenaDelta &delta) {
 }
 
 ArenaInitializer Arena::captureInitializer() {
-  if (mode == ArenaMode::Game)
-    return ArenaInitializer(players, motd, mode, sky->captureInitializer());
-  else return ArenaInitializer(players, motd, mode, {});
+  ArenaInitializer initializer;
+  initializer.players =
+      std::vector<Player>(players.begin(), players.end());
+  initializer.motd = motd;
+  initializer.mode = mode;
+  if (sky)
+    initializer.skyInitializer = sky->captureInitializer();
+  return initializer;
 }
 
 Player &Arena::connectPlayer(const std::string &requestedNick) {
