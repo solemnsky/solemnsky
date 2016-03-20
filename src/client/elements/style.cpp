@@ -122,7 +122,10 @@ Style::Multi::Multi(const Style::Base &base) :
     playerSpecColor(255, 255, 255),
     playerJoinedColor(0, 255, 0),
     readyButtonActiveDesc("ready!"),
-    readyButtonDeactiveDesc("cancel") { }
+    readyButtonDeactiveDesc("cancel"),
+
+    messageLogText(base.normalText),
+    playerListText(base.normalText) { }
 
 Style::Style() :
     base(),

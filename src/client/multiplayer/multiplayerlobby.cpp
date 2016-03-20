@@ -25,29 +25,27 @@ void MultiplayerLobby::tick(float delta) {
 void MultiplayerLobby::render(ui::Frame &f) {
   f.drawSprite(textureOf(Res::Lobby), {0, 0}, {0, 0, 1600, 900});
 
-  float offset = 0;
-  for (auto iter = connection.eventLog.rbegin();
-       iter < connection.eventLog.rend(); iter++) {
-    auto p = ui::TextProperties::normal;
-    p.size = style.base.normalFontSize;
-    p.maxWidth = 500;
-    p.alignBottom = true;
-    offset -= f.drawText(style.multi.messageLogPos + sf::Vector2f(0, offset),
-               (sky::ClientEvent(*iter)).print(), p);
-  }
+  f.drawText(
+      style.multi.messageLogPos, [&](ui::TextFrame &tf) {
+        for (auto iter = connection.eventLog.rbegin();
+             iter < connection.eventLog.rend(); iter++) {
+          tf.drawString(sky::ClientEvent(*iter).print());
+          tf.breakLine();
+        }
+      }, sf::Color::White, style.multi.messageLogText);
 
-  offset = 0;
-  sf::Color teamColor;
-  for (const sky::Player &player : connection.arena.players) {
-    offset += style.base.normalFontSize;
-    teamColor = sf::Color::Black;
-    if (player.team == 1) teamColor = sf::Color::Red;
-    if (player.team == 2) teamColor = sf::Color::Blue;
-    f.drawText(style.multi.playerListPos + sf::Vector2f(0, offset),
-               player.nickname, style.base.normalFontSize,
-               teamColor);
-  }
+  f.drawText(
+      style.multi.playerListPos, [&](ui::TextFrame &tf) {
+        for (const sky::Player &player : connection.arena.players) {
+          tf.setColor(sf::Color::Black);
 
+          if (player.team == 1) tf.setColor(sf::Color::Red);
+          if (player.team == 2) tf.setColor(sf::Color::Blue);
+
+          tf.drawString(player.nickname);
+          tf.breakLine();
+        }
+      }, sf::Color::White, style.multi.playerListText);
   ui::Control::render(f);
 }
 

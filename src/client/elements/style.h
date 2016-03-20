@@ -149,6 +149,8 @@ const static struct Style {
     sf::Color playerSpecColor, playerJoinedColor;
     std::string readyButtonActiveDesc, readyButtonDeactiveDesc;
 
+    ui::TextFormat messageLogText, playerListText;
+
     Multi(const Base &base);
   } multi;
 

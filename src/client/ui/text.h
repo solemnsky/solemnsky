@@ -32,10 +32,12 @@ struct TextFormat {
 class TextFrame {
  private:
   friend class Frame;
-  TextFrame(Frame *parent,
+
+  TextFrame(class Frame *parent,
             const sf::Vector2f &anchor,
             const sf::Color &color,
             const TextFormat &format);
+  TextFrame() = delete;
 
   // parameters and references
   class Frame *parent;
@@ -51,8 +53,6 @@ class TextFrame {
   sf::Vector2f drawnDimensions;
 
  public:
-  TextFrame() = delete;
-
   // API
   void drawString(const std::string &string);
   void breakLine();
