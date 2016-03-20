@@ -22,7 +22,7 @@ TextFormat::TextFormat(
  * TextFrame.
  */
 
-TextFrame::TextFrame(TextFrame::Frame *parent,
+TextFrame::TextFrame(Frame *parent,
                      const sf::Vector2f &anchor,
                      const sf::Color &color,
                      const TextFormat &format) :
@@ -43,28 +43,28 @@ void TextFrame::drawString(const std::string &string) {
   text.setCharacterSize((unsigned int) format.size);
   text.setString(string);
 
-  const float maxWidth = format.maxDimensions.x;
-  std::string brokenString(string);
-
-  if (maxWidth > 0) {
-    int width = (int) text.getLocalBounds().width;
-    if (width > format.maxDimensions.x) {
-      size_t prev = std::string::npos;
-      float check = (width / maxWidth) + (width / maxWidth) * maxWidth;
-      size_t p;
-      while ((p = brokenString.find_last_of(' ', prev)) != std::string::npos) {
-        int charPos = (int) text.findCharacterPos(p).x;
-        if (charPos - check < 0) {
-          brokenString.insert(p, "\n");
-          check -= maxWidth;
-          lines++;
-          if (check < maxWidth) break;
-        }
-        prev = p - 1;
-      }
-      text.setString(brokenString);
-    }
-  }
+//  const float maxWidth = format.maxDimensions.x;
+//  std::string brokenString(string);
+//
+//  if (maxWidth > 0) {
+//    int width = (int) text.getLocalBounds().width;
+//    if (width > format.maxDimensions.x) {
+//      size_t prev = std::string::npos;
+//      float check = (width / maxWidth) + (width / maxWidth) * maxWidth;
+//      size_t p;
+//      while ((p = brokenString.find_last_of(' ', prev)) != std::string::npos) {
+//        int charPos = (int) text.findCharacterPos(p).x;
+//        if (charPos - check < 0) {
+//          brokenString.insert(p, "\n");
+//          check -= maxWidth;
+//          lines++;
+//          if (check < maxWidth) break;
+//        }
+//        prev = p - 1;
+//      }
+//      text.setString(brokenString);
+//    }
+//  }
 
   // TODO: drawnDims
   text.setPosition(anchor + sf::Vector2f(0, yOffset));

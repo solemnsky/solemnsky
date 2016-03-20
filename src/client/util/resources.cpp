@@ -112,7 +112,6 @@ const sf::Texture &ResMan::textureOf(Res res) {
   const ResRecord &record(recordOf(res));
   if (record.type == ResType::Texture) return textures.at((int) res);
   appErrorLogic(record.path + " is not a texture.");
-  return nullptr;
 }
 
 const sf::Font &ResMan::fontOf(Res res) {
@@ -120,6 +119,5 @@ const sf::Font &ResMan::fontOf(Res res) {
   const ResRecord &record(recordOf(res));
   if (record.type == ResType::Font) return fonts.at((int) res);
   appErrorLogic(record.path + " is not a font.");
-  return nullptr;
 }
 }

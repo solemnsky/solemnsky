@@ -74,10 +74,8 @@ void Client::drawPage(ui::Frame &f, const PageType type,
     f.withAlpha(titleAlpha, [&]() {
       f.drawText(
           sf::Vector2f(
-              0, style.menu.pageDescMargin - style.menu.descSize)
-              + offsetAmnt * offset,
-          {name},
-          style.menu.descSize);
+              0, style.menu.pageDescMargin) + offsetAmnt * offset,
+          name, sf::Color::White, style.menu.menuDescText);
     });
     f.withTransform(transform, [&]() {
       f.drawRect({0, 0, 1600, 900}, style.menu.pageUnderlayColor);
@@ -110,7 +108,44 @@ void Client::tick(float delta) {
   }
 }
 
-void Client::render(ui::Frame &f) {
+void Client::drawUI(ui::Frame &f) {
+  const Clamped &gameFocusFactor = shared.ui.gameFocusFactor,
+      &pageFocusFactor = shared.ui.pageFocusFactor;
+
+  // draw the pages
+  drawPage(
+      f, PageType::Home, style.menu.homeOffset,
+      "home", homePage);
+  drawPage(
+      f, PageType::Listing, style.menu.listingOffset,
+      "server listing", listingPage);
+  drawPage(
+      f, PageType::Settings,
+      style.menu.settingsOffset, "settings", settingsPage);
+
+  if (shared.game) {
+    f.drawText(
+        {style.menu.closeButtonOffset.x - 10, 0}, [](ui::TextFrame &tf) {
+          tf.drawString(shared.game->name);
+          tf.setColor(style.menu.statusFontColor);
+          tf.drawString("(" + shared.game->status + ")");
+        }, sf::Color::White, style.menu.gameDescText);
+    closeButton.render(f);
+  }
+  f.withAlpha(
+      linearTween(1, 0, pageFocusFactor),
+      [&]() {
+        // buttons that fade out as the page focuses
+        quitButton.render(f);
+        aboutButton.render(f);
+      });
+  f.withAlpha(
+      linearTween(0, 1, pageFocusFactor),
+      [&]() {
+        // buttons that fade in as the page focuses
+        backButton.render(f);
+      });
+
   if (shared.settings.enableDebug) {
     const float cycleTime =
         shared.appState->profiler.logicTime.average() +
@@ -120,17 +155,17 @@ void Client::render(ui::Frame &f) {
 
     // TODO: cute debug HUD
   }
+}
 
-  bool gameUnderneath = (bool) shared.game;
-  const float gameFocusFactor = shared.ui.gameFocusFactor,
-      pageFocusFactor = shared.ui.pageFocusFactor;
-  // gameFocusFactor: 0 means tutorial is blurred, 1 means the tutorial is focused
-  // pageFocusFactor: 0 means we're in the menu, 1 means a page focused
+void Client::render(ui::Frame &f) {
+  const Clamped &gameFocusFactor = shared.ui.gameFocusFactor,
+      &pageFocusFactor = shared.ui.pageFocusFactor;
 
   if (shared.ui.gameFocused()) {
+    // just draw the game
     if (shared.game) shared.game->render(f);
   } else {
-    if (!gameUnderneath) {
+    if (!shared.game) {
       f.drawSprite(textureOf(Res::MenuBackground), {0, 0}, {0, 0, 1600, 900});
     } else {
       shared.game->render(f);
@@ -142,50 +177,10 @@ void Client::render(ui::Frame &f) {
 
     f.withAlpha(
         linearTween(1, 0, gameFocusFactor) *
-            (gameUnderneath ? linearTween(style.menu.menuInGameFade, 1,
-                                          pageFocusFactor) :
+            (shared.game ? linearTween(style.menu.menuInGameFade, 1,
+                                       pageFocusFactor) :
              1),
-        [&]() {
-          drawPage(
-              f, PageType::Home, style.menu.homeOffset,
-              "home", homePage);
-          drawPage(
-              f, PageType::Listing, style.menu.listingOffset,
-              "server listing", listingPage);
-          drawPage(
-              f, PageType::Settings,
-              style.menu.settingsOffset, "settings", settingsPage);
-
-          if (gameUnderneath) {
-            const std::string statusStr = "(" + shared.game->status + ") ";
-            const float descLength = f.textSize(shared.game->name,
-                                                style.menu.descSize).x,
-                statusLength = f.textSize(statusStr,
-                                          style.menu.descSize).x;
-            f.drawText(
-                {style.menu.closeButtonOffset.x - descLength - statusLength -
-                    10, 0},
-                {shared.game->name}, style.menu.descSize);
-            f.drawText(
-                {style.menu.closeButtonOffset.x - statusLength, 0},
-                {statusStr}, style.menu.descSize,
-                style.menu.statusFontColor);
-            closeButton.render(f);
-          }
-          f.withAlpha(
-              linearTween(1, 0, pageFocusFactor),
-              [&]() {
-                // buttons that fade out as the page focuses
-                quitButton.render(f);
-                aboutButton.render(f);
-              });
-          f.withAlpha(
-              linearTween(0, 1, pageFocusFactor),
-              [&]() {
-                // buttons that fade in as the page focuses
-                backButton.render(f);
-              });
-        });
+        [&]() { drawUI(f); });
   }
 }
 
