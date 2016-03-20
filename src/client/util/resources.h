@@ -39,9 +39,9 @@ struct ResRecord {
   ResRecord(
       std::string path,
       ResType type,
-      bool isSheet,
-      int tileX = 0, int tileY = 0,
-      int countX = 0, int countY = 0);
+      const bool isSheet,
+      const int tileX = 0, const int tileY = 0,
+      const int countX = 0, const int countY = 0);
 
   std::string path;
   ResType type;

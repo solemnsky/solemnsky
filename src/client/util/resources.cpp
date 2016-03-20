@@ -9,13 +9,13 @@
 ResRecord::ResRecord(
     std::string path,
     ResType type,
-    bool isSheet,
-    int tileX, int tileY,
-    int countX, int countY)
-    : path(path),
-      type(type),
-      isSheet(isSheet),
-      tileX(tileX), tileY(tileY), countX(countX), countY(countY) { }
+    const bool isSheet,
+    const int tileX, const int tileY,
+    const int countX, const int countY) :
+    path(path),
+    type(type),
+    isSheet(isSheet),
+    tileX(tileX), tileY(tileY), countX(countX), countY(countY) { }
 
 std::string ResRecord::realPath() const {
   return "../../media/" + path;
