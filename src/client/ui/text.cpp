@@ -11,12 +11,12 @@ TextFormat::TextFormat(
     const sf::Vector2f &maxDimensions,
     const HorizontalAlign horizontal,
     const VerticalAlign vertical,
-    const sf::Font &font) :
+    const ResID &font) :
     size(size),
     maxDimensions(maxDimensions),
     horizontal(horizontal),
     vertical(vertical),
-    font(&font) { }
+    font(font) { }
 
 /**
  * TextFrame.
@@ -39,7 +39,7 @@ void TextFrame::drawString(const std::string &string) {
   parent->primCount++;
 
   sf::Text text;
-  text.setFont(*format.font);
+  text.setFont(fontOf(format.font));
   text.setCharacterSize((unsigned int) format.size);
   text.setString(string);
 

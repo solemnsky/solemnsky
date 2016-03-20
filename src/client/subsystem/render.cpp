@@ -143,7 +143,7 @@ void RenderSystem::renderPlaneGraphics(ui::Frame &f,
 
 RenderSystem::RenderSystem(const Sky *sky) :
     Subsystem(sky),
-    sheet(Res::PlayerSheet) {
+    sheet(ResID::PlayerSheet) {
   CTOR_LOG("Render");
 }
 
@@ -174,9 +174,9 @@ void RenderSystem::render(ui::Frame &f, const sf::Vector2f &pos) {
   ));
 
   // TODO: give sky->map visual data, including background
-  f.drawSprite(textureOf(Res::Title),
+  f.drawSprite(textureOf(ResID::Title),
                {0, 0}, {0, 0, 1600, 900});
-  f.drawSprite(textureOf(Res::Title),
+  f.drawSprite(textureOf(ResID::Title),
                {1600, 0}, {0, 0, 1600, 900});
 
   for (auto &planeGraphics : graphics)

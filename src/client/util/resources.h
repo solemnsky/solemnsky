@@ -6,13 +6,14 @@
 
 #include <string>
 #include <vector>
+#include <set>
 #include <SFML/Graphics.hpp>
 
 /****
  * Resource metadata.
  */
 
-enum class Res {
+enum class ResID {
   Font, // fonts everywhere
 
   Title, // ui stuff
@@ -26,6 +27,8 @@ enum class Res {
 
   LAST // for checking number of resources defined
 };
+
+static const std::set<ResID> splashResources({ResID::Font});
 
 enum class ResType {
   Font, Texture
@@ -55,31 +58,34 @@ struct ResRecord {
  * Top-level functions to load resources, and then access pre-loaded data and
  * ResRecord metadata from Res values.
  */
+void loadSplashResources();
 void loadResources();
-const ResRecord &recordOf(const Res res);
-const sf::Texture &textureOf(const Res res);
-const sf::Font &fontOf(const Res res);
+const ResRecord &recordOf(const ResID res);
+const sf::Texture &textureOf(const ResID res);
+const sf::Font &fontOf(const ResID res);
 
 namespace detail {
 
-class ResMan {
+static class ResMan {
  private:
   std::map<int, sf::Texture> textures;
   std::map<int, sf::Font> fonts;
   std::vector<ResRecord> resRecords;
-  bool initialized{false};
+
+  bool initialized, splashInitialized;
+
+  void loadResource(const ResID res, const std::string &progress);
 
  public:
   ResMan();
 
+  void loadSplashResources();
   void loadResources();
 
-  const sf::Texture &textureOf(Res res);
-  const sf::Font &fontOf(Res res);
-  const ResRecord &recordOf(const Res res);
-};
-
-static ResMan resMan{};
+  const sf::Texture &textureOf(ResID res);
+  const sf::Font &fontOf(ResID res);
+  const ResRecord &recordOf(const ResID res);
+} resMan;
 
 }
 

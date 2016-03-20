@@ -44,7 +44,7 @@ TextEntry::TextEntry(const Style &style,
 
     textFormat(style.fontSize, {},
                ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
-               fontOf(Res::Font)) { }
+               ResID::Font) { }
 
 sf::FloatRect TextEntry::getBody() {
   return sf::FloatRect(pos, style.dimensions);

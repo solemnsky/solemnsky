@@ -35,7 +35,7 @@ Button::Button(const Style &style,
       clickSignal(false),
       textFormat(style.fontSize, style.dimensions,
                  HorizontalAlign::Center, VerticalAlign::Middle,
-                 fontOf(Res::Font)) { }
+                 ResID::Font) { }
 
 void Button::tick(float delta) {
   if (active) heat += (isHot ? 1 : -1) * delta * style.heatRate;

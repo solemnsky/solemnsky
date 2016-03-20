@@ -11,14 +11,14 @@ private:
   const sf::Vector2f tileDim;
   const sf::Texture &sheet;
   const ResRecord record;
-  const Res res;
+  const ResID res;
 
 public:
   const int count;
 
   SpriteSheet() = delete;
 
-  SpriteSheet(Res resource) :
+  SpriteSheet(ResID resource) :
       record(recordOf(resource)),
       res(res),
       sheet(textureOf(resource)),

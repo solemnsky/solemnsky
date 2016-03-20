@@ -3,6 +3,7 @@
  */
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "client/util/resources.h"
 
 namespace ui {
 
@@ -17,13 +18,13 @@ struct TextFormat {
   TextFormat(const int size,
              const sf::Vector2f &maxDimensions,
              const HorizontalAlign horizontal, const VerticalAlign vertical,
-             const sf::Font &font);
+             const ResID &font);
 
   int size;
   sf::Vector2f maxDimensions; // values of 0 mean there is no limit
   HorizontalAlign horizontal;
   VerticalAlign vertical;
-  sf::Font const *font;
+  ResID font; // resource ID
 };
 
 /**

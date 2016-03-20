@@ -9,7 +9,7 @@ Style::Base::Base() :
 
     normalText(24, {},
                ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
-               fontOf(Res::Font)),
+               ResID::Font),
 
     buttonColor(132, 173, 181), // blue
     buttonHotColor(92, 189, 206), // hot blue
