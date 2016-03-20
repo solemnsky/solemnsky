@@ -65,12 +65,12 @@ void TextFrame::drawString(const std::string &string) {
 //      text.setString(brokenString);
 //    }
 //  }
+//  yOffset += text.getLocalBounds().height; // or something
 
   // TODO: drawnDims
   text.setPosition(anchor + sf::Vector2f(0, yOffset));
   text.setColor(parent->alphaScaleColor(color));
   parent->window.draw(text, parent->transformStack.top());
-  yOffset += text.getLocalBounds().height;
 }
 
 void TextFrame::breakLine() {

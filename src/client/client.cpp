@@ -178,8 +178,7 @@ void Client::render(ui::Frame &f) {
     f.withAlpha(
         linearTween(1, 0, gameFocusFactor) *
             (shared.game ? linearTween(style.menu.menuInGameFade, 1,
-                                       pageFocusFactor) :
-             1),
+                                       pageFocusFactor) : 1),
         [&]() { drawUI(f); });
   }
 }
