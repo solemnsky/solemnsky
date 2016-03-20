@@ -43,6 +43,8 @@ class TextEntry : public Control {
   Cooldown repeatActivate;
   Cooldown repeatCooldown;
 
+  TextFormat textFormat; // deduced from the style
+
   sf::FloatRect getBody();
 
   bool handleKeyboardEvent(const sf::Event &event);

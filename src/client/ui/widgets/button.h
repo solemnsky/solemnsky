@@ -15,9 +15,8 @@ class Button: public Control {
   struct Style {
     sf::Color baseColor, hotColor, clickedColor, inactiveColor, textColor;
     sf::Vector2f dimensions;
-
     float heatRate;
-    TextFormat textProp;
+    int fontSize;
 
     Style() = delete;
     Style(const sf::Color &baseColor,
@@ -27,7 +26,7 @@ class Button: public Control {
           const sf::Color &textColor,
           const sf::Vector2f &dimensions,
           const float heatRate,
-          const TextFormat &textFormat);
+          const int fontSize);
   } style;
 
  private:
@@ -36,6 +35,8 @@ class Button: public Control {
   bool active;
 
   sf::FloatRect getBody();
+
+  TextFormat textFormat; // deduced from the style
 
  public:
   Button() = delete;

@@ -122,11 +122,12 @@ void Frame::drawRect(const sf::Vector2f &topLeft,
   window.draw(rect, transformStack.top());
 }
 
-void Frame::drawText(const sf::Vector2f &pos,
-                     std::function<void(TextFrame &)> f,
-                     const TextFormat &prop) {
-  TextFrame frame(this, pos, prop);
+sf::Vector2f Frame::drawText(const sf::Vector2f &pos,
+                             std::function<void(TextFrame &)> f,
+                             const sf::Color &color, const TextFormat &format) {
+  TextFrame frame(this, pos, color, format);
   f(frame);
+  return frame.endRender();
 }
 
 void Frame::drawSprite(const sf::Texture &texture,
