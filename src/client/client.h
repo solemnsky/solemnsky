@@ -42,6 +42,7 @@ class Client: public ui::Control {
    */
   void forAllPages(std::function<void(Page &)> f);
   Page &referencePage(const PageType type);
+  void drawUI(ui::Frame &f);
   void drawPage(ui::Frame &f, const PageType type,
                 const sf::Vector2f &offset, const std::string &name,
                 ui::Control &page);

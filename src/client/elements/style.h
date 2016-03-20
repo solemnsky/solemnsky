@@ -79,6 +79,8 @@ const static struct Style {
         quitButtonText,
         aboutButtonText;
 
+    ui::TextFormat menuDescText, gameDescText;
+
     float menuInGameFade; // the opacity of the UI when we open it
     // by escaping from the game (this opacity factor dissipates when a page
     // is focused)

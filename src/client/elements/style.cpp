@@ -73,12 +73,20 @@ Style::Menu::Menu(const Style::Base &base) :
     closeButtonText("close game"),
     quitButtonText("quit"),
     aboutButtonText("about"),
-    menuInGameFade(0.7) {
+    menuInGameFade(0.7),
+
+    menuDescText(base.normalText),
+    gameDescText(base.normalText) {
   highButtonStyle.fontSize = 50;
   highButtonStyle.dimensions.y = 70;
 
   lowButtonStyle.fontSize = 40;
   lowButtonStyle.dimensions.x = 300;
+
+  menuDescText.size = 50;
+  menuDescText.vertical = ui::VerticalAlign::Bottom;
+
+  gameDescText.horizontal = ui::HorizontalAlign::Right;
 }
 
 Style::Home::Home(const Style::Base &base) :

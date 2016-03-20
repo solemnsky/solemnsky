@@ -60,7 +60,8 @@ void OptionWidget::tick(float delta) {
 }
 
 void OptionWidget::render(ui::Frame &f) {
-  f.drawText(pos, {name}, style.base.normalFontSize, style.base.textColor);
+  f.drawText(pos, {name},
+             sf::Color::White, style.base.normalText);
   if (textEntry) textEntry->render(f);
   else checkbox->render(f);
 }
