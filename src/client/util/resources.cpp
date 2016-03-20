@@ -25,19 +25,23 @@ std::string ResRecord::realPath() const {
  * Top-level functions.
  */
 
+void loadSplashResources() {
+  detail::resMan.loadSplashResources();
+}
+
 void loadResources() {
   detail::resMan.loadResources();
 }
 
-const ResRecord &recordOf(const Res res) {
+const ResRecord &recordOf(const ResID res) {
   return detail::resMan.recordOf(res);
 }
 
-const sf::Texture &textureOf(const Res res) {
+const sf::Texture &textureOf(const ResID res) {
   return detail::resMan.textureOf(res);
 }
 
-const sf::Font &fontOf(const Res res) {
+const sf::Font &fontOf(const ResID res) {
   return detail::resMan.fontOf(res);
 }
 
@@ -57,45 +61,55 @@ ResMan::ResMan() :
         {"render-2d/scoreoverlay.png", ResType::Texture, false},
 
         {"render-3d/test_1/player_200.png",
-         ResType::Texture, true, 200, 200, 2, 15}
-    } {
-  assert(resRecords.size() == (size_t) Res::LAST);
+         ResType::Texture, true, 200, 200, 2, 15}},
+    initialized(false), splashInitialized(false) {
+  assert(resRecords.size() == (size_t) ResID::LAST);
 }
 
-const ResRecord &ResMan::recordOf(const Res res) {
+const ResRecord &ResMan::recordOf(const ResID res) {
   return resRecords.at((size_t) res);
+}
+
+void ResMan::loadResource(const ResID res, const std::string &progress) {
+  const ResRecord &record(recordOf(res));
+
+  switch (record.type) {
+    case ResType::Font: {
+      appLog("Loading font " + record.path + progress, LogOrigin::App);
+      sf::Font font;
+      font.loadFromFile(record.realPath());
+      fonts.emplace((int) res, std::move(font));
+      break;
+    }
+    case ResType::Texture: {
+      appLog("Loading texture " + record.path + progress,
+             LogOrigin::App);
+
+      sf::Texture texture;
+      texture.loadFromFile(record.realPath());
+      textures.emplace((int) res, std::move(texture));
+    }
+  }
+}
+
+void ResMan::loadSplashResources() {
+  if (splashInitialized) return;
+  for (ResID res : splashResources) loadResource(res, " (pre-loading)");
+  splashInitialized = true;
 }
 
 void ResMan::loadResources() {
   if (initialized) return;
 
-  std::string resCount = std::to_string((int) Res::LAST);
-  std::string progress;
+  std::string resCount = std::to_string((int) ResID::LAST);
   appLog("Loading resources ...", LogOrigin::App);
 
-  for (Res res = Res::Font; res < Res::LAST;
-       res = (Res) (((int) res) + 1)) {
-    const ResRecord &record(recordOf(res));
-    progress = " ... (" + std::to_string((int) res + 1) +
-        " of " + resCount + ")";
-
-    switch (record.type) {
-      case ResType::Font: {
-        appLog("Loading font " + record.path + progress, LogOrigin::App);
-        sf::Font font;
-        font.loadFromFile(record.realPath());
-        fonts.emplace((int) res, std::move(font));
-        break;
-      }
-      case ResType::Texture: {
-        appLog("Loading texture " + record.path + progress,
-               LogOrigin::App);
-
-        sf::Texture texture;
-        texture.loadFromFile(record.realPath());
-        textures.emplace((int) res, std::move(texture));
-      }
-    }
+  for (ResID res = ResID::Font; res < ResID::LAST;
+       res = (ResID) (int(res) + 1)) {
+    if (splashResources.find(res) != splashResources.end()) continue;
+    loadResource(res,
+                 " ... (" + std::to_string((int) res + 1) +
+                     " of " + resCount + ")");
   }
 
   appLog(std::to_string(fonts.size()) + " total fonts available.",
@@ -107,18 +121,16 @@ void ResMan::loadResources() {
   initialized = true;
 }
 
-const sf::Texture &ResMan::textureOf(Res res) {
-  assert(initialized);
-  const ResRecord &record(recordOf(res));
-  if (record.type == ResType::Texture) return textures.at((int) res);
-  appErrorLogic(record.path + " is not a texture.");
+const sf::Texture &ResMan::textureOf(ResID res) {
+  if (auto texture = textures.find((int) res) != textures.end()) {
+    return *texture;
+  } else appErrorRuntime("Accessing texture that isn't loaded yet!");
 }
 
-const sf::Font &ResMan::fontOf(Res res) {
-  assert(initialized);
-  const ResRecord &record(recordOf(res));
-  if (record.type == ResType::Font) return fonts.at((int) res);
-  appErrorLogic(record.path + " is not a font.");
+const sf::Font &ResMan::fontOf(ResID res) {
+  if (auto font = textures.find((int) res) != textures.end()) {
+    return *font;
+  } else appErrorRuntime("Accessing font that isn't loaded yet!");
 }
 
 }

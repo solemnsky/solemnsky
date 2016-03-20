@@ -166,7 +166,7 @@ void Client::render(ui::Frame &f) {
     if (shared.game) shared.game->render(f);
   } else {
     if (!shared.game) {
-      f.drawSprite(textureOf(Res::MenuBackground), {0, 0}, {0, 0, 1600, 900});
+      f.drawSprite(textureOf(ResID::MenuBackground), {0, 0}, {0, 0, 1600, 900});
     } else {
       shared.game->render(f);
       f.drawRect(

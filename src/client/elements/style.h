@@ -157,6 +157,5 @@ struct Style {
   Style();
 };
 
-static optional<Style> style;
-// instantiated at the loading screen
-// (it contains references to resources)
+static const Style style;
+
