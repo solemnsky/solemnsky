@@ -26,7 +26,7 @@ std::string ResRecord::realPath() const {
  */
 
 void loadResources() {
-  detail::resMan.loadRes();
+  detail::resMan.loadResources();
 }
 
 const ResRecord &recordOf(const Res res) {
@@ -66,7 +66,7 @@ const ResRecord &ResMan::recordOf(const Res res) {
   return resRecords.at((size_t) res);
 }
 
-void ResMan::loadRes() {
+void ResMan::loadResources() {
   if (initialized) return;
 
   std::string resCount = std::to_string((int) Res::LAST);
@@ -110,20 +110,16 @@ void ResMan::loadRes() {
 const sf::Texture &ResMan::textureOf(Res res) {
   assert(initialized);
   const ResRecord &record(recordOf(res));
-  if (record.type == ResType::Texture)
-    return textures.at((int) res);
-  else {
-    appErrorLogic(record.path + " is not a texture.");
-  }
+  if (record.type == ResType::Texture) return textures.at((int) res);
+  appErrorLogic(record.path + " is not a texture.");
+  return nullptr;
 }
 
 const sf::Font &ResMan::fontOf(Res res) {
   assert(initialized);
   const ResRecord &record(recordOf(res));
-  if (record.type == ResType::Font)
-    return fonts.at((int) res);
-  else {
-    appErrorLogic(record.path + " is not a font.");
-  }
+  if (record.type == ResType::Font) return fonts.at((int) res);
+  appErrorLogic(record.path + " is not a font.");
+  return nullptr;
 }
 }
