@@ -125,7 +125,7 @@ void Client::drawUI(ui::Frame &f) {
 
   if (shared.game) {
     f.drawText(
-        {style.menu.closeButtonOffset.x - 10, 0}, [](ui::TextFrame &tf) {
+        {style.menu.closeButtonOffset.x - 10, 0}, [&](ui::TextFrame &tf) {
           tf.drawString(shared.game->name);
           tf.setColor(style.menu.statusFontColor);
           tf.drawString("(" + shared.game->status + ")");
