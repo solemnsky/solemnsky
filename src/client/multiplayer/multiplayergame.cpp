@@ -25,7 +25,8 @@ void MultiplayerGame::render(ui::Frame &f) {
     renderSystem.render(f, plane->state.pos);
   } else renderSystem.render(f, {0, 0});
 
-  f.drawText({300, 300}, "need to implement this");
+  f.drawText({300, 300}, "need to implement this", sf::Color::White,
+             style.base.normalText);
 }
 
 bool MultiplayerGame::handle(const sf::Event &event) {

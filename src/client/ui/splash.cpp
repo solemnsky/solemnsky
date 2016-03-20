@@ -12,7 +12,8 @@ void SplashScreen::tick(float delta) {
 }
 
 void SplashScreen::render(ui::Frame &f) {
-  f.drawText({800, 450}, "loading resources...", style.splash.loadingText);
+  f.drawText({800, 450}, "loading resources...",
+             sf::Color::White, style.splash.loadingText);
   screenDrawn = true;
 }
 

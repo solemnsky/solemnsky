@@ -136,7 +136,7 @@ void TextEntry::render(Frame &f) {
                mixColors(style.inactiveColor, style.hotColor, heat));
     f.drawText(pos + sf::Vector2f(sidePadding, 0),
                {persistent ? contents : description},
-               textFormat);
+               style.textColor, textFormat);
   }
 }
 
