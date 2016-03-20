@@ -121,6 +121,8 @@ void TextEntry::render(Frame &f) {
         ? textDims.x - style.dimensions.x + 2 * sidePadding : 0;
 
     f.drawRect({}, style.dimensions, style.focusedColor);
+    f.drawText({sidePadding - scroll, -5},
+               contents, style.textColor, textFormat);
 
     f.drawRect(
         {sidePadding + textDims.x - scroll, 0},

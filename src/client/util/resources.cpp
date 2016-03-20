@@ -122,14 +122,16 @@ void ResMan::loadResources() {
 }
 
 const sf::Texture &ResMan::textureOf(ResID res) {
-  if (auto texture = textures.find((int) res) != textures.end()) {
-    return *texture;
+  auto texture = textures.find(int(res));
+  if (texture != textures.end()) {
+    return texture->second;
   } else appErrorRuntime("Accessing texture that isn't loaded yet!");
 }
 
 const sf::Font &ResMan::fontOf(ResID res) {
-  if (auto font = textures.find((int) res) != textures.end()) {
-    return *font;
+  auto font = fonts.find(int(res));
+  if (font != fonts.end()) {
+    return font->second;
   } else appErrorRuntime("Accessing font that isn't loaded yet!");
 }
 
