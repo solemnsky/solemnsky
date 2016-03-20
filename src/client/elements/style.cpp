@@ -7,8 +7,8 @@
 Style::Base::Base() :
     pageSize(1600, 900),
 
-    normalText(24, sf::Color(0, 0, 0, 0), sf::Color::White, -1, -1,
-               ui::TextAlign::Low, ui::TextAlign::Low,
+    normalText(24, {},
+               ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
                fontOf(Res::Font)),
 
     buttonColor(132, 173, 181), // blue
@@ -30,18 +30,19 @@ Style::Base::Base() :
 
     normalButton(buttonColor, buttonHotColor, buttonPressedColor,
                  buttonInactiveColor, textColor,
-                 {200, 50}, heatRate, normalText),
+                 {200, 50}, heatRate, normalFontSize),
 
     normalTextEntry(buttonColor, buttonHotColor, textAreaBackground,
                     textColor, textAreaForeground, {500, 40},
                     normalFontSize, heatRate),
     normalCheckbox(buttonColor, buttonHotColor, buttonPressedColor,
                    buttonInactiveColor, textColor,
-                   {40, 40}, heatRate, normalText) { }
+                   {40, 40}, heatRate, normalFontSize) { }
 
-Style::Splash::Splash() {
-  loadingText.size = 50;
-}
+Style::Splash::Splash() :
+    loadingText(60, {},
+                ui::HorizontalAlign::Center, ui::VerticalAlign::Middle,
+                fontOf(Res::Font)) { }
 
 Style::Menu::Menu(const Style::Base &base) :
     unfocusedPageScale(500.0f / 1600.0f),

@@ -8,18 +8,14 @@ namespace ui {
  */
 TextFormat::TextFormat(
     const int size,
-    const sf::Color &bgColor,
-    const sf::Color &fgColor,
     const sf::Vector2f &maxDimensions,
-    const TextAlign alignX,
-    const TextAlign alignY,
+    const HorizontalAlign horizontal,
+    const VerticalAlign vertical,
     const sf::Font &font) :
     size(size),
-    bgColor(bgColor),
-    fgColor(fgColor),
     maxDimensions(maxDimensions),
-    alignX(alignX),
-    alignY(alignY),
+    horizontal(horizontal),
+    vertical(vertical),
     font(&font) { }
 
 /**
@@ -28,11 +24,13 @@ TextFormat::TextFormat(
 
 TextFrame::TextFrame(TextFrame::Frame *parent,
                      const sf::Vector2f &anchor,
+                     const sf::Color &color,
                      const TextFormat &format) :
-    parent(parent), anchor(anchor), format(format) { }
+    parent(parent), anchor(anchor), format(format),
+    color(color) { }
 
-TextFrame::~TextFrame() {
-  // draw unfinished business
+sf::Vector2f TextFrame::endRender() {
+  return drawnDimensions;
 }
 
 void TextFrame::drawString(const std::string &string) {
@@ -68,9 +66,9 @@ void TextFrame::drawString(const std::string &string) {
     }
   }
 
-  // TODO: background color
+  // TODO: drawnDims
   text.setPosition(anchor + sf::Vector2f(0, yOffset));
-  text.setColor(parent->alphaScaleColor(format.fgColor));
+  text.setColor(parent->alphaScaleColor(color));
   parent->window.draw(text, parent->transformStack.top());
   yOffset += text.getLocalBounds().height;
 }

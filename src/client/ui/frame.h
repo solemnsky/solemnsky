@@ -56,20 +56,22 @@ class Frame {
              color);
   }
 
-  inline void drawText(const sf::Vector2f pos, const std::string &string,
-                       const TextFormat &format) {
-    drawText(pos, [&string](TextFrame &render) {
+  inline sf::Vector2f drawText(
+      const sf::Vector2f pos,
+      const std::string &string,
+      const sf::Color &color, const TextFormat &format) {
+    return drawText(pos, [&string](TextFrame &render) {
       render.drawString(string);
-    }, format);
+    }, color, format);
   }
 
   void drawCircle(const sf::Vector2f &pos, const float radius,
                   const sf::Color &color = {});
   void drawRect(const sf::Vector2f &topLeft, const sf::Vector2f &bottomRight,
                 const sf::Color &color = {});
-  void drawText(const sf::Vector2f &pos,
-                std::function<void(TextFrame &)> f,
-                const TextFormat &format);
+  sf::Vector2f drawText(const sf::Vector2f &pos,
+                        std::function<void(TextFrame &)> f,
+                        const sf::Color &color, const TextFormat &format);
   void drawSprite(const sf::Texture &texture, const sf::Vector2f &pos,
                   const sf::IntRect &portion);
 };

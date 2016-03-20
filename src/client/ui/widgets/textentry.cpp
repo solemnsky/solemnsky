@@ -40,7 +40,11 @@ TextEntry::TextEntry(const Style &style,
     // approaches the cooldown interval
 
     isHot(false),
-    isFocused(false) { }
+    isFocused(false),
+
+    textFormat(style.fontSize, {},
+               ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
+               fontOf(Res::Font)) { }
 
 sf::FloatRect TextEntry::getBody() {
   return sf::FloatRect(pos, style.dimensions);
@@ -109,15 +113,14 @@ void TextEntry::render(Frame &f) {
   if (isFocused) {
     f.pushTransform(sf::Transform().translate(pos));
 
-    const sf::Vector2f textDims(
-        f.textSize(contents.substr(0, (size_t) cursor), style.fontSize));
+    const sf::Vector2f textDims =
+        f.drawText(sf::Vector2f(sidePadding - scroll, -5),
+                   {contents}, style.textColor, textFormat);
     const float scroll =
         (textDims.x > (style.dimensions.x + sidePadding))
         ? textDims.x - style.dimensions.x + 2 * sidePadding : 0;
 
     f.drawRect({}, style.dimensions, style.focusedColor);
-    f.drawText(sf::Vector2f(sidePadding - scroll, -5),
-               {contents}, style.fontSize, style.textColor);
 
     f.drawRect(
         {sidePadding + textDims.x - scroll, 0},
@@ -131,9 +134,9 @@ void TextEntry::render(Frame &f) {
   } else {
     f.drawRect(pos, pos + style.dimensions,
                mixColors(style.inactiveColor, style.hotColor, heat));
-    f.drawText(pos + sf::Vector2f(sidePadding, -5),
+    f.drawText(pos + sf::Vector2f(sidePadding, 0),
                {persistent ? contents : description},
-               style.fontSize, style.descriptionColor);
+               textFormat);
   }
 }
 

@@ -6,11 +6,8 @@
 
 namespace ui {
 
-enum class TextAlign {
-  Low, // top / left
-  Center,
-  High // bottom / right
-};
+enum class HorizontalAlign { Left, Center, Right };
+enum class VerticalAlign { Top, Middle, Bottom };
 
 /**
  * Constant formatting parameters in a certain text rendering.
@@ -18,18 +15,15 @@ enum class TextAlign {
 struct TextFormat {
   TextFormat() = delete;
   TextFormat(const int size,
-             const sf::Color &bgColor,
-             const sf::Color &fgColor,
              const sf::Vector2f &maxDimensions,
-             const TextAlign alignX, const TextAlign alignY,
+             const HorizontalAlign horizontal, const VerticalAlign vertical,
              const sf::Font &font);
 
   int size;
-  sf::Color bgColor, fgColor;
-  sf::Vector2f maxDimensions;
-  TextAlign alignX, alignY;
+  sf::Vector2f maxDimensions; // values of 0 mean there is no limit
+  HorizontalAlign horizontal;
+  VerticalAlign vertical;
   sf::Font const *font;
-  float lineWidth, lineSpacing;
 };
 
 /**
@@ -40,8 +34,8 @@ class TextFrame {
   friend class Frame;
   TextFrame(Frame *parent,
             const sf::Vector2f &anchor,
+            const sf::Color &color,
             const TextFormat &format);
-  ~TextFrame();
 
   // parameters and references
   class Frame *parent;
@@ -52,6 +46,9 @@ class TextFrame {
   float yOffset;
   float lines = 1;
   sf::Color color;
+
+  sf::Vector2f endRender();
+  sf::Vector2f drawnDimensions;
 
  public:
   TextFrame() = delete;
