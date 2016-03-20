@@ -9,19 +9,18 @@ namespace ui {
 
 namespace detail {
 // TODO: make this threaded so the window doesn't freeze up
-class SplashScreen : public Control {
-private:
-  sf::Font font; // we have to manage this because we draw
-  // before resources come online
+class SplashScreen: public Control {
+ private:
+  const sf::Font &loadFont();
+  sf::Font font; // resources aren't loaded yet
+
+  TextFormat loadingText;
 
   bool screenDrawn{false};
   std::function<std::unique_ptr<Control>()> afterLoading;
 
-public:
-  SplashScreen(std::function<std::unique_ptr<Control>()> afterLoading) :
-      afterLoading(afterLoading) {
-    font.loadFromFile(recordOf(Res::Font).realPath());
-  }
+ public:
+  SplashScreen(std::function<std::unique_ptr<Control>()> afterLoading);
 
   virtual void tick(float delta) override;
   virtual void render(Frame &f) override;

@@ -5,7 +5,7 @@
 #include "client/ui/control.h"
 #include "client/ui/widgets/widgets.h"
 
-const static struct Style {
+struct Style {
   /**
    * Basic style consistencies.
    */
@@ -40,8 +40,6 @@ const static struct Style {
    * Splash screen.
    */
   struct Splash {
-    ui::TextFormat loadingText;
-
     Splash();
   } splash;
 
@@ -157,4 +155,8 @@ const static struct Style {
   } multi;
 
   Style();
-} style;
+};
+
+static optional<Style> style;
+// instantiated at the loading screen
+// (it contains references to resources)
