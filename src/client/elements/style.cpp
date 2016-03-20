@@ -7,7 +7,7 @@
 Style::Base::Base() :
     pageSize(1600, 900),
 
-    normalText(24, {},
+    normalText(40, {},
                ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
                ResID::Font),
 
@@ -66,10 +66,10 @@ Style::Menu::Menu(const Style::Base &base) :
     highButtonStyle(base.normalButton),
     lowButtonStyle(base.normalButton),
 
-    backButtonText("main menu"),
-    closeButtonText("close game"),
-    quitButtonText("quit"),
-    aboutButtonText("about"),
+    backButtonText("MAIN MENU"),
+    closeButtonText("CLOSE GAME"),
+    quitButtonText("QUIT"),
+    aboutButtonText("ABOUT"),
     menuInGameFade(0.7),
 
     menuDescText(base.normalText),
@@ -89,13 +89,16 @@ Style::Menu::Menu(const Style::Base &base) :
 Style::Home::Home(const Style::Base &base) :
     tutorialButtonPos(500, 300),
     localhostButtonPos(1100, 300),
-    tutorialButtonDesc("start tutorial"),
-    localhostButtonDesc("connect to localhost") { }
+    tutorialButtonDesc("START TUTORIAL"),
+    localhostButtonDesc("CONNECT TO LOCALHOST") { }
 
 Style::Settings::Settings(const Style::Base &base) :
     textEntry(base.normalTextEntry),
     checkbox(base.normalCheckbox),
-    entryOffset(150, 4),
+    descText(40, {},
+             ui::HorizontalAlign::Left, ui::VerticalAlign::Middle,
+             ResID::Font),
+    entryOffset(150, -0.5f * base.normalTextEntry.dimensions.y),
 
     debugChooserPos(100, 100),
     nicknameChooserPos(100, 100),
@@ -126,8 +129,8 @@ Style::Multi::Multi(const Style::Base &base) :
 
     playerSpecColor(255, 255, 255),
     playerJoinedColor(0, 255, 0),
-    readyButtonActiveDesc("ready!"),
-    readyButtonDeactiveDesc("cancel"),
+    readyButtonActiveDesc("READY!"),
+    readyButtonDeactiveDesc("CANCEL"),
 
     messageLogText(base.normalText),
     playerListText(base.normalText) { }

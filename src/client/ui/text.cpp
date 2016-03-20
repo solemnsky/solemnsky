@@ -3,6 +3,28 @@
 
 namespace ui {
 
+float alignValue(const HorizontalAlign align) {
+  switch (align) {
+    case HorizontalAlign::Left:
+      return 0;
+    case HorizontalAlign::Center:
+      return 0.5;
+    case HorizontalAlign::Right:
+      return 1;
+  }
+}
+
+float alignValue(const VerticalAlign align) {
+  switch (align) {
+    case VerticalAlign::Top:
+      return 0;
+    case VerticalAlign::Middle:
+      return 0.5;
+    case VerticalAlign::Bottom:
+      return 1;
+  }
+}
+
 /**
  * TextFormat.
  */
@@ -27,15 +49,41 @@ TextFrame::TextFrame(Frame *parent,
                      const sf::Color &color,
                      const TextFormat &format) :
     parent(parent), anchor(anchor), format(format),
-    color(color) { }
+    color(color), font(fontOf(format.font)) { }
 
 sf::Vector2f TextFrame::endRender() {
   return drawnDimensions;
 }
 
-void TextFrame::drawString(const std::string &string) {
-  // TODO: STUB
+sf::Vector2f TextFrame::drawBlock(const sf::Vector2f &pos,
+                                  const std::string &string) {
+  sf::Text text;
+  text.setFont(font);
+  text.setCharacterSize((unsigned int) format.size);
+  text.setString(string);
 
+  const auto bounds = text.getLocalBounds();
+  const sf::Vector2f dims = {bounds.width, 0.8f * float(format.size)};
+
+  sf::Vector2f drawPos = anchor - sf::Vector2f(0, bounds.top);
+  drawPos.y -= alignValue(format.vertical) * dims.y;
+  drawPos.y += (dims.y - bounds.height);
+  drawPos.x -= alignValue(format.horizontal) * dims.x;
+  drawPos += drawOffset;
+  text.setPosition(drawPos);
+
+//  // debug draw
+//  parent->withTransform(sf::Transform().translate(drawPos), [&]() {
+//    parent->drawRect(text.getLocalBounds(), sf::Color::Blue);
+//  });
+//  parent->drawCircle(anchor, 5, sf::Color::Black);
+
+  text.setColor(parent->alphaScaleColor(color));
+  parent->window.draw(text, parent->transformStack.top());
+  return dims;
+}
+
+void TextFrame::drawString(const std::string &string) {
   parent->primCount++;
 
   sf::Text text;
@@ -43,6 +91,7 @@ void TextFrame::drawString(const std::string &string) {
   text.setCharacterSize((unsigned int) format.size);
   text.setString(string);
 
+//   TODO: word wrapping
 //  const float maxWidth = format.maxDimensions.x;
 //  std::string brokenString(string);
 //
@@ -67,18 +116,30 @@ void TextFrame::drawString(const std::string &string) {
 //  }
 //  yOffset += text.getLocalBounds().height; // or something
 
-  // TODO: drawnDims
-  text.setPosition(anchor + sf::Vector2f(0, yOffset));
-  text.setColor(parent->alphaScaleColor(color));
-  parent->window.draw(text, parent->transformStack.top());
+  const auto dims = drawBlock(anchor, string);
+  if (format.horizontal == HorizontalAlign::Left)
+    drawOffset.x += dims.x;
+  if (format.horizontal == HorizontalAlign::Right)
+    drawOffset.x -= dims.x;
 }
 
 void TextFrame::breakLine() {
+  drawOffset.x = 0;
 
+  switch (format.vertical) {
+    case VerticalAlign::Top: {
+      drawOffset.y += format.size;
+    }
+    case VerticalAlign::Middle:
+      break;
+    case VerticalAlign::Bottom: {
+      drawOffset.y -= format.size;
+    }
+  }
 }
 
-void TextFrame::setColor(const sf::Color &color) {
-
+void TextFrame::setColor(const sf::Color &newColor) {
+  color = newColor;
 }
 
 }

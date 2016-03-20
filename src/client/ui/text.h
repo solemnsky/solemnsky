@@ -1,5 +1,5 @@
 /**
- * Text rendering API used in ui::Frame with wrapping / aligning / spacing.
+ * Text rendering API with aligning / wrapping.
  */
 #pragma once
 #include <SFML/Graphics.hpp>
@@ -7,8 +7,17 @@
 
 namespace ui {
 
-enum class HorizontalAlign { Left, Center, Right };
-enum class VerticalAlign { Top, Middle, Bottom };
+enum class HorizontalAlign {
+  Left, // displace strings to the right as you draw them
+  Center, // draw one string, centered horizontally on the anchor
+  Right // displace strings to the left as you draw them
+};
+
+enum class VerticalAlign {
+  Top, // displace lines to the bottom as you draw them
+  Middle, // draw one line, centered vertically on the anchor
+  Bottom // displace lines to the top as you draw them
+};
 
 /**
  * Constant formatting parameters in a certain text rendering.
@@ -46,18 +55,23 @@ class TextFrame {
   const sf::Vector2f &anchor;
 
   // state
-  float yOffset;
+  const sf::Font &font;
+  sf::Vector2f drawOffset;
   float lines = 1;
   sf::Color color;
+  sf::Vector2f drawnDimensions;
 
   sf::Vector2f endRender();
-  sf::Vector2f drawnDimensions;
+
+  // util
+  sf::Vector2f drawBlock(const sf::Vector2f &pos,
+                         const std::string &string);
 
  public:
   // API
   void drawString(const std::string &string);
   void breakLine();
-  void setColor(const sf::Color &color);
+  void setColor(const sf::Color &newColor);
 };
 
 }

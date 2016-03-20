@@ -106,6 +106,7 @@ struct Style {
     ui::TextEntry::Style textEntry;
     ui::Checkbox::Style checkbox;
     sf::Vector2f entryOffset;
+    ui::TextFormat descText;
 
     sf::Vector2f debugChooserPos; // general tab
     sf::Vector2f nicknameChooserPos; // player tab

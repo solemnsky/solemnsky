@@ -115,13 +115,13 @@ void Client::drawUI(ui::Frame &f) {
   // draw the pages
   drawPage(
       f, PageType::Home, style.menu.homeOffset,
-      "home", homePage);
+      "HOME", homePage);
   drawPage(
       f, PageType::Listing, style.menu.listingOffset,
-      "server listing", listingPage);
+      "SERVER LISTING", listingPage);
   drawPage(
-      f, PageType::Settings,
-      style.menu.settingsOffset, "settings", settingsPage);
+      f, PageType::Settings, style.menu.settingsOffset,
+      "SETTINGS", settingsPage);
 
   if (shared.game) {
     f.drawText(
