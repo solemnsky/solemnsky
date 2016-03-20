@@ -17,7 +17,7 @@ class Button: public Control {
     sf::Vector2f dimensions;
 
     float heatRate;
-    TextProperties textProp;
+    TextFormat textProp;
 
     Style() = delete;
     Style(const sf::Color &baseColor,
@@ -27,7 +27,7 @@ class Button: public Control {
           const sf::Color &textColor,
           const sf::Vector2f &dimensions,
           const float heatRate,
-          const TextProperties &textProp);
+          const TextFormat &textFormat);
   } style;
 
  private:

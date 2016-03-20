@@ -72,7 +72,7 @@ class ResMan {
  public:
   ResMan();
 
-  void loadRes();
+  void loadResources();
 
   const sf::Texture &textureOf(Res res);
   const sf::Font &fontOf(Res res);

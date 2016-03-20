@@ -12,7 +12,7 @@ const static struct Style {
   struct Base {
     sf::Vector2f pageSize;
 
-    ui::TextProperties normalText;
+    ui::TextFormat normalText;
 
     sf::Color buttonColor,
         buttonHotColor,
@@ -40,7 +40,7 @@ const static struct Style {
    * Splash screen.
    */
   struct Splash {
-    ui::TextProperties loadingText;
+    ui::TextFormat loadingText;
 
     Splash();
   } splash;

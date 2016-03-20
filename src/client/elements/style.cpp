@@ -7,6 +7,10 @@
 Style::Base::Base() :
     pageSize(1600, 900),
 
+    normalText(24, sf::Color(0, 0, 0, 0), sf::Color::White, -1, -1,
+               ui::TextAlign::Low, ui::TextAlign::Low,
+               fontOf(Res::Font)),
+
     buttonColor(132, 173, 181), // blue
     buttonHotColor(92, 189, 206), // hot blue
     buttonPressedColor(63, 208, 234), // less hot blue

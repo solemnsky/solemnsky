@@ -89,7 +89,7 @@ struct SkyDelta {
  * all kinds of circumstances, from server-side simulation to replaying
  * recordings.
  *
- * Planes are added and removed to a Sky "all willy-nilly"; holding
+ * Planes are added and removed in a Sky "all willy-nilly"; holding
  * persistent player records and such is the task of the Arena.
  */
 class Sky {
