@@ -120,4 +120,5 @@ const sf::Font &ResMan::fontOf(Res res) {
   if (record.type == ResType::Font) return fonts.at((int) res);
   appErrorLogic(record.path + " is not a font.");
 }
+
 }

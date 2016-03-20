@@ -39,10 +39,7 @@ Style::Base::Base() :
                    buttonInactiveColor, textColor,
                    {40, 40}, heatRate, normalFontSize) { }
 
-Style::Splash::Splash() :
-    loadingText(60, {},
-                ui::HorizontalAlign::Center, ui::VerticalAlign::Middle,
-                fontOf(Res::Font)) { }
+Style::Splash::Splash() { }
 
 Style::Menu::Menu(const Style::Base &base) :
     unfocusedPageScale(500.0f / 1600.0f),
