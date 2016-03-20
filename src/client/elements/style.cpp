@@ -133,7 +133,10 @@ Style::Multi::Multi(const Style::Base &base) :
     readyButtonDeactiveDesc("CANCEL"),
 
     messageLogText(base.normalText),
-    playerListText(base.normalText) { }
+    playerListText(base.normalText) {
+  messageLogText.vertical = ui::VerticalAlign::Bottom;
+
+}
 
 Style::Style() :
     base(),
