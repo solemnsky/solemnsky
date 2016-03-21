@@ -1,4 +1,5 @@
 #include "text.h"
+#include <cmath>
 #include "frame.h"
 
 namespace ui {
@@ -63,24 +64,25 @@ sf::Vector2f TextFrame::drawBlock(const sf::Vector2f &pos,
   text.setString(string);
 
   const auto bounds = text.getLocalBounds();
-  const sf::Vector2f dims = {bounds.width, 0.8f * float(format.size)};
+  const sf::Vector2f dims = {bounds.width, bounds.height};
 
-  sf::Vector2f drawPos = anchor - sf::Vector2f(0, bounds.top);
-  drawPos.y -= alignValue(format.vertical) * dims.y;
-  drawPos.y += (dims.y - bounds.height);
-  drawPos.x -= alignValue(format.horizontal) * dims.x;
-  drawPos += drawOffset;
+  sf::Vector2f drawPos =
+      anchor - sf::Vector2f(alignValue(format.horizontal) * dims.x, 0)
+          + drawOffset;
+  if (format.vertical == VerticalAlign::Middle) {
+    drawPos.y -= bounds.top + 0.5f * dims.y;
+  } else {
+    drawPos.y -= alignValue(format.vertical) * float(format.size);
+    drawnDimensions.x =
+        std::max(std::abs(drawOffset.x) + dims.x, drawnDimensions.x);
+    drawnDimensions.y =
+        std::max(std::abs(drawOffset.y) + dims.y, drawnDimensions.y);
+  }
   text.setPosition(drawPos);
-
-//  // debug draw
-//  parent->withTransform(sf::Transform().translate(drawPos), [&]() {
-//    parent->drawRect(text.getLocalBounds(), sf::Color::Blue);
-//  });
-//  parent->drawCircle(anchor, 5, sf::Color::Black);
 
   text.setColor(parent->alphaScaleColor(color));
   parent->window.draw(text, parent->transformStack.top());
-  return dims;
+  return {bounds.width, float(format.size)};
 }
 
 void TextFrame::drawString(const std::string &string) {
