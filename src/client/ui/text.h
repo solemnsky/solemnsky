@@ -7,6 +7,17 @@
 
 namespace ui {
 
+/**
+ * TODO
+ * This will necessarily be updated in the future when we need:
+ * 1) Word wrapping.
+ * 2) Horizontal centering of multi-colored text.
+ * 3) Vertical centering of multi-lined text.
+ *
+ * The API should remain virtually unchanged though, so this is a
+ * low-priority issue.
+ */
+
 enum class HorizontalAlign {
   Left, // displace strings to the right as you draw them
   Center, // draw one string, centered horizontally on the anchor
