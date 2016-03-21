@@ -110,34 +110,30 @@ void TextEntry::tick(float delta) {
 }
 
 void TextEntry::render(Frame &f) {
+  f.pushTransform(sf::Transform().translate(pos));
   if (isFocused) {
-    f.pushTransform(sf::Transform().translate(pos));
-
     f.drawRect({}, style.dimensions, style.focusedColor);
-
-    const sf::Vector2f textDims =
-        f.drawText(sf::Vector2f(sidePadding - scroll, -5),
-                   contents, style.textColor, textFormat);
-    const float scroll =
-        (textDims.x > (style.dimensions.x + sidePadding))
-        ? textDims.x - style.dimensions.x + 2 * sidePadding : 0;
-
-    f.drawRect(
-        {sidePadding + textDims.x - scroll, 0},
-        {sidePadding + textDims.x - scroll +
-            cursorWidth, style.dimensions.y},
-        style.textColor);
-
-    // TODO: clipping out of bounds text
-
-    f.popTransform();
+    f.drawText(
+        sf::Vector2f(sidePadding - scroll, 0), [&](TextFrame &tf) {
+          tf.drawString(contents.substr(0, size_t(cursor)));
+          const float scroll =
+              (tf.drawOffset.x > (style.dimensions.x + sidePadding))
+              ? tf.drawOffset.x - style.dimensions.x + 2 * sidePadding : 0;
+          f.drawRect(
+              {sidePadding + tf.drawOffset.x - scroll, 0},
+              {sidePadding + tf.drawOffset.x - scroll +
+                  cursorWidth, style.dimensions.y},
+              style.textColor);
+          tf.drawString(contents.substr(size_t(cursor)));
+        }, style.textColor, textFormat);
   } else {
-    f.drawRect(pos, pos + style.dimensions,
+    f.drawRect({}, style.dimensions,
                mixColors(style.inactiveColor, style.hotColor, heat));
-    f.drawText(pos + sf::Vector2f(sidePadding, 0),
+    f.drawText(sf::Vector2f(sidePadding, 0),
                {persistent ? contents : description},
                style.textColor, textFormat);
   }
+  f.popTransform();
 }
 
 bool TextEntry::handle(const sf::Event &event) {

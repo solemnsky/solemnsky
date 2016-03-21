@@ -54,20 +54,20 @@ class TextFrame {
   const TextFormat &format;
   const sf::Vector2f &anchor;
 
-  // state
   const sf::Font &font;
-  sf::Vector2f drawOffset;
-  float lines = 1;
+
+  // state
   sf::Color color;
   sf::Vector2f drawnDimensions;
+  std::vector<std::pair<sf::Color, std::string>> currentBlock;
 
-  sf::Vector2f endRender();
-
-  // util
   sf::Vector2f drawBlock(const sf::Vector2f &pos,
                          const std::string &string);
+  sf::Vector2f endRender();
 
  public:
+  sf::Vector2f drawOffset;
+
   // API
   void drawString(const std::string &string);
   void breakLine();
