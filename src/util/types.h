@@ -216,9 +216,8 @@ struct Angle {
 };
 
 /**
- * Some types have certain invariant structures that can be violated in
- * instances received from the network. This is a tidy way to verify
- * these invariants (for instance, our ad-hoc sum types in protocol.h).
+ * The concept of a type that can verify some invariant that could be
+ * violated when it's transmitted over the network.
  */
 
 class VerifyStructure {
@@ -241,6 +240,25 @@ bool verifyValue(
         VerifyStructure, X>::value>::type * = 0) {
   return true;
 }
+
+/**
+ * The concept of a type that can be synced over the network.
+ */
+
+template<typename Init, typename Delta>
+class Networked {
+ public:
+  Networked(const Init &) { }
+  virtual void applyDelta(const Delta &) = 0;
+  virtual Init captureInitializer() const = 0;
+};
+
+template<typename Init, typename Delta>
+class AutoNetworked: public Networked<Init, Delta> {
+ public:
+  AutoNetworked(const Init &init) : Networked(init) { }
+  virtual Delta captureDelta() = 0;
+};
 
 /**
  * Type synonyms for the game.

@@ -11,10 +11,31 @@
 
 namespace sky {
 
-struct PlayerDelta {
-  PlayerDelta(); // for unpacking
-  PlayerDelta(const class Player &player);
+struct PlayerInitializer {
+ private:
+  friend cereal::access;
+  friend class Player;
+  PlayerInitializer() = default;
 
+ public:
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(pid, nickname, admin, team);
+  }
+
+  PID pid;
+  std::string nickname;
+  bool admin;
+  Team team;
+};
+
+struct PlayerDelta {
+ private:
+  friend cereal::access;
+  friend class Player;
+  PlayerDelta() = default;
+
+ public:
   template<typename Archive>
   void serialize(Archive &ar) {
     ar(nickname, admin, team);
@@ -26,16 +47,12 @@ struct PlayerDelta {
 };
 
 /**
- * A Player is a handle to a player in the arena and his potential game state.
+ * A Player represents everything related to a player in the game.
  */
-struct Player {
-  Player(); // for unpacking
+struct Player: public Networked<PlayerInitializer, PlayerDelta> {
+  Player();
   Player(const PID pid);
-
-  template<typename Archive>
-  void serialize(Archive &ar) {
-    ar(pid, nickname, admin, team);
-  }
+  Player(const PlayerInitializer &initializer);
 
   PID pid;
   std::string nickname;
@@ -44,14 +61,9 @@ struct Player {
 
   Plane *plane;
 
-  std::vector<void *> subsystemData;
-
   void applyDelta(const PlayerDelta &delta);
 };
 
-/**
- * The mode of the arena; we cycle through these three modes.
- */
 enum class ArenaMode {
   Lobby, // lobby, to make teams
   Game, // playing tutorial
@@ -135,16 +147,16 @@ struct ArenaDelta: public VerifyStructure {
  * A model of a game arena.
  * Used by both server and client.
  */
-class Arena {
+class Arena: public Networked<ArenaInitializer, ArenaDelta> {
  private:
   PID allocPid() const;
   std::string allocNickname(const std::string &requested) const;
 
   std::vector<Subsystem *> subsystems;
 
-  void initSky(const SkyInitializer &initializer);
-  void addPlayer(const Player &player);
-  void removePlayer(const Player &player);
+  // subsystem callbacks
+  void join(const Player &player);
+  void quit(const Player &player);
 
  public:
   Arena();
@@ -153,11 +165,10 @@ class Arena {
    * State.
    */
   std::list<Player> players;
-  std::string motd; // message of the day
+  std::string motd;
 
   ArenaMode mode;
-  optional<Sky> sky;
-  // when in game, sky is instantiated, and we sync Players with Planes
+  Sky sky;
 
   /**
    * Subsystem.
@@ -165,15 +176,12 @@ class Arena {
   void linkSystem(Subsystem *subsystem);
 
   /**
-   * Initializers / deltas.
+   * User API.
    */
   void applyInitializer(const ArenaInitializer &initializer);
-  optional<ClientEvent> applyDelta(const ArenaDelta &delta);
+  void applyDelta(const ArenaDelta &delta) override;
   ArenaInitializer captureInitializer();
 
-  /**
-   * General API. Used by the server.
-   */
   Player &connectPlayer(const std::string &requestedNick);
   void disconnectPlayer(const Player &record);
   Player *getPlayer(const PID pid);

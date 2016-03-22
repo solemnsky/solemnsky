@@ -10,7 +10,7 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
   if (!myPlayer) {
     // waiting for the arena connection request to be accepted
     if (packet.type == ServerPacket::Type::Init) {
-      arena.applyInitializer(*packet.init);
+      arena.emplace(*packet.init);
       myPlayer = arena.getPlayer(*packet.pid);
       appLog("Joined arena!", LogOrigin::Client);
       connected = true;

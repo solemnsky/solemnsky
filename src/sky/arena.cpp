@@ -110,8 +110,6 @@ Subsystem::Subsystem(const PID id, Arena *arena) :
  * Arena.
  */
 
-Arena::Arena() { }
-
 PID Arena::allocPid() const {
   std::vector<int> usedPids;
   for (const auto &player : players) usedPids.push_back(player.pid);
@@ -161,12 +159,18 @@ void Arena::initSky(const SkyInitializer &initializer) {
   }
 }
 
-void Arena::addPlayer(const Player &player) {
+void Arena::join(const Player &player) {
   if (sky) sky->onJoin(player);
 }
 
-void Arena::removePlayer(const Player &player) {
+void Arena::quit(const Player &player) {
 
+}
+
+Arena::Arena() { }
+
+void Arena::linkSystem(Subsystem *subsystem) {
+  subsystems.push_back(subsystem);
 }
 
 void Arena::applyInitializer(const ArenaInitializer &initializer) {
@@ -179,7 +183,7 @@ void Arena::applyInitializer(const ArenaInitializer &initializer) {
   }
 }
 
-optional<ClientEvent> Arena::applyDelta(const ArenaDelta &delta) {
+void Arena::applyDelta(const ArenaDelta &delta) {
   switch (delta.type) {
     case ArenaDelta::Type::Quit: {
       optional<std::string> playerQuit;
