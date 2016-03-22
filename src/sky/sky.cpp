@@ -33,7 +33,7 @@ Sky::Sky(const SkyInitializer &initializer) :
   CTOR_LOG("Sky");
   // construct planes
   for (const auto &pair : initializer.planes)
-    planes.emplace(pair.first, Plane(this, pair.second));
+    planes.emplace(pair.first, PlaneVital(this, pair.second));
 }
 
 Sky::~Sky() {
@@ -45,17 +45,12 @@ void Sky::linkSystem(Subsystem *subsystem) {
   subsystems.push_back(subsystem);
 }
 
-Plane *Sky::getPlane(const PID pid) {
-  if (planes.find(pid) != planes.end()) return &planes.at(pid);
-  else return nullptr;
-}
-
-Plane &Sky::addPlane(const PID pid,
-                     const PlaneTuning &tuning,
-                     const sf::Vector2f pos,
-                     const float rot) {
-  Plane &plane =
-      planes.emplace(pid, Plane(this, tuning, pos, rot)).first->second;
+PlaneVital &Sky::addPlane(const PID pid,
+                          const PlaneTuning &tuning,
+                          const sf::Vector2f pos,
+                          const float rot) {
+  PlaneVital &plane =
+      planes.emplace(pid, PlaneVital(this, tuning, pos, rot)).first->second;
   for (auto system : subsystems) system->addPlane(pid, plane);
   restructure[pid] = &plane;
   return plane;
@@ -67,20 +62,19 @@ void Sky::removePlane(const PID pid) {
   restructure[pid] = nullptr;
 }
 
-void Sky::fireLaser(Plane *const plane) {
-  if (plane->state.requestDiscreteEnergy(0.3)) {
-    appLog("PEW PEW wait for somebody to implement this PEW PEW PEW");
-  }
+Plane *Sky::getPlane(const PID pid) {
+  if (planes.find(pid) != planes.end()) return &planes.at(pid);
+  else return nullptr;
 }
 
 void Sky::tick(float delta) {
   for (auto &elem : planes) {
-    Plane &plane = elem.second;
+    PlaneVital &plane = elem.second;
     plane.writeToBody();
   }
   physics.tick(delta);
   for (auto &elem : planes) {
-    Plane &plane = elem.second;
+    PlaneVital &plane = elem.second;
     plane.readFromBody();
     plane.tick(delta);
   }
@@ -113,10 +107,10 @@ SkyDelta Sky::collectDelta() {
 void Sky::applyDelta(const SkyDelta &delta) {
   for (const auto &pair : delta.restructure) {
     planes.erase(pair.first);
-    if (pair.second) planes.emplace(pair.first, Plane(this, *pair.second));
+    if (pair.second) planes.emplace(pair.first, PlaneVital(this, *pair.second));
   }
   for (const auto &pair : delta.state) {
-    if (Plane *plane = getPlane(pair.first)) {
+    if (PlaneVital *plane = getPlane(pair.first)) {
       plane->state = pair.second;
       plane->writeToBody();
     }

@@ -14,7 +14,7 @@ public:
 
  private:
   virtual void tick(const float delta) override;
-  virtual void addPlane(const PID pid, Plane &plane) override;
+  virtual void addPlane(const PID pid, PlaneVital &plane) override;
   virtual void removePlane(const PID pid) override;
 };
 }

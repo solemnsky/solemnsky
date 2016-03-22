@@ -13,7 +13,7 @@ private:
   sky::RenderSystem renderSystem;
   GameController controller;
 
-  sky::Plane *plane;
+  sky::PlaneVital *plane;
 
 public:
   Tutorial(ClientShared &state);

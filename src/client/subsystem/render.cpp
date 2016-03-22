@@ -1,4 +1,4 @@
-#include "sky/flight.h"
+#include "sky/plane.h"
 #include "render.h"
 #include "sky/sky.h"
 #include "util/methods.h"
@@ -10,7 +10,7 @@ namespace sky {
  * PlaneGraphics.
  */
 
-PlaneGraphics::PlaneGraphics(const PID pid, const Plane &parent) :
+PlaneGraphics::PlaneGraphics(const PID pid, const PlaneVital &parent) :
     pid(pid),
     parent(&parent),
     roll(90),
@@ -159,7 +159,7 @@ void RenderSystem::tick(float delta) {
   });
 }
 
-void RenderSystem::addPlane(const PID pid, Plane &plane) {
+void RenderSystem::addPlane(const PID pid, PlaneVital &plane) {
   graphics.emplace_back(pid, plane);
 }
 
