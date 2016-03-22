@@ -38,27 +38,22 @@ struct SkyDelta: public VerifyStructure {
 
 /*
  * A Sky is the state of a game being played. It is held by an Arena when a
- * game is under way. Every Player corresponds to one Plane.
+ * game is under way.
  */
 class Sky: public Subsystem {
  private:
   std::map<PID, Plane> planes;
-
-  /**
-   * API for the container Arena.
-   */
-  Plane &addPlane(const PID pid);
-  void removePlane(const PID pid);
   Plane *getPlane(const PID pid);
-  void tick(float delta);
 
  protected:
+  friend class Arena;
+
   /**
    * Subsystem implementation.
    */
   virtual void onTick(const float delta) override;
-  virtual void onJoin(const struct Player &player) override;
-  virtual void onQuit(const struct Player &player) override;
+  virtual void onJoin(struct Player &player) override;
+  virtual void onQuit(struct Player &player) override;
 
  public:
   Sky(class Arena *parent, const MapName &mapName);

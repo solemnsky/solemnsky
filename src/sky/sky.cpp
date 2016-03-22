@@ -18,13 +18,32 @@ SkyDelta::SkyDelta() { }
 
 bool SkyDelta::verifyStructure() const {
   for (auto const &x : state)
-    if (!x.second.verifyStructure()) return false
+    if (!x.second.verifyStructure()) return false;
   return true;
 }
 
 /**
  * Sky.
  */
+
+void Sky::onTick(const float delta) {
+  for (auto &elem : planes) {
+    elem.second.beforePhysics();
+  }
+  physics.tick(delta);
+  for (auto &elem : planes) {
+    elem.second.afterPhysics(delta);
+  }
+}
+
+void Sky::onJoin(Player &player) {
+  Plane &plane = planes.emplace(player.pid, Plane(this)).first->second;
+  player.plane = &plane;
+}
+
+void Sky::onQuit(Player &player) {
+  planes.erase(player.pid);
+}
 
 Sky::Sky(Arena *arena, const MapName &mapName) :
     Subsystem(arena),
@@ -45,30 +64,14 @@ Sky::Sky(Arena *arena, const SkyInitializer &initializer) :
 
 Sky::~Sky() {
   planes.clear(); // destroy the planes before destroying the physics!
-}
-
-Plane &Sky::addPlane(const PID pid) {
-  Plane &plane = planes.emplace(pid, Plane(this)).first->second;
-  return plane;
-}
-
-void Sky::removePlane(const PID pid) {
-  planes.erase(pid);
+  for (auto &player : arena->players) {
+    player.plane = nullptr;
+  }
 }
 
 Plane *Sky::getPlane(const PID pid) {
   if (planes.find(pid) != planes.end()) return &planes.at(pid);
   else return nullptr;
-}
-
-void Sky::tick(float delta) {
-  for (auto &elem : planes) {
-    elem.second.beforePhysics();
-  }
-  physics.tick(delta);
-  for (auto &elem : planes) {
-    elem.second.afterPhysics(delta);
-  }
 }
 
 SkyInitializer Sky::captureInitializer() {
