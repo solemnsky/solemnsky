@@ -241,3 +241,9 @@ bool verifyValue(
         VerifyStructure, X>::value>::type * = 0) {
   return true;
 }
+
+/**
+ * Type synonyms for the game.
+ */
+typedef unsigned int PID; // ID for elements in the game
+typedef unsigned char Team; // 0 spec, 1 red, 2 blue

@@ -30,14 +30,14 @@ add_library(solemnsky SHARED
         src/sky/event.cpp
         src/sky/event.h
 
-        src/sky/plane.cpp
-        src/sky/plane.h
-
         src/sky/map.cpp
         src/sky/map.h
 
         src/sky/physics.cpp
         src/sky/physics.h
+
+        src/sky/plane.cpp
+        src/sky/plane.h
 
         src/sky/props.cpp
         src/sky/props.h
@@ -56,7 +56,10 @@ add_library(solemnsky SHARED
 
         src/util/types.cpp
         src/util/types.h
-        src/sky/action.cpp src/sky/action.h)
+
+        src/sky/subsystem.cpp
+        src/sky/subsystem.h
+        src/sky/subsystem.cpp src/sky/subsystem.h)
 target_link_libraries(solemnsky
         enet
         sfml-system

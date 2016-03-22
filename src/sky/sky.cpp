@@ -1,3 +1,4 @@
+#include "arena.h"
 #include "sky.h"
 #include "util/methods.h"
 
@@ -10,44 +11,44 @@ namespace sky {
 SkyInitializer::SkyInitializer() { }
 
 /**
- * Snapshot.
+ * SkyDelta.
  */
 
 SkyDelta::SkyDelta() { }
+
+bool SkyDelta::verifyStructure() const {
+  for (auto const &x : state)
+    if (!x.second.verifyStructure()) return false
+  return true;
+}
 
 /**
  * Sky.
  */
 
-Sky::Sky(const MapName &mapName) :
+Sky::Sky(Arena *arena, const MapName &mapName) :
+    Subsystem(arena),
     mapName(mapName),
     map(mapName),
     physics(map) {
-  CTOR_LOG("Sky");
 }
 
-Sky::Sky(const SkyInitializer &initializer) :
+Sky::Sky(Arena *arena, const SkyInitializer &initializer) :
+    Subsystem(arena),
     mapName(initializer.mapName),
     map(mapName),
     physics(map) {
-  CTOR_LOG("Sky");
   // construct planes
   for (const auto &pair : initializer.planes)
-    planes.emplace(pair.first, PlaneVital(this, pair.second));
+    planes.emplace(pair.first, Plane(this, pair.second));
 }
 
 Sky::~Sky() {
-  DTOR_LOG("Sky");
   planes.clear(); // destroy the planes before destroying the physics!
 }
 
-void Sky::linkSystem(Subsystem *subsystem) {
-  subsystems.push_back(subsystem);
-}
-
 Plane &Sky::addPlane(const PID pid) {
-  Plane &plane =
-      planes.emplace(pid, Plane(this)).first->second;
+  Plane &plane = planes.emplace(pid, Plane(this)).first->second;
   return plane;
 }
 
@@ -68,7 +69,6 @@ void Sky::tick(float delta) {
   for (auto &elem : planes) {
     elem.second.afterPhysics(delta);
   }
-  for (auto system : subsystems) system->tick(delta);
 }
 
 SkyInitializer Sky::captureInitializer() {
@@ -81,28 +81,15 @@ SkyInitializer Sky::captureInitializer() {
 
 SkyDelta Sky::collectDelta() {
   SkyDelta delta;
-  for (const auto &pair : planes)
-    delta.state.emplace(pair.first, pair.second.state);
-  for (const auto &pair : restructure) {
-    if (!pair.second)
-      delta.restructure.emplace(
-          pair.first, optional<PlaneInitializer>());
-    else
-      delta.restructure.emplace(pair.first, pair.second->captureInitializer());
-  }
-  restructure.clear();
+  for (auto &pair : planes)
+    delta.state.emplace(pair.first, pair.second.captureDelta());
   return delta;
 }
 
 void Sky::applyDelta(const SkyDelta &delta) {
-  for (const auto &pair : delta.restructure) {
-    planes.erase(pair.first);
-    if (pair.second) planes.emplace(pair.first, PlaneVital(this, *pair.second));
-  }
-  for (const auto &pair : delta.state) {
-    if (PlaneVital *plane = getPlane(pair.first)) {
-      plane->state = pair.second;
-      plane->writeToBody();
+  for (auto const &pair : delta.state) {
+    if (Plane *plane = getPlane(pair.first)) {
+      plane->applyDelta(pair.second);
     }
   }
 }
