@@ -93,7 +93,7 @@ class Sky {
   std::map<PID, Plane> planes;
 
   /**
-   * API for the container Arena.
+   * API for the container Arena, to sync Players with Planes.
    */
   Plane &addPlane(const PID pid);
   void removePlane(const PID pid);

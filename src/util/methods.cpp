@@ -112,3 +112,11 @@ int smallestUnused(std::vector<int> &vec) {
   }
   return v;
 };
+
+Movement addMovement(const bool x, const bool y) {
+  if (y == x) return Movement::None;
+  if (y) return Movement::Up;
+  return Movement::Down;
+}
+
+

@@ -7,10 +7,68 @@
 namespace sky {
 
 /**
+ * Action.
+ */
+
+Action::Action(const Action::Type type, bool value) :
+    type(type), value(value) { }
+
+
+static const std::vector<std::string> actionNames = {
+    "thrust",
+    "reverse",
+    "left",
+    "right",
+    "primary",
+    "secondary",
+    "special",
+    "suicide"
+};
+
+std::string Action::show() const {
+  return actionNames.at((size_t) type) + (value ? "+" : "-");
+}
+
+static optional<Action> Action::read(const std::string &str) {
+  Type type = Type::Thrust;
+  for (const auto &search : actionNames) {
+    if ((search + "+") == str) return Action(type, true);
+    if ((search + "-") == str) return Action(type, false);
+    type = Type(char(type) + 1);
+  }
+  return {};
+}
+
+/**
  * PlaneTuning.
  */
 
-PlaneTuning::PlaneTuning() { }
+PlaneTuning::PlaneTuning() :
+    hitbox(110, 60),
+    maxHealth(10),
+    throttleSpeed(1.5) { }
+
+PlaneTuning::Energy::Energy() :
+    thrustDrain(1),
+    recharge(0.5),
+    laserGun(0.3) { }
+
+PlaneTuning::Stall::Stall() :
+    maxRotVel(200),
+    maxVel(300),
+    thrust(500),
+    damping(0.8),
+    threshold(130) { }
+
+PlaneTuning::Flight::Flight() :
+    maxRotVel(180),
+    airspeedFactor(330),
+    throttleInfluence(0.6),
+    throttleEffect(0.3),
+    gravityEffect(0.6),
+    afterburnDrive(0.9),
+    leftoverDamping(0.3),
+    threshold(110) { }
 
 /**
  * PlaneState.
@@ -65,11 +123,7 @@ PlaneInitializer::PlaneInitializer() { }
 
 PlaneInitializer::PlaneInitializer(
     const PlaneTuning &tuning, const PlaneState &state) :
-    tuning(tuning), state(state) { }
-
-bool PlaneInitializer::verifyStructure() const {
-  return (bool(state) == bool(tuning));
-}
+    spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)) { }
 
 /**
  * PlaneDelta.
@@ -132,7 +186,7 @@ void PlaneVital::readFromBody() {
   state.vel = physics->toGameVec(body->GetLinearVelocity());
 }
 
-void PlaneVital::tick(float delta) {
+void PlaneVital::tick(const float delta) {
   // helpful synonyms
   const float
       forwardVel = state.forwardVelocity(),
@@ -220,8 +274,106 @@ void PlaneVital::tick(float delta) {
  * Plane.
  */
 
+void Plane::syncCtrls() {
+  if (vital) {
+    vital->state.rotCtrl = addMovement(leftState, rightState);
+    vital->state.throtCtrl = addMovement(revState, thrustState);
+  }
+}
+
+void Plane::beforePhysics() {
+  if (vital) vital->writeToBody();
+}
+
+void Plane::afterPhysics(float delta) {
+  if (vital) {
+    vital->readFromBody;
+    vital->tick(delta);
+  }
+}
+
+Plane::Plane(Sky *parent) :
+    parent(parent),
+    newlyAlive(false),
+    leftState(false), rightState(false),
+    thrustState(false), revState(false) { }
+
+Plane::Plane(Sky *parent, const PlaneInitializer &initializer) :
+    Plane(parent) {
+  if (initializer.spawn)
+    vital.emplace(parent, initializer.spawn->first, initializer.spawn->second);
+}
+
+void Plane::spawn(const PlaneTuning &tuning,
+                  const sf::Vector2f pos,
+                  const float rot) {
+  vital.emplace(parent, tuning, PlaneState(tuning, pos, rot));
+  syncCtrls();
+  newlyAlive = true;
+}
+
+void Plane::doAction(const Action &action) {
+  switch (action.type) {
+    case Action::Type::Thrust: {
+      thrustState = action.value;
+      break;
+    }
+    case Action::Type::Reverse: {
+      revState = action.value;
+      break;
+    }
+    case Action::Type::Left: {
+      leftState = action.value;
+      break;
+    }
+    case Action::Type::Right: {
+      rightState = action.value;
+      break;
+    }
+    case Action::Type::Primary: {
+      break;
+    }
+    case Action::Type::Secondary: {
+      break;
+    }
+    case Action::Type::Special: {
+      break;
+    }
+    case Action::Type::Suicide: {
+      vital.reset();
+      newlyAlive = false;
+    }
+  }
+
+  syncCtrls();
+}
+
+void Plane::applyDelta(const PlaneDelta &delta) {
+  if (delta.tuning) {
+    vital.emplace(parent, delta.tuning, delta.state);
+    return;
+  }
+  if (delta.state) {
+    if (vital) vital->state = *delta.state;
+  } else vital.reset();
+}
+
 PlaneInitializer Plane::captureInitializer() const {
-  return PlaneInitializer(tuning, state);
+  if (vital) {
+    return PlaneInitializer(vital->tuning, vital->state);
+  } else {
+    return {};
+  }
+}
+
+PlaneDelta Plane::captureDelta() {
+  if (newlyAlive) {
+    newlyAlive = false;
+    return PlaneDelta(vital->tuning, vital->state);
+  } else {
+    if (vital) return PlaneDelta(vital->state);
+    else return PlaneDelta();
+  }
 }
 
 }

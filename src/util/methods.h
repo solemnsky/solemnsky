@@ -88,3 +88,5 @@ bool verifyFields(Field &field, Fields... fields) {
 std::string inQuotes(const std::string &str);
 
 int smallestUnused(std::vector<int> &vec);
+
+Movement addMovement(const bool x, const bool y);

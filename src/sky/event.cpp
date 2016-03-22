@@ -4,10 +4,6 @@
 namespace sky {
 
 /**
- * ServerEvent.
- */
-
-/**
  * ClientEvent.
  */
 
