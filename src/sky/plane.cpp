@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "flight.h"
+#include "plane.h"
 #include "sky.h"
 #include "util/methods.h"
 
@@ -67,50 +67,54 @@ PlaneInitializer::PlaneInitializer(
     const PlaneTuning &tuning, const PlaneState &state) :
     tuning(tuning), state(state) { }
 
+bool PlaneInitializer::verifyStructure() const {
+  return (bool(state) == bool(tuning));
+}
+
 /**
- * Plane.
+ * PlaneDelta.
  */
 
-Plane::Plane(Sky *parent,
-             const PlaneTuning &tuning,
-             const sf::Vector2f pos,
-             const float rot) :
-    parent(parent),
-    physics(&parent->physics),
-    body(physics->rectBody(tuning.hitbox)),
-    state(tuning, pos, rot) {
-  CTOR_LOG("Plane");
+PlaneDelta::PlaneDelta() { }
 
-  // initialize body, in agreement with state
+PlaneDelta::PlaneDelta(const PlaneState &state) :
+    state(state) { }
+
+sky::PlaneDelta::PlaneDelta(const sky::PlaneTuning &tuning,
+                            const sky::PlaneState &state) :
+    tuning(tuning), state(state) { }
+
+bool PlaneDelta::verifyStructure() const {
+  return not (!bool(tuning) or bool(state));
+}
+
+/**
+ * PlaneVital.
+ */
+
+PlaneVital::PlaneVital(Sky *parent,
+                       const PlaneTuning &tuning,
+                       const PlaneState &state) :
+    parent(parent), tuning(tuning), state(state) {
   body = physics->rectBody(tuning.hitbox);
   body->SetAngularVelocity(toRad(state.rot));
   body->SetLinearVelocity(physics->toPhysVec(state.vel));
   body->SetGravityScale(state.stalled ? 1 : 0);
 }
 
-Plane::Plane(Sky *parent, const PlaneInitializer &initializer) :
-    parent(parent),
-    physics(&parent->physics),
-    body(physics->rectBody(initializer.tuning.hitbox)),
-    state(initializer.state) {
-  CTOR_LOG("Plane");
-}
-
-Plane::Plane(Plane &&plane) :
+PlaneVital::PlaneVital(PlaneVital &&plane) :
     parent(plane.parent),
     physics(plane.physics),
     body(plane.body),
     state(plane.state) {
   plane.body = nullptr;
-  CTOR_LOG("Plane");
 }
 
-Plane::~Plane() {
+PlaneVital::~PlaneVital() {
   physics->clrBody(body);
-  DTOR_LOG("Plane");
 };
 
-void Plane::writeToBody() {
+void PlaneVital::writeToBody() {
   // TODO: use proper motors / motor joints for this instead of impulses
   physics->approachRotVel(body, state.rotvel);
   physics->approachVel(body, state.vel);
@@ -121,14 +125,14 @@ void Plane::writeToBody() {
       toRad(state.rot));
 }
 
-void Plane::readFromBody() {
+void PlaneVital::readFromBody() {
   state.pos = physics->toGameVec(body->GetPosition());
   state.rot = toDeg(body->GetAngle());
   state.rotvel = toDeg(body->GetAngularVelocity());
   state.vel = physics->toGameVec(body->GetLinearVelocity());
 }
 
-void Plane::tick(float delta) {
+void PlaneVital::tick(float delta) {
   // helpful synonyms
   const float
       forwardVel = state.forwardVelocity(),
@@ -211,6 +215,10 @@ void Plane::tick(float delta) {
     }
   }
 }
+
+/**
+ * Plane.
+ */
 
 PlaneInitializer Plane::captureInitializer() const {
   return PlaneInitializer(tuning, state);

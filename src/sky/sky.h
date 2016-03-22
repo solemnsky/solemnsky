@@ -5,7 +5,7 @@
 #include <map>
 #include <memory>
 #include "physics.h"
-#include "flight.h"
+#include "plane.h"
 #include "map.h"
 
 namespace sky {
@@ -39,7 +39,7 @@ class Subsystem {
   virtual void tick(const float delta) { }
 
   // post-add
-  virtual void addPlane(const PID pid, Plane &plane) { }
+  virtual void addPlane(const PID pid, PlaneVital &plane) { }
 
   // pre-remove
   virtual void removePlane(const PID pid) { }
@@ -74,35 +74,30 @@ struct SkyDelta {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(restructure, state);
+    ar(state);
   }
 
-  // we potentially remove / [re]add Planes
-  std::map<PID, optional<PlaneInitializer>> restructure;
   // we set the state of planes
-  std::map<PID, PlaneState> state;
+  std::map<PID, PlaneDelta> state;
+  // we set the state of the props
+  // TODO
 };
 
 /*
- * A Sky is the basic core of the game state. It is semantically subordinate to
- * an Arena, and exposes a simple interface for clients and servers alike for
- * all kinds of circumstances, from server-side simulation to replaying
- * recordings.
- *
- * Planes are added and removed in a Sky "all willy-nilly"; holding
- * persistent player records and such is the task of the Arena.
+ * A Sky is the state of a game being played. It is held by an arena when a
+ * game is under way. Every Player corresponds to one Plane.
  */
 class Sky {
  private:
   std::vector<Subsystem *> subsystems;
-
   std::map<PID, Plane> planes;
 
-  // This keeps track of PID values where planes are removed / added.
-  // `restructure.at(pid) == nullptr` <=> At pid, there is no longer any Plane.
-  // Otherwise, restructure.at(pid) points to a plane that was recently added.
-  // Reset at each collectDelta.
-  std::map<PID, Plane *> restructure;
+  /**
+   * API for the container Arena.
+   */
+  Plane &addPlane(const PID pid);
+  void removePlane(const PID pid);
+  Plane *getPlane(const PID pid);
 
  public:
   Sky(const MapName &mapName);
@@ -114,27 +109,11 @@ class Sky {
   Physics physics;
 
   /**
-   * Linking subsystems to the engine.
+   * API for the user.
    */
   void linkSystem(Subsystem *);
-
-  /**
-   * Interface.
-   */
-  Plane *getPlane(const PID pid);
-  Plane &addPlane(const PID pid,
-                  const PlaneTuning &tuning,
-                  const sf::Vector2f pos,
-                  const float rot);
-  void removePlane(const PID pid);
-
-  void fireLaser(Plane *const plane);
-
   void tick(float delta); // delta in seconds *everywhere*
 
-  /**
-   * Initializers and deltas.
-   */
   SkyInitializer captureInitializer();
   SkyDelta collectDelta();
   void applyDelta(const SkyDelta &delta);

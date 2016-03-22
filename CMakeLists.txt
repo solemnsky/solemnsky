@@ -30,8 +30,8 @@ add_library(solemnsky SHARED
         src/sky/event.cpp
         src/sky/event.h
 
-        src/sky/flight.cpp
-        src/sky/flight.h
+        src/sky/plane.cpp
+        src/sky/plane.h
 
         src/sky/map.cpp
         src/sky/map.h
@@ -56,7 +56,7 @@ add_library(solemnsky SHARED
 
         src/util/types.cpp
         src/util/types.h
-        )
+        src/sky/action.cpp src/sky/action.h)
 target_link_libraries(solemnsky
         enet
         sfml-system
@@ -170,3 +170,7 @@ target_link_libraries(solemnsky_client
 
 ###### unit tests
 add_subdirectory(tests/)
+
+###### cpack configuration
+SET(CPACK_GENERATOR "ZIP")
+include(CPack)

@@ -20,7 +20,7 @@ void MultiplayerGame::tick(float delta) {
 }
 
 void MultiplayerGame::render(ui::Frame &f) {
-  if (sky::Plane *plane =
+  if (sky::PlaneVital *plane =
       sky.getPlane(connection.myPlayer->pid)) {
     renderSystem.render(f, plane->state.pos);
   } else renderSystem.render(f, {0, 0});

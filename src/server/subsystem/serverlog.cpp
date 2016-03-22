@@ -9,7 +9,7 @@ void ServerLog::tick(const float delta) {
 
 }
 
-void ServerLog::addPlane(const PID pid, Plane &plane) {
+void ServerLog::addPlane(const PID pid, PlaneVital &plane) {
 
 }
 

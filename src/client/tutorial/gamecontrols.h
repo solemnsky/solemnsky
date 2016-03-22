@@ -3,7 +3,7 @@
  */
 #pragma once
 #include "client/util/sfmlutil.h"
-#include "sky/flight.h"
+#include "sky/plane.h"
 
 /**
  * A

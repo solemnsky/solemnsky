@@ -104,7 +104,6 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode,
 
 Arena::Arena() { }
 
-
 PID Arena::allocPid() const {
   std::vector<int> usedPids;
   for (const auto &player : players) usedPids.push_back(player.pid);
@@ -147,12 +146,29 @@ std::string Arena::allocNickname(const std::string &requested) const {
   return requested + "(" + std::to_string(smallestUnused(usedNumbers)) + ")";
 }
 
+void Arena::initSky(const SkyInitializer &initializer) {
+  sky.emplace(initializer);
+  for (const auto &player : players) {
+    player.plane = sky->
+  }
+}
+
+void Arena::addPlayer(const Player &player) {
+
+}
+
+void Arena::removePlayer(const Player &player) {
+
+}
+
 void Arena::applyInitializer(const ArenaInitializer &initializer) {
   motd = initializer.motd;
   players = std::list<Player>(initializer.players.begin(),
                               initializer.players.end());
   mode = initializer.mode;
-  if (mode == ArenaMode::Game) sky.emplace(*initializer.skyInitializer);
+  if (mode == ArenaMode::Game) {
+    initSky(*initializer.skyInitializer);
+  }
 }
 
 optional<ClientEvent> Arena::applyDelta(const ArenaDelta &delta) {

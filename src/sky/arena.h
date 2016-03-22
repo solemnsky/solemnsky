@@ -1,5 +1,5 @@
 /**
- * Shared model of a multiplayer game arena.
+ * Shared model of a multiplayer game.
  */
 #pragma once
 #include "util/types.h"
@@ -29,7 +29,7 @@ struct PlayerDelta {
 };
 
 /**
- * A player in the arena, with static data.
+ * A Player is a handle to a player in the arena and his potential game state.
  */
 struct Player {
   Player(); // for unpacking
@@ -44,6 +44,8 @@ struct Player {
   std::string nickname;
   bool admin;
   Team team;
+
+  Plane *plane;
 
   void applyDelta(const PlayerDelta &delta);
 };
@@ -137,13 +139,18 @@ struct ArenaDelta: public VerifyStructure {
 };
 
 /**
- * A model of a game arena, with utilities to help syncing it over a network.
+ * A model of a game arena.
  * Used by both server and client.
  */
 class Arena {
  private:
   PID allocPid() const;
   std::string allocNickname(const std::string &requested) const;
+
+  void initSky(const SkyInitializer &initializer);
+  void addPlayer(const Player &player);
+  void removePlayer(const Player &player);
+
  public:
   Arena();
 
@@ -155,6 +162,7 @@ class Arena {
 
   ArenaMode mode;
   optional<Sky> sky;
+  // when in game, sky is instantiated, and we sync Players with Planes
 
   /**
    * Initializers / deltas.

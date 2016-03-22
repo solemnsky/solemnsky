@@ -3,6 +3,7 @@
  */
 #pragma once
 #include <Box2D/Box2D.h>
+#include "action.h"
 #include "physics.h"
 #include "util/types.h"
 
@@ -11,7 +12,7 @@ namespace sky {
 class Sky;
 
 /**
- * Tuning values describing how a plane flies.
+ * The POD static state of a PlaneVital.
  */
 struct PlaneTuning {
   PlaneTuning(); // constructs with sensible defaults
@@ -45,9 +46,8 @@ struct PlaneTuning {
 
   struct Flight {
     // mechanics when not stalled
-    // TODO: document this
-    float maxRotVel = 180,
-        airspeedFactor = 330,
+    float maxRotVel = 180, // how quickly we can turn
+        airspeedFactor = 330, //
         throttleInfluence = 0.6,
         throttleEffect = 0.3,
         gravityEffect = 0.6,
@@ -60,7 +60,7 @@ struct PlaneTuning {
 };
 
 /**
- * The (POD) variable game state of a Plane.
+ * The POD variable game state of a PlaneVital.
  */
 struct PlaneState {
   PlaneState(); // for packing
@@ -74,10 +74,6 @@ struct PlaneState {
        leftoverVel, airspeed, throttle, energy, health);
   }
 
-  /**
-   * Data.
-   * Clamped values should have the same bounds in all instantiations.
-   */
   Movement rotCtrl; // controls
   Movement throtCtrl;
 
@@ -92,9 +88,6 @@ struct PlaneState {
 
   Clamped energy, health; // game mechanics
 
-  /**
-   * Helper methods.
-   */
   float forwardVelocity() const;
   float velocity() const;
 
@@ -105,63 +98,91 @@ struct PlaneState {
 };
 
 /**
- * Initializer to construct a new plane.
+ * Initializer to copy a Plane over a network.
  */
-struct PlaneInitializer {
+struct PlaneInitializer: public VerifyStructure {
   PlaneInitializer();
   PlaneInitializer(const PlaneTuning &tuning, const PlaneState &state);
 
   template<typename Archive>
   void serialize(Archive &ar) { ar(tuning, state); }
 
-  PlaneTuning tuning;
-  PlaneState state;
+  bool verifyStructure() const;
+
+  optional<PlaneTuning> tuning;
+  optional<PlaneState> state;
 };
 
 /**
- * A plane in the sky. Manager of a a Box2D body entity, it's non-copyable.
+ * Delta in a Plane to sync a Plane over a network..
  */
-class Plane {
+struct PlaneDelta: public VerifyStructure {
+  PlaneDelta();
+  PlaneDelta(const PlaneTuning &tuning, const PlaneState &state);
+  PlaneDelta(const PlaneState &state);
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(tuning, state);
+  }
+
+  bool verifyStructure() const;
+
+  optional<PlaneTuning> tuning;
+  optional<PlaneState> state;
+};
+
+/**
+ * The state and Box2D allocation of a plane when alive.
+ */
+class PlaneVital {
  private:
   sky::Sky *parent;
   Physics *physics;
   b2Body *body;
 
-  /**
-   * State mutation.
-   */
-  friend class Sky; // Sky calls these functions
+ public:
+  PlaneVital(Sky *parent,
+             const PlaneTuning &tuning,
+             const PlaneState &state);
+  PlaneVital(PlaneVital &&plane);
+  ~PlaneVital();
+
+  PlaneVital(const PlaneVital &) = delete;
+  PlaneVital &operator=(const PlaneVital &) = delete;
+
+  PlaneTuning tuning;
+  PlaneState state;
 
   void writeToBody();
   void readFromBody();
   void tick(float d);
 
+};
+
+/**
+ * Top-level entity representing a Player's participation in the Sky. Can be
+ * alive or not.
+ */
+class Plane {
+ private:
+  optional<PlaneVital> vital;
+
  public:
-  Plane(Sky *parent,
-        const PlaneTuning &tuning,
-        const sf::Vector2f pos,
-        const float rot);
+  Plane(Sky *parent);
   Plane(Sky *parent, const PlaneInitializer &initializer);
-  Plane(Plane &&plane);
-  ~Plane();
-
-  Plane(const Plane &) = delete;
-  Plane &operator=(const Plane &) = delete;
 
   /**
-   * State
-   * `tuning` should be treated as const; it's only not defined as such to
-   * allow Plane(Plane &&) to exist, which makes some matters a lot easier
+   * API for user.
    */
-  PlaneTuning tuning;
-  PlaneState state;
+  void spawn(const PlaneTuning &tuning,
+             const sf::Vector2f pos,
+             const float rot);
+  void doAction(const Action &action);
 
-  /**
-   * Initializer.
-   * For most game objects we also have a delta, but for our planes the delta
-   * resolution is just to copy PlaneState. TODO: make a smarter delta.
-   */
+  void applyDelta(const PlaneDelta &delta);
   PlaneInitializer captureInitializer() const;
+  PlaneDelta captureDelta();
 };
 
 }

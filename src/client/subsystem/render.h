@@ -50,12 +50,12 @@ const struct RndrParam {
  * removed from the Render subsystem.
  */
 struct PlaneGraphics {
-  PlaneGraphics(const PID pid, const Plane &parent);
+  PlaneGraphics(const PID pid, const PlaneVital &parent);
   PlaneGraphics &operator=(PlaneGraphics &&);
   PlaneGraphics(const PlaneGraphics &) = delete;
   PlaneGraphics &operator=(const PlaneGraphics &) = delete;
 
-  const Plane *parent;
+  const PlaneVital *parent;
   optional<PID> pid;
 
   Angle roll;
@@ -90,7 +90,7 @@ class RenderSystem: public Subsystem {
    * Subsystem listeners.
    */
   void tick(float delta) override;
-  virtual void addPlane(const PID pid, Plane &plane) override;
+  virtual void addPlane(const PID pid, PlaneVital &plane) override;
   virtual void removePlane(const PID pid) override;
 
  public:
