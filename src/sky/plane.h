@@ -205,6 +205,7 @@ class Plane {
   /**
    * Internal API.
    */
+  friend class Sky;
   void beforePhysics();
   void afterPhysics(float delta);
 

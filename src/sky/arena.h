@@ -11,9 +11,6 @@
 
 namespace sky {
 
-/**
- * Delta in a Player.
- */
 struct PlayerDelta {
   PlayerDelta(); // for unpacking
   PlayerDelta(const class Player &player);
@@ -47,6 +44,8 @@ struct Player {
 
   Plane *plane;
 
+  std::vector<void *> subsystemData;
+
   void applyDelta(const PlayerDelta &delta);
 };
 
@@ -59,9 +58,6 @@ enum class ArenaMode {
   Scoring // viewing tutorial results
 };
 
-/**
- * Initialize a new remote Arena.
- */
 struct ArenaInitializer: public VerifyStructure {
   ArenaInitializer(); // for unpacking
 
@@ -78,9 +74,6 @@ struct ArenaInitializer: public VerifyStructure {
   bool verifyStructure() const override;
 };
 
-/**
- * Delta in some arena state.
- */
 struct ArenaDelta: public VerifyStructure {
   enum class Type {
     Quit, // a player quits
@@ -147,6 +140,8 @@ class Arena {
   PID allocPid() const;
   std::string allocNickname(const std::string &requested) const;
 
+  std::vector<Subsystem *> subsystems;
+
   void initSky(const SkyInitializer &initializer);
   void addPlayer(const Player &player);
   void removePlayer(const Player &player);
@@ -163,6 +158,11 @@ class Arena {
   ArenaMode mode;
   optional<Sky> sky;
   // when in game, sky is instantiated, and we sync Players with Planes
+
+  /**
+   * Subsystem.
+   */
+  void linkSystem(Subsystem *subsystem);
 
   /**
    * Initializers / deltas.

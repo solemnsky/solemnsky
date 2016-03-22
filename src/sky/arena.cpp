@@ -8,6 +8,7 @@ namespace sky {
 /**
  * PlayerDelta.
  */
+
 PlayerDelta::PlayerDelta() { }
 
 PlayerDelta::PlayerDelta(const Player &player) :
@@ -16,6 +17,7 @@ PlayerDelta::PlayerDelta(const Player &player) :
 /**
  * Player.
  */
+
 Player::Player() { }
 
 Player::Player(const sky::PID pid) :
@@ -69,7 +71,6 @@ ArenaDelta ArenaDelta::Quit(const PID pid) {
   ArenaDelta delta(Type::Quit);
   delta.quit = pid;
   return delta;
-
 }
 
 ArenaDelta ArenaDelta::Join(const Player &player) {
@@ -97,6 +98,13 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode,
   delta.skyInitializer = skyInitializer;
   return delta;
 }
+
+/**
+ * Subsystem.
+ */
+
+Subsystem::Subsystem(const PID id, Arena *arena) :
+    id(id), arena(arena) { }
 
 /**
  * Arena.
@@ -149,12 +157,12 @@ std::string Arena::allocNickname(const std::string &requested) const {
 void Arena::initSky(const SkyInitializer &initializer) {
   sky.emplace(initializer);
   for (const auto &player : players) {
-    player.plane = sky->
+    player.plane = sky->getPlane(player.pid);
   }
 }
 
 void Arena::addPlayer(const Player &player) {
-
+  if (sky) sky->onJoin(player);
 }
 
 void Arena::removePlayer(const Player &player) {
