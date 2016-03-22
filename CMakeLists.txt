@@ -59,7 +59,7 @@ add_library(solemnsky SHARED
 
         src/sky/subsystem.cpp
         src/sky/subsystem.h
-        src/sky/subsystem.cpp src/sky/subsystem.h)
+        src/sky/subsystem.cpp src/sky/subsystem.h src/sky/networked.cpp src/sky/networked.h)
 target_link_libraries(solemnsky
         enet
         sfml-system
