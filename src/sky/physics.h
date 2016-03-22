@@ -7,6 +7,10 @@
 
 namespace sky {
 
+/**
+ * Manages a Box2D world, and provides a wrapped API so we don't have to deal
+ * with actual C-style Box2D in the rest of the code.
+ */
 class Physics {
 private:
   b2World world;

@@ -6,15 +6,13 @@
 namespace sky {
 
 class Subsystem {
- private:
-  class Arena *arena;
-
  protected:
+  class Arena *arena;
   friend class Arena;
 
   virtual void onTick(const float delta);
-  virtual void onJoin(const class Player &player);
-  virtual void onQuit(const class Player &player);
+  virtual void onJoin(struct Player &player);
+  virtual void onQuit(struct Player &player);
 
  public:
   Subsystem() = delete;
