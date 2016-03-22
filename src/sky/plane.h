@@ -3,13 +3,39 @@
  */
 #pragma once
 #include <Box2D/Box2D.h>
-#include "action.h"
 #include "physics.h"
 #include "util/types.h"
 
 namespace sky {
 
 class Sky;
+
+/**
+ * Clients, through their user-specified key bindings, can generate
+ * sky::Actions. These actions are passed into the sky through
+ * sky::Plane::doAction.
+ */
+struct Action {
+  enum class Type {
+    Thrust,
+    Reverse,
+    Left,
+    Right,
+    Primary,
+    Secondary,
+    Special,
+    Suicide
+  };
+
+  Action(const Type type, bool value = false);
+  Action() = delete;
+
+  Type type;
+  bool value;
+
+  std::string show() const;
+  static optional<Action> read(const std::string &str);
+};
 
 /**
  * The POD static state of a PlaneVital.
@@ -26,37 +52,37 @@ struct PlaneTuning {
        flight.leftoverDamping, flight.threshold, throttleSpeed);
   }
 
-  sf::Vector2f hitbox{110, 60}; // x axis parallel with flight direction
-  float maxHealth = 10;
+  sf::Vector2f hitbox; // x axis parallel with flight direction
+  float maxHealth, throttleSpeed;
 
   struct Energy {
-    float thrustDrain = 1;
-    float recharge = 0.5;
-    float laserGun = 0.3;
+    Energy();
+    // energy mechanics
+    float thrustDrain, recharge, laserGun;
   } energy;
 
   struct Stall {
+    Stall();
     // mechanics when stalled
-    float maxRotVel = 200, // how quickly we can turn, (deg / s)
-        maxVel = 300, // our terminal velocity (px / s)
-        thrust = 500, // thrust acceleration (ps / s^2)
-        damping = 0.8; // how quickly we approach our terminal velocity
-    float threshold = 130; // the minimum airspeed that we need to enter flight
+    float maxRotVel, // how quickly we can turn, (deg / s)
+        maxVel, // our terminal velocity (px / s)
+        thrust, // thrust acceleration (ps / s^2)
+        damping; // how quickly we approach our terminal velocity
+    float threshold; // the minimum airspeed that we need to enter flight
   } stall;
 
   struct Flight {
+    Flight();
     // mechanics when not stalled
     float maxRotVel = 180, // how quickly we can turn
-        airspeedFactor = 330, //
-        throttleInfluence = 0.6,
-        throttleEffect = 0.3,
-        gravityEffect = 0.6,
-        afterburnDrive = 0.9,
-        leftoverDamping = 0.3;
-    float threshold = 110; // the maximum airspeed that we need to enter stall
+        airspeedFactor,
+        throttleInfluence,
+        throttleEffect,
+        gravityEffect,
+        afterburnDrive,
+        leftoverDamping;
+    float threshold; // the maximum airspeed that we need to enter stall
   } flight;
-
-  float throttleSpeed = 1.5;
 };
 
 /**
@@ -74,23 +100,25 @@ struct PlaneState {
        leftoverVel, airspeed, throttle, energy, health);
   }
 
+  /**
+   * State.
+   */
   Movement rotCtrl; // controls
   Movement throtCtrl;
-
   sf::Vector2f pos, vel; // physical values
   Angle rot;
   float rotvel;
-
   bool stalled; // flight mechanics
   Clamped afterburner;
   sf::Vector2f leftoverVel;
   Clamped airspeed, throttle;
-
   Clamped energy, health; // game mechanics
 
+  /**
+   * Helper methods.
+   */
   float forwardVelocity() const;
   float velocity() const;
-
   // returns true if energy was drawn
   bool requestDiscreteEnergy(const float reqEnergy);
   // returns the fraction of the requested energy that was drawn
@@ -100,17 +128,14 @@ struct PlaneState {
 /**
  * Initializer to copy a Plane over a network.
  */
-struct PlaneInitializer: public VerifyStructure {
+struct PlaneInitializer {
   PlaneInitializer();
   PlaneInitializer(const PlaneTuning &tuning, const PlaneState &state);
 
   template<typename Archive>
-  void serialize(Archive &ar) { ar(tuning, state); }
+  void serialize(Archive &ar) { ar(spawn); }
 
-  bool verifyStructure() const;
-
-  optional<PlaneTuning> tuning;
-  optional<PlaneState> state;
+  optional<std::pair<PlaneTuning, PlaneState>> spawn;
 };
 
 /**
@@ -133,11 +158,12 @@ struct PlaneDelta: public VerifyStructure {
 };
 
 /**
- * The state and Box2D allocation of a plane when alive.
+ * The state and Box2D allocation of a plane when alive, implementation
+ * detail of Plane.
  */
 class PlaneVital {
  private:
-  sky::Sky *parent;
+  Sky *parent;
   Physics *physics;
   b2Body *body;
 
@@ -156,17 +182,31 @@ class PlaneVital {
 
   void writeToBody();
   void readFromBody();
-  void tick(float d);
-
+  void tick(const float delta);
 };
 
 /**
  * Top-level entity representing a Player's participation in the Sky. Can be
- * alive or not.
+ * alive or dead. Corresponds to a Player.
  */
 class Plane {
  private:
+  Sky *parent;
   optional<PlaneVital> vital;
+
+  bool newlyAlive;
+
+  /**
+   * Controls.
+   */
+  bool leftState, rightState, thrustState, revState;
+  void syncCtrls();
+
+  /**
+   * Internal API.
+   */
+  void beforePhysics();
+  void afterPhysics(float delta);
 
  public:
   Plane(Sky *parent);

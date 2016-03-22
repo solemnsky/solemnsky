@@ -45,21 +45,14 @@ void Sky::linkSystem(Subsystem *subsystem) {
   subsystems.push_back(subsystem);
 }
 
-PlaneVital &Sky::addPlane(const PID pid,
-                          const PlaneTuning &tuning,
-                          const sf::Vector2f pos,
-                          const float rot) {
-  PlaneVital &plane =
-      planes.emplace(pid, PlaneVital(this, tuning, pos, rot)).first->second;
-  for (auto system : subsystems) system->addPlane(pid, plane);
-  restructure[pid] = &plane;
+Plane &Sky::addPlane(const PID pid) {
+  Plane &plane =
+      planes.emplace(pid, Plane(this)).first->second;
   return plane;
 }
 
 void Sky::removePlane(const PID pid) {
-  for (auto system : subsystems) system->removePlane(pid);
   planes.erase(pid);
-  restructure[pid] = nullptr;
 }
 
 Plane *Sky::getPlane(const PID pid) {
@@ -69,14 +62,11 @@ Plane *Sky::getPlane(const PID pid) {
 
 void Sky::tick(float delta) {
   for (auto &elem : planes) {
-    PlaneVital &plane = elem.second;
-    plane.writeToBody();
+    elem.second.beforePhysics();
   }
   physics.tick(delta);
   for (auto &elem : planes) {
-    PlaneVital &plane = elem.second;
-    plane.readFromBody();
-    plane.tick(delta);
+    elem.second.afterPhysics(delta);
   }
   for (auto system : subsystems) system->tick(delta);
 }
