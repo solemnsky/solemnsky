@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "sky/protocol.h"
+#include "sky/sky.h"
 #include "util/methods.h"
 #include <cereal/archives/binary.hpp>
 
@@ -51,10 +52,10 @@ TEST_F(ProtocolTest, CerealProtocol) {
     appLog(stream.str());
     sky::ClientPacket packet;
     input(packet);
-    EXPECT_TRUE(packet.verifyStructure());
+    EXPECT_EQ(packet.verifyStructure(), true);
     EXPECT_EQ(packet.type, sky::ClientPacket::Type::ReqJoin);
-    EXPECT_TRUE((bool) packet.stringData);
-    EXPECT_EQ(*packet.stringData, "hey");
+    EXPECT_EQ(bool(packet.stringData), true);
+    EXPECT_EQ(packet.stringData.get(), "hey");
   }
 
   {
@@ -62,7 +63,7 @@ TEST_F(ProtocolTest, CerealProtocol) {
     appLog(stream.str());
     sky::ClientPacket packet;
     input(packet);
-    EXPECT_TRUE(packet.verifyStructure());
+    EXPECT_EQ(packet.verifyStructure(), true);
     EXPECT_EQ(packet.type, sky::ClientPacket::Type::ReqSpawn);
   }
 }
@@ -72,14 +73,14 @@ TEST_F(ProtocolTest, CerealProtocol) {
  */
 TEST_F(ProtocolTest, Invariant) {
   sky::ClientPacket packet = sky::ClientPacket::ReqJoin("asdf");
-  EXPECT_TRUE(packet.verifyStructure());
+  EXPECT_EQ(packet.verifyStructure(), true);
   packet.stringData.reset();
-  EXPECT_FALSE(verifyValue(packet));
+  EXPECT_EQ(verifyValue(packet), false);
 
   sky::ServerPacket sPacket =
       sky::ServerPacket::Message(
           sky::ServerMessage::Broadcast("some broadcast"));
-  EXPECT_TRUE(sPacket.verifyStructure());
+  EXPECT_EQ(sPacket.verifyStructure(), true);
   sPacket.message->type = sky::ServerMessage::Type::Chat;
-  EXPECT_FALSE(sPacket.verifyStructure()); // TODO: make this work
+  EXPECT_EQ(sPacket.verifyStructure(), false);
 }

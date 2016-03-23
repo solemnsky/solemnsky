@@ -1,7 +1,7 @@
 #include "arena.h"
 #include <algorithm>
 #include "util/methods.h"
-#include "event.h"
+#include "client/elements/event.h"
 
 namespace sky {
 
@@ -9,8 +9,9 @@ namespace sky {
  * Player.
  */
 
-PlayerInitializer::PlayerInitializer(const std::string &nickname) :
-    nickname(nickname), admin(false), team(0) { }
+PlayerInitializer::PlayerInitializer(
+    const PID pid, const std::string &nickname) :
+    pid(pid), nickname(nickname), admin(false), team(0) { }
 
 Player::Player(const PlayerInitializer &initializer) :
     Networked(initializer),
@@ -27,6 +28,7 @@ void Player::applyDelta(const PlayerDelta &delta) {
 
 PlayerInitializer Player::captureInitializer() const {
   PlayerInitializer initializer;
+  initializer.pid = pid;
   initializer.nickname = nickname;
   initializer.admin = admin;
   initializer.team = team;
@@ -67,9 +69,9 @@ ArenaDelta ArenaDelta::Quit(const PID pid) {
   return delta;
 }
 
-ArenaDelta ArenaDelta::Join(const PID pid, const Player &player) {
+ArenaDelta ArenaDelta::Join(const PlayerInitializer &initializer) {
   ArenaDelta delta(Type::Join);
-  delta.join = std::pair<PID, Player>(pid, player);
+  delta.join = initializer;
   return delta;
 }
 
@@ -147,13 +149,15 @@ std::string Arena::allocNickname(const std::string &requested) const {
     usedNumbers.push_back(nickNumber);
   }
 
-  if (usedNumbers.empty()) return requested;
-
-  return requested + "(" + std::to_string(smallestUnused(usedNumbers)) + ")";
+  int allocated = smallestUnused(usedNumbers);
+  if (allocated == 0) return requested;
+  else
+    return requested + "("
+        + std::to_string(smallestUnused(usedNumbers)) + ")";
 }
 
 void Arena::forSubsystems(std::function<void(Subsystem &)> call) {
-  for (const Subsystem *system : subsystems) call(*system);
+  for (Subsystem *system : subsystems) call(*system);
 }
 
 void Arena::forPlayers(std::function<void(Player &)> call) {
@@ -173,13 +177,13 @@ Arena::Arena(const ArenaInitializer &initializer) :
 void Arena::applyDelta(const ArenaDelta &delta) {
   switch (delta.type) {
     case ArenaDelta::Type::Quit: {
-      if (Player *player = getPlayer(*delta.quit)) quitPlayer(*player);
+      if (Player *player = getPlayer(delta.quit.get()))
+        quitPlayer(*player);
       break;
     }
 
     case ArenaDelta::Type::Join: {
-      PlayerInitializer &initializer = *delta.join;
-      joinPlayer(initializer);
+      joinPlayer(delta.join.get());
       break;
     }
 
@@ -234,14 +238,14 @@ Player &Arena::joinPlayer(const PlayerInitializer &initializer) {
 }
 
 void Arena::quitPlayer(Player &player) {
-  forSubsystems([player](Subsystem &s) { s.quit(player); });
+  forSubsystems([&](Subsystem &s) { s.quit(player); });
   players.erase(player.pid);
 }
 
 Player &Arena::connectPlayer(const std::string &requestedNick) {
   PID pid = allocPid();
-  std::string nickname = allocNickname(requestedNick);
-  players.emplace(pid, Player(nickname));
+  players.emplace(
+      pid, Player(PlayerInitializer(pid, allocNickname(requestedNick))));
   Player &newPlayer = players.at(pid);
   forSubsystems([&newPlayer](Subsystem &s) { s.join(newPlayer); });
   return newPlayer;

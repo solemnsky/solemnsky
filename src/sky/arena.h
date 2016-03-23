@@ -3,7 +3,7 @@
  */
 #pragma once
 #include "util/types.h"
-#include "event.h"
+#include "client/elements/event.h"
 #include <map>
 #include <list>
 #include <vector>
@@ -15,13 +15,8 @@ namespace sky {
  */
 
 struct PlayerInitializer {
- private:
-  friend cereal::access;
-  friend class Player;
-  PlayerInitializer() = default;
-
- public:
-  PlayerInitializer(const std::string &nickname);
+  PlayerInitializer() = default; // packing
+  PlayerInitializer(const PID pid, const std::string &nickname);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -35,12 +30,8 @@ struct PlayerInitializer {
 };
 
 struct PlayerDelta {
- private:
-  friend cereal::access;
-  friend class Player;
-  PlayerDelta() = default;
+  PlayerDelta() = default; // packing
 
- public:
   template<typename Archive>
   void serialize(Archive &ar) {
     ar(nickname, admin, team);
@@ -107,12 +98,7 @@ enum class ArenaMode {
 };
 
 struct ArenaInitializer {
- private:
-  friend cereal::access;
-  friend class Arena;
-  ArenaInitializer() = default;
-
- public:
+  ArenaInitializer() = default; // packing
   ArenaInitializer(const std::string &name);
 
   template<typename Archive>
@@ -126,15 +112,12 @@ struct ArenaInitializer {
 };
 
 struct ArenaDelta: public VerifyStructure {
- private:
-  friend cereal::access;
-  ArenaDelta() = default;
-  ArenaDelta(const Type type);
-
- public:
   enum class Type {
     Quit, Join, Delta, Motd, Mode
   };
+
+  ArenaDelta() = default; // packing
+  ArenaDelta(const Type type);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -173,7 +156,7 @@ struct ArenaDelta: public VerifyStructure {
   bool verifyStructure() const override;
 
   static ArenaDelta Quit(const PID pid);
-  static ArenaDelta Join(const PID pid, const Player &player);
+  static ArenaDelta Join(const PlayerInitializer &initializer);
   static ArenaDelta Delta(const PID, const PlayerDelta &delta);
   static ArenaDelta Motd(const std::string &motd);
   static ArenaDelta Mode(const ArenaMode mode);

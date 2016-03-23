@@ -27,9 +27,6 @@ add_library(solemnsky SHARED
         src/sky/arena.cpp
         src/sky/arena.h
 
-        src/sky/event.cpp
-        src/sky/event.h
-
         src/sky/map.cpp
         src/sky/map.h
 
@@ -56,10 +53,8 @@ add_library(solemnsky SHARED
 
         src/util/types.cpp
         src/util/types.h
+        )
 
-        src/sky/subsystem.cpp
-        src/sky/subsystem.h
-        src/sky/subsystem.cpp src/sky/subsystem.h src/sky/networked.cpp src/sky/networked.h)
 target_link_libraries(solemnsky
         enet
         sfml-system
@@ -87,6 +82,9 @@ add_executable(solemnsky_client
 
         src/client/elements/elements.cpp
         src/client/elements/elements.h
+
+        src/client/elements/event.cpp
+        src/client/elements/event.h
 
         src/client/elements/settings.cpp
         src/client/elements/settings.h

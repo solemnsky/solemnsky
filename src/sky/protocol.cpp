@@ -110,13 +110,14 @@ bool ServerPacket::verifyStructure() const {
   switch (type) {
     case Type::Pong:
       return true;
-    case Type::Message: {
+    case Type::Message:
       return verifyFields(message);
-    }
     case Type::Init:
-      return verifyFields(pid, init);
-    case Type::Delta:
-      return verifyFields(delta);
+      return verifyFields(pid, arenaInit, skyInit);
+    case Type::DeltaArena:
+      return verifyFields(arenaDelta);
+    case Type::DeltaSky:
+      return verifyFields(skyDelta);
   }
   return false;
 }
@@ -131,16 +132,19 @@ ServerPacket ServerPacket::Message(const ServerMessage &message) {
   return packet;
 }
 
-ServerPacket ServerPacket::Init(const PID pid, const ArenaInitializer &init) {
+ServerPacket ServerPacket::Init(const PID pid,
+                                const ArenaInitializer &arenaInit,
+                                const SkyInitializer &skyInit) {
   ServerPacket packet(Type::Init);
   packet.pid = pid;
-  packet.init = init;
+  packet.arenaInit = arenaInit;
+  packet.skyInit = skyInit;
   return packet;
 }
 
-ServerPacket ServerPacket::Delta(const ArenaDelta &delta) {
-  ServerPacket packet(Type::Delta);
-  packet.delta = delta;
+ServerPacket ServerPacket::DeltaArena(const ArenaDelta &arenaDelta) {
+  ServerPacket packet(Type::DeltaArena);
+  packet.arenaDelta = arenaDelta;
   return packet;
 }
 

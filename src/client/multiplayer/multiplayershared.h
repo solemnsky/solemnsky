@@ -3,7 +3,7 @@
  */
 #pragma once
 #include "client/ui/control.h"
-#include "sky/event.h"
+#include "client/elements/event.h"
 #include "util/telegraph.h"
 #include "sky/arena.h"
 #include "sky/protocol.h"
