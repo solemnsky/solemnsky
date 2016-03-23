@@ -244,24 +244,19 @@ bool verifyValue(
 /**
  * The concept of a type that can be synced over the network.
  */
-
 template<typename Init, typename Delta>
 class Networked {
  public:
+  // you have to construct a Networked object with its initializer type
+  // this guarantees orthogonality
+  Networked() = delete;
   Networked(const Init &) { }
   virtual void applyDelta(const Delta &) = 0;
   virtual Init captureInitializer() const = 0;
 };
 
-template<typename Init, typename Delta>
-class AutoNetworked: public Networked<Init, Delta> {
- public:
-  AutoNetworked(const Init &init) : Networked(init) { }
-  virtual Delta captureDelta() = 0;
-};
-
 /**
  * Type synonyms for the game.
  */
-typedef unsigned int PID; // ID for elements in the game
-typedef unsigned char Team; // 0 spec, 1 red, 2 blue
+typedef unsigned int PID;
+typedef unsigned char Team;

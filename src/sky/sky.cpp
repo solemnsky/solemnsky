@@ -26,7 +26,7 @@ bool SkyDelta::verifyStructure() const {
  * Sky.
  */
 
-void Sky::onTick(const float delta) {
+void Sky::tick(const float delta) {
   for (auto &elem : planes) {
     elem.second.beforePhysics();
   }

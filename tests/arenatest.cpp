@@ -14,21 +14,21 @@ class ArenaTest: public testing::Test {
  */
 TEST_F(ArenaTest, ConnectionTest) {
   sky::Arena arena;
-  sky::Player &player1 = arena.connectPlayer("asdf");
+  sky::Player &player1 = arena.joinPlayer("asdf");
   EXPECT_EQ(player1.pid, 0);
-  sky::Player &player2 = arena.connectPlayer("asdf");
+  sky::Player &player2 = arena.joinPlayer("asdf");
   EXPECT_EQ(player2.pid, 1);
-  sky::Player &player3 = arena.connectPlayer("asdf");
+  sky::Player &player3 = arena.joinPlayer("asdf");
   EXPECT_EQ(player2.pid, 1);
 
   EXPECT_EQ(arena.getPlayer(0)->nickname, "asdf");
   EXPECT_EQ(arena.getPlayer(1)->nickname, "asdf(1)");
   EXPECT_EQ(arena.getPlayer(2)->nickname, "asdf(2)");
 
-  arena.disconnectPlayer(player1);
+  arena.quitPlayer(player1);
   EXPECT_EQ(arena.getPlayer(0), nullptr);
 
-  sky::Player &player4 = arena.connectPlayer("fdsa");
+  sky::Player &player4 = arena.joinPlayer("fdsa");
   EXPECT_EQ(arena.getPlayer(0)->nickname, "fdsa");
 }
 
@@ -38,9 +38,9 @@ TEST_F(ArenaTest, ConnectionTest) {
 TEST_F(ArenaTest, DeltaTest) {
   sky::Arena clientArena, serverArena;
 
-  sky::Player &player1 = serverArena.connectPlayer("asdf");
+  sky::Player &player1 = serverArena.joinPlayer("asdf");
 
-  clientArena.applyDelta(sky::ArenaDelta::Join(player1));
+  clientArena.applyDelta(sky::ArenaDelta::Join(0, player1));
   EXPECT_TRUE((bool) clientArena.getPlayer(0));
   EXPECT_EQ(clientArena.getPlayer(0)->nickname, "asdf");
 
@@ -55,9 +55,9 @@ TEST_F(ArenaTest, InitializerTest) {
   sky::Arena clientArena, serverArena;
 
   serverArena.motd = "secret arena";
-  sky::Player &player1 = serverArena.connectPlayer("an admin");
+  sky::Player &player1 = serverArena.joinPlayer("an admin");
   player1.admin = true;
-  sky::Player &player2 = serverArena.connectPlayer("somebody else");
+  sky::Player &player2 = serverArena.joinPlayer("somebody else");
   serverArena.mode = sky::ArenaMode::Scoring;
 
   clientArena.applyInitializer(serverArena.captureInitializer());
@@ -89,11 +89,11 @@ TEST_F(ArenaTest, SkyTest) {
  */
 TEST_F(ArenaTest, EventTest) {
   sky::Arena clientArena, serverArena;
-  sky::Player &player = serverArena.connectPlayer("nickname");
+  sky::Player &player = serverArena.joinPlayer("nickname");
 
   {
     optional<sky::ClientEvent> event =
-        clientArena.applyDelta(sky::ArenaDelta::Join(player));
+        clientArena.applyDelta(sky::ArenaDelta::Join(0, player));
 
     ASSERT_TRUE((bool) event);
     EXPECT_EQ(*event->name, "nickname");
@@ -104,7 +104,7 @@ TEST_F(ArenaTest, EventTest) {
     sky::PlayerDelta playerDelta(player);
     playerDelta.nickname = "new nickname";
     optional<sky::ClientEvent> event =
-        clientArena.applyDelta(sky::ArenaDelta::Modify(0, playerDelta));
+        clientArena.applyDelta(sky::ArenaDelta::Delta(0, playerDelta));
 
     ASSERT_TRUE((bool) event);
     EXPECT_EQ(*event->newName, "new nickname");
