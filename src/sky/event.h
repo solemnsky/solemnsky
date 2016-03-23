@@ -2,7 +2,6 @@
  * Things that happen.
  */
 #pragma once
-#include "sky.h"
 
 namespace sky {
 
