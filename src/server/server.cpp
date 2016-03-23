@@ -92,7 +92,7 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
     // handshake, distribute an ArenaDelta to the other clients, and attach
     // a sky::Player to the enet peer
     if (packet.type == ClientPacket::Type::ReqJoin) {
-      sky::Player &newPlayer = arena.joinPlayer(*packet.stringData);
+      sky::Player &newPlayer = arena.connectPlayer(*packet.stringData);
       event.peer->data = &newPlayer;
 
       appLog("Client " + std::to_string(newPlayer.pid)

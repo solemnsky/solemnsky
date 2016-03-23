@@ -14,6 +14,7 @@ PlayerInitializer::PlayerInitializer(const std::string &nickname) :
 
 Player::Player(const PlayerInitializer &initializer) :
     Networked(initializer),
+    pid(initializer.pid),
     nickname(initializer.nickname),
     admin(initializer.admin),
     team(initializer.team) { }
@@ -97,19 +98,12 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode) {
 Subsystem::Subsystem(Arena *arena) :
     id(PID(arena->subsystems.size())) {
   arena->subsystems.push_back(this);
-  for (auto &player : arena->players) {
-    player.data.push_back(nullptr);
-    initialize(player);
-  }
+  for (auto &player : arena->players) initialize(player.second);
 }
 
-void Subsystem::initialize(Player &player) { }
-
-void Subsystem::tick(const float delta) { }
-
-void Subsystem::join(Player &player) { }
-
-void Subsystem::quit(Player &player) { }
+void Subsystem::initialize(Player &player) {
+  player.data.push_back(nullptr);
+}
 
 /**
  * Arena.
@@ -128,8 +122,6 @@ std::string Arena::allocNickname(const std::string &requested) const {
   std::stringstream readStream;
   int nickNumber;
   const size_t rsize = requested.size();
-
-  const size_t reqSize = rsize;
   std::vector<int> usedNumbers;
 
   for (const auto &player : players) {
@@ -160,6 +152,14 @@ std::string Arena::allocNickname(const std::string &requested) const {
   return requested + "(" + std::to_string(smallestUnused(usedNumbers)) + ")";
 }
 
+void Arena::forSubsystems(std::function<void(Subsystem &)> call) {
+  for (const Subsystem *system : subsystems) call(*system);
+}
+
+void Arena::forPlayers(std::function<void(Player &)> call) {
+  for (auto &player : players) call(player.second);
+}
+
 Arena::Arena(const ArenaInitializer &initializer) :
     Networked(initializer),
     name(initializer.name),
@@ -173,75 +173,83 @@ Arena::Arena(const ArenaInitializer &initializer) :
 void Arena::applyDelta(const ArenaDelta &delta) {
   switch (delta.type) {
     case ArenaDelta::Type::Quit: {
-      optional<std::string> playerQuit;
-      if (auto player = players.find(*delta.quit) != players.end()) {
-        players.erase(player);
-        return {ClientEvent::Quit(player->second.nickname)};
-      } else return {};
+      if (Player *player = getPlayer(*delta.quit)) quitPlayer(*player);
       break;
     }
+
     case ArenaDelta::Type::Join: {
-      if (Player *existingRecord = getPlayer(delta.join->pid))
-        *existingRecord = *delta.join;
-      else players.push_back(*delta.join);
-      return {ClientEvent::Join(delta.join->nickname)};
+      PlayerInitializer &initializer = *delta.join;
+      joinPlayer(initializer);
+      break;
     }
+
     case ArenaDelta::Type::Delta: {
-      if (Player *player = getPlayer(delta.delta->first)) {
+      const PID &pid = delta.delta->first;
+      const PlayerDelta &playerDelta = delta.delta->second;
+
+      if (Player *player = getPlayer(pid)) {
+        std::string oldNick = player->nickname;
         Team oldTeam = player->team;
-        std::string oldName = player->nickname;
-        player->applyDelta(delta.delta->second);
-        if (player->nickname != oldName)
-          return {ClientEvent::NickChange(oldName, player->nickname)};
+
+        player->applyDelta(playerDelta);
+
+        if (player->nickname != oldNick)
+          forSubsystems([&](Subsystem &s) { s.nickChange(*player, oldNick); });
         if (player->team != oldTeam)
-          return {ClientEvent::TeamChange(player->nickname, oldTeam,
-                                          player->team)};
+          forSubsystems([&](Subsystem &s) { s.teamChange(*player, oldTeam); });
       }
       break;
     }
+
     case ArenaDelta::Type::Motd: {
       motd = *delta.motd;
       break;
     }
+
     case ArenaDelta::Type::Mode: {
       mode = *delta.mode;
-      if (mode == ArenaMode::Game) sky.emplace(*delta.skyInitializer);
-      else sky.reset();
       break;
     }
   }
-  return {};
 }
 
-ArenaInitializer Arena::captureInitializer() {
+ArenaInitializer Arena::captureInitializer() const {
   ArenaInitializer initializer;
-  initializer.players =
-      std::vector<Player>(players.begin(), players.end());
+  for (auto &player : players) {
+    initializer.players.emplace(
+        player.first, player.second.captureInitializer());
+  }
+  initializer.name = name;
   initializer.motd = motd;
   initializer.mode = mode;
-  if (sky)
-    initializer.skyInitializer = sky->captureInitializer();
   return initializer;
 }
 
-Player &Arena::joinPlayer(const std::string &requestedNick) {
+Player &Arena::joinPlayer(const PlayerInitializer &initializer) {
+  if (Player *player = getPlayer(initializer.pid)) quitPlayer(*player);
+  players.emplace(initializer.pid, Player(initializer));
+  Player &player = players.at(initializer.pid);
+  forSubsystems([&player](Subsystem &s) { s.join(player); });
+  return player;
+}
+
+void Arena::quitPlayer(Player &player) {
+  forSubsystems([player](Subsystem &s) { s.quit(player); });
+  players.erase(player.pid);
+}
+
+Player &Arena::connectPlayer(const std::string &requestedNick) {
   PID pid = allocPid();
   std::string nickname = allocNickname(requestedNick);
-  players.emplace_back(Player(pid));
-  Player &newPlayer = players.back();
-  newPlayer.nickname = nickname;
+  players.emplace(pid, Player(nickname));
+  Player &newPlayer = players.at(pid);
+  forSubsystems([&newPlayer](Subsystem &s) { s.join(newPlayer); });
   return newPlayer;
 }
 
-void Arena::quitPlayer(const Player &player) {
-  players.remove_if([&](const Player &p) {
-    return p.pid == player.pid;
-  });
-}
-
 Player *Arena::getPlayer(const PID pid) {
-  for (Player &record : players)
-    if (record.pid == pid) return &record;
+  auto player = players.find(pid);
+  if (player != players.end()) return &player->second;
   return nullptr;
 }
 }

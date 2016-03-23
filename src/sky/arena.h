@@ -25,9 +25,10 @@ struct PlayerInitializer {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(nickname, admin, team);
+    ar(nickname, pid, admin, team);
   }
 
+  PID pid;
   std::string nickname;
   bool admin;
   Team team;
@@ -54,6 +55,7 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
   Player() = delete;
   Player(const PlayerInitializer &initializer);
 
+  const PID pid;
   std::string nickname;
   bool admin;
   Team team;
@@ -79,9 +81,12 @@ class Subsystem {
   friend class Arena;
 
   virtual void initialize(Player &player);
-  virtual void tick(const float delta);
-  virtual void join(Player &player);
-  virtual void quit(Player &player);
+  virtual void tick(const float delta) { }
+  virtual void join(Player &player) { }
+  virtual void quit(Player &player) { }
+
+  virtual void nickChange(Player &player, const std::string &oldNick) { }
+  virtual void teamChange(Player &player, const Team oldTeam) { }
 
   class Arena *arena;
   const PID id; // ID the subsystem has allocated in the Arena
@@ -160,7 +165,7 @@ struct ArenaDelta: public VerifyStructure {
 
   Type type;
   optional<PID> quit;
-  optional<std::pair<PID, Player>> join;
+  optional<PlayerInitializer> join;
   optional<std::pair<PID, PlayerDelta>> delta;
   optional<std::string> motd;
   optional<ArenaMode> mode;
@@ -183,6 +188,8 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   // subsystems
   friend class Subsystem;
   std::vector<Subsystem *> subsystems;
+  void forSubsystems(std::function<void(Subsystem &)> call);
+  void forPlayers(std::function<void(Player &)> call);
 
  public:
   Arena() = delete;
@@ -200,10 +207,11 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
    * User API.
    */
   void applyDelta(const ArenaDelta &delta) override;
-  ArenaInitializer captureInitializer() override;
+  ArenaInitializer captureInitializer() const override;
 
-  Player &joinPlayer(const std::string &requestedNick);
-  void quitPlayer(const Player &player);
+  Player &joinPlayer(const PlayerInitializer &initializer);
+  void quitPlayer(Player &player);
+  Player &connectPlayer(const std::string &requestedNick);
   Player *getPlayer(const PID pid);
 };
 

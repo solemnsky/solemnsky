@@ -11,7 +11,13 @@
 namespace sky {
 
 struct SkyInitializer {
+ private:
+  friend cereal::access;
+  friend class Sky;
   SkyInitializer();
+
+ public:
+  SkyInitializer(const MapName &mapName);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -51,11 +57,13 @@ class Sky: public Subsystem {
    * Subsystem implementation.
    */
   virtual void tick(const float delta) override;
-  virtual void onJoin(struct Player &player) override;
-  virtual void onQuit(struct Player &player) override;
+  virtual void initialize(Player &player) override {
+    Subsystem::initialize(player);
+  }
+  virtual void join(Player &player) override;
+  virtual void quit(Player &player) override;
 
  public:
-  Sky(class Arena *parent, const MapName &mapName);
   Sky(class Arena *parent, const SkyInitializer &initializer);
   ~Sky();
 
