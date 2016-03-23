@@ -1,13 +1,12 @@
 /**
- * Core game state. The sky, really. Subordinate to Arena.
+ * Arena subsystem with game state.
  */
 #pragma once
 #include <map>
-#include "subsystem.h"
 #include <memory>
 #include "physics.h"
 #include "plane.h"
-#include "map.h"
+#include "arena.h"
 
 namespace sky {
 
@@ -51,7 +50,7 @@ class Sky: public Subsystem {
   /**
    * Subsystem implementation.
    */
-  virtual void onTick(const float delta) override;
+  virtual void tick(const float delta) override;
   virtual void onJoin(struct Player &player) override;
   virtual void onQuit(struct Player &player) override;
 

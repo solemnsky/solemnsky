@@ -51,7 +51,7 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
         appLog("got delta");
         if (packet.playerDelta->admin && not player->admin) return;
         // more restrictions here
-        sky::ArenaDelta delta = sky::ArenaDelta::Modify(
+        sky::ArenaDelta delta = sky::ArenaDelta::Delta(
             player->pid, *packet.playerDelta);
         arena.applyDelta(delta);
         broadcastToClients(ServerPacket::Delta(delta));
@@ -92,7 +92,7 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
     // handshake, distribute an ArenaDelta to the other clients, and attach
     // a sky::Player to the enet peer
     if (packet.type == ClientPacket::Type::ReqJoin) {
-      sky::Player &newPlayer = arena.connectPlayer(*packet.stringData);
+      sky::Player &newPlayer = arena.joinPlayer(*packet.stringData);
       event.peer->data = &newPlayer;
 
       appLog("Client " + std::to_string(newPlayer.pid)
@@ -104,7 +104,7 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
               newPlayer.pid, arena.captureInitializer()));
       broadcastToClientsExcept(
           newPlayer.pid, ServerPacket::Delta(
-              ArenaDelta::Join(newPlayer)));
+              ArenaDelta::Join(0, newPlayer)));
     }
   }
 }
@@ -134,7 +134,7 @@ void Server::tick(float delta) {
             player->pid, sky::ServerPacket::Delta(
                 sky::ArenaDelta::Quit(player->pid)));
 
-        arena.disconnectPlayer(*player);
+        arena.quitPlayer(*player);
         event.peer->data = nullptr;
       }
       break;

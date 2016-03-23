@@ -1,15 +1,18 @@
 /**
- * Shared model of a multiplayer game.
+ * The backbone of a multiplayer game.
  */
 #pragma once
 #include "util/types.h"
-#include "sky.h"
 #include "event.h"
 #include <map>
 #include <list>
 #include <vector>
 
 namespace sky {
+
+/**
+ * Player.
+ */
 
 struct PlayerInitializer {
  private:
@@ -18,12 +21,13 @@ struct PlayerInitializer {
   PlayerInitializer() = default;
 
  public:
+  PlayerInitializer(const std::string &nickname);
+
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(pid, nickname, admin, team);
+    ar(nickname, admin, team);
   }
 
-  PID pid;
   std::string nickname;
   bool admin;
   Team team;
@@ -46,23 +50,50 @@ struct PlayerDelta {
   optional<Team> team; // 0 is spectator, 1 left, 2 right
 };
 
-/**
- * A Player represents everything related to a player in the game.
- */
 struct Player: public Networked<PlayerInitializer, PlayerDelta> {
-  Player();
-  Player(const PID pid);
+  Player() = delete;
   Player(const PlayerInitializer &initializer);
 
-  PID pid;
   std::string nickname;
   bool admin;
   Team team;
+  std::vector<void *> data;
 
-  Plane *plane;
-
-  void applyDelta(const PlayerDelta &delta);
+  void applyDelta(const PlayerDelta &delta) override;
+  PlayerInitializer captureInitializer() const override;
+  PlayerDelta zeroDelta() const;
 };
+
+/**
+ * Subsystem.
+ */
+
+class Subsystem {
+ private:
+  template<typename Data>
+  Data getPlayerData(Player &player) const {
+    return *((Data *) player.data[id]);
+  }
+
+ protected:
+  friend class Arena;
+
+  virtual void initialize(Player &player);
+  virtual void tick(const float delta);
+  virtual void join(Player &player);
+  virtual void quit(Player &player);
+
+  class Arena *arena;
+  const PID id; // ID the subsystem has allocated in the Arena
+
+ public:
+  Subsystem() = delete;
+  Subsystem(Arena *arena);
+};
+
+/**
+ * Arena.
+ */
 
 enum class ArenaMode {
   Lobby, // lobby, to make teams
@@ -70,33 +101,35 @@ enum class ArenaMode {
   Scoring // viewing tutorial results
 };
 
-struct ArenaInitializer: public VerifyStructure {
-  ArenaInitializer(); // for unpacking
+struct ArenaInitializer {
+ private:
+  friend cereal::access;
+  friend class Arena;
+  ArenaInitializer() = default;
+
+ public:
+  ArenaInitializer(const std::string &name);
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(skyInitializer, players, motd, mode);
+    ar(players, name, motd, mode);
   }
 
-  optional<SkyInitializer> skyInitializer;
-  std::vector<Player> players;
-  std::string motd;
+  std::map<PID, PlayerInitializer> players;
+  std::string name, motd;
   ArenaMode mode;
-
-  bool verifyStructure() const override;
 };
 
 struct ArenaDelta: public VerifyStructure {
-  enum class Type {
-    Quit, // a player quits
-    Join, // a player joints
-    Modify, // a player's data is modified
-    Motd, // the motd changes
-    Mode // the mode changes
-  };
-
-  ArenaDelta();
+ private:
+  friend cereal::access;
+  ArenaDelta() = default;
   ArenaDelta(const Type type);
+
+ public:
+  enum class Type {
+    Quit, Join, Delta, Motd, Mode
+  };
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -110,8 +143,8 @@ struct ArenaDelta: public VerifyStructure {
         ar(join);
         break;
       }
-      case Type::Modify: {
-        ar(player);
+      case Type::Delta: {
+        ar(delta);
         break;
       }
       case Type::Motd: {
@@ -119,7 +152,7 @@ struct ArenaDelta: public VerifyStructure {
         break;
       }
       case Type::Mode: {
-        ar(arenaMode, skyInitializer);
+        ar(mode);
         break;
       }
     }
@@ -127,63 +160,50 @@ struct ArenaDelta: public VerifyStructure {
 
   Type type;
   optional<PID> quit;
-  optional<Player> join;
-  optional<std::pair<PID, PlayerDelta>> player;
+  optional<std::pair<PID, Player>> join;
+  optional<std::pair<PID, PlayerDelta>> delta;
   optional<std::string> motd;
-  optional<ArenaMode> arenaMode;
-  optional<SkyInitializer> skyInitializer;
+  optional<ArenaMode> mode;
 
   bool verifyStructure() const override;
 
   static ArenaDelta Quit(const PID pid);
-  static ArenaDelta Join(const Player &player);
-  static ArenaDelta Modify(const PID, const PlayerDelta &pDelta);
+  static ArenaDelta Join(const PID pid, const Player &player);
+  static ArenaDelta Delta(const PID, const PlayerDelta &delta);
   static ArenaDelta Motd(const std::string &motd);
-  static ArenaDelta Mode(const ArenaMode mode,
-                         const optional<SkyInitializer> &skyInitializer = {});
+  static ArenaDelta Mode(const ArenaMode mode);
 };
 
-/**
- * A model of a game arena.
- * Used by both server and client.
- */
 class Arena: public Networked<ArenaInitializer, ArenaDelta> {
  private:
+  // utilities
   PID allocPid() const;
   std::string allocNickname(const std::string &requested) const;
 
+  // subsystems
+  friend class Subsystem;
   std::vector<Subsystem *> subsystems;
 
-  // subsystem callbacks
-  void join(const Player &player);
-  void quit(const Player &player);
-
  public:
-  Arena();
+  Arena() = delete;
+  Arena(const ArenaInitializer &initializer);
 
   /**
    * State.
    */
-  std::list<Player> players;
+  std::map<PID, Player> players;
+  std::string name;
   std::string motd;
-
   ArenaMode mode;
-  Sky sky;
-
-  /**
-   * Subsystem.
-   */
-  void linkSystem(Subsystem *subsystem);
 
   /**
    * User API.
    */
-  void applyInitializer(const ArenaInitializer &initializer);
   void applyDelta(const ArenaDelta &delta) override;
-  ArenaInitializer captureInitializer();
+  ArenaInitializer captureInitializer() override;
 
-  Player &connectPlayer(const std::string &requestedNick);
-  void disconnectPlayer(const Player &record);
+  Player &joinPlayer(const std::string &requestedNick);
+  void quitPlayer(const Player &player);
   Player *getPlayer(const PID pid);
 };
 
