@@ -4,27 +4,14 @@
 
 namespace sky {
 
-/**
- * SkyInitializer.
- */
-
-SkyInitializer::SkyInitializer() { }
-
-/**
- * SkyDelta.
- */
-
-SkyDelta::SkyDelta() { }
+SkyInitializer::SkyInitializer(const MapName &mapName) :
+    mapName(mapName) { }
 
 bool SkyDelta::verifyStructure() const {
-  for (auto const &x : state)
+  for (auto const &x : planes)
     if (!x.second.verifyStructure()) return false;
   return true;
 }
-
-/**
- * Sky.
- */
 
 void Sky::tick(const float delta) {
   for (auto &elem : planes) {
@@ -36,20 +23,13 @@ void Sky::tick(const float delta) {
   }
 }
 
-void Sky::onJoin(Player &player) {
+void Sky::join(Player &player) {
   Plane &plane = planes.emplace(player.pid, Plane(this)).first->second;
-  player.plane = &plane;
+  player.data.push_back(&plane);
 }
 
-void Sky::onQuit(Player &player) {
+void Sky::quit(Player &player) {
   planes.erase(player.pid);
-}
-
-Sky::Sky(Arena *arena, const MapName &mapName) :
-    Subsystem(arena),
-    mapName(mapName),
-    map(mapName),
-    physics(map) {
 }
 
 Sky::Sky(Arena *arena, const SkyInitializer &initializer) :
@@ -64,14 +44,12 @@ Sky::Sky(Arena *arena, const SkyInitializer &initializer) :
 
 Sky::~Sky() {
   planes.clear(); // destroy the planes before destroying the physics!
-  for (auto &player : arena->players) {
-    player.plane = nullptr;
-  }
 }
 
 Plane *Sky::getPlane(const PID pid) {
-  if (planes.find(pid) != planes.end()) return &planes.at(pid);
-  else return nullptr;
+  auto plane = planes.find(pid);
+  if (plane != planes.end()) return &plane->second;
+  return nullptr;
 }
 
 SkyInitializer Sky::captureInitializer() {
@@ -85,12 +63,12 @@ SkyInitializer Sky::captureInitializer() {
 SkyDelta Sky::collectDelta() {
   SkyDelta delta;
   for (auto &pair : planes)
-    delta.state.emplace(pair.first, pair.second.captureDelta());
+    delta.planes.emplace(pair.first, pair.second.captureDelta());
   return delta;
 }
 
 void Sky::applyDelta(const SkyDelta &delta) {
-  for (auto const &pair : delta.state) {
+  for (auto const &pair : delta.planes) {
     if (Plane *plane = getPlane(pair.first)) {
       plane->applyDelta(pair.second);
     }

@@ -11,12 +11,7 @@
 namespace sky {
 
 struct SkyInitializer {
- private:
-  friend cereal::access;
-  friend class Sky;
-  SkyInitializer();
-
- public:
+  SkyInitializer() = default; // packing
   SkyInitializer(const MapName &mapName);
 
   template<typename Archive>
@@ -29,16 +24,16 @@ struct SkyInitializer {
 };
 
 struct SkyDelta: public VerifyStructure {
-  SkyDelta();
+  SkyDelta() = default; // packing
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(state);
+    ar(planes);
   }
 
   bool verifyStructure() const;
 
-  std::map<PID, PlaneDelta> state;
+  std::map<PID, PlaneDelta> planes;
 };
 
 /*

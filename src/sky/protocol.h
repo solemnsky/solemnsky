@@ -3,6 +3,7 @@
  */
 #pragma once
 #include "util/types.h"
+#include "sky.h"
 #include "arena.h"
 #include <map>
 
@@ -121,7 +122,7 @@ struct ServerPacket: public VerifyStructure {
     Pong,
     Message, // message for a client to log
     Init, // acknowledge a ReqJoin, send ArenaInitializer
-    Delta, // broadcast a change in the Arena
+    DeltaArena, // broadcast a change in the Arena
     DeltaSky, // broadcast a change in the Arena's sky
   };
 
@@ -139,11 +140,11 @@ struct ServerPacket: public VerifyStructure {
         break;
       }
       case Type::Init: {
-        ar(pid, init);
+        ar(pid, arenaInit, skyInit);
         break;
       }
-      case Type::Delta: {
-        ar(delta);
+      case Type::DeltaArena: {
+        ar(arenaDelta);
         break;
       }
       case Type::DeltaSky: {
@@ -156,16 +157,18 @@ struct ServerPacket: public VerifyStructure {
   Type type;
   optional<ServerMessage> message;
   optional<PID> pid;
-  optional<ArenaInitializer> init;
-  optional<ArenaDelta> delta;
+  optional<ArenaInitializer> arenaInit;
+  optional<ArenaDelta> arenaDelta;
+  optional<SkyInitializer> skyInit;
   optional<SkyDelta> skyDelta;
 
   bool verifyStructure() const override;
 
   static ServerPacket Pong();
   static ServerPacket Message(const ServerMessage &message);
-  static ServerPacket Init(const PID pid, const ArenaInitializer &init);
-  static ServerPacket Delta(const ArenaDelta &delta);
+  static ServerPacket Init(const PID pid, const ArenaInitializer &arenaInit,
+                           const SkyInitializer &init);
+  static ServerPacket DeltaArena(const ArenaDelta &arenaDelta);
   static ServerPacket DeltaSky(const SkyDelta &skyDelta);
 };
 

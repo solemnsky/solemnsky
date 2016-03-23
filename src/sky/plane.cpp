@@ -29,7 +29,7 @@ std::string Action::show() const {
   return actionNames.at((size_t) type) + (value ? "+" : "-");
 }
 
-static optional<Action> Action::read(const std::string &str) {
+optional<Action> Action::read(const std::string &str) {
   Type type = Type::Thrust;
   for (const auto &search : actionNames) {
     if ((search + "+") == str) return Action(type, true);
@@ -287,7 +287,7 @@ void Plane::beforePhysics() {
 
 void Plane::afterPhysics(float delta) {
   if (vital) {
-    vital->readFromBody;
+    vital->readFromBody();
     vital->tick(delta);
   }
 }
@@ -350,7 +350,7 @@ void Plane::doAction(const Action &action) {
 
 void Plane::applyDelta(const PlaneDelta &delta) {
   if (delta.tuning) {
-    vital.emplace(parent, delta.tuning, delta.state);
+    vital.emplace(parent, delta.tuning.get(), delta.state.get());
     return;
   }
   if (delta.state) {

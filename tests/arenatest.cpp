@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "sky/arena.h"
-#include "sky/event.h"
+#include "client/elements/event.h"
 
 /**
  * The Arena abstraction.
@@ -13,54 +13,40 @@ class ArenaTest: public testing::Test {
  * Players can be connected and nicknames / PIDs are allocated correctly.
  */
 TEST_F(ArenaTest, ConnectionTest) {
-  sky::Arena arena;
-  sky::Player &player1 = arena.connectPlayer("asdf");
-  EXPECT_EQ(player1.pid, 0);
-  sky::Player &player2 = arena.connectPlayer("asdf");
-  EXPECT_EQ(player2.pid, 1);
-  sky::Player &player3 = arena.connectPlayer("asdf");
-  EXPECT_EQ(player2.pid, 1);
+  sky::Arena arena(sky::ArenaInitializer("home sweet home"));
 
-  EXPECT_EQ(arena.getPlayer(0)->nickname, "asdf");
-  EXPECT_EQ(arena.getPlayer(1)->nickname, "asdf(1)");
-  EXPECT_EQ(arena.getPlayer(2)->nickname, "asdf(2)");
+  sky::Player &player1 = arena.connectPlayer("asdf");
+  sky::Player &player2 = arena.connectPlayer("asdf");
+  sky::Player &player3 = arena.connectPlayer("asdf");
+
+  EXPECT_EQ(player1.pid, 0);
+  EXPECT_EQ(player2.pid, 1);
+  EXPECT_EQ(player3.pid, 2);
+  EXPECT_EQ(player1.nickname, "asdf");
+  EXPECT_EQ(player2.nickname, "asdf(1)");
+  EXPECT_EQ(player3.nickname, "asdf(2)");
 
   arena.quitPlayer(player1);
   EXPECT_EQ(arena.getPlayer(0), nullptr);
 
-  sky::Player &player4 = arena.connectPlayer("fdsa");
-  EXPECT_EQ(arena.getPlayer(0)->nickname, "fdsa");
-}
-
-/**
- * ArenaDeltas work correctly.
- */
-TEST_F(ArenaTest, DeltaTest) {
-  sky::Arena clientArena, serverArena;
-
-  sky::Player &player1 = serverArena.connectPlayer("asdf");
-
-  clientArena.applyDelta(sky::ArenaDelta::Join(0, player1));
-  EXPECT_TRUE((bool) clientArena.getPlayer(0));
-  EXPECT_EQ(clientArena.getPlayer(0)->nickname, "asdf");
-
-  clientArena.applyDelta(sky::ArenaDelta::Quit(0));
-  EXPECT_FALSE((bool) clientArena.getPlayer(0));
+  sky::Player &player4 = arena.connectPlayer("asdf");
+  EXPECT_EQ(player4.nickname, "asdf");
 }
 
 /**
  * Arenas can be copied through ArenaInitializer.
  */
 TEST_F(ArenaTest, InitializerTest) {
-  sky::Arena clientArena, serverArena;
-
+  sky::Arena serverArena(sky::ArenaInitializer("test arena"));
   serverArena.motd = "secret arena";
-  sky::Player &player1 = serverArena.connectPlayer("an admin");
-  player1.admin = true;
-  sky::Player &player2 = serverArena.connectPlayer("somebody else");
-  serverArena.mode = sky::ArenaMode::Scoring;
+  {
+    sky::Player &player1 = serverArena.connectPlayer("an admin");
+    player1.admin = true;
+    sky::Player &player2 = serverArena.connectPlayer("somebody else");
+    serverArena.mode = sky::ArenaMode::Scoring;
+  }
 
-  clientArena.applyInitializer(serverArena.captureInitializer());
+  sky::Arena clientArena = serverArena.captureInitializer();
   EXPECT_EQ(clientArena.motd, "secret arena");
   EXPECT_EQ(clientArena.getPlayer(0)->nickname, "an admin");
   EXPECT_EQ(clientArena.getPlayer(0)->admin, true);
@@ -69,46 +55,27 @@ TEST_F(ArenaTest, InitializerTest) {
 }
 
 /**
- * Arenas correctly manage their Skies.
+ * ArenaDeltas work correctly.
  */
-TEST_F(ArenaTest, SkyTest) {
-  sky::Arena clientArena, serverArena;
+TEST_F(ArenaTest, DeltaTest) {
+  sky::ArenaInitializer init("arena world");
+  sky::Arena clientArena(init), serverArena(init);
 
-  serverArena.mode = sky::ArenaMode::Game;
-  serverArena.sky.emplace("some map");
+  sky::Player &serverPlayer = serverArena.connectPlayer("asdf");
+  serverPlayer.admin = true;
 
-  clientArena.applyInitializer(serverArena.captureInitializer());
-  EXPECT_TRUE(bool(clientArena.sky));
+  clientArena.applyDelta(
+      sky::ArenaDelta::Join(serverPlayer.captureInitializer()));
+  ASSERT_EQ(bool(clientArena.getPlayer(0)), true);
+  sky::Player &clientPlayer = *clientArena.getPlayer(0);
+  EXPECT_EQ(clientPlayer.nickname, "asdf");
 
-  clientArena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Scoring));
-  EXPECT_FALSE(bool(clientArena.sky));
-}
+  sky::PlayerDelta delta = serverPlayer.zeroDelta();
+  delta.team.emplace(1);
+  clientArena.applyDelta(
+      sky::ArenaDelta::Delta(0, delta));
+  EXPECT_EQ(clientPlayer.team, 1);
 
-/**
- * Arenas give ClientEvents on delta application; for clients.
- */
-TEST_F(ArenaTest, EventTest) {
-  sky::Arena clientArena, serverArena;
-  sky::Player &player = serverArena.connectPlayer("nickname");
-
-  {
-    optional<sky::ClientEvent> event =
-        clientArena.applyDelta(sky::ArenaDelta::Join(0, player));
-
-    ASSERT_TRUE((bool) event);
-    EXPECT_EQ(*event->name, "nickname");
-    EXPECT_EQ(event->type, sky::ClientEvent::Type::Join);
-  }
-
-  {
-    sky::PlayerDelta playerDelta(player);
-    playerDelta.nickname = "new nickname";
-    optional<sky::ClientEvent> event =
-        clientArena.applyDelta(sky::ArenaDelta::Delta(0, playerDelta));
-
-    ASSERT_TRUE((bool) event);
-    EXPECT_EQ(*event->newName, "new nickname");
-    EXPECT_EQ(*event->name, "nickname");
-    EXPECT_EQ(event->type, sky::ClientEvent::Type::NickChange);
-  }
+  clientArena.applyDelta(sky::ArenaDelta::Quit(0));
+  EXPECT_EQ(bool(clientArena.getPlayer(0)), false);
 }
