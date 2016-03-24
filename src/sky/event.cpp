@@ -29,7 +29,7 @@ std::string ServerEvent::printReadable() const {
       break;
     }
     case Type::Delta: {
-      output << ""
+      break;
     }
     case Type::Quit:
       break;

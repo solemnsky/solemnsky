@@ -70,7 +70,7 @@ target_link_libraries(solemnsky
 add_executable(solemnsky_server
         src/server/server.cpp
         src/server/server.h
-        src/server/event.cpp src/server/event.h)
+        )
 target_link_libraries(solemnsky_server
         solemnsky
         )
@@ -82,9 +82,6 @@ add_executable(solemnsky_client
 
         src/client/elements/elements.cpp
         src/client/elements/elements.h
-
-        src/client/elements/event.cpp
-        src/client/elements/event.h
 
         src/client/elements/settings.cpp
         src/client/elements/settings.h

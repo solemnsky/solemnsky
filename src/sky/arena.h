@@ -3,7 +3,6 @@
  */
 #pragma once
 #include "util/types.h"
-#include "client/elements/event.h"
 #include "util/methods.h"
 #include <map>
 #include <list>
