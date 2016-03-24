@@ -101,11 +101,8 @@ void *Subsystem::attachData(Player &player) {
   return nullptr;
 }
 
-Subsystem::Subsystem(Arena *arena) :
-    id(PID(arena->subsystems.size())) {
+Subsystem::Subsystem(Arena *arena) : id(PID(arena->subsystems.size())) {
   arena->subsystems.push_back(this);
-  for (auto &player : arena->players)
-    player.second.data.push_back(attachData(player.second));
 }
 
 /**
