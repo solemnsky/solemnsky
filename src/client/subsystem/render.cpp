@@ -141,15 +141,14 @@ void RenderSystem::renderPlaneGraphics(ui::Frame &f,
   }
 }
 
-RenderSystem::RenderSystem(const Sky *sky) :
-    Subsystem(sky, (std::function<_Res(_ArgTypes...)>())),
+RenderSystem::RenderSystem(const Arena *arena, const Sky *sky) :
+    Subsystem(arena), sky(sky),
     sheet(ResID::PlayerSheet) {
-  CTOR_LOG("Render");
 }
 
 RenderSystem::~RenderSystem() {
-  DTOR_LOG("Render");
 }
+
 
 void RenderSystem::tick(float delta) {
   std::remove_if(graphics.begin(), graphics.end(), [delta]

@@ -24,12 +24,16 @@ void Sky::tick(const float delta) {
 }
 
 void *Sky::attachData(Player &player) {
-  return &planes.at(player.pid);
+  appLog("attaching plane to player " + std::to_string(player.pid));
+  auto plane = planes.find(player.pid);
+  if (plane == planes.end()) {
+    planes.emplace(player.pid, Plane(this));
+    return &planes.at(player.pid);
+  } else return &plane->second;
 }
 
 void Sky::join(Player &player) {
-  Plane &plane = planes.emplace(player.pid, Plane(this)).first->second;
-  player.data.push_back(&plane);
+
 }
 
 void Sky::quit(Player &player) {
@@ -45,17 +49,17 @@ Sky::Sky(Arena *arena, const SkyInitializer &initializer) :
   for (const auto &pair : initializer.planes)
     planes.emplace(pair.first, Plane(this, pair.second));
 
-  // attach data
-  for (auto &pair : arena->players)
+  // attach data to already existing players
+  for (auto &pair : arena->players) {
     pair.second.data.push_back(attachData(pair.second));
-
+  }
 }
 
 Sky::~Sky() {
   planes.clear(); // destroy the planes before destroying the physics!
 }
 
-Plane *Sky::getPlane(const PID pid) {
+Plane *Sky::planeFromPID(const PID pid) {
   auto plane = planes.find(pid);
   if (plane != planes.end()) return &plane->second;
   return nullptr;
@@ -78,10 +82,15 @@ SkyDelta Sky::collectDelta() {
 
 void Sky::applyDelta(const SkyDelta &delta) {
   for (auto const &pair : delta.planes) {
-    if (Plane *plane = getPlane(pair.first)) {
+    if (Plane *plane = planeFromPID(pair.first)) {
       plane->applyDelta(pair.second);
     }
   }
+}
+
+Plane &Sky::getPlane(const Player &player) {
+  appLog("getting plane from player " + std::to_string(player.pid));
+  return getPlayerData<Plane>(player);
 }
 
 }

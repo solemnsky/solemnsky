@@ -72,7 +72,7 @@ struct PlaneGraphics {
 
 class RenderSystem: public Subsystem {
  private:
-  std::list<PlaneGraphics> graphics;
+  std::map<PID, PlaneGraphics> graphics;
   const ui::SpriteSheet sheet;
 
   /**
@@ -89,12 +89,15 @@ class RenderSystem: public Subsystem {
   /**
    * Subsystem listeners.
    */
-  void tick(float delta) override;
-  virtual void addPlane(const PID pid, PlaneVital &plane) override;
-  virtual void removePlane(const PID pid) override;
+ protected:
+  void *attachData(Player &player) override;
+
+  void tick(const float delta) override;
+  void join(Player &player) override;
+  void quit(Player &player) override;
 
  public:
-  explicit RenderSystem(const Sky *sky);
+  RenderSystem(const Arena *arena, const Sky *sky);
   ~RenderSystem();
 
   /**

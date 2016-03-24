@@ -12,13 +12,7 @@ namespace sky {
  * with actual C-style Box2D in the rest of the code.
  */
 class Physics {
-private:
-  b2World world;
-
-public:
-  Physics(const Map &map);
-  ~Physics();
-
+ private:
   const struct Settings {
     Settings() { }
 
@@ -26,6 +20,12 @@ public:
     float distanceScale = 100;
     float gravity = 150;
   } settings;
+
+  b2World world;
+
+ public:
+  Physics(const Map &map);
+  ~Physics();
 
   const sf::Vector2f dims;
 

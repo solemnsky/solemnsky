@@ -4,6 +4,7 @@
 #pragma once
 #include "util/types.h"
 #include "client/elements/event.h"
+#include "util/methods.h"
 #include <map>
 #include <list>
 #include <vector>
@@ -64,7 +65,8 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
 class Subsystem {
  protected:
   template<typename Data>
-  Data getPlayerData(const Player &player) const {
+  Data &getPlayerData(const Player &player) {
+    appLog("reading from id " + std::to_string(id));
     return *((Data *) player.data[id]);
   }
 
@@ -78,12 +80,12 @@ class Subsystem {
   virtual void nickChange(Player &player, const std::string &oldNick) { }
   virtual void teamChange(Player &player, const Team oldTeam) { }
 
-  class Arena *arena;
+  class Arena *const arena;
   const PID id; // ID the subsystem has allocated in the Arena
 
  public:
   Subsystem() = delete;
-  Subsystem(Arena *arena);
+  Subsystem(Arena *const arena);
 };
 
 /**

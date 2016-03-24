@@ -43,8 +43,8 @@ class MultiplayerConnection {
    * Game state.
    */
   sky::Player *myPlayer;
-  sky::Arena arena;
-  std::vector<sky::ClientEvent> eventLog;
+  optional<sky::Arena> arena;
+  std::vector<ClientEvent> eventLog;
 
   /**
    * Methods.
@@ -53,7 +53,7 @@ class MultiplayerConnection {
   optional<sky::ServerPacket> poll(const float delta);
   void disconnect();
 
-  void requestTeamChange(const sky::Team team);
+  void requestTeamChange(const Team team);
 };
 
 /**

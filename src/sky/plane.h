@@ -192,8 +192,6 @@ class PlaneVital {
 class Plane {
  private:
   Sky *parent;
-  optional<PlaneVital> vital;
-
   bool newlyAlive;
 
   /**
@@ -212,6 +210,8 @@ class Plane {
  public:
   Plane(Sky *parent);
   Plane(Sky *parent, const PlaneInitializer &initializer);
+
+  optional<PlaneVital> vital;
 
   /**
    * API for user.

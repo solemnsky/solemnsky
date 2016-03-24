@@ -17,17 +17,8 @@
 
 class MultiplayerGame: public MultiplayerView {
  private:
-  // sky and render subsystem
-  sky::Sky &sky;
-  sky::RenderSystem renderSystem;
-
-  // state and stuff
-  sf::Vector2f panning;
-  Cooldown skyDeltaUpdate;
-
  public:
-  MultiplayerGame(ClientShared &shared,
-                  MultiplayerConnection &connection);
+  MultiplayerGame(ClientShared &shared, MultiplayerConnection &connection);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;

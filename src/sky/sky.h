@@ -43,7 +43,7 @@ struct SkyDelta: public VerifyStructure {
 class Sky: public Subsystem {
  private:
   std::map<PID, Plane> planes;
-  Plane *getPlane(const PID pid);
+  Plane *planeFromPID(const PID pid);
 
  protected:
   friend class Arena;
@@ -70,6 +70,7 @@ class Sky: public Subsystem {
   SkyInitializer captureInitializer();
   SkyDelta collectDelta();
   void applyDelta(const SkyDelta &delta);
+  Plane &getPlane(const Player &player);
 };
 
 }
