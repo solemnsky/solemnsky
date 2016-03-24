@@ -1,7 +1,6 @@
 #include "arena.h"
 #include <algorithm>
 #include "util/methods.h"
-#include "client/elements/event.h"
 
 namespace sky {
 
