@@ -23,6 +23,10 @@ void Sky::tick(const float delta) {
   }
 }
 
+void *Sky::attachData(Player &player) {
+  return nullptr;
+}
+
 void Sky::join(Player &player) {
   Plane &plane = planes.emplace(player.pid, Plane(this)).first->second;
   player.data.push_back(&plane);

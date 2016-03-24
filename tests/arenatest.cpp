@@ -79,3 +79,53 @@ TEST_F(ArenaTest, DeltaTest) {
   clientArena.applyDelta(sky::ArenaDelta::Quit(0));
   EXPECT_EQ(bool(clientArena.getPlayer(0)), false);
 }
+
+/**
+ * Subsystems work correctly.
+ */
+class MySubsystem: public sky::Subsystem {
+ public:
+  std::map<PID, float> myData;
+
+ protected:
+  virtual void *attachData(sky::Player &player) override {
+    myData.emplace(player.pid, 0);
+    return &myData.at(player.pid);
+  }
+
+  void tick(const float delta) override {
+    for (auto &x : myData) x.second += delta;
+  }
+
+  void join(sky::Player &player) override { }
+
+  void quit(sky::Player &player) override {
+    myData.erase(player.pid);
+  }
+
+ public:
+  MySubsystem(sky::Arena *arena) : sky::Subsystem(arena) { }
+
+  float getTimeData(const sky::Player &player) {
+    return getPlayerData<float>(player);
+  }
+};
+
+TEST_F(ArenaTest, SubsystemTest) {
+  sky::Arena arena(sky::ArenaInitializer("my arena"));
+  MySubsystem subsystem(&arena);
+
+  sky::Player &player1 = arena.connectPlayer("player number 1");
+  EXPECT_EQ(subsystem.getTimeData(player1), 0);
+  arena.tick(0.5);
+  EXPECT_EQ(subsystem.getTimeData(player1), 0.5);
+
+  sky::Arena remoteArena(arena.captureInitializer());
+  MySubsystem remoteSubsystem(&remoteArena);
+
+//  sky::Player &remotePlayer1 = *remoteArena.getPlayer(0);
+//  EXPECT_EQ(remoteSubsystem.getTimeData(remotePlayer1), 0);
+//  remoteArena.tick(0.5);
+//  EXPECT_EQ(remoteSubsystem.getTimeData(remotePlayer1), 0.5);
+}
+

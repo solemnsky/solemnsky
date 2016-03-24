@@ -28,8 +28,8 @@ TEST_F(ProtocolTest, Cereal) {
   appLog(stream.str());
   optional<int> x;
   input(x);
-  EXPECT_TRUE((bool) x);
-  EXPECT_EQ(*x, 6);
+  EXPECT_EQ(bool(x), true);
+  EXPECT_EQ(x.get(), 6);
 
   // PlaneTuning: large, automatic type
   sky::PlaneTuning someTuning;
