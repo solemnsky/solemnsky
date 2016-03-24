@@ -62,16 +62,15 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
  */
 
 class Subsystem {
- private:
+ protected:
   template<typename Data>
-  Data getPlayerData(Player &player) const {
+  Data getPlayerData(const Player &player) const {
     return *((Data *) player.data[id]);
   }
 
- protected:
   friend class Arena;
 
-  virtual void initialize(Player &player);
+  virtual void *attachData(Player &player);
   virtual void tick(const float delta) { }
   virtual void join(Player &player) { }
   virtual void quit(Player &player) { }
@@ -196,6 +195,8 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   void quitPlayer(Player &player);
   Player &connectPlayer(const std::string &requestedNick);
   Player *getPlayer(const PID pid);
+
+  void tick(const float delta);
 };
 
 }

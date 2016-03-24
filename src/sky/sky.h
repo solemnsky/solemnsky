@@ -51,12 +51,10 @@ class Sky: public Subsystem {
   /**
    * Subsystem implementation.
    */
-  virtual void tick(const float delta) override;
-  virtual void initialize(Player &player) override {
-    Subsystem::initialize(player);
-  }
-  virtual void join(Player &player) override;
-  virtual void quit(Player &player) override;
+  void tick(const float delta) override;
+  void *attachData(Player &player) override;
+  void join(Player &player) override;
+  void quit(Player &player) override;
 
  public:
   Sky(class Arena *parent, const SkyInitializer &initializer);

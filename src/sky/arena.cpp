@@ -97,14 +97,15 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode) {
  * Subsystem.
  */
 
+void *Subsystem::attachData(Player &player) {
+  return nullptr;
+}
+
 Subsystem::Subsystem(Arena *arena) :
     id(PID(arena->subsystems.size())) {
   arena->subsystems.push_back(this);
-  for (auto &player : arena->players) initialize(player.second);
-}
-
-void Subsystem::initialize(Player &player) {
-  player.data.push_back(nullptr);
+  for (auto &player : arena->players)
+    player.second.data.push_back(attachData(player.second));
 }
 
 /**
@@ -128,7 +129,6 @@ std::string Arena::allocNickname(const std::string &requested) const {
 
   for (const auto &player : players) {
     const std::string &name = player.second.nickname;
-    appLog("Checking name: " + name);
     if (name.size() < rsize) continue;
     if (name.substr(0, rsize) != requested) continue;
 
@@ -233,7 +233,10 @@ Player &Arena::joinPlayer(const PlayerInitializer &initializer) {
   if (Player *player = getPlayer(initializer.pid)) quitPlayer(*player);
   players.emplace(initializer.pid, Player(initializer));
   Player &player = players.at(initializer.pid);
-  forSubsystems([&player](Subsystem &s) { s.join(player); });
+  forSubsystems([&player](Subsystem &s) {
+    player.data.push_back(s.attachData(player));
+    s.join(player);
+  });
   return player;
 }
 
@@ -243,12 +246,8 @@ void Arena::quitPlayer(Player &player) {
 }
 
 Player &Arena::connectPlayer(const std::string &requestedNick) {
-  PID pid = allocPid();
-  players.emplace(
-      pid, Player(PlayerInitializer(pid, allocNickname(requestedNick))));
-  Player &newPlayer = players.at(pid);
-  forSubsystems([&newPlayer](Subsystem &s) { s.join(newPlayer); });
-  return newPlayer;
+  return joinPlayer(
+      PlayerInitializer(allocPid(), allocNickname(requestedNick)));
 }
 
 Player *Arena::getPlayer(const PID pid) {
@@ -256,4 +255,9 @@ Player *Arena::getPlayer(const PID pid) {
   if (player != players.end()) return &player->second;
   return nullptr;
 }
+
+void Arena::tick(const float delta) {
+  forSubsystems([delta](Subsystem &s) { s.tick(delta); });
+}
+
 }
