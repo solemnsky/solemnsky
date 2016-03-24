@@ -104,7 +104,6 @@ void *Subsystem::attachData(Player &player) {
 Subsystem::Subsystem(Arena *const arena) :
     arena(arena),
     id(PID(arena->subsystems.size())) {
-  appLog("adding subsystem to arena");
   arena->subsystems.push_back(this);
 }
 

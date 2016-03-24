@@ -6,29 +6,41 @@
  * Server.
  */
 
+void logEvent(const ServerEvent &event) {
+  appLog(event.printReadable(), LogOrigin::Server);
+}
+
 Server::Server(const unsigned short port) :
+    start("my fancy server"),
+    arena(start),
     host(tg::HostType::Server, port),
     running(true) {
-  appLog("Starting server on port " + std::to_string(port), LogOrigin::Server);
+  logEvent(ServerEvent::Start(port, start));
 }
 
-void Server::broadcastToClients(const sky::ServerPacket &packet) {
-  telegraph.transmitMult(host, host.peers, packet);
-}
-
-void Server::broadcastToClientsExcept(const sky::PID pid,
-                                      const sky::ServerPacket &packet) {
-  telegraph.transmitMultPred(
-      host, host.peers,
-      [&](ENetPeer *peer) {
-        if (sky::Player *player = playerFromPeer(peer))
-          return player->pid != pid;
-        else return false;
+void Server::sendToClients(const sky::ServerPacket &packet) {
+  telegraph.transmit(
+      host,
+      [&](std::function<void(ENetPeer *const)> transmit) {
+        for (auto const peer : host.peers) { transmit(peer); }
       }, packet);
 }
 
-void Server::transmitToClient(ENetPeer *const client,
-                              const sky::ServerPacket &packet) {
+void Server::sendToClientsExcept(const PID pid,
+                                 const sky::ServerPacket &packet) {
+  telegraph.transmit(
+      host,
+      [&](std::function<void(ENetPeer *const)> transmit) {
+        for (auto const peer : host.peers) {
+          if (sky::Player *player = playerFromPeer(peer)) {
+            if (player->pid != pid) transmit(peer);
+          }
+        }
+      }, packet);
+}
+
+void Server::sendToClient(ENetPeer *const client,
+                          const sky::ServerPacket &packet) {
   telegraph.transmit(host, client, packet);
 }
 
@@ -48,19 +60,18 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
 
     switch (packet.type) {
       case ClientPacket::Type::ReqPlayerDelta: {
-        appLog("got delta");
-        if (packet.playerDelta->admin && not player->admin) return;
-        // more restrictions here
-        sky::ArenaDelta delta = sky::ArenaDelta::Delta(
-            player->pid, *packet.playerDelta);
-        arena.applyDelta(delta);
-        broadcastToClients(ServerPacket::Delta(delta));
+        const PlayerDelta &delta = packet.playerDelta.get();
+        if (delta.admin && not player->admin) return;
+
+        sky::ArenaDelta arenaDelta = sky::ArenaDelta::Delta(
+            player->pid, delta);
+        logEvent(ServerEvent::Delta(arenaDelta));
+        arena.applyDelta(arenaDelta);
+        sendToClients(ServerPacket::DeltaArena(arenaDelta));
         break;
       }
 
       case ClientPacket::Type::ReqSkyDelta: {
-        if (!arena.sky) return;
-        arena.sky->applyDelta(*packet.skyDelta);
         break;
       }
 
@@ -73,14 +84,15 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
       }
 
       case ClientPacket::Type::Chat: {
-        appLog("Chat \"" + player->nickname + "\": " + *packet.stringData);
-        broadcastToClients(ServerPacket::Message(
-            ServerMessage::Chat(player->pid, *packet.stringData)));
+        sky::ServerMessage message =
+            ServerMessage::Chat(player->pid, *packet.stringData.get());
+        logEvent(ServerEvent::Message(message));
+        sendToClients(sky::ServerPacket::Message(message));
         break;
       }
 
       case ClientPacket::Type::Ping: {
-        transmitToClient(client, ServerPacket::Pong());
+        sendToClient(client, ServerPacket::Pong());
         break;
       }
 
@@ -93,29 +105,25 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
     // a sky::Player to the enet peer
     if (packet.type == ClientPacket::Type::ReqJoin) {
       sky::Player &newPlayer = arena.connectPlayer(*packet.stringData);
-      event.peer->data = &newPlayer;
+      client->data = &newPlayer;
 
+      logEvent(Server)
       appLog("Client " + std::to_string(newPlayer.pid)
                  + " connected as \"" + *packet.stringData + "\".",
              LogOrigin::Server);
 
-      transmitToClient(
+      sendToClient(
           client, ServerPacket::Init(
-              newPlayer.pid, arena.captureInitializer()));
-      broadcastToClientsExcept(
-          newPlayer.pid, ServerPacket::Delta(
-              ArenaDelta::Join(0, newPlayer)));
+              newPlayer.pid, arena.captureInitializer(), {}));
+      sendToClientsExcept(
+          newPlayer.pid, ServerPacket::DeltaArena(
+              ArenaDelta::Join(newPlayer.captureInitializer());
     }
   }
 }
 
 void Server::tick(float delta) {
-  if (arena.sky) {
-    arena.sky->tick(delta);
-//    broadcastToClients(sky::ServerPacket::Delta(
-//        arena.sky->collectDelta()));
-  }
-
+  static ENetEvent event;
   event = host.poll();
   switch (event.type) {
     case ENET_EVENT_TYPE_NONE:
@@ -127,11 +135,13 @@ void Server::tick(float delta) {
     }
     case ENET_EVENT_TYPE_DISCONNECT: {
       if (sky::Player *player = playerFromPeer(event.peer)) {
-        appLog("Client disconnected, PID " + std::to_string(player->pid),
-               LogOrigin::Server);
 
-        broadcastToClientsExcept(
-            player->pid, sky::ServerPacket::Delta(
+        logEvent(ServerEvent::Quit(
+            sf::IpAddress(event.peer->address.host),
+            player->captureInitializer()));
+
+        sendToClientsExcept(
+            player->pid, sky::ServerPacket::DeltaArena(
                 sky::ArenaDelta::Quit(player->pid)));
 
         arena.quitPlayer(*player);

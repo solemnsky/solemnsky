@@ -27,6 +27,9 @@ add_library(solemnsky STATIC
         src/sky/arena.cpp
         src/sky/arena.h
 
+        src/sky/event.cpp
+        src/sky/event.h
+
         src/sky/map.cpp
         src/sky/map.h
 
@@ -67,7 +70,7 @@ target_link_libraries(solemnsky
 add_executable(solemnsky_server
         src/server/server.cpp
         src/server/server.h
-        )
+        src/server/event.cpp src/server/event.h)
 target_link_libraries(solemnsky_server
         solemnsky
         )

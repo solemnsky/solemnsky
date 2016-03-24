@@ -163,8 +163,8 @@ struct PlaneDelta: public VerifyStructure {
  */
 class PlaneVital {
  private:
-  Sky *parent;
-  Physics *physics;
+  Sky *const parent;
+  Physics *const physics;
   b2Body *body;
 
  public:
@@ -191,7 +191,7 @@ class PlaneVital {
  */
 class Plane {
  private:
-  Sky *parent;
+  Sky *const parent;
   bool newlyAlive;
 
   /**
@@ -208,6 +208,7 @@ class Plane {
   void afterPhysics(float delta);
 
  public:
+  Plane() = delete;
   Plane(Sky *parent);
   Plane(Sky *parent, const PlaneInitializer &initializer);
 

@@ -95,29 +95,15 @@ class Telegraph {
    * Transmit same packet to an iterator range of peers.
    */
   template<typename TransmitType>
-  void transmitMult(
-      Host &host, const std::vector<ENetPeer *> &peers,
+  void transmit(
+      Host &host,
+      std::function<void(std::function<void(ENetPeer *const)>)> callPeers,
       const TransmitType &value,
       ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
     std::string data = outputToString(value);
-    for (ENetPeer *peer : peers)
+    callPeers([&](ENetPeer *const peer) {
       host.transmit(peer, (unsigned char *) data.c_str(), data.size(), flag);
-  }
-
-  /**
-   * Transmit same packet to the peers in an iterator range of peers
-   * that satisfy a predicate.
-   */
-  template<typename TransmitType>
-  void transmitMultPred(
-      Host &host, const std::vector<ENetPeer *> &peers,
-      std::function<bool(ENetPeer *)> predicate,
-      const TransmitType &value,
-      ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
-    std::string data = outputToString(value);
-    for (ENetPeer *peer : peers)
-      if (predicate(peer))
-        host.transmit(peer, (unsigned char *) data.c_str(), data.size(), flag);
+    });
   }
 
   optional<ReceiveType> receive(const ENetPacket *packet) {

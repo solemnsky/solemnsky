@@ -1,5 +1,90 @@
 #include "event.h"
-#include "util/methods.h"
+
+/**
+ * ServerEvent.
+ */
+
+ServerEvent::ServerEvent(const ServerEvent::Type type) : type(type) { }
+
+std::string ServerEvent::printReadable() const {
+  std::stringstream output;
+  switch (type) {
+    case Type::Start: {
+      output << "Starting server on port ";
+      output << start->first;
+      output << "; Arena name is: ";
+      output << inQuotes(start->second.name);
+      break;
+    }
+    case Type::Connect: {
+      output << "Client connected from IP ";
+      output << ipAddr->toString();
+      break;
+    }
+    case Type::Join: {
+      output << "Client joined arena. PID: ";
+      output << playerInitializer->pid;
+      output << " Nickname: ";
+      output << playerInitializer->nickname;
+      break;
+    }
+    case Type::Delta: {
+      output << ""
+    }
+    case Type::Quit:
+      break;
+    case Type::Message:
+      break;
+    case Type::Stop:
+      break;
+  }
+  return output.str();
+}
+
+ServerEvent ServerEvent::Start(const unsigned char port,
+                               const sky::ArenaInitializer &initializer) {
+  ServerEvent event(Type::Start);
+  return event;
+}
+
+ServerEvent ServerEvent::Connect(const sf::IpAddress &ipAddr) {
+  ServerEvent event(Type::Connect);
+  event.ipAddr = ipAddr;
+  return event;
+}
+
+ServerEvent ServerEvent::Join(const sf::IpAddress &ipAddr,
+                              const sky::PlayerInitializer &initializer) {
+  ServerEvent event(Type::Join);
+  event.ipAddr = ipAddr;
+  event.playerInitializer = initializer;
+  return event;
+}
+
+ServerEvent ServerEvent::Delta(const sky::ArenaDelta &delta) {
+  ServerEvent event(Type::Delta);
+  return event;
+}
+
+ServerEvent ServerEvent::Message(const sky::ServerMessage &message) {
+  ServerEvent event(Type::Message);
+  return event;
+}
+
+ServerEvent ServerEvent::Quit(const sf::IpAddress &ipAddr,
+                              const sky::PlayerInitializer &initializer) {
+  ServerEvent event(Type::Quit);
+  return event;
+}
+
+
+ServerEvent ServerEvent::Stop() {
+  return ServerEvent(Type::Stop);
+}
+
+/**
+ * ClientEvent.
+ */
 
 ClientEvent::ClientEvent(const Type type) : type(type) { }
 

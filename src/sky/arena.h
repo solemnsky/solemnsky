@@ -66,7 +66,6 @@ class Subsystem {
  protected:
   template<typename Data>
   Data &getPlayerData(const Player &player) {
-    appLog("reading from id " + std::to_string(id));
     return *((Data *) player.data[id]);
   }
 
