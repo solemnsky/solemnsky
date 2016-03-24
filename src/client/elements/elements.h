@@ -3,7 +3,6 @@
  */
 #pragma once
 #include "clientshared.h"
-#include "event.h"
 
 /**
  * Pages are the portals through which users interface with the tutorial
