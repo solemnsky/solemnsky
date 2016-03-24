@@ -27,28 +27,10 @@ struct ServerEvent {
     Start, Connect, Join, Delta, Quit, Message, Stop
   } type;
 
- private:
-  ServerEvent(const Type type);
+  // STUB
+  ServerEvent() = default;
 
- public:
-  optional<sf::IpAddress> ipAddr;
-  optional<std::pair<unsigned char, sky::ArenaInitializer>> start;
-  optional<sky::PlayerInitializer> playerInitializer;
-  optional<sky::ArenaDelta> arenaDelta;
-  optional<sky::ServerMessage> message;
-
-  std::string printReadable() const;
-
-  static ServerEvent Start(const unsigned char port,
-                           const sky::ArenaInitializer &initializer);
-  static ServerEvent Connect(const sf::IpAddress &ipAddr);
-  static ServerEvent Join(const sf::IpAddress &ipAddr,
-                          const sky::PlayerInitializer &initializer);
-  static ServerEvent Delta(const sky::ArenaDelta &delta);
-  static ServerEvent Message(const sky::ServerMessage &message);
-  static ServerEvent Quit(const sf::IpAddress &ipAddr,
-                          const sky::PlayerInitializer &initializer);
-  static ServerEvent Stop();
+  std::string print() const;
 };
 
 /**
@@ -60,9 +42,7 @@ struct ClientEvent {
     Connect,
     Chat,
     Broadcast,
-
-    // resolved subset of ArenaDelta
-        Join,
+    Join, // resolved subset of ArenaDelta
     Quit,
     NickChange,
     TeamChange,

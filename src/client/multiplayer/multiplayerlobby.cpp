@@ -15,7 +15,7 @@ MultiplayerLobby::MultiplayerLobby(
     chatInput(style.base.normalTextEntry,
               style.multi.chatPos, "[enter to chat]") {
   areChildren({&specButton, &redButton, &blueButton, &chatInput});
-  connection.eventLog.push_back(sky::ClientEvent::LobbyStart());
+  connection.eventLog.push_back(ClientEvent::LobbyStart());
 }
 
 void MultiplayerLobby::tick(float delta) {
@@ -29,14 +29,14 @@ void MultiplayerLobby::render(ui::Frame &f) {
       style.multi.messageLogPos, [&](ui::TextFrame &tf) {
         for (auto iter = connection.eventLog.rbegin();
              iter < connection.eventLog.rend(); iter++) {
-          tf.drawString(sky::ClientEvent(*iter).print());
+          tf.drawString(ClientEvent(*iter).print());
           tf.breakLine();
         }
       }, sf::Color::White, style.multi.messageLogText);
 
   f.drawText(
       style.multi.playerListPos, [&](ui::TextFrame &tf) {
-        for (const sky::Player &player : connection.arena.players) {
+        for (const sky::Player &player : connection.arena->players) {
           tf.setColor(sf::Color::Black);
 
           if (player.team == 1) tf.setColor(sf::Color::Red);
@@ -68,8 +68,6 @@ void MultiplayerLobby::reset() {
 void MultiplayerLobby::signalRead() {
   ui::Control::signalRead();
 
-  sky::PlayerDelta delta(*connection.myPlayer);
-
   if (specButton.clickSignal)
     connection.requestTeamChange(0);
   if (redButton.clickSignal)
@@ -77,7 +75,7 @@ void MultiplayerLobby::signalRead() {
   if (blueButton.clickSignal)
     connection.requestTeamChange(2);
   if (chatInput.inputSignal)
-    connection.transmit(sky::ClientPacket::Chat(*chatInput.inputSignal));
+    connection.transmit(sky::ClientPacket::Chat(chatInput.inputSignal.get()));
 }
 
 void MultiplayerLobby::signalClear() {

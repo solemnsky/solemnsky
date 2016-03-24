@@ -9,7 +9,7 @@
  */
 
 std::unique_ptr<MultiplayerView> Multiplayer::mkView() {
-  switch (connection.arena.mode) {
+  switch (connection.arena->mode) {
     case sky::ArenaMode::Lobby:
       return std::make_unique<MultiplayerLobby>(shared, connection);
     case sky::ArenaMode::Game:
@@ -35,7 +35,7 @@ void Multiplayer::onChangeSettings(const SettingsDelta &settings) {
 
   if (connection.myPlayer) {
     if (settings.nickname) {
-      sky::PlayerDelta delta(*connection.myPlayer);
+      sky::PlayerDelta delta = connection.myPlayer->zeroDelta();
       delta.nickname = *settings.nickname;
       connection.transmit(sky::ClientPacket::ReqPlayerDelta(delta));
       // request a nickname change
