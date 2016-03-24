@@ -24,7 +24,6 @@ void Sky::tick(const float delta) {
 }
 
 void *Sky::attachData(Player &player) {
-  appLog("attaching plane to player " + std::to_string(player.pid));
   auto plane = planes.find(player.pid);
   if (plane == planes.end()) {
     planes.emplace(player.pid, Plane(this));
@@ -32,9 +31,7 @@ void *Sky::attachData(Player &player) {
   } else return &plane->second;
 }
 
-void Sky::join(Player &player) {
-
-}
+void Sky::join(Player &player) { }
 
 void Sky::quit(Player &player) {
   planes.erase(player.pid);
@@ -89,7 +86,6 @@ void Sky::applyDelta(const SkyDelta &delta) {
 }
 
 Plane &Sky::getPlane(const Player &player) {
-  appLog("getting plane from player " + std::to_string(player.pid));
   return getPlayerData<Plane>(player);
 }
 

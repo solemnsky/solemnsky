@@ -24,6 +24,7 @@ class Physics {
   b2World world;
 
  public:
+  Physics() = delete;
   Physics(const Map &map);
   ~Physics();
 

@@ -149,7 +149,8 @@ bool PlaneDelta::verifyStructure() const {
 PlaneVital::PlaneVital(Sky *parent,
                        const PlaneTuning &tuning,
                        const PlaneState &state) :
-    parent(parent), tuning(tuning), state(state) {
+    parent(parent), physics(&parent->physics),
+    tuning(tuning), state(state) {
   body = physics->rectBody(tuning.hitbox);
   body->SetAngularVelocity(toRad(state.rot));
   body->SetLinearVelocity(physics->toPhysVec(state.vel));

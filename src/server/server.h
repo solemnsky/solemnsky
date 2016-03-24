@@ -5,6 +5,7 @@
 #include "sky/arena.h"
 #include "util/telegraph.h"
 #include "sky/protocol.h"
+#include "event.h"
 #include "sky/arena.h"
 #include <iostream>
 
@@ -13,25 +14,30 @@ class Server {
   tg::UsageFlag flag; // for enet global state
 
   double uptime;
-  optional<sky::Sky> sky;
+
+  sky::ArenaInitializer start;
   sky::Arena arena;
 
   /**
-   * Connection stuff.
+   * Connection state.
    */
   tg::Host host;
   tg::Telegraph<sky::ClientPacket> telegraph;
-  ENetEvent event;
   std::vector<ENetPeer *> connectingPeers;
+
+  /**
+   * Events.
+   */
+  void logEvent(const ServerEvent &event);
 
   /**
    * Network logic.
    */
-  void broadcastToClients(const sky::ServerPacket &packet);
-  void broadcastToClientsExcept(const sky::PID pid,
-                                const sky::ServerPacket &packet);
-  void transmitToClient(ENetPeer *const client,
-                        const sky::ServerPacket &packet);
+  void sendToClients(const sky::ServerPacket &packet);
+  void sendToClientsExcept(const PID pid,
+                           const sky::ServerPacket &packet);
+  void sendToClient(ENetPeer *const client,
+                    const sky::ServerPacket &packet);
   sky::Player *playerFromPeer(ENetPeer *peer) const;
   void processPacket(ENetPeer *client, const sky::ClientPacket &packet);
 
