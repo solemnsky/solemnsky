@@ -3,7 +3,7 @@
 namespace sky {
 
 ServerLog::ServerLog(Sky *sky, std::function<void(std::string &&)> logger) :
-    Subsystem(sky) { }
+    Subsystem(sky, (std::function<_Res(_ArgTypes...)>())) { }
 
 void ServerLog::tick(const float delta) {
 

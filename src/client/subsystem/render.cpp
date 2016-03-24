@@ -142,7 +142,7 @@ void RenderSystem::renderPlaneGraphics(ui::Frame &f,
 }
 
 RenderSystem::RenderSystem(const Sky *sky) :
-    Subsystem(sky),
+    Subsystem(sky, (std::function<_Res(_ArgTypes...)>())),
     sheet(ResID::PlayerSheet) {
   CTOR_LOG("Render");
 }

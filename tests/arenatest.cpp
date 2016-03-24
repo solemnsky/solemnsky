@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "sky/arena.h"
-#include "client/elements/event.h"
+#include "util/methods.h"
 
 /**
  * The Arena abstraction.
@@ -88,7 +88,7 @@ class MySubsystem: public sky::Subsystem {
   std::map<PID, float> myData;
 
  protected:
-  virtual void *attachData(sky::Player &player) override {
+  void *attachData(sky::Player &player) override {
     myData.emplace(player.pid, 0);
     return &myData.at(player.pid);
   }
@@ -104,7 +104,10 @@ class MySubsystem: public sky::Subsystem {
   }
 
  public:
-  MySubsystem(sky::Arena *arena) : sky::Subsystem(arena) { }
+  MySubsystem(sky::Arena *arena) : sky::Subsystem(arena) {
+    for (auto &player : arena->players)
+      player.second.data.push_back(attachData(player.second));
+  }
 
   float getTimeData(const sky::Player &player) {
     return getPlayerData<float>(player);
@@ -123,9 +126,9 @@ TEST_F(ArenaTest, SubsystemTest) {
   sky::Arena remoteArena(arena.captureInitializer());
   MySubsystem remoteSubsystem(&remoteArena);
 
-//  sky::Player &remotePlayer1 = *remoteArena.getPlayer(0);
-//  EXPECT_EQ(remoteSubsystem.getTimeData(remotePlayer1), 0);
-//  remoteArena.tick(0.5);
-//  EXPECT_EQ(remoteSubsystem.getTimeData(remotePlayer1), 0.5);
+  sky::Player &remotePlayer1 = *remoteArena.getPlayer(0);
+  EXPECT_EQ(remoteSubsystem.getTimeData(remotePlayer1), 0);
+  remoteArena.tick(0.5);
+  EXPECT_EQ(remoteSubsystem.getTimeData(remotePlayer1), 0.5);
 }
 

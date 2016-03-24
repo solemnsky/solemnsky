@@ -24,7 +24,7 @@ void Sky::tick(const float delta) {
 }
 
 void *Sky::attachData(Player &player) {
-  return nullptr;
+  return &planes.at(player.pid);
 }
 
 void Sky::join(Player &player) {
@@ -41,9 +41,14 @@ Sky::Sky(Arena *arena, const SkyInitializer &initializer) :
     mapName(initializer.mapName),
     map(mapName),
     physics(map) {
-  // construct planes
+  // initialize planes
   for (const auto &pair : initializer.planes)
     planes.emplace(pair.first, Plane(this, pair.second));
+
+  // attach data
+  for (auto &pair : arena->players)
+    pair.second.data.push_back(attachData(pair.second));
+
 }
 
 Sky::~Sky() {
