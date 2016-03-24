@@ -10,15 +10,13 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
   if (!myPlayer) {
     // waiting for the arena connection request to be accepted
     if (packet.type == ServerPacket::Type::Init) {
-      arena.emplace(*packet.arenaInit);
-      myPlayer = arena.getPlayer(*packet.pid);
+      arena.emplace(packet.arenaInit.get());
+      myPlayer = arena->getPlayer(packet.pid.get());
       appLog("Joined arena!", LogOrigin::Client);
       connected = true;
-      if (host.peers.size() == 1) {
-        eventLog.push_back(sky::ClientEvent::Connect(
-            "(haven't implemented server names lol)",
-            tg::printAddress(host.peers[0]->address)));
-      }
+      eventLog.push_back(sky::ClientEvent::Connect(
+          "(haven't implemented server names lol)",
+          tg::printAddress(host.peers[0]->address)));
     }
     return;
   }
@@ -32,7 +30,8 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
     case ServerPacket::Type::Message: {
       switch (packet.message->type) {
         case ServerMessage::Type::Chat: {
-          if (sky::Player *player = arena.getPlayer(*packet.message->from)) {
+          if (sky::Player *player = arena->getPlayer(
+              packet.message->from.get())) {
             eventLog.push_back(sky::ClientEvent::Chat(
                 player->nickname, packet.message->contents));
           } else {
@@ -51,15 +50,11 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
     }
 
     case ServerPacket::Type::DeltaArena: {
-      if (optional<sky::ClientEvent> event =
-          arena.applyDelta(*packet.delta)) {
-        eventLog.push_back(*event);
-      }
+      arena->applyDelta(packet.arenaDelta.get());
       break;
     }
 
     case ServerPacket::Type::DeltaSky: {
-      if (arena.sky) arena.sky->applyDelta(*packet.skyDelta);
       break;
     }
 
@@ -145,9 +140,9 @@ void MultiplayerConnection::disconnect() {
   }
 }
 
-void MultiplayerConnection::requestTeamChange(sky::Team team) {
+void MultiplayerConnection::requestTeamChange(Team team) {
   if (myPlayer) {
-    sky::PlayerDelta delta(*myPlayer);
+    sky::PlayerDelta delta = myPlayer->zeroDelta();
     delta.team = team;
     transmit(sky::ClientPacket::ReqPlayerDelta(delta));
   }

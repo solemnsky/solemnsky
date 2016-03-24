@@ -1,12 +1,6 @@
 #include "event.h"
 #include "util/methods.h"
 
-namespace sky {
-
-/**
- * ClientEvent.
- */
-
 ClientEvent::ClientEvent(const Type type) : type(type) { }
 
 std::string ClientEvent::print() const {
@@ -100,7 +94,3 @@ ClientEvent ClientEvent::GameStart(const std::string &name) {
 ClientEvent ClientEvent::ScoringStart() {
   return ClientEvent(Type::ScoringStart);
 }
-
-}
-
-

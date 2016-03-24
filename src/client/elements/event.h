@@ -2,8 +2,7 @@
  * Things that happen.
  */
 #pragma once
-
-namespace sky {
+#include "util/types.h"
 
 /**
  * Events that a client observes.
@@ -49,5 +48,3 @@ struct ClientEvent {
   static ClientEvent GameStart(const std::string &name);
   static ClientEvent ScoringStart();
 };
-
-}
