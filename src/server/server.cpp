@@ -3,6 +3,20 @@
 #include "util/methods.h"
 
 /**
+ * ServerLogger.
+ */
+
+void ServerLogger::registerPlayer(sky::Player &player) {
+  player.data.push_back(nullptr);
+}
+
+void ServerLogger::unregisterPlayer(sky::Player &player) { }
+
+ServerLogger::ServerLogger(sky::Arena *const arena) : Subsystem(arena) {
+  for (auto &player : arena->players) registerPlayer(player.second);
+}
+
+/**
  * Server.
  */
 
@@ -17,6 +31,7 @@ void Server::logArenaEvent(const ArenaEvent &event) {
 Server::Server(const Port port,
                const sky::ArenaInitializer &initializer) :
     arena(initializer),
+    logger(&arena),
     host(tg::HostType::Server, port),
     running(true) {
   logEvent(ServerEvent::Start(port, initializer.name));
@@ -88,8 +103,9 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
 
       case ClientPacket::Type::Chat: {
         sky::ServerMessage message =
-            ServerMessage::Chat(player->pid, *packet.stringData.get());
-        logEvent(ServerEvent::Message(message));
+            ServerMessage::Chat(player->pid, packet.stringData.get());
+        logArenaEvent(ArenaEvent::Chat(
+            player->nickname, packet.stringData.get()));
         sendToClients(sky::ServerPacket::Message(message));
         break;
       }
@@ -110,17 +126,13 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
       sky::Player &newPlayer = arena.connectPlayer(*packet.stringData);
       client->data = &newPlayer;
 
-      logEvent(Server, <#initializer#>)
-      appLog("Client " + std::to_string(newPlayer.pid)
-                 + " connected as \"" + *packet.stringData + "\".",
-             LogOrigin::Server);
-
+      logEvent(ServerEvent::Connect(newPlayer.nickname));
       sendToClient(
           client, ServerPacket::Init(
               newPlayer.pid, arena.captureInitializer(), {}));
       sendToClientsExcept(
           newPlayer.pid, ServerPacket::DeltaArena(
-              ArenaDelta::Join(newPlayer.captureInitializer());
+              ArenaDelta::Join(newPlayer.captureInitializer())));
     }
   }
 }
@@ -139,10 +151,7 @@ void Server::tick(float delta) {
     case ENET_EVENT_TYPE_DISCONNECT: {
       if (sky::Player *player = playerFromPeer(event.peer)) {
 
-        logEvent(ServerEvent::Quit(
-            sf::IpAddress(event.peer->address.host),
-            player->captureInitializer()));
-
+        logEvent(ServerEvent::Disconnect(player->nickname));
         sendToClientsExcept(
             player->pid, sky::ServerPacket::DeltaArena(
                 sky::ArenaDelta::Quit(player->pid)));
@@ -163,7 +172,7 @@ void Server::tick(float delta) {
 }
 
 int main() {
-  Server server(4242, <#initializer#>);
+  Server server(4242, sky::ArenaInitializer("my arena"));
   sf::Clock clock;
 
   while (server.running) {

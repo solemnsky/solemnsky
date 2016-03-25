@@ -102,6 +102,10 @@ std::string ServerEvent::print() const {
     case Type::Stop:
       return "Stopped server after " + std::to_string(uptime.get())
           + " seconds of uptime";
+    case Type::Connect:
+      return "Client connected: " + inQuotes(name.get());
+    case Type::Disconnect:
+      return "Client disconnected: " + inQuotes(name.get());
   }
 }
 
@@ -122,6 +126,18 @@ ServerEvent ServerEvent::Event(const ArenaEvent &arenaEvent) {
 ServerEvent ServerEvent::Stop(const double uptime) {
   ServerEvent event(Type::Stop);
   event.uptime = uptime;
+  return event;
+}
+
+ServerEvent ServerEvent::Connect(const std::string &name) {
+  ServerEvent event(Type::Connect);
+  event.name = name;
+  return event;
+}
+
+ServerEvent ServerEvent::Disconnect(const std::string &name) {
+  ServerEvent event(Type::Disconnect);
+  event.name = name;
   return event;
 }
 
