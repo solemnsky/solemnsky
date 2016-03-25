@@ -1,6 +1,70 @@
 #include "event.h"
 
 /**
+ * ArenaEvent.
+ */
+
+ArenaEvent::ArenaEvent(const Type type) : type(type) { }
+
+ArenaEvent ArenaEvent::Chat(const std::string &name,
+                            const std::string &message) {
+  ArenaEvent event(Type::Chat);
+  event.name = name;
+  event.message = message;
+  return event;
+}
+
+ArenaEvent ArenaEvent::Broadcast(const std::string &message) {
+  ArenaEvent event(Type::Broadcast);
+  event.message = message;
+  return event;
+}
+
+ArenaEvent ArenaEvent::Join(const std::string &name) {
+  ArenaEvent event(Type::Join);
+  event.name = name;
+  return event;
+}
+
+ArenaEvent ArenaEvent::Quit(const std::string &name) {
+  ArenaEvent event(Type::Quit);
+  event.name = name;
+  return event;
+}
+
+ArenaEvent ArenaEvent::NickChange(const std::string &name,
+                                  const std::string &newName) {
+  ArenaEvent event(Type::NickChange);
+  event.name = name;
+  event.newName = newName;
+  return event;
+}
+
+ArenaEvent ArenaEvent::TeamChange(const std::string &name,
+                                  const Team oldTeam,
+                                  const Team newTeam) {
+  ArenaEvent event(Type::TeamChange);
+  event.name = name;
+  event.oldTeam = oldTeam;
+  event.newTeam = newTeam;
+  return event;
+}
+
+ArenaEvent ArenaEvent::LobbyStart() {
+  return ArenaEvent(Type::LobbyStart);
+}
+
+ArenaEvent ArenaEvent::GameStart(const std::string &name) {
+  ArenaEvent event(Type::LobbyStart);
+  event.name = name;
+  return event;
+}
+
+ArenaEvent ArenaEvent::ScoringStart() {
+  return ArenaEvent(Type::ScoringStart);
+}
+
+/**
  * ServerEvent.
  */
 
@@ -48,60 +112,3 @@ ClientEvent ClientEvent::Connect(const std::string &name,
   return event;
 }
 
-ClientEvent ClientEvent::Chat(const std::string &name,
-                              const std::string &message) {
-  ClientEvent event(Type::Chat);
-  event.name = name;
-  event.message = message;
-  return event;
-}
-
-ClientEvent ClientEvent::Broadcast(const std::string &message) {
-  ClientEvent event(Type::Broadcast);
-  event.message = message;
-  return event;
-}
-
-ClientEvent ClientEvent::Join(const std::string &name) {
-  ClientEvent event(Type::Join);
-  event.name = name;
-  return event;
-}
-
-ClientEvent ClientEvent::Quit(const std::string &name) {
-  ClientEvent event(Type::Quit);
-  event.name = name;
-  return event;
-}
-
-ClientEvent ClientEvent::NickChange(const std::string &name,
-                                    const std::string &newName) {
-  ClientEvent event(Type::NickChange);
-  event.name = name;
-  event.newName = newName;
-  return event;
-}
-
-ClientEvent ClientEvent::TeamChange(const std::string &name,
-                                    const Team oldTeam,
-                                    const Team newTeam) {
-  ClientEvent event(Type::TeamChange);
-  event.name = name;
-  event.oldTeam = oldTeam;
-  event.newTeam = newTeam;
-  return event;
-}
-
-ClientEvent ClientEvent::LobbyStart() {
-  return ClientEvent(Type::LobbyStart);
-}
-
-ClientEvent ClientEvent::GameStart(const std::string &name) {
-  ClientEvent event(Type::LobbyStart);
-  event.name = name;
-  return event;
-}
-
-ClientEvent ClientEvent::ScoringStart() {
-  return ClientEvent(Type::ScoringStart);
-}
