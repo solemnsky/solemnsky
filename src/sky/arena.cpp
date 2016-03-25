@@ -96,10 +96,6 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode) {
  * Subsystem.
  */
 
-void *Subsystem::attachData(Player &player) {
-  return nullptr;
-}
-
 Subsystem::Subsystem(Arena *const arena) :
     arena(arena),
     id(PID(arena->subsystems.size())) {
@@ -232,14 +228,17 @@ Player &Arena::joinPlayer(const PlayerInitializer &initializer) {
   players.emplace(initializer.pid, Player(initializer));
   Player &player = players.at(initializer.pid);
   forSubsystems([&player](Subsystem &s) {
-    player.data.push_back(s.attachData(player));
+    s.registerPlayer(player);
     s.join(player);
   });
   return player;
 }
 
 void Arena::quitPlayer(Player &player) {
-  forSubsystems([&](Subsystem &s) { s.quit(player); });
+  forSubsystems([&](Subsystem &s) {
+    s.unregisterPlayer(player);
+    s.quit(player);
+  });
   players.erase(player.pid);
 }
 

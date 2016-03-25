@@ -65,12 +65,16 @@ class Subsystem {
  protected:
   template<typename Data>
   Data &getPlayerData(const Player &player) {
-    return *((Data *) player.data[id]);
+    return *((Data *) player.data.at(id));
   }
 
   friend class Arena;
 
-  virtual void *attachData(Player &player);
+  // push a pointer onto the player's data
+  virtual void registerPlayer(Player &player) = 0;
+  // destroy the data the player was attached to
+  virtual void unregisterPlayer(Player &player) = 0;
+
   virtual void tick(const float delta) { }
   virtual void join(Player &player) { }
   virtual void quit(Player &player) { }
