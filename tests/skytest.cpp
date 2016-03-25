@@ -3,7 +3,7 @@
 #include "util/methods.h"
 
 /**
- * Our Sky subsystem works correctly.
+ * Our Sky render works correctly.
  */
 class SkyTest: public testing::Test {
  public:

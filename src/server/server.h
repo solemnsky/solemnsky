@@ -10,7 +10,7 @@
 #include <iostream>
 
 /**
- * Arena subsystem
+ * Arena render
  */
 class ServerLogger: sky::Subsystem {
  protected:
