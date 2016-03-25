@@ -104,8 +104,8 @@ add_executable(solemnsky_client
         src/client/multiplayer/multiplayershared.cpp
         src/client/multiplayer/multiplayershared.h
 
-        src/client/subsystem/render.cpp
-        src/client/subsystem/render.h
+        src/client/render/render.cpp
+        src/client/render/render.h
 
         src/client/tutorial/gamecontrols.cpp
         src/client/tutorial/gamecontrols.h

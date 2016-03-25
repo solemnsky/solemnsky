@@ -84,7 +84,7 @@ class Subsystem {
   virtual void onEvent(const ArenaEvent &event) { }
 
   class Arena *const arena;
-  const PID id; // ID the subsystem has allocated in the Arena
+  const PID id; // ID the render has allocated in the Arena
 
  public:
   Subsystem() = delete;

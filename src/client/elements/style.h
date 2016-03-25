@@ -155,6 +155,30 @@ struct Style {
     Multi(const Base &base);
   } multi;
 
+  /**
+   * Render settings for the game.
+   */
+  struct SkyRender {
+    float
+        rollAmount = 25, // how many degrees it rolls to either side
+        rollSpeed = 2, // how quickly it rolls 2 * rollAmount
+        flipSpeed = 2; // how quickly it flips orientation
+
+    float spriteSize = 200;
+
+    sf::FloatRect afterburnArea = {-70, -10, 70, 20};
+
+    sf::FloatRect barArea = {-100, -100, 200, 30};
+    sf::Color
+        throttleStall = sf::Color(0, 0, 0, 100),
+        throttle = sf::Color::Black,
+        health = sf::Color::Green,
+        energy = sf::Color::Blue;
+    float deathRate = 0.5;
+
+    SkyRender();
+  } skyRender;
+
   Style();
 };
 

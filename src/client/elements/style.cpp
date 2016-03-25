@@ -135,8 +135,9 @@ Style::Multi::Multi(const Style::Base &base) :
     messageLogText(base.normalText),
     playerListText(base.normalText) {
   messageLogText.vertical = ui::VerticalAlign::Bottom;
-
 }
+
+Style::SkyRender::SkyRender() { }
 
 Style::Style() :
     base(),
