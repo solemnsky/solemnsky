@@ -8,9 +8,8 @@
 #include <SFML/Network.hpp>
 
 /**
- * ArenaEvent.
- *
- * Aims to be
+ * ArenaEvent represents a thing that can happen in an game server. Used by
+ * both ClientEvent and ServerEvent.
  */
 
 struct ArenaEvent {
@@ -28,6 +27,8 @@ struct ArenaEvent {
   optional<std::string> name, addr, message, newName;
   optional<Team> oldTeam, newTeam;
 
+  std::string print() const;
+
   static ArenaEvent Chat(const std::string &name, const std::string &message);
   static ArenaEvent Broadcast(const std::string &message);
 
@@ -43,37 +44,44 @@ struct ArenaEvent {
 };
 
 /**
- * ServerEvent.
+ * A thing that can happen on a server. Subordinates ArenaEvent.
  */
 
 struct ServerEvent {
- public:
   enum class Type {
-    Start, Connect, Join, Delta, Quit, Message, Stop
+    Start, Event, Stop
   } type;
 
-  // STUB
-  ServerEvent() = default;
+ private:
+  ServerEvent(const Type type);
+
+ public:
+  ServerEvent() = delete;
+
+  optional<unsigned char> port;
+  optional<std::string> name;
+  optional<ArenaEvent> arenaEvent;
+  optional<double> uptime;
 
   std::string print() const;
+
+  static ServerEvent Start(const unsigned char port,
+                           const std::string &name);
+  static ServerEvent Event(const ArenaEvent &arenaEvent);
+  static ServerEvent Stop(const double uptime);
 };
 
 /**
- * ClientEvent.
+ * A thing that can happen on a client. Subordinates ArenaEvent.
  */
+
+enum class DisconnectType {
+  Graceful, Timeout
+};
 
 struct ClientEvent {
   enum class Type {
-    Connect,
-    Chat,
-    Broadcast,
-    Join, // resolved subset of ArenaDelta
-    Quit,
-    NickChange,
-    TeamChange,
-    LobbyStart,
-    GameStart,
-    ScoringStart
+    Connect, Event, Disconnect
   } type;
 
  private:
@@ -82,7 +90,17 @@ struct ClientEvent {
  public:
   ClientEvent() = delete;
 
+  optional<std::string> name;
+  optional<sf::IpAddress> ipAddr;
+  optional<ArenaEvent> arenaEvent;
+  optional<double> uptime;
+  optional<DisconnectType> disconnect;
+
   std::string print() const;
 
-  static ClientEvent Connect(const std::string &name, const std::string &addr);
+  static ClientEvent Connect(const std::string &name,
+                             const sf::IpAddress &ipAddr);
+  static ClientEvent Event(const ArenaEvent &arenaEvent);
+  static ClientEvent Disconnect(const double uptime,
+                                const DisconnectType disconnect);
 };

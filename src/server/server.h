@@ -5,7 +5,7 @@
 #include "sky/arena.h"
 #include "util/telegraph.h"
 #include "sky/protocol.h"
-#include "event.h"
+#include "sky/event.h"
 #include "sky/arena.h"
 #include <iostream>
 

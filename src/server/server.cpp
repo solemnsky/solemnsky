@@ -1,5 +1,5 @@
 #include "server.h"
-#include "client/elements/event.h"
+#include "sky/event.h"
 #include "util/methods.h"
 
 /**
@@ -7,7 +7,7 @@
  */
 
 void logEvent(const ServerEvent &event) {
-  appLog(event.printReadable(), LogOrigin::Server);
+  appLog(event.print(), LogOrigin::Server);
 }
 
 Server::Server(const unsigned short port) :
