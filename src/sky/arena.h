@@ -94,6 +94,7 @@ class Subsystem {
 /**
  * Arena.
  */
+
 struct ArenaInitializer {
   ArenaInitializer() = default; // packing
   ArenaInitializer(const std::string &name);

@@ -23,12 +23,16 @@ std::string ArenaEvent::print() const {
       return inQuotes(name.get()) + " changed team from "
           + std::to_string(oldTeam.get())
           + " to " + std::to_string(newTeam.get());
-    case Type::LobbyStart:
-      return "** Entered lobby. **";
-    case Type::GameStart:
-      return "** Began game on " + *name + " **";
-    case Type::ScoringStart:
-      return "** Entered scoring. **";
+    case Type::ModeChange: {
+      switch (mode.get()) {
+        case ArenaMode::Lobby:
+          return "** Entered lobby. **";
+        case ArenaMode::Game:
+          return "** Began game on " + *name + " **";
+        case ArenaMode::Scoring:
+          return "** Entered scoring. **";
+      }
+    }
   }
 }
 
@@ -76,18 +80,10 @@ ArenaEvent ArenaEvent::TeamChange(const std::string &name,
   return event;
 }
 
-ArenaEvent ArenaEvent::LobbyStart() {
-  return ArenaEvent(Type::LobbyStart);
-}
-
-ArenaEvent ArenaEvent::GameStart(const std::string &name) {
-  ArenaEvent event(Type::LobbyStart);
-  event.name = name;
+ArenaEvent ArenaEvent::ModeChange(const ArenaMode mode) {
+  ArenaEvent event(Type::ModeChange);
+  event.mode = mode;
   return event;
-}
-
-ArenaEvent ArenaEvent::ScoringStart() {
-  return ArenaEvent(Type::ScoringStart);
 }
 
 /**

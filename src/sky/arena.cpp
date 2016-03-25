@@ -158,7 +158,7 @@ void Arena::forPlayers(std::function<void(Player &)> call) {
 }
 
 void Arena::logEvent(const ArenaEvent &event) const {
-  forSubsystems([&event](Subsystem *s) { s->onEvent(event); });
+  forSubsystems([&event](Subsystem &s) { s.onEvent(event); });
 }
 
 Arena::Arena(const ArenaInitializer &initializer) :

@@ -9,6 +9,13 @@
 #include "sky/arena.h"
 #include <iostream>
 
+/**
+ * Arena subsystem
+ */
+class ServerLogger: sky::Subsystem {
+
+};
+
 class Server {
  private:
   tg::UsageFlag flag; // for enet global state
