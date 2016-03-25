@@ -27,16 +27,19 @@ struct ArenaEvent {
 
   optional<std::string> name, message, newName;
   optional<Team> oldTeam, newTeam;
+  optional<ArenaMode> mode;
 
   std::string print() const;
 
+  static ArenaEvent Chat(const std::string &name, const std::string &message);
+  static ArenaEvent Broadcast(const std::string &message);
   static ArenaEvent Join(const std::string &name);
   static ArenaEvent Quit(const std::string &name);
   static ArenaEvent NickChange(const std::string &name,
                                const std::string &newName);
   static ArenaEvent TeamChange(const std::string &name, const Team oldTeam,
                                const Team newTeam);
-  static ArenaEvent ModeChange(const ArenaMode)
+  static ArenaEvent ModeChange(const ArenaMode mode);
 };
 
 /**
@@ -99,7 +102,4 @@ struct ClientEvent {
   static ClientEvent Event(const ArenaEvent &arenaEvent);
   static ClientEvent Disconnect(const double uptime,
                                 const DisconnectType disconnect);
-
-  static ClientEvent Chat(const std::string &name, const std::string &message);
-  static ClientEvent Broadcast(const std::string &message);
 };
