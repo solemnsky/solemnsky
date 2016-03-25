@@ -51,8 +51,10 @@ class Sky: public Subsystem {
   /**
    * Subsystem implementation.
    */
+  void registerPlayer(Player &player) override;
+  void unregisterPlayer(Player &player) override;
+
   void tick(const float delta) override;
-  void *attachData(Player &player) override;
   void join(Player &player) override;
   void quit(Player &player) override;
 

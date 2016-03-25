@@ -88,25 +88,22 @@ class MySubsystem: public sky::Subsystem {
   std::map<PID, float> myData;
 
  protected:
-  void *attachData(sky::Player &player) override {
+  void registerPlayer(sky::Player &player) override {
     myData.emplace(player.pid, 0);
-    return &myData.at(player.pid);
+    player.data.push_back(&myData.at(player.pid));
+  }
+
+  void unregisterPlayer(sky::Player &player) override {
+    myData.erase(player.pid);
   }
 
   void tick(const float delta) override {
     for (auto &x : myData) x.second += delta;
   }
 
-  void join(sky::Player &player) override { }
-
-  void quit(sky::Player &player) override {
-    myData.erase(player.pid);
-  }
-
  public:
   MySubsystem(sky::Arena *arena) : sky::Subsystem(arena) {
-    for (auto &player : arena->players)
-      player.second.data.push_back(attachData(player.second));
+    for (auto &player : arena->players) registerPlayer(player.second);
   }
 
   float getTimeData(const sky::Player &player) {

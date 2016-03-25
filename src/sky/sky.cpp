@@ -13,6 +13,19 @@ bool SkyDelta::verifyStructure() const {
   return true;
 }
 
+void Sky::registerPlayer(Player &player) {
+  const auto plane = planes.find(player.pid);
+  if (plane == planes.end()) {
+    planes.emplace(player.pid, Plane(this));
+    player.data.push_back(&planes.at(player.pid));
+  } else player.data.push_back(&plane->second);
+}
+
+void Sky::unregisterPlayer(Player &player) {
+  const auto plane = planes.find(player.pid);
+  if (plane != planes.end()) planes.erase(plane);
+}
+
 void Sky::tick(const float delta) {
   for (auto &elem : planes) {
     elem.second.beforePhysics();
@@ -21,14 +34,6 @@ void Sky::tick(const float delta) {
   for (auto &elem : planes) {
     elem.second.afterPhysics(delta);
   }
-}
-
-void *Sky::attachData(Player &player) {
-  auto plane = planes.find(player.pid);
-  if (plane == planes.end()) {
-    planes.emplace(player.pid, Plane(this));
-    return &planes.at(player.pid);
-  } else return &plane->second;
 }
 
 void Sky::join(Player &player) { }
@@ -46,10 +51,8 @@ Sky::Sky(Arena *arena, const SkyInitializer &initializer) :
   for (const auto &pair : initializer.planes)
     planes.emplace(pair.first, Plane(this, pair.second));
 
-  // attach data to already existing players
-  for (auto &pair : arena->players) {
-    pair.second.data.push_back(attachData(pair.second));
-  }
+  // register players and guarantee that every player has a plane
+  for (auto &pair : arena->players) registerPlayer(pair.second);
 }
 
 Sky::~Sky() {
