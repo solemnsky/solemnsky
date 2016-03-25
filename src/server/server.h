@@ -13,7 +13,12 @@
  * Arena subsystem
  */
 class ServerLogger: sky::Subsystem {
+ protected:
+  void registerPlayer(sky::Player &player) override;
+  void unregisterPlayer(sky::Player &player) override;
 
+ public:
+  ServerLogger(sky::Arena *const arena);
 };
 
 class Server {
@@ -22,8 +27,8 @@ class Server {
 
   double uptime;
 
-  sky::ArenaInitializer start;
   sky::Arena arena;
+  ServerLogger logger;
 
   /**
    * Connection state.

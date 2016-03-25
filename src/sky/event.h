@@ -48,7 +48,7 @@ struct ArenaEvent {
 
 struct ServerEvent {
   enum class Type {
-    Start, Event, Stop
+    Start, Event, Stop, Connect, Disconnect
   } type;
 
  private:
@@ -68,6 +68,8 @@ struct ServerEvent {
                            const std::string &name);
   static ServerEvent Event(const ArenaEvent &arenaEvent);
   static ServerEvent Stop(const double uptime);
+  static ServerEvent Connect(const std::string &name);
+  static ServerEvent Disconnect(const std::string &name);
 };
 
 /**
