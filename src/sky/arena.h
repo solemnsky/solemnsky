@@ -8,6 +8,8 @@
 #include <list>
 #include <vector>
 
+struct ArenaEvent; // event.h
+
 namespace sky {
 
 /**
@@ -79,8 +81,7 @@ class Subsystem {
   virtual void join(Player &player) { }
   virtual void quit(Player &player) { }
 
-  virtual void nickChange(Player &player, const std::string &oldNick) { }
-  virtual void teamChange(Player &player, const Team oldTeam) { }
+  virtual void onEvent(const ArenaEvent &event) { }
 
   class Arena *const arena;
   const PID id; // ID the subsystem has allocated in the Arena
@@ -93,13 +94,6 @@ class Subsystem {
 /**
  * Arena.
  */
-
-enum class ArenaMode {
-  Lobby, // lobby, to make teams
-  Game, // playing tutorial
-  Scoring // viewing tutorial results
-};
-
 struct ArenaInitializer {
   ArenaInitializer() = default; // packing
   ArenaInitializer(const std::string &name);
@@ -174,8 +168,10 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   // subsystems
   friend class Subsystem;
   std::vector<Subsystem *> subsystems;
-  void forSubsystems(std::function<void(Subsystem &)> call);
+  void forSubsystems(std::function<void(Subsystem &)> call) const;
   void forPlayers(std::function<void(Player &)> call);
+
+  void logEvent(const ArenaEvent &event) const;
 
  public:
   Arena() = delete;

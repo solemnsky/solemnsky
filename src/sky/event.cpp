@@ -109,7 +109,7 @@ std::string ServerEvent::print() const {
   }
 }
 
-ServerEvent ServerEvent::Start(const unsigned char port,
+ServerEvent ServerEvent::Start(const Port port,
                                const std::string &name) {
   ServerEvent event(Type::Start);
   event.port = port;

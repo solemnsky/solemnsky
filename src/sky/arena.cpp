@@ -1,6 +1,5 @@
 #include "arena.h"
-#include <algorithm>
-#include "util/methods.h"
+#include "event.h"
 
 namespace sky {
 
@@ -150,12 +149,16 @@ std::string Arena::allocNickname(const std::string &requested) const {
         + std::to_string(smallestUnused(usedNumbers)) + ")";
 }
 
-void Arena::forSubsystems(std::function<void(Subsystem &)> call) {
+void Arena::forSubsystems(std::function<void(Subsystem &)> call) const {
   for (Subsystem *system : subsystems) call(*system);
 }
 
 void Arena::forPlayers(std::function<void(Player &)> call) {
   for (auto &player : players) call(player.second);
+}
+
+void Arena::logEvent(const ArenaEvent &event) const {
+  forSubsystems([&event](Subsystem *s) { s->onEvent(event); });
 }
 
 Arena::Arena(const ArenaInitializer &initializer) :
@@ -171,13 +174,16 @@ Arena::Arena(const ArenaInitializer &initializer) :
 void Arena::applyDelta(const ArenaDelta &delta) {
   switch (delta.type) {
     case ArenaDelta::Type::Quit: {
-      if (Player *player = getPlayer(delta.quit.get()))
+      if (Player *player = getPlayer(delta.quit.get())) {
+        logEvent(ArenaEvent::Quit(player->nickname));
         quitPlayer(*player);
+      }
       break;
     }
 
     case ArenaDelta::Type::Join: {
       joinPlayer(delta.join.get());
+      logEvent(ArenaEvent::Join(delta.join->nickname));
       break;
     }
 
@@ -191,10 +197,12 @@ void Arena::applyDelta(const ArenaDelta &delta) {
 
         player->applyDelta(playerDelta);
 
-        if (player->nickname != oldNick)
-          forSubsystems([&](Subsystem &s) { s.nickChange(*player, oldNick); });
+        if (player->nickname != oldNick) {
+          logEvent(ArenaEvent::NickChange(player->nickname, oldNick));
+        }
         if (player->team != oldTeam)
-          forSubsystems([&](Subsystem &s) { s.teamChange(*player, oldTeam); });
+          logEvent(ArenaEvent::TeamChange(player->nickname,
+                                          player->team, oldTeam));
       }
       break;
     }
