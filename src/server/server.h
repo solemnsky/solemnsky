@@ -29,6 +29,7 @@ class Server {
    * Events.
    */
   void logEvent(const ServerEvent &event);
+  void logArenaEvent(const ArenaEvent &event);
 
   /**
    * Network logic.
@@ -42,7 +43,7 @@ class Server {
   void processPacket(ENetPeer *client, const sky::ClientPacket &packet);
 
  public:
-  Server(const unsigned short port);
+  Server(const Port port, const sky::ArenaInitializer &initializer);
 
   void tick(float delta);
   bool running;

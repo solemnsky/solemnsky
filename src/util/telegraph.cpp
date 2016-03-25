@@ -28,7 +28,7 @@ UsageFlag::~UsageFlag() {
 /**
  * Host.
  */
-Host::Host(const HostType type, const unsigned short port) :
+Host::Host(const HostType type, const Port port) :
     host(nullptr) {
   switch (type) {
     case HostType::Server: {
@@ -75,7 +75,7 @@ void Host::unregisterPeer(ENetPeer *peer) {
   }
 }
 
-ENetPeer *Host::connect(const std::string &address, const unsigned short port) {
+ENetPeer *Host::connect(const std::string &address, const Port port) {
   ENetAddress eaddress;
   enet_address_set_host(&eaddress, address.c_str());
   eaddress.port = port;

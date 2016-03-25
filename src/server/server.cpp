@@ -6,16 +6,20 @@
  * Server.
  */
 
-void logEvent(const ServerEvent &event) {
+void Server::logEvent(const ServerEvent &event) {
   appLog(event.print(), LogOrigin::Server);
 }
 
-Server::Server(const unsigned short port) :
-    start("my fancy server"),
-    arena(start),
+void Server::logArenaEvent(const ArenaEvent &event) {
+  logEvent(ServerEvent::Event(event));
+}
+
+Server::Server(const Port port,
+               const sky::ArenaInitializer &initializer) :
+    arena(initializer),
     host(tg::HostType::Server, port),
     running(true) {
-  logEvent(ServerEvent::Start(port, start));
+  logEvent(ServerEvent::Start(port, initializer.name));
 }
 
 void Server::sendToClients(const sky::ServerPacket &packet) {
@@ -65,7 +69,6 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
 
         sky::ArenaDelta arenaDelta = sky::ArenaDelta::Delta(
             player->pid, delta);
-        logEvent(ServerEvent::Delta(arenaDelta));
         arena.applyDelta(arenaDelta);
         sendToClients(ServerPacket::DeltaArena(arenaDelta));
         break;
@@ -107,7 +110,7 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
       sky::Player &newPlayer = arena.connectPlayer(*packet.stringData);
       client->data = &newPlayer;
 
-      logEvent(Server)
+      logEvent(Server, <#initializer#>)
       appLog("Client " + std::to_string(newPlayer.pid)
                  + " connected as \"" + *packet.stringData + "\".",
              LogOrigin::Server);
@@ -160,7 +163,7 @@ void Server::tick(float delta) {
 }
 
 int main() {
-  Server server(4242);
+  Server server(4242, <#initializer#>);
   sf::Clock clock;
 
   while (server.running) {

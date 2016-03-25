@@ -39,7 +39,7 @@ class Host {
 
  public:
   Host(const HostType type,
-       const unsigned short port = 0);
+       const Port port = 0);
   ~Host();
 
   // uncopyable + unassignable
@@ -50,7 +50,7 @@ class Host {
    * API.
    */
   std::vector<ENetPeer *> peers;
-  ENetPeer *connect(const std::string &address, const unsigned short port);
+  ENetPeer *connect(const std::string &address, const Port port);
   void disconnect(ENetPeer *);
   void transmit(ENetPeer *const peer,
                 unsigned char *data, size_t size,

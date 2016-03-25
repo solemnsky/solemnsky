@@ -256,7 +256,16 @@ class Networked {
 };
 
 /**
- * Type synonyms for the game.
+ * Types and type synonyms for the game.
  */
 typedef unsigned int PID;
 typedef unsigned char Team;
+
+typedef unsigned short Port;
+
+enum class ArenaMode {
+  Lobby, // lobby, to make teams
+  Game, // playing tutorial
+  Scoring // viewing tutorial results
+};
+
