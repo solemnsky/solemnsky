@@ -16,27 +16,26 @@ namespace sky {
  */
 struct PlaneGraphics {
   PlaneGraphics(const Plane &plane);
-
   const Plane &plane;
 
-  bool wasDead;
-  Angle roll;
   bool orientation;
   float flipState, rollState; // these two values contribute to the roll
-  Clamped life;
-
-  void onRespawn();
+  Angle roll() const;
 
   void tick(const float delta);
   void kill();
   void spawn();
 };
 
+/**
+ * Subsystem, attaching additional graphics-related state to Players and
+ * exposing top-level methods for rendering the game.
+ */
 class SkyRender: public Subsystem {
  private:
   const Sky &sky;
   std::map<PID, PlaneGraphics> graphics;
-  const ui::SpriteSheet sheet;
+  const ui::SpriteSheet planeSheet;
 
   /**
    * Render submethods.

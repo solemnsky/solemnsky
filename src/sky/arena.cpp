@@ -106,8 +106,15 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode) {
  * Subsystem.
  */
 
+SubsystemCaller::SubsystemCaller(Arena &arena) : arena(arena) { }
+
+void SubsystemCaller::kill(Player &player) {
+  for (auto s : arena.subsystems) s->onKill(player);
+}
+
 Subsystem::Subsystem(Arena &arena) :
     arena(arena),
+    caller(arena.caller),
     id(PID(arena.subsystems.size())) {
   arena.subsystems.push_back(this);
 }
@@ -169,12 +176,17 @@ void Arena::onSpawn(Player &player, const PlaneTuning &tuning,
   for (auto s : subsystems) s->onSpawn(player, tuning, pos, rot);
 }
 
+void Arena::onDie(Player &player) {
+  for (auto s : subsystems) s->onKill(player);
+}
+
 void Arena::onEvent(const ArenaEvent &event) const {
   for (auto s : subsystems) s->onEvent(event);
 }
 
 Arena::Arena(const ArenaInitializer &initializer) :
     Networked(initializer),
+    caller(*this),
     name(initializer.name),
     motd(initializer.motd),
     mode(initializer.mode) {
