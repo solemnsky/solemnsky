@@ -1,6 +1,6 @@
 #include "sky/plane.h"
 #include "client/elements/style.h"
-#include "render.h"
+#include "skyrender.h"
 #include "sky/sky.h"
 #include "util/methods.h"
 #include "util/methods.h"

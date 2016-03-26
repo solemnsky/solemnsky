@@ -3,7 +3,7 @@
  */
 #pragma once
 #include "multiplayershared.h"
-#include "client/subsystem/render.h"
+#include "client/skyrender.h"
 #include "client/ui/widgets/widgets.h"
 
 /**

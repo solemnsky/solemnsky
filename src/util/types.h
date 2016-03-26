@@ -258,10 +258,13 @@ class Networked {
 /**
  * Types and type synonyms for the game.
  */
-typedef unsigned int PID;
-typedef unsigned char Team;
 
-typedef unsigned short Port;
+typedef unsigned int PID; // ID type for various things in the game
+typedef unsigned short Port; // network port
+
+namespace sky {
+
+typedef unsigned char Team;
 
 enum class ArenaMode {
   Lobby, // lobby, to make teams
@@ -269,3 +272,4 @@ enum class ArenaMode {
   Scoring // viewing tutorial results
 };
 
+}

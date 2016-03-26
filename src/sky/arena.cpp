@@ -287,6 +287,14 @@ Player *Arena::getPlayer(const PID pid) {
   return nullptr;
 }
 
+void Arena::forPlayers(std::function<void(const Player &)> f) const {
+  for (const auto &pair : players) f(pair.second);
+}
+
+void Arena::forPlayers(std::function<void(Player &)> f) {
+  for (const auto &pair : players) f(pair.second);
+}
+
 void Arena::tick(const float delta) {
   for (auto s : subsystems) s->onTick(delta);
 }

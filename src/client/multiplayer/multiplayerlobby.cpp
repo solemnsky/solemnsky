@@ -15,7 +15,6 @@ MultiplayerLobby::MultiplayerLobby(
     chatInput(style.base.normalTextEntry,
               style.multi.chatPos, "[enter to chat]") {
   areChildren({&specButton, &redButton, &blueButton, &chatInput});
-  connection.eventLog.push_back(ClientEvent::LobbyStart());
 }
 
 void MultiplayerLobby::tick(float delta) {
@@ -36,16 +35,15 @@ void MultiplayerLobby::render(ui::Frame &f) {
 
   f.drawText(
       style.multi.playerListPos, [&](ui::TextFrame &tf) {
-        for (const sky::Player &player : connection.arena->players) {
+        connection.arena->forPlayers([&](const sky::Player &player) {
           tf.setColor(sf::Color::Black);
-
           if (player.team == 1) tf.setColor(sf::Color::Red);
           if (player.team == 2) tf.setColor(sf::Color::Blue);
-
           tf.drawString(player.nickname);
           tf.breakLine();
-        }
+        });
       }, sf::Color::White, style.multi.playerListText);
+
   ui::Control::render(f);
 }
 

@@ -4,7 +4,7 @@
 #pragma once
 #include "client/elements/elements.h"
 #include "sky/sky.h"
-#include "client/render/render.h"
+#include "client/skyrender.h"
 #include "gamecontrols.h"
 
 class Tutorial : public Game {

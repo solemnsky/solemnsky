@@ -3,11 +3,29 @@
  */
 #pragma once
 #include "client/ui/control.h"
-#include "sky/event.h"
 #include "util/telegraph.h"
+#include "sky/event.h"
 #include "sky/arena.h"
 #include "sky/protocol.h"
 #include "client/elements/elements.h"
+
+/**
+ * Particular arena subsystem for the multiplayer client.
+ */
+class MultiplayerSubsystem: public sky::Subsystem {
+ private:
+  MultiplayerConnection &connection;
+
+ protected:
+  void registerPlayer(sky::Player &player) override;
+  void unregisterPlayer(sky::Player &player) override;
+
+  void onEvent(const ArenaEvent &event) override;
+
+ public:
+  MultiplayerSubsystem(Arena &arena, MultiplayerConnection &connection);
+
+};
 
 /**
  * A connection to a server; manages the enet connection state, follows the
@@ -15,8 +33,9 @@
  */
 class MultiplayerConnection {
  private:
-  ClientShared &shared;
+  friend class MultiplayerSubsystem;
 
+  ClientShared &shared;
   ENetEvent event;
 
   tg::Telegraph<sky::ServerPacket> telegraph;
@@ -24,6 +43,9 @@ class MultiplayerConnection {
   Cooldown disconnectTimeout;
 
   void processPacket(const sky::ServerPacket &packet);
+
+  void logEvent(const ClientEvent &event);
+  void logArenaEvent(const ArenaEvent &event);
 
  public:
   MultiplayerConnection(
@@ -36,14 +58,20 @@ class MultiplayerConnection {
    */
   tg::Host host;
   ENetPeer *server;
-  bool connected; // connected to the arena
-  bool disconnected, disconnecting;
+  bool disconnecting, // trying to disconnect
+      disconnected; // it's over, close the multiplayer client
 
   /**
-   * Game state.
+   * Arena and subsystems.
    */
-  sky::Player *myPlayer;
+  void initializeArena(
+      const PID pid,
+      const sky::ArenaInitializer &arenaInit,
+      const sky::SkyInitializer &skyInit);
   optional<sky::Arena> arena;
+  optional<sky::Sky> sky;
+  optional<MultiplayerSubsystem> multiplayerSubsystem;
+  sky::Player *myPlayer;
   std::vector<ClientEvent> eventLog;
 
   /**
@@ -53,7 +81,7 @@ class MultiplayerConnection {
   optional<sky::ServerPacket> poll(const float delta);
   void disconnect();
 
-  void requestTeamChange(const Team team);
+  void requestTeamChange(const sky::Team team);
 };
 
 /**

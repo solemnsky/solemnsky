@@ -1,6 +1,32 @@
 #include "multiplayershared.h"
 
 /**
+ * MultiplayerSubsystem.
+ */
+
+
+void MultiplayerSubsystem::registerPlayer(sky::Player &player) {
+  player.data.push_back(nullptr);
+}
+
+void MultiplayerSubsystem::unregisterPlayer(sky::Player &player) {
+
+}
+
+void MultiplayerSubsystem::onEvent(const ArenaEvent &event) {
+  connection.logArenaEvent(event);
+}
+
+MultiplayerSubsystem::MultiplayerSubsystem(
+    sky::Arena &arena,
+    MultiplayerConnection &connection) :
+    sky::Subsystem(arena), connection(connection) {
+  arena.forPlayers([&](sky::Player &player) {
+    registerPlayer(player);
+  });
+}
+
+/**
  * MultiplayerConnection.
  */
 
@@ -10,11 +36,11 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
   if (!myPlayer) {
     // waiting for the arena connection request to be accepted
     if (packet.type == ServerPacket::Type::Init) {
-      arena.emplace(packet.arenaInit.get());
-      myPlayer = arena->getPlayer(packet.pid.get());
+      initializeArena(
+          packet.pid.get(), packet.arenaInit.get(), packet.skyInit.get());
       appLog("Joined arena!", LogOrigin::Client);
-      connected = true;
-      eventLog.push_back(sky::ClientEvent::Connect(
+
+      logEvent(ClientEvent::Connect(
           "(haven't implemented server names lol)",
           tg::printAddress(host.peers[0]->address)));
     }
@@ -32,16 +58,13 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
         case ServerMessage::Type::Chat: {
           if (sky::Player *player = arena->getPlayer(
               packet.message->from.get())) {
-            eventLog.push_back(sky::ClientEvent::Chat(
+            logArenaEvent(ArenaEvent::Chat(
                 player->nickname, packet.message->contents));
-          } else {
-            eventLog.push_back(sky::ClientEvent::Chat(
-                "<unknown>", packet.message->contents));
           }
           break;
         }
         case ServerMessage::Type::Broadcast: {
-          eventLog.push_back(sky::ClientEvent::Broadcast(
+          logArenaEvent(ArenaEvent::Broadcast(
               packet.message->contents));
           break;
         }
@@ -63,6 +86,14 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
   }
 }
 
+void MultiplayerConnection::logEvent(const ClientEvent &event) {
+  eventLog.push_back(event);
+}
+
+void MultiplayerConnection::logArenaEvent(const ArenaEvent &event) {
+  eventLog.push_back(ClientEvent::Event(event));
+}
+
 MultiplayerConnection::MultiplayerConnection(
     ClientShared &shared,
     const std::string &serverHostname,
@@ -77,6 +108,16 @@ MultiplayerConnection::MultiplayerConnection(
     connected(false),
     myPlayer(nullptr) {
   host.connect(serverHostname, serverPort);
+}
+
+void MultiplayerConnection::initializeArena(
+    const PID pid,
+    const sky::ArenaInitializer &arenaInit,
+    const sky::SkyInitializer &skyInit) {
+  arena.emplace(arenaInit);
+  sky.emplace(arena, skyInit);
+  multiplayerSubsystem.emplace(arena);
+  myPlayer = arena->getPlayer(pid);
 }
 
 void MultiplayerConnection::transmit(const sky::ClientPacket &packet) {
