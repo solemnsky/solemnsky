@@ -106,10 +106,10 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode) {
  * Subsystem.
  */
 
-Subsystem::Subsystem(Arena *const arena) :
+Subsystem::Subsystem(Arena &arena) :
     arena(arena),
-    id(PID(arena->subsystems.size())) {
-  arena->subsystems.push_back(this);
+    id(PID(arena.subsystems.size())) {
+  arena.subsystems.push_back(this);
 }
 
 /**

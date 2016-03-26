@@ -62,7 +62,7 @@ class Sky: public Subsystem {
                const sf::Vector2f &pos, const float rot) override;
 
  public:
-  Sky(class Arena *parent, const SkyInitializer &initializer);
+  Sky(class Arena &parent, const SkyInitializer &initializer);
   ~Sky();
 
   const MapName mapName;

@@ -15,7 +15,7 @@ class SkyTest: public testing::Test {
  */
 TEST_F(SkyTest, SubsystemTest) {
   sky::Arena arena(sky::ArenaInitializer("my arena"));
-  sky::Sky sky(&arena, sky::SkyInitializer("some map"));
+  sky::Sky sky(arena, sky::SkyInitializer("some map"));
 
   {
     sky::Player &player = arena.connectPlayer("some name");
@@ -36,7 +36,7 @@ TEST_F(SkyTest, SubsystemTest) {
  */
 TEST_F(SkyTest, InitializerTest) {
   sky::Arena serverArena(sky::ArenaInitializer("my arena"));
-  sky::Sky serverSky(&serverArena, sky::SkyInitializer("some map"));
+  sky::Sky serverSky(serverArena, sky::SkyInitializer("some map"));
 
   {
     sky::Player &player0 = serverArena.connectPlayer("some guy");
@@ -45,7 +45,7 @@ TEST_F(SkyTest, InitializerTest) {
   }
 
   sky::Arena clientArena(serverArena.captureInitializer());
-  sky::Sky clientSky(&clientArena, serverSky.captureInitializer());
+  sky::Sky clientSky(clientArena, serverSky.captureInitializer());
 
   {
     sky::Player *player0(clientArena.getPlayer(0)),
@@ -67,10 +67,10 @@ TEST_F(SkyTest, InitializerTest) {
  */
 TEST_F(SkyTest, DeltaTest) {
   sky::Arena serverArena(sky::ArenaInitializer("my arena"));
-  sky::Sky serverSky(&serverArena, sky::SkyInitializer("some map"));
+  sky::Sky serverSky(serverArena, sky::SkyInitializer("some map"));
 
   sky::Arena clientArena(serverArena.captureInitializer());
-  sky::Sky clientSky(&clientArena, serverSky.captureInitializer());
+  sky::Sky clientSky(clientArena, serverSky.captureInitializer());
 
   sky::ArenaDelta arenaDelta;
   {
