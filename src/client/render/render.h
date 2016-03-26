@@ -28,10 +28,13 @@ struct PlaneGraphics {
   void onRespawn();
 
   void tick(const float delta);
+  void kill();
+  void spawn();
 };
 
 class SkyRender: public Subsystem {
  private:
+  const Sky &sky;
   std::map<PID, PlaneGraphics> graphics;
   const ui::SpriteSheet sheet;
 
@@ -56,7 +59,7 @@ class SkyRender: public Subsystem {
   void onTick(const float delta) override;
 
  public:
-  SkyRender(const Arena *arena, const Sky *sky);
+  SkyRender(Arena &arena, Sky &sky);
   ~SkyRender();
 
   /**

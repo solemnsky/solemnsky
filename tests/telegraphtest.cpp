@@ -73,7 +73,7 @@ TEST_F(TelegraphTest, Protocol) {
     const optional<ClientPacket> &packet =
         serverTelegraph.receive(event.packet);
 
-    ASSERT_TRUE((bool) packet);
+    ASSERT_EQ(bool(packet), true);
     EXPECT_EQ(packet->type, ClientPacket::Type::ReqJoin);
     EXPECT_EQ(*packet->stringData, "nickname");
   }
@@ -86,9 +86,9 @@ TEST_F(TelegraphTest, Protocol) {
     const optional<ServerPacket> &packet =
         clientTelegraph.receive(event.packet);
 
-    ASSERT_TRUE((bool) packet);
+    ASSERT_EQ(bool(packet), true);
     EXPECT_EQ(packet->type, ServerPacket::Type::Message);
-    ASSERT_TRUE((bool) packet->message);
+    ASSERT_EQ(bool(packet->message), true);
     EXPECT_EQ(packet->message->contents, "some broadcast");
   }
 
@@ -99,7 +99,7 @@ TEST_F(TelegraphTest, Protocol) {
     const optional<ClientPacket> &packet =
         serverTelegraph.receive(event.packet);
 
-    ASSERT_TRUE((bool) packet);
+    ASSERT_EQ(bool(packet), true);
     EXPECT_EQ(packet->type, ClientPacket::Type::ReqSpawn);
   }
 }
@@ -117,6 +117,6 @@ TEST_F(TelegraphTest, Invariant) {
     event = processHosts(server, client);
     const optional<ServerPacket> &packet =
         clientTelegraph.receive(event.packet);
-    EXPECT_FALSE((bool) packet);
+    ASSERT_EQ(bool(packet), false);
   }
 }

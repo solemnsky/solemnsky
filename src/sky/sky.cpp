@@ -51,8 +51,7 @@ void Sky::onSpawn(Player &player,
   getPlane(player).spawn(tuning, pos, rot);
 }
 
-
-Sky::Sky(Arena *arena, const SkyInitializer &initializer) :
+Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
     Subsystem(arena),
     mapName(initializer.mapName),
     map(mapName),
@@ -62,7 +61,7 @@ Sky::Sky(Arena *arena, const SkyInitializer &initializer) :
     planes.emplace(pair.first, Plane(this, pair.second));
 
   // register players and guarantee that every player has a plane
-  for (auto &pair : arena->players) registerPlayer(pair.second);
+  for (auto &pair : arena.players) registerPlayer(pair.second);
 }
 
 Sky::~Sky() {

@@ -3,11 +3,9 @@
 #include "util/methods.h"
 
 /**
- * The Arena abstraction.
+ * Arena is the backbone of a multiplayer server.
  */
-class ArenaTest: public testing::Test {
- public:
-};
+class ArenaTest: public testing::Test { };
 
 /**
  * Players can be connected and nicknames / PIDs are allocated correctly.
@@ -78,54 +76,5 @@ TEST_F(ArenaTest, DeltaTest) {
 
   clientArena.applyDelta(sky::ArenaDelta::Quit(0));
   EXPECT_EQ(bool(clientArena.getPlayer(0)), false);
-}
-
-/**
- * Subsystems work correctly.
- */
-class MySubsystem: public sky::Subsystem {
- public:
-  std::map<PID, float> myData;
-
- protected:
-  void registerPlayer(sky::Player &player) override {
-    myData.emplace(player.pid, 0);
-    player.data.push_back(&myData.at(player.pid));
-  }
-
-  void unregisterPlayer(sky::Player &player) override {
-    myData.erase(player.pid);
-  }
-
-  void onTick(const float delta) override {
-    for (auto &x : myData) x.second += delta;
-  }
-
- public:
-  MySubsystem(sky::Arena *arena) : sky::Subsystem(arena) {
-    for (auto &player : arena->players) registerPlayer(player.second);
-  }
-
-  float getTimeData(const sky::Player &player) {
-    return getPlayerData<float>(player);
-  }
-};
-
-TEST_F(ArenaTest, SubsystemTest) {
-  sky::Arena arena(sky::ArenaInitializer("my arena"));
-  MySubsystem subsystem(&arena);
-
-  sky::Player &player1 = arena.connectPlayer("player number 1");
-  EXPECT_EQ(subsystem.getTimeData(player1), 0);
-  arena.tick(0.5);
-  EXPECT_EQ(subsystem.getTimeData(player1), 0.5);
-
-  sky::Arena remoteArena(arena.captureInitializer());
-  MySubsystem remoteSubsystem(&remoteArena);
-
-  sky::Player &remotePlayer1 = *remoteArena.getPlayer(0);
-  EXPECT_EQ(remoteSubsystem.getTimeData(remotePlayer1), 0);
-  remoteArena.tick(0.5);
-  EXPECT_EQ(remoteSubsystem.getTimeData(remotePlayer1), 0.5);
 }
 

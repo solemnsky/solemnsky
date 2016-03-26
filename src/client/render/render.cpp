@@ -24,16 +24,10 @@ PlaneGraphics::PlaneGraphics(const Plane &plane) :
 }
 
 void PlaneGraphics::onRespawn() {
-  orientation = Angle(plane.vital->state.rot + 90) > 180;
-  flipState = 0;
-  rollState = 0;
-  life = 1;
-  wasDead = false;
 }
 
 void PlaneGraphics::tick(const float delta) {
   if (plane.vital) {
-    if (wasDead) onRespawn();
     const auto &vital = plane.vital;
 
     // potentially switch orientation
@@ -52,11 +46,18 @@ void PlaneGraphics::tick(const float delta) {
              style.skyRender.rollSpeed * delta);
 
     roll = flipComponent + style.skyRender.rollAmount * rollState;
-
-  } else {
-    life -= style.skyRender.deathRate * delta;
-    wasDead = true;
   }
+}
+
+void PlaneGraphics::kill() {
+
+}
+
+void PlaneGraphics::spawn() {
+  orientation = Angle(plane.vital->state.rot + 90) > 180;
+  flipState = 0;
+  rollState = 0;
+  life = 1;
 }
 
 /**
@@ -108,11 +109,12 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
           f.withTransform(
               sf::Transform().scale(state.afterburner, state.afterburner),
               [&]() {
-                f.drawRect(rndrParam.afterburnArea, sf::Color::Red);
+                f.drawRect(style.skyRender.afterburnArea, sf::Color::Red);
               });
 
           sheet.drawIndexAtRoll(
-              f, sf::Vector2f(rndrParam.spriteSize, rndrParam.spriteSize),
+              f, sf::Vector2f(style.skyRender.spriteSize,
+                              style.skyRender.spriteSize),
               graphics.roll);
         });
 
@@ -122,15 +124,15 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
       renderBars(
           f,
           {mkBar(state.throttle,
-                 state.stalled ? rndrParam.throttleStall
-                               : rndrParam.throttle),
+                 state.stalled ? style.skyRender.throttleStall
+                               : style.skyRender.throttle),
            mkBar(state.stalled
                  ? clamp<float>(0, 1, ((state.forwardVelocity()) / tuning.stall
                          .threshold))
                  : (state.airspeed - airspeedStall) / (1 - airspeedStall),
-                 rndrParam.health),
-           mkBar(state.energy, rndrParam.energy)},
-          rndrParam.barArea
+                 style.skyRender.health),
+           mkBar(state.energy, style.skyRender.energy)},
+          style.skyRender.barArea
       );
     });
   } else {
@@ -138,12 +140,21 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
   }
 }
 
-SkyRender::SkyRender(const Arena *arena, const Sky *sky) :
+SkyRender::SkyRender(Arena &arena, Sky &sky) :
     Subsystem(arena), sky(sky),
     sheet(ResID::PlayerSheet) {
 }
 
 SkyRender::~SkyRender() {
+}
+
+
+void SkyRender::registerPlayer(Player &player) {
+
+}
+
+void SkyRender::unregisterPlayer(Player &player) {
+
 }
 
 

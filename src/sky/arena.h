@@ -96,12 +96,12 @@ class Subsystem {
                        const sf::Vector2f &pos, const float rot) { };
   virtual void onEvent(const ArenaEvent &event) { }
 
-  class Arena *const arena;
+  class Arena &arena;
   const PID id; // ID the render has allocated in the Arena
 
  public:
   Subsystem() = delete;
-  Subsystem(Arena *const arena);
+  Subsystem(Arena &arena);
 };
 
 /**
