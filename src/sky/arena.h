@@ -64,7 +64,7 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
   PlayerDelta zeroDelta() const;
 
   // game API
-  void doAction(const Action &action);
+  void doAction(const Action action, const bool state);
   void spawn(const PlaneTuning &tuning,
              const sf::Vector2f &pos, const float rot);
 };
@@ -107,7 +107,8 @@ class Subsystem {
   virtual void onTick(const float delta) { }
   virtual void onJoin(Player &player) { }
   virtual void onQuit(Player &player) { }
-  virtual void onAction(Player &player, const Action &action) { }
+  virtual void onAction(Player &player,
+                        const Action action, const bool state) { }
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
                        const sf::Vector2f &pos, const float rot) { };
   virtual void onEvent(const ArenaEvent &event) { }
@@ -202,7 +203,7 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   friend class SubsystemCaller;
 
   // subsystem triggers, for Arena / Player to call
-  void onAction(Player &player, const Action &action);
+  void onAction(Player &player, const Action action, const bool state);
   void onSpawn(Player &player, const PlaneTuning &tuning,
                const sf::Vector2f &pos, const float rot);
   void onEvent(const ArenaEvent &event) const;

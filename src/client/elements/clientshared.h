@@ -2,6 +2,7 @@
  * The place where the whole client converges.
  */
 #pragma once
+#include "sky/plane.h"
 #include "client/ui/control.h"
 #include "settings.h"
 
@@ -60,19 +61,17 @@ public:
   Settings settings;
   double uptime;
 
-  /**
-   * The game.
-   */
+  // the game
   std::unique_ptr<class Game> game;
 
-  /**
-   * UI state, read-only by elements.
-  */
+  // UI state, read-only by elements.
   ClientUiState ui;
 
-  /**
-   * Relays to client. This seems to be useful enough to justify vioating DRY.
-   */
+  // query key bindings
+  optional<sky::Action> actionFromControl(
+      const sf::Event &event) const;
+
+  // Relays to client. This seems to be useful enough to justify violating DRY.
   void beginGame(std::unique_ptr<Game> &&game);
   void blurGame();
   void focusGame();

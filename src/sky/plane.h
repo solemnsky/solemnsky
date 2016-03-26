@@ -11,30 +11,18 @@ namespace sky {
 class Sky;
 
 /**
- * Clients, through their user-specified key bindings, can generate
- * sky::Actions. These actions are passed into the sky through
- * sky::Plane::doAction.
+ * Vectors of action to control a Plane. Passed along with a state,
+ * corresponding to whether the action was begun or ended.
  */
-struct Action {
-  enum class Type {
-    Thrust,
-    Reverse,
-    Left,
-    Right,
-    Primary,
-    Secondary,
-    Special,
-    Suicide
-  };
-
-  Action(const Type type, bool value = false);
-  Action() = delete;
-
-  Type type;
-  bool value;
-
-  std::string show() const;
-  static optional<Action> read(const std::string &str);
+enum class Action {
+  Thrust,
+  Reverse,
+  Left,
+  Right,
+  Primary,
+  Secondary,
+  Special,
+  Suicide
 };
 
 /**
@@ -201,22 +189,6 @@ class Plane {
   bool leftState, rightState, thrustState, revState;
   void syncCtrls();
 
-  /**
-   * Internal methods.
-   */
-  friend class Sky;
-  void beforePhysics();
-  void afterPhysics(float delta);
-
-  void spawn(const PlaneTuning &tuning,
-             const sf::Vector2f pos,
-             const float rot);
-  void doAction(const Action &action);
-
-  void applyDelta(const PlaneDelta &delta);
-  PlaneInitializer captureInitializer() const;
-  PlaneDelta captureDelta();
-
  public:
   Plane() = delete;
   Plane(Sky &parent, class Player &player);
@@ -224,6 +196,21 @@ class Plane {
         const PlaneInitializer &initializer);
 
   optional<PlaneVital> vital;
+
+  /**
+   * Internal methods.
+   */
+  void beforePhysics();
+  void afterPhysics(float delta);
+
+  void spawn(const PlaneTuning &tuning,
+             const sf::Vector2f pos,
+             const float rot);
+  void doAction(const Action &action, bool state);
+
+  void applyDelta(const PlaneDelta &delta);
+  PlaneInitializer captureInitializer() const;
+  PlaneDelta captureDelta();
 };
 
 }

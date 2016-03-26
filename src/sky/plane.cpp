@@ -307,34 +307,34 @@ void Plane::spawn(const PlaneTuning &tuning,
   newlyAlive = true;
 }
 
-void Plane::doAction(const Action &action) {
-  switch (action.type) {
-    case Action::Type::Thrust: {
-      thrustState = action.value;
+void Plane::doAction(const Action &action, const bool state) {
+  switch (action) {
+    case Action::Thrust: {
+      thrustState = state;
       break;
     }
-    case Action::Type::Reverse: {
-      revState = action.value;
+    case Action::Reverse: {
+      revState = state;
       break;
     }
-    case Action::Type::Left: {
-      leftState = action.value;
+    case Action::Left: {
+      leftState = state;
       break;
     }
-    case Action::Type::Right: {
-      rightState = action.value;
+    case Action::Right: {
+      rightState = state;
       break;
     }
-    case Action::Type::Primary: {
+    case Action::Primary: {
       break;
     }
-    case Action::Type::Secondary: {
+    case Action::Secondary: {
       break;
     }
-    case Action::Type::Special: {
+    case Action::Special: {
       break;
     }
-    case Action::Type::Suicide: {
+    case Action::Suicide: {
       vital.reset();
       parent.arena.caller.kill(player);
       newlyAlive = false;
