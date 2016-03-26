@@ -21,6 +21,5 @@ class MultiplayerScoring: public MultiplayerView {
   void signalRead() override;
   void signalClear() override;
 
-  void onPacket(const sky::ServerPacket &packet) override;
   void onChangeSettings(const SettingsDelta &settings) override;
 };

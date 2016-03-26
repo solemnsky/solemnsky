@@ -56,14 +56,13 @@ void Multiplayer::doExit() {
 }
 
 void Multiplayer::tick(float delta) {
-  optional<sky::ServerPacket> packet = connection.poll(delta);
+  connection.poll(delta);
   if (connection.disconnected) quitting = true;
   if (connection.disconnecting) return;
 
-  if (connection.connected) {
-    if (!view or view->target != connection.arena.mode) view = mkView();
+  if (connection.arena) {
+    if (!view or view->target != connection.arena->mode) view = mkView();
     view->tick(delta);
-    if (packet) view->onPacket(*packet);
   }
 }
 

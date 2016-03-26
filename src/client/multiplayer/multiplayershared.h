@@ -78,7 +78,7 @@ class MultiplayerConnection {
    * Methods.
    */
   void transmit(const sky::ClientPacket &packet);
-  optional<sky::ServerPacket> poll(const float delta);
+  void poll(const float delta);
   void disconnect();
 
   void requestTeamChange(const sky::Team team);
@@ -105,6 +105,5 @@ class MultiplayerView: public ui::Control {
 
   const sky::ArenaMode target; // the target of this view
 
-  virtual void onPacket(const sky::ServerPacket &packet) = 0;
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
 };

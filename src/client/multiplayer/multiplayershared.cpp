@@ -124,7 +124,7 @@ void MultiplayerConnection::transmit(const sky::ClientPacket &packet) {
   if (server) telegraph.transmit(host, server, packet);
 }
 
-optional<sky::ServerPacket> MultiplayerConnection::poll(const float delta) {
+void MultiplayerConnection::poll(const float delta) {
   if (disconnected) return {};
 
   event = host.poll();
@@ -156,19 +156,16 @@ optional<sky::ServerPacket> MultiplayerConnection::poll(const float delta) {
       appLog("Asking to join arena...", LogOrigin::Client);
       transmit(sky::ClientPacket::ReqJoin(shared.settings.nickname));
       askedConnection = true;
-      return {};
+      return;
     }
 
     if (event.type == ENET_EVENT_TYPE_RECEIVE) {
       if (const auto reception = telegraph.receive(event.packet)) {
         // connected to enet, receiving a protocol packet
         processPacket(*reception);
-        return *reception;
       }
     }
   }
-
-  return {};
 }
 
 void MultiplayerConnection::disconnect() {
