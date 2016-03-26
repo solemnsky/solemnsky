@@ -38,12 +38,13 @@ struct SkyDelta: public VerifyStructure {
   std::map<PID, PlaneDelta> planes;
 };
 
-/*
+/**
  * A Sky is the state of a game being played. It is held by an Arena when a
  * game is under way.
  */
 class Sky: public Subsystem {
  private:
+  friend struct Plane;
   std::map<PID, Plane> planes;
   Plane *planeFromPID(const PID pid);
 
@@ -75,7 +76,7 @@ class Sky: public Subsystem {
   SkyInitializer captureInitializer();
   SkyDelta collectDelta();
   void applyDelta(const SkyDelta &delta);
-  Plane &getPlane(const Player &player);
+  Plane &getPlane(const Player &player) const;
 };
 
 }

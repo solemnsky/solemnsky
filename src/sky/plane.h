@@ -163,15 +163,14 @@ struct PlaneDelta: public VerifyStructure {
  */
 class PlaneVital {
  private:
-  Sky *const parent;
-  Physics *const physics;
+  Sky &parent;
+  Physics &physics;
   b2Body *body;
 
  public:
-  PlaneVital(Sky *parent,
+  PlaneVital(Sky &parent,
              const PlaneTuning &tuning,
              const PlaneState &state);
-  PlaneVital(PlaneVital &&plane);
   ~PlaneVital();
 
   PlaneVital(const PlaneVital &) = delete;
@@ -191,7 +190,9 @@ class PlaneVital {
  */
 class Plane {
  private:
-  Sky *const parent;
+  Sky &parent;
+  class Player &player; // associated player
+
   bool newlyAlive;
 
   /**
@@ -218,8 +219,9 @@ class Plane {
 
  public:
   Plane() = delete;
-  Plane(Sky *parent);
-  Plane(Sky *parent, const PlaneInitializer &initializer);
+  Plane(Sky &parent, class Player &player);
+  Plane(Sky &parent, class Player &player,
+        const PlaneInitializer &initializer);
 
   optional<PlaneVital> vital;
 };

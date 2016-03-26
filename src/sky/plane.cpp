@@ -1,5 +1,5 @@
 #include <cmath>
-
+#include "arena.h"
 #include "plane.h"
 #include "sky.h"
 #include "util/methods.h"
@@ -146,45 +146,37 @@ bool PlaneDelta::verifyStructure() const {
  * PlaneVital.
  */
 
-PlaneVital::PlaneVital(Sky *parent,
+PlaneVital::PlaneVital(Sky &parent,
                        const PlaneTuning &tuning,
                        const PlaneState &state) :
-    parent(parent), physics(&parent->physics),
+    parent(parent), physics(parent.physics),
     tuning(tuning), state(state) {
-  body = physics->rectBody(tuning.hitbox);
+  body = physics.rectBody(tuning.hitbox);
   body->SetAngularVelocity(toRad(state.rot));
-  body->SetLinearVelocity(physics->toPhysVec(state.vel));
+  body->SetLinearVelocity(physics.toPhysVec(state.vel));
   body->SetGravityScale(state.stalled ? 1 : 0);
 }
 
-PlaneVital::PlaneVital(PlaneVital &&plane) :
-    parent(plane.parent),
-    physics(plane.physics),
-    body(plane.body),
-    state(plane.state) {
-  plane.body = nullptr;
-}
-
 PlaneVital::~PlaneVital() {
-  physics->clrBody(body);
+  physics.clrBody(body);
 };
 
 void PlaneVital::writeToBody() {
   // TODO: use proper motors / motor joints for this instead of impulses
-  physics->approachRotVel(body, state.rotvel);
-  physics->approachVel(body, state.vel);
+  physics.approachRotVel(body, state.rotvel);
+  physics.approachVel(body, state.vel);
   body->SetGravityScale(state.stalled ? 1 : 0);
 
   body->SetTransform(
-      physics->toPhysVec(state.pos),
+      physics.toPhysVec(state.pos),
       toRad(state.rot));
 }
 
 void PlaneVital::readFromBody() {
-  state.pos = physics->toGameVec(body->GetPosition());
+  state.pos = physics.toGameVec(body->GetPosition());
   state.rot = toDeg(body->GetAngle());
   state.rotvel = toDeg(body->GetAngularVelocity());
-  state.vel = physics->toGameVec(body->GetLinearVelocity());
+  state.vel = physics.toGameVec(body->GetLinearVelocity());
 }
 
 void PlaneVital::tick(const float delta) {
@@ -293,14 +285,16 @@ void Plane::afterPhysics(float delta) {
   }
 }
 
-Plane::Plane(Sky *parent) :
+Plane::Plane(Sky &parent, Player &player) :
     parent(parent),
+    player(player),
     newlyAlive(false),
     leftState(false), rightState(false),
     thrustState(false), revState(false) { }
 
-Plane::Plane(Sky *parent, const PlaneInitializer &initializer) :
-    Plane(parent) {
+Plane::Plane(Sky &parent, Player &player,
+             const PlaneInitializer &initializer) :
+    Plane(parent, player) {
   if (initializer.spawn)
     vital.emplace(parent, initializer.spawn->first, initializer.spawn->second);
 }
@@ -342,6 +336,7 @@ void Plane::doAction(const Action &action) {
     }
     case Action::Type::Suicide: {
       vital.reset();
+      parent.arena.caller.kill(player);
       newlyAlive = false;
     }
   }

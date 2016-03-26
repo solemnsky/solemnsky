@@ -1,6 +1,5 @@
 #include "arena.h"
 #include "sky.h"
-#include "util/methods.h"
 
 namespace sky {
 
@@ -16,7 +15,9 @@ bool SkyDelta::verifyStructure() const {
 void Sky::registerPlayer(Player &player) {
   const auto plane = planes.find(player.pid);
   if (plane == planes.end()) {
-    planes.emplace(player.pid, Plane(this));
+    planes.emplace(std::piecewise_construct,
+                   std::forward_as_tuple(player.pid),
+                   std::forward_as_tuple(*this, player));
     player.data.push_back(&planes.at(player.pid));
   } else player.data.push_back(&plane->second);
 }
@@ -56,12 +57,18 @@ Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
     mapName(initializer.mapName),
     map(mapName),
     physics(map) {
-  // initialize planes
-  for (const auto &pair : initializer.planes)
-    planes.emplace(pair.first, Plane(this, pair.second));
-
-  // register players and guarantee that every player has a plane
-  for (auto &pair : arena.players) registerPlayer(pair.second);
+  for (auto &player : arena.players) {
+    const auto iter = initializer.planes.find(player.first);
+    if (iter != initializer.planes.end()) {
+      // initialize with the PlaneInitializer
+      planes.emplace(std::piecewise_construct,
+                     std::forward_as_tuple(player.first),
+                     std::forward_as_tuple(*this, player.second,
+                                           iter->second));
+    }
+    // initialize default plane
+    registerPlayer(player.second);
+  }
 }
 
 Sky::~Sky() {
@@ -97,7 +104,7 @@ void Sky::applyDelta(const SkyDelta &delta) {
   }
 }
 
-Plane &Sky::getPlane(const Player &player) {
+Plane &Sky::getPlane(const Player &player) const {
   return getPlayerData<Plane>(player);
 }
 

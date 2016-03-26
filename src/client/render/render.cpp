@@ -15,16 +15,7 @@ PlaneGraphics::PlaneGraphics(const Plane &plane) :
     plane(plane),
     orientation(false),
     flipState(0),
-    rollState(0),
-    life(int(bool(plane.vital))),
-    wasDead(true) {
-  if (plane.vital) onRespawn();
-  wasDead = false;
-  onRespawn();
-}
-
-void PlaneGraphics::onRespawn() {
-}
+    rollState(0) { }
 
 void PlaneGraphics::tick(const float delta) {
   if (plane.vital) {
@@ -37,27 +28,26 @@ void PlaneGraphics::tick(const float delta) {
     // flipping (when orientation changes)
     approach(flipState, (const float) (orientation ? 1 : 0),
              style.skyRender.flipSpeed * delta);
-    Angle flipComponent;
-    if (orientation) flipComponent = 90 - flipState * 180;
-    else flipComponent = 90 + flipState * 180;
 
     // rolling (when rotation control is active)
     approach(rollState, movementValue(vital->state.rotCtrl),
              style.skyRender.rollSpeed * delta);
-
-    roll = flipComponent + style.skyRender.rollAmount * rollState;
   }
 }
 
-void PlaneGraphics::kill() {
-
+Angle PlaneGraphics::roll() const {
+  Angle flipComponent;
+  if (orientation) flipComponent = 90 - flipState * 180;
+  else flipComponent = 90 + flipState * 180;
+  return flipComponent + style.skyRender.rollAmount * rollState;
 }
+
+void PlaneGraphics::kill() { }
 
 void PlaneGraphics::spawn() {
   orientation = Angle(plane.vital->state.rot + 90) > 180;
   flipState = 0;
   rollState = 0;
-  life = 1;
 }
 
 /**
@@ -99,9 +89,9 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
 
 void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                     const PlaneGraphics &graphics) {
-  if (graphics.parent) {
-    const auto &state = graphics.parent->state;
-    const auto &tuning = graphics.parent->tuning;
+  if (graphics.plane.vital) {
+    const auto &state = graphics.plane.vital->state;
+    const auto &tuning = graphics.plane.vital->tuning;
 
     f.withTransform(
         sf::Transform().translate(state.pos).rotate(state.rot), [&]() {
@@ -112,10 +102,10 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
                 f.drawRect(style.skyRender.afterburnArea, sf::Color::Red);
               });
 
-          sheet.drawIndexAtRoll(
+          planeSheet.drawIndexAtRoll(
               f, sf::Vector2f(style.skyRender.spriteSize,
                               style.skyRender.spriteSize),
-              graphics.roll);
+              graphics.roll());
         });
 
     f.withTransform(sf::Transform().translate(state.pos), [&]() {
@@ -142,7 +132,7 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
 
 SkyRender::SkyRender(Arena &arena, Sky &sky) :
     Subsystem(arena), sky(sky),
-    sheet(ResID::PlayerSheet) {
+    planeSheet(ResID::PlayerSheet) {
 }
 
 SkyRender::~SkyRender() {
@@ -150,46 +140,33 @@ SkyRender::~SkyRender() {
 
 
 void SkyRender::registerPlayer(Player &player) {
-
+  graphics.emplace(player.pid, sky.getPlane(player));
+  player.data.push_back(&graphics.at(player.pid));
 }
 
 void SkyRender::unregisterPlayer(Player &player) {
-
+  graphics.erase(player.pid);
 }
-
 
 void SkyRender::onTick(const float delta) {
-  std::remove_if(graphics.begin(), graphics.end(), [delta]
-      (PlaneGraphics &planeGraphics) {
-    planeGraphics.tick(delta);
-    return planeGraphics.destroyed;
-  });
-}
-
-void SkyRender::addPlane(const PID pid, PlaneVital &plane) {
-  graphics.emplace_back(pid, plane);
-}
-
-void SkyRender::removePlane(const PID pid) {
-  for (auto &planeGraphics : graphics) planeGraphics.removePlane(pid);
+  for (auto &pair : graphics) pair.second.tick(delta);
 }
 
 void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
-  f.pushTransform(sf::Transform().translate(
-      {-findView(1600, sky->map.dimensions.x, pos.x),
-       -findView(900, sky->map.dimensions.y, pos.y)}
-  ));
-
-  // TODO: give sky->map visual data, including background
-  f.drawSprite(textureOf(ResID::Title),
-               {0, 0}, {0, 0, 1600, 900});
-  f.drawSprite(textureOf(ResID::Title),
-               {1600, 0}, {0, 0, 1600, 900});
-
-  for (auto &planeGraphics : graphics)
-    renderPlaneGraphics(f, planeGraphics);
-
-  f.popTransform();
+  f.withTransform(
+      sf::Transform().translate(
+          {-findView(1600, sky.map.dimensions.x, pos.x),
+           -findView(900, sky.map.dimensions.y, pos.y)}
+      ),
+      [&]() {
+        // TODO: give sky->map visual data, including background
+        f.drawSprite(textureOf(ResID::Title),
+                     {0, 0}, {0, 0, 1600, 900});
+        f.drawSprite(textureOf(ResID::Title),
+                     {1600, 0}, {0, 0, 1600, 900});
+        for (auto &pair: graphics) renderPlaneGraphics(f, pair.second);
+      }
+  );
 }
 
 }

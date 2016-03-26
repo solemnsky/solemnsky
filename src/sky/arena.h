@@ -73,33 +73,52 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
  * Subsystem.
  */
 
+/**
+ * Interface to call certain subsystem callbacks.
+ */
+class SubsystemCaller {
+ private:
+  class Arena &arena;
+
+ public:
+  SubsystemCaller(Arena &arena);
+
+  // callbacks that subsystems can trigger
+  void kill(Player &player);
+  // TODO: takeDamage, etc
+};
+
 class Subsystem {
  protected:
+  friend class Arena;
+  friend class SubsystemCaller;
+  const PID id; // ID the render has allocated in the Arena
+
   template<typename Data>
-  Data &getPlayerData(const Player &player) {
+  Data &getPlayerData(const Player &player) const {
     return *((Data *) player.data.at(id));
   }
 
-  friend class Arena;
-
-  // push a pointer onto the player's data
+  // managing player registration: obligatory
   virtual void registerPlayer(Player &player) = 0;
-  // destroy the data the player was attached to
   virtual void unregisterPlayer(Player &player) = 0;
 
+  // arena-triggered callbacks
   virtual void onTick(const float delta) { }
   virtual void onJoin(Player &player) { }
   virtual void onQuit(Player &player) { }
-
   virtual void onAction(Player &player, const Action &action) { }
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
                        const sf::Vector2f &pos, const float rot) { };
   virtual void onEvent(const ArenaEvent &event) { }
 
-  class Arena &arena;
-  const PID id; // ID the render has allocated in the Arena
+  // subsystem-triggered callbacks
+  virtual void onKill(Player &player) { }
 
  public:
+  class Arena &arena;
+  SubsystemCaller caller;
+
   Subsystem() = delete;
   Subsystem(Arena &arena);
 };
@@ -180,20 +199,24 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   std::string allocNickname(const std::string &requested) const;
 
   friend class Player;
+  friend class SubsystemCaller;
 
-  // subsystems
-  friend class Subsystem;
-  std::vector<Subsystem *> subsystems;
-
-  // subsystem triggers
+  // subsystem triggers, for Arena / Player to call
   void onAction(Player &player, const Action &action);
   void onSpawn(Player &player, const PlaneTuning &tuning,
                const sf::Vector2f &pos, const float rot);
   void onEvent(const ArenaEvent &event) const;
 
+  // subsystem triggers, for subsystems to call
+  void onDie(Player &player);
+
  public:
   Arena() = delete;
   Arena(const ArenaInitializer &initializer);
+
+  // subsystems
+  SubsystemCaller caller;
+  std::vector<Subsystem *> subsystems;
 
   /**
    * State.
