@@ -4,7 +4,6 @@
 MultiplayerScoring::MultiplayerScoring(
     ClientShared &shared, MultiplayerConnection &connection) :
     MultiplayerView(sky::ArenaMode::Scoring, shared, connection) {
-  connection.eventLog.push_back(ClientEvent::ScoringStart());
 }
 
 void MultiplayerScoring::tick(float delta) {

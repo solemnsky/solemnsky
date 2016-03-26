@@ -104,9 +104,6 @@ add_executable(solemnsky_client
         src/client/multiplayer/multiplayershared.cpp
         src/client/multiplayer/multiplayershared.h
 
-        src/client/render/render.cpp
-        src/client/render/render.h
-
         src/client/tutorial/gamecontrols.cpp
         src/client/tutorial/gamecontrols.h
 
@@ -159,6 +156,9 @@ add_executable(solemnsky_client
 
         src/client/settingspage.cpp
         src/client/settingspage.h
+
+        src/client/skyrender.cpp
+        src/client/skyrender.h
         )
 target_link_libraries(solemnsky_client
         solemnsky

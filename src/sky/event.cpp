@@ -25,11 +25,11 @@ std::string ArenaEvent::print() const {
           + " to " + std::to_string(newTeam.get());
     case Type::ModeChange: {
       switch (mode.get()) {
-        case ArenaMode::Lobby:
+        case sky::ArenaMode::Lobby:
           return "** Entered lobby. **";
-        case ArenaMode::Game:
+        case sky::ArenaMode::Game:
           return "** Began game on " + *name + " **";
-        case ArenaMode::Scoring:
+        case sky::ArenaMode::Scoring:
           return "** Entered scoring. **";
       }
     }
@@ -71,8 +71,8 @@ ArenaEvent ArenaEvent::NickChange(const std::string &name,
 }
 
 ArenaEvent ArenaEvent::TeamChange(const std::string &name,
-                                  const Team oldTeam,
-                                  const Team newTeam) {
+                                  const sky::Team oldTeam,
+                                  const sky::Team newTeam) {
   ArenaEvent event(Type::TeamChange);
   event.name = name;
   event.oldTeam = oldTeam;
@@ -80,7 +80,7 @@ ArenaEvent ArenaEvent::TeamChange(const std::string &name,
   return event;
 }
 
-ArenaEvent ArenaEvent::ModeChange(const ArenaMode mode) {
+ArenaEvent ArenaEvent::ModeChange(const sky::ArenaMode mode) {
   ArenaEvent event(Type::ModeChange);
   event.mode = mode;
   return event;

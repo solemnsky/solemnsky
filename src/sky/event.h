@@ -26,8 +26,8 @@ struct ArenaEvent {
   ArenaEvent() = delete;
 
   optional<std::string> name, message, newName;
-  optional<Team> oldTeam, newTeam;
-  optional<ArenaMode> mode;
+  optional<sky::Team> oldTeam, newTeam;
+  optional<sky::ArenaMode> mode;
 
   std::string print() const;
 
@@ -37,9 +37,9 @@ struct ArenaEvent {
   static ArenaEvent Quit(const std::string &name);
   static ArenaEvent NickChange(const std::string &name,
                                const std::string &newName);
-  static ArenaEvent TeamChange(const std::string &name, const Team oldTeam,
-                               const Team newTeam);
-  static ArenaEvent ModeChange(const ArenaMode mode);
+  static ArenaEvent TeamChange(const std::string &name, const sky::Team oldTeam,
+                               const sky::Team newTeam);
+  static ArenaEvent ModeChange(const sky::ArenaMode mode);
 };
 
 /**

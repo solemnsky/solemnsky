@@ -236,6 +236,8 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   void quitPlayer(Player &player);
   Player &connectPlayer(const std::string &requestedNick);
   Player *getPlayer(const PID pid);
+  void forPlayers(std::function<void(const Player &)> f) const;
+  void forPlayers(std::function<void(Player &)> f);
 
   void tick(const float delta);
 };
