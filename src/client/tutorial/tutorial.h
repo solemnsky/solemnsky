@@ -4,16 +4,18 @@
 #pragma once
 #include "client/elements/elements.h"
 #include "sky/sky.h"
-#include "client/subsystem/render.h"
+#include "client/render/render.h"
 #include "gamecontrols.h"
 
 class Tutorial : public Game {
 private:
+  sky::Arena arena;
   sky::Sky sky;
-  sky::RenderSystem renderSystem;
-  GameController controller;
+  sky::SkyRender skyRender;
 
-  sky::PlaneVital *plane;
+  sky::Player *player;
+
+  GameController controller;
 
 public:
   Tutorial(ClientShared &state);

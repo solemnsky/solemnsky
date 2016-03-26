@@ -2,10 +2,10 @@
 
 Tutorial::Tutorial(ClientShared &state) :
     Game(state, "tutorial"),
-    sky("default_map_that_exists"),
-    renderSystem(&sky) {
-  sky.linkSystem(&renderSystem);
-  plane = &sky.addPlane(0, {}, {200, 200}, 0);
+    arena(sky::ArenaInitializer("tutorial")),
+    sky(arena, sky::SkyInitializer("some map")),
+    skyRender(arena, sky) {
+  player = &arena.connectPlayer("offline player");
   status = "some status";
 }
 
@@ -15,7 +15,7 @@ Tutorial::Tutorial(ClientShared &state) :
 
 void Tutorial::onChangeSettings(const SettingsDelta &settings) {
   if (settings.nickname) {
-    // a simple Sky doesn't hold nickname data!
+    player->nickname = settings.nickname;
   }
 }
 
@@ -36,18 +36,19 @@ void Tutorial::doExit() {
  */
 
 void Tutorial::tick(float delta) {
-  if (shared.ui.gameFocused())
-    sky.onTick(delta); // if this were multiplayer of course
-  // we wouldn't have this liberty
+  if (shared.ui.gameFocused()) arena.tick(delta);
+  // if this were multiplayer of course we wouldn't have this liberty
 }
 
 void Tutorial::render(ui::Frame &f) {
-  renderSystem.render(f, plane ? plane->state.pos : sf::Vector2f(0, 0));
+  const sky::Plane &plane = sky.getPlane(*player);
+  skyRender.render(f, plane.vital ? plane.vital->state.pos : {0, 0})
 }
 
 bool Tutorial::handle(const sf::Event &event) {
   if (controller.handle(event)) {
-    if (plane) controller.setState(plane->state);
+    player->doAction(sky::Action(sky::Action::Type::Left, true));
+    // etc
     return true;
   }
   return false;
