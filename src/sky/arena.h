@@ -47,10 +47,10 @@ struct PlayerDelta {
 
 struct Player: public Networked<PlayerInitializer, PlayerDelta> {
  private:
-  class Arena *const arena;
+  class Arena &arena;
  public:
   Player() = delete;
-  Player(class Arena *const arena, const PlayerInitializer &initializer);
+  Player(Arena &arena, const PlayerInitializer &initializer);
 
   const PID pid;
   std::string nickname;
@@ -91,7 +91,7 @@ class Subsystem {
   virtual void onJoin(Player &player) { }
   virtual void onQuit(Player &player) { }
 
-  virtual void onAction(Player &player, Action &action) { }
+  virtual void onAction(Player &player, const Action &action) { }
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
                        const sf::Vector2f &pos, const float rot) { };
   virtual void onEvent(const ArenaEvent &event) { }
@@ -184,8 +184,6 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   // subsystems
   friend class Subsystem;
   std::vector<Subsystem *> subsystems;
-  void forSubsystems(std::function<void(Subsystem &)> call) const;
-  void forPlayers(std::function<void(Player &)> call);
 
   // subsystem triggers
   void onAction(Player &player, const Action &action);

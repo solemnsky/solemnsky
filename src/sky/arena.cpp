@@ -11,7 +11,7 @@ PlayerInitializer::PlayerInitializer(
     const PID pid, const std::string &nickname) :
     pid(pid), nickname(nickname), admin(false), team(0) { }
 
-Player::Player(class Arena *const arena, const PlayerInitializer &initializer) :
+Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     Networked(initializer),
     arena(arena),
     pid(initializer.pid),
@@ -41,13 +41,13 @@ PlayerDelta Player::zeroDelta() const {
 }
 
 void Player::doAction(const Action &action) {
-  arena->onAction(*this, action);
+  arena.onAction(*this, action);
 }
 
 void Player::spawn(const PlaneTuning &tuning,
                    const sf::Vector2f &pos,
                    const float rot) {
-  arena->onSpawn(*this, tuning, pos, rot);
+  arena.onSpawn(*this, tuning, pos, rot);
 }
 
 /**
@@ -160,25 +160,17 @@ std::string Arena::allocNickname(const std::string &requested) const {
         + std::to_string(smallestUnused(usedNumbers)) + ")";
 }
 
-void Arena::forSubsystems(std::function<void(Subsystem &)> call) const {
-  for (Subsystem *system : subsystems) call(*system);
-}
-
-void Arena::forPlayers(std::function<void(Player &)> call) {
-  for (auto &player : players) call(player.second);
-}
-
 void Arena::onAction(Player &player, const Action &action) {
-  forSubsystems([&](auto s) { s.onAction(player, action); });
+  for (auto s : subsystems) s->onAction(player, action);
 }
 
 void Arena::onSpawn(Player &player, const PlaneTuning &tuning,
                     const sf::Vector2f &pos, const float rot) {
-  forSubsystems([&](auto s) { s.onSpawn(player, tuning, pos, rot); });
+  for (auto s : subsystems) s->onSpawn(player, tuning, pos, rot);
 }
 
 void Arena::onEvent(const ArenaEvent &event) const {
-  forSubsystems([&event](Subsystem &s) { s.onEvent(event); });
+  for (auto s : subsystems) s->onEvent(event);
 }
 
 Arena::Arena(const ArenaInitializer &initializer) :
@@ -187,7 +179,9 @@ Arena::Arena(const ArenaInitializer &initializer) :
     motd(initializer.motd),
     mode(initializer.mode) {
   for (auto const &player : initializer.players) {
-    players.emplace(player.first, player.second);
+    players.emplace(std::piecewise_construct,
+                    std::forward_as_tuple(player.first),
+                    std::forward_as_tuple(*this, player.second));
   }
 }
 
@@ -253,20 +247,20 @@ ArenaInitializer Arena::captureInitializer() const {
 
 Player &Arena::joinPlayer(const PlayerInitializer &initializer) {
   if (Player *player = getPlayer(initializer.pid)) quitPlayer(*player);
-  players.emplace(initializer.pid, Player(nullptr, initializer));
+  players.emplace(initializer.pid, Player(*this, initializer));
   Player &player = players.at(initializer.pid);
-  forSubsystems([&player](auto s) {
-    s.registerPlayer(player);
-    s.onJoin(player);
-  });
+  for (auto s : subsystems) {
+    s->registerPlayer(player);
+    s->onJoin(player);
+  }
   return player;
 }
 
 void Arena::quitPlayer(Player &player) {
-  forSubsystems([&](Subsystem &s) {
-    s.unregisterPlayer(player);
-    s.onQuit(player);
-  });
+  for (auto s : subsystems) {
+    s->unregisterPlayer(player);
+    s->onQuit(player);
+  }
   players.erase(player.pid);
 }
 
@@ -282,7 +276,7 @@ Player *Arena::getPlayer(const PID pid) {
 }
 
 void Arena::tick(const float delta) {
-  forSubsystems([delta](Subsystem &s) { s.onTick(delta); });
+  for (auto s : subsystems) s->onTick(delta);
 }
 
 }
