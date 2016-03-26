@@ -147,7 +147,7 @@ SkyRender::~SkyRender() {
 }
 
 
-void SkyRender::tick(float delta) {
+void SkyRender::onTick(const float delta) {
   std::remove_if(graphics.begin(), graphics.end(), [delta]
       (PlaneGraphics &planeGraphics) {
     planeGraphics.tick(delta);

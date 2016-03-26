@@ -19,7 +19,7 @@ TEST_F(SkyTest, SubsystemTest) {
 
   {
     sky::Player &player = arena.connectPlayer("some name");
-    sky.getPlane(player).spawn({}, {300, 300}, 0);
+    player.spawn({}, {300, 300}, 0);
     EXPECT_EQ(sky.getPlane(player).vital->state.pos.x, 300);
     arena.tick(0.5);
     EXPECT_NE(sky.getPlane(player).vital->state.pos.x, 300);
@@ -41,7 +41,7 @@ TEST_F(SkyTest, InitializerTest) {
   {
     sky::Player &player0 = serverArena.connectPlayer("some guy");
     sky::Player &player1 = serverArena.connectPlayer("some other guy");
-    serverSky.getPlane(player1).spawn({}, {200, 200}, 0);
+    player1.spawn({}, {200, 200}, 0);
   }
 
   sky::Arena clientArena(serverArena.captureInitializer());
@@ -88,9 +88,8 @@ TEST_F(SkyTest, DeltaTest) {
 
   sky::SkyDelta skyDelta;
   {
-    // server spawns the player's plane
-    sky::Plane &plane = serverSky.getPlane(*serverArena.getPlayer(0));
-    plane.spawn({}, {300, 300}, 0);
+    // server spawns the player
+    serverArena.getPlayer(0)->spawn({}, {300, 300}, 0);
     skyDelta = serverSky.collectDelta();
   }
 

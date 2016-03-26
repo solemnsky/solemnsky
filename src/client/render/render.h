@@ -53,7 +53,7 @@ class SkyRender: public Subsystem {
   void registerPlayer(Player &player);
   void unregisterPlayer(Player &player);
 
-  void tick(const float delta) override;
+  void onTick(const float delta) override;
 
  public:
   SkyRender(const Arena *arena, const Sky *sky);

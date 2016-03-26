@@ -97,7 +97,7 @@ class MySubsystem: public sky::Subsystem {
     myData.erase(player.pid);
   }
 
-  void tick(const float delta) override {
+  void onTick(const float delta) override {
     for (auto &x : myData) x.second += delta;
   }
 
