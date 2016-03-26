@@ -40,8 +40,8 @@ PlayerDelta Player::zeroDelta() const {
   return delta;
 }
 
-void Player::doAction(const Action &action) {
-  arena.onAction(*this, action);
+void Player::doAction(const Action action, const bool state) {
+  arena.onAction(*this, action, state);
 }
 
 void Player::spawn(const PlaneTuning &tuning,
@@ -167,8 +167,8 @@ std::string Arena::allocNickname(const std::string &requested) const {
         + std::to_string(smallestUnused(usedNumbers)) + ")";
 }
 
-void Arena::onAction(Player &player, const Action &action) {
-  for (auto s : subsystems) s->onAction(player, action);
+void Arena::onAction(Player &player, const Action action, const bool state) {
+  for (auto s : subsystems) s->onAction(player, action, state);
 }
 
 void Arena::onSpawn(Player &player, const PlaneTuning &tuning,
@@ -292,7 +292,7 @@ void Arena::forPlayers(std::function<void(const Player &)> f) const {
 }
 
 void Arena::forPlayers(std::function<void(Player &)> f) {
-  for (const auto &pair : players) f(pair.second);
+  for (auto &pair : players) f(pair.second);
 }
 
 void Arena::tick(const float delta) {

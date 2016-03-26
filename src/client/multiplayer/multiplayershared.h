@@ -14,7 +14,7 @@
  */
 class MultiplayerSubsystem: public sky::Subsystem {
  private:
-  MultiplayerConnection &connection;
+  class MultiplayerConnection &connection;
 
  protected:
   void registerPlayer(sky::Player &player) override;
@@ -23,8 +23,8 @@ class MultiplayerSubsystem: public sky::Subsystem {
   void onEvent(const ArenaEvent &event) override;
 
  public:
-  MultiplayerSubsystem(Arena &arena, MultiplayerConnection &connection);
-
+  MultiplayerSubsystem(
+      sky::Arena &arena, class MultiplayerConnection &connection);
 };
 
 /**
@@ -42,6 +42,7 @@ class MultiplayerConnection {
   bool askedConnection;
   Cooldown disconnectTimeout;
 
+  // process a packet, after we're connected via enet and have send a ReqJoin
   void processPacket(const sky::ServerPacket &packet);
 
   void logEvent(const ClientEvent &event);

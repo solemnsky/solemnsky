@@ -4,7 +4,6 @@
  * MultiplayerSubsystem.
  */
 
-
 void MultiplayerSubsystem::registerPlayer(sky::Player &player) {
   player.data.push_back(nullptr);
 }
@@ -105,7 +104,6 @@ MultiplayerConnection::MultiplayerConnection(
     disconnectTimeout(5),
     host(tg::HostType::Client),
     disconnected(false), disconnecting(false),
-    connected(false),
     myPlayer(nullptr) {
   host.connect(serverHostname, serverPort);
 }
@@ -125,14 +123,14 @@ void MultiplayerConnection::transmit(const sky::ClientPacket &packet) {
 }
 
 void MultiplayerConnection::poll(const float delta) {
-  if (disconnected) return {};
+  if (disconnected) return;
 
   event = host.poll();
   if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
     server = nullptr;
     appLog("Disconnected from server!", LogOrigin::Client);
     disconnected = true;
-    return {};
+    return;
   }
 
   if (disconnecting) {
@@ -140,7 +138,7 @@ void MultiplayerConnection::poll(const float delta) {
       appLog("Disconnected from unresponsive server!", LogOrigin::Client);
       disconnected = true;
     }
-    return {};
+    return;
   }
 
   if (!server) {
@@ -160,10 +158,8 @@ void MultiplayerConnection::poll(const float delta) {
     }
 
     if (event.type == ENET_EVENT_TYPE_RECEIVE) {
-      if (const auto reception = telegraph.receive(event.packet)) {
-        // connected to enet, receiving a protocol packet
+      if (const auto reception = telegraph.receive(event.packet))
         processPacket(*reception);
-      }
     }
   }
 }
