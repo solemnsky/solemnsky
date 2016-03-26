@@ -26,10 +26,6 @@ void MultiplayerScoring::signalClear() {
   ui::Control::signalClear();
 }
 
-void MultiplayerScoring::onPacket(const sky::ServerPacket &packet) {
-
-}
-
 void MultiplayerScoring::onChangeSettings(const SettingsDelta &settings) {
 
 }

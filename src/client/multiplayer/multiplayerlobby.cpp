@@ -80,10 +80,6 @@ void MultiplayerLobby::signalClear() {
   ui::Control::signalClear();
 }
 
-void MultiplayerLobby::onPacket(const sky::ServerPacket &packet) {
-
-}
-
 void MultiplayerLobby::onChangeSettings(const SettingsDelta &settings) {
 
 }
