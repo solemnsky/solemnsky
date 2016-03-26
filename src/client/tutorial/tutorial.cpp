@@ -37,7 +37,7 @@ void Tutorial::doExit() {
 
 void Tutorial::tick(float delta) {
   if (shared.ui.gameFocused())
-    sky.tick(delta); // if this were multiplayer of course
+    sky.onTick(delta); // if this were multiplayer of course
   // we wouldn't have this liberty
 }
 

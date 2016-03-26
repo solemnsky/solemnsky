@@ -26,7 +26,7 @@ void Sky::unregisterPlayer(Player &player) {
   if (plane != planes.end()) planes.erase(plane);
 }
 
-void Sky::tick(const float delta) {
+void Sky::onTick(const float delta) {
   for (auto &elem : planes) {
     elem.second.beforePhysics();
   }
@@ -36,11 +36,21 @@ void Sky::tick(const float delta) {
   }
 }
 
-void Sky::join(Player &player) { }
+void Sky::onJoin(Player &player) { }
 
-void Sky::quit(Player &player) {
-  planes.erase(player.pid);
+void Sky::onQuit(Player &player) { }
+
+void Sky::onAction(Player &player, const Action &action) {
+  getPlane(player).doAction(action);
 }
+
+void Sky::onSpawn(Player &player,
+                  const PlaneTuning &tuning,
+                  const sf::Vector2f &pos,
+                  const float rot) {
+  getPlane(player).spawn(tuning, pos, rot);
+}
+
 
 Sky::Sky(Arena *arena, const SkyInitializer &initializer) :
     Subsystem(arena),

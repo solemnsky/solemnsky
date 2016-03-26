@@ -201,22 +201,12 @@ class Plane {
   void syncCtrls();
 
   /**
-   * Internal API.
+   * Internal methods.
    */
   friend class Sky;
   void beforePhysics();
   void afterPhysics(float delta);
 
- public:
-  Plane() = delete;
-  Plane(Sky *parent);
-  Plane(Sky *parent, const PlaneInitializer &initializer);
-
-  optional<PlaneVital> vital;
-
-  /**
-   * API for user.
-   */
   void spawn(const PlaneTuning &tuning,
              const sf::Vector2f pos,
              const float rot);
@@ -225,6 +215,13 @@ class Plane {
   void applyDelta(const PlaneDelta &delta);
   PlaneInitializer captureInitializer() const;
   PlaneDelta captureDelta();
+
+ public:
+  Plane() = delete;
+  Plane(Sky *parent);
+  Plane(Sky *parent, const PlaneInitializer &initializer);
+
+  optional<PlaneVital> vital;
 };
 
 }

@@ -24,6 +24,8 @@ struct SkyInitializer {
 };
 
 struct SkyDelta: public VerifyStructure {
+  // TODO: map changes will go here
+
   SkyDelta() = default; // packing
 
   template<typename Archive>
@@ -46,17 +48,18 @@ class Sky: public Subsystem {
   Plane *planeFromPID(const PID pid);
 
  protected:
-  friend class Arena;
-
   /**
    * Subsystem implementation.
    */
   void registerPlayer(Player &player) override;
   void unregisterPlayer(Player &player) override;
 
-  void tick(const float delta) override;
-  void join(Player &player) override;
-  void quit(Player &player) override;
+  void onTick(const float delta) override;
+  void onJoin(Player &player) override;
+  void onQuit(Player &player) override;
+  void onAction(Player &player, const Action &action) override;
+  void onSpawn(Player &player, const PlaneTuning &tuning,
+               const sf::Vector2f &pos, const float rot) override;
 
  public:
   Sky(class Arena *parent, const SkyInitializer &initializer);

@@ -4,6 +4,7 @@
 #pragma once
 #include "util/types.h"
 #include "util/methods.h"
+#include "plane.h"
 #include <map>
 #include <list>
 #include <vector>
@@ -45,8 +46,11 @@ struct PlayerDelta {
 };
 
 struct Player: public Networked<PlayerInitializer, PlayerDelta> {
+ private:
+  class Arena *const arena;
+ public:
   Player() = delete;
-  Player(const PlayerInitializer &initializer);
+  Player(class Arena *const arena, const PlayerInitializer &initializer);
 
   const PID pid;
   std::string nickname;
@@ -54,9 +58,15 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
   Team team;
   std::vector<void *> data;
 
+  // network API
   void applyDelta(const PlayerDelta &delta) override;
   PlayerInitializer captureInitializer() const override;
   PlayerDelta zeroDelta() const;
+
+  // game API
+  void doAction(const Action &action);
+  void spawn(const PlaneTuning &tuning,
+             const sf::Vector2f &pos, const float rot);
 };
 
 /**
@@ -77,10 +87,13 @@ class Subsystem {
   // destroy the data the player was attached to
   virtual void unregisterPlayer(Player &player) = 0;
 
-  virtual void tick(const float delta) { }
-  virtual void join(Player &player) { }
-  virtual void quit(Player &player) { }
+  virtual void onTick(const float delta) { }
+  virtual void onJoin(Player &player) { }
+  virtual void onQuit(Player &player) { }
 
+  virtual void onAction(Player &player, Action &action) { }
+  virtual void onSpawn(Player &player, const PlaneTuning &tuning,
+                       const sf::Vector2f &pos, const float rot) { };
   virtual void onEvent(const ArenaEvent &event) { }
 
   class Arena *const arena;
@@ -166,13 +179,19 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   PID allocPid() const;
   std::string allocNickname(const std::string &requested) const;
 
+  friend class Player;
+
   // subsystems
   friend class Subsystem;
   std::vector<Subsystem *> subsystems;
   void forSubsystems(std::function<void(Subsystem &)> call) const;
   void forPlayers(std::function<void(Player &)> call);
 
-  void logEvent(const ArenaEvent &event) const;
+  // subsystem triggers
+  void onAction(Player &player, const Action &action);
+  void onSpawn(Player &player, const PlaneTuning &tuning,
+               const sf::Vector2f &pos, const float rot);
+  void onEvent(const ArenaEvent &event) const;
 
  public:
   Arena() = delete;
