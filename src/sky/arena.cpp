@@ -258,20 +258,22 @@ ArenaInitializer Arena::captureInitializer() const {
 }
 
 Player &Arena::joinPlayer(const PlayerInitializer &initializer) {
-  if (Player *player = getPlayer(initializer.pid)) quitPlayer(*player);
+  if (Player *oldPlayer = getPlayer(initializer.pid)) quitPlayer(*oldPlayer);
   players.emplace(initializer.pid, Player(*this, initializer));
-  Player &player = players.at(initializer.pid);
+  Player &newPlayer = players.at(initializer.pid);
   for (auto s : subsystems) {
-    s->registerPlayer(player);
-    s->onJoin(player);
+    s->registerPlayer(newPlayer);
+    s->onJoin(newPlayer);
+    s->onEvent(ArenaEvent::Join(newPlayer.nickname));
   }
-  return player;
+  return newPlayer;
 }
 
 void Arena::quitPlayer(Player &player) {
   for (auto s : subsystems) {
-    s->unregisterPlayer(player);
     s->onQuit(player);
+    s->onEvent(ArenaEvent::Quit(player.nickname));
+    s->unregisterPlayer(player);
   }
   players.erase(player.pid);
 }

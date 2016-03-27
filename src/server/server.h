@@ -8,17 +8,23 @@
 #include "sky/event.h"
 #include "sky/arena.h"
 #include <iostream>
+#include "sky/event.h"
 
 /**
  * Arena render
  */
 class ServerLogger: sky::Subsystem {
+ private:
+  class Server &server;
+
  protected:
   void registerPlayer(sky::Player &player) override;
   void unregisterPlayer(sky::Player &player) override;
 
+  void onEvent(const ArenaEvent &event) override;
+
  public:
-  ServerLogger(sky::Arena *const arena);
+  ServerLogger(sky::Arena &arena, class Server &server);
 };
 
 class Server {
@@ -40,6 +46,7 @@ class Server {
   /**
    * Events.
    */
+  friend class ServerLogger;
   void logEvent(const ServerEvent &event);
   void logArenaEvent(const ArenaEvent &event);
 

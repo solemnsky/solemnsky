@@ -12,8 +12,14 @@ void ServerLogger::registerPlayer(sky::Player &player) {
 
 void ServerLogger::unregisterPlayer(sky::Player &player) { }
 
-ServerLogger::ServerLogger(sky::Arena *const arena) : Subsystem(arena) {
-  for (auto &player : arena->players) registerPlayer(player.second);
+ServerLogger::ServerLogger(sky::Arena &arena, Server &server) :
+    Subsystem(arena),
+    server(server) {
+  for (auto &player : arena.players) registerPlayer(player.second);
+}
+
+void ServerLogger::onEvent(const ArenaEvent &event) {
+  server.logArenaEvent(event);
 }
 
 /**
@@ -31,7 +37,7 @@ void Server::logArenaEvent(const ArenaEvent &event) {
 Server::Server(const Port port,
                const sky::ArenaInitializer &initializer) :
     arena(initializer),
-    logger(&arena),
+    logger(arena, *this),
     host(tg::HostType::Server, port),
     running(true) {
   logEvent(ServerEvent::Start(port, initializer.name));
