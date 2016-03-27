@@ -16,10 +16,10 @@ class OptionWidget: public ui::Control {
 
   // invariant: exactly one of these pairs is non-null
   std::string *strOption;
-  std::shared_ptr<ui::TextEntry> textEntry;
+  optional<ui::TextEntry> textEntry;
 
   bool *boolOption;
-  std::shared_ptr<ui::Checkbox> checkbox;
+  optional<ui::Checkbox> checkbox;
 
  public:
   OptionWidget() = delete;

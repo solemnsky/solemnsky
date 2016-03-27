@@ -58,7 +58,7 @@ class Sky: public Subsystem {
   void onTick(const float delta) override;
   void onJoin(Player &player) override;
   void onQuit(Player &player) override;
-  void onAction(Player &player, const Action &action) override;
+  void onAction(Player &player, const Action action, const bool state) override;
   void onSpawn(Player &player, const PlaneTuning &tuning,
                const sf::Vector2f &pos, const float rot) override;
 

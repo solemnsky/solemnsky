@@ -41,8 +41,8 @@ void Sky::onJoin(Player &player) { }
 
 void Sky::onQuit(Player &player) { }
 
-void Sky::onAction(Player &player, const Action &action) {
-  getPlane(player).doAction(action);
+void Sky::onAction(Player &player, const Action action, const bool state) {
+  getPlane(player).doAction(action, state);
 }
 
 void Sky::onSpawn(Player &player,

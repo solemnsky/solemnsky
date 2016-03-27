@@ -11,7 +11,7 @@ OptionWidget::OptionWidget(
     const std::string &name, const std::string &tooltip) :
     pos(pos),
     strOption(option),
-    textEntry(std::make_shared<ui::TextEntry>(
+    textEntry(ui::TextEntry(
         style.settings.textEntry,
         pos + style.settings.entryOffset, "", true)),
     name(name),
@@ -24,7 +24,7 @@ OptionWidget::OptionWidget(
     const std::string &name, const std::string &tooltip) :
     pos(pos),
     boolOption(option),
-    checkbox(std::make_shared<ui::Checkbox>(
+    checkbox(ui::Checkbox(
         style.settings.checkbox,
         pos + style.settings.entryOffset)),
     name(name),

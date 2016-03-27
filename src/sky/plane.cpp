@@ -10,10 +10,6 @@ namespace sky {
  * Action.
  */
 
-Action::Action(const Action::Type type, bool value) :
-    type(type), value(value) { }
-
-
 static const std::vector<std::string> actionNames = {
     "thrust",
     "reverse",
@@ -25,16 +21,15 @@ static const std::vector<std::string> actionNames = {
     "suicide"
 };
 
-std::string Action::show() const {
-  return actionNames.at((size_t) type) + (value ? "+" : "-");
+std::string showAction(const Action action) const {
+  return actionNames.at((size_t) action);
 }
 
 optional<Action> Action::read(const std::string &str) {
-  Type type = Type::Thrust;
+  Action action = Action::Thrust;
   for (const auto &search : actionNames) {
-    if ((search + "+") == str) return Action(type, true);
-    if ((search + "-") == str) return Action(type, false);
-    type = Type(char(type) + 1);
+    if (search == str) return action;
+    return Action(char(action) + 1);
   }
   return {};
 }
