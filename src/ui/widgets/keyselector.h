@@ -2,7 +2,7 @@
  * Widget used to select a keyboard key.
  */
 #pragma once
-#include "client/ui/control.h"
+#include "ui/control.h"
 
 namespace ui {
 

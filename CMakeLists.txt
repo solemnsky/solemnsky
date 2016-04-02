@@ -110,35 +110,6 @@ add_executable(solemnsky_client
         src/client/tutorial/tutorial.cpp
         src/client/tutorial/tutorial.h
 
-        src/client/ui/widgets/button.cpp
-        src/client/ui/widgets/button.h
-
-        src/client/ui/widgets/checkbox.cpp
-        src/client/ui/widgets/checkbox.h
-
-        src/client/ui/widgets/keyselector.cpp
-        src/client/ui/widgets/keyselector.h
-
-        src/client/ui/widgets/textentry.cpp
-        src/client/ui/widgets/textentry.h
-
-        src/client/ui/widgets/widgets.h
-
-        src/client/ui/control.cpp
-        src/client/ui/control.h
-
-        src/client/ui/frame.cpp
-        src/client/ui/frame.h
-
-        src/client/ui/sheet.cpp
-        src/client/ui/sheet.h
-
-        src/client/ui/splash.cpp
-        src/client/ui/splash.h
-
-        src/client/ui/text.cpp
-        src/client/ui/text.h
-
         src/client/util/resources.cpp
         src/client/util/resources.h
 
@@ -159,6 +130,35 @@ add_executable(solemnsky_client
 
         src/client/skyrender.cpp
         src/client/skyrender.h
+
+        src/ui/widgets/button.cpp
+        src/ui/widgets/button.h
+
+        src/ui/widgets/checkbox.cpp
+        src/ui/widgets/checkbox.h
+
+        src/ui/widgets/keyselector.cpp
+        src/ui/widgets/keyselector.h
+
+        src/ui/widgets/textentry.cpp
+        src/ui/widgets/textentry.h
+
+        src/ui/widgets/widgets.h
+
+        src/ui/control.cpp
+        src/ui/control.h
+
+        src/ui/frame.cpp
+        src/ui/frame.h
+
+        src/ui/sheet.cpp
+        src/ui/sheet.h
+
+        src/ui/splash.cpp
+        src/ui/splash.h
+
+        src/ui/text.cpp
+        src/ui/text.h
         )
 target_link_libraries(solemnsky_client
         solemnsky

@@ -3,7 +3,7 @@
  */
 #pragma once
 #include "sky/plane.h"
-#include "client/ui/control.h"
+#include "ui/control.h"
 #include "settings.h"
 
 class Client;
@@ -68,7 +68,7 @@ public:
   ClientUiState ui;
 
   // query key bindings
-  optional<sky::Action> actionFromControl(
+  optional<std::pair<sky::Action, bool>> actionFromControl(
       const sf::Event &event) const;
 
   // Relays to client. This seems to be useful enough to justify violating DRY.

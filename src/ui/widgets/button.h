@@ -2,7 +2,7 @@
  * The ubiquitous button.
  */
 #pragma once
-#include "client/ui/control.h"
+#include "ui/control.h"
 #include "util/types.h"
 
 namespace ui {

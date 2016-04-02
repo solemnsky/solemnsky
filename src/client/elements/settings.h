@@ -7,22 +7,10 @@
 #include "util/types.h"
 
 /**
- * An action accomplished by a key our client.
+ * Actions a key-press can achieve in a client.
  */
-struct KeyAction {
-  enum class Type {
-    Chat, Scoreboard, SkyAction
-  } type;
-
- private:
-  KeyAction(const Type type);
-
- public:
-  optional<sky::Action> skyAction;
-
-  static KeyAction Chat();
-  static KeyAction Scoreboard();
-  static KeyAction SkyAction(const sky::Action action);
+enum class ClientAction {
+  Chat, Scoreboard
 };
 
 /**
@@ -31,8 +19,8 @@ struct KeyAction {
 struct KeyBindings {
   KeyBindings();
 
-  // use a bimap for this?
-  std::map<sf::Keyboard::Key, KeyAction>;
+  std::map<sf::Keyboard::Key, sky::Action> skyBindings;
+  std::map<sf::Keyboard::Key, ClientAction> clientBindings;
 };
 
 /**
@@ -42,8 +30,8 @@ struct KeyBindings {
 struct Settings {
   Settings(); // initialize with meaningful default settings
 
-  void readFromFile(std::string filepath);
-  void writeToFile(std::string filepath);
+  void readFromFile(const std::string &filepath);
+  void writeToFile(const std::string &filepath);
 
   // general
   bool enableDebug;

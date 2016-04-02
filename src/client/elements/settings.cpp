@@ -6,33 +6,22 @@
  * Settings.
  */
 
-KeyBindings::KeyBindings() :
-    thrust(sf::Keyboard::I),
-    reverse(sf::Keyboard::K),
-    left(sf::Keyboard::J),
-    right(sf::Keyboard::L),
-    primary(sf::Keyboard::F),
-    secondary(sf::Keyboard::D),
-    special(sf::Keyboard::S),
-    chat(sf::Keyboard::Return),
-    scoreboard(sf::Keyboard::Tab) { }
+KeyBindings::KeyBindings() {
+  skyBindings.emplace(sf::Keyboard::I, sky::Action::Thrust);
+  skyBindings.emplace(sf::Keyboard::K, sky::Action::Reverse);
+  skyBindings.emplace(sf::Keyboard::J, sky::Action::Left);
+  skyBindings.emplace(sf::Keyboard::L, sky::Action::Right);
+  skyBindings.emplace(sf::Keyboard::F, sky::Action::Primary);
+  skyBindings.emplace(sf::Keyboard::D, sky::Action::Secondary);
+  skyBindings.emplace(sf::Keyboard::S, sky::Action::Special);
 
-template<typename Archive>
-void serialize(Archive &ar, const sf::Keyboard::Key key) {
-  ar((unsigned char) key);
+  clientBindings.emplace(sf::Keyboard::Return, ClientAction::Chat);
+  clientBindings.emplace(sf::Keyboard::Tab, ClientAction::Scoreboard);
 }
 
 template<typename Archive>
 void serialize(Archive &ar, const KeyBindings &bindings) {
-  ar(cereal::make_nvp("thrust", bindings.thrust),
-     cereal::make_nvp("reverse", bindings.reverse),
-     cereal::make_nvp("left", bindings.left),
-     cereal::make_nvp("right", bindings.right),
-     cereal::make_nvp("primary", bindings.primary),
-     cereal::make_nvp("secondary", bindings.secondary),
-     cereal::make_nvp("special", bindings.special),
-     cereal::make_nvp("chat", bindings.chat),
-     cereal::make_nvp("scoreboard", bindings.scoreboard));
+  ar(bindings.skyBindings, bindings.clientBindings);
 }
 
 template<typename Archive>
@@ -46,16 +35,16 @@ Settings::Settings() :
     nickname("nameless plane"),
     enableDebug(false) { }
 
-void Settings::readFromFile(std::string filepath) {
-  std::ifstream file(filepath);
-  cereal::XMLInputArchive archive(file);
-  archive(*this);
+void Settings::readFromFile(const std::string &filepath) {
+//  std::ifstream file(filepath);
+//  cereal::XMLInputArchive archive(file);
+//  archive(*this);
 }
 
-void Settings::writeToFile(std::string filepath) {
-  std::ofstream file(filepath);
-  cereal::XMLOutputArchive archive(file);
-  archive(*this);
+void Settings::writeToFile(const std::string &filepath) {
+//  std::ofstream file(filepath);
+//  cereal::XMLOutputArchive archive(file);
+//  archive(*this);
 }
 
 /**

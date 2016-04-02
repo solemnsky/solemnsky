@@ -27,8 +27,7 @@ class LifeSubsystem: public sky::Subsystem {
   }
 
   void onAction(sky::Player &player, const sky::Action &action) {
-    if (action.type == sky::Action::Type::Suicide)
-      getPlayerData<bool>(player) = false;
+    if (action == sky::Action::Suicide) getPlayerData<bool>(player) = false;
   }
  public:
   LifeSubsystem(sky::Arena &arena) : sky::Subsystem(arena) {

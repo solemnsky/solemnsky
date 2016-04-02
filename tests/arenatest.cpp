@@ -41,7 +41,7 @@ TEST_F(ArenaTest, InitializerTest) {
     sky::Player &player1 = serverArena.connectPlayer("an admin");
     player1.admin = true;
     sky::Player &player2 = serverArena.connectPlayer("somebody else");
-    serverArena.mode = ArenaMode::Scoring;
+    serverArena.mode = sky::ArenaMode::Scoring;
   }
 
   sky::Arena clientArena = serverArena.captureInitializer();
@@ -49,7 +49,7 @@ TEST_F(ArenaTest, InitializerTest) {
   EXPECT_EQ(clientArena.getPlayer(0)->nickname, "an admin");
   EXPECT_EQ(clientArena.getPlayer(0)->admin, true);
   EXPECT_EQ(clientArena.getPlayer(1)->nickname, "somebody else");
-  EXPECT_EQ(clientArena.mode, ArenaMode::Scoring);
+  EXPECT_EQ(clientArena.mode, sky::ArenaMode::Scoring);
 }
 
 /**

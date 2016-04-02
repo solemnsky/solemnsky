@@ -81,8 +81,6 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
 
   if (Player *player = playerFromPeer(client)) {
     // the player has joined the arena
-    const std::string &pidString = std::to_string(player->pid);
-
     switch (packet.type) {
       case ClientPacket::Type::ReqPlayerDelta: {
         const PlayerDelta &delta = packet.playerDelta.get();
@@ -156,7 +154,6 @@ void Server::tick(float delta) {
     }
     case ENET_EVENT_TYPE_DISCONNECT: {
       if (sky::Player *player = playerFromPeer(event.peer)) {
-
         logEvent(ServerEvent::Disconnect(player->nickname));
         sendToClientsExcept(
             player->pid, sky::ServerPacket::DeltaArena(
