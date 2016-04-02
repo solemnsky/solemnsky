@@ -3,92 +3,6 @@
 #include "util/methods.h"
 
 /**
- * OptionWidget.
- */
-
-OptionWidget::OptionWidget(
-    std::string *option, const sf::Vector2f &pos,
-    const std::string &name, const std::string &tooltip) :
-    pos(pos),
-    strOption(option),
-    name(name),
-    tooltip(tooltip) {
-  textEntry.emplace(
-      style.settings.textEntry,
-      pos + style.settings.entryOffset, "", true);
-  onChangeSettings();
-}
-
-OptionWidget::OptionWidget(
-    bool *option, const sf::Vector2f &pos,
-    const std::string &name, const std::string &tooltip) :
-    pos(pos),
-    boolOption(option),
-    name(name),
-    tooltip(tooltip) {
-  checkbox.emplace(
-      style.settings.checkbox,
-      pos + style.settings.entryOffset);
-  onChangeSettings();
-}
-
-void OptionWidget::onChangeSettings() {
-  if (textEntry) {
-    textEntry->contents = *strOption;
-  }
-  if (checkbox) {
-    checkbox->setValue(*boolOption);
-  }
-}
-
-void OptionWidget::onBlur() {
-  if (textEntry) {
-    *strOption = textEntry->contents;
-    textEntry->reset();
-    return;
-  }
-  if (checkbox) {
-    *boolOption = checkbox->getValue();
-    checkbox->reset();
-    return;
-  }
-}
-
-void OptionWidget::tick(float delta) {
-  if (textEntry) return textEntry->tick(delta);
-  if (checkbox) return checkbox->tick(delta);
-}
-
-void OptionWidget::render(ui::Frame &f) {
-  f.drawText(pos, {name},
-             sf::Color::White, style.settings.descText);
-  if (textEntry) textEntry->render(f);
-  else checkbox->render(f);
-}
-
-bool OptionWidget::handle(const sf::Event &event) {
-  if (textEntry) return textEntry->handle(event);
-  else return checkbox->handle(event);
-}
-
-void OptionWidget::signalRead() {
-  if (textEntry) {
-    if (textEntry->inputSignal) *strOption = *textEntry->inputSignal;
-    return;
-  }
-
-  if (checkbox) {
-    checkbox->signalRead();
-    if (checkbox->clickSignal) *boolOption = checkbox->getValue();
-  }
-}
-
-void OptionWidget::signalClear() {
-  if (textEntry) return textEntry->signalClear();
-  if (checkbox) return checkbox->signalClear();
-}
-
-/**
  * SettingsTab.
  */
 
@@ -106,8 +20,8 @@ SettingsTab::SettingsTab(ui::Button *const selectorButton,
 GeneralTab::GeneralTab(ui::Button *const selectorButton,
                        Settings &newSettings, ClientShared &state) :
     SettingsTab(selectorButton, newSettings, state),
-    debugOption(&newSettings.enableDebug, style.settings.debugChooserPos,
-                "debug", "display debug information") {
+    debugOption(style.settings.checkbox, style.settings.debugOptionPos) {
+  debugOption.description = "debug mode";
   areChildren({&debugOption});
 }
 

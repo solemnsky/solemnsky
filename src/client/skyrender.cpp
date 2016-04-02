@@ -93,8 +93,6 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
     const auto &state = graphics.plane.vital->state;
     const auto &tuning = graphics.plane.vital->tuning;
 
-    f.drawRect({0, 0}, {20, 20}, sf::Color::Red);
-
     f.withTransform(
         sf::Transform().translate(state.pos).rotate(state.rot), [&]() {
           f.withTransform(

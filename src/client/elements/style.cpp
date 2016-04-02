@@ -100,7 +100,7 @@ Style::Settings::Settings(const Style::Base &base) :
              ResID::Font),
     entryOffset(150, -0.5f * base.normalTextEntry.dimensions.y),
 
-    debugChooserPos(100, 100),
+    debugOptionPos(100, 100),
     nicknameChooserPos(100, 100),
     pageButtonHeight(800),
     generalButtonOffset(700 / 6),
