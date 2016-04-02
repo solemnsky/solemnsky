@@ -5,17 +5,13 @@
 #include "client/elements/elements.h"
 #include "sky/sky.h"
 #include "client/skyrender.h"
-#include "gamecontrols.h"
 
 class Tutorial : public Game {
 private:
   sky::Arena arena;
+  sky::Player *player;
   sky::Sky sky;
   sky::SkyRender skyRender;
-
-  sky::Player *player;
-
-  GameController controller;
 
 public:
   Tutorial(ClientShared &state);

@@ -297,6 +297,7 @@ Plane::Plane(Sky &parent, Player &player,
 void Plane::spawn(const PlaneTuning &tuning,
                   const sf::Vector2f pos,
                   const float rot) {
+  // TODO: die if position is not valid
   vital.emplace(parent, tuning, PlaneState(tuning, pos, rot));
   syncCtrls();
   newlyAlive = true;

@@ -6,6 +6,7 @@ Tutorial::Tutorial(ClientShared &state) :
     sky(arena, sky::SkyInitializer("some map")),
     skyRender(arena, sky) {
   player = &arena.connectPlayer("offline player");
+  player->spawn({}, {30, 30}, 0);
   status = "some status";
 }
 
@@ -45,6 +46,9 @@ void Tutorial::render(ui::Frame &f) {
 }
 
 bool Tutorial::handle(const sf::Event &event) {
+  if (auto action = shared.actionFromControl(event)) {
+    player->doAction(action->first, action->second);
+  }
   return false;
 }
 
