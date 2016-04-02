@@ -3,7 +3,7 @@
  */
 #pragma once
 #include "multiplayershared.h"
-#include "client/ui/widgets/widgets.h"
+#include "ui/widgets/widgets.h"
 
 /**
  * In the lobby, we can talk to people, see teams, change teams, and vote for

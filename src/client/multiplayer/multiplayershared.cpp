@@ -113,8 +113,8 @@ void MultiplayerConnection::initializeArena(
     const sky::ArenaInitializer &arenaInit,
     const sky::SkyInitializer &skyInit) {
   arena.emplace(arenaInit);
-  sky.emplace(arena, skyInit);
-  multiplayerSubsystem.emplace(arena);
+  sky.emplace(arena.get(), skyInit);
+  multiplayerSubsystem.emplace(arena.get(), *this);
   myPlayer = arena->getPlayer(pid);
 }
 
@@ -174,7 +174,7 @@ void MultiplayerConnection::disconnect() {
   }
 }
 
-void MultiplayerConnection::requestTeamChange(Team team) {
+void MultiplayerConnection::requestTeamChange(const sky::Team team) {
   if (myPlayer) {
     sky::PlayerDelta delta = myPlayer->zeroDelta();
     delta.team = team;

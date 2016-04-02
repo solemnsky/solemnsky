@@ -10,7 +10,7 @@
 #include "client/elements/elements.h"
 
 /**
- * Particular arena subsystem for the multiplayer client.
+ * Subsystem used by the MultiplayerConnection to listen to events.
  */
 class MultiplayerSubsystem: public sky::Subsystem {
  private:
@@ -23,8 +23,8 @@ class MultiplayerSubsystem: public sky::Subsystem {
   void onEvent(const ArenaEvent &event) override;
 
  public:
-  MultiplayerSubsystem(
-      sky::Arena &arena, class MultiplayerConnection &connection);
+  MultiplayerSubsystem(sky::Arena &arena,
+                       class MultiplayerConnection &connection);
 };
 
 /**
