@@ -36,6 +36,7 @@ class Checkbox: public ui::Control {
   /**
    * Signals and UI values.
    */
+  optional<std::string> description;
   void setValue(const bool newValue);
   bool getValue() const;
 

@@ -5,44 +5,6 @@
 #include "elements/elements.h"
 #include "ui/widgets/widgets.h"
 
-/**
- * Widget that manages the description / tooltip / entry device for an option
- * in the settings. Can be any of a number of option types.
- */
-class OptionWidget: public ui::Control {
- private:
-  sf::Vector2f pos;
-  std::string name, tooltip;
-
-  // invariant: exactly one of these pairs is non-null
-  std::string *strOption;
-  optional<ui::TextEntry> textEntry;
-
-  bool *boolOption;
-  optional<ui::Checkbox> checkbox;
-
- public:
-  OptionWidget() = delete;
-  // a widget that chooses a string, using a TextEntry
-  OptionWidget(std::string *option, const sf::Vector2f &pos,
-               const std::string &name, const std::string &tooltip);
-  // a widget that chooses a bool, using a Checkbox
-  OptionWidget(bool *option, const sf::Vector2f &pos,
-               const std::string &name, const std::string &tooltip);
-
-  void onChangeSettings();
-  void onBlur(); // reset your UI state and write the option
-
-  /**
-   * Control interface.
-   */
-  void tick(float delta) override;
-  void render(ui::Frame &f) override;
-  bool handle(const sf::Event &event) override;
-  void signalRead() override;
-  void signalClear() override;
-};
-
 class SettingsTab: public Page {
  private:
   Settings &newSettings;
@@ -57,7 +19,7 @@ class SettingsTab: public Page {
 
 class GeneralTab: public SettingsTab {
  private:
-  OptionWidget debugOption;
+  ui::Checkbox debugOption;
  public:
   GeneralTab(ui::Button *const selectorButton,
              Settings &newSettings, ClientShared &state);
@@ -75,7 +37,7 @@ class GeneralTab: public SettingsTab {
 
 class PlayerTab: public SettingsTab {
  private:
-  OptionWidget nicknameOption;
+  ui::TextEntry nicknameOption;
  public:
   PlayerTab(ui::Button *const selectorButtom,
             Settings &newSettings, ClientShared &state);

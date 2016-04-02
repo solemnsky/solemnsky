@@ -23,9 +23,11 @@ struct KeyBindings {
   std::map<sf::Keyboard::Key, ClientAction> clientBindings;
 };
 
+bool operator==(const KeyBindings &x, const KeyBindings &y);
+
 /**
  * Client settings, for everything from graphics preferences to player name.
- * Saved and loaded from disk.
+ * Saved to and loaded from disk.
  */
 struct Settings {
   Settings(); // initialize with meaningful default settings
@@ -33,36 +35,23 @@ struct Settings {
   void readFromFile(const std::string &filepath);
   void writeToFile(const std::string &filepath);
 
-  // general
   bool enableDebug;
-
-  // player
   std::string nickname;
-
-  // controls
   KeyBindings bindings;
 };
 
 /**
- * A delta between a past and a current Settings instantiation, so we can
- * reason about what we need to change.
- *
- * For example, when the player nickname is changed, the multiplayer client
- * should request a nickname change; if it isn't, this isn't necessary.
+ * A delta in a Settings.
  */
 struct SettingsDelta {
-  /**
-   * Construct it as the delta between two object, or populate the optional
-   * fields yourself.
-   */
+  // delta between two objects
   SettingsDelta(const Settings &oldSettings, const Settings &newSettings);
+  // null delta
   SettingsDelta();
 
   void apply(Settings &settings) const;
 
-  /**
-   * Data.
-   */
   optional<bool> enableDebug;
   optional<std::string> nickname;
+  optional<KeyBindings> bindings;
 };

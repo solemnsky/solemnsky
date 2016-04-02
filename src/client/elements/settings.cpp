@@ -19,6 +19,10 @@ KeyBindings::KeyBindings() {
   clientBindings.emplace(sf::Keyboard::Tab, ClientAction::Scoreboard);
 }
 
+bool operator==(const KeyBindings &x, const KeyBindings &y) {
+
+}
+
 template<typename Archive>
 void serialize(Archive &ar, const KeyBindings &bindings) {
   ar(bindings.skyBindings, bindings.clientBindings);
@@ -59,10 +63,13 @@ SettingsDelta::SettingsDelta(const Settings &oldSettings,
     nickname = newSettings.nickname;
   if (oldSettings.enableDebug != newSettings.enableDebug)
     enableDebug = newSettings.enableDebug;
+  if (oldSettings.bindings != newSettings.bindings)
+    bindings = newSettings.bindings;
 }
 
 void SettingsDelta::apply(Settings &settings) const {
   if (nickname) settings.nickname = *nickname;
   if (enableDebug) settings.enableDebug = *enableDebug;
+  if (bindings) settings.bindings = *bindings;
 }
 

@@ -108,7 +108,7 @@ struct Style {
     sf::Vector2f entryOffset;
     ui::TextFormat descText;
 
-    sf::Vector2f debugChooserPos; // general tab
+    sf::Vector2f debugOptionPos; // general tab
     sf::Vector2f nicknameChooserPos; // player tab
     /* stub */ // controls tab
     float pageButtonHeight;
