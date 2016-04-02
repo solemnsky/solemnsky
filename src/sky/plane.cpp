@@ -21,11 +21,11 @@ static const std::vector<std::string> actionNames = {
     "suicide"
 };
 
-std::string showAction(const Action action) const {
+std::string showAction(const Action action) {
   return actionNames.at((size_t) action);
 }
 
-optional<Action> Action::read(const std::string &str) {
+optional<Action> readAction(const std::string &str) {
   Action action = Action::Thrust;
   for (const auto &search : actionNames) {
     if (search == str) return action;

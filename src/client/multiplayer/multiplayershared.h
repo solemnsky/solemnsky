@@ -2,7 +2,7 @@
  * Where the multiplayer client converges.
  */
 #pragma once
-#include "client/ui/control.h"
+#include "ui/control.h"
 #include "util/telegraph.h"
 #include "sky/event.h"
 #include "sky/arena.h"

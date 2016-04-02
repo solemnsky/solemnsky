@@ -3,7 +3,7 @@
  */
 #pragma once
 #include <memory>
-#include "client/ui/control.h"
+#include "control.h"
 
 namespace ui {
 

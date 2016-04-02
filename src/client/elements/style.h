@@ -2,8 +2,8 @@
  * Style settings.
  */
 #pragma once
-#include "client/ui/control.h"
-#include "client/ui/widgets/widgets.h"
+#include "ui/control.h"
+#include "ui/widgets/widgets.h"
 
 struct Style {
   /**

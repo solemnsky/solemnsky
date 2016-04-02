@@ -2,7 +2,7 @@
  * The ubiquitous checkbox.
  */
 #pragma once
-#include "client/ui/control.h"
+#include "ui/control.h"
 #include "button.h"
 
 namespace ui {

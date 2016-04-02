@@ -4,8 +4,8 @@
 #pragma once
 #include "client/util/resources.h"
 #include <list>
-#include "client/ui/control.h"
-#include "client/ui/sheet.h"
+#include "ui/control.h"
+#include "ui/sheet.h"
 #include "sky/sky.h"
 #include <SFML/Graphics.hpp>
 
