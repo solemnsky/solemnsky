@@ -4,7 +4,7 @@
 #pragma once
 #include "multiplayershared.h"
 #include "client/skyrender.h"
-#include "client/ui/widgets/widgets.h"
+#include "ui/widgets/widgets.h"
 
 /**
  * In the game, the rendered representation of the game is the central

@@ -3,7 +3,7 @@
  */
 #pragma once
 #include "multiplayershared.h"
-#include "client/ui/widgets/widgets.h"
+#include "ui/widgets/widgets.h"
 
 /**
  * At the scoring screen, we display the score and players talk about how

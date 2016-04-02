@@ -14,9 +14,7 @@ Tutorial::Tutorial(ClientShared &state) :
  */
 
 void Tutorial::onChangeSettings(const SettingsDelta &settings) {
-  if (settings.nickname) {
-    player->nickname = settings.nickname;
-  }
+  if (settings.nickname) player->nickname = *settings.nickname;
 }
 
 void Tutorial::onBlur() {
@@ -42,15 +40,11 @@ void Tutorial::tick(float delta) {
 
 void Tutorial::render(ui::Frame &f) {
   const sky::Plane &plane = sky.getPlane(*player);
-  skyRender.render(f, plane.vital ? plane.vital->state.pos : {0, 0})
+  skyRender.render(
+      f, plane.vital ? plane.vital->state.pos : sf::Vector2f(0, 0));
 }
 
 bool Tutorial::handle(const sf::Event &event) {
-  if (controller.handle(event)) {
-    player->doAction(sky::Action(sky::Action::Type::Left, true));
-    // etc
-    return true;
-  }
   return false;
 }
 
