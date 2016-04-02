@@ -93,9 +93,10 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
     const auto &state = graphics.plane.vital->state;
     const auto &tuning = graphics.plane.vital->tuning;
 
+    f.drawRect({0, 0}, {20, 20}, sf::Color::Red);
+
     f.withTransform(
         sf::Transform().translate(state.pos).rotate(state.rot), [&]() {
-
           f.withTransform(
               sf::Transform().scale(state.afterburner, state.afterburner),
               [&]() {
@@ -126,7 +127,7 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
       );
     });
   } else {
-    // plane is dead
+    // TODO: death animation
   }
 }
 
@@ -159,7 +160,7 @@ void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
            -findView(900, sky.map.dimensions.y, pos.y)}
       ),
       [&]() {
-        // TODO: give sky->map visual data, including background
+        // TODO: give the map visual data, including background
         f.drawSprite(textureOf(ResID::Title),
                      {0, 0}, {0, 0, 1600, 900});
         f.drawSprite(textureOf(ResID::Title),
