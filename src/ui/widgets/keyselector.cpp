@@ -1,11 +1,10 @@
 #include "keyselector.h"
+#include "util/methods.h"
 
 namespace ui {
 
 std::string KeySelector::printKey(const sf::Keyboard::Key key) const {
   switch (key) {
-    case sf::Keyboard::Unknown:
-      return "<unknown key>";
     case sf::Keyboard::A:
       return "A";
     case sf::Keyboard::B:
@@ -208,14 +207,14 @@ std::string KeySelector::printKey(const sf::Keyboard::Key key) const {
       return "F15";
     case sf::Keyboard::Pause:
       return "Pause";
-    case sf::Keyboard::KeyCount:
-      return "KeyCount";
+    default:
+      return "<unknown key>";
   }
-  return "<unknown key>";
 }
 
 KeySelector::KeySelector(const ui::KeySelector::Style &style,
                          const sf::Vector2f &pos) :
+    capturing(false),
     clickSignal(clickSignal),
     button(style, pos, "") {
   areChildren({&button});
@@ -223,16 +222,18 @@ KeySelector::KeySelector(const ui::KeySelector::Style &style,
 
 void KeySelector::render(ui::Frame &f) {
   Control::render(f);
-  if (inFocus) {
-    f.drawRect(button.pos, button.style.dimensions, sf::Color::Green);
+  const auto body = button.getBody();
+
+  if (capturing) {
+    f.drawRect(body, sf::Color::Green);
   }
 }
 
 bool KeySelector::handle(const sf::Event &event) {
-  if (inFocus) {
+  if (capturing) {
     if (event.type == sf::Event::KeyReleased) {
-      value = event.key.code;
-      inFocus = false;
+      setValue(event.key.code);
+      capturing = false;
       return true;
     }
   }
@@ -241,12 +242,14 @@ bool KeySelector::handle(const sf::Event &event) {
 
 void KeySelector::reset() {
   Control::reset();
-  inFocus = false;
+  appLog("resetting");
+  capturing = false;
 }
 
 void KeySelector::signalRead() {
   if (button.clickSignal) {
-    inFocus = true;
+    setValue({});
+    capturing = true;
   }
   Control::signalRead();
 }
@@ -256,7 +259,8 @@ void KeySelector::signalClear() {
 }
 
 void KeySelector::setValue(const optional<sf::Keyboard::Key> key) {
-  value = key;
+  if (key) button.text = printKey(key.get());
+  else button.text = "<unbound>";
 }
 
 optional<sf::Keyboard::Key> KeySelector::getValue() const {

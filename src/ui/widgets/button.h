@@ -36,6 +36,7 @@ class Button: public Control {
 
   sf::FloatRect getBody();
 
+  friend class KeySelector;
   TextFormat textFormat, descriptionFormat; // deduced from the style
 
  public:

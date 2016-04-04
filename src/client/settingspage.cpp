@@ -51,7 +51,7 @@ void PlayerTab::writeSettings(Settings &settings) {
 ControlsTab::ControlsTab(const Settings &settings) :
     SettingsTab(settings),
     keyOption(style.base.normalButton, style.settings.nicknameChooserPos) {
-  keyOption.setDescription(optional("key option"));
+  keyOption.setDescription(optional<std::string>("key option"));
   areChildren({&keyOption});
   readSettings(settings);
 }
