@@ -1,4 +1,5 @@
 #include "checkbox.h"
+#include "util/methods.h"
 
 namespace ui {
 
@@ -41,6 +42,10 @@ void Checkbox::setValue(const bool newValue) {
 
 bool Checkbox::getValue() const {
   return value;
+}
+
+void Checkbox::setDescription(const optional<std::string> &description) {
+  button.description = description;
 }
 
 }

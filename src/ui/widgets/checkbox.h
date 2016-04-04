@@ -32,9 +32,10 @@ class Checkbox: public ui::Control {
   /**
    * Custom.
    */
-  optional<std::string> description;
   void setValue(const bool newValue);
   bool getValue() const;
+
+  void setDescription(const optional<std::string> &description);
 
   bool &clickSignal;
 };

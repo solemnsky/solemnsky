@@ -90,7 +90,7 @@ void MultiplayerConnection::logEvent(const ClientEvent &event) {
 }
 
 void MultiplayerConnection::logArenaEvent(const ArenaEvent &event) {
-  eventLog.push_back(ClientEvent::Event(event));
+  logEvent(ClientEvent::Event(event));
 }
 
 MultiplayerConnection::MultiplayerConnection(
