@@ -9,7 +9,7 @@
 GeneralTab::GeneralTab(const Settings &settings) :
     SettingsTab(settings),
     debugOption(style.settings.checkbox, style.settings.debugOptionPos) {
-  debugOption.description = "debug mode";
+  debugOption.setDescription(optional<std::string>("debug mode"));
   areChildren({&debugOption});
   readSettings(settings);
 }
@@ -30,6 +30,7 @@ PlayerTab::PlayerTab(const Settings &settings) :
     SettingsTab(settings),
     nicknameOption(style.base.normalTextEntry,
                    style.settings.nicknameChooserPos) {
+  nicknameOption.persistent = true;
   nicknameOption.description = "nickname";
   areChildren({&nicknameOption});
   readSettings(settings);
@@ -60,6 +61,7 @@ void ControlsTab::writeSettings(Settings &buffer) { }
 
 void SettingsPage::switchToTab(ui::Button &button, SettingsTab &tab) {
   currentTab.first->setActive(true);
+  currentTab.second->reset();
   currentTab.second->writeSettings(newSettings);
 
   button.setActive(false);
@@ -116,7 +118,7 @@ void SettingsPage::reset() {
 
 void SettingsPage::signalRead() {
   ui::Control::signalRead();
-  currentTab.first->signalRead();
+  currentTab.second->signalRead();
   if (generalButton.clickSignal) switchToTab(generalButton, generalTab);
   if (playerButton.clickSignal) switchToTab(playerButton, playerTab);
   if (controlsButton.clickSignal) switchToTab(controlsButton, controlsTab);
@@ -124,10 +126,11 @@ void SettingsPage::signalRead() {
 
 void SettingsPage::signalClear() {
   ui::Control::signalClear();
-  currentTab.first->signalClear();
+  currentTab.second->signalClear();
 }
 
 void SettingsPage::onBlur() {
+  currentTab.second->reset();
   currentTab.second->writeSettings(newSettings);
   shared.changeSettings(SettingsDelta(shared.settings, newSettings));
 }

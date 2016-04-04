@@ -74,8 +74,8 @@ class Control {
   virtual void reset(); // reset UI elements
   // return true to prevent propogation
 
-  virtual void signalRead();;
-  virtual void signalClear();;
+  virtual void signalRead();
+  virtual void signalClear();
 };
 
 /**

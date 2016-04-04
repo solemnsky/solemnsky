@@ -201,7 +201,6 @@ void Arena::applyDelta(const ArenaDelta &delta) {
   switch (delta.type) {
     case ArenaDelta::Type::Quit: {
       if (Player *player = getPlayer(delta.quit.get())) {
-        onEvent(ArenaEvent::Quit(player->nickname));
         quitPlayer(*player);
       }
       break;
@@ -209,7 +208,6 @@ void Arena::applyDelta(const ArenaDelta &delta) {
 
     case ArenaDelta::Type::Join: {
       joinPlayer(delta.join.get());
-      onEvent(ArenaEvent::Join(delta.join->nickname));
       break;
     }
 
@@ -224,7 +222,7 @@ void Arena::applyDelta(const ArenaDelta &delta) {
         player->applyDelta(playerDelta);
 
         if (player->nickname != oldNick) {
-          onEvent(ArenaEvent::NickChange(player->nickname, oldNick));
+          onEvent(ArenaEvent::NickChange(oldNick, player->nickname));
         }
         if (player->team != oldTeam)
           onEvent(ArenaEvent::TeamChange(player->nickname,

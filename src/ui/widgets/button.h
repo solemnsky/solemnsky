@@ -36,7 +36,7 @@ class Button: public Control {
 
   sf::FloatRect getBody();
 
-  TextFormat textFormat; // deduced from the style
+  TextFormat textFormat, descriptionFormat; // deduced from the style
 
  public:
   Button() = delete;
@@ -59,6 +59,8 @@ class Button: public Control {
   /**
    * Custom.
    */
+  optional<std::string> description;
+
   void setActive(const bool active);
 
   bool isHot;

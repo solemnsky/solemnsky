@@ -35,13 +35,21 @@ Button::Button(const Style &style,
       clickSignal(false),
       textFormat(style.fontSize, style.dimensions,
                  HorizontalAlign::Center, VerticalAlign::Middle,
-                 ResID::Font) { }
+                 ResID::Font),
+      descriptionFormat(textFormat) {
+  descriptionFormat.horizontal = HorizontalAlign::Right;
+}
 
 void Button::tick(float delta) {
   if (active) heat += (isHot ? 1 : -1) * delta * style.heatRate;
 }
 
 void Button::render(Frame &f) {
+  if (description)
+    f.drawText(pos + sf::Vector2f(0, style.dimensions.y / 2),
+               description.get(), style.textColor,
+               descriptionFormat);
+
   const auto body = getBody();
   if (!active) {
     f.drawRect(body, style.inactiveColor);
