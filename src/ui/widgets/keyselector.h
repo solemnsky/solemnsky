@@ -11,9 +11,7 @@ class KeySelector: public ui::Control {
  private:
   Button button;
   optional<sf::Keyboard::Key> value;
-  bool inFocus;
-
-  std::string keyName;
+  bool capturing;
   std::string printKey(const sf::Keyboard::Key key) const;
 
  public:
