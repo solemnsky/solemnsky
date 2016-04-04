@@ -11,62 +11,41 @@
  */
 class SettingsTab: public ui::Control {
  public:
-  SettingsTab() = default;
+  SettingsTab(const Settings &settings) { } // always initialize
 
-  virtual void readFromBuffer(Settings &buffer) = 0;
-  virtual void writeToBuffer(Settings &buffer) = 0;
+  virtual void readSettings(const Settings &settings) = 0;
+  virtual void writeSettings(Settings &settings) = 0;
 };
 
 class GeneralTab: public SettingsTab {
  private:
   ui::Checkbox debugOption;
+
  public:
-  GeneralTab(Settings &newSettings, ClientShared &state);
+  GeneralTab(const Settings &settings);
 
-  void tick(float delta) override;
-  void render(ui::Frame &f) override;
-  bool handle(const sf::Event &event) override;
-  void reset() override;
-  void signalRead() override;
-  void signalClear() override;
-
-  void update(const SettingsDelta &delta);
-  void applyChanges() const;
+  void readSettings(const Settings &settings) override final;
+  void writeSettings(Settings &buffer) override final;
 };
 
 class PlayerTab: public SettingsTab {
  private:
   ui::TextEntry nicknameOption;
+
  public:
-  PlayerTab(ui::Button *const selectorButtom,
-            Settings &newSettings, ClientShared &state);
+  PlayerTab(const Settings &settings);
 
-  void tick(float delta) override;
-  void render(ui::Frame &f) override;
-  bool handle(const sf::Event &event) override;
-  void reset() override;
-  void signalRead() override;
-  void signalClear() override;
-
-  void onChangeSettings(const SettingsDelta &) override;
-  void onBlur() override;
+  void readSettings(const Settings &settings) override final;
+  void writeSettings(Settings &settings) override final;
 };
 
 class ControlsTab: public SettingsTab {
  private:
  public:
-  ControlsTab(ui::Button *const selectorButton,
-              Settings &newSettings, ClientShared &state);
+  ControlsTab(const Settings &settings);
 
-  void tick(float delta) override;
-  void render(ui::Frame &f) override;
-  bool handle(const sf::Event &event) override;
-  void reset() override;
-  void signalRead() override;
-  void signalClear() override;
-
-  void onChangeSettings(const SettingsDelta &) override;
-  void onBlur() override;
+  void readSettings(const Settings &settings) override final;
+  void writeSettings(Settings &buffer) override final;
 };
 
 class SettingsPage: public Page {
@@ -78,9 +57,10 @@ class SettingsPage: public Page {
   GeneralTab generalTab;
   PlayerTab playerTab;
   ControlsTab controlsTab;
-  SettingsTab *currentTab;
 
-  void switchToTab(SettingsTab *const newTab);
+  std::pair<ui::Button *, SettingsTab *> currentTab;
+
+  void switchToTab(ui::Button &button, SettingsTab &tab);
 
  public:
   SettingsPage(ClientShared &shared);
