@@ -41,6 +41,8 @@ class PlayerTab: public SettingsTab {
 
 class ControlsTab: public SettingsTab {
  private:
+  ui::KeySelector keyOption;
+
  public:
   ControlsTab(const Settings &settings);
 
