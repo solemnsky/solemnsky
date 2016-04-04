@@ -19,6 +19,16 @@ KeyBindings::KeyBindings() {
   clientBindings.emplace(sf::Keyboard::Tab, ClientAction::Scoreboard);
 }
 
+
+optional<sf::Keyboard::Key> KeyBindings::lookupBinding(
+    const sky::Action action) const {
+  for (const auto pair : skyBindings) {
+    if (pair.second == action) return {pair.first};
+  }
+  return {};
+}
+
+
 bool operator==(const KeyBindings &x, const KeyBindings &y) {
   return false;
 }
