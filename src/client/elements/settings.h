@@ -24,6 +24,9 @@ struct KeyBindings {
 };
 
 bool operator==(const KeyBindings &x, const KeyBindings &y);
+inline bool operator!=(const KeyBindings &x, const KeyBindings &y) {
+  return !(x == y);
+}
 
 /**
  * Client settings, for everything from graphics preferences to player name.

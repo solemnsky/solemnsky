@@ -20,7 +20,7 @@ KeyBindings::KeyBindings() {
 }
 
 bool operator==(const KeyBindings &x, const KeyBindings &y) {
-
+  return false;
 }
 
 template<typename Archive>
