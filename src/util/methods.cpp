@@ -25,7 +25,7 @@ void appLog(const std::string &contents, const LogOrigin origin) {
        "client]  : ",
        "server]  : ",
        "ERROR]   : ",
-       "         : "};
+       "...      : "};
 
   std::stringstream stream(contents);
   std::string line;
@@ -36,14 +36,15 @@ void appLog(const std::string &contents, const LogOrigin origin) {
     return;
   }
 
+  const std::string time = showTime();
   bool isFirstLine(true);
   while (getline(stream, line, '\n')) {
     if (isFirstLine) {
-      std::cout << showTime() + "[" + prefixes[(int) origin] + line;
+      std::cout << time + "[" + prefixes[(int) origin] + line;
       std::endl(std::cout);
       isFirstLine = false;
     } else {
-      std::cout << prefixes[7] + line;
+      std::cout << time + prefixes[7] + line;
       std::endl(std::cout);
     }
   }

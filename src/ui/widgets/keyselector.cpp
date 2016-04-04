@@ -231,8 +231,10 @@ void KeySelector::render(ui::Frame &f) {
 
 bool KeySelector::handle(const sf::Event &event) {
   if (capturing) {
-    if (event.type == sf::Event::KeyReleased) {
-      setValue(event.key.code);
+    if (event.type == sf::Event::KeyPressed) {
+      if (event.key.code == sf::Keyboard::Escape) setValue({});
+      else setValue(event.key.code);
+
       capturing = false;
       return true;
     }

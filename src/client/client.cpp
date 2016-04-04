@@ -277,8 +277,8 @@ void Client::signalClear() {
 }
 
 void Client::beginGame(std::unique_ptr<Game> &&game) {
-  shared.ui.focusGame();
-  shared.game = std::move(game);
+  if (shared.game) exitGame();
+  else shared.game = std::move(game);
   focusGame();
 }
 
