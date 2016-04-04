@@ -54,16 +54,13 @@ class Button: public Control {
   void render(Frame &f) override;
   bool handle(const sf::Event &event) override;
   void signalClear() override;
+  void reset() override;
 
   /**
-   * UI methods.
+   * Custom.
    */
   void setActive(const bool active);
-  void reset(); // reset animation
 
-  /**
-   * UI state and signals, read-only.
-   */
   bool isHot;
   bool clickSignal;
 };

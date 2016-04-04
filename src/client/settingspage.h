@@ -5,24 +5,23 @@
 #include "elements/elements.h"
 #include "ui/widgets/widgets.h"
 
-class SettingsTab: public Page {
- private:
-  Settings &newSettings;
+/**
+ * One tab of the control page.
+ * Simple user interface that can load / write from and to a Settings object.
+ */
+class SettingsTab: public ui::Control {
  public:
-  SettingsTab() = delete;
-  SettingsTab(ui::Button *const selectorButton,
-              Settings &newSettings,
-              ClientShared &state);
+  SettingsTab() = default;
 
-  ui::Button *const selectorButton;
+  virtual void readFromBuffer(Settings &buffer) = 0;
+  virtual void writeToBuffer(Settings &buffer) = 0;
 };
 
 class GeneralTab: public SettingsTab {
  private:
   ui::Checkbox debugOption;
  public:
-  GeneralTab(ui::Button *const selectorButton,
-             Settings &newSettings, ClientShared &state);
+  GeneralTab(Settings &newSettings, ClientShared &state);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;
@@ -31,8 +30,8 @@ class GeneralTab: public SettingsTab {
   void signalRead() override;
   void signalClear() override;
 
-  void onChangeSettings(const SettingsDelta &) override;
-  void onBlur() override;
+  void update(const SettingsDelta &delta);
+  void applyChanges() const;
 };
 
 class PlayerTab: public SettingsTab {

@@ -27,14 +27,10 @@ class Checkbox: public ui::Control {
   bool handle(const sf::Event &event) override;
   void signalRead() override;
   void signalClear() override;
+  void reset() override;
 
   /**
-   * UI methods.
-   */
-  void reset();
-
-  /**
-   * Signals and UI values.
+   * Custom.
    */
   optional<std::string> description;
   void setValue(const bool newValue);

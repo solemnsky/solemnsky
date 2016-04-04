@@ -3,23 +3,11 @@
 #include "util/methods.h"
 
 /**
- * SettingsTab.
- */
-
-SettingsTab::SettingsTab(ui::Button *const selectorButton,
-                         Settings &newSettings,
-                         ClientShared &state) :
-    Page(state),
-    selectorButton(selectorButton),
-    newSettings(newSettings) { }
-
-/**
  * GeneralTab.
  */
 
 GeneralTab::GeneralTab(ui::Button *const selectorButton,
                        Settings &newSettings, ClientShared &state) :
-    SettingsTab(selectorButton, newSettings, state),
     debugOption(style.settings.checkbox, style.settings.debugOptionPos) {
   debugOption.description = "debug mode";
   areChildren({&debugOption});
@@ -49,12 +37,11 @@ void GeneralTab::signalClear() {
   ui::Control::signalClear();
 }
 
-void GeneralTab::onChangeSettings(const SettingsDelta &) {
-
+void GeneralTab::update(const SettingsDelta &delta) {
+  if (delta.enableDebug) debugOption.setValue(*delta.enableDebug);
 }
 
-void GeneralTab::onBlur() {
-
+void GeneralTab::applyChanges() const {
 }
 
 /**
@@ -186,13 +173,6 @@ void SettingsPage::render(ui::Frame &f) {
 bool SettingsPage::handle(const sf::Event &event) {
   if (currentTab->handle(event)) return true;
   return ui::Control::handle(event);
-}
-
-void SettingsPage::switchToTab(SettingsTab *const newTab) {
-  newTab->selectorButton->setActive(false);
-  currentTab->selectorButton->setActive(true);
-  currentTab->onBlur();
-  currentTab = newTab;
 }
 
 void SettingsPage::reset() {
