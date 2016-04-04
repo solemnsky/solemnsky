@@ -117,6 +117,7 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
   window.setKeyRepeatEnabled(false);
 
   ui::Profiler profiler{100};
+  Cooldown profileCooldown{100};
   Cooldown resizeCooldown{1};
 
   sf::Clock cycleClock, profileClock;
@@ -137,6 +138,14 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
   ctrl->attachState();
 
   while (window.isOpen()) {
+    if (profileCooldown.cool(1)) {
+      appLog(
+          "cycleTime:  " + std::to_string(profiler.cycleTime.max())
+              + "\nlogicTime:  " + std::to_string(profiler.logicTime.max())
+              + "\nrenderTime: " + std::to_string(profiler.renderTime.max())
+      );
+      profileCooldown.reset();
+    }
     if (ctrl->quitting) window.close();
     if (ctrl->next) {
       ctrl = std::move(ctrl->next);

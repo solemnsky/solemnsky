@@ -7,7 +7,7 @@
 
 namespace ui {
 
-class TextEntry : public Control {
+class TextEntry: public Control {
  public:
   struct Style {
     sf::Color inactiveColor{142, 183, 191}, // background when inactive
@@ -43,10 +43,9 @@ class TextEntry : public Control {
   Cooldown repeatActivate;
   Cooldown repeatCooldown;
 
-  TextFormat textFormat; // deduced from the style
+  TextFormat textFormat, descriptionFormat; // deduced from the style
 
   sf::FloatRect getBody();
-
   bool handleKeyboardEvent(const sf::Event &event);
 
  public:

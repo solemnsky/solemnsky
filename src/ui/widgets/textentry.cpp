@@ -28,6 +28,7 @@ TextEntry::TextEntry(const Style &style,
                      const bool persistent) :
     persistent(persistent),
     pos(pos),
+    scroll(0),
     cursor(0),
     heat(0),
     description(description),
@@ -44,7 +45,11 @@ TextEntry::TextEntry(const Style &style,
 
     textFormat(style.fontSize, {},
                ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
-               ResID::Font) { }
+               ResID::Font),
+    descriptionFormat(textFormat) {
+  descriptionFormat.horizontal = HorizontalAlign::Right;
+  descriptionFormat.vertical = VerticalAlign::Middle;
+}
 
 sf::FloatRect TextEntry::getBody() {
   return sf::FloatRect(pos, style.dimensions);
@@ -109,6 +114,11 @@ void TextEntry::tick(float delta) {
 
 void TextEntry::render(Frame &f) {
   f.pushTransform(sf::Transform().translate(pos));
+  if (persistent) {
+    f.drawText({-20, style.dimensions.y / 2.0f},
+               description, style.textColor, descriptionFormat);
+  }
+
   if (isFocused) {
     f.drawRect({}, style.dimensions, style.focusedColor);
     f.drawText(
@@ -127,7 +137,7 @@ void TextEntry::render(Frame &f) {
   } else {
     f.drawRect({}, style.dimensions,
                mixColors(style.inactiveColor, style.hotColor, heat));
-    f.drawText(sf::Vector2f(sidePadding, 0),
+    f.drawText({sidePadding, 0},
                {persistent ? contents : description},
                style.textColor, textFormat);
   }

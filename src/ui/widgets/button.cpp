@@ -46,7 +46,7 @@ void Button::tick(float delta) {
 
 void Button::render(Frame &f) {
   if (description)
-    f.drawText(pos + sf::Vector2f(0, style.dimensions.y / 2),
+    f.drawText(pos + sf::Vector2f(-20, style.dimensions.y / 2),
                description.get(), style.textColor,
                descriptionFormat);
 
