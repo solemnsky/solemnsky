@@ -60,9 +60,7 @@ bool TextEntry::handleKeyboardEvent(const sf::Event &event) {
         return true;
       }
       case sf::Keyboard::Return: {
-        if (persistent) inputSignal.emplace(contents);
-        else inputSignal.emplace(std::move(contents));
-        cursor = 0;
+        inputSignal.emplace(contents);
         unfocus();
         return true;
       }
@@ -198,7 +196,10 @@ void TextEntry::focus() {
 
 void TextEntry::unfocus() {
   isFocused = false;
-  if (!persistent) contents = "";
+  if (!persistent) {
+    contents = "";
+    cursor = 0;
+  }
   repeatActivate.reset();
   repeatCooldown.reset();
 }
