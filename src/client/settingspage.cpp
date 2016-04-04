@@ -50,18 +50,44 @@ void PlayerTab::writeSettings(Settings &settings) {
 
 ControlsTab::ControlsTab(const Settings &settings) :
     SettingsTab(settings),
-    keyOption(style.base.normalButton, style.settings.nicknameChooserPos) {
-  keyOption.setDescription(optional<std::string>("key option"));
-  areChildren({&keyOption});
+    boundActions{sky::Action::Left,
+                 sky::Action::Right,
+                 sky::Action::Thrust,
+                 sky::Action::Reverse} {
+
+  sf::Vector2f pos = style.settings.nicknameChooserPos;
+
+  for (sky::Action action : boundActions) {
+    bindingChoosers.emplace(
+        std::piecewise_construct,
+        std::forward_as_tuple(action),
+        std::forward_as_tuple(style.base.normalButton, pos));
+
+    auto &selector = bindingChoosers.at(action);
+    selector.setDescription(sky::showAction(action));
+    areChildren({&selector});
+
+    pos += {0, 80};
+  }
+
   readSettings(settings);
 }
 
 void ControlsTab::readSettings(const Settings &settings) {
-  // stub
+  for (const sky::Action action : boundActions) {
+    bindingChoosers.at(action).setValue(
+        settings.bindings.lookupBinding(action));
+  }
 }
 
-void ControlsTab::writeSettings(Settings &buffer) {
-  // stub
+void ControlsTab::writeSettings(Settings &settings) {
+  settings.bindings.skyBindings.clear();
+  for (const sky::Action action : boundActions) {
+    const auto &chooser = bindingChoosers.at(action);
+    if (const auto binding = bindingChoosers.at(action).getValue()) {
+      settings.bindings.skyBindings.emplace(binding.get(), action);
+    }
+  }
 }
 
 /**

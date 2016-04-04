@@ -242,7 +242,6 @@ bool KeySelector::handle(const sf::Event &event) {
 
 void KeySelector::reset() {
   Control::reset();
-  appLog("resetting");
   capturing = false;
 }
 
@@ -259,6 +258,7 @@ void KeySelector::signalClear() {
 }
 
 void KeySelector::setValue(const optional<sf::Keyboard::Key> key) {
+  value = key;
   if (key) button.text = printKey(key.get());
   else button.text = "<unbound>";
 }
@@ -268,7 +268,7 @@ optional<sf::Keyboard::Key> KeySelector::getValue() const {
 }
 
 void KeySelector::setDescription(const optional<std::string> &description) {
-
+  button.description = description;
 }
 
 }

@@ -41,7 +41,8 @@ class PlayerTab: public SettingsTab {
 
 class ControlsTab: public SettingsTab {
  private:
-  ui::KeySelector keyOption;
+  std::vector<sky::Action> boundActions;
+  std::map<sky::Action, ui::KeySelector> bindingChoosers;
 
  public:
   ControlsTab(const Settings &settings);

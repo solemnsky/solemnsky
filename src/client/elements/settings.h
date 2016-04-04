@@ -19,6 +19,8 @@ enum class ClientAction {
 struct KeyBindings {
   KeyBindings();
 
+  optional<sf::Keyboard::Key> lookupBinding(sky::Action) const;
+
   std::map<sf::Keyboard::Key, sky::Action> skyBindings;
   std::map<sf::Keyboard::Key, ClientAction> clientBindings;
 };
