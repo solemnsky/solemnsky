@@ -19,18 +19,11 @@ class Checkbox: public ui::Control {
   Checkbox(const Style &style,
            const sf::Vector2f &pos);
 
-  /**
-   * Control interface.
-   */
-  void tick(float delta) override;
-  void render(Frame &f) override;
-  bool handle(const sf::Event &event) override;
   void signalRead() override;
   void signalClear() override;
-  void reset() override;
 
   /**
-   * Custom.
+   * Custom API.
    */
   void setValue(const bool newValue);
   bool getValue() const;

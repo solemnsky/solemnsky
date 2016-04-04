@@ -49,11 +49,20 @@ void PlayerTab::writeSettings(Settings &settings) {
  */
 
 ControlsTab::ControlsTab(const Settings &settings) :
-    SettingsTab(settings) { }
+    SettingsTab(settings),
+    keyOption(style.base.normalButton, style.settings.nicknameChooserPos) {
+  keyOption.setDescription(optional("key option"));
+  areChildren({&keyOption});
+  readSettings(settings);
+}
 
-void ControlsTab::readSettings(const Settings &settings) { }
+void ControlsTab::readSettings(const Settings &settings) {
+  // stub
+}
 
-void ControlsTab::writeSettings(Settings &buffer) { }
+void ControlsTab::writeSettings(Settings &buffer) {
+  // stub
+}
 
 /**
  * SettingsPage.

@@ -7,18 +7,8 @@ Checkbox::Checkbox(const ui::Button::Style &style,
                    const sf::Vector2f &pos) :
     button(style, pos, ""),
     value(false),
-    clickSignal(button.clickSignal) { }
-
-void Checkbox::tick(float delta) {
-  button.tick(delta);
-}
-
-void Checkbox::render(Frame &f) {
-  button.render(f);
-}
-
-bool Checkbox::handle(const sf::Event &event) {
-  return button.handle(event);
+    clickSignal(button.clickSignal) {
+  areChildren({&button});
 }
 
 void Checkbox::signalRead() {
@@ -29,10 +19,6 @@ void Checkbox::signalRead() {
 
 void Checkbox::signalClear() {
   button.signalClear();
-}
-
-void Checkbox::reset() {
-  button.reset();
 }
 
 void Checkbox::setValue(const bool newValue) {
