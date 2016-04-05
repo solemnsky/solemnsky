@@ -15,7 +15,7 @@ class VanillaServer: public Server {
   void onTick(const float delta) override;
 
   // server callbacks
-  virtual void onPacket(ENetPeer &client,
+  virtual void onPacket(ENetPeer *const client,
                         sky::Player &player,
                         const sky::ClientPacket &packet);
 

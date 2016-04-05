@@ -13,7 +13,7 @@ void VanillaServer::onTick(const float delta) {
 
 }
 
-void virtual VanillaServer::onPacket(ENetPeer &client,
+void virtual VanillaServer::onPacket(ENetPeer *const client,
                                      sky::Player &player,
                                      const sky::ClientPacket &packet) {
   if (packet.type == sky::ClientPacket::Type::RCon) {

@@ -4,8 +4,9 @@
  * ServerTelegraphy.
  */
 
-ServerTelegraphy::ServerTelegraphy(tg::Host &host) :
-    host(host) { }
+ServerTelegraphy::ServerTelegraphy(
+    tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph) :
+    host(host), telegraph(telegraph) { }
 
 sky::Player *ServerTelegraphy::playerFromPeer(ENetPeer *peer) const {
   if (peer->data) return (sky::Player *) peer->data;
@@ -53,44 +54,14 @@ Server::Server(ServerTelegraphy &telegraphy,
  * ServerExec.
  */
 
+
+
 void ServerExec::processPacket(ENetPeer *client,
                                const sky::ClientPacket &packet) {
-
-}
-
-void ServerExec::tick(float delta) {
-
-}
-
-ServerExec::ServerExec(const Port port,
-                       const sky::ArenaInitializer &initializer,
-                       std::function<std::unique_ptr<Server>(
-                           ServerTelegraphy &, sky::Arena &, sky::Sky &)> f) {
-
-}
-
-void ServerExec::run() {
-
-}
-
-Server::Server(const Port port,
-               const sky::ArenaInitializer &initializer) :
-    arena(initializer),
-    logger(arena, *this),
-    host(tg::HostType::Server, port),
-    running(true) {
-  logEvent(ServerEvent::Start(port, initializer.name));
-}
-
-
-sky::Player *Server::playerFromPeer(ENetPeer *peer) const {
-}
-
-void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
   using namespace sky;
   // received a packet from a connected enet peer
 
-  if (Player *player = playerFromPeer(client)) {
+  if (Player *player = telegraphy.playerFromPeer(client)) {
     // the player has joined the arena
     switch (packet.type) {
       case ClientPacket::Type::ReqPlayerDelta: {
@@ -100,7 +71,7 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
         sky::ArenaDelta arenaDelta = sky::ArenaDelta::Delta(
             player->pid, delta);
         arena.applyDelta(arenaDelta);
-        sendToClients(ServerPacket::DeltaArena(arenaDelta));
+        telegraphy.sendToClients(ServerPacket::DeltaArena(arenaDelta));
         break;
       }
 
@@ -121,18 +92,20 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
             ServerMessage::Chat(player->pid, packet.stringData.get());
         logArenaEvent(ArenaEvent::Chat(
             player->nickname, packet.stringData.get()));
-        sendToClients(sky::ServerPacket::Message(message));
+        telegraphy.sendToClients(sky::ServerPacket::Message(message));
         break;
       }
 
       case ClientPacket::Type::Ping: {
-        sendToClient(client, ServerPacket::Pong());
+        telegraphy.sendToClient(client, ServerPacket::Pong());
         break;
       }
 
       default:
         break;
     }
+
+    server->onPacket(client, *player, packet);
   } else {
     // client is still connecting, we need to do a ReqJoin / AckJoin
     // handshake, distribute an ArenaDelta to the other clients, and attach
@@ -142,17 +115,24 @@ void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
       client->data = &newPlayer;
 
       logEvent(ServerEvent::Connect(newPlayer.nickname));
-      sendToClient(
+      telegraphy.sendToClient(
           client, ServerPacket::Init(
               newPlayer.pid, arena.captureInitializer(), {}));
-      sendToClientsExcept(
+      telegraphy.sendToClientsExcept(
           newPlayer.pid, ServerPacket::DeltaArena(
               ArenaDelta::Join(newPlayer.captureInitializer())));
     }
   }
 }
+void ServerExec::logEvent(const ServerEvent &event) {
+  appLog(event.print(), LogOrigin::Server);
+}
 
-void Server::tick(float delta) {
+void ServerExec::logArenaEvent(const ArenaEvent &event) {
+  logEvent(ServerEvent::Event(event));
+}
+
+void ServerExec::tick(float delta) {
   static ENetEvent event;
   event = host.poll();
   switch (event.type) {
@@ -164,9 +144,9 @@ void Server::tick(float delta) {
       break;
     }
     case ENET_EVENT_TYPE_DISCONNECT: {
-      if (sky::Player *player = playerFromPeer(event.peer)) {
+      if (sky::Player *player = telegraphy.playerFromPeer(event.peer)) {
         logEvent(ServerEvent::Disconnect(player->nickname));
-        sendToClientsExcept(
+        telegraphy.sendToClientsExcept(
             player->pid, sky::ServerPacket::DeltaArena(
                 sky::ArenaDelta::Quit(player->pid)));
 
@@ -185,12 +165,25 @@ void Server::tick(float delta) {
   uptime += delta;
 }
 
-int main() {
-  Server server(4242, sky::ArenaInitializer("my arena"));
-  sf::Clock clock;
+ServerExec::ServerExec(
+    const Port port,
+    const sky::ArenaInitializer &arena,
+    const sky::SkyInitializer &sky,
+    std::function<std::unique_ptr<Server>(
+        ServerTelegraphy &, sky::Arena &, sky::Sky &)> server) :
+    host(tg::HostType::Server, port),
+    telegraphy(host, telegraph),
+    arena(arena),
+    sky(this->arena, sky),
+    server(std::move(server(arena, sky))) {
+  logEvent(ServerEvent::Start(port, arena.name));
+}
 
-  while (server.running) {
-    server.tick(clock.restart().asSeconds());
+void ServerExec::run() {
+  sf::Clock clock;
+  while (running) {
+    tick(clock.restart().asSeconds());
     sf::sleep(sf::milliseconds(16));
   }
 }
+
