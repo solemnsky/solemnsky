@@ -221,12 +221,11 @@ void Arena::applyDelta(const ArenaDelta &delta) {
 
         player->applyDelta(playerDelta);
 
-        if (player->nickname != oldNick) {
+        if (player->nickname != oldNick)
           onEvent(ArenaEvent::NickChange(oldNick, player->nickname));
-        }
         if (player->team != oldTeam)
-          onEvent(ArenaEvent::TeamChange(player->nickname,
-                                         player->team, oldTeam));
+          onEvent(ArenaEvent::TeamChange(
+              player->nickname, oldTeam, player->team));
       }
       break;
     }
@@ -237,7 +236,10 @@ void Arena::applyDelta(const ArenaDelta &delta) {
     }
 
     case ArenaDelta::Type::Mode: {
-      mode = *delta.mode;
+      if (mode != *delta.mode) {
+        onEvent(ArenaEvent::ModeChange(mode));
+        mode = *delta.mode;
+      }
       break;
     }
   }

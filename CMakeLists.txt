@@ -70,7 +70,7 @@ target_link_libraries(solemnsky
 add_executable(solemnsky_server
         src/server/server.cpp
         src/server/server.h
-        )
+        src/server/console.cpp src/server/console.h)
 target_link_libraries(solemnsky_server
         solemnsky
         )
