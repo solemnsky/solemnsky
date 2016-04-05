@@ -74,5 +74,3 @@ class Client: public ui::Control {
 
   void changeSettings(const SettingsDelta &settings);
 };
-
-int main();

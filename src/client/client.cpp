@@ -320,9 +320,3 @@ void Client::changeSettings(const SettingsDelta &settings) {
   });
   if (shared.game) shared.game->onChangeSettings(settings);
 }
-
-int main() {
-  // and He said,
-  ui::runSFML([]() { return std::make_unique<Client>(); });
-  // and lo, there appeared a client
-}

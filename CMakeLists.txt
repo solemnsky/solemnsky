@@ -56,7 +56,7 @@ add_library(solemnsky STATIC
 
         src/util/types.cpp
         src/util/types.h
-        )
+        src/server/servers/vanilla.cpp src/server/servers/vanilla.h)
 
 target_link_libraries(solemnsky
         enet
@@ -70,7 +70,7 @@ target_link_libraries(solemnsky
 add_executable(solemnsky_server
         src/server/server.cpp
         src/server/server.h
-        src/server/console.cpp src/server/console.h)
+        src/server/console.cpp src/server/console.h src/server/main.cpp)
 target_link_libraries(solemnsky_server
         solemnsky
         )
@@ -156,7 +156,7 @@ add_executable(solemnsky_client
 
         src/ui/text.cpp
         src/ui/text.h
-        )
+        src/client/main.cpp)
 target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics

@@ -122,6 +122,8 @@ class Subsystem {
 
   Subsystem() = delete;
   Subsystem(Arena &arena);
+  // a subsystem has to make sure to manually register the arena's players on
+  // construction!
 };
 
 /**
