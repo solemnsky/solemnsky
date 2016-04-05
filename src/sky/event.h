@@ -3,6 +3,7 @@
  */
 #pragma once
 #include "util/types.h"
+#include "util/printer.h"
 #include "arena.h"
 #include "protocol.h"
 #include <SFML/Network.hpp>
@@ -29,7 +30,8 @@ struct ArenaEvent {
   optional<sky::Team> oldTeam, newTeam;
   optional<sky::ArenaMode> mode;
 
-  std::string print() const;
+  void print(Printer &printer) const;
+  std::string printString() const;
 
   static ArenaEvent Chat(const std::string &name, const std::string &message);
   static ArenaEvent Broadcast(const std::string &message);
@@ -62,7 +64,8 @@ struct ServerEvent {
   optional<ArenaEvent> arenaEvent;
   optional<double> uptime;
 
-  std::string print() const;
+  void print(Printer &printer) const;
+  std::string printString() const;
 
   static ServerEvent Start(const Port port,
                            const std::string &name);
@@ -97,7 +100,8 @@ struct ClientEvent {
   optional<double> uptime;
   optional<DisconnectType> disconnect;
 
-  std::string print() const;
+  void print(Printer &printer) const;
+  std::string printString() const;
 
   static ClientEvent Connect(const std::string &name,
                              const sf::IpAddress &ipAddr);

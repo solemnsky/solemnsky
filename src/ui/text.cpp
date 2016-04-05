@@ -85,7 +85,7 @@ sf::Vector2f TextFrame::drawBlock(const sf::Vector2f &pos,
   return {bounds.width, float(format.size)};
 }
 
-void TextFrame::drawString(const std::string &string) {
+void TextFrame::print(const std::string &string) {
   parent->primCount++;
 
   sf::Text text;
@@ -138,6 +138,12 @@ void TextFrame::breakLine() {
       drawOffset.y -= format.size;
     }
   }
+}
+
+void TextFrame::setColor(const unsigned char r,
+                         const unsigned char g,
+                         const unsigned char b) {
+  setColor(sf::Color(r, g, b));
 }
 
 void TextFrame::setColor(const sf::Color &newColor) {
