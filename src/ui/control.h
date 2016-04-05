@@ -72,7 +72,7 @@ class Control {
   virtual void render(Frame &f);
   virtual bool handle(const sf::Event &event);
   virtual void reset(); // reset UI elements
-  // return true to prevent propogation
+  // return true to prevent propagation
 
   virtual void signalRead();
   virtual void signalClear();

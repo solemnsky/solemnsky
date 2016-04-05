@@ -23,7 +23,8 @@ struct ClientPacket: public VerifyStructure {
     ReqSpawn, // request to spawn
     ReqKill, // request to die
 
-    Chat // send a chat message
+    Chat, // send a chat message
+    RCon  // send an rcon command
   };
 
   template<typename Archive>
@@ -54,6 +55,9 @@ struct ClientPacket: public VerifyStructure {
       case Type::Chat: {
         ar(stringData);
       }
+      case Type::RCon: {
+        ar(stringData);
+      }
     }
   }
 
@@ -74,6 +78,7 @@ struct ClientPacket: public VerifyStructure {
   static ClientPacket ReqSpawn();
   static ClientPacket ReqKill();
   static ClientPacket Chat(const std::string &message);
+  static ClientPacket RCon(const std::string &command);
 };
 
 /**

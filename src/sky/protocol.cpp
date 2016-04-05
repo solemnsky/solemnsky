@@ -66,6 +66,12 @@ ClientPacket ClientPacket::Chat(const std::string &message) {
   return packet;
 }
 
+ClientPacket ClientPacket::RCon(const std::string &command) {
+  ClientPacket packet(Type::RCon);
+  packet.stringData = command;
+  return packet;
+}
+
 /**
  * ServerMessage.
  */

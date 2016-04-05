@@ -1,49 +1,18 @@
 #include "server.h"
-#include "sky/event.h"
-#include "util/methods.h"
 
 /**
- * ServerLogger.
+ * ServerTelegraphy.
  */
 
-void ServerLogger::registerPlayer(sky::Player &player) {
-  player.data.push_back(nullptr);
+ServerTelegraphy::ServerTelegraphy(tg::Host &host) :
+    host(host) { }
+
+sky::Player *ServerTelegraphy::playerFromPeer(ENetPeer *peer) const {
+  if (peer->data) return (sky::Player *) peer->data;
+  else return nullptr;
 }
 
-void ServerLogger::unregisterPlayer(sky::Player &player) { }
-
-ServerLogger::ServerLogger(sky::Arena &arena, Server &server) :
-    Subsystem(arena),
-    server(server) {
-  for (auto &player : arena.players) registerPlayer(player.second);
-}
-
-void ServerLogger::onEvent(const ArenaEvent &event) {
-  server.logArenaEvent(event);
-}
-
-/**
- * Server.
- */
-
-void Server::logEvent(const ServerEvent &event) {
-  appLog(event.print(), LogOrigin::Server);
-}
-
-void Server::logArenaEvent(const ArenaEvent &event) {
-  logEvent(ServerEvent::Event(event));
-}
-
-Server::Server(const Port port,
-               const sky::ArenaInitializer &initializer) :
-    arena(initializer),
-    logger(arena, *this),
-    host(tg::HostType::Server, port),
-    running(true) {
-  logEvent(ServerEvent::Start(port, initializer.name));
-}
-
-void Server::sendToClients(const sky::ServerPacket &packet) {
+void ServerTelegraphy::sendToClients(const sky::ServerPacket &packet) {
   telegraph.transmit(
       host,
       [&](std::function<void(ENetPeer *const)> transmit) {
@@ -51,8 +20,8 @@ void Server::sendToClients(const sky::ServerPacket &packet) {
       }, packet);
 }
 
-void Server::sendToClientsExcept(const PID pid,
-                                 const sky::ServerPacket &packet) {
+void ServerTelegraphy::sendToClientsExcept(const PID pid,
+                                           const sky::ServerPacket &packet) {
   telegraph.transmit(
       host,
       [&](std::function<void(ENetPeer *const)> transmit) {
@@ -64,15 +33,57 @@ void Server::sendToClientsExcept(const PID pid,
       }, packet);
 }
 
-void Server::sendToClient(ENetPeer *const client,
-                          const sky::ServerPacket &packet) {
+void ServerTelegraphy::sendToClient(ENetPeer *const client,
+                                    const sky::ServerPacket &packet) {
   telegraph.transmit(host, client, packet);
 }
 
+/**
+ * Server.
+ */
+
+Server::Server(ServerTelegraphy &telegraphy,
+               sky::Arena &arena, sky::Sky &sky) :
+    Subsystem(arena),
+    telegraphy(telegraphy),
+    sky(sky) { }
+
+
+/**
+ * ServerExec.
+ */
+
+void ServerExec::processPacket(ENetPeer *client,
+                               const sky::ClientPacket &packet) {
+
+}
+
+void ServerExec::tick(float delta) {
+
+}
+
+ServerExec::ServerExec(const Port port,
+                       const sky::ArenaInitializer &initializer,
+                       std::function<std::unique_ptr<Server>(
+                           ServerTelegraphy &, sky::Arena &, sky::Sky &)> f) {
+
+}
+
+void ServerExec::run() {
+
+}
+
+Server::Server(const Port port,
+               const sky::ArenaInitializer &initializer) :
+    arena(initializer),
+    logger(arena, *this),
+    host(tg::HostType::Server, port),
+    running(true) {
+  logEvent(ServerEvent::Start(port, initializer.name));
+}
+
+
 sky::Player *Server::playerFromPeer(ENetPeer *peer) const {
-  if (peer->data)
-    return (sky::Player *) peer->data;
-  else return nullptr;
 }
 
 void Server::processPacket(ENetPeer *client, const sky::ClientPacket &packet) {
