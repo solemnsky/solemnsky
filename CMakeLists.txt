@@ -56,7 +56,7 @@ add_library(solemnsky STATIC
 
         src/util/types.cpp
         src/util/types.h
-        src/server/servers/vanilla.cpp src/server/servers/vanilla.h)
+        src/server/servers/vanilla.cpp src/server/servers/vanilla.h src/util/printer.cpp src/util/printer.h)
 
 target_link_libraries(solemnsky
         enet

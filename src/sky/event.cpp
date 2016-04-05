@@ -6,34 +6,40 @@
 
 ArenaEvent::ArenaEvent(const Type type) : type(type) { }
 
-std::string ArenaEvent::print() const {
+void ArenaEvent::print(Printer &p) const {
   switch (type) {
     case Type::Chat:
-      return "[chat] " + *name + ": " + *message;
+      p.print("[chat] " + *name + ": " + *message);
     case Type::Broadcast:
-      return "[server] " + *message;
+      p.print("[server] " + *message);
     case Type::Join:
-      return inQuotes(name.get()) + " joined the game!";
+      p.print(inQuotes(name.get()) + " joined the game!");
     case Type::Quit:
-      return inQuotes(name.get()) + " left the game!";
+      p.print(inQuotes(name.get()) + " left the game!");
     case Type::NickChange:
-      return inQuotes(name.get()) + " changed name to "
-          + inQuotes(newName.get());
+      p.print(inQuotes(name.get()) + " changed name to "
+                  + inQuotes(newName.get()));
     case Type::TeamChange:
-      return inQuotes(name.get()) + " changed team from "
-          + std::to_string(oldTeam.get())
-          + " to " + std::to_string(newTeam.get());
+      p.print(inQuotes(name.get()) + " changed team from "
+                  + std::to_string(oldTeam.get())
+                  + " to " + std::to_string(newTeam.get()));
     case Type::ModeChange: {
       switch (mode.get()) {
         case sky::ArenaMode::Lobby:
-          return "** Entered lobby. **";
+          p.print("** Entered lobby. **");
         case sky::ArenaMode::Game:
-          return "** Began game on " + *name + " **";
+          p.print("** Began game on " + *name + " **");
         case sky::ArenaMode::Scoring:
-          return "** Entered scoring. **";
+          p.print("** Entered scoring. **");
       }
     }
   }
+}
+
+std::string ArenaEvent::printString() const {
+  StringPrinter p;
+  print(p);
+  return p.getString();
 }
 
 ArenaEvent ArenaEvent::Chat(const std::string &name,
@@ -92,21 +98,27 @@ ArenaEvent ArenaEvent::ModeChange(const sky::ArenaMode mode) {
 
 ServerEvent::ServerEvent(const Type type) : type(type) { }
 
-std::string ServerEvent::print() const {
+void ServerEvent::print(Printer &p) const {
   switch (type) {
     case Type::Start:
-      return "Started " + inQuotes(name.get())
-          + " on port " + std::to_string(port.get());
+      p.print("Started " + inQuotes(name.get())
+                  + " on port " + std::to_string(port.get()));
     case Type::Event:
-      return arenaEvent->print();
+      arenaEvent->print(p);
     case Type::Stop:
-      return "Stopped server after " + std::to_string(uptime.get())
-          + " seconds of uptime";
+      p.print("Stopped server after " + std::to_string(uptime.get())
+                  + " seconds of uptime");
     case Type::Connect:
-      return "Client connected: " + inQuotes(name.get());
+      p.print("Client connected: " + inQuotes(name.get()));
     case Type::Disconnect:
-      return "Client disconnected: " + inQuotes(name.get());
+      p.print("Client disconnected: " + inQuotes(name.get()));
   }
+}
+
+std::string ServerEvent::printString() const {
+  StringPrinter p;
+  print(p);
+  return p.getString();
 }
 
 ServerEvent ServerEvent::Start(const Port port,

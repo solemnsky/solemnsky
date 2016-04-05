@@ -3,6 +3,7 @@
  */
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "util/printer.h"
 #include "client/util/resources.h"
 
 namespace ui {
@@ -50,7 +51,7 @@ struct TextFormat {
 /**
  * A frame in which a user can draw text; allocated internally by the Frame.
  */
-class TextFrame {
+class TextFrame: public Printer {
  private:
   friend class Frame;
 
@@ -79,9 +80,12 @@ class TextFrame {
   sf::Vector2f drawOffset;
 
   // API
-  void drawString(const std::string &string);
-  void breakLine();
+  void print(const std::string &string) override;
+  void setColor(const unsigned char r,
+                const unsigned char g,
+                const unsigned char b) override;
   void setColor(const sf::Color &newColor);
+  void breakLine() override;
 };
 
 }
