@@ -78,5 +78,3 @@ class ServerExec {
 
   bool running;
 };
-
-int runServer();
