@@ -12,3 +12,9 @@ std::string StringPrinter::getString() const {
   return value;
 }
 
+std::string printToString(std::function<void(Printer &)> print) {
+  StringPrinter p;
+  print(p);
+  return p.getString();
+}
+

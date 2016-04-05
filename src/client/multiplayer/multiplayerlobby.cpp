@@ -28,7 +28,7 @@ void MultiplayerLobby::render(ui::Frame &f) {
       style.multi.messageLogPos, [&](ui::TextFrame &tf) {
         for (auto iter = connection.eventLog.rbegin();
              iter < connection.eventLog.rend(); iter++) {
-          tf.drawString(ClientEvent(*iter).print());
+          ClientEvent(*iter).print(tf);
           tf.breakLine();
         }
       }, sf::Color::White, style.multi.messageLogText);
@@ -39,7 +39,7 @@ void MultiplayerLobby::render(ui::Frame &f) {
           tf.setColor(sf::Color::Black);
           if (player.team == 1) tf.setColor(sf::Color::Red);
           if (player.team == 2) tf.setColor(sf::Color::Blue);
-          tf.drawString(player.nickname);
+          tf.print(player.nickname);
           tf.breakLine();
         });
       }, sf::Color::White, style.multi.playerListText);
