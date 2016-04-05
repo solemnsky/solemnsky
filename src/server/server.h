@@ -15,10 +15,10 @@
  * Telegraphy state and utilities for use by the Server and the ServerExec.
  */
 struct ServerTelegraphy {
-  ServerTelegraphy(tg::Host &host);
+  ServerTelegraphy(tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph);
 
   tg::Host &host;
-  tg::Telegraph<sky::ClientPacket> telegraph;
+  tg::Telegraph<sky::ClientPacket> &telegraph;
 
   sky::Player *playerFromPeer(ENetPeer *peer) const;
   void sendToClients(const sky::ServerPacket &packet);
@@ -38,7 +38,7 @@ class Server: public sky::Subsystem {
   ServerTelegraphy &telegraphy;
   sky::Sky &sky;
 
-  virtual void onPacket(ENetPeer &client,
+  virtual void onPacket(ENetPeer *const client,
                         sky::Player &player,
                         const sky::ClientPacket &packet) = 0;
 
@@ -54,25 +54,27 @@ class Server: public sky::Subsystem {
 class ServerExec {
  private:
   tg::UsageFlag flag; // for enet global state
-
   double uptime;
 
   tg::Host host;
+  tg::Telegraph<sky::ClientPacket> telegraph;
   ServerTelegraphy telegraphy;
+
   sky::Arena arena;
   sky::Sky sky;
   std::unique_ptr<Server> server;
 
   void logEvent(const ServerEvent &event);
   void logArenaEvent(const ArenaEvent &event);
-
   void processPacket(ENetPeer *client, const sky::ClientPacket &packet);
   void tick(float delta);
 
  public:
-  ServerExec(const Port port, const sky::ArenaInitializer &initializer,
+  ServerExec(const Port port,
+             const sky::ArenaInitializer &arena,
+             const sky::SkyInitializer &sky,
              std::function<std::unique_ptr<Server>(
-                 ServerTelegraphy &, sky::Arena &, sky::Sky &)> f);
+                 ServerTelegraphy &, sky::Arena &, sky::Sky &)> server);
 
   void run();
 
