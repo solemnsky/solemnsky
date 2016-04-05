@@ -54,8 +54,6 @@ Server::Server(ServerTelegraphy &telegraphy,
  * ServerExec.
  */
 
-
-
 void ServerExec::processPacket(ENetPeer *client,
                                const sky::ClientPacket &packet) {
   using namespace sky;
@@ -125,7 +123,7 @@ void ServerExec::processPacket(ENetPeer *client,
   }
 }
 void ServerExec::logEvent(const ServerEvent &event) {
-  appLog(event.print(), LogOrigin::Server);
+  appLog(printToString(event.print), LogOrigin::Server);
 }
 
 void ServerExec::logArenaEvent(const ArenaEvent &event) {

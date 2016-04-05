@@ -36,12 +36,6 @@ void ArenaEvent::print(Printer &p) const {
   }
 }
 
-std::string ArenaEvent::printString() const {
-  StringPrinter p;
-  print(p);
-  return p.getString();
-}
-
 ArenaEvent ArenaEvent::Chat(const std::string &name,
                             const std::string &message) {
   ArenaEvent event(Type::Chat);
@@ -115,12 +109,6 @@ void ServerEvent::print(Printer &p) const {
   }
 }
 
-std::string ServerEvent::printString() const {
-  StringPrinter p;
-  print(p);
-  return p.getString();
-}
-
 ServerEvent ServerEvent::Start(const Port port,
                                const std::string &name) {
   ServerEvent event(Type::Start);
@@ -159,20 +147,19 @@ ServerEvent ServerEvent::Disconnect(const std::string &name) {
 
 ClientEvent::ClientEvent(const Type type) : type(type) { }
 
-
-std::string ClientEvent::print() const {
+void ClientEvent::print(Printer &p) const {
   switch (type) {
     case Type::Connect:
-      return "Connected to " + inQuotes(name.get())
-          + " @ " + ipAddr->toString();
+      p.print("Connected to " + inQuotes(name.get())
+                  + " @ " + ipAddr->toString());
     case Type::Event:
-      return arenaEvent->print();
+      arenaEvent->print(p);
     case Type::Disconnect: {
       switch (disconnect.get()) {
         case DisconnectType::Graceful:
-          return "Disconnected from server gracefully.";
+          p.print("Disconnected from server gracefully.");
         case DisconnectType::Timeout:
-          return "Disconnected from server due to timeout.";
+          p.print("Disconnected from server due to timeout.");
       }
     }
   }

@@ -4,6 +4,9 @@
 #pragma once
 #include "types.h"
 
+/**
+ * Implemented by StringPrinter below and TextFrame in the Client UI.
+ */
 class Printer {
  public:
   virtual void print(const std::string &str) = 0;
@@ -30,5 +33,7 @@ class StringPrinter: public Printer {
 
   std::string getString() const;
 };
+
+std::string printToString(std::function<void(Printer &)> print);
 
 

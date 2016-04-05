@@ -30,8 +30,7 @@ struct ArenaEvent {
   optional<sky::Team> oldTeam, newTeam;
   optional<sky::ArenaMode> mode;
 
-  void print(Printer &printer) const;
-  std::string printString() const;
+  void print(Printer &p) const;
 
   static ArenaEvent Chat(const std::string &name, const std::string &message);
   static ArenaEvent Broadcast(const std::string &message);
@@ -64,8 +63,7 @@ struct ServerEvent {
   optional<ArenaEvent> arenaEvent;
   optional<double> uptime;
 
-  void print(Printer &printer) const;
-  std::string printString() const;
+  void print(Printer &p) const;
 
   static ServerEvent Start(const Port port,
                            const std::string &name);
@@ -100,8 +98,7 @@ struct ClientEvent {
   optional<double> uptime;
   optional<DisconnectType> disconnect;
 
-  void print(Printer &printer) const;
-  std::string printString() const;
+  void print(Printer &p) const;
 
   static ClientEvent Connect(const std::string &name,
                              const sf::IpAddress &ipAddr);
