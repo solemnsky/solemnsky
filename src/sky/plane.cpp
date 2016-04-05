@@ -29,7 +29,7 @@ optional<Action> readAction(const std::string &str) {
   Action action = Action::Thrust;
   for (const auto &search : actionNames) {
     if (search == str) return action;
-    return Action(char(action) + 1);
+    action = Action(char(action) + 1);
   }
   return {};
 }
