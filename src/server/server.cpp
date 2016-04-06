@@ -174,7 +174,8 @@ ServerExec::ServerExec(
     telegraphy(host, telegraph),
     arena(arena),
     sky(this->arena, sky),
-    server(server(telegraphy, this->arena, this->sky)) {
+    server(server(telegraphy, this->arena, this->sky)),
+    running(true) {
   logEvent(ServerEvent::Start(port, arena.name));
 }
 

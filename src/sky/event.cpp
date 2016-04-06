@@ -8,29 +8,47 @@ ArenaEvent::ArenaEvent(const Type type) : type(type) { }
 
 void ArenaEvent::print(Printer &p) const {
   switch (type) {
-    case Type::Chat:
+    case Type::Chat: {
       p.print("[chat] " + *name + ": " + *message);
-    case Type::Broadcast:
+      break;
+    }
+    case Type::Broadcast: {
       p.print("[server] " + *message);
-    case Type::Join:
+      break;
+    }
+    case Type::Join: {
       p.print(inQuotes(name.get()) + " joined the game!");
-    case Type::Quit:
+      break;
+    }
+    case Type::Quit: {
       p.print(inQuotes(name.get()) + " left the game!");
-    case Type::NickChange:
+      break;
+    }
+    case Type::NickChange: {
       p.print(inQuotes(name.get()) + " changed name to "
                   + inQuotes(newName.get()));
-    case Type::TeamChange:
+      break;
+    }
+    case Type::TeamChange: {
       p.print(inQuotes(name.get()) + " changed team from "
                   + std::to_string(oldTeam.get())
                   + " to " + std::to_string(newTeam.get()));
+      break;
+    }
     case Type::ModeChange: {
       switch (mode.get()) {
-        case sky::ArenaMode::Lobby:
+        case sky::ArenaMode::Lobby: {
           p.print("** Entered lobby. **");
-        case sky::ArenaMode::Game:
+          break;
+        }
+        case sky::ArenaMode::Game: {
           p.print("** Began game on " + *name + " **");
-        case sky::ArenaMode::Scoring:
+          break;
+        }
+        case sky::ArenaMode::Scoring: {
           p.print("** Entered scoring. **");
+          break;
+        }
       }
     }
   }
