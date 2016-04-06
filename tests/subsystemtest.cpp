@@ -26,9 +26,11 @@ class LifeSubsystem: public sky::Subsystem {
     getPlayerData<bool>(player) = true;
   }
 
-  void onAction(sky::Player &player, const sky::Action &action) {
+  void onAction(sky::Player &player, const sky::Action action,
+                const bool state) override {
     if (action == sky::Action::Suicide) getPlayerData<bool>(player) = false;
   }
+
  public:
   LifeSubsystem(sky::Arena &arena) : sky::Subsystem(arena) {
     arena.forPlayers([&](sky::Player &player) {
@@ -91,6 +93,8 @@ TEST_F(SubsystemTest, LifeCounter) {
   EXPECT_EQ(lifeSubsystem.getLifeData(player1), true);
   arena.tick(0.5);
   EXPECT_EQ(counterSubsystem.getTimeData(player1), 0.5);
+  player1.doAction(sky::Action::Suicide, true);
+  EXPECT_EQ(lifeSubsystem.getLifeData(player1), false);
 }
 
 

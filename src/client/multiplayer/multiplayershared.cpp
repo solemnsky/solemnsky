@@ -12,7 +12,7 @@ void MultiplayerSubsystem::unregisterPlayer(sky::Player &player) {
 
 }
 
-void MultiplayerSubsystem::onEvent(const ArenaEvent &event) {
+void MultiplayerSubsystem::onEvent(const sky::ArenaEvent &event) {
   connection.logArenaEvent(event);
 }
 
@@ -64,14 +64,14 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
     case ServerPacket::Type::Chat: {
       if (sky::Player *player = arena->getPlayer(
           packet.pid.get())) {
-        logArenaEvent(ArenaEvent::Chat(
+        logEvent(ClientEvent::Chat(
             player->nickname, packet.stringData.get()));
       }
       break;
     }
 
     case ServerPacket::Type::Broadcast: {
-      logArenaEvent(ArenaEvent::Broadcast(packet.stringData.get()));
+      logEvent(ClientEvent::Broadcast(packet.stringData.get()));
       break;
     }
 
@@ -87,7 +87,7 @@ void MultiplayerConnection::logEvent(const ClientEvent &event) {
   eventLog.push_back(event);
 }
 
-void MultiplayerConnection::logArenaEvent(const ArenaEvent &event) {
+void MultiplayerConnection::logArenaEvent(const sky::ArenaEvent &event) {
   StringPrinter p;
   event.print(p);
   appLog(p.getString(), LogOrigin::Engine);

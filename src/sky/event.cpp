@@ -48,20 +48,6 @@ void ArenaEvent::print(Printer &p) const {
   }
 }
 
-ArenaEvent ArenaEvent::Chat(const std::string &name,
-                            const std::string &message) {
-  ArenaEvent event(Type::Chat);
-  event.name = name;
-  event.message = message;
-  return event;
-}
-
-ArenaEvent ArenaEvent::Broadcast(const std::string &message) {
-  ArenaEvent event(Type::Broadcast);
-  event.message = message;
-  return event;
-}
-
 ArenaEvent ArenaEvent::Join(const std::string &name) {
   ArenaEvent event(Type::Join);
   event.name = name;

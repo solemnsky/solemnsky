@@ -140,14 +140,12 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
 
   AppState appState(window, profiler);
   ctrl->appState = &appState;
-  ctrl->attachState();
 
   while (window.isOpen()) {
     if (ctrl->quitting) window.close();
     if (ctrl->next) {
       ctrl = std::move(ctrl->next);
       ctrl->appState = &appState;
-      ctrl->attachState();
     }
 
     /*

@@ -116,7 +116,9 @@ class RollingSampler {
 };
 
 struct SamplerSnapshot {
+  SamplerSnapshot();
   SamplerSnapshot(const RollingSampler &sampler);
+
   float min, mean, max;
 };
 

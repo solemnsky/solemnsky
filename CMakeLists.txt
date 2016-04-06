@@ -51,12 +51,15 @@ add_library(solemnsky STATIC
         src/util/methods.cpp
         src/util/methods.h
 
+        src/util/printer.cpp
+        src/util/printer.h
+
         src/util/telegraph.cpp
         src/util/telegraph.h
 
         src/util/types.cpp
         src/util/types.h
-        src/server/servers/vanilla.cpp src/server/servers/vanilla.h src/util/printer.cpp src/util/printer.h)
+        )
 
 target_link_libraries(solemnsky
         enet
@@ -68,9 +71,17 @@ target_link_libraries(solemnsky
 
 ###### solemnsky_server
 add_executable(solemnsky_server
+        src/server/servers/vanilla.cpp
+        src/server/servers/vanilla.h
+
+        src/server/console.cpp
+        src/server/console.h
+
+        src/server/main.cpp
+
         src/server/server.cpp
         src/server/server.h
-        src/server/console.cpp src/server/console.h src/server/main.cpp)
+        )
 target_link_libraries(solemnsky_server
         solemnsky
         )
@@ -125,6 +136,8 @@ add_executable(solemnsky_client
         src/client/settingspage.cpp
         src/client/settingspage.h
 
+        src/client/main.cpp
+
         src/client/skyrender.cpp
         src/client/skyrender.h
 
@@ -156,7 +169,7 @@ add_executable(solemnsky_client
 
         src/ui/text.cpp
         src/ui/text.h
-        src/client/main.cpp)
+        )
 target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics
