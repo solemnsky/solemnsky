@@ -26,7 +26,7 @@ Client::Client() :
     settingsPage(shared),
     tryingToQuit(false),
 
-    profilerCooldown(100) {
+    profilerCooldown(1) {
   areChildren({&quitButton, &aboutButton, &closeButton, &backButton,
                &homePage, &listingPage, &settingsPage});
 }
@@ -45,6 +45,30 @@ Page &Client::referencePage(const PageType type) {
       return settingsPage;
     case PageType::Listing:
       return listingPage;
+  }
+}
+
+void Client::tick(float delta) {
+  ui::Control::tick(delta);
+
+  if (profilerCooldown.cool(delta)) {
+    profilerSnap = ui::ProfilerSnapshot(appState->profiler);
+    profilerCooldown.reset();
+  }
+
+  shared.uptime += delta;
+  shared.ui.tick(delta);
+
+  if (shared.game) {
+    shared.game->tick(delta);
+    if (shared.game->quitting) {
+      if (tryingToQuit) {
+        quitting = true;
+        return;
+      }
+      shared.game.reset();
+      shared.ui.blurGame();
+    }
   }
 }
 
@@ -86,24 +110,6 @@ void Client::drawPage(ui::Frame &f, const PageType type,
   });
 }
 
-void Client::tick(float delta) {
-  ui::Control::tick(delta);
-
-  shared.uptime += delta;
-  shared.ui.tick(delta);
-
-  if (shared.game) {
-    shared.game->tick(delta);
-    if (shared.game->quitting) {
-      if (tryingToQuit) {
-        quitting = true;
-        return;
-      }
-      shared.game.reset();
-      shared.ui.blurGame();
-    }
-  }
-}
 
 void Client::drawUI(ui::Frame &f) {
   const Clamped &gameFocusFactor = shared.ui.gameFocusFactor,
@@ -142,15 +148,21 @@ void Client::drawUI(ui::Frame &f) {
         // buttons that fade in as the page focuses
         backButton.render(f);
       });
+}
+
+void Client::drawGame(ui::Frame &f) {
+  shared.game->render(f);
 
   if (shared.settings.enableDebug) {
-    const float cycleTime =
-        shared.appState->profiler.logicTime.mean() +
-            shared.appState->profiler.renderTime.mean();
-
-    const float actualCycleTime = shared.appState->profiler.cycleTime.mean();
-
-    // TODO: cute debug HUD
+    f.drawText(
+        {10, 10},
+        [&](ui::TextFrame &tf) {
+          tf.print("cycle:" + profilerSnap.cycleTime.print());
+          tf.breakLine();
+          tf.print("logic:" + profilerSnap.logicTime.print());
+          tf.breakLine();
+          tf.print("render:" + profilerSnap.logicTime.print());
+        }, sf::Color::White, style.base.normalText);
   }
 }
 
@@ -158,14 +170,13 @@ void Client::render(ui::Frame &f) {
   const Clamped &gameFocusFactor = shared.ui.gameFocusFactor,
       &pageFocusFactor = shared.ui.pageFocusFactor;
 
-  if (shared.ui.gameFocused()) {
-    // just draw the game
-    if (shared.game) shared.game->render(f);
+  if (shared.ui.gameFocused() && shared.game) {
+    drawGame(f);
   } else {
     if (!shared.game) {
       f.drawSprite(textureOf(ResID::MenuBackground), {0, 0}, {0, 0, 1600, 900});
     } else {
-      shared.game->render(f);
+      drawGame(f);
       f.drawRect(
           {0, 0, 1600, 900},
           sf::Color(0, 0, 0,

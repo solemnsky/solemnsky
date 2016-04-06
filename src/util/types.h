@@ -120,6 +120,7 @@ struct SamplerSnapshot {
   SamplerSnapshot(const RollingSampler &sampler);
 
   float min, mean, max;
+  std::string print() const;
 };
 
 /****
