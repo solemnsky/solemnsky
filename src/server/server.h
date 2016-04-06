@@ -57,7 +57,7 @@ class ServerLogger: public sky::Subsystem {
  protected:
   void registerPlayer(sky::Player &player) override;
   void unregisterPlayer(sky::Player &player) override;
-  void onEvent(const ArenaEvent &event) override;
+  void onEvent(const sky::ArenaEvent &event) override;
 
  public:
 
@@ -86,7 +86,7 @@ class ServerExec {
   ServerLogger logger;
 
   void logEvent(const ServerEvent &event);
-  void logArenaEvent(const ArenaEvent &event);
+  void logArenaEvent(const sky::ArenaEvent &event);
   void processPacket(ENetPeer *client, const sky::ClientPacket &packet);
   void tick(float delta);
 

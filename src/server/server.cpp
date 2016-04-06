@@ -61,7 +61,7 @@ void ServerLogger::unregisterPlayer(sky::Player &player) {
 
 }
 
-void ServerLogger::onEvent(const ArenaEvent &event) {
+void ServerLogger::onEvent(const sky::ArenaEvent &event) {
   exec.logArenaEvent(event);
 }
 
@@ -80,7 +80,7 @@ void ServerExec::logEvent(const ServerEvent &event) {
   appLog(p.getString(), LogOrigin::Server);
 }
 
-void ServerExec::logArenaEvent(const ArenaEvent &event) {
+void ServerExec::logArenaEvent(const sky::ArenaEvent &event) {
   StringPrinter p;
   event.print(p);
   appLog(p.getString(), LogOrigin::Engine);
@@ -118,8 +118,6 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::Chat: {
-        logArenaEvent(ArenaEvent::Chat(
-            player->nickname, packet.stringData.get()));
         telegraphy.sendToClients(sky::ServerPacket::Chat(
             player->pid, packet.stringData.get()));
         break;

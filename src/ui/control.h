@@ -26,7 +26,7 @@ struct Profiler {
 };
 
 struct ProfilerSnapshot {
-  ProfilerSnapshot() = delete;
+  ProfilerSnapshot() = default; // 'null' defaults, all zeroes
   ProfilerSnapshot(const Profiler &profiler);
 
   SamplerSnapshot cycleTime, logicTime, renderTime;

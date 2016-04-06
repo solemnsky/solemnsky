@@ -20,7 +20,7 @@ class MultiplayerSubsystem: public sky::Subsystem {
   void registerPlayer(sky::Player &player) override;
   void unregisterPlayer(sky::Player &player) override;
 
-  void onEvent(const ArenaEvent &event) override;
+  void onEvent(const sky::ArenaEvent &event) override;
 
  public:
   MultiplayerSubsystem(sky::Arena &arena,
@@ -46,7 +46,7 @@ class MultiplayerConnection {
   void processPacket(const sky::ServerPacket &packet);
 
   void logEvent(const ClientEvent &event);
-  void logArenaEvent(const ArenaEvent &event);
+  void logArenaEvent(const sky::ArenaEvent &event);
 
  public:
   MultiplayerConnection(

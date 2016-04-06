@@ -35,6 +35,9 @@ float RollingSampler::min() const {
   return *std::min_element(data.begin(), data.end());
 }
 
+SamplerSnapshot::SamplerSnapshot() :
+    min(0), mean(0), max(0) { }
+
 SamplerSnapshot::SamplerSnapshot(const RollingSampler &sampler) :
     min(sampler.min()), mean(sampler.mean()), max(sampler.max()) { }
 
