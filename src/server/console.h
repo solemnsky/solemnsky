@@ -15,7 +15,8 @@ struct ConsoleCommand {
 
  public:
   ConsoleCommand() = delete;
-  ConsoleCommand(const std::string &clientCommand);
+
+  static optional<ConsoleCommand> read(const std::string &str);
 
   std::vector<std::string> arguments;
 };

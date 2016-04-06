@@ -50,16 +50,49 @@ Server::Server(ServerTelegraphy &telegraphy,
     sky(sky) { }
 
 /**
+ * ServerLogger.
+ */
+
+void ServerLogger::registerPlayer(sky::Player &player) {
+  player.data.push_back(nullptr);
+}
+
+void ServerLogger::unregisterPlayer(sky::Player &player) {
+
+}
+
+void ServerLogger::onEvent(const ArenaEvent &event) {
+  exec.logArenaEvent(event);
+}
+
+ServerLogger::ServerLogger(class ServerExec &exec, sky::Arena &arena) :
+    sky::Subsystem(arena), exec(exec) {
+  arena.forPlayers([&](sky::Player &p) { registerPlayer(p); });
+}
+
+/**
  * ServerExec.
  */
+
+void ServerExec::logEvent(const ServerEvent &event) {
+  StringPrinter p;
+  event.print(p);
+  appLog(p.getString(), LogOrigin::Server);
+}
+
+void ServerExec::logArenaEvent(const ArenaEvent &event) {
+  StringPrinter p;
+  event.print(p);
+  appLog(p.getString(), LogOrigin::Engine);
+}
 
 void ServerExec::processPacket(ENetPeer *client,
                                const sky::ClientPacket &packet) {
   using namespace sky;
-  // received a packet from a connected enet peer
 
   if (Player *player = telegraphy.playerFromPeer(client)) {
-    // the player has joined the arena
+    // the player is in the arena
+
     switch (packet.type) {
       case ClientPacket::Type::ReqPlayerDelta: {
         const PlayerDelta &delta = packet.playerDelta.get();
@@ -102,10 +135,10 @@ void ServerExec::processPacket(ENetPeer *client,
     }
 
     server->onPacket(client, *player, packet);
+
   } else {
-    // client is still connecting, we need to do a ReqJoin / AckJoin
-    // handshake, distribute an ArenaDelta to the other clients, and attach
-    // a sky::Player to the enet peer
+    // client hasn't joined the arena yet
+
     if (packet.type == ClientPacket::Type::ReqJoin) {
       sky::Player &newPlayer = arena.connectPlayer(*packet.stringData);
       client->data = &newPlayer;
@@ -121,15 +154,6 @@ void ServerExec::processPacket(ENetPeer *client,
   }
 }
 
-void ServerExec::logEvent(const ServerEvent &event) {
-  StringPrinter p;
-  event.print(p);
-  appLog(p.getString(), LogOrigin::Server);
-}
-
-void ServerExec::logArenaEvent(const ArenaEvent &event) {
-  logEvent(ServerEvent::Event(event));
-}
 
 void ServerExec::tick(float delta) {
   static ENetEvent event;
@@ -175,6 +199,7 @@ ServerExec::ServerExec(
     arena(arena),
     sky(this->arena, sky),
     server(server(telegraphy, this->arena, this->sky)),
+    logger(*this, this->arena),
     running(true) {
   logEvent(ServerEvent::Start(port, arena.name));
 }

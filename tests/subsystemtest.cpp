@@ -31,7 +31,9 @@ class LifeSubsystem: public sky::Subsystem {
   }
  public:
   LifeSubsystem(sky::Arena &arena) : sky::Subsystem(arena) {
-    for (auto &player : arena.players) registerPlayer(player.second);
+    arena.forPlayers([&](sky::Player &player) {
+      registerPlayer(player);
+    });
   }
 
   bool getLifeData(const sky::Player &player) {
@@ -65,7 +67,9 @@ class CounterSubsystem: public sky::Subsystem {
  public:
   CounterSubsystem(sky::Arena &arena, LifeSubsystem &lifeSubsystem) :
       sky::Subsystem(arena), lifeSubsystem(lifeSubsystem) {
-    for (auto &player : arena.players) registerPlayer(player.second);
+    arena.forPlayers([&](sky::Player &player) {
+      registerPlayer(player);
+    });
   }
 
   float getTimeData(const sky::Player &player) {
