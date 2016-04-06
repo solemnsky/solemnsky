@@ -72,8 +72,17 @@ void MultiplayerLobby::signalRead() {
     connection.requestTeamChange(1);
   if (blueButton.clickSignal)
     connection.requestTeamChange(2);
-  if (chatInput.inputSignal)
-    connection.transmit(sky::ClientPacket::Chat(chatInput.inputSignal.get()));
+  if (chatInput.inputSignal) {
+    const std::string &str = chatInput.inputSignal.get();
+    if (str.size() >= 1) {
+      if (str.size() > 1 and str[0] == '/')
+        connection.transmit(
+            sky::ClientPacket::RCon(str.substr(str.size() - 1)));
+      else
+        connection.transmit(
+            sky::ClientPacket::Chat(chatInput.inputSignal.get()));
+    }
+  }
 }
 
 void MultiplayerLobby::signalClear() {

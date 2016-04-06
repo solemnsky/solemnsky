@@ -85,11 +85,10 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::Chat: {
-        sky::ServerMessage message =
-            ServerMessage::Chat(player->pid, packet.stringData.get());
         logArenaEvent(ArenaEvent::Chat(
             player->nickname, packet.stringData.get()));
-        telegraphy.sendToClients(sky::ServerPacket::Message(message));
+        telegraphy.sendToClients(sky::ServerPacket::Chat(
+            player->pid, packet.stringData.get()));
         break;
       }
 

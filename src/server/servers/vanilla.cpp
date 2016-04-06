@@ -17,10 +17,9 @@ void VanillaServer::onPacket(ENetPeer *const client,
                              sky::Player &player,
                              const sky::ClientPacket &packet) {
   if (packet.type == sky::ClientPacket::Type::RCon) {
-    if (packet.stringData.get() == "some command") {
-      telegraphy.sendToClients(sky::ServerPacket::Message(
-          sky::ServerMessage::Broadcast("some effect")
-      ));
+    if (packet.stringData.get() == "auth password") {
+      telegraphy.sendToClients(sky::ServerPacket::Broadcast(
+          "our secure authentication algorithm has succeeded"));
     }
   }
 }
