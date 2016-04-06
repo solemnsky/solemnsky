@@ -48,10 +48,29 @@ class Server: public sky::Subsystem {
 };
 
 /**
+ * Subsystem that just logs arena events through the onEvent callback.
+ */
+class ServerLogger: public sky::Subsystem {
+ private:
+  class ServerExec &exec;
+
+ protected:
+  void registerPlayer(sky::Player &player) override;
+  void unregisterPlayer(sky::Player &player) override;
+  void onEvent(const ArenaEvent &event) override;
+
+ public:
+
+  ServerLogger(class ServerExec &exec, sky::Arena &arena);
+};
+
+/**
  * State and logic associated with the execution of a Server.
  * We manage the basics here.
  */
 class ServerExec {
+  friend class ServerLogger;
+
  private:
   tg::UsageFlag flag; // for enet global state
   double uptime;
@@ -63,6 +82,8 @@ class ServerExec {
   sky::Arena arena;
   sky::Sky sky;
   std::unique_ptr<Server> server;
+
+  ServerLogger logger;
 
   void logEvent(const ServerEvent &event);
   void logArenaEvent(const ArenaEvent &event);

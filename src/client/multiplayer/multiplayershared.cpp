@@ -62,7 +62,7 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
     }
 
     case ServerPacket::Type::Chat: {
-      if (sky::Player * player = arena->getPlayer(
+      if (sky::Player *player = arena->getPlayer(
           packet.pid.get())) {
         logArenaEvent(ArenaEvent::Chat(
             player->nickname, packet.stringData.get()));
@@ -81,11 +81,17 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
 }
 
 void MultiplayerConnection::logEvent(const ClientEvent &event) {
+  StringPrinter p;
+  event.print(p);
+  appLog(p.getString(), LogOrigin::Client);
   eventLog.push_back(event);
 }
 
 void MultiplayerConnection::logArenaEvent(const ArenaEvent &event) {
-  logEvent(ClientEvent::Event(event));
+  StringPrinter p;
+  event.print(p);
+  appLog(p.getString(), LogOrigin::Engine);
+  eventLog.push_back(ClientEvent::Event(event));
 }
 
 MultiplayerConnection::MultiplayerConnection(

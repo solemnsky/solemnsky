@@ -61,6 +61,7 @@ void Multiplayer::tick(float delta) {
   if (connection.disconnecting) return;
 
   if (connection.arena) {
+    connection.arena->tick(delta);
     if (!view or view->target != connection.arena->mode) view = mkView();
     view->tick(delta);
   }

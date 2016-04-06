@@ -4,8 +4,6 @@
 ConsoleCommand::ConsoleCommand(const ConsoleCommand::Type type) :
     type(type) { }
 
-ConsoleCommand::ConsoleCommand(const std::string &clientCommand) {
-
+optional<ConsoleCommand> ConsoleCommand::read(const std::string &str) {
+  return {};
 }
-
-
