@@ -9,9 +9,10 @@
 #include <list>
 #include <vector>
 
-struct ArenaEvent; // event.h
 
 namespace sky {
+
+struct ArenaEvent; // event.h
 
 /**
  * Player.
@@ -243,6 +244,8 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   void forPlayers(std::function<void(Player &)> f);
 
   void tick(const float delta);
+  void chat(const PID pid, const std::string &message);
+  // chat and broadcasts pass through
 };
 
 }

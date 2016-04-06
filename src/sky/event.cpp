@@ -1,5 +1,7 @@
 #include "event.h"
 
+namespace sky {
+
 /**
  * ArenaEvent.
  */
@@ -8,14 +10,6 @@ ArenaEvent::ArenaEvent(const Type type) : type(type) { }
 
 void ArenaEvent::print(Printer &p) const {
   switch (type) {
-    case Type::Chat: {
-      p.print("[chat] " + *name + ": " + *message);
-      break;
-    }
-    case Type::Broadcast: {
-      p.print("[server] " + *message);
-      break;
-    }
     case Type::Join: {
       p.print(inQuotes(name.get()) + " joined the game!");
       break;
@@ -104,6 +98,8 @@ ArenaEvent ArenaEvent::ModeChange(const sky::ArenaMode mode) {
   return event;
 }
 
+}
+
 /**
  * ServerEvent.
  */
@@ -145,7 +141,7 @@ ServerEvent ServerEvent::Start(const Port port,
   return event;
 }
 
-ServerEvent ServerEvent::Event(const ArenaEvent &arenaEvent) {
+ServerEvent ServerEvent::Event(const sky::ArenaEvent &arenaEvent) {
   ServerEvent event(Type::Event);
   event.arenaEvent = arenaEvent;
   return event;
@@ -188,15 +184,23 @@ void ClientEvent::print(Printer &p) const {
     }
     case Type::Disconnect: {
       switch (disconnect.get()) {
-        case DisconnectType::Graceful: {
+        case sky::DisconnectType::Graceful: {
           p.print("Disconnected from server gracefully.");
           break;
         }
-        case DisconnectType::Timeout: {
+        case sky::DisconnectType::Timeout: {
           p.print("Disconnected from server due to timeout.");
           break;
         }
       }
+    }
+    case Type::Chat: {
+      p.print("[chat] " + name.get() + ": " + message.get());
+      break;
+    }
+    case Type::Broadcast: {
+      p.print("[broadcast] " + message.get());
+      break;
     }
   }
 }
@@ -209,21 +213,33 @@ ClientEvent ClientEvent::Connect(const std::string &name,
   return event;
 }
 
-ClientEvent ClientEvent::Event(const ArenaEvent &arenaEvent) {
+ClientEvent ClientEvent::Event(const sky::ArenaEvent &arenaEvent) {
   ClientEvent event(Type::Event);
   event.arenaEvent = arenaEvent;
   return event;
 }
 
 ClientEvent ClientEvent::Disconnect(const double uptime,
-                                    const DisconnectType disconnect) {
+                                    const sky::DisconnectType disconnect) {
   ClientEvent event(Type::Disconnect);
   event.uptime = uptime;
   event.disconnect = disconnect;
   return event;
 }
 
+ClientEvent ClientEvent::Chat(const std::string &name,
+                              const std::string &message) {
+  ClientEvent event(Type::Chat);
+  event.name = name;
+  event.message = message;
+  return event;
+}
 
+ClientEvent ClientEvent::Broadcast(const std::string &message) {
+  ClientEvent event(Type::Broadcast);
+  event.message = message;
+  return event;
+}
 
 
 

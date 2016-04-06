@@ -75,21 +75,21 @@ TEST_F(TelegraphTest, Protocol) {
 
     ASSERT_EQ(bool(packet), true);
     EXPECT_EQ(packet->type, ClientPacket::Type::ReqJoin);
-    EXPECT_EQ(*packet->stringData, "nickname");
+    EXPECT_EQ(packet->stringData.get(), "nickname");
   }
 
   {
     serverTelegraph.transmit(
         server, clientPeer,
-        ServerPacket::Message(ServerMessage::Broadcast("some broadcast")));
+        ServerPacket::Broadcast("some broadcast"));
     event = processHosts(client, server);
     const optional<ServerPacket> &packet =
         clientTelegraph.receive(event.packet);
 
     ASSERT_EQ(bool(packet), true);
-    EXPECT_EQ(packet->type, ServerPacket::Type::Message);
-    ASSERT_EQ(bool(packet->message), true);
-    EXPECT_EQ(packet->stringData->contents, "some broadcast");
+    EXPECT_EQ(packet->type, ServerPacket::Type::Broadcast);
+    ASSERT_EQ(bool(packet->stringData), true);
+    EXPECT_EQ(packet->stringData.get(), "some broadcast");
   }
 
   {

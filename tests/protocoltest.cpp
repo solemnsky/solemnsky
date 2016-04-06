@@ -78,9 +78,8 @@ TEST_F(ProtocolTest, Invariant) {
   EXPECT_EQ(verifyValue(packet), false);
 
   sky::ServerPacket sPacket =
-      sky::ServerPacket::Message(
-          sky::ServerMessage::Broadcast("some broadcast"));
+      sky::ServerPacket::Broadcast("some broadcast");
   EXPECT_EQ(sPacket.verifyStructure(), true);
-  sPacket.stringData->type = sky::ServerMessage::Type::Chat;
+  sPacket.type = sky::ServerPacket::Type::Chat;
   EXPECT_EQ(sPacket.verifyStructure(), false);
 }
