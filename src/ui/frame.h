@@ -61,7 +61,7 @@ class Frame {
       const std::string &string,
       const sf::Color &color, const TextFormat &format) {
     return drawText(pos, [&string](TextFrame &render) {
-      render.drawString(string);
+      render.print(string);
     }, color, format);
   }
 

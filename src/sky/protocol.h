@@ -82,53 +82,18 @@ struct ClientPacket: public VerifyStructure {
 };
 
 /**
- * Messages from the server, of varied nature.
- */
-struct ServerMessage: public VerifyStructure {
-  enum class Type {
-    Chat, // a client said something
-    Broadcast // an important message to be displayed in big letters
-  };
-
-  ServerMessage();
-  ServerMessage(const Type type);
-
-  template<typename Archive>
-  void serialize(Archive &ar) {
-    ar(type);
-    switch (type) {
-      case Type::Chat: {
-        ar(from, contents);
-        break;
-      }
-      case Type::Broadcast: {
-        ar(contents);
-        break;
-      }
-    }
-  }
-
-  Type type;
-  optional<PID> from; // who the message is from, potentially
-  std::string contents;
-
-  bool verifyStructure() const override;
-
-  static ServerMessage Chat(const PID &from,
-                            const std::string &contents);
-  static ServerMessage Broadcast(const std::string &contents);
-};
-
-/**
  * Protocol verbs for the server.
  */
 struct ServerPacket: public VerifyStructure {
   enum class Type {
     Pong,
-    Message, // message for a client to log
     Init, // acknowledge a ReqJoin, send ArenaInitializer
     DeltaArena, // broadcast a change in the Arena
     DeltaSky, // broadcast a change in the Arena's sky
+
+    Chat, // chat relay, to all clients
+    Broadcast, // broadcast message, to any subset of clients
+    RCon // rcon message, to one client
   };
 
   ServerPacket();
@@ -140,10 +105,6 @@ struct ServerPacket: public VerifyStructure {
     switch (type) {
       case Type::Pong:
         break;
-      case Type::Message: {
-        ar(message);
-        break;
-      }
       case Type::Init: {
         ar(pid, arenaInit, skyInit);
         break;
@@ -156,25 +117,39 @@ struct ServerPacket: public VerifyStructure {
         ar(skyDelta);
         break;
       }
+      case Type::Chat: {
+        ar(stringData);
+        break;
+      }
+      case Type::Broadcast: {
+        ar(stringData);
+        break;
+      }
+      case Type::RCon: {
+        ar(stringData);
+        break;
+      }
     }
   }
 
   Type type;
-  optional<ServerMessage> message;
   optional<PID> pid;
   optional<ArenaInitializer> arenaInit;
   optional<ArenaDelta> arenaDelta;
   optional<SkyInitializer> skyInit;
   optional<SkyDelta> skyDelta;
+  optional<std::string> stringData;
 
   bool verifyStructure() const override;
 
   static ServerPacket Pong();
-  static ServerPacket Message(const ServerMessage &message);
   static ServerPacket Init(const PID pid, const ArenaInitializer &arenaInit,
                            const SkyInitializer &init);
   static ServerPacket DeltaArena(const ArenaDelta &arenaDelta);
   static ServerPacket DeltaSky(const SkyDelta &skyDelta);
+  static ServerPacket Chat(const PID pid, const std::string &chat);
+  static ServerPacket Broadcast(const std::string &broadcast);
+  static ServerPacket RCon(const std::string &message);
 };
 
 }

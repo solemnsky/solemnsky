@@ -7,7 +7,8 @@
 #include "util/types.h"
 
 /**
- * Actions a key-press can achieve in a client.
+ * Actions a key-press can achieve in a client. Like sky::Action but for the
+ * client instead of the sky.
  */
 enum class ClientAction {
   Chat, Scoreboard

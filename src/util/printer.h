@@ -25,11 +25,11 @@ class StringPrinter: public Printer {
  public:
   StringPrinter() = default;
 
-  void print(const std::string &str) override;
+  void print(const std::string &str) override final;
   void setColor(const unsigned char,
                 const unsigned char,
-                const unsigned char) override { }
-  void breakLine() override;
+                const unsigned char) override final { }
+  void breakLine() override final;
 
   std::string getString() const;
 };

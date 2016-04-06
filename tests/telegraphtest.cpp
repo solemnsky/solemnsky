@@ -89,7 +89,7 @@ TEST_F(TelegraphTest, Protocol) {
     ASSERT_EQ(bool(packet), true);
     EXPECT_EQ(packet->type, ServerPacket::Type::Message);
     ASSERT_EQ(bool(packet->message), true);
-    EXPECT_EQ(packet->message->contents, "some broadcast");
+    EXPECT_EQ(packet->stringData->contents, "some broadcast");
   }
 
   {

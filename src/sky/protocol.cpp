@@ -26,6 +26,8 @@ bool ClientPacket::verifyStructure() const {
       return true;
     case Type::Chat:
       return verifyFields(stringData);
+    case Type::RCon:
+      return verifyFields(stringData);
   }
   return false;
 }
@@ -73,38 +75,6 @@ ClientPacket ClientPacket::RCon(const std::string &command) {
 }
 
 /**
- * ServerMessage.
- */
-
-ServerMessage::ServerMessage() { }
-
-ServerMessage::ServerMessage(const Type type) : type(type) { }
-
-bool ServerMessage::verifyStructure() const {
-  switch (type) {
-    case Type::Chat:
-      return verifyFields(from);
-    case Type::Broadcast:
-      return true;
-  }
-  return false;
-}
-
-ServerMessage ServerMessage::Chat(const PID &from,
-                                  const std::string &contents) {
-  ServerMessage message(Type::Chat);
-  message.from = from;
-  message.contents = contents;
-  return message;
-}
-
-ServerMessage ServerMessage::Broadcast(const std::string &contents) {
-  ServerMessage message(Type::Broadcast);
-  message.contents = contents;
-  return message;
-}
-
-/**
  * ServerPacket.
  */
 
@@ -116,26 +86,24 @@ bool ServerPacket::verifyStructure() const {
   switch (type) {
     case Type::Pong:
       return true;
-    case Type::Message:
-      return verifyFields(message);
     case Type::Init:
       return verifyFields(pid, arenaInit, skyInit);
     case Type::DeltaArena:
       return verifyFields(arenaDelta);
     case Type::DeltaSky:
       return verifyFields(skyDelta);
+    case Type::Chat:
+      return verifyFields(pid, stringData);
+    case Type::Broadcast:
+      return verifyFields(stringData);
+    case Type::RCon:
+      return verifyFields(stringData);
   }
   return false;
 }
 
 ServerPacket ServerPacket::Pong() {
   return ServerPacket(ServerPacket::Type::Pong);
-}
-
-ServerPacket ServerPacket::Message(const ServerMessage &message) {
-  ServerPacket packet(Type::Message);
-  packet.message = message;
-  return packet;
 }
 
 ServerPacket ServerPacket::Init(const PID pid,
@@ -157,6 +125,26 @@ ServerPacket ServerPacket::DeltaArena(const ArenaDelta &arenaDelta) {
 ServerPacket ServerPacket::DeltaSky(const SkyDelta &skyDelta) {
   ServerPacket packet(Type::DeltaSky);
   packet.skyDelta = skyDelta;
+  return packet;
+}
+
+
+ServerPacket ServerPacket::Chat(const PID pid, const std::string &chat) {
+  ServerPacket packet(Type::Chat);
+  packet.pid = pid;
+  packet.stringData = chat;
+  return packet;
+}
+
+ServerPacket ServerPacket::Broadcast(const std::string &broadcast) {
+  ServerPacket packet(Type::Broadcast);
+  packet.stringData = broadcast;
+  return packet;
+}
+
+ServerPacket ServerPacket::RCon(const std::string &message) {
+  ServerPacket packet(Type::RCon);
+  packet.stringData = message;
   return packet;
 }
 
