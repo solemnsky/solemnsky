@@ -18,7 +18,7 @@ TEST_F(UtilTest, RollingSamplerTest) {
   sampler.push(7);
   EXPECT_EQ(sampler.min(), 5);
   EXPECT_EQ(sampler.max(), 7);
-  EXPECT_EQ(sampler.average(), 6);
+  EXPECT_EQ(sampler.mean(), 6);
   sampler.push(8);
   EXPECT_EQ(sampler.min(), 6);
 }

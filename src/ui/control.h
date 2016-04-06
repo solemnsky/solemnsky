@@ -25,6 +25,13 @@ struct Profiler {
   RollingSampler primCount;
 };
 
+struct ProfilerSnapshot {
+  ProfilerSnapshot() = delete;
+  ProfilerSnapshot(const Profiler &profiler);
+
+  SamplerSnapshot cycleTime, logicTime, renderTime;
+};
+
 /**
  * Various lower level settings and SFML-provided state for us to access
  * occasionally.
@@ -48,32 +55,22 @@ class Control {
   }
 
  public:
+  Control();
   virtual ~Control() { }
 
-  /**
-   * Safe to use in any of the callback functions iff you're a
-   * top-level control.
-   */
   AppState *appState;
 
-  virtual void attachState() { }
-  // signal that appState is initialized
+  // flags
+  std::unique_ptr<Control> next;
+  bool quitting;
 
-  /**
-   * Signals to the app loop.
-   */
-  std::unique_ptr<Control> next{nullptr};
-  bool quitting{false};
-
-  /**
-   * Callbacks to the app loop.
-   */
+  // callbacks
   virtual void tick(float delta);
   virtual void render(Frame &f);
   virtual bool handle(const sf::Event &event);
-  virtual void reset(); // reset UI elements
-  // return true to prevent propagation
+  virtual void reset();
 
+  // signals
   virtual void signalRead();
   virtual void signalClear();
 };

@@ -24,7 +24,9 @@ Client::Client() :
     homePage(shared),
     listingPage(shared),
     settingsPage(shared),
-    tryingToQuit(false) {
+    tryingToQuit(false),
+
+    profilerCooldown(100) {
   areChildren({&quitButton, &aboutButton, &closeButton, &backButton,
                &homePage, &listingPage, &settingsPage});
 }
@@ -82,11 +84,6 @@ void Client::drawPage(ui::Frame &f, const PageType type,
       page.render(f);
     });
   });
-}
-
-void Client::attachState() {
-  shared.appState = appState;
-  forAllPages([](Page &page) { page.attachState(); });
 }
 
 void Client::tick(float delta) {
@@ -148,10 +145,10 @@ void Client::drawUI(ui::Frame &f) {
 
   if (shared.settings.enableDebug) {
     const float cycleTime =
-        shared.appState->profiler.logicTime.average() +
-            shared.appState->profiler.renderTime.average();
+        shared.appState->profiler.logicTime.mean() +
+            shared.appState->profiler.renderTime.mean();
 
-    const float actualCycleTime = shared.appState->profiler.cycleTime.average();
+    const float actualCycleTime = shared.appState->profiler.cycleTime.mean();
 
     // TODO: cute debug HUD
   }

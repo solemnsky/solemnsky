@@ -19,18 +19,24 @@ void RollingSampler::push(const float value) {
   data.push_back(value);
 }
 
-float RollingSampler::average() const {
+float RollingSampler::mean() const {
+  if (data.size() == 0) return 0;
   return std::accumulate(data.begin(), data.end(), 0, std::plus<float>())
       / data.size();
 }
 
 float RollingSampler::max() const {
+  if (data.size() == 0) return 0;
   return *std::max_element(data.begin(), data.end());
 }
 
 float RollingSampler::min() const {
+  if (data.size() == 0) return 0;
   return *std::min_element(data.begin(), data.end());
 }
+
+SamplerSnapshot::SamplerSnapshot(const RollingSampler &sampler) :
+    min(sampler.min()), mean(sampler.mean()), max(sampler.max()) { }
 
 /**
  * Cooldown.

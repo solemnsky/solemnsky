@@ -110,9 +110,14 @@ class RollingSampler {
 
   void push(const float value);
 
-  float average() const;
+  float mean() const;
   float max() const;
   float min() const;
+};
+
+struct SamplerSnapshot {
+  SamplerSnapshot(const RollingSampler &sampler);
+  float min, mean, max;
 };
 
 /****
