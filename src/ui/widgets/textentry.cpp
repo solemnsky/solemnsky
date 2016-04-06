@@ -123,7 +123,7 @@ void TextEntry::render(Frame &f) {
     f.drawRect({}, style.dimensions, style.focusedColor);
     f.drawText(
         sf::Vector2f(sidePadding - scroll, 0), [&](TextFrame &tf) {
-          tf.drawString(contents.substr(0, size_t(cursor)));
+          tf.print(contents.substr(0, size_t(cursor)));
           const float scroll =
               (tf.drawOffset.x > (style.dimensions.x + sidePadding))
               ? tf.drawOffset.x - style.dimensions.x + 2 * sidePadding : 0;
@@ -132,7 +132,7 @@ void TextEntry::render(Frame &f) {
               {sidePadding + tf.drawOffset.x - scroll +
                   cursorWidth, style.dimensions.y},
               style.textColor);
-          tf.drawString(contents.substr(size_t(cursor)));
+          tf.print(contents.substr(size_t(cursor)));
         }, style.textColor, textFormat);
   } else {
     f.drawRect({}, style.dimensions,

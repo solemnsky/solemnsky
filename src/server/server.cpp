@@ -49,7 +49,6 @@ Server::Server(ServerTelegraphy &telegraphy,
     telegraphy(telegraphy),
     sky(sky) { }
 
-
 /**
  * ServerExec.
  */

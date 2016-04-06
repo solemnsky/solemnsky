@@ -1,5 +1,5 @@
 /**
- * Clearly divided classes of interfaces that make up the client.
+ * Clearly divided classes of GUI elements that make up the client.
  */
 #pragma once
 #include "clientshared.h"

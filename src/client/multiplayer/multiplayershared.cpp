@@ -53,18 +53,18 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
     }
 
     case ServerPacket::Type::Message: {
-      switch (packet.message->type) {
+      switch (packet.stringData->type) {
         case ServerMessage::Type::Chat: {
           if (sky::Player *player = arena->getPlayer(
-              packet.message->from.get())) {
+              packet.stringData->from.get())) {
             logArenaEvent(ArenaEvent::Chat(
-                player->nickname, packet.message->contents));
+                player->nickname, packet.stringData->contents));
           }
           break;
         }
         case ServerMessage::Type::Broadcast: {
           logArenaEvent(ArenaEvent::Broadcast(
-              packet.message->contents));
+              packet.stringData->contents));
           break;
         }
       }
