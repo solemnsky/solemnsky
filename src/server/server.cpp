@@ -120,8 +120,11 @@ void ServerExec::processPacket(ENetPeer *client,
     }
   }
 }
+
 void ServerExec::logEvent(const ServerEvent &event) {
-  appLog(printToString(event.print), LogOrigin::Server);
+  StringPrinter p;
+  event.print(p);
+  appLog(p.getString(), LogOrigin::Server);
 }
 
 void ServerExec::logArenaEvent(const ArenaEvent &event) {
@@ -171,7 +174,7 @@ ServerExec::ServerExec(
     telegraphy(host, telegraph),
     arena(arena),
     sky(this->arena, sky),
-    server(std::move(server(arena, sky))) {
+    server(server(telegraphy, this->arena, this->sky)) {
   logEvent(ServerEvent::Start(port, arena.name));
 }
 

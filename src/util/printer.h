@@ -33,7 +33,3 @@ class StringPrinter: public Printer {
 
   std::string getString() const;
 };
-
-std::string printToString(std::function<void(Printer &)> print);
-
-
