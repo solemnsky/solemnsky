@@ -94,18 +94,28 @@ ServerEvent::ServerEvent(const Type type) : type(type) { }
 
 void ServerEvent::print(Printer &p) const {
   switch (type) {
-    case Type::Start:
+    case Type::Start: {
       p.print("Started " + inQuotes(name.get())
                   + " on port " + std::to_string(port.get()));
-    case Type::Event:
+      break;
+    }
+    case Type::Event: {
       arenaEvent->print(p);
-    case Type::Stop:
+      break;
+    }
+    case Type::Stop: {
       p.print("Stopped server after " + std::to_string(uptime.get())
                   + " seconds of uptime");
-    case Type::Connect:
+      break;
+    }
+    case Type::Connect: {
       p.print("Client connected: " + inQuotes(name.get()));
-    case Type::Disconnect:
+      break;
+    }
+    case Type::Disconnect: {
       p.print("Client disconnected: " + inQuotes(name.get()));
+      break;
+    }
   }
 }
 
@@ -149,17 +159,25 @@ ClientEvent::ClientEvent(const Type type) : type(type) { }
 
 void ClientEvent::print(Printer &p) const {
   switch (type) {
-    case Type::Connect:
+    case Type::Connect: {
       p.print("Connected to " + inQuotes(name.get())
                   + " @ " + ipAddr->toString());
-    case Type::Event:
+      break;
+    }
+    case Type::Event: {
       arenaEvent->print(p);
+      break;
+    }
     case Type::Disconnect: {
       switch (disconnect.get()) {
-        case DisconnectType::Graceful:
+        case DisconnectType::Graceful: {
           p.print("Disconnected from server gracefully.");
-        case DisconnectType::Timeout:
+          break;
+        }
+        case DisconnectType::Timeout: {
           p.print("Disconnected from server due to timeout.");
+          break;
+        }
       }
     }
   }
