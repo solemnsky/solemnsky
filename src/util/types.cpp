@@ -41,6 +41,14 @@ SamplerSnapshot::SamplerSnapshot() :
 SamplerSnapshot::SamplerSnapshot(const RollingSampler &sampler) :
     min(sampler.min()), mean(sampler.mean()), max(sampler.max()) { }
 
+std::string printMs(float ms) {
+  return std::to_string(int(std::round(ms * 1000)));
+}
+
+std::string SamplerSnapshot::print() const {
+  return printMs(min) + ";" + printMs(mean) + ";" + printMs(max);
+}
+
 /**
  * Cooldown.
  */
