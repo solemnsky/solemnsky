@@ -52,31 +52,26 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
       break;
     }
 
-    case ServerPacket::Type::Message: {
-      switch (packet.stringData->type) {
-        case ServerMessage::Type::Chat: {
-          if (sky::Player *player = arena->getPlayer(
-              packet.stringData->from.get())) {
-            logArenaEvent(ArenaEvent::Chat(
-                player->nickname, packet.stringData->contents));
-          }
-          break;
-        }
-        case ServerMessage::Type::Broadcast: {
-          logArenaEvent(ArenaEvent::Broadcast(
-              packet.stringData->contents));
-          break;
-        }
-      }
-      break;
-    }
-
     case ServerPacket::Type::DeltaArena: {
       arena->applyDelta(packet.arenaDelta.get());
       break;
     }
 
     case ServerPacket::Type::DeltaSky: {
+      break;
+    }
+
+    case ServerPacket::Type::Chat: {
+      if (sky::Player * player = arena->getPlayer(
+          packet.pid.get())) {
+        logArenaEvent(ArenaEvent::Chat(
+            player->nickname, packet.stringData.get()));
+      }
+      break;
+    }
+
+    case ServerPacket::Type::Broadcast: {
+      logArenaEvent(ArenaEvent::Broadcast(packet.stringData.get()));
       break;
     }
 
