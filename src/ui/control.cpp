@@ -7,12 +7,28 @@
 
 namespace ui {
 
+/**
+ * Profiler.
+ */
+
+Profiler::Profiler(int size) :
+    cycleTime(size), logicTime(size),
+    renderTime(size), primCount(size) { }
+
+ProfilerSnapshot::ProfilerSnapshot(const Profiler &profiler) :
+    cycleTime(profiler.cycleTime), logicTime(profiler.logicTime),
+    renderTime(profiler.renderTime) { }
 
 /**
  * Control.
  */
 
-void ui::Control::tick(float delta) {
+Control::Control() :
+    appState(nullptr),
+    next(nullptr),
+    quitting(false) { }
+
+void Control::tick(float delta) {
   for (auto child : children) child->tick(delta);
 }
 
@@ -36,16 +52,6 @@ void Control::signalRead() { // process signals
 void Control::signalClear() { // clear signals
   for (auto child : children) child->signalClear();
 }
-
-
-/**
- * RollingSampler and Profiler.
- */
-
-
-Profiler::Profiler(int size) :
-    cycleTime(size), logicTime(size),
-    renderTime(size), primCount(size) { }
 
 /**
  * runSFML.
@@ -117,7 +123,6 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
   window.setKeyRepeatEnabled(false);
 
   ui::Profiler profiler{100};
-  Cooldown profileCooldown{100};
   Cooldown resizeCooldown{1};
 
   sf::Clock cycleClock, profileClock;
@@ -138,14 +143,6 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
   ctrl->attachState();
 
   while (window.isOpen()) {
-    if (profileCooldown.cool(1)) {
-      appLog(
-          "cycleTime:  " + std::to_string(profiler.cycleTime.max())
-              + "\nlogicTime:  " + std::to_string(profiler.logicTime.max())
-              + "\nrenderTime: " + std::to_string(profiler.renderTime.max())
-      );
-      profileCooldown.reset();
-    }
     if (ctrl->quitting) window.close();
     if (ctrl->next) {
       ctrl = std::move(ctrl->next);

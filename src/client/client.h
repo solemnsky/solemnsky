@@ -37,6 +37,9 @@ class Client: public ui::Control {
   SettingsPage settingsPage;
   bool tryingToQuit; // trying to exit, waiting on the game to close
 
+  Cooldown profilerCooldown;
+  ui::ProfilerSnapshot profilerSnap;
+
   /**
    * Helpers.
    */
@@ -53,7 +56,6 @@ class Client: public ui::Control {
   /**
    * Control interface.
    */
-  void attachState() override;
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
