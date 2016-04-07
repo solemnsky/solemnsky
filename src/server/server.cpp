@@ -58,7 +58,6 @@ void ServerShared::logArenaEvent(const sky::ArenaEvent &event) {
   appLog(p.getString(), LogOrigin::Engine);
 }
 
-
 /**
  * Server.
  */

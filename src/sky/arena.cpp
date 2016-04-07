@@ -237,8 +237,8 @@ void Arena::applyDelta(const ArenaDelta &delta) {
 
     case ArenaDelta::Type::Mode: {
       if (mode != *delta.mode) {
-        onEvent(ArenaEvent::ModeChange(mode));
         mode = *delta.mode;
+        onEvent(ArenaEvent::ModeChange(mode));
       }
       break;
     }
