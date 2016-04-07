@@ -38,7 +38,7 @@ void ArenaEvent::print(Printer &p) const {
           break;
         }
         case sky::ArenaMode::Game: {
-          p.print("** Began game on " + *name + " **");
+          p.print("** Entered game. **");
           break;
         }
         case sky::ArenaMode::Scoring: {
