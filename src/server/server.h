@@ -12,30 +12,43 @@
 #include <iostream>
 
 /**
- * Telegraphy state and utilities for use by the Server and the ServerExec.
+ * Methods that the ServerExec exposes for use by Server and ServerLogger.
  */
-struct ServerTelegraphy {
-  ServerTelegraphy(tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph);
+struct ServerShared {
+ private:
+  class ServerExec &exec; // TODO: justify use
+
+ public:
+  ServerShared(tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph,
+               class ServerExec &exec);
 
   tg::Host &host;
   tg::Telegraph<sky::ClientPacket> &telegraph;
 
   sky::Player *playerFromPeer(ENetPeer *peer) const;
+
+  // transmission
   void sendToClients(const sky::ServerPacket &packet);
   void sendToClientsExcept(const PID pid,
                            const sky::ServerPacket &packet);
   void sendToClient(ENetPeer *const client,
                     const sky::ServerPacket &packet);
+
+  // logging events
+  void logEvent(const ServerEvent &event);
+  void logArenaEvent(const sky::ArenaEvent &event);
 };
 
 /**
  * The Server abstraction: a sky::Arena subsystem with additional callbacks
- * for networking and access to a ServerTelegraphy object.
+ * for networking and access to a ServerShared object.
  */
 class Server: public sky::Subsystem {
   friend class ServerExec;
+  // callbacks are protected, in the style of sky::Subsystem
+
  protected:
-  ServerTelegraphy &telegraphy;
+  ServerShared &shared;
   sky::Sky &sky;
 
   virtual void onPacket(ENetPeer *const client,
@@ -43,7 +56,7 @@ class Server: public sky::Subsystem {
                         const sky::ClientPacket &packet) = 0;
 
  public:
-  Server(ServerTelegraphy &telegraphy, sky::Arena &arena, sky::Sky &sky);
+  Server(ServerShared &shared, sky::Arena &arena, sky::Sky &sky);
 
 };
 
@@ -52,7 +65,7 @@ class Server: public sky::Subsystem {
  */
 class ServerLogger: public sky::Subsystem {
  private:
-  class ServerExec &exec;
+  ServerShared &shared;
 
  protected:
   void registerPlayer(sky::Player &player) override;
@@ -60,8 +73,7 @@ class ServerLogger: public sky::Subsystem {
   void onEvent(const sky::ArenaEvent &event) override;
 
  public:
-
-  ServerLogger(class ServerExec &exec, sky::Arena &arena);
+  ServerLogger(ServerShared &shared, sky::Arena &arena);
 };
 
 /**
@@ -77,7 +89,7 @@ class ServerExec {
 
   tg::Host host;
   tg::Telegraph<sky::ClientPacket> telegraph;
-  ServerTelegraphy telegraphy;
+  ServerShared shared;
 
   sky::Arena arena;
   sky::Sky sky;
@@ -85,8 +97,6 @@ class ServerExec {
 
   ServerLogger logger;
 
-  void logEvent(const ServerEvent &event);
-  void logArenaEvent(const sky::ArenaEvent &event);
   void processPacket(ENetPeer *client, const sky::ClientPacket &packet);
   void tick(float delta);
 
@@ -95,7 +105,7 @@ class ServerExec {
              const sky::ArenaInitializer &arena,
              const sky::SkyInitializer &sky,
              std::function<std::unique_ptr<Server>(
-                 ServerTelegraphy &, sky::Arena &, sky::Sky &)> server);
+                 ServerShared &, sky::Arena &, sky::Sky &)> server);
 
   void run();
 

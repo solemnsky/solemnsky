@@ -82,6 +82,9 @@ class MultiplayerConnection {
   void poll(const float delta);
   void disconnect();
 
+  void chat(const std::string &message);
+  void rcon(const std::string &command);
+
   void requestTeamChange(const sky::Team team);
 };
 

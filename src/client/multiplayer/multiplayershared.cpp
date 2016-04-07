@@ -75,6 +75,11 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
       break;
     }
 
+    case ServerPacket::Type::RCon: {
+      logEvent(ClientEvent::RConResponse(packet.stringData.get()));
+      break;
+    }
+
     default:
       break;
   }
@@ -173,6 +178,15 @@ void MultiplayerConnection::disconnect() {
   } else {
     disconnected = true;
   }
+}
+
+void MultiplayerConnection::chat(const std::string &message) {
+  transmit(sky::ClientPacket::Chat(message));
+}
+
+void MultiplayerConnection::rcon(const std::string &command) {
+  logEvent(ClientEvent::RConCommand(command));
+  transmit(sky::ClientPacket::RCon(command));
 }
 
 void MultiplayerConnection::requestTeamChange(const sky::Team team) {
