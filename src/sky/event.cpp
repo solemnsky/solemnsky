@@ -170,7 +170,7 @@ ServerEvent ServerEvent::RConIn(const std::string &command) {
 
 ServerEvent ServerEvent::RConOut(const std::string &response) {
   ServerEvent event(Type::RConOut);
-  event.stringData = command;
+  event.stringData = response;
   return event;
 }
 
@@ -216,6 +216,17 @@ void ClientEvent::print(Printer &p) const {
       p.print("[broadcast] " + message.get());
       break;
     }
+    case Type::RConCommand: {
+      p.setColor(0, 0, 255);
+      p.print("[rcon] -> " + message.get());
+      break;
+    }
+    case Type::RConResponse: {
+      p.setColor(0, 0, 255);
+      p.print("[rcon] <- " + message.get());
+      break;
+    }
+
   }
 }
 
