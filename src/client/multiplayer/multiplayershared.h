@@ -84,6 +84,7 @@ class MultiplayerConnection {
 
   void chat(const std::string &message);
   void rcon(const std::string &command);
+  void handleChatInput(const std::string &input);
 
   void requestTeamChange(const sky::Team team);
 };

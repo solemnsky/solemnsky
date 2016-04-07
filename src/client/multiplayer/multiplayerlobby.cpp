@@ -73,14 +73,7 @@ void MultiplayerLobby::signalRead() {
   if (blueButton.clickSignal)
     connection.requestTeamChange(2);
   if (chatInput.inputSignal) {
-    const std::string &str = chatInput.inputSignal.get();
-    if (str.size() >= 1) {
-      if (str.size() > 1 and str[0] == '/') {
-        connection.rcon(str.substr(1));
-      } else {
-        connection.chat(chatInput.inputSignal.get());
-      }
-    }
+    connection.handleChatInput(chatInput.inputSignal.get());
   }
 }
 

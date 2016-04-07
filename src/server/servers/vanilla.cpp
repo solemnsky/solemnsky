@@ -16,24 +16,31 @@ void VanillaServer::onPacket(ENetPeer *const client,
                              sky::Player &player,
                              const sky::ClientPacket &packet) {
   if (packet.type == sky::ClientPacket::Type::RCon) {
-    if (packet.stringData.get() == "auth password") {
-      shared.sendToClients(sky::ServerPacket::Broadcast(
-          "our secure authentication algorithm has succeeded"));
-      shared.sendToClient(client, sky::ServerPacket::RCon(
-          "beep boop, you're authorized"
-      ));
+    if (!player.admin) {
+      if (packet.stringData.get() == "auth password") {
+        sky::PlayerDelta delta = player.zeroDelta();
+        delta.admin = true;
+        sky::ArenaDelta adminDelta = sky::ArenaDelta::Delta(player.pid, delta);
+        arena.applyDelta(adminDelta);
+        shared.sendToClients(sky::ServerPacket::DeltaArena(adminDelta));
+
+        shared.rconResponse(client, "you're authenticated");
+      }
     }
 
-    if (packet.stringData.get() == "start") {
-      sky::ArenaDelta delta = sky::ArenaDelta::Mode(sky::ArenaMode::Game);
-      arena.applyDelta(delta);
-      shared.sendToClients(sky::ServerPacket::DeltaArena(delta));
-    }
+    if (player.admin) {
+      // TODO: uniform command parsing
+      if (packet.stringData.get() == "start") {
+        sky::ArenaDelta delta = sky::ArenaDelta::Mode(sky::ArenaMode::Game);
+        arena.applyDelta(delta);
+        shared.sendToClients(sky::ServerPacket::DeltaArena(delta));
+      }
 
-    if (packet.stringData.get() == "stop") {
-      sky::ArenaDelta delta = sky::ArenaDelta::Mode(sky::ArenaMode::Lobby);
-      arena.applyDelta(delta);
-      shared.sendToClients(sky::ServerPacket::DeltaArena(delta));
+      if (packet.stringData.get() == "stop") {
+        sky::ArenaDelta delta = sky::ArenaDelta::Mode(sky::ArenaMode::Lobby);
+        arena.applyDelta(delta);
+        shared.sendToClients(sky::ServerPacket::DeltaArena(delta));
+      }
     }
   }
 }
