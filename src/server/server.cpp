@@ -1,19 +1,20 @@
 #include "server.h"
 
 /**
- * ServerTelegraphy.
+ * ServerShared.
  */
 
-ServerTelegraphy::ServerTelegraphy(
-    tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph) :
-    host(host), telegraph(telegraph) { }
+ServerShared::ServerShared(
+    tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph,
+    ServerExec &exec) :
+    exec(exec), host(host), telegraph(telegraph) { }
 
-sky::Player *ServerTelegraphy::playerFromPeer(ENetPeer *peer) const {
+sky::Player *ServerShared::playerFromPeer(ENetPeer *peer) const {
   if (peer->data) return (sky::Player *) peer->data;
   else return nullptr;
 }
 
-void ServerTelegraphy::sendToClients(const sky::ServerPacket &packet) {
+void ServerShared::sendToClients(const sky::ServerPacket &packet) {
   telegraph.transmit(
       host,
       [&](std::function<void(ENetPeer *const)> transmit) {
@@ -21,8 +22,8 @@ void ServerTelegraphy::sendToClients(const sky::ServerPacket &packet) {
       }, packet);
 }
 
-void ServerTelegraphy::sendToClientsExcept(const PID pid,
-                                           const sky::ServerPacket &packet) {
+void ServerShared::sendToClientsExcept(const PID pid,
+                                       const sky::ServerPacket &packet) {
   telegraph.transmit(
       host,
       [&](std::function<void(ENetPeer *const)> transmit) {
@@ -34,19 +35,32 @@ void ServerTelegraphy::sendToClientsExcept(const PID pid,
       }, packet);
 }
 
-void ServerTelegraphy::sendToClient(ENetPeer *const client,
-                                    const sky::ServerPacket &packet) {
+void ServerShared::sendToClient(ENetPeer *const client,
+                                const sky::ServerPacket &packet) {
   telegraph.transmit(host, client, packet);
 }
+
+void ServerShared::logEvent(const ServerEvent &event) {
+  StringPrinter p;
+  event.print(p);
+  appLog(p.getString(), LogOrigin::Server);
+}
+
+void ServerShared::logArenaEvent(const sky::ArenaEvent &event) {
+  StringPrinter p;
+  event.print(p);
+  appLog(p.getString(), LogOrigin::Engine);
+}
+
 
 /**
  * Server.
  */
 
-Server::Server(ServerTelegraphy &telegraphy,
+Server::Server(ServerShared &shared,
                sky::Arena &arena, sky::Sky &sky) :
     Subsystem(arena),
-    telegraphy(telegraphy),
+    shared(shared),
     sky(sky) { }
 
 /**
@@ -62,11 +76,11 @@ void ServerLogger::unregisterPlayer(sky::Player &player) {
 }
 
 void ServerLogger::onEvent(const sky::ArenaEvent &event) {
-  exec.logArenaEvent(event);
+  shared.logArenaEvent(event);
 }
 
-ServerLogger::ServerLogger(class ServerExec &exec, sky::Arena &arena) :
-    sky::Subsystem(arena), exec(exec) {
+ServerLogger::ServerLogger(ServerShared &shared, sky::Arena &arena) :
+    sky::Subsystem(arena), shared(shared) {
   arena.forPlayers([&](sky::Player &p) { registerPlayer(p); });
 }
 
@@ -74,23 +88,11 @@ ServerLogger::ServerLogger(class ServerExec &exec, sky::Arena &arena) :
  * ServerExec.
  */
 
-void ServerExec::logEvent(const ServerEvent &event) {
-  StringPrinter p;
-  event.print(p);
-  appLog(p.getString(), LogOrigin::Server);
-}
-
-void ServerExec::logArenaEvent(const sky::ArenaEvent &event) {
-  StringPrinter p;
-  event.print(p);
-  appLog(p.getString(), LogOrigin::Engine);
-}
-
 void ServerExec::processPacket(ENetPeer *client,
                                const sky::ClientPacket &packet) {
   using namespace sky;
 
-  if (Player *player = telegraphy.playerFromPeer(client)) {
+  if (Player *player = shared.playerFromPeer(client)) {
     // the player is in the arena
 
     switch (packet.type) {
@@ -101,7 +103,7 @@ void ServerExec::processPacket(ENetPeer *client,
         sky::ArenaDelta arenaDelta = sky::ArenaDelta::Delta(
             player->pid, delta);
         arena.applyDelta(arenaDelta);
-        telegraphy.sendToClients(ServerPacket::DeltaArena(arenaDelta));
+        shared.sendToClients(ServerPacket::DeltaArena(arenaDelta));
         break;
       }
 
@@ -118,13 +120,18 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::Chat: {
-        telegraphy.sendToClients(sky::ServerPacket::Chat(
+        shared.sendToClients(sky::ServerPacket::Chat(
             player->pid, packet.stringData.get()));
         break;
       }
 
       case ClientPacket::Type::Ping: {
-        telegraphy.sendToClient(client, ServerPacket::Pong());
+        shared.sendToClient(client, ServerPacket::Pong());
+        break;
+      }
+
+      case ClientPacket::Type::RCon: {
+        shared.logEvent(ServerEvent::RConIn(packet.stringData.get()));
         break;
       }
 
@@ -138,14 +145,14 @@ void ServerExec::processPacket(ENetPeer *client,
     // client hasn't joined the arena yet
 
     if (packet.type == ClientPacket::Type::ReqJoin) {
-      sky::Player &newPlayer = arena.connectPlayer(*packet.stringData);
+      sky::Player &newPlayer = arena.connectPlayer(packet.stringData.get());
       client->data = &newPlayer;
 
-      logEvent(ServerEvent::Connect(newPlayer.nickname));
-      telegraphy.sendToClient(
+      shared.logEvent(ServerEvent::Connect(newPlayer.nickname));
+      shared.sendToClient(
           client, ServerPacket::Init(
               newPlayer.pid, arena.captureInitializer(), {}));
-      telegraphy.sendToClientsExcept(
+      shared.sendToClientsExcept(
           newPlayer.pid, ServerPacket::DeltaArena(
               ArenaDelta::Join(newPlayer.captureInitializer())));
     }
@@ -165,9 +172,9 @@ void ServerExec::tick(float delta) {
       break;
     }
     case ENET_EVENT_TYPE_DISCONNECT: {
-      if (sky::Player *player = telegraphy.playerFromPeer(event.peer)) {
-        logEvent(ServerEvent::Disconnect(player->nickname));
-        telegraphy.sendToClientsExcept(
+      if (sky::Player *player = shared.playerFromPeer(event.peer)) {
+        shared.logEvent(ServerEvent::Disconnect(player->nickname));
+        shared.sendToClientsExcept(
             player->pid, sky::ServerPacket::DeltaArena(
                 sky::ArenaDelta::Quit(player->pid)));
 
@@ -191,15 +198,15 @@ ServerExec::ServerExec(
     const sky::ArenaInitializer &arena,
     const sky::SkyInitializer &sky,
     std::function<std::unique_ptr<Server>(
-        ServerTelegraphy &, sky::Arena &, sky::Sky &)> server) :
+        ServerShared &, sky::Arena &, sky::Sky &)> server) :
     host(tg::HostType::Server, port),
-    telegraphy(host, telegraph),
+    shared(host, telegraph, *this),
     arena(arena),
     sky(this->arena, sky),
-    server(server(telegraphy, this->arena, this->sky)),
-    logger(*this, this->arena),
+    server(server(shared, this->arena, this->sky)),
+    logger(shared, this->arena),
     running(true) {
-  logEvent(ServerEvent::Start(port, arena.name));
+  shared.logEvent(ServerEvent::Start(port, arena.name));
 }
 
 void ServerExec::run() {

@@ -57,7 +57,7 @@ struct ServerEvent {
   // TODO: sky::DisconnectType in ServerEvent::Disconnect
 
   enum class Type {
-    Start, Event, Stop, Connect, Disconnect
+    Start, Event, Stop, Connect, Disconnect, RConIn, RConOut
   } type;
 
  private:
@@ -67,7 +67,7 @@ struct ServerEvent {
   ServerEvent() = delete;
 
   optional<Port> port;
-  optional<std::string> name;
+  optional<std::string> stringData;
   optional<sky::ArenaEvent> arenaEvent;
   optional<double> uptime;
 
@@ -79,6 +79,9 @@ struct ServerEvent {
   static ServerEvent Stop(const double uptime);
   static ServerEvent Connect(const std::string &name);
   static ServerEvent Disconnect(const std::string &name);
+
+  static ServerEvent RConIn(const std::string &command);
+  static ServerEvent RConOut(const std::string &response);
 };
 
 /**
@@ -87,7 +90,8 @@ struct ServerEvent {
 
 struct ClientEvent {
   enum class Type {
-    Connect, Event, Disconnect, Chat, Broadcast
+    Connect, Event, Disconnect, Chat, Broadcast,
+    RConCommand, RConResponse
   } type;
 
  private:
@@ -112,5 +116,8 @@ struct ClientEvent {
   static ClientEvent Chat(const std::string &name,
                           const std::string &message);
   static ClientEvent Broadcast(const std::string &message);
+
+  static ClientEvent RConCommand(const std::string &command);
+  static ClientEvent RConResponse(const std::string &response);
 };
 

@@ -11,7 +11,7 @@ int main() {
   const sky::ArenaInitializer arenaInit("my special server");
   const sky::SkyInitializer skyInit("some map");
   ServerExec(4242, arenaInit, skyInit,
-      [](ServerTelegraphy &telegraphy, sky::Arena &arena, sky::Sky &sky) {
+             [](ServerShared &telegraphy, sky::Arena &arena, sky::Sky &sky) {
         return std::make_unique<VanillaServer>(telegraphy, arena, sky);
       }).run();
   // and lo, there appeared a server

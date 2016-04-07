@@ -31,8 +31,8 @@ void ArenaEvent::print(Printer &p) const {
       break;
     }
     case Type::ModeChange: {
+      p.setColor(0, 255, 0);
       switch (mode.get()) {
-        p.setColor(0, 255, 0);
         case sky::ArenaMode::Lobby: {
           p.print("** Entered lobby. **");
           break;
@@ -98,7 +98,7 @@ void ServerEvent::print(Printer &p) const {
   p.setColor(255, 255, 255);
   switch (type) {
     case Type::Start: {
-      p.print("Started " + inQuotes(name.get())
+      p.print("Started " + inQuotes(stringData.get())
                   + " on port " + std::to_string(port.get()));
       break;
     }
@@ -112,11 +112,19 @@ void ServerEvent::print(Printer &p) const {
       break;
     }
     case Type::Connect: {
-      p.print("Client connected: " + inQuotes(name.get()));
+      p.print("Client connected: " + inQuotes(stringData.get()));
       break;
     }
     case Type::Disconnect: {
-      p.print("Client disconnected: " + inQuotes(name.get()));
+      p.print("Client disconnected: " + inQuotes(stringData.get()));
+      break;
+    }
+    case Type::RConIn: {
+      p.print("[rcon] <- " + stringData.get());
+      break;
+    }
+    case Type::RConOut: {
+      p.print("[rcon] -> " + stringData.get());
       break;
     }
   }
@@ -126,7 +134,7 @@ ServerEvent ServerEvent::Start(const Port port,
                                const std::string &name) {
   ServerEvent event(Type::Start);
   event.port = port;
-  event.name = name;
+  event.stringData = name;
   return event;
 }
 
@@ -144,13 +152,25 @@ ServerEvent ServerEvent::Stop(const double uptime) {
 
 ServerEvent ServerEvent::Connect(const std::string &name) {
   ServerEvent event(Type::Connect);
-  event.name = name;
+  event.stringData = name;
   return event;
 }
 
 ServerEvent ServerEvent::Disconnect(const std::string &name) {
   ServerEvent event(Type::Disconnect);
-  event.name = name;
+  event.stringData = name;
+  return event;
+}
+
+ServerEvent ServerEvent::RConIn(const std::string &command) {
+  ServerEvent event(Type::RConIn);
+  event.stringData = command;
+  return event;
+}
+
+ServerEvent ServerEvent::RConOut(const std::string &response) {
+  ServerEvent event(Type::RConOut);
+  event.stringData = command;
   return event;
 }
 
@@ -235,5 +255,14 @@ ClientEvent ClientEvent::Broadcast(const std::string &message) {
   return event;
 }
 
+ClientEvent ClientEvent::RConCommand(const std::string &command) {
+  ClientEvent event(Type::RConCommand);
+  event.message = command;
+  return event;
+}
 
-
+ClientEvent ClientEvent::RConResponse(const std::string &response) {
+  ClientEvent event(Type::RConResponse);
+  event.message = response;
+  return event;
+}
