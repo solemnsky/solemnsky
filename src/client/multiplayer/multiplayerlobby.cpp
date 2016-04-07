@@ -76,7 +76,7 @@ void MultiplayerLobby::signalRead() {
     const std::string &str = chatInput.inputSignal.get();
     if (str.size() >= 1) {
       if (str.size() > 1 and str[0] == '/') {
-        connection.rcon(str.substr(str.size() - 1));
+        connection.rcon(str.substr(1));
       } else {
         connection.chat(chatInput.inputSignal.get());
       }
