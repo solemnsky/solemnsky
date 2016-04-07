@@ -33,6 +33,7 @@ struct ServerShared {
                            const sky::ServerPacket &packet);
   void sendToClient(ENetPeer *const client,
                     const sky::ServerPacket &packet);
+  void rconResponse(ENetPeer *const client, const std::string &response);
 
   // logging events
   void logEvent(const ServerEvent &event);

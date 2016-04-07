@@ -40,6 +40,12 @@ void ServerShared::sendToClient(ENetPeer *const client,
   telegraph.transmit(host, client, packet);
 }
 
+void ServerShared::rconResponse(ENetPeer *const client,
+                                const std::string &response) {
+  sendToClient(client, sky::ServerPacket::RCon(response));
+  logEvent(ServerEvent::RConOut(response));
+}
+
 void ServerShared::logEvent(const ServerEvent &event) {
   StringPrinter p;
   event.print(p);

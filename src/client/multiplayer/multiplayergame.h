@@ -17,6 +17,8 @@
 
 class MultiplayerGame: public MultiplayerView {
  private:
+  ui::TextEntry chatInput;
+
  public:
   MultiplayerGame(ClientShared &shared, MultiplayerConnection &connection);
 

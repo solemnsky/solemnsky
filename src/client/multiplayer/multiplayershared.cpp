@@ -189,6 +189,16 @@ void MultiplayerConnection::rcon(const std::string &command) {
   transmit(sky::ClientPacket::RCon(command));
 }
 
+void MultiplayerConnection::handleChatInput(const std::string &input) {
+  if (input.size() >= 1) {
+    if (input.size() > 1 and input[0] == '/') {
+      rcon(input.substr(1));
+    } else {
+      chat(input);
+    }
+  }
+}
+
 void MultiplayerConnection::requestTeamChange(const sky::Team team) {
   if (myPlayer) {
     sky::PlayerDelta delta = myPlayer->zeroDelta();
