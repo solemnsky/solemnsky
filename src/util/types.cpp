@@ -21,7 +21,7 @@ void RollingSampler::push(const float value) {
 
 float RollingSampler::mean() const {
   if (data.size() == 0) return 0;
-  return std::accumulate(data.begin(), data.end(), 0, std::plus<float>())
+  return std::accumulate(data.begin(), data.end(), 0.0f, std::plus<float>())
       / float(data.size());
 }
 
