@@ -23,12 +23,13 @@ enum class ResID {
   Scoring,
   ScoreOverlay,
 
-  PlayerSheet, // tutorial stuff
+  PlayerSheet, // game stuff
 
   LAST // for checking number of resources defined
 };
 
-static const std::set<ResID> splashResources({ResID::Font});
+static const std::set<ResID> splashResources(
+    {ResID::Font, ResID::MenuBackground});
 
 enum class ResType {
   Font, Texture

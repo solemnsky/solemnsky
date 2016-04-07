@@ -11,9 +11,6 @@ namespace detail {
 // TODO: make this threaded so the window doesn't freeze up
 class SplashScreen: public Control {
  private:
-  const sf::Font &loadFont();
-  sf::Font font; // resources aren't loaded yet
-
   TextFormat loadingText;
 
   bool screenDrawn{false};

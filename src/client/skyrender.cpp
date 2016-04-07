@@ -105,6 +105,12 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
               f, sf::Vector2f(style.skyRender.spriteSize,
                               style.skyRender.spriteSize),
               graphics.roll());
+
+          if (enableDebug) {
+            const auto halfHitbox = 0.5f * tuning.hitbox;
+            f.drawRect(-halfHitbox, halfHitbox, sf::Color(255, 255, 255, 100));
+          }
+
         });
 
     f.withTransform(sf::Transform().translate(state.pos), [&]() {

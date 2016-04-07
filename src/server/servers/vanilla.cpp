@@ -19,6 +19,21 @@ void VanillaServer::onPacket(ENetPeer *const client,
     if (packet.stringData.get() == "auth password") {
       telegraphy.sendToClients(sky::ServerPacket::Broadcast(
           "our secure authentication algorithm has succeeded"));
+      telegraphy.sendToClient(client, sky::ServerPacket::RCon(
+          "beep boop, you're authorized"
+      ));
+    }
+
+    if (packet.stringData.get() == "start") {
+      sky::ArenaDelta delta = sky::ArenaDelta::Mode(sky::ArenaMode::Game);
+      arena.applyDelta(delta);
+      telegraphy.sendToClients(sky::ServerPacket::DeltaArena(delta));
+    }
+
+    if (packet.stringData.get() == "stop") {
+      sky::ArenaDelta delta = sky::ArenaDelta::Mode(sky::ArenaMode::Lobby);
+      arena.applyDelta(delta);
+      telegraphy.sendToClients(sky::ServerPacket::DeltaArena(delta));
     }
   }
 }

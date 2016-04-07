@@ -23,6 +23,7 @@ void SplashScreen::tick(float delta) {
 
 void SplashScreen::render(ui::Frame &f) {
   loadSplashResources();
+  f.drawSprite(textureOf(ResID::MenuBackground), {}, {0, 0, 1600, 900});
   f.drawText({800, 450}, "loading resources...",
              sf::Color::White, loadingText);
   screenDrawn = true;

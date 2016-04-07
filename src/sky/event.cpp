@@ -9,6 +9,7 @@ namespace sky {
 ArenaEvent::ArenaEvent(const Type type) : type(type) { }
 
 void ArenaEvent::print(Printer &p) const {
+  p.setColor(255, 255, 255);
   switch (type) {
     case Type::Join: {
       p.print(inQuotes(name.get()) + " joined the game!");
@@ -31,6 +32,7 @@ void ArenaEvent::print(Printer &p) const {
     }
     case Type::ModeChange: {
       switch (mode.get()) {
+        p.setColor(0, 255, 0);
         case sky::ArenaMode::Lobby: {
           p.print("** Entered lobby. **");
           break;
@@ -93,6 +95,7 @@ ArenaEvent ArenaEvent::ModeChange(const sky::ArenaMode mode) {
 ServerEvent::ServerEvent(const Type type) : type(type) { }
 
 void ServerEvent::print(Printer &p) const {
+  p.setColor(255, 255, 255);
   switch (type) {
     case Type::Start: {
       p.print("Started " + inQuotes(name.get())
@@ -158,8 +161,10 @@ ServerEvent ServerEvent::Disconnect(const std::string &name) {
 ClientEvent::ClientEvent(const Type type) : type(type) { }
 
 void ClientEvent::print(Printer &p) const {
+  p.setColor(255, 255, 255);
   switch (type) {
     case Type::Connect: {
+      p.setColor(255, 0, 0);
       p.print("Connected to " + inQuotes(name.get())
                   + " @ " + ipAddr->toString());
       break;
@@ -181,7 +186,10 @@ void ClientEvent::print(Printer &p) const {
       }
     }
     case Type::Chat: {
-      p.print("[chat] " + name.get() + ": " + message.get());
+      p.setColor(255, 0, 0);
+      p.print("[chat] ");
+      p.setColor(255, 255, 255);
+      p.print(name.get() + ": " + message.get());
       break;
     }
     case Type::Broadcast: {

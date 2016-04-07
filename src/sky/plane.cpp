@@ -1,4 +1,5 @@
 #include <cmath>
+#include <SFML/Graphics/Rect.hpp>
 #include "arena.h"
 #include "plane.h"
 #include "sky.h"
