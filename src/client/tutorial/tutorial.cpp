@@ -16,6 +16,7 @@ Tutorial::Tutorial(ClientShared &state) :
 
 void Tutorial::onChangeSettings(const SettingsDelta &settings) {
   if (settings.nickname) player->nickname = *settings.nickname;
+  if (settings.enableDebug) skyRender.enableDebug = settings.enableDebug.get();
 }
 
 void Tutorial::onBlur() {

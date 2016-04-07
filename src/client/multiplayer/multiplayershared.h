@@ -45,10 +45,10 @@ class MultiplayerConnection {
   // process a packet, after we're connected via enet and have send a ReqJoin
   void processPacket(const sky::ServerPacket &packet);
 
+ public:
   void logEvent(const ClientEvent &event);
   void logArenaEvent(const sky::ArenaEvent &event);
 
- public:
   MultiplayerConnection(
       ClientShared &shared,
       const std::string &serverHostname,

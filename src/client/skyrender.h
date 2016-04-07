@@ -65,6 +65,7 @@ class SkyRender: public Subsystem {
    * Renders the game from a view centered on pos.
    */
   void render(ui::Frame &f, const sf::Vector2f &pos);
+  bool enableDebug;
 };
 
 }

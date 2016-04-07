@@ -74,6 +74,7 @@ struct PlaneTuning {
         leftoverDamping;
     float threshold; // the maximum airspeed that we need to enter stall
   } flight;
+
 };
 
 /**
