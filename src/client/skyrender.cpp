@@ -135,14 +135,13 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
   }
 }
 
-SkyRender::SkyRender(Arena &arena, Sky &sky) :
+SkyRender::SkyRender(Arena &arena, Sky &sky, const bool enableDebug) :
     Subsystem(arena), sky(sky),
+    enableDebug(enableDebug),
     planeSheet(ResID::PlayerSheet) {
 }
 
-SkyRender::~SkyRender() {
-}
-
+SkyRender::~SkyRender() { }
 
 void SkyRender::registerPlayer(Player &player) {
   graphics.emplace(player.pid, sky.getPlane(player));

@@ -58,7 +58,7 @@ class SkyRender: public Subsystem {
   void onTick(const float delta) override;
 
  public:
-  SkyRender(Arena &arena, Sky &sky);
+  SkyRender(Arena &arena, Sky &sky, const bool enableDebug);
   ~SkyRender();
 
   /**
