@@ -39,8 +39,8 @@ add_library(solemnsky SHARED
         src/sky/plane.cpp
         src/sky/plane.h
 
-        src/sky/props.cpp
-        src/sky/props.h
+        src/sky/prop.cpp
+        src/sky/prop.h
 
         src/sky/protocol.cpp
         src/sky/protocol.h

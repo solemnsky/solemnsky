@@ -3,13 +3,13 @@
  */
 #pragma once
 #include <Box2D/Box2D.h>
+#include "util/types.h"
 #include "map.h"
 
 namespace sky {
 
 /**
- * Manages a Box2D world, and provides a wrapped API so we don't have to deal
- * with actual C-style Box2D in the rest of the code.
+ * A physical world.
  */
 class Physics {
  private:
@@ -35,10 +35,10 @@ class Physics {
   /**
    * Conversion.
    */
-  sf::Vector2f toGameVec(b2Vec2 vec);
-  b2Vec2 toPhysVec(sf::Vector2f vec);
-  float toGameDistance(float x);
-  float toPhysDistance(float x);
+  sf::Vector2f toGameVec(b2Vec2 vec) const;
+  b2Vec2 toPhysVec(sf::Vector2f vec) const;
+  float toGameDistance(float x) const;
+  float toPhysDistance(float x) const;
 
   /**
    * Managing bodies.
@@ -51,8 +51,30 @@ class Physics {
 
   // approach angular / linear velocities with impulses (to participate
   // in the simulation correctly)
-  void approachRotVel(b2Body *body, float rotvel);
-  void approachVel(b2Body *body, sf::Vector2f vel);
+  void approachRotVel(b2Body *body, float rotvel) const;
+  void approachVel(b2Body *body, sf::Vector2f vel) const;
+};
+
+/**
+ * The physical state of a body.
+ */
+struct PhysicalState {
+  PhysicalState() = default; // packing
+  PhysicalState(const sf::Vector2f &pos, const sf::Vector2f &vel,
+                const Angle rot, const float rotvel);
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(pos, rot, rotvel);
+  }
+
+  sf::Vector2f pos, vel;
+  Angle rot;
+  float rotvel;
+
+  void hardWriteToBody(const Physics &physics, b2Body *const body);
+  void readFromBody(const Physics &physics, const b2Body *const body);
+  void writeToBody(const Physics &physics, b2Body *const body);
 };
 
 }
