@@ -12,19 +12,16 @@
 /**
  * Subsystem used by the MultiplayerConnection to listen to events.
  */
-class MultiplayerSubsystem: public sky::Subsystem {
+class MultiplayerLogger: public sky::ArenaLogger {
  private:
   class MultiplayerConnection &connection;
 
  protected:
-  void registerPlayer(sky::Player &player) override;
-  void unregisterPlayer(sky::Player &player) override;
-
   void onEvent(const sky::ArenaEvent &event) override;
 
  public:
-  MultiplayerSubsystem(sky::Arena &arena,
-                       class MultiplayerConnection &connection);
+  MultiplayerLogger(sky::Arena &arena,
+                    class MultiplayerConnection &connection);
 };
 
 /**
@@ -33,7 +30,7 @@ class MultiplayerSubsystem: public sky::Subsystem {
  */
 class MultiplayerConnection {
  private:
-  friend class MultiplayerSubsystem;
+  friend class MultiplayerLogger;
 
   ClientShared &shared;
   ENetEvent event;
@@ -71,7 +68,7 @@ class MultiplayerConnection {
       const sky::SkyInitializer &skyInit);
   optional<sky::Arena> arena;
   optional<sky::Sky> sky;
-  optional<MultiplayerSubsystem> multiplayerSubsystem;
+  optional<MultiplayerLogger> multiplayerSubsystem;
   sky::Player *myPlayer;
   std::vector<ClientEvent> eventLog;
 

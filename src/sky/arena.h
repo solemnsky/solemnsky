@@ -86,7 +86,7 @@ class SubsystemCaller {
   SubsystemCaller(Arena &arena);
 
   // callbacks that subsystems can trigger
-  void kill(Player &player);
+  void onDie(Player &player);
   // TODO: takeDamage, etc
 };
 
@@ -120,7 +120,7 @@ class Subsystem {
   virtual void onDelta(Player &player, const PlayerDelta &delta) { }
 
   // subsystem-triggered callbacks
-  virtual void onKill(Player &player) { }
+  virtual void onDie(Player &player) { }
 
  public:
   class Arena &arena;
@@ -139,11 +139,13 @@ class ArenaLogger {
  protected:
   friend class Arena;
   virtual void onEvent(const ArenaEvent &event) { }
+
  public:
   class Arena &arena;
 
   ArenaLogger() = delete;
   ArenaLogger(Arena &arena);
+
 };
 
 /**
@@ -234,18 +236,21 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   void onAction(Player &player, const Action action, const bool state);
   void onSpawn(Player &player, const PlaneTuning &tuning,
                const sf::Vector2f &pos, const float rot);
-  void onEvent(const ArenaEvent &event) const;
 
-  // subsystem triggers, for subsystems to call
+  // subsystem triggers, for SubsystemCaller to call
   void onDie(Player &player);
+
+  // event logging
+  void onEvent(const ArenaEvent &event) const;
 
  public:
   Arena() = delete;
   Arena(const ArenaInitializer &initializer);
 
-  // subsystems
+  // subsystems and loggers
   SubsystemCaller caller;
   std::vector<Subsystem *> subsystems;
+  std::vector<ArenaLogger *> loggers;
 
   /**
    * State.

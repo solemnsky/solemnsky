@@ -1,29 +1,16 @@
 #include "multiplayershared.h"
 
 /**
- * MultiplayerSubsystem.
+ * MultiplayerLogger.
  */
 
-void MultiplayerSubsystem::registerPlayer(sky::Player &player) {
-  player.data.push_back(nullptr);
-}
-
-void MultiplayerSubsystem::unregisterPlayer(sky::Player &player) {
-
-}
-
-void MultiplayerSubsystem::onEvent(const sky::ArenaEvent &event) {
+void MultiplayerLogger::onEvent(const sky::ArenaEvent &event) {
   connection.logArenaEvent(event);
 }
 
-MultiplayerSubsystem::MultiplayerSubsystem(
-    sky::Arena &arena,
-    MultiplayerConnection &connection) :
-    sky::Subsystem(arena), connection(connection) {
-  arena.forPlayers([&](sky::Player &player) {
-    registerPlayer(player);
-  });
-}
+MultiplayerLogger::MultiplayerLogger(sky::Arena &arena,
+                                     MultiplayerConnection &connection) :
+    sky::ArenaLogger(arena), connection(connection) { }
 
 /**
  * MultiplayerConnection.
