@@ -1,5 +1,5 @@
 /**
- * Arena subsystem with game state.
+ * Physical game state of an Arena.
  */
 #pragma once
 #include <map>
@@ -39,8 +39,7 @@ struct SkyDelta: public VerifyStructure {
 };
 
 /**
- * A Sky is the state of a game being played. It is held by an Arena when a
- * game is under way.
+ * A Sky is a subsystem holding the state of a game being played.
  */
 class Sky: public Subsystem {
  private:
