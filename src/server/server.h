@@ -64,13 +64,11 @@ class Server: public sky::Subsystem {
 /**
  * Subsystem that just logs arena events through the onEvent callback.
  */
-class ServerLogger: public sky::Subsystem {
+class ServerLogger: public sky::ArenaLogger {
  private:
   ServerShared &shared;
 
  protected:
-  void registerPlayer(sky::Player &player) override;
-  void unregisterPlayer(sky::Player &player) override;
   void onEvent(const sky::ArenaEvent &event) override;
 
  public:

@@ -72,22 +72,12 @@ Server::Server(ServerShared &shared,
  * ServerLogger.
  */
 
-void ServerLogger::registerPlayer(sky::Player &player) {
-  player.data.push_back(nullptr);
-}
-
-void ServerLogger::unregisterPlayer(sky::Player &player) {
-
-}
-
 void ServerLogger::onEvent(const sky::ArenaEvent &event) {
   shared.logArenaEvent(event);
 }
 
 ServerLogger::ServerLogger(ServerShared &shared, sky::Arena &arena) :
-    sky::Subsystem(arena), shared(shared) {
-  arena.forPlayers([&](sky::Player &p) { registerPlayer(p); });
-}
+    sky::ArenaLogger(arena), shared(shared) { }
 
 /**
  * ServerExec.

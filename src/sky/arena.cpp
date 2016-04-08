@@ -108,8 +108,8 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode) {
 
 SubsystemCaller::SubsystemCaller(Arena &arena) : arena(arena) { }
 
-void SubsystemCaller::kill(Player &player) {
-  for (auto s : arena.subsystems) s->onKill(player);
+void SubsystemCaller::onDie(Player &player) {
+  arena.onDie(player);
 }
 
 Subsystem::Subsystem(Arena &arena) :
@@ -117,6 +117,14 @@ Subsystem::Subsystem(Arena &arena) :
     caller(arena.caller),
     id(PID(arena.subsystems.size())) {
   arena.subsystems.push_back(this);
+}
+
+/**
+ * ArenaLogger.
+ */
+
+ArenaLogger::ArenaLogger(Arena &arena) : arena(arena) {
+  arena.loggers.push_back(this);
 }
 
 /**
@@ -177,11 +185,11 @@ void Arena::onSpawn(Player &player, const PlaneTuning &tuning,
 }
 
 void Arena::onDie(Player &player) {
-  for (auto s : subsystems) s->onKill(player);
+  for (auto s : subsystems) s->onDie(player);
 }
 
 void Arena::onEvent(const ArenaEvent &event) const {
-  for (auto s : subsystems) s->onEvent(event);
+  for (auto l : loggers) l->onEvent(event);
 }
 
 Arena::Arena(const ArenaInitializer &initializer) :
@@ -264,17 +272,17 @@ Player &Arena::joinPlayer(const PlayerInitializer &initializer) {
   for (auto s : subsystems) {
     s->registerPlayer(newPlayer);
     s->onJoin(newPlayer);
-    s->onEvent(ArenaEvent::Join(newPlayer.nickname));
   }
+  onEvent(ArenaEvent::Join(newPlayer.nickname));
   return newPlayer;
 }
 
 void Arena::quitPlayer(Player &player) {
   for (auto s : subsystems) {
     s->onQuit(player);
-    s->onEvent(ArenaEvent::Quit(player.nickname));
     s->unregisterPlayer(player);
   }
+  onEvent(ArenaEvent::Quit(player.nickname));
   players.erase(player.pid);
 }
 

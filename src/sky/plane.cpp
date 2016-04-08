@@ -333,7 +333,7 @@ void Plane::doAction(const Action &action, const bool state) {
     }
     case Action::Suicide: {
       vital.reset();
-      parent.arena.caller.kill(player);
+      parent.arena.caller.onDie(player);
       newlyAlive = false;
     }
   }
