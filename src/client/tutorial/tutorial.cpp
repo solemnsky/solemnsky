@@ -43,7 +43,7 @@ void Tutorial::tick(float delta) {
 void Tutorial::render(ui::Frame &f) {
   const sky::Plane &plane = sky.getPlane(*player);
   skyRender.render(
-      f, plane.vital ? plane.vital->state.pos : sf::Vector2f(0, 0));
+      f, plane.vital ? plane.vital->state.physical.pos : sf::Vector2f(0, 0));
 }
 
 bool Tutorial::handle(const sf::Event &event) {

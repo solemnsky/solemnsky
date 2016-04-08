@@ -46,6 +46,7 @@ class SkyRender: public Subsystem {
   void renderBars(ui::Frame &f,
                   std::vector<std::pair<float, const sf::Color &>> bars,
                   sf::FloatRect area);
+  void renderProps(ui::Frame &f, const Plane &plane);
   void renderPlaneGraphics(ui::Frame &f, const PlaneGraphics &graphics);
 
   /**

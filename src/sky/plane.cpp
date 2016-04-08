@@ -274,6 +274,12 @@ void Plane::afterPhysics(float delta) {
   if (vital) {
     vital->readFromBody();
     vital->tick(delta);
+
+    if (primaryState) {
+      if (vital->state.requestDiscreteEnergy(0.1)) {
+        props.emplace_back(parent, vital->state.physical.pos);
+      }
+    }
   }
   for (auto &prop : props) {
     prop.readFromBody();
@@ -323,10 +329,7 @@ void Plane::doAction(const Action &action, const bool state) {
       break;
     }
     case Action::Primary: {
-      if (vital) {
-        props.emplace_back(
-            parent, vital->state.physical.pos + sf::Vector2f(20, 20));
-      }
+      primaryState = state;
       break;
     }
     case Action::Secondary: {
