@@ -15,9 +15,8 @@ namespace sky {
 struct ArenaEvent; // event.h
 
 /**
- * Player.
+ * Initializer type for Player's Networked implementation.
  */
-
 struct PlayerInitializer {
   PlayerInitializer() = default; // packing
   PlayerInitializer(const PID pid, const std::string &nickname);
@@ -33,6 +32,9 @@ struct PlayerInitializer {
   Team team;
 };
 
+/**
+ * Delta type for Player's Networked implementation.
+ */
 struct PlayerDelta {
   PlayerDelta() = default; // packing
 
@@ -46,6 +48,9 @@ struct PlayerDelta {
   optional<Team> team; // 0 is spectator, 1 left, 2 right
 };
 
+/**
+ * Represents a player in the arena, with some minimal metadata.
+ */
 struct Player: public Networked<PlayerInitializer, PlayerDelta> {
  private:
   class Arena &arena;
@@ -71,10 +76,6 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
 };
 
 /**
- * Subsystem.
- */
-
-/**
  * Interface for subsystems to trigger certain subsystem callbacks.
  */
 class SubsystemCaller {
@@ -90,7 +91,9 @@ class SubsystemCaller {
 };
 
 /**
- * The subsystem abtraction.
+ * The subsystem abtraction: attaches state to players and has various
+ * callbacks. Some callbacks can be triggered by subsystems through
+ * SubsystemCaller (i.e. onKill() and onTakeDamage() triggered by the sky).
  */
 class Subsystem {
  protected:
@@ -114,6 +117,7 @@ class Subsystem {
                         const Action action, const bool state) { }
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
                        const sf::Vector2f &pos, const float rot) { };
+  virtual void onDelta(Player &player, const PlayerDelta &delta) { }
 
   // subsystem-triggered callbacks
   virtual void onKill(Player &player) { }
@@ -129,7 +133,7 @@ class Subsystem {
 };
 
 /**
- * The logger abstraction.
+ * The arena logger abstraction: callbacks on ArenaEvents.
  */
 class ArenaLogger {
  protected:
@@ -142,11 +146,9 @@ class ArenaLogger {
   ArenaLogger(Arena &arena);
 };
 
-
 /**
- * Arena.
+ * Initializer type for Arena's Networked implementation.
  */
-
 struct ArenaInitializer {
   ArenaInitializer() = default; // packing
   ArenaInitializer(const std::string &name);
@@ -161,6 +163,9 @@ struct ArenaInitializer {
   ArenaMode mode;
 };
 
+/**
+ * Delta type for Arena's Networked implementation.
+ */
 struct ArenaDelta: public VerifyStructure {
   enum class Type {
     Quit, Join, Delta, Motd, Mode
@@ -212,6 +217,10 @@ struct ArenaDelta: public VerifyStructure {
   static ArenaDelta Mode(const ArenaMode mode);
 };
 
+/**
+ * The backbone of a multiplayer game. Holds Players, Subsystems, and
+ * an ArenaLoggers, and exposes a small API.
+ */
 class Arena: public Networked<ArenaInitializer, ArenaDelta> {
  private:
   // utilities
@@ -247,7 +256,7 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   ArenaMode mode;
 
   /**
-   * User API.
+   * Top-level API.
    */
   void applyDelta(const ArenaDelta &delta) override;
   ArenaInitializer captureInitializer() const override;
