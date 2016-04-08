@@ -188,7 +188,7 @@ class Plane {
   bool newlyAlive;
 
   // controls
-  bool leftState, rightState, thrustState, revState;
+  bool leftState, rightState, thrustState, revState, primaryState;
   void syncCtrls(); // write control state to vital->state
 
  public:

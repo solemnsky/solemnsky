@@ -22,7 +22,7 @@ void PlaneGraphics::tick(const float delta) {
     const auto &vital = plane.vital;
 
     // potentially switch orientation
-    bool newOrientation = Angle(vital->state.rot + 90) > 180;
+    bool newOrientation = Angle(vital->state.physical.rot + 90) > 180;
     if (vital->state.rotCtrl == Movement::None) orientation = newOrientation;
 
     // flipping (when orientation changes)
@@ -45,7 +45,7 @@ Angle PlaneGraphics::roll() const {
 void PlaneGraphics::kill() { }
 
 void PlaneGraphics::spawn() {
-  orientation = Angle(plane.vital->state.rot + 90) > 180;
+  orientation = Angle(plane.vital->state.physical.rot + 90) > 180;
   flipState = 0;
   rollState = 0;
 }
@@ -87,14 +87,32 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
   return std::pair<float, const sf::Color &>(x, c);
 };
 
+void SkyRender::renderProps(ui::Frame &f,
+                            const Plane &plane) {
+  for (auto &prop : plane.props) {
+    f.withTransform(
+        sf::Transform()
+            .translate(prop.physical.pos)
+            .rotate(prop.physical.rot), [&]() {
+          f.drawRect(sf::Vector2f(-5, -5),
+                     sf::Vector2f(5, 5),
+                     sf::Color::White);
+        });
+  }
+}
+
 void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                     const PlaneGraphics &graphics) {
+  renderProps(f, graphics.plane);
+
   if (graphics.plane.vital) {
     const auto &state = graphics.plane.vital->state;
     const auto &tuning = graphics.plane.vital->tuning;
 
     f.withTransform(
-        sf::Transform().translate(state.pos).rotate(state.rot), [&]() {
+        sf::Transform()
+            .translate(state.physical.pos)
+            .rotate(state.physical.rot), [&]() {
           f.withTransform(
               sf::Transform().scale(state.afterburner, state.afterburner),
               [&]() {
@@ -113,7 +131,7 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
 
         });
 
-    f.withTransform(sf::Transform().translate(state.pos), [&]() {
+    f.withTransform(sf::Transform().translate(state.physical.pos), [&]() {
       const float airspeedStall = tuning.flight.threshold /
           tuning.flight.airspeedFactor;
       renderBars(
