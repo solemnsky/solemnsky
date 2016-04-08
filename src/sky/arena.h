@@ -75,7 +75,7 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
  */
 
 /**
- * Interface to call certain subsystem callbacks.
+ * Interface for subsystems to trigger certain subsystem callbacks.
  */
 class SubsystemCaller {
  private:
@@ -89,10 +89,12 @@ class SubsystemCaller {
   // TODO: takeDamage, etc
 };
 
+/**
+ * The subsystem abtraction.
+ */
 class Subsystem {
  protected:
   friend class Arena;
-  friend class SubsystemCaller;
   const PID id; // ID the render has allocated in the Arena
 
   template<typename Data>
@@ -112,7 +114,6 @@ class Subsystem {
                         const Action action, const bool state) { }
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
                        const sf::Vector2f &pos, const float rot) { };
-  virtual void onEvent(const ArenaEvent &event) { }
 
   // subsystem-triggered callbacks
   virtual void onKill(Player &player) { }
@@ -126,6 +127,21 @@ class Subsystem {
   // a subsystem has to make sure to manually register the arena's players on
   // construction!
 };
+
+/**
+ * The logger abstraction.
+ */
+class ArenaLogger {
+ protected:
+  friend class Arena;
+  virtual void onEvent(const ArenaEvent &event) { }
+ public:
+  class Arena &arena;
+
+  ArenaLogger() = delete;
+  ArenaLogger(Arena &arena);
+};
+
 
 /**
  * Arena.
@@ -244,8 +260,6 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   void forPlayers(std::function<void(Player &)> f);
 
   void tick(const float delta);
-  void chat(const PID pid, const std::string &message);
-  // chat and broadcasts pass through
 };
 
 }
