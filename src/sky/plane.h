@@ -1,8 +1,9 @@
 /**
- * The flight! Also the landing, and everything else.
+ * The state and logic of Planes.
  */
 #pragma once
 #include <Box2D/Box2D.h>
+#include "prop.h"
 #include "physics.h"
 #include "util/types.h"
 
@@ -88,7 +89,7 @@ struct PlaneState {
 
   template<class Archive>
   void serialize(Archive &ar) {
-    ar(rotCtrl, throtCtrl, pos, vel, rot, rotvel, stalled, afterburner,
+    ar(rotCtrl, throtCtrl, physical, stalled, afterburner,
        leftoverVel, airspeed, throttle, energy, health);
   }
 
@@ -97,9 +98,7 @@ struct PlaneState {
    */
   Movement rotCtrl; // controls
   Movement throtCtrl;
-  sf::Vector2f pos, vel; // physical values
-  Angle rot;
-  float rotvel;
+  PhysicalState physical; // physical state
   bool stalled; // flight mechanics
   Clamped afterburner;
   sf::Vector2f leftoverVel;
@@ -160,6 +159,7 @@ class PlaneVital {
   b2Body *body;
 
  public:
+  PlaneVital() = delete;
   PlaneVital(Sky &parent,
              const PlaneTuning &tuning,
              const PlaneState &state);
@@ -187,11 +187,9 @@ class Plane {
 
   bool newlyAlive;
 
-  /**
-   * Controls.
-   */
+  // controls
   bool leftState, rightState, thrustState, revState;
-  void syncCtrls();
+  void syncCtrls(); // write control state to vital->state
 
  public:
   Plane() = delete;
@@ -200,9 +198,10 @@ class Plane {
         const PlaneInitializer &initializer);
 
   optional<PlaneVital> vital;
+  std::vector<Prop> props;
 
   /**
-   * Internal methods.
+   * API for Sky.
    */
   void beforePhysics();
   void afterPhysics(float delta);

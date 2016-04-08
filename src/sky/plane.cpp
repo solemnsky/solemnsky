@@ -78,10 +78,10 @@ PlaneState::PlaneState(const PlaneTuning &tuning,
     rotCtrl(Movement::None),
     throtCtrl(Movement::None),
 
-    pos(pos),
-    vel(tuning.flight.airspeedFactor * VecMath::fromAngle(rot)),
-    rot(rot),
-    rotvel(0),
+    physical(pos,
+             tuning.flight.airspeedFactor * VecMath::fromAngle(rot),
+             rot,
+             0),
 
     stalled(false), afterburner(0),
     airspeed(tuning.flight.throttleInfluence),
@@ -92,11 +92,13 @@ PlaneState::PlaneState(const PlaneTuning &tuning,
     health(1) { }
 
 float PlaneState::forwardVelocity() const {
-  return velocity() * (const float) cos(toRad(rot) - std::atan2(vel.y, vel.x));
+  return velocity() *
+      (const float) cos(
+          toRad(physical.rot) - std::atan2(physical.vel.y, physical.vel.x));
 }
 
 float PlaneState::velocity() const {
-  return VecMath::length(vel);
+  return VecMath::length(physical.vel);
 }
 
 bool PlaneState::requestDiscreteEnergy(const float reqEnergy) {
@@ -146,10 +148,10 @@ PlaneVital::PlaneVital(Sky &parent,
                        const PlaneTuning &tuning,
                        const PlaneState &state) :
     parent(parent), physics(parent.physics),
-    tuning(tuning), state(state) {
+    tuning(tuning), state(state),
+    body(physics.rectBody(tuning.hitbox)) {
   body = physics.rectBody(tuning.hitbox);
-  body->SetAngularVelocity(toRad(state.rot));
-  body->SetLinearVelocity(physics.toPhysVec(state.vel));
+  this->state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(state.stalled ? 1 : 0);
 }
 
@@ -158,21 +160,12 @@ PlaneVital::~PlaneVital() {
 };
 
 void PlaneVital::writeToBody() {
-  // TODO: use proper motors / motor joints for this instead of impulses
-  physics.approachRotVel(body, state.rotvel);
-  physics.approachVel(body, state.vel);
+  state.physical.writeToBody(physics, body);
   body->SetGravityScale(state.stalled ? 1 : 0);
-
-  body->SetTransform(
-      physics.toPhysVec(state.pos),
-      toRad(state.rot));
 }
 
 void PlaneVital::readFromBody() {
-  state.pos = physics.toGameVec(body->GetPosition());
-  state.rot = toDeg(body->GetAngle());
-  state.rotvel = toDeg(body->GetAngularVelocity());
-  state.vel = physics.toGameVec(body->GetLinearVelocity());
+  state.physical.readFromBody(physics, body);
 }
 
 void PlaneVital::tick(const float delta) {
@@ -182,9 +175,10 @@ void PlaneVital::tick(const float delta) {
       velocity = state.velocity();
 
   // set rotation
-  state.rotvel = ((state.stalled) ?
-                  tuning.stall.maxRotVel :
-                  tuning.flight.maxRotVel) * movementValue(state.rotCtrl);
+  state.physical.rotvel = ((state.stalled) ?
+                           tuning.stall.maxRotVel :
+                           tuning.flight.maxRotVel)
+      * movementValue(state.rotCtrl);
 
   state.energy += tuning.energy.recharge * delta;
   state.afterburner = 0;
@@ -195,8 +189,8 @@ void PlaneVital::tick(const float delta) {
       const float thrustEfficacy =
           state.requestEnergy(tuning.energy.thrustDrain * delta);
 
-      state.vel +=
-          VecMath::fromAngle(state.rot) *
+      state.physical.vel +=
+          VecMath::fromAngle(state.physical.rot) *
               (delta * tuning.stall.thrust * thrustEfficacy);
       state.afterburner = thrustEfficacy;
     }
@@ -205,7 +199,7 @@ void PlaneVital::tick(const float delta) {
     float excessVel = velocity - tuning.stall.maxVel;
     float dampingFactor = tuning.stall.maxVel / velocity;
     if (excessVel > 0)
-      state.vel = state.vel * dampingFactor *
+      state.physical.vel = state.physical.vel * dampingFactor *
           std::pow(tuning.stall.damping, delta);
   } else {
     // modify throttle and afterburner according to controls
@@ -219,7 +213,7 @@ void PlaneVital::tick(const float delta) {
     // modify vstate.airspeed
     float speedMod = 0;
     speedMod +=
-        sin(toRad(state.rot)) * tuning.flight.gravityEffect * delta;
+        sin(toRad(state.physical.rot)) * tuning.flight.gravityEffect * delta;
     if (afterburning) {
       const float thrustEfficacity =
           state.requestEnergy(tuning.energy.thrustDrain * delta);
@@ -235,7 +229,7 @@ void PlaneVital::tick(const float delta) {
     float targetSpeed = state.airspeed * tuning.flight.airspeedFactor;
 
     // set velocity, according to target speed, rotation, and leftoverVel
-    state.vel = targetSpeed * VecMath::fromAngle(state.rot) +
+    state.physical.vel = targetSpeed * VecMath::fromAngle(state.physical.rot) +
         state.leftoverVel;
   }
 
@@ -244,7 +238,8 @@ void PlaneVital::tick(const float delta) {
     if (forwardVel > tuning.stall.threshold) {
       state.stalled = false;
       state.leftoverVel =
-          state.vel - (forwardVel * VecMath::fromAngle(state.rot));
+          state.physical.vel
+              - (forwardVel * VecMath::fromAngle(state.physical.rot));
 
       state.airspeed = forwardVel / tuning.flight.airspeedFactor;
       state.throttle =
@@ -272,12 +267,17 @@ void Plane::syncCtrls() {
 
 void Plane::beforePhysics() {
   if (vital) vital->writeToBody();
+  for (auto &prop : props) prop.writeToBody();
 }
 
 void Plane::afterPhysics(float delta) {
   if (vital) {
     vital->readFromBody();
     vital->tick(delta);
+  }
+  for (auto &prop : props) {
+    prop.readFromBody();
+    prop.tick(delta);
   }
 }
 
@@ -323,6 +323,10 @@ void Plane::doAction(const Action &action, const bool state) {
       break;
     }
     case Action::Primary: {
+      if (vital) {
+        props.emplace_back(
+            parent, vital->state.physical.pos + sf::Vector2f(20, 20));
+      }
       break;
     }
     case Action::Secondary: {
