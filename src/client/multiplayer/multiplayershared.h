@@ -3,6 +3,7 @@
  */
 #pragma once
 #include "ui/control.h"
+#include "client/skyrender.h"
 #include "util/telegraph.h"
 #include "sky/event.h"
 #include "sky/arena.h"
@@ -14,21 +15,22 @@
  */
 class MultiplayerLogger: public sky::ArenaLogger {
  private:
-  class MultiplayerConnection &connection;
+  class MultiplayerShared &connection;
 
  protected:
   void onEvent(const sky::ArenaEvent &event) override;
 
  public:
   MultiplayerLogger(sky::Arena &arena,
-                    class MultiplayerConnection &connection);
+                    class MultiplayerShared &connection);
 };
 
 /**
- * A connection to a server; manages the enet connection state, follows the
- * protocol to maintain a sky::Arena up-to-date, and maintains a message log.
+ * The shared state of the multiplayer client, at the intersection of the
+ * three multiplayer views. Holds the Arena and friends, Manages the basic
+ * protocol, and provides utilities.
  */
-class MultiplayerConnection {
+class MultiplayerShared {
  private:
   friend class MultiplayerLogger;
 
@@ -43,47 +45,53 @@ class MultiplayerConnection {
   void processPacket(const sky::ServerPacket &packet);
 
  public:
-  void logEvent(const ClientEvent &event);
-  void logArenaEvent(const sky::ArenaEvent &event);
-
-  MultiplayerConnection(
+  MultiplayerShared(
       ClientShared &shared,
       const std::string &serverHostname,
       const unsigned short serverPort);
 
-  /**
-   * Connection state.
-   */
+  // event logging
+  void logEvent(const ClientEvent &event);
+  void logArenaEvent(const sky::ArenaEvent &event);
+  std::vector<ClientEvent> eventLog;
+
+  //
   tg::Host host;
   ENetPeer *server;
   bool disconnecting, // trying to disconnect
       disconnected; // it's over, close the multiplayer client
 
-  /**
-   * Arena and subsystems.
-   */
+  // arena and subsystems
   void initializeArena(
       const PID pid,
       const sky::ArenaInitializer &arenaInit,
       const sky::SkyInitializer &skyInit);
   optional<sky::Arena> arena;
   optional<sky::Sky> sky;
-  optional<MultiplayerLogger> multiplayerSubsystem;
-  sky::Player *myPlayer;
-  std::vector<ClientEvent> eventLog;
+  optional<sky::SkyRender> skyRender;
+  optional<MultiplayerLogger> logger;
+  sky::Player *player;
+  sky::Plane *plane;
 
   /**
-   * Methods.
+   * Additional methods for Multiplayer.
    */
   void transmit(const sky::ClientPacket &packet);
   void poll(const float delta);
   void disconnect();
+  void onChangeSettings(const SettingsDelta &settings);
 
+  /**
+   * Additional methods for MultiplayerView.
+   */
   void chat(const std::string &message);
   void rcon(const std::string &command);
   void handleChatInput(const std::string &input);
 
   void requestTeamChange(const sky::Team team);
+
+  void drawEventLog(ui::Frame &f, const float cutoff);
+
 };
 
 /**
@@ -97,12 +105,12 @@ class MultiplayerView: public ui::Control {
  public:
   // shared state
   ClientShared &shared;
-  MultiplayerConnection &connection;
+  MultiplayerShared &mShared;
 
   MultiplayerView(
       sky::ArenaMode target,
       ClientShared &shared,
-      MultiplayerConnection &connection);
+      MultiplayerShared &mShared);
   virtual ~MultiplayerView() { }
 
   const sky::ArenaMode target; // the target of this view

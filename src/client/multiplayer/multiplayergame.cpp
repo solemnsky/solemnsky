@@ -2,7 +2,7 @@
 #include "client/elements/style.h"
 
 MultiplayerGame::MultiplayerGame(
-    ClientShared &shared, MultiplayerConnection &connection) :
+    ClientShared &shared, MultiplayerShared &connection) :
     MultiplayerView(sky::ArenaMode::Game, shared, connection),
     chatInput(style.base.normalTextEntry,
               style.multi.chatPos,
@@ -15,9 +15,12 @@ void MultiplayerGame::tick(float delta) {
 }
 
 void MultiplayerGame::render(ui::Frame &f) {
+  if (mShared.plane->vital) {
+    mShared.skyRender->render(f, mShared.plane->vital->state.physical.pos);
+  } else mShared.skyRender->render(f, {});
   ui::Control::render(f);
-  f.drawText({20, 20}, "<game goes here>", sf::Color::White,
-             style.base.normalText);
+  if (chatInput.isFocused) mShared.drawEventLog(f, 900);
+  else mShared.drawEventLog(f, 150);
 }
 
 bool MultiplayerGame::handle(const sf::Event &event) {
@@ -35,7 +38,7 @@ bool MultiplayerGame::handle(const sf::Event &event) {
 void MultiplayerGame::signalRead() {
   ui::Control::signalRead();
   if (chatInput.inputSignal) {
-    connection.handleChatInput(chatInput.inputSignal.get());
+    mShared.handleChatInput(chatInput.inputSignal.get());
   }
 }
 

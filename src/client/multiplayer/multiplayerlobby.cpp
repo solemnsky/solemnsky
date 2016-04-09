@@ -2,7 +2,7 @@
 #include "client/elements/style.h"
 
 MultiplayerLobby::MultiplayerLobby(
-    ClientShared &shared, MultiplayerConnection &connection) :
+    ClientShared &shared, MultiplayerShared &connection) :
     MultiplayerView(sky::ArenaMode::Lobby, shared, connection),
 
     specButton(style.base.normalButton, style.multi.lobbyButtonPos, "spectate"),
@@ -24,18 +24,10 @@ void MultiplayerLobby::tick(float delta) {
 void MultiplayerLobby::render(ui::Frame &f) {
   f.drawSprite(textureOf(ResID::Lobby), {0, 0}, {0, 0, 1600, 900});
 
-  f.drawText(
-      style.multi.messageLogPos, [&](ui::TextFrame &tf) {
-        for (auto iter = connection.eventLog.rbegin();
-             iter < connection.eventLog.rend(); iter++) {
-          ClientEvent(*iter).print(tf);
-          tf.breakLine();
-        }
-      }, sf::Color::White, style.multi.messageLogText);
-
+  mShared.drawEventLog(f, 300);
   f.drawText(
       style.multi.playerListPos, [&](ui::TextFrame &tf) {
-        connection.arena->forPlayers([&](const sky::Player &player) {
+        mShared.arena->forPlayers([&](const sky::Player &player) {
           tf.setColor(sf::Color::Black);
           if (player.team == 1) tf.setColor(sf::Color::Red);
           if (player.team == 2) tf.setColor(sf::Color::Blue);
@@ -67,13 +59,13 @@ void MultiplayerLobby::signalRead() {
   ui::Control::signalRead();
 
   if (specButton.clickSignal)
-    connection.requestTeamChange(0);
+    mShared.requestTeamChange(0);
   if (redButton.clickSignal)
-    connection.requestTeamChange(1);
+    mShared.requestTeamChange(1);
   if (blueButton.clickSignal)
-    connection.requestTeamChange(2);
+    mShared.requestTeamChange(2);
   if (chatInput.inputSignal) {
-    connection.handleChatInput(chatInput.inputSignal.get());
+    mShared.handleChatInput(chatInput.inputSignal.get());
   }
 }
 
