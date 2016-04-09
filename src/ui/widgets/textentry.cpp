@@ -55,34 +55,34 @@ sf::FloatRect TextEntry::getBody() {
   return sf::FloatRect(pos, style.dimensions);
 }
 
-bool TextEntry::handleKeyboardEvent(const sf::Event &event) {
+void TextEntry::handleKeyboardEvent(const sf::Event &event) {
   if (event.type == sf::Event::KeyPressed) {
     sf::Keyboard::Key key = event.key.code;
 
     switch (key) {
       case sf::Keyboard::Escape: {
         unfocus();
-        return true;
+        return;
       }
       case sf::Keyboard::Return: {
         inputSignal.emplace(contents);
         unfocus();
-        return true;
+        return;
       }
       case sf::Keyboard::BackSpace: {
         if (!contents.empty() and cursor != 0) {
           contents.erase((size_t) cursor - 1, 1);
           cursor--;
         }
-        return true;
+        return;
       }
       case sf::Keyboard::Left: {
         cursor = std::max(0, cursor - 1);
-        return true;
+        return;
       }
       case sf::Keyboard::Right: {
         cursor = std::min((int) contents.size(), cursor + 1);
-        return true;
+        return;
       }
       default:
         break;
@@ -90,13 +90,10 @@ bool TextEntry::handleKeyboardEvent(const sf::Event &event) {
   }
 
   if (event.type == sf::Event::TextEntered) {
-    if (event.text.unicode < 32) return true; // non-printable
+    if (event.text.unicode < 32) return; // non-printable
     contents.insert((size_t) cursor, {(char) event.text.unicode});
     cursor++;
-    return true;
   }
-
-  return false;
 }
 
 void TextEntry::tick(float delta) {
@@ -116,7 +113,7 @@ void TextEntry::render(Frame &f) {
   f.pushTransform(sf::Transform().translate(pos));
   if (persistent) {
     f.drawText({-20, style.dimensions.y / 2.0f},
-               description, style.textColor, descriptionFormat);
+               description, sf::Color::White, descriptionFormat);
   }
 
   if (isFocused) {
@@ -159,6 +156,7 @@ bool TextEntry::handle(const sf::Event &event) {
 
     return contains;
   }
+
   if (!isFocused) {
     if (event.type == sf::Event::MouseMoved) {
       const sf::Vector2f pt(event.mouseMove.x, event.mouseMove.y);
@@ -170,7 +168,7 @@ bool TextEntry::handle(const sf::Event &event) {
       pressedKeyboardEvent.reset();
       repeatActivate.reset();
       repeatCooldown.reset();
-      return false;
+      return true;
     }
 
     if (event.type == sf::Event::KeyPressed) {
@@ -179,13 +177,16 @@ bool TextEntry::handle(const sf::Event &event) {
           and event.key.code != sf::Keyboard::Escape)
         pressedKeyboardEvent = event;
 
-      if (handleKeyboardEvent(event)) return true;
+      handleKeyboardEvent(event);
+      return true;
     }
 
     if (event.type == sf::Event::TextEntered) {
-      if (handleKeyboardEvent(event)) return true;
+      handleKeyboardEvent(event);
+      return true;
     }
   }
+
   return false;
 }
 

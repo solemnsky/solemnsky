@@ -100,8 +100,9 @@ Style::Settings::Settings(const Style::Base &base) :
              ResID::Font),
     entryOffset(150, -0.5f * base.normalTextEntry.dimensions.y),
 
-    debugOptionPos(500, 100),
-    nicknameChooserPos(500, 100),
+    column1Pos(300, 80),
+    column2Pos(800, 80),
+    rowOffset(80),
     pageButtonHeight(800),
     generalButtonOffset(700 / 6),
     playerButtonOffset(generalButtonOffset + 300 + 700 / 3),
@@ -123,7 +124,7 @@ Style::Multi::Multi(const Style::Base &base) :
 
     chatPos(20, 850),
     messageLogPos(20, 840),
-    playerListPos(1250, 150),
+    playerListPos(1250, 200),
     lobbyButtonPos(lobbyChatWidth + 100, lobbyTopMargin),
     lobbyButtonSep(0, 100),
 

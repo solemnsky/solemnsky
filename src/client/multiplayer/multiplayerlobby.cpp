@@ -29,7 +29,7 @@ void MultiplayerLobby::tick(float delta) {
 void MultiplayerLobby::render(ui::Frame &f) {
   f.drawSprite(textureOf(ResID::Lobby), {0, 0}, {0, 0, 1600, 900});
 
-  mShared.drawEventLog(f, 300);
+  mShared.drawEventLog(f, 800);
   f.drawText(
       style.multi.playerListPos, [&](ui::TextFrame &tf) {
         mShared.arena->forPlayers([&](const sky::Player &player) {

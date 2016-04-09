@@ -46,7 +46,7 @@ class TextEntry: public Control {
   TextFormat textFormat, descriptionFormat; // deduced from the style
 
   sf::FloatRect getBody();
-  bool handleKeyboardEvent(const sf::Event &event);
+  void handleKeyboardEvent(const sf::Event &event);
 
  public:
   TextEntry() = delete;

@@ -2,6 +2,17 @@
 #include <cereal/archives/xml.hpp>
 #include <fstream>
 
+std::string showClientAction(const ClientAction action) {
+  switch (action) {
+    case ClientAction::Spawn:
+      return "spawn";
+    case ClientAction::Chat:
+      return "chat";
+    case ClientAction::Scoreboard:
+      return "scoreboard";
+  }
+}
+
 /**
  * Serialization through cereal.
  */
