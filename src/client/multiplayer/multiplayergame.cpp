@@ -10,7 +10,7 @@ void MultiplayerGame::doClientAction(const ClientAction action,
       break;
     }
     case ClientAction::Chat: {
-      if (!state) chatInput.focus();
+      if (state) chatInput.focus();
       break;
     }
     case ClientAction::Scoreboard: {
@@ -39,8 +39,8 @@ void MultiplayerGame::render(ui::Frame &f) {
     mShared.skyRender->render(f, mShared.plane->vital->state.physical.pos);
   } else mShared.skyRender->render(f, {});
   ui::Control::render(f);
-  if (chatInput.isFocused) mShared.drawEventLog(f, 900);
-  else mShared.drawEventLog(f, 150);
+  if (chatInput.isFocused) mShared.drawEventLog(f, style.multi.chatCutoff);
+  else mShared.drawEventLog(f, style.multi.chatIngameCutoff);
   if (scoreboardFocused) {
     // TODO: scoreboard
     f.drawText({20, 20}, "<scoreboard goes here>",
@@ -51,13 +51,15 @@ void MultiplayerGame::render(ui::Frame &f) {
 bool MultiplayerGame::handle(const sf::Event &event) {
   if (ui::Control::handle(event)) return true;
 
-  if (auto clientAction = shared.triggerClientAction(event)) {
-    doClientAction(clientAction->first, clientAction->second);
-    return true;
+  if (mShared.plane->isSpawned()) {
+    if (auto action = shared.triggerSkyAction(event)) {
+      mShared.player->doAction(action->first, action->second);
+      return true;
+    }
   }
 
-  if (auto action = shared.triggerSkyAction(event)) {
-    mShared.player->doAction(action->first, action->second);
+  if (auto clientAction = shared.triggerClientAction(event)) {
+    doClientAction(clientAction->first, clientAction->second);
     return true;
   }
 

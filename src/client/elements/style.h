@@ -146,6 +146,7 @@ struct Style {
         messageLogPos,
         playerListPos,
         lobbyButtonPos, lobbyButtonSep;
+    float chatCutoff, chatIngameCutoff;
 
     sf::Color playerSpecColor, playerJoinedColor;
     std::string readyButtonActiveDesc, readyButtonDeactiveDesc;
