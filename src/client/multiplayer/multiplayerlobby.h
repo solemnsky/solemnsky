@@ -19,6 +19,8 @@ class MultiplayerLobby: public MultiplayerView {
 
   std::vector<ui::Control *> myControls;
 
+  void doClientAction(const ClientAction action, const bool state);
+
  public:
   MultiplayerLobby(ClientShared &shared, MultiplayerShared &connection);
 

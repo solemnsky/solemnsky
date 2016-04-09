@@ -18,6 +18,9 @@
 class MultiplayerGame: public MultiplayerView {
  private:
   ui::TextEntry chatInput;
+  bool scoreboardFocused;
+
+  void doClientAction(const ClientAction action, const bool state);
 
  public:
   MultiplayerGame(ClientShared &shared, MultiplayerShared &connection);

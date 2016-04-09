@@ -1,12 +1,31 @@
 #include "multiplayergame.h"
 #include "client/elements/style.h"
 
+void MultiplayerGame::doClientAction(const ClientAction action,
+                                     const bool state) {
+  switch (action) {
+    case ClientAction::Spawn: {
+      if (state) mShared.player->spawn({}, {200, 200}, 0);
+      break;
+    }
+    case ClientAction::Chat: {
+      if (state) chatInput.focus();
+      break;
+    }
+    case ClientAction::Scoreboard: {
+      scoreboardFocused = state;
+      break;
+    }
+  }
+}
+
 MultiplayerGame::MultiplayerGame(
     ClientShared &shared, MultiplayerShared &connection) :
     MultiplayerView(sky::ArenaMode::Game, shared, connection),
     chatInput(style.base.normalTextEntry,
               style.multi.chatPos,
-              "[enter to chat]") {
+              "[enter to chat]"),
+    scoreboardFocused(false) {
   areChildren({&chatInput});
 }
 
@@ -21,17 +40,26 @@ void MultiplayerGame::render(ui::Frame &f) {
   ui::Control::render(f);
   if (chatInput.isFocused) mShared.drawEventLog(f, 900);
   else mShared.drawEventLog(f, 150);
+  if (scoreboardFocused) {
+    // TODO: scoreboard
+    f.drawText({20, 20}, "<scoreboard goes here>",
+               sf::Color::Black, style.base.normalText);
+  }
 }
 
 bool MultiplayerGame::handle(const sf::Event &event) {
   if (ui::Control::handle(event)) return true;
 
-  if (event.type == sf::Event::KeyPressed) {
-    if (event.key.code == sf::Keyboard::Return) {
-      chatInput.focus();
-      return true;
+  if (!mShared.plane->isSpawned()) {
+    if (auto clientAction = shared.triggerClientAction(event)) {
+      doClientAction(clientAction->first, clientAction->second);
     }
   }
+
+  if (auto action = shared.triggerSkyAction(event)) {
+    mShared.player->doAction(action->first, action->second);
+  }
+
   return false;
 }
 

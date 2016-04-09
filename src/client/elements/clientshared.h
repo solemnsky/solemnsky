@@ -68,8 +68,11 @@ private:
   ClientUiState ui;
 
   // query key bindings
-  optional<std::pair<sky::Action, bool>> actionFromControl(
+  optional<std::pair<sky::Action, bool>> triggerSkyAction(
       const sf::Event &event) const;
+  optional<std::pair<ClientAction, bool>> triggerClientAction(
+      const sf::Event &event) const;
+
 
   // Relays to client. This seems to be useful enough to justify violating DRY.
   void beginGame(std::unique_ptr<Game> &&game);
