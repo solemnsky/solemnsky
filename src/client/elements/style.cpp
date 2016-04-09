@@ -121,6 +121,8 @@ Style::Multi::Multi(const Style::Base &base) :
     lobbyTopMargin(205),
     lobbyChatWidth(900),
     gameChatWidth(500),
+    chatCutoff(500),
+    chatIngameCutoff(150),
 
     chatPos(20, 850),
     messageLogPos(20, 840),
