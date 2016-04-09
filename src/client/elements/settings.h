@@ -14,6 +14,8 @@ enum class ClientAction {
   Spawn, Chat, Scoreboard
 };
 
+std::string showClientAction(const ClientAction action);
+
 /**
  * Key bindings for the client.
  */

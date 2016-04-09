@@ -10,7 +10,7 @@ void MultiplayerGame::doClientAction(const ClientAction action,
       break;
     }
     case ClientAction::Chat: {
-      if (state) chatInput.focus();
+      if (!state) chatInput.focus();
       break;
     }
     case ClientAction::Scoreboard: {
