@@ -20,9 +20,9 @@ TEST_F(SkyTest, SubsystemTest) {
   {
     sky::Player &player = arena.connectPlayer("some name");
     player.spawn({}, {300, 300}, 0);
-    EXPECT_EQ(sky.getPlane(player).vital->state.pos.x, 300);
+    EXPECT_EQ(sky.getPlane(player).vital->state.physical.pos.x, 300);
     arena.tick(0.5);
-    EXPECT_NE(sky.getPlane(player).vital->state.pos.x, 300);
+    EXPECT_NE(sky.getPlane(player).vital->state.physical.pos.x, 300);
   }
 
   {
@@ -58,7 +58,7 @@ TEST_F(SkyTest, InitializerTest) {
         &plane1 = clientSky.getPlane(*player1);
     EXPECT_EQ(bool(plane0.vital), false);
     ASSERT_EQ(bool(plane1.vital), true);
-    EXPECT_EQ(plane1.vital->state.pos.x, 200);
+    EXPECT_EQ(plane1.vital->state.physical.pos.x, 200);
   }
 }
 
@@ -100,6 +100,6 @@ TEST_F(SkyTest, DeltaTest) {
     sky::Plane &plane = clientSky.getPlane(player);
 
     ASSERT_EQ(bool(plane.vital), true);
-    EXPECT_EQ(plane.vital->state.pos.x, 300);
+    EXPECT_EQ(plane.vital->state.physical.pos.x, 300);
   }
 }
