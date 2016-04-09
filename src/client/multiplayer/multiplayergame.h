@@ -20,7 +20,7 @@ class MultiplayerGame: public MultiplayerView {
   ui::TextEntry chatInput;
 
  public:
-  MultiplayerGame(ClientShared &shared, MultiplayerConnection &connection);
+  MultiplayerGame(ClientShared &shared, MultiplayerShared &connection);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;

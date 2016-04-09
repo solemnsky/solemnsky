@@ -13,7 +13,7 @@ class Multiplayer: public Game {
    * Arena connection state / protocol implementation and the current
    * (mode-specific) interface that we show the user.
    */
-  MultiplayerConnection connection;
+  MultiplayerShared mShared;
   std::unique_ptr<MultiplayerView> view;
   std::unique_ptr<MultiplayerView> mkView();
 

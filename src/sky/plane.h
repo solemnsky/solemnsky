@@ -80,7 +80,8 @@ struct PlaneTuning {
 };
 
 /**
- * The POD variable game state of a PlaneVital.
+ * The POD variable game state of a PlaneVital, that's necessary to sync over
+ * the network.
  */
 struct PlaneState {
   PlaneState(); // for packing
@@ -194,15 +195,7 @@ class Plane {
   Cooldown primaryCooldown;
   void syncControls();
 
- public:
-  Plane() = delete;
-  Plane(Sky &parent, class Player &player);
-  Plane(Sky &parent, class Player &player,
-        const PlaneInitializer &initializer);
-
-  optional<PlaneVital> vital;
-  std::forward_list<Prop> props;
-
+  friend class Sky;
   /**
    * API for Sky.
    */
@@ -217,6 +210,19 @@ class Plane {
   void applyDelta(const PlaneDelta &delta);
   PlaneInitializer captureInitializer() const;
   PlaneDelta captureDelta();
+
+ public:
+  Plane() = delete;
+  Plane(Sky &parent, class Player &player);
+  Plane(Sky &parent, class Player &player,
+        const PlaneInitializer &initializer);
+
+  /**
+   * Top-level API.
+   */
+  optional<PlaneVital> vital;
+  std::forward_list<Prop> props;
+
 };
 
 }

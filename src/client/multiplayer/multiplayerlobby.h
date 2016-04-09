@@ -20,7 +20,7 @@ class MultiplayerLobby: public MultiplayerView {
   std::vector<ui::Control *> myControls;
 
  public:
-  MultiplayerLobby(ClientShared &shared, MultiplayerConnection &connection);
+  MultiplayerLobby(ClientShared &shared, MultiplayerShared &connection);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;

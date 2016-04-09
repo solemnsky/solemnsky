@@ -9,13 +9,13 @@
  */
 
 std::unique_ptr<MultiplayerView> Multiplayer::mkView() {
-  switch (connection.arena->mode) {
+  switch (mShared.arena->mode) {
     case sky::ArenaMode::Lobby:
-      return std::make_unique<MultiplayerLobby>(shared, connection);
+      return std::make_unique<MultiplayerLobby>(shared, mShared);
     case sky::ArenaMode::Game:
-      return std::make_unique<MultiplayerGame>(shared, connection);
+      return std::make_unique<MultiplayerGame>(shared, mShared);
     case sky::ArenaMode::Scoring:
-      return std::make_unique<MultiplayerScoring>(shared, connection);
+      return std::make_unique<MultiplayerScoring>(shared, mShared);
   }
 }
 
@@ -24,20 +24,21 @@ Multiplayer::Multiplayer(ClientShared &shared,
                          const unsigned short serverPort) :
     Game(shared, "multiplayer"),
     view(nullptr),
-    connection(shared, serverHostname, serverPort) { }
+    mShared(shared, serverHostname, serverPort) { }
 
 /**
  * Game interface.
  */
 
 void Multiplayer::onChangeSettings(const SettingsDelta &settings) {
+  mShared.onChangeSettings(settings);
   if (view) view->onChangeSettings(settings);
 
-  if (connection.myPlayer) {
+  if (mShared.player) {
     if (settings.nickname) {
-      sky::PlayerDelta delta = connection.myPlayer->zeroDelta();
+      sky::PlayerDelta delta = mShared.player->zeroDelta();
       delta.nickname = *settings.nickname;
-      connection.transmit(sky::ClientPacket::ReqPlayerDelta(delta));
+      mShared.transmit(sky::ClientPacket::ReqPlayerDelta(delta));
       // request a nickname change
     }
   }
@@ -52,24 +53,24 @@ void Multiplayer::onFocus() {
 }
 
 void Multiplayer::doExit() {
-  connection.disconnect();
+  mShared.disconnect();
 }
 
 void Multiplayer::tick(float delta) {
-  connection.poll(delta);
-  if (connection.disconnected) quitting = true;
-  if (connection.disconnecting) return;
+  mShared.poll(delta);
+  if (mShared.disconnected) quitting = true;
+  if (mShared.disconnecting) return;
 
-  if (connection.arena) {
-    connection.arena->tick(delta);
-    if (!view or view->target != connection.arena->mode) view = mkView();
+  if (mShared.arena) {
+    mShared.arena->tick(delta);
+    if (!view or view->target != mShared.arena->mode) view = mkView();
     view->tick(delta);
   }
 }
 
 void Multiplayer::render(ui::Frame &f) {
-  if (!connection.server) {
-    if (connection.disconnecting) {
+  if (!mShared.server) {
+    if (mShared.disconnecting) {
       f.drawText({400, 400}, "Disconnecting...",
                  sf::Color::White, style.base.normalText);
       return;

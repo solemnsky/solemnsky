@@ -1,4 +1,6 @@
 #include "multiplayershared.h"
+#include "client/elements/style.h"
+#include "sky/event.h"
 
 /**
  * MultiplayerLogger.
@@ -9,17 +11,17 @@ void MultiplayerLogger::onEvent(const sky::ArenaEvent &event) {
 }
 
 MultiplayerLogger::MultiplayerLogger(sky::Arena &arena,
-                                     MultiplayerConnection &connection) :
+                                     MultiplayerShared &connection) :
     sky::ArenaLogger(arena), connection(connection) { }
 
 /**
  * MultiplayerConnection.
  */
 
-void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
+void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
   using namespace sky;
 
-  if (!myPlayer) {
+  if (!player) {
     // waiting for the arena connection request to be accepted
     if (packet.type == ServerPacket::Type::Init) {
       initializeArena(
@@ -72,21 +74,21 @@ void MultiplayerConnection::processPacket(const sky::ServerPacket &packet) {
   }
 }
 
-void MultiplayerConnection::logEvent(const ClientEvent &event) {
+void MultiplayerShared::logEvent(const ClientEvent &event) {
   StringPrinter p;
   event.print(p);
   appLog(p.getString(), LogOrigin::Client);
   eventLog.push_back(event);
 }
 
-void MultiplayerConnection::logArenaEvent(const sky::ArenaEvent &event) {
+void MultiplayerShared::logArenaEvent(const sky::ArenaEvent &event) {
   StringPrinter p;
   event.print(p);
   appLog(p.getString(), LogOrigin::Engine);
   eventLog.push_back(ClientEvent::Event(event));
 }
 
-MultiplayerConnection::MultiplayerConnection(
+MultiplayerShared::MultiplayerShared(
     ClientShared &shared,
     const std::string &serverHostname,
     const unsigned short serverPort) :
@@ -97,25 +99,27 @@ MultiplayerConnection::MultiplayerConnection(
     disconnectTimeout(5),
     host(tg::HostType::Client),
     disconnected(false), disconnecting(false),
-    myPlayer(nullptr) {
+    player(nullptr), plane(nullptr) {
   host.connect(serverHostname, serverPort);
 }
 
-void MultiplayerConnection::initializeArena(
+void MultiplayerShared::initializeArena(
     const PID pid,
     const sky::ArenaInitializer &arenaInit,
     const sky::SkyInitializer &skyInit) {
   arena.emplace(arenaInit);
   sky.emplace(arena.get(), skyInit);
-  multiplayerSubsystem.emplace(arena.get(), *this);
-  myPlayer = arena->getPlayer(pid);
+  skyRender.emplace(arena.get(), sky.get(), shared.settings.enableDebug);
+  logger.emplace(arena.get(), *this);
+  player = arena->getPlayer(pid);
+  plane = &sky->getPlane(*player);
 }
 
-void MultiplayerConnection::transmit(const sky::ClientPacket &packet) {
+void MultiplayerShared::transmit(const sky::ClientPacket &packet) {
   if (server) telegraph.transmit(host, server, packet);
 }
 
-void MultiplayerConnection::poll(const float delta) {
+void MultiplayerShared::poll(const float delta) {
   if (disconnected) return;
 
   event = host.poll();
@@ -157,7 +161,7 @@ void MultiplayerConnection::poll(const float delta) {
   }
 }
 
-void MultiplayerConnection::disconnect() {
+void MultiplayerShared::disconnect() {
   if (server) {
     host.disconnect(server);
     disconnecting = true;
@@ -167,16 +171,23 @@ void MultiplayerConnection::disconnect() {
   }
 }
 
-void MultiplayerConnection::chat(const std::string &message) {
+void MultiplayerShared::onChangeSettings(const SettingsDelta &settings) {
+  if (skyRender) {
+    if (settings.enableDebug)
+      skyRender->enableDebug = settings.enableDebug.get();
+  }
+}
+
+void MultiplayerShared::chat(const std::string &message) {
   transmit(sky::ClientPacket::Chat(message));
 }
 
-void MultiplayerConnection::rcon(const std::string &command) {
+void MultiplayerShared::rcon(const std::string &command) {
   logEvent(ClientEvent::RConCommand(command));
   transmit(sky::ClientPacket::RCon(command));
 }
 
-void MultiplayerConnection::handleChatInput(const std::string &input) {
+void MultiplayerShared::handleChatInput(const std::string &input) {
   if (input.size() >= 1) {
     if (input.size() > 1 and input[0] == '/') {
       rcon(input.substr(1));
@@ -186,12 +197,24 @@ void MultiplayerConnection::handleChatInput(const std::string &input) {
   }
 }
 
-void MultiplayerConnection::requestTeamChange(const sky::Team team) {
-  if (myPlayer) {
-    sky::PlayerDelta delta = myPlayer->zeroDelta();
+void MultiplayerShared::requestTeamChange(const sky::Team team) {
+  if (player) {
+    sky::PlayerDelta delta = player->zeroDelta();
     delta.team = team;
     transmit(sky::ClientPacket::ReqPlayerDelta(delta));
   }
+}
+
+void MultiplayerShared::drawEventLog(ui::Frame &f, const float cutoff) {
+  f.drawText(
+      style.multi.messageLogPos, [&](ui::TextFrame &tf) {
+        for (auto iter = eventLog.rbegin();
+             iter < eventLog.rend(); iter++) {
+          ClientEvent(*iter).print(tf);
+          tf.breakLine();
+          if (tf.drawOffset.y < -cutoff) break;
+        }
+      }, sf::Color::White, style.multi.messageLogText);
 }
 
 /**
@@ -201,8 +224,8 @@ void MultiplayerConnection::requestTeamChange(const sky::Team team) {
 MultiplayerView::MultiplayerView(
     sky::ArenaMode target,
     ClientShared &shared,
-    MultiplayerConnection &connection) :
+    MultiplayerShared &mShared) :
     target(target),
     shared(shared),
-    connection(connection) { }
+    mShared(mShared) { }
 
