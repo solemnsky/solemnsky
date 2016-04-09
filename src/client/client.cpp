@@ -161,7 +161,7 @@ void Client::drawGame(ui::Frame &f) {
           tf.breakLine();
           tf.print("logic:" + profilerSnap.logicTime.print());
           tf.breakLine();
-          tf.print("render:" + profilerSnap.logicTime.print());
+          tf.print("render:" + profilerSnap.renderTime.print());
         }, sf::Color::White, style.base.normalText);
   }
 }

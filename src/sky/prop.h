@@ -19,12 +19,10 @@ class Prop {
  public:
   Prop() = delete;
   Prop(class Sky &parent,
-       const sf::Vector2f &pos);
-  ~Prop();
-
-  Prop(const Prop &) = delete;
-  Prop &operator=(const Prop &) = delete;
+       const sf::Vector2f &pos,
+       const sf::Vector2f &vel);
   Prop(Prop &&);
+  ~Prop();
 
   float lifeTime;
   PhysicalState physical;

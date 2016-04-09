@@ -3,6 +3,7 @@
  */
 #pragma once
 #include <Box2D/Box2D.h>
+#include <forward_list>
 #include "prop.h"
 #include "physics.h"
 #include "util/types.h"
@@ -185,11 +186,13 @@ class Plane {
   Sky &parent;
   class Player &player; // associated player
 
+  // for capturing deltas
   bool newlyAlive;
 
-  // controls
+  // controls and other state we don't need to transmit
   bool leftState, rightState, thrustState, revState, primaryState;
-  void syncCtrls(); // write control state to vital->state
+  Cooldown primaryCooldown;
+  void syncControls();
 
  public:
   Plane() = delete;
@@ -198,7 +201,7 @@ class Plane {
         const PlaneInitializer &initializer);
 
   optional<PlaneVital> vital;
-  std::vector<Prop> props;
+  std::forward_list<Prop> props;
 
   /**
    * API for Sky.

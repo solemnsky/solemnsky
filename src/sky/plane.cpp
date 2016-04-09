@@ -258,7 +258,7 @@ void PlaneVital::tick(const float delta) {
  * Plane.
  */
 
-void Plane::syncCtrls() {
+void Plane::syncControls() {
   if (vital) {
     vital->state.rotCtrl = addMovement(leftState, rightState);
     vital->state.throtCtrl = addMovement(revState, thrustState);
@@ -275,16 +275,32 @@ void Plane::afterPhysics(float delta) {
     vital->readFromBody();
     vital->tick(delta);
 
+    primaryCooldown.cool(delta);
+
     if (primaryState) {
-      if (vital->state.requestDiscreteEnergy(0.1)) {
-        props.emplace_back(parent, vital->state.physical.pos);
+      if (primaryCooldown && primaryState) {
+        if (vital->state.requestDiscreteEnergy(
+            vital->tuning.energy.laserGun)) {
+          props.emplace_front(
+              parent,
+              vital->state.physical.pos + 100.0f * VecMath::fromAngle(
+                  vital->state.physical.rot),
+              vital->state.physical.vel + 300.0f * VecMath::fromAngle
+                  (vital->state.physical.rot));
+          primaryCooldown.reset();
+        }
       }
     }
   }
+
   for (auto &prop : props) {
     prop.readFromBody();
     prop.tick(delta);
   }
+
+  props.remove_if([](Prop &prop) {
+    return prop.lifeTime > 1;
+  });
 }
 
 Plane::Plane(Sky &parent, Player &player) :
@@ -292,7 +308,9 @@ Plane::Plane(Sky &parent, Player &player) :
     player(player),
     newlyAlive(false),
     leftState(false), rightState(false),
-    thrustState(false), revState(false) { }
+    thrustState(false), revState(false),
+    primaryState(false),
+    primaryCooldown(0.2) { }
 
 Plane::Plane(Sky &parent, Player &player,
              const PlaneInitializer &initializer) :
@@ -304,9 +322,8 @@ Plane::Plane(Sky &parent, Player &player,
 void Plane::spawn(const PlaneTuning &tuning,
                   const sf::Vector2f pos,
                   const float rot) {
-  // TODO: die if position is not valid
   vital.emplace(parent, tuning, PlaneState(tuning, pos, rot));
-  syncCtrls();
+  syncControls();
   newlyAlive = true;
 }
 
@@ -340,12 +357,12 @@ void Plane::doAction(const Action &action, const bool state) {
     }
     case Action::Suicide: {
       vital.reset();
-      parent.arena.caller.onDie(player);
+      parent.caller.onDie(player);
       newlyAlive = false;
     }
   }
 
-  syncCtrls();
+  syncControls();
 }
 
 void Plane::applyDelta(const PlaneDelta &delta) {
