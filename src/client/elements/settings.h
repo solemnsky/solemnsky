@@ -11,7 +11,7 @@
  * client instead of the sky.
  */
 enum class ClientAction {
-  Chat, Scoreboard
+  Spawn, Chat, Scoreboard
 };
 
 /**
@@ -21,15 +21,11 @@ struct KeyBindings {
   KeyBindings();
 
   optional<sf::Keyboard::Key> lookupBinding(sky::Action) const;
+  optional<sf::Keyboard::Key> lookupClientBinding(ClientAction) const;
 
   std::map<sf::Keyboard::Key, sky::Action> skyBindings;
   std::map<sf::Keyboard::Key, ClientAction> clientBindings;
 };
-
-bool operator==(const KeyBindings &x, const KeyBindings &y);
-inline bool operator!=(const KeyBindings &x, const KeyBindings &y) {
-  return !(x == y);
-}
 
 /**
  * Client settings, for everything from graphics preferences to player name.

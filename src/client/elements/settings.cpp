@@ -32,20 +32,23 @@ KeyBindings::KeyBindings() {
   skyBindings.emplace(sf::Keyboard::D, sky::Action::Secondary);
   skyBindings.emplace(sf::Keyboard::S, sky::Action::Special);
 
+  clientBindings.emplace(sf::Keyboard::F, ClientAction::Spawn);
   clientBindings.emplace(sf::Keyboard::Return, ClientAction::Chat);
   clientBindings.emplace(sf::Keyboard::Tab, ClientAction::Scoreboard);
 }
 
 optional<sf::Keyboard::Key> KeyBindings::lookupBinding(
     const sky::Action action) const {
-  for (const auto pair : skyBindings) {
+  for (const auto pair : skyBindings)
     if (pair.second == action) return {pair.first};
-  }
   return {};
 }
 
-bool operator==(const KeyBindings &x, const KeyBindings &y) {
-  return false;
+optional<sf::Keyboard::Key> KeyBindings::lookupClientBinding(
+    const ClientAction action) const {
+  for (const auto pair : clientBindings)
+    if (pair.second == action) return {pair.first};
+  return {};
 }
 
 Settings::Settings() :
@@ -76,8 +79,7 @@ SettingsDelta::SettingsDelta(const Settings &oldSettings,
     nickname = newSettings.nickname;
   if (oldSettings.enableDebug != newSettings.enableDebug)
     enableDebug = newSettings.enableDebug;
-  if (oldSettings.bindings != newSettings.bindings)
-    bindings = newSettings.bindings;
+  bindings = newSettings.bindings;
 }
 
 void SettingsDelta::apply(Settings &settings) const {

@@ -53,18 +53,30 @@ ClientShared::ClientShared(Client *client) :
     client(client),
     uptime(0) { }
 
-optional<std::pair<sky::Action, bool>>
-ClientShared::actionFromControl(const sf::Event &event) const {
+template<typename T>
+optional<std::pair<T, bool>>
+bindingFromEvent(const sf::Event &event,
+                 const std::map<sf::Keyboard::Key, T> &map) {
   if (event.type == sf::Event::KeyPressed
       or event.type == sf::Event::KeyReleased) {
     bool value = event.type == sf::Event::KeyPressed;
 
-    auto action = settings.bindings.skyBindings.find(event.key.code);
-    if (action != settings.bindings.skyBindings.end())
+    auto action = map.find(event.key.code);
+    if (action != map.end())
       return {std::pair<sky::Action, bool>(action->second, value)};
   }
 
   return {};
+};
+
+optional<std::pair<sky::Action, bool>>
+ClientShared::triggerSkyAction(const sf::Event &event) const {
+  return bindingFromEvent(event, settings.bindings.skyBindings);
+}
+
+optional<std::pair<ClientAction, bool>>
+ClientShared::triggerClientAction(const sf::Event &event) const {
+  return bindingFromEvent(event, settings.bindings.skyBindings);
 }
 
 void ClientShared::beginGame(std::unique_ptr<Game> &&game) {

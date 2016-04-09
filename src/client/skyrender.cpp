@@ -105,7 +105,7 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                     const PlaneGraphics &graphics) {
   renderProps(f, graphics.plane);
 
-  if (graphics.plane.vital) {
+  if (graphics.plane.isSpawned()) {
     const auto &state = graphics.plane.vital->state;
     const auto &tuning = graphics.plane.vital->tuning;
 

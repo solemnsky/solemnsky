@@ -271,7 +271,7 @@ void Plane::beforePhysics() {
 }
 
 void Plane::afterPhysics(float delta) {
-  if (vital) {
+  if (isSpawned()) {
     vital->readFromBody();
     vital->tick(delta);
 
@@ -301,22 +301,6 @@ void Plane::afterPhysics(float delta) {
   props.remove_if([](Prop &prop) {
     return prop.lifeTime > 1;
   });
-}
-
-Plane::Plane(Sky &parent, Player &player) :
-    parent(parent),
-    player(player),
-    newlyAlive(false),
-    leftState(false), rightState(false),
-    thrustState(false), revState(false),
-    primaryState(false),
-    primaryCooldown(0.2) { }
-
-Plane::Plane(Sky &parent, Player &player,
-             const PlaneInitializer &initializer) :
-    Plane(parent, player) {
-  if (initializer.spawn)
-    vital.emplace(parent, initializer.spawn->first, initializer.spawn->second);
 }
 
 void Plane::spawn(const PlaneTuning &tuning,
@@ -392,6 +376,27 @@ PlaneDelta Plane::captureDelta() {
     else return PlaneDelta();
   }
 }
+
+Plane::Plane(Sky &parent, Player &player) :
+    parent(parent),
+    player(player),
+    newlyAlive(false),
+    leftState(false), rightState(false),
+    thrustState(false), revState(false),
+    primaryState(false),
+    primaryCooldown(0.2) { }
+
+Plane::Plane(Sky &parent, Player &player,
+             const PlaneInitializer &initializer) :
+    Plane(parent, player) {
+  if (initializer.spawn)
+    vital.emplace(parent, initializer.spawn->first, initializer.spawn->second);
+}
+
+bool Plane::isSpawned() const {
+  return bool(vital);
+}
+
 
 }
 

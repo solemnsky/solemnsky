@@ -1,6 +1,13 @@
 #include "multiplayerlobby.h"
 #include "client/elements/style.h"
 
+void MultiplayerLobby::doClientAction(const ClientAction action,
+                                      const bool state) {
+  switch (action) {
+    if
+  }
+}
+
 MultiplayerLobby::MultiplayerLobby(
     ClientShared &shared, MultiplayerShared &connection) :
     MultiplayerView(sky::ArenaMode::Lobby, shared, connection),
@@ -42,12 +49,10 @@ void MultiplayerLobby::render(ui::Frame &f) {
 bool MultiplayerLobby::handle(const sf::Event &event) {
   if (ui::Control::handle(event)) return true;
 
-  if (event.type == sf::Event::KeyPressed) {
-    if (event.key.code == sf::Keyboard::Return) {
-      chatInput.focus();
-      return true;
-    }
+  if (const auto action = shared.triggerClientAction(event)) {
+    doClientAction(action->first, action->second);
   }
+
   return false;
 }
 

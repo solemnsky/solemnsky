@@ -223,6 +223,8 @@ class Plane {
   optional<PlaneVital> vital;
   std::forward_list<Prop> props;
 
+  bool isSpawned() const;
+
 };
 
 }
