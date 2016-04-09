@@ -157,6 +157,7 @@ SkyRender::SkyRender(Arena &arena, Sky &sky, const bool enableDebug) :
     Subsystem(arena), sky(sky),
     enableDebug(enableDebug),
     planeSheet(ResID::PlayerSheet) {
+  arena.forPlayers([&](Player &player) { registerPlayer(player); });
 }
 
 SkyRender::~SkyRender() { }

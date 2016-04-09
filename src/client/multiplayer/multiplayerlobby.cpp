@@ -3,9 +3,7 @@
 
 void MultiplayerLobby::doClientAction(const ClientAction action,
                                       const bool state) {
-  switch (action) {
-    if
-  }
+  if (action == ClientAction::Chat && state) chatInput.focus();
 }
 
 MultiplayerLobby::MultiplayerLobby(
@@ -51,6 +49,7 @@ bool MultiplayerLobby::handle(const sf::Event &event) {
 
   if (const auto action = shared.triggerClientAction(event)) {
     doClientAction(action->first, action->second);
+    return true;
   }
 
   return false;
