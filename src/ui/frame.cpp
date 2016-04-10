@@ -123,7 +123,7 @@ void Frame::drawRect(const sf::Vector2f &topLeft,
 }
 
 sf::Vector2f Frame::drawText(const sf::Vector2f &pos,
-                             PrintProcess process,
+                             std::function<void(TextFrame &)> process,
                              const TextFormat &format) {
   TextFrame frame(this, pos, format);
   process(frame);

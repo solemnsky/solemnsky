@@ -125,6 +125,17 @@ void TextFrame::print(const std::string &string) {
     drawOffset.x -= dims.x;
 }
 
+void TextFrame::setColor(const unsigned char r,
+                         const unsigned char g,
+                         const unsigned char b) {
+  setColor(sf::Color(r, g, b));
+}
+
+void TextFrame::setColor(const sf::Color &color) {
+  this->color = color;
+  colorSet = true;
+}
+
 void TextFrame::breakLine() {
   drawOffset.x = 0;
 
@@ -140,11 +151,5 @@ void TextFrame::breakLine() {
   }
 }
 
-void TextFrame::setColor(const unsigned char r,
-                         const unsigned char g,
-                         const unsigned char b) {
-  color = sf::Color(r, g, b);
-  colorSet = true;
-}
 
 }

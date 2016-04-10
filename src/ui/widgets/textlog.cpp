@@ -86,15 +86,14 @@ TextLog::Style::Style(
     maxLifetimeCollapsed(maxLifetimeCollapsed),
     fontSize(fontSize) { }
 
-TextLog::TextLog(const Style &style,
+TextLog::TextLog(AppState &appState, const Style &style,
                  const sf::Vector2f &pos) :
-    style(style), pos(pos), time(0),
+    Control(appState),
+    style(style), pos(pos),
     textFormat(style.fontSize, 0, ui::HorizontalAlign::Left,
                ui::VerticalAlign::Bottom, ResID::Font) { }
 
-void TextLog::tick(float delta) {
-  time += delta;
-}
+void TextLog::tick(float delta) { }
 
 void TextLog::render(Frame &f) {
   const float
@@ -103,13 +102,13 @@ void TextLog::render(Frame &f) {
 
   f.drawText(pos, [&](TextFrame &tf) {
     for (const auto &pair : printActions) {
-      const float age = time - pair.first;
+      const float age = appState.timeSince(pair.first);
       if (age < maxLifetime) {
         const float alpha =
             (style.fadeStart == 0) ? 1 :
             clamp(0.0f, 1, (maxLifetime - age) / style.fadeStart);
         f.withAlpha(alpha, [&]() {
-          for (const auto &action : pair.second) action.print(tf);
+          for (auto &action : pair.second) action.print(tf);
         });
       }
 
