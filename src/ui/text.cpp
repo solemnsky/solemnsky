@@ -143,12 +143,8 @@ void TextFrame::breakLine() {
 void TextFrame::setColor(const unsigned char r,
                          const unsigned char g,
                          const unsigned char b) {
-  setColor(sf::Color(r, g, b));
+  color = sf::Color(r, g, b);
   colorSet = true;
-}
-
-void TextFrame::setColor(const sf::Color &newColor) {
-  color = newColor;
 }
 
 }

@@ -1,8 +1,4 @@
 #include "methods.h"
-#include <cmath>
-#include <iostream>
-#include <vector>
-#include <sstream>
 #include "printer.h"
 
 /**
@@ -56,7 +52,7 @@ ConsolePrinter::ConsolePrinter(const LogOrigin origin) :
   std::cout << showTime() + showOrigin(origin);
 }
 
-~ConsolePrinter() {
+ConsolePrinter::~ConsolePrinter() {
   std::endl(std::cout);
 }
 
@@ -81,9 +77,9 @@ void appLog(const std::__cxx11::string &contents, const LogOrigin origin) {
 
 void appErrorLogic(const std::__cxx11::string &contents) {
   appLog(contents, LogOrigin::Error);
-  throw logic_error(contents);
+  throw std::logic_error(contents);
 }
 void appErrorRuntime(const std::__cxx11::string &contents) {
   appLog(contents, LogOrigin::Error);
-  throw runtime_error(contents);
+  throw std::runtime_error(contents);
 }

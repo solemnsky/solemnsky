@@ -23,7 +23,8 @@ void MultiplayerGame::doClientAction(const ClientAction action,
 MultiplayerGame::MultiplayerGame(
     ClientShared &shared, MultiplayerShared &connection) :
     MultiplayerView(sky::ArenaMode::Game, shared, connection),
-    chatInput(style.base.normalTextEntry,
+    chatInput(appState,
+              style.base.normalTextEntry,
               style.multi.chatPos,
               "[enter to chat]"),
     scoreboardFocused(false) {
