@@ -61,7 +61,7 @@ class Control {
   }
 
  public:
-  Control();
+  Control(AppState &appState);
   virtual ~Control() { }
 
   // flags
@@ -92,10 +92,17 @@ class ControlExec {
   ui::Profiler profiler;
   Cooldown resizeCooldown;
 
+  const float tickStep;
+  float rollingTickTime;
   std::unique_ptr<Control> ctrl;
   AppState appState;
 
   sf::Clock cycleClock, profileClock;
+
+  // app loop
+  void tick();
+  void handle();
+  void renderAndSleep();
 
  public:
   ControlExec(std::function<std::unique_ptr<Control>()> initCtrl);
