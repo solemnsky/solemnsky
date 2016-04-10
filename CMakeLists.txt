@@ -2,7 +2,7 @@ project(solemnsky)
 
 # tool / compiler versions
 cmake_minimum_required(VERSION 3.2)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+set(CMAKE_CXX_FLAGS "-pthread ${CMAKE_CXX_FLAGS} -std=c++14")
 
 # we depend on Box2D, SFML, and enet, from submodules in thirdparty/
 add_subdirectory("thirdparty/Box2D/Box2D")
@@ -11,6 +11,7 @@ add_subdirectory("thirdparty/enet")
 
 # we also depend on boost and gthread from the host system
 find_package(Boost)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 # so we can #include stuff
@@ -68,6 +69,7 @@ target_link_libraries(solemnsky
         sfml-network
         Box2D_shared
         ${Boost_LIBRARIES}
+        Threads::Threads
         )
 
 ###### solemnsky_server
@@ -175,7 +177,6 @@ target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics
         sfml-window
-        ${CMAKE_THREAD_LIBS_INIT}
         )
 
 ###### unit tests
