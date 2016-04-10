@@ -21,10 +21,6 @@ void PrintAction::print(Printer &p) const {
       p.print(string.get());
       break;
     }
-    case Type::BreakLine: {
-      p.breakLine();
-      break;
-    }
   }
 }
 
@@ -38,32 +34,6 @@ PrintAction PrintAction::Print(const std::string &string) {
   PrintAction action(Type::Print);
   action.string = string;
   return action;
-}
-
-PrintAction PrintAction::BreakLine() {
-  return PrintAction(Type::BreakLine);
-}
-
-/**
- * ActionPrinter.
- */
-
-ActionPrinter::ActionPrinter(std::vector<PrintAction> &printActions) :
-    printActions(printActions) { }
-
-void ActionPrinter::print(const std::string &str) {
-  printActions.push_back(PrintAction::Print(str));
-}
-
-void ActionPrinter::setColor(const unsigned char r,
-                             const unsigned char g,
-                             const unsigned char b) {
-  printActions.push_back(PrintAction::Color(sf::Color(r, b, g)));
-
-}
-
-void ActionPrinter::breakLine() {
-  printActions.push_back(PrintAction::BreakLine());
 }
 
 }
@@ -86,12 +56,20 @@ TextLog::Style::Style(
     maxLifetimeCollapsed(maxLifetimeCollapsed),
     fontSize(fontSize) { }
 
+void TextLog::startNewLine() {
+  lines.emplace_back(appState.time);
+  startingNewLine = false;
+}
+
 TextLog::TextLog(AppState &appState, const Style &style,
                  const sf::Vector2f &pos) :
     Control(appState),
     style(style), pos(pos),
+    startingNewLine(true),
     textFormat(style.fontSize, 0, ui::HorizontalAlign::Left,
-               ui::VerticalAlign::Bottom, ResID::Font) { }
+               ui::VerticalAlign::Bottom, ResID::Font) {
+
+}
 
 void TextLog::tick(float delta) { }
 
@@ -101,18 +79,19 @@ void TextLog::render(Frame &f) {
       maxLifetime = collapsed ? style.maxLifetimeCollapsed : style.maxLifetime;
 
   f.drawText(pos, [&](TextFrame &tf) {
-    for (const auto &pair : printActions) {
+    for (const auto &pair : lines) {
       const double age = appState.timeSince(pair.first);
-      if (age < maxLifetime) {
+      if (age < maxLifetime || maxLifetime == 0) {
         const double alpha =
             (style.fadeStart == 0) ? 1 :
             clamp(0.0, 1.0, (maxLifetime - age) / style.fadeStart);
         f.withAlpha(float(alpha), [&]() {
           for (auto &action : pair.second) action.print(tf);
         });
+        tf.breakLine();
       }
 
-      if (tf.drawOffset.y > maxHeight) return;
+      if (tf.drawOffset.y > maxHeight && maxHeight != 0) return;
     }
   }, textFormat);
 }
@@ -121,15 +100,25 @@ bool TextLog::handle(const sf::Event &event) {
   return false;
 }
 
-void TextLog::clear() {
-  printActions.clear();
+void TextLog::print(const std::string &str) {
+  if (startingNewLine) startNewLine();
+  lines.end()->second.push_back(detail::PrintAction::Print(str));
 }
 
-void TextLog::print(PrintProcess process) {
-  detail::PrintBlock block;
-  detail::ActionPrinter printer(block);
-  process(printer);
-  printActions.emplace_back(double(appState.time), block);
+void TextLog::setColor(const unsigned char r,
+                       const unsigned char g,
+                       const unsigned char b) {
+  if (startingNewLine) startNewLine();
+  lines.end()->second.push_back(
+      detail::PrintAction::Color(sf::Color(r, b, g)));
+}
+
+void TextLog::breakLine() {
+  startingNewLine = true;
+}
+
+void TextLog::clear() {
+  lines.clear();
 }
 
 }

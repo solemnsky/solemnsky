@@ -9,11 +9,10 @@ namespace ui {
 
 namespace detail {
 
-// plain data type, a vector of which can encode a PrintProcess
 struct PrintAction {
  private:
   enum class Type {
-    Color, Print, BreakLine
+    Color, Print
   } type;
 
   PrintAction(const Type type);
@@ -25,30 +24,13 @@ struct PrintAction {
 
   static PrintAction Color(const sf::Color &color);
   static PrintAction Print(const std::string &string);
-  static PrintAction BreakLine();
 };
 
-// a PrintProcess encoded into PrintActions
-using PrintBlock = std::vector<PrintAction>;
-
-class ActionPrinter: public Printer {
- private:
-  std::vector<PrintAction> &printActions;
-
- public:
-  ActionPrinter(std::vector<PrintAction> &printActions);
-
-  void print(const std::string &str) override final;
-  void setColor(const unsigned char r,
-                const unsigned char g,
-                const unsigned char b) override final;
-  void breakLine() override final;
-
-};
+using LogLine = std::vector<PrintAction>;
 
 }
 
-class TextLog: public Control {
+class TextLog: public Control, public Printer {
  public:
   struct Style {
     float maxWidth, maxHeight, maxHeightCollapsed;
@@ -67,7 +49,10 @@ class TextLog: public Control {
  private:
   Style style;
   sf::Vector2f pos;
-  std::vector<std::pair<double, detail::PrintBlock>> printActions;
+
+  void startNewLine();
+  bool startingNewLine;
+  std::vector<std::pair<double, detail::LogLine>> lines;
 
   TextFormat textFormat; // derived from style
 
@@ -79,9 +64,14 @@ class TextLog: public Control {
   void render(Frame &f) override final;
   bool handle(const sf::Event &event) override final;
 
-  // API
+  // Printer implementation
+  void print(const std::string &str) override final;
+  void setColor(const unsigned char r,
+                const unsigned char g,
+                const unsigned char b);
+  void breakLine();
+
   void clear();
-  void print(PrintProcess process);
 
   bool collapsed;
 };

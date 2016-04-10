@@ -3,6 +3,8 @@
  */
 #pragma once
 #include <memory>
+#include <pthread_unistd.h>
+#include "widgets/textlog.h"
 #include "control.h"
 
 namespace ui {
@@ -13,8 +15,10 @@ class SplashScreen: public Control {
  private:
   TextFormat loadingText;
 
-  bool screenDrawn{false};
+  float progress;
+  ui::TextLog textLog;
   std::function<std::unique_ptr<Control>(AppState &)> afterLoading;
+  std::thread resourceThread;
 
  public:
   SplashScreen(AppState &appState,

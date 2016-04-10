@@ -30,8 +30,8 @@ void loadSplashResources() {
   detail::resMan.loadSplashResources();
 }
 
-void loadResources() {
-  detail::resMan.loadResources();
+void loadResources(Printer &printer, float &progress) {
+  detail::resMan.loadResources(printer, progress);
 }
 
 const ResRecord &recordOf(const ResID res) {
@@ -71,20 +71,21 @@ const ResRecord &ResMan::recordOf(const ResID res) {
   return resRecords.at((size_t) res);
 }
 
-void ResMan::loadResource(const ResID res, const std::string &progress) {
+void ResMan::loadResource(const ResID res, const std::string &progress,
+                          Printer &printer) {
   const ResRecord &record(recordOf(res));
 
   switch (record.type) {
     case ResType::Font: {
-      appLog("Loading font " + record.path + progress, LogOrigin::App);
+      printer.printLn("Loading font " + record.path + progress);
+
       sf::Font font;
       font.loadFromFile(record.realPath());
       fonts.emplace((int) res, std::move(font));
       break;
     }
     case ResType::Texture: {
-      appLog("Loading texture " + record.path + progress,
-             LogOrigin::App);
+      printer.printLn("Loading texture " + record.path + progress);
 
       sf::Texture texture;
       texture.loadFromFile(record.realPath());
@@ -95,29 +96,33 @@ void ResMan::loadResource(const ResID res, const std::string &progress) {
 
 void ResMan::loadSplashResources() {
   if (splashInitialized) return;
-  for (ResID res : splashResources) loadResource(res, " (pre-loading)");
+  ConsolePrinter printer(LogOrigin::App);
+  for (ResID res : splashResources)
+    loadResource(res, " (pre-loading)", printer);
   splashInitialized = true;
 }
 
-void ResMan::loadResources() {
+void ResMan::loadResources(Printer &printer, float &progress) {
+  progress = 0;
+
   if (initialized) return;
 
   std::string resCount = std::to_string((int) ResID::LAST);
-  appLog("Loading resources ...", LogOrigin::App);
+  printer.printLn("Loading resources ...");
 
   for (ResID res = ResID::Font; res < ResID::LAST;
        res = (ResID) (int(res) + 1)) {
     if (splashResources.find(res) != splashResources.end()) continue;
-    loadResource(res,
-                 " ... (" + std::to_string((int) res + 1) +
-                     " of " + resCount + ")");
+    loadResource(res, " ... (" + std::to_string((int) res + 1) +
+        " of " + resCount + ")", printer);
+    progress = (float(res) + 1.0f) / float(ResID::LAST);
   }
 
-  appLog(std::to_string(fonts.size()) + " total fonts available.",
-         LogOrigin::App);
-  appLog(std::to_string(textures.size()) + " total textures available.",
-         LogOrigin::App);
-  appLog("Finished loading resources.", LogOrigin::App);
+  printer.printLn(
+      std::to_string(fonts.size()) + " total fonts available.");
+  printer.printLn(
+      std::to_string(textures.size()) + " total textures available.");
+  printer.printLn("Finished loading resources.");
 
   initialized = true;
 }

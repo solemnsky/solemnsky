@@ -8,6 +8,7 @@
 #include <vector>
 #include <set>
 #include <SFML/Graphics.hpp>
+#include <util/printer.h>
 
 /****
  * Resource metadata.
@@ -60,7 +61,7 @@ struct ResRecord {
  * ResRecord metadata from Res values.
  */
 void loadSplashResources();
-void loadResources();
+void loadResources(Printer &printer, float &progress);
 const ResRecord &recordOf(const ResID res);
 const sf::Texture &textureOf(const ResID res);
 const sf::Font &fontOf(const ResID res);
@@ -75,13 +76,14 @@ static class ResMan {
 
   bool initialized, splashInitialized;
 
-  void loadResource(const ResID res, const std::string &progress);
+  void loadResource(
+      const ResID res, const std::string &progress, Printer &printer);
 
  public:
   ResMan();
 
   void loadSplashResources();
-  void loadResources();
+  void loadResources(Printer &printer, float &progress);
 
   const sf::Texture &textureOf(ResID res);
   const sf::Font &fontOf(ResID res);
