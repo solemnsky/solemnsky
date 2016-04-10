@@ -37,12 +37,12 @@ enum class VerticalAlign {
 struct TextFormat {
   TextFormat() = delete;
   TextFormat(const int size,
-             const sf::Vector2f &maxDimensions,
+             const float maxWidth,
              const HorizontalAlign horizontal, const VerticalAlign vertical,
              const ResID &font);
 
   int size;
-  sf::Vector2f maxDimensions; // values of 0 mean there is no limit
+  float maxWidth; // values of 0 mean there is no limit
   HorizontalAlign horizontal;
   VerticalAlign vertical;
   ResID font; // resource ID

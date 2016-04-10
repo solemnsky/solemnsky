@@ -43,7 +43,7 @@ TextEntry::TextEntry(const Style &style,
     isHot(false),
     isFocused(false),
 
-    textFormat(style.fontSize, {},
+    textFormat(style.fontSize, 0,
                ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
                ResID::Font),
     descriptionFormat(textFormat) {

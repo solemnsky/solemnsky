@@ -21,7 +21,7 @@ struct PrintAction {
   optional<sf::Color> color;
   optional<std::string> string;
 
-  void print(Printer &);
+  void print(Printer &) const;
 
   static PrintAction Color(const sf::Color &color);
   static PrintAction Print(const std::string &string);
@@ -52,8 +52,8 @@ class TextLog: public Control {
  public:
   struct Style {
     float maxWidth, maxHeight, maxHeightCollapsed;
-    float maxLifetime, maxLifetimeCollapsed;
-    TextFormat textFormat;
+    float maxLifetime, maxLifetimeCollapsed, fadeStart;
+    int fontSize;
 
     Style() = delete;
     Style(const float maxWidth,
@@ -61,7 +61,7 @@ class TextLog: public Control {
           const float maxHeightCollapsed,
           const float maxLifetime,
           const float maxLifetimeCollapsed,
-          const TextFormat &textFormat);
+          const int fontSize);
   };
 
  private:
@@ -69,6 +69,8 @@ class TextLog: public Control {
   Style style;
   sf::Vector2f pos;
   std::vector<std::pair<float, detail::PrintBlock>> printActions;
+
+  TextFormat textFormat; // derived from style
 
  public:
   TextLog() = delete;

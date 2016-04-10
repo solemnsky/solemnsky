@@ -31,12 +31,12 @@ float alignValue(const VerticalAlign align) {
  */
 TextFormat::TextFormat(
     const int size,
-    const sf::Vector2f &maxDimensions,
+    const float maxWidth,
     const HorizontalAlign horizontal,
     const VerticalAlign vertical,
     const ResID &font) :
     size(size),
-    maxDimensions(maxDimensions),
+    maxWidth(maxWidth),
     horizontal(horizontal),
     vertical(vertical),
     font(font) { }
