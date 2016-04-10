@@ -58,7 +58,7 @@ void Client::tick(float delta) {
   ui::Control::tick(delta);
 
   if (profilerCooldown.cool(delta)) {
-    profilerSnap = ui::ProfilerSnapshot(appState->profiler);
+    profilerSnap = ui::ProfilerSnapshot(appState.profiler);
     profilerCooldown.reset();
   }
 
@@ -135,10 +135,11 @@ void Client::drawUI(ui::Frame &f) {
   if (shared.game) {
     f.drawText(
         {style.menu.closeButtonOffset.x - 10, 0}, [&](ui::TextFrame &tf) {
+          tf.setColor(sf::Color::White);
           tf.print(shared.game->name);
           tf.setColor(style.menu.statusFontColor);
           tf.print("(" + shared.game->status + ")");
-        }, sf::Color::White, style.menu.gameDescText);
+        }, style.menu.gameDescText);
     closeButton.render(f);
   }
   f.withAlpha(
@@ -163,12 +164,13 @@ void Client::drawGame(ui::Frame &f) {
     f.drawText(
         {10, 10},
         [&](ui::TextFrame &tf) {
+          tf.setColor(sf::Color::White);
           tf.print("cycle:" + profilerSnap.cycleTime.print());
           tf.breakLine();
           tf.print("logic:" + profilerSnap.logicTime.print());
           tf.breakLine();
           tf.print("render:" + profilerSnap.renderTime.print());
-        }, sf::Color::White, style.base.normalText);
+        }, style.base.normalText);
   }
 }
 

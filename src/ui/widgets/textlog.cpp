@@ -102,12 +102,12 @@ void TextLog::render(Frame &f) {
 
   f.drawText(pos, [&](TextFrame &tf) {
     for (const auto &pair : printActions) {
-      const float age = appState.timeSince(pair.first);
+      const double age = appState.timeSince(pair.first);
       if (age < maxLifetime) {
-        const float alpha =
+        const double alpha =
             (style.fadeStart == 0) ? 1 :
-            clamp(0.0f, 1, (maxLifetime - age) / style.fadeStart);
-        f.withAlpha(alpha, [&]() {
+            clamp(0.0, 1.0, (maxLifetime - age) / style.fadeStart);
+        f.withAlpha(float(alpha), [&]() {
           for (auto &action : pair.second) action.print(tf);
         });
       }
@@ -127,8 +127,9 @@ void TextLog::clear() {
 
 void TextLog::print(PrintProcess process) {
   detail::PrintBlock block;
-  process(detail::ActionPrinter(block));
-  printActions.emplace_back(time, block);
+  detail::ActionPrinter printer(block);
+  process(printer);
+  printActions.emplace_back(double(appState.time), block);
 }
 
 }

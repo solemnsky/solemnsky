@@ -7,7 +7,7 @@ Checkbox::Checkbox(AppState &appState,
                    const ui::Button::Style &style,
                    const sf::Vector2f &pos) :
     Control(appState),
-    button(style, pos, ""),
+    button(appState, style, pos, ""),
     value(false),
     clickSignal(button.clickSignal) {
   areChildren({&button});

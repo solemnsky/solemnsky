@@ -218,7 +218,7 @@ KeySelector::KeySelector(AppState &appState,
     Control(appState),
     capturing(false),
     clickSignal(clickSignal),
-    button(style, pos, "") {
+    button(appState, style, pos, "") {
   areChildren({&button});
 }
 

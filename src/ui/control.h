@@ -46,7 +46,7 @@ struct AppState {
   const sf::RenderWindow &window;
   const Profiler &profiler;
 
-  float timeSince(const float event) const;
+  double timeSince(const double event) const;
 };
 
 /**

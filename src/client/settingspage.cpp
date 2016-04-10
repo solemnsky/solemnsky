@@ -6,9 +6,9 @@
  * GeneralTab.
  */
 
-GeneralTab::GeneralTab(const Settings &settings) :
-    SettingsTab(settings),
-    debugOption(style.settings.checkbox, style.settings.column1Pos) {
+GeneralTab::GeneralTab(ui::AppState &appState, const Settings &settings) :
+    SettingsTab(appState, settings),
+    debugOption(appState, style.settings.checkbox, style.settings.column1Pos) {
   debugOption.setDescription(optional<std::string>("debug mode"));
   areChildren({&debugOption});
   readSettings(settings);
@@ -26,9 +26,9 @@ void GeneralTab::writeSettings(Settings &buffer) {
  * PlayerTab.
  */
 
-PlayerTab::PlayerTab(const Settings &settings) :
-    SettingsTab(settings),
-    nicknameOption(style.base.normalTextEntry,
+PlayerTab::PlayerTab(ui::AppState &appState, const Settings &settings) :
+    SettingsTab(appState, settings),
+    nicknameOption(appState, style.base.normalTextEntry,
                    style.settings.column1Pos) {
   nicknameOption.persistent = true;
   nicknameOption.description = "nickname";
@@ -48,8 +48,8 @@ void PlayerTab::writeSettings(Settings &settings) {
  * ControlsTab.
  */
 
-ControlsTab::ControlsTab(const Settings &settings) :
-    SettingsTab(settings),
+ControlsTab::ControlsTab(ui::AppState &appState, const Settings &settings) :
+    SettingsTab(appState, settings),
     skyActions{sky::Action::Left,
                sky::Action::Right,
                sky::Action::Thrust,
@@ -70,7 +70,7 @@ ControlsTab::ControlsTab(const Settings &settings) :
     skyChoosers.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(action),
-        std::forward_as_tuple(style.base.normalButton, pos));
+        std::forward_as_tuple(appState, style.base.normalButton, pos));
 
     auto &selector = skyChoosers.at(action);
     selector.setDescription(sky::showAction(action));
@@ -85,7 +85,7 @@ ControlsTab::ControlsTab(const Settings &settings) :
     clientChoosers.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(action),
-        std::forward_as_tuple(style.base.normalButton, pos));
+        std::forward_as_tuple(appState, style.base.normalButton, pos));
 
     auto &selector = clientChoosers.at(action);
     selector.setDescription(showClientAction(action));
@@ -145,22 +145,22 @@ SettingsPage::SettingsPage(ClientShared &shared) :
 
     newSettings(shared.settings),
 
-    generalButton(style.base.normalButton,
+    generalButton(appState, style.base.normalButton,
                   {style.settings.generalButtonOffset,
                    style.settings.pageButtonHeight},
                   "GENERAL"),
-    playerButton(style.base.normalButton,
+    playerButton(appState, style.base.normalButton,
                  {style.settings.playerButtonOffset,
                   style.settings.pageButtonHeight},
                  "PLAYER"),
-    controlsButton(style.base.normalButton,
+    controlsButton(appState, style.base.normalButton,
                    {style.settings.controlsButtonOffset,
                     style.settings.pageButtonHeight},
                    "CONTROLS"),
 
-    generalTab(shared.settings),
-    playerTab(shared.settings),
-    controlsTab(shared.settings),
+    generalTab(appState, shared.settings),
+    playerTab(appState, shared.settings),
+    controlsTab(appState, shared.settings),
     currentTab(&generalButton, &generalTab) {
   areChildren(
       {&generalButton, &playerButton, &controlsButton});

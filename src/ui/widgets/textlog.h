@@ -67,7 +67,7 @@ class TextLog: public Control {
  private:
   Style style;
   sf::Vector2f pos;
-  std::vector<std::pair<float, detail::PrintBlock>> printActions;
+  std::vector<std::pair<double, detail::PrintBlock>> printActions;
 
   TextFormat textFormat; // derived from style
 

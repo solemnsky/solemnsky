@@ -8,6 +8,8 @@ int main() {
   // TODO: commandline arguments?
 
   // and He said,
-  ui::runSFML([]() { return std::make_unique<Client>(); });
+  ui::runSFML([](ui::AppState &appState) {
+    return std::make_unique<Client>(appState);
+  });
   // and lo, there appeared a client
 }
