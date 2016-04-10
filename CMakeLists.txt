@@ -11,6 +11,7 @@ add_subdirectory("thirdparty/enet")
 
 # we also depend on boost and gthread from the host system
 find_package(Boost)
+find_package(Threads REQUIRED)
 
 # so we can #include stuff
 include_directories(
@@ -174,7 +175,7 @@ target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics
         sfml-window
-        gthread
+        ${CMAKE_THREAD_LIBS_INIT}
         )
 
 ###### unit tests
