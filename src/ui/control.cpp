@@ -1,9 +1,7 @@
 #include <cmath>
 
 #include "splash.h"
-#include "util/telegraph.h"
-#include "control.h"
-#include "printer.h"
+#include "util/printer.h"
 
 namespace ui {
 
@@ -23,8 +21,8 @@ ProfilerSnapshot::ProfilerSnapshot(const Profiler &profiler) :
  * Control.
  */
 
-Control::Control() :
-    appState(nullptr),
+Control::Control(AppState &appState) :
+    appState(appState),
     next(nullptr),
     quitting(false) { }
 
@@ -54,7 +52,7 @@ void Control::signalClear() { // clear signals
 }
 
 /**
- * runSFML.
+ * ControlExec.
  */
 
 /**
@@ -119,6 +117,7 @@ ControlExec::ControlExec(
     window(sf::VideoMode(800, 600), "solemnsky",
            sf::Style::Default, makeSettings()),
     frame(window),
+    tickStep(1.0f / 60.0f),
     profiler(100),
     resizeCooldown(0.5),
 
@@ -129,113 +128,82 @@ ControlExec::ControlExec(
   appLog("Initialized SFML.", LogOrigin::App);
 }
 
-void ControlExec::run() {
+void ControlExec::tick() {
+  const float cycleDelta = cycleClock.restart().asSeconds();
+  profiler.cycleTime.push(cycleDelta);
 
+  profileClock.restart();
+  rollingTickTime += cycleDelta;
+  while (rollingTickTime > tickStep) {
+    ctrl->tick(tickStep);
+    rollingTickTime -= tickStep;
+  }
+  profiler.logicTime.push(profileClock.restart().asSeconds());
+
+  ctrl->signalRead();
+  ctrl->signalClear();
+
+  if (resizeCooldown.cool(cycleDelta)) {
+    resizeCooldown.reset();
+    frame.resize();
+  }
 }
 
-void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
-  std::unique_ptr<Control> ctrl =
-      std::make_unique<detail::SplashScreen>(initCtrl);
-
-  /**
-   * Create the window.
-   */
-  appLog("Creating window / various things ...", LogOrigin::App);
-
-  tg::UsageFlag flag; // for ENet initialization
-
-  sf::RenderWindow window(sf::VideoMode(800, 600), "My window",
-                          sf::Style::Default, settings);
-  window.setVerticalSyncEnabled(true);
-  window.setKeyRepeatEnabled(false);
-
-  ui::Profiler profiler{100};
-  Cooldown resizeCooldown{1};
-
-  sf::Clock cycleClock, profileClock;
-  constexpr float tickStep = 1 / 60.0f;
-  float rollingTickTime = 0, cycleDelta = 0;
-
-  Frame frame(window);
-  sf::Event event;
-  appLog("Finished creating window.", LogOrigin::App);
-
-  /**
-   * Create appState, start tutorial loop.
-   */
-  appLog("Running application...", LogOrigin::App);
-
-  AppState appState(window, profiler);
-  ctrl->appState = &appState;
-
-  while (window.isOpen()) {
-    if (ctrl->quitting) window.close();
-    if (ctrl->next) {
-      ctrl = std::move(ctrl->next);
-      ctrl->appState = &appState;
+void ControlExec::handle() {
+  static sf::Event event;
+  while (window.pollEvent(event)) {
+    if (event.type == sf::Event::Closed) {
+      appLog("Caught close signal.", LogOrigin::App);
+      window.close();
     }
 
-    /*
-     * Ticking
-     * Here our goal is to execute a logic routine as many times as it needs
-     * to simulate the tutorial that passed during the time we slept.
-     */
-    cycleDelta = cycleClock.restart().asSeconds();
-    profiler.cycleTime.push(cycleDelta);
-
-    profileClock.restart();
-    rollingTickTime += cycleDelta;
-    while (rollingTickTime > tickStep) {
-      ctrl->tick(tickStep);
-      rollingTickTime -= tickStep;
-    }
-    profiler.logicTime.push(profileClock.restart().asSeconds());
-
-    ctrl->signalRead();
-    ctrl->signalClear();
-
-    /*
-     * Events
-     * Here we process any events that were added to the cue during our
-     * rendering and logic, and push our 'signals' through the stack.
-     */
-    while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed) {
-        appLog("Caught close signal.", LogOrigin::App);
-        window.close();
-      }
-
-      if (event.type == sf::Event::LostFocus) ctrl->reset();
-
-      if (event.type != sf::Event::MouseWheelScrolled) { // fk mouse wheels
-        ctrl->handle(transformEvent(frame.windowToFrame, event));
-        ctrl->signalRead();
-        ctrl->signalClear();
-      }
-    }
-
-    /*
-     * Rendering / Sleeping
-     * Here our goal is to update the window display (at the next available
-     * screen refresh), and in doing so spend some time before ticking.
-     */
-    if (event.type == sf::Event::Resized || resizeCooldown.cool(cycleDelta)) {
+    if (event.type == sf::Event::Resized) {
       resizeCooldown.reset();
       frame.resize();
     }
-    frame.beginDraw();
-    profileClock.restart();
-    ctrl->render(frame);
-    profiler.renderTime.push(profileClock.restart().asSeconds());
-    profiler.primCount.push(frame.primCount);
-    frame.endDraw();
-    window.display();
-    // window.display() doesn't seem to block when the window isn't focused
-    // on certain platforms
-    if (!window.hasFocus()) sf::sleep(sf::milliseconds(16));
+
+    if (event.type == sf::Event::LostFocus) ctrl->reset();
+
+    if (event.type != sf::Event::MouseWheelScrolled) { // fk mouse wheels
+      ctrl->handle(transformEvent(frame.windowToFrame, event));
+      ctrl->signalRead();
+      ctrl->signalClear();
+    }
+  }
+}
+
+void ControlExec::renderAndSleep() {
+  frame.beginDraw();
+  profileClock.restart();
+  ctrl->render(frame);
+  profiler.renderTime.push(profileClock.restart().asSeconds());
+  profiler.primCount.push(frame.primCount);
+  frame.endDraw();
+  window.display();
+  // window.display() doesn't seem to block when the window isn't focused
+  // on certain platforms
+  if (!window.hasFocus()) sf::sleep(sf::milliseconds(16));
+}
+
+void ControlExec::run() {
+  appLog("Starting game loop.", LogOrigin::App);
+
+  while (window.isOpen()) {
+    tick();
+    handle();
+    renderAndSleep();
+
+    if (ctrl->quitting) window.close();
+    if (ctrl->next) {
+      ctrl = std::move(ctrl->next);
+    }
   }
 
-  appLog("Exiting app, goodbye!", LogOrigin::App);
+  appLog("Exiting solemnsky, see you later.", LogOrigin::App);
+}
+
+void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
+  ControlExec(initCtrl).run();
 }
 
 }

@@ -14,7 +14,7 @@ class Control;
 
 class Frame {
   friend class TextFrame;
-  friend void runSFML(std::function<std::unique_ptr<Control>()> initCtrl);
+  friend class ControlExec;
 
  private:
   std::stack<sf::Transform> transformStack;
