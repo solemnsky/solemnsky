@@ -11,7 +11,7 @@ namespace detail {
 PrintAction::PrintAction(const PrintAction::Type type) :
     type(type) { }
 
-void PrintAction::print(Printer &p) {
+void PrintAction::print(Printer &p) const {
   switch (type) {
     case Type::Color: {
       p.setColor(color->r, color->g, color->b);
@@ -48,9 +48,8 @@ PrintAction PrintAction::BreakLine() {
  * ActionPrinter.
  */
 
-
 ActionPrinter::ActionPrinter(std::vector<PrintAction> &printActions) :
-  printActions(printActions) { }
+    printActions(printActions) { }
 
 void ActionPrinter::print(const std::string &str) {
   printActions.push_back(PrintAction::Print(str));
@@ -79,32 +78,48 @@ TextLog::Style::Style(
     const float maxHeightCollapsed,
     const float maxLifetime,
     const float maxLifetimeCollapsed,
-    const TextFormat &textFormat) :
+    const int fontSize) :
     maxWidth(maxWidth),
     maxHeight(maxHeight),
     maxHeightCollapsed(maxHeightCollapsed),
     maxLifetime(maxLifetime),
     maxLifetimeCollapsed(maxLifetimeCollapsed),
-    textFormat(textFormat) { }
+    fontSize(fontSize) { }
 
 TextLog::TextLog(const Style &style,
                  const sf::Vector2f &pos) :
-    style(style), pos(pos) { }
+    style(style), pos(pos), time(0),
+    textFormat(style.fontSize, 0, ui::HorizontalAlign::Left,
+               ui::VerticalAlign::Bottom, ResID::Font) { }
 
 void TextLog::tick(float delta) {
   time += delta;
 }
 
 void TextLog::render(Frame &f) {
+  const float
+      maxHeight = collapsed ? style.maxHeightCollapsed : style.maxHeight,
+      maxLifetime = collapsed ? style.maxLifetimeCollapsed : style.maxLifetime;
+
   f.drawText(pos, [&](TextFrame &tf) {
     for (const auto &pair : printActions) {
+      const float age = time - pair.first;
+      if (age < maxLifetime) {
+        const float alpha =
+            (style.fadeStart == 0) ? 1 :
+            clamp(0.0f, 1, (maxLifetime - age) / style.fadeStart);
+        f.withAlpha(alpha, [&]() {
+          for (const auto &action : pair.second) action.print(tf);
+        });
+      }
 
+      if (tf.drawOffset.y > maxHeight) return;
     }
-  }, style.textFormat);
+  }, textFormat);
 }
 
 bool TextLog::handle(const sf::Event &event) {
-  return Control::handle(event);
+  return false;
 }
 
 void TextLog::clear() {
