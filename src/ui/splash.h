@@ -3,7 +3,7 @@
  */
 #pragma once
 #include <memory>
-#include <boost/thread.hpp>
+#include <thread>
 #include "widgets/textlog.h"
 #include "control.h"
 
@@ -18,7 +18,7 @@ class SplashScreen: public Control {
   float progress;
   ui::TextLog textLog;
   std::function<std::unique_ptr<Control>(AppState &)> afterLoading;
-  boost::thread resourceThread;
+  std::thread resourceThread;
 
  public:
   SplashScreen(AppState &appState,
