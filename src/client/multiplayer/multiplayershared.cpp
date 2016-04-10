@@ -1,7 +1,7 @@
 #include "multiplayershared.h"
 #include "client/elements/style.h"
 #include "sky/event.h"
-#include "printer.h"
+#include "util/printer.h"
 
 /**
  * MultiplayerLogger.
@@ -215,7 +215,7 @@ void MultiplayerShared::drawEventLog(ui::Frame &f, const float cutoff) {
           tf.breakLine();
           if (tf.drawOffset.y < -cutoff) break;
         }
-      }, sf::Color::White, style.multi.messageLogText);
+      }, style.multi.messageLogText);
 }
 
 /**

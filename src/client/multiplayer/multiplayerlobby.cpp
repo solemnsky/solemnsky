@@ -10,15 +10,16 @@ MultiplayerLobby::MultiplayerLobby(
     ClientShared &shared, MultiplayerShared &connection) :
     MultiplayerView(sky::ArenaMode::Lobby, shared, connection),
 
-    specButton(style.base.normalButton, style.multi.lobbyButtonPos, "spectate"),
-    redButton(style.base.normalButton,
+    specButton(appState, style.base.normalButton, style.multi.lobbyButtonPos,
+               "SPECTATE"),
+    redButton(appState, style.base.normalButton,
               style.multi.lobbyButtonPos + style.multi.lobbyButtonSep,
-              "join red"),
-    blueButton(style.base.normalButton,
+              "JOIN RED"),
+    blueButton(appState, style.base.normalButton,
                style.multi.lobbyButtonPos + 2.0f * style.multi.lobbyButtonSep,
-               "join blue"),
-    chatInput(style.base.normalTextEntry,
-              style.multi.chatPos, "[enter to chat]") {
+               "JOIN BLUE"),
+    chatInput(appState, style.base.normalTextEntry,
+              style.multi.chatPos, "[ENTER TO CHAT]") {
   areChildren({&specButton, &redButton, &blueButton, &chatInput});
 }
 
@@ -31,15 +32,15 @@ void MultiplayerLobby::render(ui::Frame &f) {
 
   mShared.drawEventLog(f, style.multi.chatCutoff);
   f.drawText(
-      style.multi.playerListPos, [&](ui::TextFrame &tf) {
+      style.multi.playerListPos, [&](Printer &p) {
         mShared.arena->forPlayers([&](const sky::Player &player) {
-          tf.setColor(sf::Color::Black);
-          if (player.team == 1) tf.setColor(sf::Color::Red);
-          if (player.team == 2) tf.setColor(sf::Color::Blue);
-          tf.print(player.nickname);
-          tf.breakLine();
+          p.setColor(0, 0, 0);
+          if (player.team == 1) p.setColor(255, 0, 0);
+          if (player.team == 2) p.setColor(0, 0, 255);
+          p.print(player.nickname);
+          p.breakLine();
         });
-      }, sf::Color::White, style.multi.playerListText);
+      }, style.multi.playerListText);
 
   ui::Control::render(f);
 }

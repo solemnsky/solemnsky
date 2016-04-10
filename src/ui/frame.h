@@ -60,9 +60,17 @@ class Frame {
       const sf::Vector2f pos,
       const std::string &string,
       const sf::Color &color, const TextFormat &format) {
-    return drawText(pos, (PrintProcess) [&](Printer &p) {
-      p.setColor(color.r, color.g, color.b);
+    return drawText(pos, [&](ui::TextFrame &p) {
+      p.setColor(color);
       p.print(string);
+    }, format);
+  }
+
+  inline sf::Vector2f drawText(
+      const sf::Vector2f pos,
+      PrintProcess process, const TextFormat &format) {
+    return drawText(pos, [&](ui::TextFrame &tf) {
+      process(PrintProcess(tf));
     }, format);
   }
 
@@ -71,7 +79,7 @@ class Frame {
   void drawRect(const sf::Vector2f &topLeft, const sf::Vector2f &bottomRight,
                 const sf::Color &color = {});
   sf::Vector2f drawText(const sf::Vector2f &pos,
-                        PrintProcess process,
+                        std::function<void(TextFrame &)> process,
                         const TextFormat &format);
   void drawSprite(const sf::Texture &texture, const sf::Vector2f &pos,
                   const sf::IntRect &portion);

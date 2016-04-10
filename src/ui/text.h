@@ -84,6 +84,7 @@ class TextFrame: public Printer {
   void setColor(const unsigned char r,
                 const unsigned char g,
                 const unsigned char b) override final;
+  void setColor(const sf::Color &color);
   void breakLine() override final;
 };
 

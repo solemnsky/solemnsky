@@ -65,7 +65,6 @@ class TextLog: public Control {
   };
 
  private:
-  float time;
   Style style;
   sf::Vector2f pos;
   std::vector<std::pair<float, detail::PrintBlock>> printActions;
@@ -73,8 +72,7 @@ class TextLog: public Control {
   TextFormat textFormat; // derived from style
 
  public:
-  TextLog() = delete;
-  TextLog(const Style &style, const sf::Vector2f &pos);
+  TextLog(AppState &appState, const Style &style, const sf::Vector2f &pos);
 
   // Control implementation
   void tick(float delta) override final;

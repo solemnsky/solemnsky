@@ -98,11 +98,11 @@ void ClientShared::focusPage(const PageType type) {
 }
 
 void ClientShared::blurPage() {
-  client->blurPage();
+  client.blurPage();
 }
 
 void ClientShared::changeSettings(const SettingsDelta &settings) {
-  client->changeSettings(settings);
+  client.changeSettings(settings);
 }
 
 

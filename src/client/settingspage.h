@@ -11,7 +11,7 @@
  */
 class SettingsTab: public ui::Control {
  public:
-  SettingsTab(const ui::AppState &appState, const Settings &settings) :
+  SettingsTab(ui::AppState &appState, const Settings &settings) :
       ui::Control(appState) { }
 
   virtual void readSettings(const Settings &settings) = 0;
