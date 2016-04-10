@@ -1,27 +1,32 @@
 #include "client.h"
 #include "elements/style.h"
 #include "util/methods.h"
-#include "printer.h"
+#include "util/printer.h"
 
 /**
  * Client.
  */
 
-Client::Client() :
-    quitButton(style.menu.highButtonStyle,
+Client::Client(ui::AppState &appState) :
+    ui::Control(appState),
+    quitButton(appState,
+               style.menu.highButtonStyle,
                style.menu.quitButtonOffset,
                style.menu.quitButtonText),
-    aboutButton(style.menu.highButtonStyle,
+    aboutButton(appState,
+                style.menu.highButtonStyle,
                 style.menu.aboutButtonOffset,
                 style.menu.aboutButtonText),
-    closeButton(style.menu.lowButtonStyle,
+    closeButton(appState,
+                style.menu.lowButtonStyle,
                 style.menu.closeButtonOffset,
                 style.menu.closeButtonText),
-    backButton(style.menu.lowButtonStyle,
+    backButton(appState,
+               style.menu.lowButtonStyle,
                style.menu.backButtonOffset,
                style.menu.backButtonText),
 
-    shared(this),
+    shared(appState, *this),
     homePage(shared),
     listingPage(shared),
     settingsPage(shared),

@@ -53,7 +53,6 @@ struct AppState {
  * The control abstraction: a tangible GUI entity.
  */
 class Control {
- private:
  protected:
   AppState &appState;
 

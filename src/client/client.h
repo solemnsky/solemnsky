@@ -44,7 +44,7 @@ class Client: public ui::Control {
   void drawGame(ui::Frame &f);
 
  public:
-  Client();
+  Client(ui::AppState &appState);
 
   /**
    * Control interface.

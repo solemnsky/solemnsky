@@ -80,12 +80,11 @@ class TextFrame: public Printer {
   sf::Vector2f drawOffset;
 
   // API
-  void print(const std::string &string) override;
+  void print(const std::string &string) override final;
   void setColor(const unsigned char r,
                 const unsigned char g,
-                const unsigned char b) override;
-  void setColor(const sf::Color &newColor);
-  void breakLine() override;
+                const unsigned char b) override final;
+  void breakLine() override final;
 };
 
 }

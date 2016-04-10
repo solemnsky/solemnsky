@@ -60,9 +60,9 @@ class Frame {
       const sf::Vector2f pos,
       const std::string &string,
       const sf::Color &color, const TextFormat &format) {
-    return drawText(pos, [&string](TextFrame &tf) {
-      tf.setColor(color);
-      tf.print(string);
+    return drawText(pos, (PrintProcess) [&](Printer &p) {
+      p.setColor(color.r, color.g, color.b);
+      p.print(string);
     }, format);
   }
 

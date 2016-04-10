@@ -11,7 +11,8 @@
  */
 class SettingsTab: public ui::Control {
  public:
-  SettingsTab(const Settings &settings) { } // always initialize
+  SettingsTab(const ui::AppState &appState, const Settings &settings) :
+      ui::Control(appState) { }
 
   virtual void readSettings(const Settings &settings) = 0;
   virtual void writeSettings(Settings &settings) = 0;

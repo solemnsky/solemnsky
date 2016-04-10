@@ -1,13 +1,12 @@
-#include <sstream>
-#include <vector>
 
 #define _USE_MATH_DEFINES // for M_PI
 
+#include <sstream>
+#include <vector>
 #include <math.h>
 #include <iostream>
 #include <cmath>
 #include "methods.h"
-#include "types.h"
 
 float VecMath::length(const sf::Vector2f &vec) {
   return (float) sqrt(vec.x * vec.x + vec.y * vec.y);

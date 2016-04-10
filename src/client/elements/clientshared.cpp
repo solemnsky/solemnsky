@@ -49,9 +49,9 @@ bool ClientUiState::menuFocused() const {
  * ClientShared.
  */
 
-ClientShared::ClientShared(Client *client) :
+ClientShared::ClientShared(ui::AppState &appState, Client &client) :
     client(client),
-    uptime(0) { }
+    appState(appState) { }
 
 template<typename T>
 optional<std::pair<T, bool>>
@@ -78,23 +78,23 @@ ClientShared::triggerClientAction(const sf::Event &event) const {
 }
 
 void ClientShared::beginGame(std::unique_ptr<Game> &&game) {
-  client->beginGame(std::move(game));
+  client.beginGame(std::move(game));
 }
 
 void ClientShared::blurGame() {
-  client->blurGame();
+  client.blurGame();
 }
 
 void ClientShared::focusGame() {
-  client->focusGame();
+  client.focusGame();
 }
 
 void ClientShared::exitGame() {
-  client->exitGame();
+  client.exitGame();
 }
 
 void ClientShared::focusPage(const PageType type) {
-  client->focusPage(type);
+  client.focusPage(type);
 }
 
 void ClientShared::blurPage() {

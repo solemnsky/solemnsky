@@ -53,10 +53,12 @@ public:
  */
 struct ClientShared {
 private:
-  Client *client;
+  Client &client;
 
  public:
-  ClientShared(Client *client);
+  ClientShared(ui::AppState &appState, Client &client);
+
+  ui::AppState appState;
 
   Settings settings;
   double uptime;

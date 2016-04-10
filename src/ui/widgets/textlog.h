@@ -29,7 +29,7 @@ struct PrintAction {
 };
 
 // a PrintProcess encoded into PrintActions
-using PrintBlock = std::vector<PrintAction>
+using PrintBlock = std::vector<PrintAction>;
 
 class ActionPrinter: public Printer {
  private:
