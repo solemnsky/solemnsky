@@ -40,8 +40,8 @@ class Button: public Control {
   TextFormat textFormat, descriptionFormat; // deduced from the style
 
  public:
-  Button() = delete;
-  Button(const Style &style,
+  Button(AppState &appState,
+         const Style &style,
          const sf::Vector2f &pos,
          const std::string &text);
 

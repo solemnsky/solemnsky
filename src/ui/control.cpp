@@ -23,7 +23,7 @@ ProfilerSnapshot::ProfilerSnapshot(const Profiler &profiler) :
 
 AppState::AppState(const sf::RenderWindow &window,
                    const Profiler &profiler,
-                   const float &time)
+                   const double &time)
     : window(window), profiler(profiler), time(time) { }
 
 float AppState::timeSince(const float event) const {
@@ -38,6 +38,10 @@ Control::Control(AppState &appState) :
     appState(appState),
     next(nullptr),
     quitting(false) { }
+
+void Control::poll(float delta) {
+  for (auto child : children) child->poll(delta);
+}
 
 void Control::tick(float delta) {
   for (auto child : children) child->tick(delta);
@@ -121,31 +125,14 @@ static sf::ContextSettings ControlExec::makeSettings() {
   return settings;
 }
 
-ControlExec::ControlExec(
-    std::function<std::unique_ptr<Control>()> initCtrl) :
-    window(sf::VideoMode(800, 600), "solemnsky",
-           sf::Style::Default, makeSettings()),
-    frame(window),
-    tickStep(1.0f / 60.0f),
-    rollingTickTime(0),
-    time(0),
-    profiler(100),
-    resizeCooldown(0.5),
-
-    appState(window, profiler, time),
-    ctrl(std::make_unique<detail::SplashScreen>(appState, initCtrl)) {
-  window.setVerticalSyncEnabled(true);
-  window.setKeyRepeatEnabled(false);
-  appLog("Initialized SFML.", LogOrigin::App);
-}
-
 void ControlExec::tick() {
   const float cycleDelta = cycleClock.restart().asSeconds();
   profiler.cycleTime.push(cycleDelta);
 
   profileClock.restart();
   rollingTickTime += cycleDelta;
-  time += cycleDelta;
+  ctrl->poll(cycleDelta);
+  time += double(cycleDelta);
   while (rollingTickTime > tickStep) {
     ctrl->tick(tickStep);
     rollingTickTime -= tickStep;
@@ -196,6 +183,25 @@ void ControlExec::renderAndSleep() {
   // on certain platforms
   if (!window.hasFocus()) sf::sleep(sf::milliseconds(16));
 }
+
+ControlExec::ControlExec(
+    std::function<std::unique_ptr<Control>(AppState &)> initCtrl) :
+    window(sf::VideoMode(800, 600), "solemnsky",
+           sf::Style::Default, makeSettings()),
+    frame(window),
+    tickStep(1.0f / 60.0f),
+    rollingTickTime(0),
+    time(0),
+    profiler(100),
+    resizeCooldown(0.5),
+
+    appState(window, profiler, time),
+    ctrl(std::make_unique<detail::SplashScreen>(appState, initCtrl)) {
+  window.setVerticalSyncEnabled(true);
+  window.setKeyRepeatEnabled(false);
+  appLog("Initialized SFML.", LogOrigin::App);
+}
+
 
 void ControlExec::run() {
   appLog("Starting game loop.", LogOrigin::App);

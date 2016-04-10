@@ -55,8 +55,18 @@ enum class LogOrigin {
 
 class ConsolePrinter: public Printer {
  private:
+  const static int timeLength = 10,
+      originLength = 12;
+
+  const LogOrigin origin;
+  bool printedOrigin;
+
+  std::string showTime() const;
+  std::string showOrigin(const LogOrigin origin);
+
  public:
-  ConsolePrinter();
+  ConsolePrinter(const LogOrigin origin);
+  ~ConsolePrinter();
 
   void print(const std::string &str) override final;
   virtual void setColor(const unsigned char r,

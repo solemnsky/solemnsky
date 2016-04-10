@@ -50,7 +50,8 @@ class TextEntry: public Control {
 
  public:
   TextEntry() = delete;
-  TextEntry(const Style &style,
+  TextEntry(AppState &appState,
+            const Style &style,
             const sf::Vector2f &pos,
             const std::string &description = "",
             const bool persistent = false);

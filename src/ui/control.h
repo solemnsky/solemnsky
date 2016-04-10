@@ -40,9 +40,9 @@ struct ProfilerSnapshot {
 struct AppState {
   AppState(const sf::RenderWindow &window,
            const Profiler &profiler,
-           const float &time);
+           const double &time);
 
-  const float &time;
+  const double &time;
   const sf::RenderWindow &window;
   const Profiler &profiler;
 
@@ -72,6 +72,7 @@ class Control {
   bool quitting;
 
   // callbacks
+  virtual void poll(float delta);
   virtual void tick(float delta);
   virtual void render(Frame &f);
   virtual bool handle(const sf::Event &event);
@@ -92,16 +93,17 @@ class ControlExec {
   static sf::ContextSettings makeSettings();
   sf::RenderWindow window;
   Frame frame;
-  ui::Profiler profiler;
   Cooldown resizeCooldown;
+  double time;
 
+  ui::Profiler profiler;
   const float tickStep;
   float rollingTickTime;
-  float time;
+  sf::Clock cycleClock, profileClock;
+
   AppState appState;
   std::unique_ptr<Control> ctrl;
 
-  sf::Clock cycleClock, profileClock;
 
   // app loop
   void tick();
