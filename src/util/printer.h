@@ -71,9 +71,10 @@ class ConsolePrinter: public Printer {
 /**
  * Logging / error throwing functions.
  */
-void appLog(const std::__cxx11::string &contents, const LogOrigin = LogOrigin::None);
-void appErrorLogic(const std::__cxx11::string &contents);
-void appErrorRuntime(const std::__cxx11::string &contents);
+void appLog(const std::string &contents, const LogOrigin = LogOrigin::None);
+void appErrorLogic(const std::string &contents);
+void appErrorRuntime(const std::string &contents);
+
 /**
  * Log cereal-serializable types, hooray.
  */

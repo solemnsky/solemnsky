@@ -104,6 +104,35 @@ sf::Event transformEvent(const sf::Transform trans,
   return event;
 }
 
+/**
+ * ControlExec.
+ */
+
+static sf::ContextSettings ControlExec::makeSettings() {
+  sf::ContextSettings settings;
+  settings.antialiasingLevel = 8;
+  return settings;
+}
+
+ControlExec::ControlExec(
+    std::function<std::unique_ptr<Control>()> initCtrl) :
+    window(sf::VideoMode(800, 600), "solemnsky",
+           sf::Style::Default, makeSettings()),
+    frame(window),
+    profiler(100),
+    resizeCooldown(0.5),
+
+    ctrl(std::make_unique<detail::SplashScreen>(initCtrl)),
+    appState(window, profiler) {
+  window.setVerticalSyncEnabled(true);
+  window.setKeyRepeatEnabled(false);
+  appLog("Initialized SFML.", LogOrigin::App);
+}
+
+void ControlExec::run() {
+
+}
+
 void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
   std::unique_ptr<Control> ctrl =
       std::make_unique<detail::SplashScreen>(initCtrl);
@@ -115,8 +144,6 @@ void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
 
   tg::UsageFlag flag; // for ENet initialization
 
-  sf::ContextSettings settings;
-  settings.antialiasingLevel = 8;
   sf::RenderWindow window(sf::VideoMode(800, 600), "My window",
                           sf::Style::Default, settings);
   window.setVerticalSyncEnabled(true);
