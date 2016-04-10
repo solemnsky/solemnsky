@@ -17,6 +17,11 @@ class Printer {
                         const unsigned char g,
                         const unsigned char b) = 0;
   virtual void breakLine() = 0;
+
+  void printLn(const std::string &str) {
+    print(str);
+    breakLine();
+  }
 };
 
 using PrintProcess = std::function<void(Printer &)>;
