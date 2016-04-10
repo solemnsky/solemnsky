@@ -17,8 +17,8 @@ SplashScreen::SplashScreen(AppState &appState,
             TextLog::Style(1580, 890, 0, 0, 0, 24), {10, 890}),
     progress(0),
     afterLoading(afterLoading),
-    resourceThread(loadResources, textLog, progress) {
-  areChildren({textLog});
+    resourceThread(loadResources, (Printer &) textLog, progress) {
+  areChildren({&textLog});
 }
 
 void SplashScreen::tick(float delta) {
