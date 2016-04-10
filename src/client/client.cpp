@@ -1,6 +1,7 @@
 #include "client.h"
 #include "elements/style.h"
 #include "util/methods.h"
+#include "printer.h"
 
 /**
  * Client.

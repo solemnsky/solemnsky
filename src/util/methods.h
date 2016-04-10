@@ -8,37 +8,8 @@
 #include "types.h"
 #include <cereal/archives/json.hpp>
 
-/****
- * Canonical log messages with some handy formatting.
- */
-
-enum class LogOrigin {
-  None, // not specified
-  Engine, // something deep in the engine
-  Network, // network / enet stuff
-  App, // multimedia management for clients
-  Client, // misc. things for clients
-  Server, // misc. things for servers
-  Error // is a fatal error
-};
-
-/**
- * Logging / error throwing functions.
- */
-void appLog(const std::string &contents, const LogOrigin = LogOrigin::None);
-void appErrorLogic(const std::string &contents); // log and throw
-void appErrorRuntime(const std::string &contents); // log and throw
-
-/**
- * Log cereal-serializable types, hooray.
- */
-template<typename T>
-void appLogValue(const T &x) {
-  std::stringstream stream;
-  cereal::JSONOutputArchive archive(stream);
-  archive(x);
-  appLog(stream.str());
-}
+// log and throw
+// log and throw
 
 /**
  * Logging for memory leaks.
@@ -86,7 +57,4 @@ bool verifyFields(Field &field, Fields... fields) {
  */
 
 std::string inQuotes(const std::string &str);
-
 int smallestUnused(std::vector<int> &vec);
-
-Movement addMovement(const bool x, const bool y);

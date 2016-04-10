@@ -1,6 +1,7 @@
 #include <assert.h>
 #include "resources.h"
 #include "util/methods.h"
+#include "printer.h"
 
 /**
  * ResRecord.

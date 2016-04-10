@@ -7,6 +7,7 @@
 #include <sstream>
 #include <cereal/archives/binary.hpp>
 #include "util/methods.h"
+#include "printer.h"
 #include <boost/range/iterator_range_core.hpp>
 
 namespace tg {

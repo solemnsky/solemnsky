@@ -57,7 +57,6 @@ class TextFrame: public Printer {
 
   TextFrame(class Frame *parent,
             const sf::Vector2f &anchor,
-            const sf::Color &color,
             const TextFormat &format);
   TextFrame() = delete;
 
@@ -69,6 +68,7 @@ class TextFrame: public Printer {
   const sf::Font &font;
 
   // state
+  bool colorSet;
   sf::Color color;
   sf::Vector2f drawnDimensions;
 

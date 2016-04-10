@@ -1,6 +1,7 @@
 #include "multiplayershared.h"
 #include "client/elements/style.h"
 #include "sky/event.h"
+#include "printer.h"
 
 /**
  * MultiplayerLogger.
