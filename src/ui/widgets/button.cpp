@@ -25,18 +25,20 @@ sf::FloatRect Button::getBody() {
   return sf::FloatRect(pos, style.dimensions);
 }
 
-Button::Button(const Style &style,
+Button::Button(AppState &appState,
+               const Style &style,
                const sf::Vector2f &pos,
-               const std::string &text)
-    : pos(pos), text(text), style(style),
-      heat(0),
-      active(true),
-      isHot(false),
-      clickSignal(false),
-      textFormat(style.fontSize, style.dimensions,
-                 HorizontalAlign::Center, VerticalAlign::Middle,
-                 ResID::Font),
-      descriptionFormat(textFormat) {
+               const std::string &text) :
+    Control(appState),
+    pos(pos), text(text), style(style),
+    heat(0),
+    active(true),
+    isHot(false),
+    clickSignal(false),
+    textFormat(style.fontSize, style.dimensions,
+               HorizontalAlign::Center, VerticalAlign::Middle,
+               ResID::Font),
+    descriptionFormat(textFormat) {
   descriptionFormat.horizontal = HorizontalAlign::Right;
 }
 

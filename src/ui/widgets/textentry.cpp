@@ -22,10 +22,12 @@ TextEntry::Style::Style(
     fontSize(fontSize),
     heatRate(heatRate) { }
 
-TextEntry::TextEntry(const Style &style,
+TextEntry::TextEntry(AppState &appState,
+                     const Style &style,
                      const sf::Vector2f &pos,
                      const std::string &description,
                      const bool persistent) :
+    Control(appState),
     persistent(persistent),
     pos(pos),
     scroll(0),
@@ -120,6 +122,7 @@ void TextEntry::render(Frame &f) {
     f.drawRect({}, style.dimensions, style.focusedColor);
     f.drawText(
         sf::Vector2f(sidePadding - scroll, 0), [&](TextFrame &tf) {
+          tf.setColor(style.textColor);
           tf.print(contents.substr(0, size_t(cursor)));
           const float scroll =
               (tf.drawOffset.x > (style.dimensions.x + sidePadding))
@@ -130,7 +133,7 @@ void TextEntry::render(Frame &f) {
                   cursorWidth, style.dimensions.y},
               style.textColor);
           tf.print(contents.substr(size_t(cursor)));
-        }, style.textColor, textFormat);
+        }, textFormat);
   } else {
     f.drawRect({}, style.dimensions,
                mixColors(style.inactiveColor, style.hotColor, heat));

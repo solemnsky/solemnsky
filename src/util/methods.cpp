@@ -9,13 +9,6 @@
 #include "methods.h"
 #include "types.h"
 
-std::string showTime() {
-  static sf::Clock clock;
-  std::string clockTime =
-      std::to_string(clock.getElapsedTime().asMilliseconds());
-  return clockTime + std::string(10 - clockTime.size(), ' ');
-}
-
 float VecMath::length(const sf::Vector2f &vec) {
   return (float) sqrt(vec.x * vec.x + vec.y * vec.y);
 }
