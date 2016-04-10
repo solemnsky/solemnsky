@@ -212,8 +212,10 @@ std::string KeySelector::printKey(const sf::Keyboard::Key key) const {
   }
 }
 
-KeySelector::KeySelector(const ui::KeySelector::Style &style,
+KeySelector::KeySelector(AppState &appState,
+                         const ui::KeySelector::Style &style,
                          const sf::Vector2f &pos) :
+    Control(appState),
     capturing(false),
     clickSignal(clickSignal),
     button(style, pos, "") {

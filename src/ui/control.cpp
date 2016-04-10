@@ -18,6 +18,19 @@ ProfilerSnapshot::ProfilerSnapshot(const Profiler &profiler) :
     renderTime(profiler.renderTime) { }
 
 /**
+ * AppState.
+ */
+
+AppState::AppState(const sf::RenderWindow &window,
+                   const Profiler &profiler,
+                   const float &time)
+    : window(window), profiler(profiler), time(time) { }
+
+float AppState::timeSince(const float event) const {
+  return time - event;
+}
+
+/**
  * Control.
  */
 
@@ -50,10 +63,6 @@ void Control::signalRead() { // process signals
 void Control::signalClear() { // clear signals
   for (auto child : children) child->signalClear();
 }
-
-/**
- * ControlExec.
- */
 
 /**
  * Fakes a transformation of any potential position-related values on an
@@ -118,11 +127,13 @@ ControlExec::ControlExec(
            sf::Style::Default, makeSettings()),
     frame(window),
     tickStep(1.0f / 60.0f),
+    rollingTickTime(0),
+    time(0),
     profiler(100),
     resizeCooldown(0.5),
 
-    ctrl(std::make_unique<detail::SplashScreen>(initCtrl)),
-    appState(window, profiler) {
+    appState(window, profiler, time),
+    ctrl(std::make_unique<detail::SplashScreen>(appState, initCtrl)) {
   window.setVerticalSyncEnabled(true);
   window.setKeyRepeatEnabled(false);
   appLog("Initialized SFML.", LogOrigin::App);
@@ -134,6 +145,7 @@ void ControlExec::tick() {
 
   profileClock.restart();
   rollingTickTime += cycleDelta;
+  time += cycleDelta;
   while (rollingTickTime > tickStep) {
     ctrl->tick(tickStep);
     rollingTickTime -= tickStep;
@@ -202,7 +214,7 @@ void ControlExec::run() {
   appLog("Exiting solemnsky, see you later.", LogOrigin::App);
 }
 
-void runSFML(std::function<std::unique_ptr<Control>()> initCtrl) {
+void runSFML(std::function<std::unique_ptr<Control>(AppState &)> initCtrl) {
   ControlExec(initCtrl).run();
 }
 

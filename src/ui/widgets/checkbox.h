@@ -16,7 +16,8 @@ class Checkbox: public ui::Control {
   typedef Button::Style Style;
 
   Checkbox() = delete;
-  Checkbox(const Style &style,
+  Checkbox(AppState &appState,
+           const Style &style,
            const sf::Vector2f &pos);
 
   void signalRead() override;
