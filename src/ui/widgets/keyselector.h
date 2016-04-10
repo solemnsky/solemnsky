@@ -17,8 +17,8 @@ class KeySelector: public ui::Control {
  public:
   typedef Button::Style Style;
 
-  KeySelector() = delete;
-  KeySelector(const Style &style, const sf::Vector2f &pos);
+  KeySelector(AppState &appState,
+              const Style &style, const sf::Vector2f &pos);
 
   void render(Frame &f) override;
   bool handle(const sf::Event &event) override;

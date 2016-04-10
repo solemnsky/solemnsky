@@ -14,10 +14,12 @@ class SplashScreen: public Control {
   TextFormat loadingText;
 
   bool screenDrawn{false};
-  std::function<std::unique_ptr<Control>()> afterLoading;
+  std::function<std::unique_ptr<Control>(AppState &)> afterLoading;
 
  public:
-  SplashScreen(std::function<std::unique_ptr<Control>()> afterLoading);
+  SplashScreen(AppState &appState,
+               std::function<std::unique_ptr<Control>(AppState &)>
+               afterLoading);
 
   virtual void tick(float delta) override;
   virtual void render(Frame &f) override;

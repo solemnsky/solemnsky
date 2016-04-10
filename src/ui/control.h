@@ -39,11 +39,14 @@ struct ProfilerSnapshot {
  */
 struct AppState {
   AppState(const sf::RenderWindow &window,
-           const Profiler &profiler) :
-      window(window), profiler(profiler) { }
+           const Profiler &profiler,
+           const float &time);
 
+  const float &time;
   const sf::RenderWindow &window;
   const Profiler &profiler;
+
+  float timeSince(const float event) const;
 };
 
 /**
@@ -94,8 +97,9 @@ class ControlExec {
 
   const float tickStep;
   float rollingTickTime;
-  std::unique_ptr<Control> ctrl;
+  float time;
   AppState appState;
+  std::unique_ptr<Control> ctrl;
 
   sf::Clock cycleClock, profileClock;
 
@@ -105,11 +109,11 @@ class ControlExec {
   void renderAndSleep();
 
  public:
-  ControlExec(std::function<std::unique_ptr<Control>()> initCtrl);
+  ControlExec(std::function<std::unique_ptr<Control>(AppState &)> initCtrl);
 
   void run();
 
 };
 
-void runSFML(std::function<std::unique_ptr<Control>()> initCtrl);
+void runSFML(std::function<std::unique_ptr<Control>(AppState &)> initCtrl);
 }
