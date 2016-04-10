@@ -3,8 +3,8 @@
  */
 #pragma once
 #include <memory>
-#include <thread>
 #include "widgets/textlog.h"
+#include <mingw.thread.h>
 #include "control.h"
 
 namespace ui {
