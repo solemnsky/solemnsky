@@ -9,7 +9,7 @@ add_subdirectory("thirdparty/Box2D/Box2D")
 add_subdirectory("thirdparty/SFML")
 add_subdirectory("thirdparty/enet")
 
-# we also depend on boost from the host system
+# we also depend on boost and gthread from the host system
 find_package(Boost)
 
 # so we can #include stuff
@@ -174,6 +174,7 @@ target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics
         sfml-window
+        gthread
         )
 
 ###### unit tests

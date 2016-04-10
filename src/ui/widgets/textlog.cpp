@@ -57,7 +57,7 @@ TextLog::Style::Style(
     fontSize(fontSize) { }
 
 void TextLog::startNewLine() {
-  lines.emplace_back(appState.time);
+  lines.emplace_back(appState.time, std::vector<detail::PrintAction>());
   startingNewLine = false;
 }
 
