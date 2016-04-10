@@ -26,7 +26,7 @@ AppState::AppState(const sf::RenderWindow &window,
                    const double &time)
     : window(window), profiler(profiler), time(time) { }
 
-float AppState::timeSince(const float event) const {
+double AppState::timeSince(const double event) const {
   return time - event;
 }
 
@@ -119,7 +119,7 @@ sf::Event transformEvent(const sf::Transform trans,
  * ControlExec.
  */
 
-static sf::ContextSettings ControlExec::makeSettings() {
+sf::ContextSettings ControlExec::makeSettings() {
   sf::ContextSettings settings;
   settings.antialiasingLevel = 8;
   return settings;

@@ -35,7 +35,7 @@ Button::Button(AppState &appState,
     active(true),
     isHot(false),
     clickSignal(false),
-    textFormat(style.fontSize, style.dimensions,
+    textFormat(style.fontSize, style.dimensions.x,
                HorizontalAlign::Center, VerticalAlign::Middle,
                ResID::Font),
     descriptionFormat(textFormat) {

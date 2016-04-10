@@ -6,10 +6,10 @@
 
 HomePage::HomePage(ClientShared &clientState) :
     Page(clientState),
-    tutorialButton(style.base.normalButton,
+    tutorialButton(appState, style.base.normalButton,
                    style.home.tutorialButtonPos,
                    style.home.tutorialButtonDesc),
-    localhostButton(style.base.normalButton,
+    localhostButton(appState, style.base.normalButton,
                     style.home.localhostButtonPos,
                     style.home.localhostButtonDesc) {
   areChildren({&tutorialButton, &localhostButton});

@@ -66,14 +66,6 @@ class Frame {
     }, format);
   }
 
-  inline sf::Vector2f drawText(
-      const sf::Vector2f pos,
-      PrintProcess process, const TextFormat &format) {
-    return drawText(pos, [&](ui::TextFrame &tf) {
-      process(PrintProcess(tf));
-    }, format);
-  }
-
   void drawCircle(const sf::Vector2f &pos, const float radius,
                   const sf::Color &color = {});
   void drawRect(const sf::Vector2f &topLeft, const sf::Vector2f &bottomRight,
@@ -81,6 +73,7 @@ class Frame {
   sf::Vector2f drawText(const sf::Vector2f &pos,
                         std::function<void(TextFrame &)> process,
                         const TextFormat &format);
+  // PrintProcess has an implicit conversion to std::function<void(TextFrame &)>
   void drawSprite(const sf::Texture &texture, const sf::Vector2f &pos,
                   const sf::IntRect &portion);
 };
