@@ -4,7 +4,7 @@
 
 namespace ui {
 
-ui::TextEntry::Style::Style(
+TextEntry::Style::Style(
     const sf::Color &inactiveColor,
     const sf::Color &hotColor,
     const sf::Color &focusedColor,

@@ -1,9 +1,9 @@
 #include <cmath>
 
 #include "splash.h"
-#include "util/methods.h"
 #include "util/telegraph.h"
 #include "control.h"
+#include "printer.h"
 
 namespace ui {
 

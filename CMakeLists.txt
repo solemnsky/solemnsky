@@ -166,7 +166,7 @@ add_executable(solemnsky_client
 
         src/ui/text.cpp
         src/ui/text.h
-        )
+        src/ui/widgets/textlog.cpp src/ui/widgets/textlog.h)
 target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics

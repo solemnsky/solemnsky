@@ -1,6 +1,6 @@
 #include "splash.h"
 #include "client/elements/style.h"
-#include "util/methods.h"
+#include "printer.h"
 
 namespace ui {
 

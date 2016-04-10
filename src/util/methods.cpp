@@ -16,50 +16,6 @@ std::string showTime() {
   return clockTime + std::string(10 - clockTime.size(), ' ');
 }
 
-void appLog(const std::string &contents, const LogOrigin origin) {
-  static std::vector<std::string> prefixes =
-      {"]        : ",
-       "engine]  : ",
-       "network] : ",
-       "app]     : ",
-       "client]  : ",
-       "server]  : ",
-       "ERROR]   : ",
-       "...      : "};
-
-  std::stringstream stream(contents);
-  std::string line;
-
-  if (contents == "") {
-    std::cout << showTime() + "[" + prefixes[(int) origin];
-    std::endl(std::cout);
-    return;
-  }
-
-  const std::string time = showTime();
-  bool isFirstLine(true);
-  while (getline(stream, line, '\n')) {
-    if (isFirstLine) {
-      std::cout << time + "[" + prefixes[(int) origin] + line;
-      std::endl(std::cout);
-      isFirstLine = false;
-    } else {
-      std::cout << time + prefixes[7] + line;
-      std::endl(std::cout);
-    }
-  }
-}
-
-void appErrorLogic(const std::string &contents) {
-  appLog(contents, LogOrigin::Error);
-  throw std::logic_error(contents);
-}
-
-void appErrorRuntime(const std::string &contents) {
-  appLog(contents, LogOrigin::Error);
-  throw std::runtime_error(contents);
-}
-
 float VecMath::length(const sf::Vector2f &vec) {
   return (float) sqrt(vec.x * vec.x + vec.y * vec.y);
 }
@@ -113,11 +69,5 @@ int smallestUnused(std::vector<int> &vec) {
   }
   return v;
 };
-
-Movement addMovement(const bool x, const bool y) {
-  if (y == x) return Movement::None;
-  if (y) return Movement::Up;
-  return Movement::Down;
-}
 
 

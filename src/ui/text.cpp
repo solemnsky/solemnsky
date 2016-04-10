@@ -47,10 +47,9 @@ TextFormat::TextFormat(
 
 TextFrame::TextFrame(Frame *parent,
                      const sf::Vector2f &anchor,
-                     const sf::Color &color,
                      const TextFormat &format) :
     parent(parent), anchor(anchor), format(format),
-    color(color), font(fontOf(format.font)) { }
+    font(fontOf(format.font)) { }
 
 sf::Vector2f TextFrame::endRender() {
   return drawnDimensions;
@@ -86,6 +85,7 @@ sf::Vector2f TextFrame::drawBlock(const sf::Vector2f &pos,
 }
 
 void TextFrame::print(const std::string &string) {
+  assert(colorSet);
   parent->primCount++;
 
   sf::Text text;
@@ -144,6 +144,7 @@ void TextFrame::setColor(const unsigned char r,
                          const unsigned char g,
                          const unsigned char b) {
   setColor(sf::Color(r, g, b));
+  colorSet = true;
 }
 
 void TextFrame::setColor(const sf::Color &newColor) {
