@@ -16,22 +16,16 @@
  */
 class Client: public ui::Control {
  private:
-  /**
-   * Buttons.
-   */
+  // buttons
   ui::Button backButton, // for exiting menus, lower right
       closeButton, // for closing the current tutorial, lower left
       quitButton, // quitting solemnsky
       aboutButton; // for seeing the about screen
 
-  /**
-   * Shared state.
-   */
+  // shared state
   ClientShared shared;
 
-  /**
-   * UI stuff.
-   */
+  // misc ui
   HomePage homePage;
   ListingPage listingPage;
   SettingsPage settingsPage;
@@ -40,9 +34,7 @@ class Client: public ui::Control {
   Cooldown profilerCooldown;
   ui::ProfilerSnapshot profilerSnap;
 
-  /**
-   * Helpers.
-   */
+  // helpers
   void forAllPages(std::function<void(Page &)> f);
   Page &referencePage(const PageType type);
   void drawPage(ui::Frame &f, const PageType type,

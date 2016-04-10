@@ -3,6 +3,7 @@
  */
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "util/telegraph.h"
 #include <vector>
 #include <stack>
 #include <functional>
@@ -45,9 +46,14 @@ struct AppState {
   const Profiler &profiler;
 };
 
+/**
+ * The control abstraction: a tangible GUI entity.
+ */
 class Control {
  private:
  protected:
+  AppState &appState;
+
   std::vector<Control *> children;
 
   inline void areChildren(std::initializer_list<Control *> controls) {
@@ -57,8 +63,6 @@ class Control {
  public:
   Control();
   virtual ~Control() { }
-
-  AppState *appState;
 
   // flags
   std::unique_ptr<Control> next;
@@ -78,5 +82,27 @@ class Control {
 /**
  * Runs a top-level ui::Control, resulting in a full app.
  */
+class ControlExec {
+ private:
+  tg::UsageFlag flag;
+
+  static sf::ContextSettings makeSettings();
+  sf::RenderWindow window;
+  Frame frame;
+  ui::Profiler profiler;
+  Cooldown resizeCooldown;
+
+  std::unique_ptr<Control> ctrl;
+  AppState appState;
+
+  sf::Clock cycleClock, profileClock;
+
+ public:
+  ControlExec(std::function<std::unique_ptr<Control>()> initCtrl);
+
+  void run();
+
+};
+
 void runSFML(std::function<std::unique_ptr<Control>()> initCtrl);
 }
