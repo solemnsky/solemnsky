@@ -17,17 +17,17 @@ SplashScreen::SplashScreen(AppState &appState,
             TextLog::Style(1580, 890, 0, 0, 0, 24), {10, 890}),
     progress(0),
     afterLoading(afterLoading),
-    resourceThread(loadResources, textLog, progress) {
+    resourceThread([&]() { loadResources(textLog, progress); }) {
+  loadSplashResources();
   areChildren({&textLog});
 }
 
 void SplashScreen::tick(float delta) {
   ui::Control::tick(delta);
-  if (!next) next = std::move(afterLoading(appState));
+  if (progress == 1) next = std::move(afterLoading(appState));
 }
 
 void SplashScreen::render(ui::Frame &f) {
-  loadSplashResources();
   f.drawSprite(textureOf(ResID::MenuBackground), {}, {0, 0, 1600, 900});
   f.drawText({800, 450}, "loading resources...",
              sf::Color::White, loadingText);

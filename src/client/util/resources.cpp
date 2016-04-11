@@ -115,7 +115,7 @@ void ResMan::loadResources(Printer &printer, float &progress) {
     if (splashResources.find(res) != splashResources.end()) continue;
     loadResource(res, " ... (" + std::to_string((int) res + 1) +
         " of " + resCount + ")", printer);
-    progress = (float(res) + 1.0f) / float(ResID::LAST);
+    progress = float(res) / float(ResID::LAST);
   }
 
   printer.printLn(
@@ -124,6 +124,7 @@ void ResMan::loadResources(Printer &printer, float &progress) {
       std::to_string(textures.size()) + " total textures available.");
   printer.printLn("Finished loading resources.");
 
+  progress = 1;
   initialized = true;
 }
 
