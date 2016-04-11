@@ -102,14 +102,15 @@ bool TextLog::handle(const sf::Event &event) {
 
 void TextLog::print(const std::string &str) {
   if (startingNewLine) startNewLine();
-  lines.end()->second.push_back(detail::PrintAction::Print(str));
+  lines.rbegin()->second.push_back(
+      detail::PrintAction::Print(str));
 }
 
 void TextLog::setColor(const unsigned char r,
                        const unsigned char g,
                        const unsigned char b) {
   if (startingNewLine) startNewLine();
-  lines.end()->second.push_back(
+  lines.rbegin()->second.push_back(
       detail::PrintAction::Color(sf::Color(r, b, g)));
 }
 
