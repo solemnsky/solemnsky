@@ -24,10 +24,12 @@ class SplashScreen: public Control {
   SplashScreen(AppState &appState,
                std::function<std::unique_ptr<Control>(AppState &)>
                afterLoading);
+  ~SplashScreen();
 
-  virtual void tick(float delta) override;
-  virtual void render(Frame &f) override;
-  virtual bool handle(const sf::Event &event) override;
+  virtual void poll(float delta) override final;
+  virtual void tick(float delta) override final;
+  virtual void render(Frame &f) override final;
+  virtual bool handle(const sf::Event &event) override final;
 };
 }
 

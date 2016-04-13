@@ -165,11 +165,9 @@ void Client::drawGame(ui::Frame &f) {
         {10, 10},
         [&](ui::TextFrame &tf) {
           tf.setColor(sf::Color::White);
-          tf.print("cycle:" + profilerSnap.cycleTime.print());
-          tf.breakLine();
-          tf.print("logic:" + profilerSnap.logicTime.print());
-          tf.breakLine();
-          tf.print("render:" + profilerSnap.renderTime.print());
+          tf.printLn("cycle:" + profilerSnap.cycleTime.print());
+          tf.printLn("logic:" + profilerSnap.logicTime.print());
+          tf.printLn("render:" + profilerSnap.renderTime.print());
         }, style.base.normalText);
   }
 }
