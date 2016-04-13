@@ -61,7 +61,7 @@ struct ResRecord {
  * ResRecord metadata from Res values.
  */
 void loadSplashResources();
-void loadResources(Printer &printer, float &progress);
+void loadResources(Printer *const printer, float *const progress);
 const ResRecord &recordOf(const ResID res);
 const sf::Texture &textureOf(const ResID res);
 const sf::Font &fontOf(const ResID res);
@@ -83,7 +83,7 @@ static class ResMan {
   ResMan();
 
   void loadSplashResources();
-  void loadResources(Printer &printer, float &progress);
+  void loadResources(Printer *const printer, float *const progress);
 
   const sf::Texture &textureOf(ResID res);
   const sf::Font &fontOf(ResID res);

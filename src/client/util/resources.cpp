@@ -30,7 +30,7 @@ void loadSplashResources() {
   detail::resMan.loadSplashResources();
 }
 
-void loadResources(Printer &printer, float &progress) {
+void loadResources(Printer *const printer, float *const progress) {
   detail::resMan.loadResources(printer, progress);
 }
 
@@ -102,29 +102,29 @@ void ResMan::loadSplashResources() {
   splashInitialized = true;
 }
 
-void ResMan::loadResources(Printer &printer, float &progress) {
-  progress = 0;
+void ResMan::loadResources(Printer *const printer, float *const progress) {
+  *progress = 0;
 
   if (initialized) return;
 
   std::string resCount = std::to_string((int) ResID::LAST);
-  printer.printLn("Loading resources ...");
+  printer->printLn("Loading resources ...");
 
   for (ResID res = ResID::Font; res < ResID::LAST;
        res = (ResID) (int(res) + 1)) {
     if (splashResources.find(res) != splashResources.end()) continue;
     loadResource(res, " ... (" + std::to_string((int) res + 1) +
-        " of " + resCount + ")", printer);
-    progress = float(res) / float(ResID::LAST);
+        " of " + resCount + ")", *printer);
+    *progress = float(res) / float(ResID::LAST);
   }
 
-  printer.printLn(
+  printer->printLn(
       std::to_string(fonts.size()) + " total fonts available.");
-  printer.printLn(
+  printer->printLn(
       std::to_string(textures.size()) + " total textures available.");
-  printer.printLn("Finished loading resources.");
+  printer->printLn("Finished loading resources.");
 
-  progress = 1;
+  *progress = 1;
   initialized = true;
 }
 
