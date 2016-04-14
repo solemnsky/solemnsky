@@ -61,7 +61,7 @@ struct ResRecord {
  * ResRecord metadata from Res values.
  */
 void loadSplashResources();
-void loadResources(Printer *const printer, float *const progress);
+void loadResources();
 const ResRecord &recordOf(const ResID res);
 const sf::Texture &textureOf(const ResID res);
 const sf::Font &fontOf(const ResID res);
@@ -77,13 +77,13 @@ static class ResMan {
   bool initialized, splashInitialized;
 
   void loadResource(
-      const ResID res, const std::string &progress, Printer &printer);
+      const ResID res, const std::string &progress);
 
  public:
   ResMan();
 
   void loadSplashResources();
-  void loadResources(Printer *const printer, float *const progress);
+  void loadResources();
 
   const sf::Texture &textureOf(ResID res);
   const sf::Font &fontOf(ResID res);

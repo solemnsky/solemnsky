@@ -202,7 +202,6 @@ ControlExec::ControlExec(
   appLog("Initialized SFML.", LogOrigin::App);
 }
 
-
 void ControlExec::run() {
   appLog("Starting game loop.", LogOrigin::App);
 

@@ -15,6 +15,7 @@ class SplashScreen: public Control {
  private:
   TextFormat loadingText;
 
+  bool firstCycle, loadingDone;
   float progress;
   ui::TextLog textLog;
   std::function<std::unique_ptr<Control>(AppState &)> afterLoading;

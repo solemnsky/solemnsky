@@ -45,7 +45,7 @@ class StringPrinter: public Printer {
 };
 
 /**
- * Printer to the console, with neat formatting and origin information.
+ * Canonical console logging / error throwing.
  */
 
 enum class LogOrigin {
@@ -58,16 +58,18 @@ enum class LogOrigin {
   Error // is a fatal error
 };
 
+void appLog(const std::string &contents, const LogOrigin = LogOrigin::None);
+void appErrorLogic(const std::string &contents);
+void appErrorRuntime(const std::string &contents);
+
+/**
+ * A printer wrapping appLog.
+ */
+
 class ConsolePrinter: public Printer {
  private:
-  const static int timeLength = 10,
-      originLength = 12;
-
   const LogOrigin origin;
-  bool printedOrigin;
-
-  std::string showTime() const;
-  std::string showOrigin(const LogOrigin origin);
+  std::string currentLine;
 
  public:
   ConsolePrinter(const LogOrigin origin);
@@ -82,13 +84,6 @@ class ConsolePrinter: public Printer {
 
 // note: ui::TextFrame implements Printer and
 // ui::TextLog::print(PrintProcess) should be used for printing logs
-
-/**
- * Logging / error throwing functions.
- */
-void appLog(const std::string &contents, const LogOrigin = LogOrigin::None);
-void appErrorLogic(const std::string &contents);
-void appErrorRuntime(const std::string &contents);
 
 /**
  * Log cereal-serializable types, hooray.

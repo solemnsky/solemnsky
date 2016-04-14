@@ -18,17 +18,17 @@ std::string StringPrinter::getString() const {
 }
 
 /**
- * ConsolePrinter.
+ * AppLog.
  */
 
-std::string ConsolePrinter::showTime() const {
+std::string showTime() {
   static sf::Clock clock;
   std::string clockTime =
       std::to_string(clock.getElapsedTime().asMilliseconds());
-  return clockTime + std::string(timeLength - clockTime.size(), ' ');
+  return clockTime + std::string(10 - clockTime.size(), ' ');
 }
 
-std::string ConsolePrinter::showOrigin(const LogOrigin origin) {
+std::string showOrigin(const LogOrigin origin) {
   switch (origin) {
     case LogOrigin::None:
       return "[]        : ";
@@ -47,17 +47,33 @@ std::string ConsolePrinter::showOrigin(const LogOrigin origin) {
   }
 }
 
-ConsolePrinter::ConsolePrinter(const LogOrigin origin) :
-    origin(origin), printedOrigin(false) {
-  std::cout << showTime() + showOrigin(origin);
+void appLog(const std::string &contents, const LogOrigin origin) {
+  std::cout << showTime() << showOrigin(origin) << contents << "\n";
 }
 
+void appErrorLogic(const std::__cxx11::string &contents) {
+  appLog(contents, LogOrigin::Error);
+  throw std::logic_error(contents);
+}
+
+void appErrorRuntime(const std::__cxx11::string &contents) {
+  appLog(contents, LogOrigin::Error);
+  throw std::runtime_error(contents);
+}
+
+/**
+ * ConsolePrinter.
+ */
+
+ConsolePrinter::ConsolePrinter(const LogOrigin origin) :
+    origin(origin) { }
+
 ConsolePrinter::~ConsolePrinter() {
-  std::endl(std::cout);
+  breakLine();
 }
 
 void ConsolePrinter::print(const std::string &str) {
-  std::cout << str;
+  currentLine += str;
 }
 
 void ConsolePrinter::setColor(const unsigned char r,
@@ -67,19 +83,6 @@ void ConsolePrinter::setColor(const unsigned char r,
 }
 
 void ConsolePrinter::breakLine() {
-  endl(std::cout);
-  std::cout << std::string(originLength + timeLength, ' ');
+  if (currentLine.size() != 0) appLog(std::move(currentLine));
 }
 
-void appLog(const std::__cxx11::string &contents, const LogOrigin origin) {
-  ConsolePrinter(origin).print(contents);
-}
-
-void appErrorLogic(const std::__cxx11::string &contents) {
-  appLog(contents, LogOrigin::Error);
-  throw std::logic_error(contents);
-}
-void appErrorRuntime(const std::__cxx11::string &contents) {
-  appLog(contents, LogOrigin::Error);
-  throw std::runtime_error(contents);
-}
