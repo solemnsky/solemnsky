@@ -40,6 +40,10 @@ float linearTween(const float begin, const float end, const float time) {
                       std::max(begin, end), begin + time * (end - begin));
 }
 
+float sineAnim(const float time, const float period) {
+  return (1.0f + float(sin((time * M_2_PI) / period))) / 2.0f;
+}
+
 bool verifyFields() {
   return true;
 }
