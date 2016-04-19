@@ -42,6 +42,7 @@ KeyBindings::KeyBindings() {
   skyBindings.emplace(sf::Keyboard::F, sky::Action::Primary);
   skyBindings.emplace(sf::Keyboard::D, sky::Action::Secondary);
   skyBindings.emplace(sf::Keyboard::S, sky::Action::Special);
+  skyBindings.emplace(sf::Keyboard::Q, sky::Action::Suicide);
 
   clientBindings.emplace(sf::Keyboard::F, ClientAction::Spawn);
   clientBindings.emplace(sf::Keyboard::Return, ClientAction::Chat);

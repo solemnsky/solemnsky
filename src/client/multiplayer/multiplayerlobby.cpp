@@ -3,7 +3,16 @@
 
 void MultiplayerLobby::doClientAction(const ClientAction action,
                                       const bool state) {
-  if (action == ClientAction::Chat && state) chatInput.focus();
+  switch (action) {
+    case ClientAction::Spawn:
+      break;
+    case ClientAction::Chat: {
+      if (state) chatInput.focus();
+      break;
+    }
+    case ClientAction::Scoreboard:
+      break;
+  }
 }
 
 MultiplayerLobby::MultiplayerLobby(

@@ -9,11 +9,9 @@
 #include <SFML/Window.hpp>
 #include "util/types.h"
 
-/****
- * Do stuff with colors.
- */
 sf::Color mixColors(
     const sf::Color color1, const sf::Color color2, const float degree);
 
+std::string printKey(const sf::Keyboard::Key key);
 
 #endif //SOLEMNSKY_UTIL_H

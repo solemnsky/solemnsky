@@ -63,6 +63,9 @@ Style::Menu::Menu(const Style::Base &base) :
 
     pageDescMargin(10),
 
+    pageFocusAnimSpeed(4),
+    gameFocusAnimSpeed(6),
+
     highButtonStyle(base.normalButton),
     lowButtonStyle(base.normalButton),
 

@@ -22,8 +22,6 @@ bool ClientPacket::verifyStructure() const {
       return verifyFields(action, state);
     case Type::ReqSpawn:
       return true;
-    case Type::ReqKill:
-      return true;
     case Type::Chat:
       return verifyFields(stringData);
     case Type::RCon:
@@ -58,10 +56,6 @@ ClientPacket ClientPacket::ReqAction(const Action &action,
 
 ClientPacket ClientPacket::ReqSpawn() {
   return ClientPacket(ClientPacket::Type::ReqSpawn);
-}
-
-ClientPacket ClientPacket::ReqKill() {
-  return ClientPacket(ClientPacket::Type::ReqKill);
 }
 
 ClientPacket ClientPacket::Chat(const std::string &message) {

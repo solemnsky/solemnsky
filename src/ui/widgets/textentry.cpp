@@ -1,5 +1,5 @@
 #include "textentry.h"
-#include "client/util/sfmlutil.h"
+#include "util/client/sfmlutil.h"
 #include "util/methods.h"
 
 namespace ui {

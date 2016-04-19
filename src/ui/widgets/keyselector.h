@@ -12,7 +12,6 @@ class KeySelector: public ui::Control {
   Button button;
   optional<sf::Keyboard::Key> value;
   bool capturing;
-  std::string printKey(const sf::Keyboard::Key key) const;
 
  public:
   typedef Button::Style Style;

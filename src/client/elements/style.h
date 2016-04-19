@@ -69,6 +69,9 @@ struct Style {
     int descSize; // size of bits of text that describe things
     float pageDescMargin;
 
+    float pageFocusAnimSpeed, // s^-1
+        gameFocusAnimSpeed;
+
     ui::Button::Style highButtonStyle;
     ui::Button::Style lowButtonStyle;
 

@@ -22,7 +22,6 @@ struct ClientPacket: public VerifyStructure {
     ReqAction, // request to perform an action
 
     ReqSpawn, // request to spawn
-    ReqKill, // request to die
 
     Chat, // send a chat message
     RCon  // send an rcon command
@@ -50,9 +49,6 @@ struct ClientPacket: public VerifyStructure {
       case Type::ReqSpawn: {
         break;
       }
-      case Type::ReqKill: {
-        break;
-      }
       case Type::Chat: {
         ar(stringData);
       }
@@ -78,7 +74,6 @@ struct ClientPacket: public VerifyStructure {
   static ClientPacket ReqPlayerDelta(const PlayerDelta &playerDelta);
   static ClientPacket ReqAction(const Action &action, const bool state);
   static ClientPacket ReqSpawn();
-  static ClientPacket ReqKill();
   static ClientPacket Chat(const std::string &message);
   static ClientPacket RCon(const std::string &command);
 };
