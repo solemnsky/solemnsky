@@ -1,5 +1,5 @@
 /**
- * Abstraction of a thing that prints text, optionally with colors.
+ * Printing text in ways appealing to humans.
  */
 #pragma once
 #include <SFML/System.hpp>

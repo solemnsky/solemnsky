@@ -166,11 +166,11 @@ add_executable(solemnsky_client
         src/ui/sheet.cpp
         src/ui/sheet.h
 
-        src/ui/splash.cpp
-        src/ui/splash.h
-
         src/ui/text.cpp
         src/ui/text.h
+
+        src/ui/wrapper.cpp
+        src/ui/wrapper.h
         )
 target_link_libraries(solemnsky_client
         solemnsky
