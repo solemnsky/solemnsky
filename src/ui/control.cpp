@@ -36,7 +36,6 @@ double AppState::timeSince(const double event) const {
 
 Control::Control(AppState &appState) :
     appState(appState),
-    next(nullptr),
     quitting(false) { }
 
 void Control::poll(float delta) {
@@ -132,11 +131,12 @@ void ControlExec::tick() {
   profileClock.restart();
   rollingTickTime += cycleDelta;
   ctrl->poll(cycleDelta);
-  time += double(cycleDelta);
   while (rollingTickTime > tickStep) {
     ctrl->tick(tickStep);
+    time += tickStep;
     rollingTickTime -= tickStep;
   }
+
   profiler.logicTime.push(profileClock.restart().asSeconds());
 
   ctrl->signalRead();

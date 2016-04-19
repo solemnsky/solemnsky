@@ -34,10 +34,11 @@ float toRad(const float x);
 float toDeg(const float x);
 
 /**
- * Tweening.
+ * Tweening and animation.
  */
 
 float linearTween(const float begin, const float end, const float time);
+float sineAnim(const float time, const float period);
 
 /**
  * Certify that a bunch of optional fields are instantiated and have valid

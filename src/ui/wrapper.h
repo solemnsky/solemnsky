@@ -14,12 +14,15 @@ namespace detail {
  * displaying a splash screen and fades into the main Control when resources
  * are ready. It also relays the wrapped control's `quitting` flag.
  */
-// TODO: make this threaded so the window doesn't freeze up
+// TODO: Make this threaded, currently the game loop locks up while resources
+// are being loaded! You fool!
 class ExecWrapper: public Control {
  private:
+  double animBegin;
+  bool drewScreen, loadingDone;
   TextFormat loadingText;
   std::function<std::unique_ptr<Control>(AppState &)> mainCtrlCtor;
-  optional<Control> mainCtrl;
+  std::unique_ptr<Control> mainCtrl;
 
  public:
   ExecWrapper(AppState &appState,
