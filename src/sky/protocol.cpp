@@ -18,8 +18,8 @@ bool ClientPacket::verifyStructure() const {
       return verifyFields(stringData);
     case Type::ReqPlayerDelta:
       return verifyFields(playerDelta);
-    case Type::ReqSkyDelta:
-      return verifyFields(skyDelta);
+    case Type::ReqAction:
+      return verifyFields(action, state);
     case Type::ReqSpawn:
       return true;
     case Type::ReqKill:
@@ -48,9 +48,11 @@ ClientPacket ClientPacket::ReqPlayerDelta(const PlayerDelta &playerDelta) {
   return packet;
 }
 
-ClientPacket ClientPacket::ReqSkyDelta(const SkyDelta &skyDelta) {
-  ClientPacket packet(Type::ReqSkyDelta);
-  packet.skyDelta = skyDelta;
+ClientPacket ClientPacket::ReqAction(const Action &action,
+                                     const bool state) {
+  ClientPacket packet(Type::ReqAction);
+  packet.action = action;
+  packet.state = state;
   return packet;
 }
 
@@ -127,7 +129,6 @@ ServerPacket ServerPacket::DeltaSky(const SkyDelta &skyDelta) {
   packet.skyDelta = skyDelta;
   return packet;
 }
-
 
 ServerPacket ServerPacket::Chat(const PID pid, const std::string &chat) {
   ServerPacket packet(Type::Chat);

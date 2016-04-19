@@ -5,8 +5,7 @@ void MultiplayerGame::doClientAction(const ClientAction action,
                                      const bool state) {
   switch (action) {
     case ClientAction::Spawn: {
-      if (state && !mShared.plane->isSpawned())
-        mShared.player->spawn({}, {200, 200}, 0);
+      if (state) mShared.transmit(sky::ClientPacket::ReqSpawn());
       break;
     }
     case ClientAction::Chat: {
@@ -54,7 +53,8 @@ bool MultiplayerGame::handle(const sf::Event &event) {
 
   if (mShared.plane->isSpawned()) {
     if (auto action = shared.triggerSkyAction(event)) {
-      mShared.player->doAction(action->first, action->second);
+      mShared.transmit(sky::ClientPacket::ReqAction(action->first,
+                                                    action->second));
       return true;
     }
   }

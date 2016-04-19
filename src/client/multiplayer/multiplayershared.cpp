@@ -48,6 +48,7 @@ void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
     }
 
     case ServerPacket::Type::DeltaSky: {
+      sky->applyDelta(packet.skyDelta.get());
       break;
     }
 
