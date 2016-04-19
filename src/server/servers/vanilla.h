@@ -1,13 +1,10 @@
 /**
- * Default multiplayer server.
+ * Default multiplayer server, with a cool rcon and a lazy tdm mode.
  */
 #pragma once
 #include "server/server.h"
 
 class VanillaServer: public Server {
-
-
- public:
  protected:
   // subsystem callbacks
   void registerPlayer(sky::Player &player) override;

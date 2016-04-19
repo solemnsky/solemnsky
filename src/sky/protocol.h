@@ -3,6 +3,7 @@
  */
 #pragma once
 #include "util/types.h"
+#include "plane.h"
 #include "sky.h"
 #include "arena.h"
 #include <map>
@@ -18,7 +19,7 @@ struct ClientPacket: public VerifyStructure {
     ReqJoin, // request joining in the arena, part of the connection protocol
 
     ReqPlayerDelta, // request a change to your player data
-    ReqSkyDelta, // request to modify the Sky
+    ReqAction, // request to perform an action
 
     ReqSpawn, // request to spawn
     ReqKill, // request to die
@@ -42,8 +43,8 @@ struct ClientPacket: public VerifyStructure {
         ar(playerDelta);
         break;
       }
-      case Type::ReqSkyDelta: {
-        ar(skyDelta);
+      case Type::ReqAction: {
+        ar(action, state);
         break;
       }
       case Type::ReqSpawn: {
@@ -67,14 +68,15 @@ struct ClientPacket: public VerifyStructure {
   Type type;
   optional<std::string> stringData;
   optional<PlayerDelta> playerDelta;
-  optional<SkyDelta> skyDelta;
+  optional<Action> action;
+  optional<bool> state;
 
   bool verifyStructure() const override;
 
   static ClientPacket Ping();
   static ClientPacket ReqJoin(const std::string &nickname);
   static ClientPacket ReqPlayerDelta(const PlayerDelta &playerDelta);
-  static ClientPacket ReqSkyDelta(const SkyDelta &skyDelta);
+  static ClientPacket ReqAction(const Action &action, const bool state);
   static ClientPacket ReqSpawn();
   static ClientPacket ReqKill();
   static ClientPacket Chat(const std::string &message);

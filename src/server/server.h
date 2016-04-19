@@ -93,6 +93,7 @@ class ServerExec {
   sky::Arena arena;
   sky::Sky sky;
   std::unique_ptr<Server> server;
+  Cooldown packetBroadcastTimer;
 
   ServerLogger logger;
 

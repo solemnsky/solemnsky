@@ -103,11 +103,15 @@ void ServerExec::processPacket(ENetPeer *client,
         break;
       }
 
-      case ClientPacket::Type::ReqSkyDelta: {
+      case ClientPacket::Type::ReqAction: {
+        player->doAction(packet.action.get(), packet.state.get());
+        appLog("got action request");
         break;
       }
 
       case ClientPacket::Type::ReqSpawn: {
+        player->spawn({}, {300, 300}, 0);
+        appLog("got spawn request");
         break;
       }
 
@@ -155,7 +159,6 @@ void ServerExec::processPacket(ENetPeer *client,
   }
 }
 
-
 void ServerExec::tick(float delta) {
   static ENetEvent event;
   event = host.poll();
@@ -163,7 +166,7 @@ void ServerExec::tick(float delta) {
     case ENET_EVENT_TYPE_NONE:
       break;
     case ENET_EVENT_TYPE_CONNECT: {
-      appLog("Client connecting...");
+      appLog("Client connecting...", LogOrigin::Server);
       event.peer->data = nullptr;
       break;
     }
@@ -186,6 +189,11 @@ void ServerExec::tick(float delta) {
     }
   }
 
+  if (packetBroadcastTimer.cool(delta)) {
+    shared.sendToClients(sky::ServerPacket::DeltaSky(sky.collectDelta()));
+    packetBroadcastTimer.reset();
+  }
+
   uptime += delta;
 }
 
@@ -201,6 +209,7 @@ ServerExec::ServerExec(
     sky(this->arena, sky),
     server(server(shared, this->arena, this->sky)),
     logger(shared, this->arena),
+    packetBroadcastTimer(0.03),
     running(true) {
   shared.logEvent(ServerEvent::Start(port, arena.name));
 }

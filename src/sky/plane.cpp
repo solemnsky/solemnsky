@@ -137,7 +137,8 @@ sky::PlaneDelta::PlaneDelta(const sky::PlaneTuning &tuning,
     tuning(tuning), state(state) { }
 
 bool PlaneDelta::verifyStructure() const {
-  return not (!bool(tuning) or bool(state));
+  return true;
+//  return not (!bool(tuning) or bool(state));
 }
 
 /**
