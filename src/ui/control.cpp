@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "splash.h"
+#include "wrapper.h"
 #include "util/printer.h"
 
 namespace ui {
@@ -196,7 +196,7 @@ ControlExec::ControlExec(
     resizeCooldown(0.5),
 
     appState(window, profiler, time),
-    ctrl(std::make_unique<detail::SplashScreen>(appState, initCtrl)) {
+    ctrl(std::make_unique<detail::ExecWrapper>(appState, initCtrl)) {
   window.setVerticalSyncEnabled(true);
   window.setKeyRepeatEnabled(false);
   appLog("Initialized SFML.", LogOrigin::App);
@@ -211,9 +211,6 @@ void ControlExec::run() {
     renderAndSleep();
 
     if (ctrl->quitting) window.close();
-    if (ctrl->next) {
-      ctrl = std::move(ctrl->next);
-    }
   }
 
   appLog("Exiting solemnsky, see you later.", LogOrigin::App);

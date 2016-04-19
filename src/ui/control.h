@@ -66,8 +66,7 @@ class Control {
   Control(AppState &appState);
   virtual ~Control() { }
 
-  // flags
-  std::unique_ptr<Control> next;
+  // quitting flag
   bool quitting;
 
   // callbacks
