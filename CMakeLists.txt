@@ -20,7 +20,6 @@ include_directories(
         thirdparty/SFML/include/
         thirdparty/Box2D/Box2D/
         thirdparty/enet/include/
-        thirdparty/mingw-std-threads/
         thirdparty/cereal/
         "${Boost_INCLUDE_DIRS}"
 )
