@@ -17,9 +17,6 @@ enum class PageType {
  */
 class ClientUiState {
 private:
-  const float pageFocusAnimSpeed = 3, // s^-1
-      gameFocusAnimSpeed = 4;
-
   friend class Client;
 
   void focusGame();

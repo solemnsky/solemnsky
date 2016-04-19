@@ -6,7 +6,7 @@
 #include <stack>
 #include <SFML/Graphics.hpp>
 #include <functional>
-#include "client/util/resources.h"
+#include "util/client/resources.h"
 #include "text.h"
 
 namespace ui {

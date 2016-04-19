@@ -323,6 +323,7 @@ void Client::focusPage(const PageType type) {
 
 void Client::blurPage() {
   referencePage(shared.ui.focusedPage).reset();
+  backButton.reset();
   referencePage(shared.ui.focusedPage).onBlur();
   shared.ui.blurPage();
 }

@@ -4,7 +4,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "util/printer.h"
-#include "client/util/resources.h"
+#include "util/client/resources.h"
 
 namespace ui {
 

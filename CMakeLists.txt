@@ -117,12 +117,6 @@ add_executable(solemnsky_client
         src/client/tutorial/tutorial.cpp
         src/client/tutorial/tutorial.h
 
-        src/client/util/resources.cpp
-        src/client/util/resources.h
-
-        src/client/util/sfmlutil.cpp
-        src/client/util/sfmlutil.h
-
         src/client/client.cpp
         src/client/client.h
 
@@ -171,6 +165,12 @@ add_executable(solemnsky_client
 
         src/ui/wrapper.cpp
         src/ui/wrapper.h
+
+        src/util/client/resources.cpp
+        src/util/client/resources.h
+
+        src/util/client/sfmlutil.cpp
+        src/util/client/sfmlutil.h
         )
 target_link_libraries(solemnsky_client
         solemnsky

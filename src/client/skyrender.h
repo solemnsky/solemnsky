@@ -2,7 +2,7 @@
  * Rendering the sky.
  */
 #pragma once
-#include "client/util/resources.h"
+#include "util/client/resources.h"
 #include <list>
 #include "ui/control.h"
 #include "ui/sheet.h"

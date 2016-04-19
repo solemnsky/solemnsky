@@ -1,4 +1,5 @@
 #include "client/client.h"
+#include "style.h"
 
 /**
  * ClientUiState.
@@ -33,8 +34,10 @@ void ClientUiState::blurPage() {
 }
 
 void ClientUiState::tick(float delta) {
-  pageFocusFactor += pageFocusAnimSpeed * delta * (pageFocusing ? 1 : -1);
-  gameFocusFactor += gameFocusAnimSpeed * delta * (gameFocusing ? 1 : -1);
+  pageFocusFactor += style.menu.pageFocusAnimSpeed
+      * delta * (pageFocusing ? 1 : -1);
+  gameFocusFactor += style.menu.gameFocusAnimSpeed
+      * delta * (gameFocusing ? 1 : -1);
 }
 
 bool ClientUiState::pageFocused() const { return pageFocusFactor == 1; }

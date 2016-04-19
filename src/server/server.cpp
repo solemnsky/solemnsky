@@ -105,17 +105,11 @@ void ServerExec::processPacket(ENetPeer *client,
 
       case ClientPacket::Type::ReqAction: {
         player->doAction(packet.action.get(), packet.state.get());
-        appLog("got action request");
         break;
       }
 
       case ClientPacket::Type::ReqSpawn: {
         player->spawn({}, {300, 300}, 0);
-        appLog("got spawn request");
-        break;
-      }
-
-      case ClientPacket::Type::ReqKill: {
         break;
       }
 
@@ -160,6 +154,14 @@ void ServerExec::processPacket(ENetPeer *client,
 }
 
 void ServerExec::tick(float delta) {
+  uptime += delta;
+  arena.tick(delta);
+
+  if (packetBroadcastTimer.cool(delta)) {
+    shared.sendToClients(sky::ServerPacket::DeltaSky(sky.collectDelta()));
+    packetBroadcastTimer.reset();
+  }
+
   static ENetEvent event;
   event = host.poll();
   switch (event.type) {
@@ -188,13 +190,6 @@ void ServerExec::tick(float delta) {
       break;
     }
   }
-
-  if (packetBroadcastTimer.cool(delta)) {
-    shared.sendToClients(sky::ServerPacket::DeltaSky(sky.collectDelta()));
-    packetBroadcastTimer.reset();
-  }
-
-  uptime += delta;
 }
 
 ServerExec::ServerExec(

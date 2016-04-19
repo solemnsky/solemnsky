@@ -1,6 +1,6 @@
 #include "button.h"
 #include "util/methods.h"
-#include "client/util/sfmlutil.h"
+#include "util/client/sfmlutil.h"
 
 namespace ui {
 
