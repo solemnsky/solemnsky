@@ -53,7 +53,6 @@ void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
     }
 
     case ServerPacket::Type::Chat: {
-      appLog("receiving chat from pid " + std::to_string(packet.pid.get()));
       if (sky::Player *chattyPlayer = arena->getPlayer(
           packet.pid.get())) {
         logEvent(ClientEvent::Chat(

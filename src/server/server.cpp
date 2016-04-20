@@ -114,7 +114,6 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::Chat: {
-        appLog("sending chat from pid " + std::to_string(player->pid));
         shared.sendToClients(sky::ServerPacket::Chat(
             player->pid, packet.stringData.get()));
         break;
@@ -146,7 +145,8 @@ void ServerExec::processPacket(ENetPeer *client,
       shared.logEvent(ServerEvent::Connect(newPlayer.nickname));
       shared.sendToClient(
           client, ServerPacket::Init(
-              newPlayer.pid, arena.captureInitializer(), {}));
+              newPlayer.pid, arena.captureInitializer(),
+              sky.captureInitializer()));
       shared.sendToClientsExcept(
           newPlayer.pid, ServerPacket::DeltaArena(
               ArenaDelta::Join(newPlayer.captureInitializer())));

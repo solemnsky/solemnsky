@@ -3,6 +3,7 @@
  */
 #pragma once
 #include <Box2D/Box2D.h>
+#include <bitset>
 #include <forward_list>
 #include "prop.h"
 #include "physics.h"
@@ -24,7 +25,8 @@ enum class Action {
   Primary,
   Secondary,
   Special,
-  Suicide
+  Suicide,
+  MAX
 };
 
 std::string showAction(const Action action);
@@ -91,21 +93,24 @@ struct PlaneState {
 
   template<class Archive>
   void serialize(Archive &ar) {
-    ar(rotCtrl, throtCtrl, physical, stalled, afterburner,
-       leftoverVel, airspeed, throttle, energy, health);
+    ar(physical);
+    ar(stalled, afterburner, leftoverVel, airspeed, throttle);
+    ar(energy, health, primaryCooldown);
   }
 
   /**
    * State.
    */
-  Movement rotCtrl; // controls
-  Movement throtCtrl;
-  PhysicalState physical; // physical state
-  bool stalled; // flight mechanics
+  // physical state
+  PhysicalState physical;
+  // flight mechanics
+  bool stalled;
   Clamped afterburner;
   sf::Vector2f leftoverVel;
   Clamped airspeed, throttle;
-  Clamped energy, health; // game mechanics
+  // game mechanics
+  Clamped energy, health;
+  Cooldown primaryCooldown;
 
   /**
    * Helper methods.
@@ -119,6 +124,30 @@ struct PlaneState {
 };
 
 /**
+ * The persistent control state of a Plane; synchronized along with the
+ * rest of the Plane's state.
+ */
+struct PlaneControls {
+ private:
+  std::bitset<Action::MAX> controls;
+
+ public:
+  PlaneControls();
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(controls);
+  }
+
+  void doAction(const Action action, const bool actionState);
+  bool getState(const Action action) const;
+
+  template<Action action>
+  bool getState() const { return controls[size_t(action)]; }
+};
+
+
+/**
  * Initializer to copy a Plane over a network.
  */
 struct PlaneInitializer {
@@ -129,6 +158,7 @@ struct PlaneInitializer {
   void serialize(Archive &ar) { ar(spawn); }
 
   optional<std::pair<PlaneTuning, PlaneState>> spawn;
+  PlaneControls controls;
 };
 
 /**
@@ -136,8 +166,9 @@ struct PlaneInitializer {
  */
 struct PlaneDelta: public VerifyStructure {
   PlaneDelta();
-  PlaneDelta(const PlaneTuning &tuning, const PlaneState &state);
-  PlaneDelta(const PlaneState &state);
+  PlaneDelta(const PlaneTuning &tuning, const PlaneState &state,
+             const PlaneControls &controls);
+  PlaneDelta(const PlaneState &state, const PlaneControls &controls);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -148,6 +179,7 @@ struct PlaneDelta: public VerifyStructure {
 
   optional<PlaneTuning> tuning;
   optional<PlaneState> state;
+  PlaneControls controls;
 };
 
 /**
@@ -160,9 +192,15 @@ class PlaneVital {
   Physics &physics;
   b2Body *body;
 
+  PlaneControls &controls;
+
+  void tickFlight(const float delta);
+  void tickWeapons(const float delta);
+
  public:
   PlaneVital() = delete;
   PlaneVital(Sky &parent,
+             PlaneControls &controls,
              const PlaneTuning &tuning,
              const PlaneState &state);
   ~PlaneVital();
@@ -190,12 +228,8 @@ class Plane {
   // for capturing deltas
   bool newlyAlive;
 
-  // controls and other state we don't need to transmit
-  bool leftState, rightState, thrustState, revState, primaryState;
-  Cooldown primaryCooldown;
-  void syncControls();
-
   friend class Sky;
+
   /**
    * API for Sky.
    */
@@ -205,7 +239,7 @@ class Plane {
   void spawn(const PlaneTuning &tuning,
              const sf::Vector2f pos,
              const float rot);
-  void doAction(const Action &action, bool state);
+  void doAction(const Action action, bool state);
 
   void applyDelta(const PlaneDelta &delta);
   PlaneInitializer captureInitializer() const;
@@ -221,6 +255,7 @@ class Plane {
    * Top-level API.
    */
   optional<PlaneVital> vital;
+  PlaneControls controls;
   std::forward_list<Prop> props;
 
   bool isSpawned() const;
