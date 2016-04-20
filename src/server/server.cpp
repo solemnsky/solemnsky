@@ -114,6 +114,7 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::Chat: {
+        appLog("sending chat from pid " + std::to_string(player->pid));
         shared.sendToClients(sky::ServerPacket::Chat(
             player->pid, packet.stringData.get()));
         break;
