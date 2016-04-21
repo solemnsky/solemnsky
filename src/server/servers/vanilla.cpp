@@ -41,6 +41,10 @@ void VanillaServer::onPacket(ENetPeer *const client,
         arena.applyDelta(delta);
         shared.sendToClients(sky::ServerPacket::DeltaArena(delta));
       }
+
+      if (packet.stringData.get() == "restart") {
+        sky.restart();
+      }
     }
   }
 }

@@ -3,9 +3,6 @@
 
 namespace sky {
 
-SkyInitializer::SkyInitializer(const MapName &mapName) :
-    mapName(mapName) { }
-
 bool SkyDelta::verifyStructure() const {
   for (auto const &x : planes)
     if (!x.second.verifyStructure()) return false;
@@ -43,6 +40,18 @@ void Sky::onJoin(Player &player) { }
 
 void Sky::onQuit(Player &player) { }
 
+void Sky::onMode(const ArenaMode newMode) {
+  if (physics) {
+    if (newMode != ArenaMode::Game) {
+      stop();
+    }
+  } else {
+    if (newMode == ArenaMode::Game) {
+      start();
+    }
+  }
+}
+
 void Sky::onAction(Player &player, const Action action, const bool state) {
   getPlane(player).doAction(action, state);
 }
@@ -52,6 +61,17 @@ void Sky::onSpawn(Player &player,
                   const sf::Vector2f &pos,
                   const float rot) {
   getPlane(player).spawn(tuning, pos, rot);
+}
+
+void Sky::stop() {
+  for (auto &pair : planes) {
+    pair.second.reset();
+  }
+  physics.reset();
+}
+
+void Sky::start() {
+  physics.emplace(arena.map);
 }
 
 Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
@@ -74,10 +94,9 @@ Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
     }
   } else {
     for (auto &player : arena.players) {
-
+      registerPlayer(player.second);
     }
   }
-
 }
 
 Sky::~Sky() {
@@ -116,15 +135,9 @@ Plane &Sky::getPlane(const Player &player) const {
   return getPlayerData<Plane>(player);
 }
 
-void Sky::stop() {
-  for (auto &pair : planes) {
-    pair.second.reset();
-  }
-  physics.reset();
-}
-
-void Sky::startMap(const MapName newMap) {
-  physics.emplace(Map(newMap));
+void Sky::restart() {
+  stop();
+  start();
 }
 
 }

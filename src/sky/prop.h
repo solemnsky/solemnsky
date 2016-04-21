@@ -1,5 +1,5 @@
 /**
- * A prop, a mutable-lifetime (projectile, etc) that a Plane can own.
+ * A prop, a mutable-lifetime (projectile, etc) entity that a Plane can own.
  * Subordinate to a Plane.
  */
 #pragma once

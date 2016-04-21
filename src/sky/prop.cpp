@@ -4,7 +4,7 @@
 namespace sky {
 
 Prop::Prop(Sky &parent, const sf::Vector2f &pos, const sf::Vector2f &vel) :
-    parent(parent), physics(parent.physics),
+    parent(parent), physics(parent.physics.get()),
     lifeTime(0),
     body(physics.rectBody({10, 10})),
     physical(pos, vel, 0, 0) {
