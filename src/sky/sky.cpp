@@ -28,12 +28,14 @@ void Sky::unregisterPlayer(Player &player) {
 }
 
 void Sky::onTick(const float delta) {
-  for (auto &elem : planes) {
-    elem.second.beforePhysics();
-  }
-  physics.tick(delta);
-  for (auto &elem : planes) {
-    elem.second.afterPhysics(delta);
+  if (physics) {
+    for (auto &elem : planes) {
+      elem.second.beforePhysics();
+    }
+    physics->tick(delta);
+    for (auto &elem : planes) {
+      elem.second.afterPhysics(delta);
+    }
   }
 }
 
@@ -53,21 +55,29 @@ void Sky::onSpawn(Player &player,
 }
 
 Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
-    Subsystem(arena),
-    mapName(initializer.mapName),
-    physics(Map(mapName)) {
-  for (auto &player : arena.players) {
-    const auto iter = initializer.planes.find(player.first);
-    if (iter != initializer.planes.end()) {
-      // initialize with the PlaneInitializer
-      planes.emplace(std::piecewise_construct,
-                     std::forward_as_tuple(player.first),
-                     std::forward_as_tuple(*this, player.second,
-                                           iter->second));
+    Subsystem(arena) {
+  if (arena.mode == ArenaMode::Game) {
+    physics.emplace(arena.map);
+
+    for (auto &player : arena.players) {
+      const auto iter = initializer.planes.find(player.first);
+      if (iter != initializer.planes.end()) {
+        // initialize with the PlaneInitializer
+        planes.emplace(std::piecewise_construct,
+                       std::forward_as_tuple(player.first),
+                       std::forward_as_tuple(*this, player.second,
+                                             iter->second));
+      } else {
+        // initialize default plane
+        registerPlayer(player.second);
+      }
     }
-    // initialize default plane
-    registerPlayer(player.second);
+  } else {
+    for (auto &player : arena.players) {
+
+    }
   }
+
 }
 
 Sky::~Sky() {
@@ -82,7 +92,6 @@ Plane *Sky::planeFromPID(const PID pid) {
 
 SkyInitializer Sky::captureInitializer() {
   SkyInitializer initializer;
-  initializer.mapName = mapName;
   for (const auto &pair : planes)
     initializer.planes.emplace(pair.first, pair.second.captureInitializer());
   return initializer;

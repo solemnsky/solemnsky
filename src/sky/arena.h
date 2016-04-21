@@ -113,11 +113,11 @@ class Subsystem {
   virtual void onTick(const float delta) { }
   virtual void onJoin(Player &player) { }
   virtual void onQuit(Player &player) { }
+  virtual void onMode(const ArenaMode newMode) { }
   virtual void onAction(Player &player,
                         const Action action, const bool state) { }
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
                        const sf::Vector2f &pos, const float rot) { };
-  virtual void onDelta(Player &player, const PlayerDelta &delta) { }
 
   // subsystem-triggered callbacks
   virtual void onDie(Player &player) { }
@@ -258,6 +258,7 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   std::map<PID, Player> players;
   std::string name;
   std::string motd;
+  MapName map;
   ArenaMode mode;
 
   /**
