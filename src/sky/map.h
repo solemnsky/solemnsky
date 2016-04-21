@@ -1,5 +1,6 @@
 /**
  * The static environment in which a Sky plays out.
+ * TODO: what if things move?
  */
 #pragma once
 #include <SFML/System.hpp>
@@ -9,12 +10,31 @@ namespace sky {
 
 using MapName = std::string;
 
+// a convex shape that planes collide with, ouch
+struct MapObstacle {
+  MapObstacle();
+  MapObstacle(const sf::Vector2f &pos,
+              const std::vector<sf::Vector2f> &localVerticies,
+              const float damage);
+
+  sf::Vector2f pos;
+  std::vector<sf::Vector2f> localVerticies;
+  float damage;
+};
+
+struct MapItem {
+  enum class Type {
+    RedThingy, BlueThingy
+  } type;
+  sf::Vector2f pos;
+};
+
 struct Map {
   Map(const MapName &name);
 
-  // stub: awaiting broad design decisions
-
   sf::Vector2f dimensions;
+  std::vector<MapObstacle> obstacles;
+  std::vector<MapItem> items;
 };
 
 }

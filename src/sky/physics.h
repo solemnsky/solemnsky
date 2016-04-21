@@ -45,6 +45,9 @@ class Physics {
    */
   // construct a body with a rectangular fixture
   b2Body *rectBody(sf::Vector2f dims, bool isStatic = false);
+  // or with a polygon fixture
+  b2Body *polyBody(const std::vector<sf::Vector2f> &verticies,
+                   bool isStatic = false);
 
   // clear a body pointer
   void clrBody(b2Body *&body);
