@@ -16,10 +16,9 @@ struct SkyInitializer {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(mapName, planes);
+    ar(planes);
   }
 
-  MapName mapName; // the map to load
   std::map<PID, PlaneInitializer> planes; // planes already in the arena
 };
 
@@ -65,7 +64,6 @@ class Sky: public Subsystem {
   Sky(class Arena &parent, const SkyInitializer &initializer);
   ~Sky();
 
-  const MapName mapName;
   optional<Physics> physics;
   // instantiated when the sky is
 
