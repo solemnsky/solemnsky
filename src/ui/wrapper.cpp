@@ -67,9 +67,8 @@ void ExecWrapper::render(ui::Frame &f) {
 
 bool ExecWrapper::handle(const sf::Event &event) {
   if (loadingDone && !mainCtrl) {
-    if (event.type == sf::Event::KeyPressed
-        or event.type == sf::Event::KeyReleased
-        or event.type == sf::Event::MouseButtonPressed) {
+    if (event.type == sf::Event::KeyReleased
+        or event.type == sf::Event::MouseButtonReleased) {
       mainCtrl = std::move(mainCtrlCtor(appState));
       animBegin = appState.time;
       areChildren({mainCtrl.get()});
