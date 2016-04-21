@@ -65,7 +65,7 @@ struct PhysicalState {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(pos, rot, rotvel);
+    ar(pos, vel, rot, rotvel);
   }
 
   sf::Vector2f pos, vel;
