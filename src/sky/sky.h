@@ -76,10 +76,17 @@ class Sky: public Subsystem {
   /**
    * API for the user.
    */
+  // networking
   SkyInitializer captureInitializer();
   SkyDelta collectDelta();
   void applyDelta(const SkyDelta &delta);
   Plane &getPlane(const Player &player) const;
+
+  // changing map / resetting state
+  void reload(); // stop everything, start anew
+  void setMap();
+
+
 };
 
 }

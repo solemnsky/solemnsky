@@ -53,15 +53,37 @@ float Physics::toPhysDistance(float x) const {
 
 b2Body *Physics::rectBody(sf::Vector2f dims, bool isStatic) {
   b2Body *body;
-  const b2Vec2 &&bdims = toPhysVec(dims);
+  const b2Vec2 bdims = toPhysVec(dims);
 
   b2BodyDef def;
   def.fixedRotation = false;
   def.type = isStatic ? b2_staticBody : b2_dynamicBody;
+  body = world.CreateBody(&def);
 
   b2PolygonShape shape;
   shape.SetAsBox(bdims.x / 2, bdims.y / 2);
+  body->CreateFixture(&shape, 10.0f);
+
+  return body;
+}
+
+b2Body *Physics::polyBody(const std::vector<sf::Vector2f> &verticies,
+                          bool isStatic) {
+  b2Body *body;
+
+  b2BodyDef def;
+  def.fixedRotation = false;
+  def.type = isStatic ? b2_staticBody : b2_dynamicBody;
   body = world.CreateBody(&def);
+
+  b2PolygonShape shape;
+  b2Vec2 points[verticies.size()];
+  size_t i = 0;
+  for (const auto &vertex : verticies) {
+    points[i] = toPhysVec(vertex);
+    i++;
+  }
+  shape.Set(points, (int32) verticies.size());
   body->CreateFixture(&shape, 10.0f);
 
   return body;
