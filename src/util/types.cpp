@@ -166,8 +166,8 @@ sf::Vector2f Angle::toVector() {
   const float rad = toRad(value);
   return sf::Vector2f((float) cos(rad), (float) sin(rad));
 }
-Movement addMovement(const bool x, const bool y) {
-  if (y == x) return Movement::None;
-  if (y) return Movement::Up;
+Movement addMovement(const bool down, const bool up) {
+  if (up == down) return Movement::None;
+  if (up) return Movement::Up;
   return Movement::Down;
 }

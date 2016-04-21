@@ -115,7 +115,7 @@ struct ServerPacket: public VerifyStructure {
         break;
       }
       case Type::Chat: {
-        ar(stringData);
+        ar(pid, stringData);
         break;
       }
       case Type::Broadcast: {

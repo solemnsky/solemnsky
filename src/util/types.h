@@ -199,7 +199,7 @@ enum class Movement {
 };
 
 float movementValue(const Movement movement);
-Movement addMovement(const bool x, const bool y);
+Movement addMovement(const bool down, const bool up);
 
 /**
  * Angle value: represents an angle in degrees.

@@ -60,6 +60,10 @@ class Sky: public Subsystem {
   void onAction(Player &player, const Action action, const bool state) override;
   void onSpawn(Player &player, const PlaneTuning &tuning,
                const sf::Vector2f &pos, const float rot) override;
+  // NOTE: unlike the other callbacks, onAction can't be depended on to call
+  // everywhere on the network; doAction() doesn't make its way through
+  // through deltas. It's only used to effect changes in some subsystems (Sky
+  // notably), which in turn enter into the Networked infrastructure.
 
  public:
   Sky(class Arena &parent, const SkyInitializer &initializer);

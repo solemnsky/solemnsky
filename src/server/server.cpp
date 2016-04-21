@@ -88,7 +88,7 @@ void ServerExec::processPacket(ENetPeer *client,
                                const sky::ClientPacket &packet) {
   using namespace sky;
 
-  if (Player *player = shared.playerFromPeer(client)) {
+  if (Player *const player = shared.playerFromPeer(client)) {
     // the player is in the arena
 
     switch (packet.type) {
@@ -145,7 +145,8 @@ void ServerExec::processPacket(ENetPeer *client,
       shared.logEvent(ServerEvent::Connect(newPlayer.nickname));
       shared.sendToClient(
           client, ServerPacket::Init(
-              newPlayer.pid, arena.captureInitializer(), {}));
+              newPlayer.pid, arena.captureInitializer(),
+              sky.captureInitializer()));
       shared.sendToClientsExcept(
           newPlayer.pid, ServerPacket::DeltaArena(
               ArenaDelta::Join(newPlayer.captureInitializer())));

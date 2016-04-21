@@ -53,10 +53,10 @@ void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
     }
 
     case ServerPacket::Type::Chat: {
-      if (sky::Player *player = arena->getPlayer(
+      if (sky::Player *chattyPlayer = arena->getPlayer(
           packet.pid.get())) {
         logEvent(ClientEvent::Chat(
-            player->nickname, packet.stringData.get()));
+            chattyPlayer->nickname, packet.stringData.get()));
       }
       break;
     }

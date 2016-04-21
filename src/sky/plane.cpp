@@ -129,12 +129,13 @@ PlaneInitializer::PlaneInitializer(
 
 PlaneDelta::PlaneDelta() { }
 
-PlaneDelta::PlaneDelta(const PlaneState &state) :
-    state(state) { }
-
 sky::PlaneDelta::PlaneDelta(const sky::PlaneTuning &tuning,
-                            const sky::PlaneState &state) :
-    tuning(tuning), state(state) { }
+                            const sky::PlaneState &state,
+                            const PlaneControls &controls) :
+    tuning(tuning), state(state), controls(controls) { }
+
+PlaneDelta::PlaneDelta(const PlaneState &state, const PlaneControls &controls) :
+    state(state), controls(controls) { }
 
 bool PlaneDelta::verifyStructure() const {
   return true;
@@ -146,9 +147,11 @@ bool PlaneDelta::verifyStructure() const {
  */
 
 PlaneVital::PlaneVital(Sky &parent,
+                       PlaneControls &controls,
                        const PlaneTuning &tuning,
                        const PlaneState &state) :
     parent(parent), physics(parent.physics),
+    controls(controls),
     tuning(tuning), state(state),
     body(physics.rectBody(tuning.hitbox)) {
   body = physics.rectBody(tuning.hitbox);
@@ -169,24 +172,31 @@ void PlaneVital::readFromBody() {
   state.physical.readFromBody(physics, body);
 }
 
-void PlaneVital::tick(const float delta) {
+void PlaneVital::tickFlight(const float delta) {
   // helpful synonyms
   const float
       forwardVel = state.forwardVelocity(),
       velocity = state.velocity();
 
+  Movement throtCtrl =
+      addMovement(controls.getState<Action::Thrust>(),
+                  controls.getState<Action::Reverse>());
+  Movement rotCtrl =
+      addMovement(controls.getState<Action::Left>(),
+                  controls.getState<Action::Right>());
+
   // set rotation
   state.physical.rotvel = ((state.stalled) ?
                            tuning.stall.maxRotVel :
                            tuning.flight.maxRotVel)
-      * movementValue(state.rotCtrl);
+      * movementValue(rotCtrl);
 
   state.energy += tuning.energy.recharge * delta;
   state.afterburner = 0;
 
   if (state.stalled) {
     // afterburner
-    if (state.throtCtrl == Movement::Up) {
+    if (throtCtrl == Movement::Up) {
       const float thrustEfficacy =
           state.requestEnergy(tuning.energy.thrustDrain * delta);
 
@@ -204,9 +214,9 @@ void PlaneVital::tick(const float delta) {
           std::pow(tuning.stall.damping, delta);
   } else {
     // modify throttle and afterburner according to controls
-    state.throttle += movementValue(state.throtCtrl) * delta;
+    state.throttle += movementValue(throtCtrl) * delta;
     bool afterburning =
-        (state.throtCtrl == Movement::Up) && state.throttle == 1;
+        (throtCtrl == Movement::Up) && state.throttle == 1;
 
     // pick away at leftover velocity
     state.leftoverVel *= std::pow(tuning.flight.leftoverDamping, delta);
@@ -254,17 +264,45 @@ void PlaneVital::tick(const float delta) {
     }
   }
 }
+void PlaneVital::tickWeapons(const float delta) {
+  state.primaryCooldown.cool(delta);
+  if (state.primaryCooldown &&) {
+    if (state.requestDiscreteEnergy(
+        tuning.energy.laserGun)) {
+// TODO: better props
+//      props.emplace_front(
+//          parent,
+//          vital->state.physical.pos + 100.0f * VecMath::fromAngle(
+//              vital->state.physical.rot),
+//          vital->state.physical.vel + 300.0f * VecMath::fromAngle
+//              (vital->state.physical.rot));
+//      primaryCooldown.reset();
+    }
+  }
+}
+
+void PlaneVital::tick(const float delta) {
+  tickFlight(delta);
+  tickWeapons(delta);
+}
+
+/**
+ * PlaneControls.
+ */
+
+PlaneControls::PlaneControls() : controls(0) { }
+
+void PlaneControls::doAction(const Action action, const bool actionState) {
+  controls[size_t(action)] = actionState;
+}
+
+bool PlaneControls::getState(const Action action) const {
+  return controls[size_t(action)];
+}
 
 /**
  * Plane.
  */
-
-void Plane::syncControls() {
-  if (vital) {
-    vital->state.rotCtrl = addMovement(leftState, rightState);
-    vital->state.throtCtrl = addMovement(revState, thrustState);
-  }
-}
 
 void Plane::beforePhysics() {
   if (vital) vital->writeToBody();
@@ -276,78 +314,26 @@ void Plane::afterPhysics(float delta) {
     vital->readFromBody();
     vital->tick(delta);
 
-    primaryCooldown.cool(delta);
-
-    if (primaryState) {
-      if (primaryCooldown && primaryState) {
-        if (vital->state.requestDiscreteEnergy(
-            vital->tuning.energy.laserGun)) {
-          props.emplace_front(
-              parent,
-              vital->state.physical.pos + 100.0f * VecMath::fromAngle(
-                  vital->state.physical.rot),
-              vital->state.physical.vel + 300.0f * VecMath::fromAngle
-                  (vital->state.physical.rot));
-          primaryCooldown.reset();
-        }
-      }
+    for (auto &prop : props) {
+      prop.readFromBody();
+      prop.tick(delta);
     }
-  }
 
-  for (auto &prop : props) {
-    prop.readFromBody();
-    prop.tick(delta);
+    props.remove_if([](Prop &prop) {
+      return prop.lifeTime > 1;
+    });
   }
-
-  props.remove_if([](Prop &prop) {
-    return prop.lifeTime > 1;
-  });
 }
 
 void Plane::spawn(const PlaneTuning &tuning,
                   const sf::Vector2f pos,
                   const float rot) {
   vital.emplace(parent, tuning, PlaneState(tuning, pos, rot));
-  syncControls();
   newlyAlive = true;
 }
 
-void Plane::doAction(const Action &action, const bool state) {
-  switch (action) {
-    case Action::Thrust: {
-      thrustState = state;
-      break;
-    }
-    case Action::Reverse: {
-      revState = state;
-      break;
-    }
-    case Action::Left: {
-      leftState = state;
-      break;
-    }
-    case Action::Right: {
-      rightState = state;
-      break;
-    }
-    case Action::Primary: {
-      primaryState = state;
-      break;
-    }
-    case Action::Secondary: {
-      break;
-    }
-    case Action::Special: {
-      break;
-    }
-    case Action::Suicide: {
-      vital.reset();
-      parent.caller.onDie(player);
-      newlyAlive = false;
-    }
-  }
-
-  syncControls();
+void Plane::doAction(const Action action, bool actionState) {
+  controls.doAction(action, actionState);
 }
 
 void Plane::applyDelta(const PlaneDelta &delta) {
@@ -358,6 +344,7 @@ void Plane::applyDelta(const PlaneDelta &delta) {
   if (delta.state) {
     if (vital) vital->state = *delta.state;
   } else vital.reset();
+  controls = delta.controls;
 }
 
 PlaneInitializer Plane::captureInitializer() const {
@@ -371,9 +358,9 @@ PlaneInitializer Plane::captureInitializer() const {
 PlaneDelta Plane::captureDelta() {
   if (newlyAlive) {
     newlyAlive = false;
-    return PlaneDelta(vital->tuning, vital->state);
+    return PlaneDelta(vital->tuning, vital->state, controls);
   } else {
-    if (vital) return PlaneDelta(vital->state);
+    if (vital) return PlaneDelta(vital->state, controls);
     else return PlaneDelta();
   }
 }
@@ -381,23 +368,21 @@ PlaneDelta Plane::captureDelta() {
 Plane::Plane(Sky &parent, Player &player) :
     parent(parent),
     player(player),
-    newlyAlive(false),
-    leftState(false), rightState(false),
-    thrustState(false), revState(false),
-    primaryState(false),
-    primaryCooldown(0.2) { }
+    newlyAlive(false) { }
 
 Plane::Plane(Sky &parent, Player &player,
              const PlaneInitializer &initializer) :
     Plane(parent, player) {
   if (initializer.spawn)
-    vital.emplace(parent, initializer.spawn->first, initializer.spawn->second);
+    vital.emplace(parent,
+                  initializer.spawn->first,
+                  initializer.spawn->second);
+  controls = initializer.controls;
 }
 
 bool Plane::isSpawned() const {
   return bool(vital);
 }
-
 
 }
 

@@ -111,6 +111,8 @@ class Telegraph {
     std::string data((const char *) packet->data, packet->dataLength);
     std::stringstream inputStream(data);
     cereal::BinaryInputArchive input(inputStream);
+
+    receiveBuffer = ReceiveType();
     try {
       input(receiveBuffer);
       if (!verifyValue(receiveBuffer)) {
