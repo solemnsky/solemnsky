@@ -131,6 +131,9 @@ struct SamplerSnapshot {
 
 /**
  * Floats that are used for a 'cooldown' effect.
+ * The 'period' value isn't really part of the state; it's only there to help
+ * regulate its usage. Therefore, it isn't synced over the network.
+ * (Ideally it should be value templated).
  */
 struct Cooldown {
  public:
@@ -143,6 +146,11 @@ struct Cooldown {
   void prime();;
 
   inline operator bool() { return cooldown == 0; }
+
+  template<typename Archive>
+  void serialize(Archive ar) {
+    ar(cooldown);
+  }
 };
 
 /**

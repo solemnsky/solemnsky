@@ -23,14 +23,15 @@ void PlaneGraphics::tick(const float delta) {
 
     // potentially switch orientation
     bool newOrientation = Angle(vital->state.physical.rot + 90) > 180;
-    if (vital->state.rotCtrl == Movement::None) orientation = newOrientation;
+    const Movement rotMovement = plane.controls.rotMovement();
+    if (rotMovement == Movement::None) orientation = newOrientation;
 
     // flipping (when orientation changes)
     approach(flipState, (const float) (orientation ? 1 : 0),
              style.skyRender.flipSpeed * delta);
 
     // rolling (when rotation control is active)
-    approach(rollState, movementValue(vital->state.rotCtrl),
+    approach(rollState, movementValue(rotMovement),
              style.skyRender.rollSpeed * delta);
   }
 }
@@ -108,8 +109,6 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
   if (graphics.plane.isSpawned()) {
     const auto &state = graphics.plane.vital->state;
     const auto &tuning = graphics.plane.vital->tuning;
-
-    appLog(graphics.plane.vital->state.throttle);
 
     f.withTransform(
         sf::Transform()

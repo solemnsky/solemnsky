@@ -129,14 +129,20 @@ struct PlaneState {
  */
 struct PlaneControls {
  private:
-  std::bitset<Action::MAX> controls;
+  std::bitset<size_t(Action::MAX)> controls;
 
  public:
   PlaneControls();
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(controls);
+    bool x;
+    for (size_t i = 0; i < size_t(Action::MAX); ++i) {
+      x = controls[i];
+      ar(x);
+      controls[i] = x;
+      // hahahah
+    }
   }
 
   void doAction(const Action action, const bool actionState);
@@ -144,6 +150,8 @@ struct PlaneControls {
 
   template<Action action>
   bool getState() const { return controls[size_t(action)]; }
+
+  Movement rotMovement() const;
 };
 
 
@@ -152,10 +160,14 @@ struct PlaneControls {
  */
 struct PlaneInitializer {
   PlaneInitializer();
-  PlaneInitializer(const PlaneTuning &tuning, const PlaneState &state);
+  PlaneInitializer(const PlaneControls &controls,
+                   const PlaneTuning &tuning,
+                   const PlaneState &state);
 
   template<typename Archive>
-  void serialize(Archive &ar) { ar(spawn); }
+  void serialize(Archive &ar) {
+    ar(spawn, controls);
+  }
 
   optional<std::pair<PlaneTuning, PlaneState>> spawn;
   PlaneControls controls;
@@ -163,6 +175,7 @@ struct PlaneInitializer {
 
 /**
  * Delta in a Plane to sync a Plane over a network..
+ * TODO: make smarter
  */
 struct PlaneDelta: public VerifyStructure {
   PlaneDelta();
@@ -172,7 +185,7 @@ struct PlaneDelta: public VerifyStructure {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(tuning, state);
+    ar(tuning, state, controls);
   }
 
   bool verifyStructure() const;
@@ -192,15 +205,17 @@ class PlaneVital {
   Physics &physics;
   b2Body *body;
 
-  PlaneControls &controls;
+  const PlaneControls &controls;
 
   void tickFlight(const float delta);
   void tickWeapons(const float delta);
 
  public:
   PlaneVital() = delete;
+  PlaneVital(Sky &, PlaneControls &&, const PlaneTuning &,
+             const PlaneState &) = delete; // `controls` must not be a temp
   PlaneVital(Sky &parent,
-             PlaneControls &controls,
+             const PlaneControls &controls,
              const PlaneTuning &tuning,
              const PlaneState &state);
   ~PlaneVital();
@@ -229,6 +244,11 @@ class Plane {
   bool newlyAlive;
 
   friend class Sky;
+
+  /**
+   * Internal helpers.
+   */
+  void spawnWithState(const PlaneTuning &tuning, const PlaneState &state);
 
   /**
    * API for Sky.

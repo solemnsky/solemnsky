@@ -70,14 +70,12 @@ PlaneTuning::Flight::Flight() :
  * PlaneState.
  */
 
-PlaneState::PlaneState() { }
+PlaneState::PlaneState() : primaryCooldown(1) { }
 
 PlaneState::PlaneState(const PlaneTuning &tuning,
                        const sf::Vector2f &pos,
                        const float rot) :
-    rotCtrl(Movement::None),
-    throtCtrl(Movement::None),
-
+    primaryCooldown(1),
     physical(pos,
              tuning.flight.airspeedFactor * VecMath::fromAngle(rot),
              rot,
@@ -120,8 +118,11 @@ float PlaneState::requestEnergy(const float reqEnergy) {
 PlaneInitializer::PlaneInitializer() { }
 
 PlaneInitializer::PlaneInitializer(
-    const PlaneTuning &tuning, const PlaneState &state) :
-    spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)) { }
+    const PlaneControls &controls,
+    const PlaneTuning &tuning,
+    const PlaneState &state) :
+    spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)),
+    controls(controls) { }
 
 /**
  * PlaneDelta.
@@ -147,7 +148,7 @@ bool PlaneDelta::verifyStructure() const {
  */
 
 PlaneVital::PlaneVital(Sky &parent,
-                       PlaneControls &controls,
+                       const PlaneControls &controls,
                        const PlaneTuning &tuning,
                        const PlaneState &state) :
     parent(parent), physics(parent.physics),
@@ -179,11 +180,9 @@ void PlaneVital::tickFlight(const float delta) {
       velocity = state.velocity();
 
   Movement throtCtrl =
-      addMovement(controls.getState<Action::Thrust>(),
-                  controls.getState<Action::Reverse>());
-  Movement rotCtrl =
-      addMovement(controls.getState<Action::Left>(),
-                  controls.getState<Action::Right>());
+      addMovement(controls.getState<Action::Reverse>(),
+                  controls.getState<Action::Thrust>());
+  Movement rotCtrl = controls.rotMovement();
 
   // set rotation
   state.physical.rotvel = ((state.stalled) ?
@@ -266,7 +265,8 @@ void PlaneVital::tickFlight(const float delta) {
 }
 void PlaneVital::tickWeapons(const float delta) {
   state.primaryCooldown.cool(delta);
-  if (state.primaryCooldown &&) {
+  if (state.primaryCooldown
+      && this->controls.getState<Action::Primary>()) {
     if (state.requestDiscreteEnergy(
         tuning.energy.laserGun)) {
 // TODO: better props
@@ -300,9 +300,19 @@ bool PlaneControls::getState(const Action action) const {
   return controls[size_t(action)];
 }
 
+Movement PlaneControls::rotMovement() const {
+  return addMovement(getState<Action::Left>(),
+                     getState<Action::Right>());
+}
+
 /**
  * Plane.
  */
+
+void Plane::spawnWithState(const PlaneTuning &tuning,
+                           const PlaneState &state) {
+  vital.emplace(parent, controls, tuning, state);
+}
 
 void Plane::beforePhysics() {
   if (vital) vital->writeToBody();
@@ -328,7 +338,7 @@ void Plane::afterPhysics(float delta) {
 void Plane::spawn(const PlaneTuning &tuning,
                   const sf::Vector2f pos,
                   const float rot) {
-  vital.emplace(parent, tuning, PlaneState(tuning, pos, rot));
+  spawnWithState(tuning, PlaneState(tuning, pos, rot));
   newlyAlive = true;
 }
 
@@ -338,7 +348,7 @@ void Plane::doAction(const Action action, bool actionState) {
 
 void Plane::applyDelta(const PlaneDelta &delta) {
   if (delta.tuning) {
-    vital.emplace(parent, delta.tuning.get(), delta.state.get());
+    spawnWithState(delta.tuning.get(), delta.state.get());
     return;
   }
   if (delta.state) {
@@ -349,7 +359,7 @@ void Plane::applyDelta(const PlaneDelta &delta) {
 
 PlaneInitializer Plane::captureInitializer() const {
   if (vital) {
-    return PlaneInitializer(vital->tuning, vital->state);
+    return PlaneInitializer(controls, vital->tuning, vital->state);
   } else {
     return {};
   }
@@ -374,9 +384,7 @@ Plane::Plane(Sky &parent, Player &player,
              const PlaneInitializer &initializer) :
     Plane(parent, player) {
   if (initializer.spawn)
-    vital.emplace(parent,
-                  initializer.spawn->first,
-                  initializer.spawn->second);
+    spawnWithState(initializer.spawn->first, initializer.spawn->second);
   controls = initializer.controls;
 }
 
