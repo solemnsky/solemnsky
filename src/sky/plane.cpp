@@ -346,6 +346,10 @@ void Plane::doAction(const Action action, bool actionState) {
   controls.doAction(action, actionState);
 }
 
+void Plane::reset() {
+  vital.reset();
+}
+
 void Plane::applyDelta(const PlaneDelta &delta) {
   if (delta.tuning) {
     spawnWithState(delta.tuning.get(), delta.state.get());

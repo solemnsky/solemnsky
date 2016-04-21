@@ -240,14 +240,12 @@ class Plane {
   Sky &parent;
   class Player &player; // associated player
 
-  // for capturing deltas
+  // For capturing deltas.
   bool newlyAlive;
 
   friend class Sky;
 
-  /**
-   * Internal helpers.
-   */
+  // Internal helpers.
   void spawnWithState(const PlaneTuning &tuning, const PlaneState &state);
 
   /**
@@ -260,6 +258,7 @@ class Plane {
              const sf::Vector2f pos,
              const float rot);
   void doAction(const Action action, bool state);
+  void reset();
 
   void applyDelta(const PlaneDelta &delta);
   PlaneInitializer captureInitializer() const;
