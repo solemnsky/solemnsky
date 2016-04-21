@@ -6,9 +6,7 @@ solemnsky is an endeavour to, finding foundations in http://altitudegame.com,
  create a new open-source multiplayer 2d plane game designed to support 
  competition and community-driven design.
  
-This is the solemnsky codebase; barring the contributions of a benevolent 
- artificial super-intelligence or some other wholly unlikely turn of events, 
- writing code is our best bet at turning solemnsky into a reality.
+This is the solemnsky codebase. It's our best shot at making solemnsky happen.
  
 ## the making of solemnsky
 
@@ -35,7 +33,7 @@ solemnsky is licensed under GPL.v3
 Magnetic Duck writes the code.
 LeGrape draws the graphics stuff.
 CouleeApps (glcoulee) and the one known only as 'Jeff' occasionally fix 
-things I fuck up in C++.
+things I mess up in C++.
 A few other people shout at us to create things faster, thanks guys.
 
 ## Building
