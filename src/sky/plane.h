@@ -174,7 +174,7 @@ struct PlaneInitializer {
 };
 
 /**
- * Delta in a Plane to sync a Plane over a network..
+ * Delta in a Plane to sync a Plane over a network.
  * TODO: make smarter
  */
 struct PlaneDelta: public VerifyStructure {

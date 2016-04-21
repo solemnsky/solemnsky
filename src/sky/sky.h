@@ -11,8 +11,7 @@
 namespace sky {
 
 struct SkyInitializer {
-  SkyInitializer() = default; // packing
-  SkyInitializer(const MapName &mapName);
+  SkyInitializer() = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -39,6 +38,8 @@ struct SkyDelta: public VerifyStructure {
 
 /**
  * A Sky is a subsystem holding the potential state of a game being played.
+ *
+ * This is
  */
 class Sky: public Subsystem {
  private:
@@ -56,16 +57,23 @@ class Sky: public Subsystem {
   void onTick(const float delta) override;
   void onJoin(Player &player) override;
   void onQuit(Player &player) override;
+  void onMode(const ArenaMode newMode) override;
   void onAction(Player &player, const Action action, const bool state) override;
   void onSpawn(Player &player, const PlaneTuning &tuning,
                const sf::Vector2f &pos, const float rot) override;
+
+  // starting and stopping
+  void stop();
+  void start();
 
  public:
   Sky(class Arena &parent, const SkyInitializer &initializer);
   ~Sky();
 
   optional<Physics> physics;
-  // instantiated when the sky is
+  // instantiated when the sky is running
+  // invariant: this is the case when arena.mode == ArenaMode::Game
+  // (guaranteed by constructor and onMode() subsystem callback)
 
   /**
    * API for the user.
@@ -76,9 +84,8 @@ class Sky: public Subsystem {
   void applyDelta(const SkyDelta &delta);
   Plane &getPlane(const Player &player) const;
 
-  // change the map / reset the state
-  void stop();
-  void startMap(const MapName newMap);
+  // restart, resetting state
+  void restart();
 };
 
 }
