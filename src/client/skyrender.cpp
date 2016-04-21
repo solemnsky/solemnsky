@@ -109,6 +109,8 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
     const auto &state = graphics.plane.vital->state;
     const auto &tuning = graphics.plane.vital->tuning;
 
+    appLog(graphics.plane.vital->state.throttle);
+
     f.withTransform(
         sf::Transform()
             .translate(state.physical.pos)
