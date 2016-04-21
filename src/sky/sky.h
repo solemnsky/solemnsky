@@ -39,7 +39,7 @@ struct SkyDelta: public VerifyStructure {
 };
 
 /**
- * A Sky is a subsystem holding the state of a game being played.
+ * A Sky is a subsystem holding the potential state of a game being played.
  */
 class Sky: public Subsystem {
  private:
@@ -60,18 +60,14 @@ class Sky: public Subsystem {
   void onAction(Player &player, const Action action, const bool state) override;
   void onSpawn(Player &player, const PlaneTuning &tuning,
                const sf::Vector2f &pos, const float rot) override;
-  // NOTE: unlike the other callbacks, onAction can't be depended on to call
-  // everywhere on the network; doAction() doesn't make its way through
-  // through deltas. It's only used to effect changes in some subsystems (Sky
-  // notably), which in turn enter into the Networked infrastructure.
 
  public:
   Sky(class Arena &parent, const SkyInitializer &initializer);
   ~Sky();
 
   const MapName mapName;
-  const Map map; // physics uses this at construction
-  Physics physics;
+  optional<Physics> physics;
+  // instantiated when the sky is
 
   /**
    * API for the user.
@@ -82,11 +78,9 @@ class Sky: public Subsystem {
   void applyDelta(const SkyDelta &delta);
   Plane &getPlane(const Player &player) const;
 
-  // changing map / resetting state
-  void reload(); // stop everything, start anew
-  void setMap();
-
-
+  // change the map / reset the state
+  void stop();
+  void startMap(const MapName newMap);
 };
 
 }

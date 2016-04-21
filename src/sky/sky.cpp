@@ -55,8 +55,7 @@ void Sky::onSpawn(Player &player,
 Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
     Subsystem(arena),
     mapName(initializer.mapName),
-    map(mapName),
-    physics(map) {
+    physics(Map(mapName)) {
   for (auto &player : arena.players) {
     const auto iter = initializer.planes.find(player.first);
     if (iter != initializer.planes.end()) {
@@ -72,7 +71,7 @@ Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
 }
 
 Sky::~Sky() {
-  planes.clear(); // destroy the planes before destroying the physics!
+  stop(); // necessary to correctly free the box2d world
 }
 
 Plane *Sky::planeFromPID(const PID pid) {
@@ -106,6 +105,17 @@ void Sky::applyDelta(const SkyDelta &delta) {
 
 Plane &Sky::getPlane(const Player &player) const {
   return getPlayerData<Plane>(player);
+}
+
+void Sky::stop() {
+  for (auto &pair : planes) {
+    pair.second.reset();
+  }
+  physics.reset();
+}
+
+void Sky::startMap(const MapName newMap) {
+  physics.emplace(Map(newMap));
 }
 
 }

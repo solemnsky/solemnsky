@@ -91,7 +91,7 @@ class SubsystemCaller {
 };
 
 /**
- * The subsystem abtraction: attaches state to players and has various
+ * The subsystem abstraction: attaches state to players and has various
  * callbacks. Some callbacks can be triggered by subsystems through
  * SubsystemCaller (i.e. onKill() and onTakeDamage() triggered by the sky).
  */
@@ -105,7 +105,7 @@ class Subsystem {
     return *((Data *) player.data.at(id));
   }
 
-  // managing player registration: obligatory
+  // managing player registration
   virtual void registerPlayer(Player &player) = 0;
   virtual void unregisterPlayer(Player &player) = 0;
 
