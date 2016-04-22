@@ -38,8 +38,6 @@ struct SkyDelta: public VerifyStructure {
 
 /**
  * A Sky is a subsystem holding the potential state of a game being played.
- *
- * This is
  */
 class Sky: public Subsystem {
  private:
