@@ -16,7 +16,7 @@ sky::Player *ServerShared::playerFromPeer(ENetPeer *peer) const {
 }
 
 void ServerShared::applyAndSendDelta(const sky::ArenaDelta &arenaDelta) {
-  exec.arena.apply(arenaDelta);
+  exec.arena.applyDelta(arenaDelta);
   sendToClients(sky::ServerPacket::DeltaArena(arenaDelta));
 }
 

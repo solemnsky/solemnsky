@@ -18,7 +18,8 @@ TEST_F(SkyTest, SubsystemTest) {
   sky::Sky sky(arena, sky::SkyInitializer());
 
   {
-    sky::Player &player = arena.connectPlayer("some name");
+    auto delta = arena.connectPlayer("some name");
+    sky::Player &player = *arena.getPlayer(delta.join->pid);
     player.spawn({}, {300, 300}, 0);
     EXPECT_EQ(sky.getPlane(player).vital->state.physical.pos.x, 300);
     arena.tick(0.5);

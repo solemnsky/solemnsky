@@ -56,7 +56,7 @@ void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
       if (sky::Player *chattyPlayer = arena->getPlayer(
           packet.pid.get())) {
         logEvent(ClientEvent::Chat(
-            chattyPlayer->nickname, packet.stringData.get()));
+            chattyPlayer->getNickname(), packet.stringData.get()));
       }
       break;
     }
