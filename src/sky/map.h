@@ -30,6 +30,12 @@ struct MapItem {
 };
 
 struct Map {
+ private:
+  // Hard-coded maps for now.
+  void loadTest1();
+  void loadTest2();
+
+ public:
   Map(const MapName &name);
 
   sf::Vector2f dimensions;

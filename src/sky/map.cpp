@@ -21,11 +21,21 @@ MapObstacle::MapObstacle(const sf::Vector2f &pos,
  * Map.
  */
 
+void Map::loadTest1() {
+  dimensions = {500, 500};
+}
+
+void Map::loadTest2() {
+  dimensions = {3200, 900};
+}
+
 Map::Map(const MapName &name) :
-    dimensions(3200, 900),
-    obstacles() {
-  // TODO: loading from file with cereal
-  // we'll also probably want to make map loading threaded soon
+    dimensions(3200, 900) {
+  if (name == "test1") {
+    loadTest1();
+  } else if (name == "test2") {
+    loadTest2();
+  }
 }
 
 }
