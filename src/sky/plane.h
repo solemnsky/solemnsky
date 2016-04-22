@@ -174,7 +174,7 @@ struct PlaneInitializer {
 };
 
 /**
- * Delta in a Plane to sync a Plane over a network..
+ * Delta in a Plane to sync a Plane over a network.
  * TODO: make smarter
  */
 struct PlaneDelta: public VerifyStructure {
@@ -198,6 +198,7 @@ struct PlaneDelta: public VerifyStructure {
 /**
  * The state and Box2D allocation of a plane when alive, implementation
  * detail of Plane.
+ * Only constructable when in an active game, because it binds to Sky::physics.
  */
 class PlaneVital {
  private:
@@ -235,19 +236,17 @@ class PlaneVital {
  * Top-level entity representing a Player's participation in the Sky. Can be
  * alive or dead. Corresponds to a Player.
  */
-class Plane {
+class Plane: private Networked<PlaneInitializer, PlaneDelta> {
  private:
   Sky &parent;
   class Player &player; // associated player
 
-  // for capturing deltas
+  // For capturing deltas.
   bool newlyAlive;
 
   friend class Sky;
 
-  /**
-   * Internal helpers.
-   */
+  // Internal helpers.
   void spawnWithState(const PlaneTuning &tuning, const PlaneState &state);
 
   /**
@@ -260,14 +259,14 @@ class Plane {
              const sf::Vector2f pos,
              const float rot);
   void doAction(const Action action, bool state);
+  void reset();
 
-  void applyDelta(const PlaneDelta &delta);
+  void applyDelta(const PlaneDelta &delta) override;
   PlaneInitializer captureInitializer() const;
   PlaneDelta captureDelta();
 
  public:
   Plane() = delete;
-  Plane(Sky &parent, class Player &player);
   Plane(Sky &parent, class Player &player,
         const PlaneInitializer &initializer);
 

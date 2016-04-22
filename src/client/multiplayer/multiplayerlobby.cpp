@@ -44,9 +44,9 @@ void MultiplayerLobby::render(ui::Frame &f) {
       style.multi.playerListPos, [&](Printer &p) {
         mShared.arena->forPlayers([&](const sky::Player &player) {
           p.setColor(0, 0, 0);
-          if (player.team == 1) p.setColor(255, 0, 0);
-          if (player.team == 2) p.setColor(0, 0, 255);
-          p.print(player.nickname);
+          if (player.getTeam() == 1) p.setColor(255, 0, 0);
+          if (player.getTeam() == 2) p.setColor(0, 0, 255);
+          p.print(player.getNickname());
           p.breakLine();
         });
       }, style.multi.playerListText);
