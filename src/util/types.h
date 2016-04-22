@@ -24,7 +24,7 @@ void save(Archive &ar, const optional<T> &x) {
     ar(true);
     ar(*x);
   } else ar(false);
-};
+}
 
 template<typename Archive, typename T>
 void load(Archive &ar, optional<T> &x) {
@@ -34,7 +34,7 @@ void load(Archive &ar, optional<T> &x) {
     x.emplace();
     ar(*x);
   } else x.reset();
-};
+}
 
 template<typename Archive>
 void serialize(Archive &ar, sf::Vector2f &x) {
@@ -143,7 +143,7 @@ struct Cooldown {
   Cooldown(const float period);
   bool cool(const float delta);
   void reset();
-  void prime();;
+  void prime();
 
   inline operator bool() { return cooldown == 0; }
 
