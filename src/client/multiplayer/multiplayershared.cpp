@@ -29,8 +29,7 @@ void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
           packet.pid.get(), packet.arenaInit.get(), packet.skyInit.get());
 
       logEvent(ClientEvent::Connect(
-          "(haven't implemented server names lol)",
-          tg::printAddress(host.peers[0]->address)));
+          arena->getName(), tg::printAddress(host.peers[0]->address)));
     }
     return;
   }
