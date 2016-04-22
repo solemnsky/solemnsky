@@ -27,14 +27,27 @@ void VanillaServer::onPacket(ENetPeer *const client,
       // TODO: uniform command parsing
       if (packet.stringData.get() == "start") {
         shared.applyAndSendDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
+        return;
       }
 
       if (packet.stringData.get() == "stop") {
         shared.applyAndSendDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Lobby));
+        return;
       }
 
       if (packet.stringData.get() == "restart") {
         sky.restart();
+        return;
+      }
+
+      if (packet.stringData.get() == "map1") {
+        shared.applyAndSendDelta(sky::ArenaDelta::MapChange("test1"));
+        return;
+      }
+
+      if (packet.stringData.get() == "map2") {
+        shared.applyAndSendDelta(sky::ArenaDelta::MapChange("test2"));
+        return;
       }
     }
   }

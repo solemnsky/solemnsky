@@ -106,7 +106,7 @@ Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
 
   if (arena.getMode() == ArenaMode::Game) {
     arena.forPlayers([&](Player &player) {
-      physics.emplace(arena.getMap());
+      start();
       const auto iter = initializer.planes.find(player.pid);
       if (iter != initializer.planes.end()) {
         registerPlayerWith(player, iter->second);
