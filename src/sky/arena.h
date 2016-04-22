@@ -131,7 +131,7 @@ class Subsystem {
   virtual void onJoin(Player &player) { }
   virtual void onQuit(Player &player) { }
   virtual void onMode(const ArenaMode newMode) { }
-  virtual void onMap(const MapName &map) { }
+  virtual void onMapChange() { }
   virtual void onAction(Player &player,
                         const Action action, const bool state) { }
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,

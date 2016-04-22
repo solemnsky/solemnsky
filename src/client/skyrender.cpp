@@ -114,11 +114,11 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
         sf::Transform()
             .translate(state.physical.pos)
             .rotate(state.physical.rot), [&]() {
-          f.withTransform(
-              sf::Transform().scale(state.afterburner, state.afterburner),
-              [&]() {
-                f.drawRect(style.skyRender.afterburnArea, sf::Color::Red);
-              });
+          f.withAlpha(state.afterburner,
+                      [&]() {
+                        f.drawRect(style.skyRender.afterburnArea,
+                                   sf::Color::Red);
+                      });
 
           planeSheet.drawIndexAtRoll(
               f, sf::Vector2f(style.skyRender.spriteSize,

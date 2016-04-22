@@ -268,7 +268,7 @@ void Arena::applyDelta(const ArenaDelta &delta) {
     case ArenaDelta::Type::MapChange: {
       map = *delta.map;
       logEvent(ArenaEvent::MapChange(map));
-      for (auto s : subsystems) s->onMap(map);
+      for (auto s : subsystems) s->onMapChange();
     }
   }
 }
