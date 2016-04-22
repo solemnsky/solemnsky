@@ -3,7 +3,7 @@
 #include "arena.h"
 #include "plane.h"
 #include "sky.h"
-#include "util/methods.h"
+#include "util/printer.h"
 
 namespace sky {
 
@@ -151,7 +151,7 @@ PlaneVital::PlaneVital(Sky &parent,
                        const PlaneControls &controls,
                        const PlaneTuning &tuning,
                        const PlaneState &state) :
-    parent(parent), physics(parent.physics),
+    parent(parent), physics(parent.physics.get()),
     controls(controls),
     tuning(tuning), state(state),
     body(physics.rectBody(tuning.hitbox)) {
@@ -269,6 +269,8 @@ void PlaneVital::tickWeapons(const float delta) {
       && this->controls.getState<Action::Primary>()) {
     if (state.requestDiscreteEnergy(
         tuning.energy.laserGun)) {
+      state.primaryCooldown.reset();
+      appLog("implement pewpew plz");
 // TODO: better props
 //      props.emplace_front(
 //          parent,
@@ -344,6 +346,13 @@ void Plane::spawn(const PlaneTuning &tuning,
 
 void Plane::doAction(const Action action, bool actionState) {
   controls.doAction(action, actionState);
+  if (action == Action::Suicide && actionState) {
+    reset();
+  }
+}
+
+void Plane::reset() {
+  vital.reset();
 }
 
 void Plane::applyDelta(const PlaneDelta &delta) {
@@ -375,14 +384,12 @@ PlaneDelta Plane::captureDelta() {
   }
 }
 
-Plane::Plane(Sky &parent, Player &player) :
-    parent(parent),
-    player(player),
-    newlyAlive(false) { }
-
 Plane::Plane(Sky &parent, Player &player,
              const PlaneInitializer &initializer) :
-    Plane(parent, player) {
+    Networked(initializer),
+    parent(parent),
+    player(player),
+    newlyAlive(false) {
   if (initializer.spawn)
     spawnWithState(initializer.spawn->first, initializer.spawn->second);
   controls = initializer.controls;

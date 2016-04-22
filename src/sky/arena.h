@@ -54,22 +54,33 @@ struct PlayerDelta {
 struct Player: public Networked<PlayerInitializer, PlayerDelta> {
  private:
   class Arena &arena;
+
+  // State: managed through the Networked API.
+  std::string nickname;
+  bool admin;
+  Team team;
+
  public:
   Player() = delete;
   Player(Arena &arena, const PlayerInitializer &initializer);
 
   const PID pid;
-  std::string nickname;
-  bool admin;
-  Team team;
   std::vector<void *> data;
 
-  // network API
+  /**
+   * Top-level API.
+   */
+  // Networked API.
   void applyDelta(const PlayerDelta &delta) override;
   PlayerInitializer captureInitializer() const override;
   PlayerDelta zeroDelta() const;
 
-  // game API
+  // Accessing state.
+  std::string getNickname() const;
+  bool isAdmin() const;
+  Team getTeam() const;
+
+  // Subsystem triggers.
   void doAction(const Action action, const bool state);
   void spawn(const PlaneTuning &tuning,
              const sf::Vector2f &pos, const float rot);
@@ -91,13 +102,19 @@ class SubsystemCaller {
 };
 
 /**
- * The subsystem abtraction: attaches state to players and has various
+ * The subsystem abstraction: attaches state to players and has various
  * callbacks. Some callbacks can be triggered by subsystems through
  * SubsystemCaller (i.e. onKill() and onTakeDamage() triggered by the sky).
  */
 class Subsystem {
  protected:
+  // subsystem callbacks can be triggered by the Arena, the SubsystemCaller (for
+  // subsystems to trigger events), or the Player (which is essentially an
+  // extension of the Arena API)
   friend class Arena;
+  friend class SubsystemCaller;
+  friend class Player;
+
   const PID id; // ID the render has allocated in the Arena
 
   template<typename Data>
@@ -105,7 +122,7 @@ class Subsystem {
     return *((Data *) player.data.at(id));
   }
 
-  // managing player registration: obligatory
+  // managing player registration
   virtual void registerPlayer(Player &player) = 0;
   virtual void unregisterPlayer(Player &player) = 0;
 
@@ -113,11 +130,12 @@ class Subsystem {
   virtual void onTick(const float delta) { }
   virtual void onJoin(Player &player) { }
   virtual void onQuit(Player &player) { }
+  virtual void onMode(const ArenaMode newMode) { }
+  virtual void onMap(const MapName &map) { }
   virtual void onAction(Player &player,
                         const Action action, const bool state) { }
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
                        const sf::Vector2f &pos, const float rot) { };
-  virtual void onDelta(Player &player, const PlayerDelta &delta) { }
 
   // subsystem-triggered callbacks
   virtual void onDie(Player &player) { }
@@ -153,15 +171,16 @@ class ArenaLogger {
  */
 struct ArenaInitializer {
   ArenaInitializer() = default; // packing
-  ArenaInitializer(const std::string &name);
+  ArenaInitializer(const std::string &name, const MapName &map);
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(players, name, motd, mode);
+    ar(players, name, motd, map, mode);
   }
 
   std::map<PID, PlayerInitializer> players;
   std::string name, motd;
+  MapName map;
   ArenaMode mode;
 };
 
@@ -170,7 +189,7 @@ struct ArenaInitializer {
  */
 struct ArenaDelta: public VerifyStructure {
   enum class Type {
-    Quit, Join, Delta, Motd, Mode
+    Quit, Join, Delta, Motd, Mode, MapChange
   };
 
   ArenaDelta() = default; // packing
@@ -200,6 +219,10 @@ struct ArenaDelta: public VerifyStructure {
         ar(mode);
         break;
       }
+      case Type::MapChange: {
+        ar(map);
+        break;
+      }
     }
   }
 
@@ -209,6 +232,7 @@ struct ArenaDelta: public VerifyStructure {
   optional<std::pair<PID, PlayerDelta>> delta;
   optional<std::string> motd;
   optional<ArenaMode> mode;
+  optional<MapName> map;
 
   bool verifyStructure() const override;
 
@@ -217,6 +241,7 @@ struct ArenaDelta: public VerifyStructure {
   static ArenaDelta Delta(const PID, const PlayerDelta &delta);
   static ArenaDelta Motd(const std::string &motd);
   static ArenaDelta Mode(const ArenaMode mode);
+  static ArenaDelta MapChange(const MapName &name);
 };
 
 /**
@@ -225,54 +250,57 @@ struct ArenaDelta: public VerifyStructure {
  */
 class Arena: public Networked<ArenaInitializer, ArenaDelta> {
  private:
-  // utilities
+  // Utilities.
   PID allocPid() const;
   std::string allocNickname(const std::string &requested) const;
 
   friend class Player;
   friend class SubsystemCaller;
 
-  // subsystem triggers, for Arena / Player to call
-  void onAction(Player &player, const Action action, const bool state);
-  void onSpawn(Player &player, const PlaneTuning &tuning,
-               const sf::Vector2f &pos, const float rot);
+  // Event logging.
+  void logEvent(const ArenaEvent &event) const;
 
-  // subsystem triggers, for SubsystemCaller to call
-  void onDie(Player &player);
+  // State: managed through the Networked API.
+  std::map<PID, Player> players;
+  std::string name;
+  std::string motd;
+  MapName map;
+  ArenaMode mode;
 
-  // event logging
-  void onEvent(const ArenaEvent &event) const;
+  // Managing players.
+  Player &joinPlayer(const PlayerInitializer &initializer);
+  void quitPlayer(Player &player);
 
  public:
   Arena() = delete;
   Arena(const ArenaInitializer &initializer);
 
-  // subsystems and loggers
+  // Subsystems and loggers.
   SubsystemCaller caller;
   std::vector<Subsystem *> subsystems;
   std::vector<ArenaLogger *> loggers;
 
   /**
-   * State.
-   */
-  std::map<PID, Player> players;
-  std::string name;
-  std::string motd;
-  ArenaMode mode;
-
-  /**
    * Top-level API.
    */
+  // Networked interface.
   void applyDelta(const ArenaDelta &delta) override;
   ArenaInitializer captureInitializer() const override;
 
-  Player &joinPlayer(const PlayerInitializer &initializer);
-  void quitPlayer(Player &player);
-  Player &connectPlayer(const std::string &requestedNick);
+  // Accessing state.
   Player *getPlayer(const PID pid);
   void forPlayers(std::function<void(const Player &)> f) const;
   void forPlayers(std::function<void(Player &)> f);
 
+  std::string getName() const;
+  std::string getMotd() const;
+  MapName getMap() const;
+  ArenaMode getMode() const;
+
+  // Connecting players (for the server).
+  ArenaDelta connectPlayer(const std::string &requestedNick);
+
+  // Simulating.
   void tick(const float delta);
 };
 

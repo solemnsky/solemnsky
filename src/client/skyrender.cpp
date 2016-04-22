@@ -177,20 +177,22 @@ void SkyRender::onTick(const float delta) {
 }
 
 void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
-  f.withTransform(
-      sf::Transform().translate(
-          {-findView(1600, sky.map.dimensions.x, pos.x),
-           -findView(900, sky.map.dimensions.y, pos.y)}
-      ),
-      [&]() {
-        // TODO: give the map visual data, including background
-        f.drawSprite(textureOf(ResID::Title),
-                     {0, 0}, {0, 0, 1600, 900});
-        f.drawSprite(textureOf(ResID::Title),
-                     {1600, 0}, {0, 0, 1600, 900});
-        for (auto &pair: graphics) renderPlaneGraphics(f, pair.second);
-      }
-  );
+  if (sky.map) {
+    f.withTransform(
+        sf::Transform().translate(
+            {-findView(1600, sky.map->dimensions.x, pos.x),
+             -findView(900, sky.map->dimensions.y, pos.y)}
+        ),
+        [&]() {
+          // TODO: give the map visual data, including background
+          f.drawSprite(textureOf(ResID::Title),
+                       {0, 0}, {0, 0, 1600, 900});
+          f.drawSprite(textureOf(ResID::Title),
+                       {1600, 0}, {0, 0, 1600, 900});
+          for (auto &pair: graphics) renderPlaneGraphics(f, pair.second);
+        }
+    );
+  }
 }
 
 }
