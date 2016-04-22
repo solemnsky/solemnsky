@@ -2,8 +2,8 @@
 
 Tutorial::Tutorial(ClientShared &state) :
     Game(state, "tutorial"),
-    arena(sky::ArenaInitializer("tutorial")),
-    sky(arena, sky::SkyInitializer("some map")),
+    arena(sky::ArenaInitializer("tutorial", "test_map")),
+    sky(arena, sky::SkyInitializer()),
     skyRender(arena, sky, shared.settings.enableDebug) {
   player = &arena.connectPlayer("offline player");
   player->spawn({}, {30, 30}, 0);

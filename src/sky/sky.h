@@ -58,6 +58,7 @@ class Sky: public Subsystem {
   void onJoin(Player &player) override;
   void onQuit(Player &player) override;
   void onMode(const ArenaMode newMode) override;
+  void onMap(const MapName &map) override;
   void onAction(Player &player, const Action action, const bool state) override;
   void onSpawn(Player &player, const PlaneTuning &tuning,
                const sf::Vector2f &pos, const float rot) override;
@@ -70,6 +71,7 @@ class Sky: public Subsystem {
   Sky(class Arena &parent, const SkyInitializer &initializer);
   ~Sky();
 
+  optional<Map> map;
   optional<Physics> physics;
   // instantiated when the sky is running
   // invariant: this is the case when arena.mode == ArenaMode::Game

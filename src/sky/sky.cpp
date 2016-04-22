@@ -52,6 +52,10 @@ void Sky::onMode(const ArenaMode newMode) {
   }
 }
 
+void Sky::onMap(const MapName &map) {
+  if (arena.mode == ArenaMode::Game) restart();
+}
+
 void Sky::onAction(Player &player, const Action action, const bool state) {
   getPlane(player).doAction(action, state);
 }
@@ -71,7 +75,8 @@ void Sky::stop() {
 }
 
 void Sky::start() {
-  physics.emplace(arena.map);
+  map.emplace(arena.map);
+  physics.emplace(map);
 }
 
 Sky::Sky(Arena &arena, const SkyInitializer &initializer) :

@@ -151,7 +151,7 @@ PlaneVital::PlaneVital(Sky &parent,
                        const PlaneControls &controls,
                        const PlaneTuning &tuning,
                        const PlaneState &state) :
-    parent(parent), physics(parent.physics),
+    parent(parent), physics(parent.physics.get()),
     controls(controls),
     tuning(tuning), state(state),
     body(physics.rectBody(tuning.hitbox)) {
@@ -344,6 +344,9 @@ void Plane::spawn(const PlaneTuning &tuning,
 
 void Plane::doAction(const Action action, bool actionState) {
   controls.doAction(action, actionState);
+  if (action == Action::Suicide && actionState) {
+    reset();
+  }
 }
 
 void Plane::reset() {

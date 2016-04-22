@@ -14,8 +14,8 @@ class SkyTest: public testing::Test {
  * We're attached to the arena, along for the ride.
  */
 TEST_F(SkyTest, SubsystemTest) {
-  sky::Arena arena(sky::ArenaInitializer("my arena"));
-  sky::Sky sky(arena, sky::SkyInitializer("some map"));
+  sky::Arena arena(sky::ArenaInitializer("my arena", "test_map"));
+  sky::Sky sky(arena, sky::SkyInitializer());
 
   {
     sky::Player &player = arena.connectPlayer("some name");
@@ -35,8 +35,8 @@ TEST_F(SkyTest, SubsystemTest) {
  * Initializers work correctly.
  */
 TEST_F(SkyTest, InitializerTest) {
-  sky::Arena serverArena(sky::ArenaInitializer("my arena"));
-  sky::Sky serverSky(serverArena, sky::SkyInitializer("some map"));
+  sky::Arena serverArena(sky::ArenaInitializer("my arena", "test_map"));
+  sky::Sky serverSky(serverArena, sky::SkyInitializer());
 
   {
     sky::Player &player0 = serverArena.connectPlayer("some guy");

@@ -46,6 +46,12 @@ void ArenaEvent::print(Printer &p) const {
           break;
         }
       }
+      break;
+    }
+    case Type::MapChange: {
+      p.setColor(0, 255, 0);
+      p.print("** Changed map to " + inQuotes(map.get()) + ". **");
+      break;
     }
   }
 }
@@ -83,6 +89,12 @@ ArenaEvent ArenaEvent::TeamChange(const std::string &name,
 ArenaEvent ArenaEvent::ModeChange(const sky::ArenaMode mode) {
   ArenaEvent event(Type::ModeChange);
   event.mode = mode;
+  return event;
+}
+
+ArenaEvent ArenaEvent::MapChange(const MapName &map) {
+  ArenaEvent event(Type::MapChange);
+  event.map = map;
   return event;
 }
 
