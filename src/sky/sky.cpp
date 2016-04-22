@@ -53,7 +53,7 @@ void Sky::onMode(const ArenaMode newMode) {
 }
 
 void Sky::onMap(const MapName &map) {
-  if (arena.mode == ArenaMode::Game) restart();
+  if (arena.getMode() == ArenaMode::Game) restart();
 }
 
 void Sky::onAction(Player &player, const Action action, const bool state) {
@@ -71,36 +71,37 @@ void Sky::stop() {
   for (auto &pair : planes) {
     pair.second.reset();
   }
+  map.reset();
   physics.reset();
 }
 
 void Sky::start() {
-  map.emplace(arena.map);
-  physics.emplace(map);
+  map.emplace(arena.getMap());
+  physics.emplace(map.get());
 }
 
 Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
     Subsystem(arena) {
-  if (arena.mode == ArenaMode::Game) {
-    physics.emplace(arena.map);
+  if (arena.getMode() == ArenaMode::Game) {
+    physics.emplace(arena.getMap());
 
-    for (auto &player : arena.players) {
-      const auto iter = initializer.planes.find(player.first);
+    arena.forPlayers([&](Player &player) {
+      const auto iter = initializer.planes.find(player.pid);
       if (iter != initializer.planes.end()) {
         // initialize with the PlaneInitializer
         planes.emplace(std::piecewise_construct,
-                       std::forward_as_tuple(player.first),
-                       std::forward_as_tuple(*this, player.second,
+                       std::forward_as_tuple(player.pid),
+                       std::forward_as_tuple(*this, player,
                                              iter->second));
       } else {
         // initialize default plane
-        registerPlayer(player.second);
+        registerPlayer(player);
       }
-    }
+    });
   } else {
-    for (auto &player : arena.players) {
-      registerPlayer(player.second);
-    }
+    arena.forPlayers([&](Player &player) {
+      registerPlayer(player);
+    });
   }
 }
 

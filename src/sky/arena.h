@@ -54,22 +54,33 @@ struct PlayerDelta {
 struct Player: public Networked<PlayerInitializer, PlayerDelta> {
  private:
   class Arena &arena;
+
+  // State: managed through the Networked API.
+  std::string nickname;
+  bool admin;
+  Team team;
+
  public:
   Player() = delete;
   Player(Arena &arena, const PlayerInitializer &initializer);
 
   const PID pid;
-  std::string nickname;
-  bool admin;
-  Team team;
   std::vector<void *> data;
 
-  // network API
+  /**
+   * Top-level API.
+   */
+  // Networked API.
   void applyDelta(const PlayerDelta &delta) override;
   PlayerInitializer captureInitializer() const override;
   PlayerDelta zeroDelta() const;
 
-  // game API
+  // Accessing state.
+  std::string getNickname() const;
+  bool isAdmin() const;
+  Team getTeam() const;
+
+  // Subsystem triggers.
   void doAction(const Action action, const bool state);
   void spawn(const PlaneTuning &tuning,
              const sf::Vector2f &pos, const float rot);
@@ -97,7 +108,7 @@ class SubsystemCaller {
  */
 class Subsystem {
  protected:
-  // subsystem calls can come from the Arena, the SubsystemCaller (for
+  // subsystem callbacks can be triggered by the Arena, the SubsystemCaller (for
   // subsystems to trigger events), or the Player (which is essentially an
   // extension of the Arena API)
   friend class Arena;
@@ -249,18 +260,22 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   // Event logging.
   void logEvent(const ArenaEvent &event) const;
 
-  // state;
+  // State: managed through the Networked API.
   std::map<PID, Player> players;
   std::string name;
   std::string motd;
   MapName map;
   ArenaMode mode;
 
+  // Managing players.
+  Player &joinPlayer(const PlayerInitializer &initializer);
+  void quitPlayer(Player &player);
+
  public:
   Arena() = delete;
   Arena(const ArenaInitializer &initializer);
 
-  // subsystems and loggers
+  // Subsystems and loggers.
   SubsystemCaller caller;
   std::vector<Subsystem *> subsystems;
   std::vector<ArenaLogger *> loggers;
@@ -268,20 +283,24 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   /**
    * Top-level API.
    */
-  // Networked interface (change state through this)
+  // Networked interface.
   void applyDelta(const ArenaDelta &delta) override;
   ArenaInitializer captureInitializer() const override;
 
-  // managing players, for the server
-  Player &joinPlayer(const PlayerInitializer &initializer);
-  void quitPlayer(Player &player);
-  Player &connectPlayer(const std::string &requestedNick);
-
-  // accessing players
+  // Accessing state.
   Player *getPlayer(const PID pid);
   void forPlayers(std::function<void(const Player &)> f) const;
   void forPlayers(std::function<void(Player &)> f);
 
+  std::string getName() const;
+  std::string getMotd() const;
+  MapName getMap() const;
+  ArenaMode getMode() const;
+
+  // Connecting players (for the server).
+  ArenaDelta connectPlayer(const std::string &requestedNick);
+
+  // Simulating.
   void tick(const float delta);
 };
 

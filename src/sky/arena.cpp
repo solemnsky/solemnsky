@@ -40,14 +40,27 @@ PlayerDelta Player::zeroDelta() const {
   return delta;
 }
 
+std::string Player::getNickname() const {
+  return nickname;
+}
+
+bool Player::isAdmin() const {
+  return admin;
+}
+
+Team Player::getTeam() const {
+  return team;
+}
+
+
 void Player::doAction(const Action action, const bool state) {
-  arena.onAction(*this, action, state);
+  for (auto s : arena.subsystems) s->onAction(*this, action, state);
 }
 
 void Player::spawn(const PlaneTuning &tuning,
                    const sf::Vector2f &pos,
                    const float rot) {
-  arena.onSpawn(*this, tuning, pos, rot);
+  for (auto s : arena.subsystems) s->onSpawn(*this, tuning, pos, rot);
 }
 
 /**
@@ -156,7 +169,7 @@ std::string Arena::allocNickname(const std::string &requested) const {
   std::vector<int> usedNumbers;
 
   for (const auto &player : players) {
-    const std::string &name = player.second.nickname;
+    const std::string &name = player.second.getNickname();
     if (name.size() < rsize) continue;
     if (name.substr(0, rsize) != requested) continue;
 
@@ -182,19 +195,6 @@ std::string Arena::allocNickname(const std::string &requested) const {
   else
     return requested + "("
         + std::to_string(smallestUnused(usedNumbers)) + ")";
-}
-
-void Arena::onAction(Player &player, const Action action, const bool state) {
-  for (auto s : subsystems) s->onAction(player, action, state);
-}
-
-void Arena::onSpawn(Player &player, const PlaneTuning &tuning,
-                    const sf::Vector2f &pos, const float rot) {
-  for (auto s : subsystems) s->onSpawn(player, tuning, pos, rot);
-}
-
-void Arena::onDie(Player &player) {
-  for (auto s : subsystems) s->onDie(player);
 }
 
 void Arena::logEvent(const ArenaEvent &event) const {
@@ -235,16 +235,18 @@ void Arena::applyDelta(const ArenaDelta &delta) {
       const PlayerDelta &playerDelta = delta.delta->second;
 
       if (Player *player = getPlayer(pid)) {
-        std::string oldNick = player->nickname;
-        Team oldTeam = player->team;
+        const auto oldNick = player->getNickname();
+        const auto oldTeam = player->getTeam();
 
         player->applyDelta(playerDelta);
 
-        if (player->nickname != oldNick)
-          logEvent(ArenaEvent::NickChange(oldNick, player->nickname));
-        if (player->team != oldTeam)
-          logEvent(ArenaEvent::TeamChange(
-              player->nickname, oldTeam, player->team));
+        const auto newNick = player->getNickname();
+        const auto newTeam = player->getTeam();
+
+        if (newNick != oldNick)
+          logEvent(ArenaEvent::NickChange(oldNick, newNick));
+        if (newTeam != oldTeam)
+          logEvent(ArenaEvent::TeamChange(newNick, oldTeam, newTeam));
       }
       break;
     }
@@ -290,7 +292,7 @@ Player &Arena::joinPlayer(const PlayerInitializer &initializer) {
     s->registerPlayer(newPlayer);
     s->onJoin(newPlayer);
   }
-  logEvent(ArenaEvent::Join(newPlayer.nickname));
+  logEvent(ArenaEvent::Join(newPlayer.getNickname()));
   return newPlayer;
 }
 
@@ -299,13 +301,8 @@ void Arena::quitPlayer(Player &player) {
     s->onQuit(player);
     s->unregisterPlayer(player);
   }
-  logEvent(ArenaEvent::Quit(player.nickname));
+  logEvent(ArenaEvent::Quit(player.getNickname()));
   players.erase(player.pid);
-}
-
-Player &Arena::connectPlayer(const std::string &requestedNick) {
-  return joinPlayer(
-      PlayerInitializer(allocPid(), allocNickname(requestedNick)));
 }
 
 Player *Arena::getPlayer(const PID pid) {
@@ -321,6 +318,30 @@ void Arena::forPlayers(std::function<void(const Player &)> f) const {
 void Arena::forPlayers(std::function<void(Player &)> f) {
   for (auto &pair : players) f(pair.second);
 }
+
+
+std::string Arena::getName() const {
+  return name;
+}
+
+std::string Arena::getMotd() const {
+  return motd;
+}
+
+MapName Arena::getMap() const {
+  return map;
+}
+
+ArenaMode Arena::getMode() const {
+  return mode;
+}
+
+ArenaDelta Arena::connectPlayer(const std::string &requestedNick) {
+  Player &player = joinPlayer(
+      PlayerInitializer(allocPid(), allocNickname(requestedNick)));
+  return ArenaDelta::Join(player.captureInitializer());
+}
+
 
 void Arena::tick(const float delta) {
   for (auto s : subsystems) s->onTick(delta);
