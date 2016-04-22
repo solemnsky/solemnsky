@@ -83,7 +83,7 @@ class ServerLogger: public sky::ArenaLogger {
  * We manage the basics here.
  */
 class ServerExec {
-  friend class ServerExec;
+  friend class ServerShared;
 
  private:
   tg::UsageFlag flag; // for enet global state
