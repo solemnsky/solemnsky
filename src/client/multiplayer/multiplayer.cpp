@@ -9,7 +9,7 @@
  */
 
 std::unique_ptr<MultiplayerView> Multiplayer::mkView() {
-  switch (mShared.arena->mode) {
+  switch (mShared.arena->getMode()) {
     case sky::ArenaMode::Lobby:
       return std::make_unique<MultiplayerLobby>(shared, mShared);
     case sky::ArenaMode::Game:
@@ -63,7 +63,7 @@ void Multiplayer::tick(float delta) {
 
   if (mShared.arena) {
     mShared.arena->tick(delta);
-    if (!view or view->target != mShared.arena->mode) view = mkView();
+    if (!view or view->target != mShared.arena->getMode()) view = mkView();
     view->tick(delta);
   }
 }
