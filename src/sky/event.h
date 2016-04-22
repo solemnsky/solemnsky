@@ -23,7 +23,7 @@ enum class DisconnectType {
 
 struct ArenaEvent {
   enum class Type {
-    Join, Quit, NickChange, TeamChange, ModeChange
+    Join, Quit, NickChange, TeamChange, ModeChange, MapChange
   } type;
 
  private:
@@ -35,6 +35,7 @@ struct ArenaEvent {
   optional<std::string> name, newName;
   optional<sky::Team> oldTeam, newTeam;
   optional<sky::ArenaMode> mode;
+  optional<MapName> map;
 
   void print(Printer &p) const;
 
@@ -45,6 +46,7 @@ struct ArenaEvent {
   static ArenaEvent TeamChange(const std::string &name, const sky::Team oldTeam,
                                const sky::Team newTeam);
   static ArenaEvent ModeChange(const sky::ArenaMode mode);
+  static ArenaEvent MapChange(const MapName &map);
 };
 
 }
