@@ -6,6 +6,7 @@ Tutorial::Tutorial(ClientShared &state) :
     sky(arena, sky::SkyInitializer()),
     skyRender(arena, sky, shared.settings.enableDebug) {
   arena.connectPlayer("offline player");
+  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
   player = arena.getPlayer(0);
   player->spawn({}, {30, 30}, 0);
   status = "some status";

@@ -3,20 +3,41 @@
 
 namespace sky {
 
+/**
+ * SkyInitializer.
+ */
+
+bool SkyInitializer::verifyStructure() const {
+  return true; // TODO: initializer invariants?
+}
+
+/**
+ * SkyDelta.
+ */
+
 bool SkyDelta::verifyStructure() const {
   for (auto const &x : planes)
     if (!x.second.verifyStructure()) return false;
   return true;
 }
 
-void Sky::registerPlayer(Player &player) {
+/**
+ * Sky.
+ */
+
+void Sky::registerPlayerWith(Player &player,
+                             const PlaneInitializer &initializer) {
   const auto plane = planes.find(player.pid);
   if (plane == planes.end()) {
     planes.emplace(std::piecewise_construct,
                    std::forward_as_tuple(player.pid),
-                   std::forward_as_tuple(*this, player));
+                   std::forward_as_tuple(*this, player, initializer));
     player.data.push_back(&planes.at(player.pid));
   } else player.data.push_back(&plane->second);
+}
+
+void Sky::registerPlayer(Player &player) {
+  registerPlayerWith(player, {});
 }
 
 void Sky::unregisterPlayer(Player &player) {
@@ -82,19 +103,14 @@ void Sky::start() {
 
 Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
     Subsystem(arena) {
-  if (arena.getMode() == ArenaMode::Game) {
-    physics.emplace(arena.getMap());
 
+  if (arena.getMode() == ArenaMode::Game) {
     arena.forPlayers([&](Player &player) {
+      physics.emplace(arena.getMap());
       const auto iter = initializer.planes.find(player.pid);
       if (iter != initializer.planes.end()) {
-        // initialize with the PlaneInitializer
-        planes.emplace(std::piecewise_construct,
-                       std::forward_as_tuple(player.pid),
-                       std::forward_as_tuple(*this, player,
-                                             iter->second));
+        registerPlayerWith(player, iter->second);
       } else {
-        // initialize default plane
         registerPlayer(player);
       }
     });

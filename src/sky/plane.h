@@ -198,6 +198,7 @@ struct PlaneDelta: public VerifyStructure {
 /**
  * The state and Box2D allocation of a plane when alive, implementation
  * detail of Plane.
+ * Only constructable when in an active game, because it binds to Sky::physics.
  */
 class PlaneVital {
  private:
@@ -235,7 +236,7 @@ class PlaneVital {
  * Top-level entity representing a Player's participation in the Sky. Can be
  * alive or dead. Corresponds to a Player.
  */
-class Plane {
+class Plane: private Networked<PlaneInitializer, PlaneDelta> {
  private:
   Sky &parent;
   class Player &player; // associated player
@@ -260,13 +261,12 @@ class Plane {
   void doAction(const Action action, bool state);
   void reset();
 
-  void applyDelta(const PlaneDelta &delta);
+  void applyDelta(const PlaneDelta &delta) override;
   PlaneInitializer captureInitializer() const;
   PlaneDelta captureDelta();
 
  public:
   Plane() = delete;
-  Plane(Sky &parent, class Player &player);
   Plane(Sky &parent, class Player &player,
         const PlaneInitializer &initializer);
 
