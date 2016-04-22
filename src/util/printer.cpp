@@ -51,12 +51,12 @@ void appLog(const std::string &contents, const LogOrigin origin) {
   std::cout << showTime() << showOrigin(origin) << contents << "\n";
 }
 
-void appErrorLogic(const std::__cxx11::string &contents) {
+void appErrorLogic(const std::string &contents) {
   appLog(contents, LogOrigin::Error);
   throw std::logic_error(contents);
 }
 
-void appErrorRuntime(const std::__cxx11::string &contents) {
+void appErrorRuntime(const std::string &contents) {
   appLog(contents, LogOrigin::Error);
   throw std::runtime_error(contents);
 }
