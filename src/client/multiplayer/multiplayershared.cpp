@@ -27,7 +27,6 @@ void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
     if (packet.type == ServerPacket::Type::Init) {
       initializeArena(
           packet.pid.get(), packet.arenaInit.get(), packet.skyInit.get());
-      appLog("Joined arena!", LogOrigin::Client);
 
       logEvent(ClientEvent::Connect(
           "(haven't implemented server names lol)",
@@ -109,12 +108,14 @@ void MultiplayerShared::initializeArena(
     const PID pid,
     const sky::ArenaInitializer &arenaInit,
     const sky::SkyInitializer &skyInit) {
+  appLog("Loading arena...", LogOrigin::Client);
   arena.emplace(arenaInit);
   sky.emplace(arena.get(), skyInit);
   skyRender.emplace(arena.get(), sky.get(), shared.settings.enableDebug);
   logger.emplace(arena.get(), *this);
   player = arena->getPlayer(pid);
   plane = &sky->getPlane(*player);
+  appLog("Joined arena!", LogOrigin::Client);
 }
 
 void MultiplayerShared::transmit(const sky::ClientPacket &packet) {

@@ -3,7 +3,7 @@
 #include "arena.h"
 #include "plane.h"
 #include "sky.h"
-#include "util/methods.h"
+#include "util/printer.h"
 
 namespace sky {
 
@@ -269,6 +269,8 @@ void PlaneVital::tickWeapons(const float delta) {
       && this->controls.getState<Action::Primary>()) {
     if (state.requestDiscreteEnergy(
         tuning.energy.laserGun)) {
+      state.primaryCooldown.reset();
+      appLog("implement pewpew plz");
 // TODO: better props
 //      props.emplace_front(
 //          parent,
@@ -382,14 +384,12 @@ PlaneDelta Plane::captureDelta() {
   }
 }
 
-Plane::Plane(Sky &parent, Player &player) :
-    parent(parent),
-    player(player),
-    newlyAlive(false) { }
-
 Plane::Plane(Sky &parent, Player &player,
              const PlaneInitializer &initializer) :
-    Plane(parent, player) {
+    Networked(initializer),
+    parent(parent),
+    player(player),
+    newlyAlive(false) {
   if (initializer.spawn)
     spawnWithState(initializer.spawn->first, initializer.spawn->second);
   controls = initializer.controls;

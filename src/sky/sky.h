@@ -10,13 +10,15 @@
 
 namespace sky {
 
-struct SkyInitializer {
+struct SkyInitializer: public VerifyStructure {
   SkyInitializer() = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {
     ar(planes);
   }
+
+  bool verifyStructure() const;
 
   std::map<PID, PlaneInitializer> planes; // planes already in the arena
 };
@@ -46,6 +48,8 @@ class Sky: public Subsystem {
   Plane *planeFromPID(const PID pid);
 
  protected:
+  void registerPlayerWith(Player &player, const PlaneInitializer &initializer);
+
   /**
    * Subsystem implementation.
    */
