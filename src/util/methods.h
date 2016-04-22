@@ -51,7 +51,7 @@ bool verifyFields(Field &field, Fields... fields) {
   if (!field) return false;
   if (!verifyValue(*field)) return false;
   return verifyFields(fields...);
-};
+}
 
 /**
  * Random stuff.

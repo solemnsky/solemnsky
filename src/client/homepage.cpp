@@ -12,6 +12,7 @@ HomePage::HomePage(ClientShared &clientState) :
     localhostButton(appState, style.base.normalButton,
                     style.home.localhostButtonPos,
                     style.home.localhostButtonDesc) {
+  appLog("constructed home page");
   areChildren({&tutorialButton, &localhostButton});
 }
 
@@ -28,6 +29,7 @@ void HomePage::onBlur() {
 }
 
 void HomePage::render(ui::Frame &f) {
+  appLog("rendering home page");
   drawBackground(f);
   ui::Control::render(f);
 }

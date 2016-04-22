@@ -14,10 +14,10 @@ PlayerInitializer::PlayerInitializer(
 Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     Networked(initializer),
     arena(arena),
-    pid(initializer.pid),
     nickname(initializer.nickname),
     admin(initializer.admin),
-    team(initializer.team) { }
+    team(initializer.team),
+    pid(initializer.pid) { }
 
 void Player::applyDelta(const PlayerDelta &delta) {
   if (delta.nickname) nickname = *delta.nickname;
