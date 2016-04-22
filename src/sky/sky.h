@@ -24,8 +24,6 @@ struct SkyInitializer: public VerifyStructure {
 };
 
 struct SkyDelta: public VerifyStructure {
-  // TODO: map changes will go here
-
   SkyDelta() = default; // packing
 
   template<typename Archive>
