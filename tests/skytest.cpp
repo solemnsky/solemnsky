@@ -19,15 +19,15 @@ class SkyTest: public testing::Test {
  * The map allocation is managed.
  */
 TEST_F(SkyTest, MapAlloc) {
-  ASSERT_EQ(bool(sky.map), false);
+  EXPECT_EQ(bool(sky.map), false);
 
   arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
 
-  ASSERT_EQ(bool(sky.map), true);
+  EXPECT_EQ(bool(sky.map), true);
 
   arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Scoring));
 
-  ASSERT_EQ(bool(sky.map), false);
+  EXPECT_EQ(bool(sky.map), false);
 }
 
 /**
@@ -37,24 +37,37 @@ TEST_F(SkyTest, MapAlloc) {
 TEST_F(SkyTest, InitializerTest) {
   arena.connectPlayer("nameless plane");
   sky::Player *player = arena.getPlayer(0);
+  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
   player->spawn({}, {300, 300}, 0);
 
-  ASSERT_EQ(sky.getPlane(*player).isSpawned(), true);
+  EXPECT_EQ(sky.getPlane(*player).isSpawned(), true);
 
   sky::Arena remoteArena(arena.captureInitializer());
   sky::Sky remoteSky(remoteArena, sky.captureInitializer());
 
-  ASSERT_EQ(remoteSky.getPlane(*player).isSpawned(), true);
+  EXPECT_EQ(remoteSky.getPlane(*player).isSpawned(), true);
 }
 
 /**
- * We can propogate changes over the network with a SkyDelta.
+ * We can propagate changes over the network with a SkyDelta.
  */
 TEST_F(SkyTest, DeltaTest) {
+  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
   sky::Arena remoteArena(arena.captureInitializer());
   sky::Sky remoteSky(remoteArena, sky.captureInitializer());
 
-  // TODO: finish
+  auto const delta = arena.connectPlayer("nameless plane");
+  remoteArena.applyDelta(delta);
+
+  sky::Player *player = arena.getPlayer(0);
+  player->spawn({}, {}, 0);
+  player->doAction(sky::Action::Reverse, true);
+  remoteSky.applyDelta(sky.collectDelta());
+
+  EXPECT_EQ(sky.getPlane(*player)
+                .controls.getState<sky::Action::Reverse>(), true);
+  EXPECT_EQ(remoteSky.getPlane(*remoteArena.getPlayer(0))
+                .controls.getState<sky::Action::Reverse>(), true);
 }
 
 

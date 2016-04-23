@@ -156,13 +156,14 @@ struct PlaneControls {
 
 
 /**
- * Initializer to copy a Plane over a network.
+ * Initializer for Plane's Networked implementation.
  */
 struct PlaneInitializer {
   PlaneInitializer();
   PlaneInitializer(const PlaneControls &controls,
                    const PlaneTuning &tuning,
                    const PlaneState &state);
+  PlaneInitializer(const PlaneControls &controls);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -174,14 +175,11 @@ struct PlaneInitializer {
 };
 
 /**
- * Delta in a Plane to sync a Plane over a network.
+ * Delta for Plane's Networked implementation.
  * TODO: make smarter
  */
 struct PlaneDelta: public VerifyStructure {
   PlaneDelta();
-  PlaneDelta(const PlaneTuning &tuning, const PlaneState &state,
-             const PlaneControls &controls);
-  PlaneDelta(const PlaneState &state, const PlaneControls &controls);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -190,9 +188,9 @@ struct PlaneDelta: public VerifyStructure {
 
   bool verifyStructure() const;
 
-  optional<PlaneTuning> tuning;
-  optional<PlaneState> state;
-  PlaneControls controls;
+  optional<PlaneTuning> tuning; // if the plane spawned
+  optional<PlaneState> state; // if the plane is alive
+  optional<PlaneControls> controls; // if the controls changed
 };
 
 /**
