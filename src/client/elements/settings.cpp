@@ -1,4 +1,5 @@
 #include "settings.h"
+#include "util/methods.h"
 #include <cereal/archives/xml.hpp>
 #include <fstream>
 
@@ -11,6 +12,7 @@ std::string showClientAction(const ClientAction action) {
     case ClientAction::Scoreboard:
       return "scoreboard";
   }
+  throw enum_error();
 }
 
 /**
@@ -64,8 +66,8 @@ optional<sf::Keyboard::Key> KeyBindings::lookupClientBinding(
 }
 
 Settings::Settings() :
-    nickname("nameless plane"),
-    enableDebug(false) { }
+    enableDebug(false),
+    nickname("nameless plane") { }
 
 void Settings::readFromFile(const std::string &filepath) {
   std::ifstream file(filepath);

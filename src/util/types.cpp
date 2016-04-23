@@ -7,7 +7,7 @@
  * RollingSampler.
  */
 
-RollingSampler::RollingSampler(const int maxMemory) :
+RollingSampler::RollingSampler(const unsigned int maxMemory) :
     maxMemory(maxMemory) {
   push(0);
 }
@@ -62,7 +62,8 @@ bool Cooldown::cool(const float delta) {
   return cooldown == 0;
 }
 
-Cooldown::Cooldown(const float period) : period(period), cooldown(period) { }
+Cooldown::Cooldown(const float period) :
+    cooldown(period), period(period) { }
 
 /**
  * Clamped.
@@ -99,6 +100,7 @@ float movementValue(const Movement movement) {
     case Movement::None:
       return 0;
   }
+  throw std::logic_error("bad enum");
 }
 
 /**
@@ -106,10 +108,10 @@ float movementValue(const Movement movement) {
  */
 
 Cyclic::Cyclic(const float min, const float max) :
-    min(min), max(max), value(min) { }
+    value(min), min(min), max(max) { }
 
 Cyclic::Cyclic(const float min, const float max, const float value) :
-    min(min), max(max), value(cyclicClamp(min, max, value)) { }
+    value(cyclicClamp(min, max, value)), min(min), max(max) { }
 
 Cyclic &Cyclic::operator=(const float x) {
   value = cyclicClamp(min, max, x);

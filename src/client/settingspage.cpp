@@ -112,14 +112,12 @@ void ControlsTab::readSettings(const Settings &settings) {
 void ControlsTab::writeSettings(Settings &settings) {
   settings.bindings.skyBindings.clear();
   for (const sky::Action action : skyActions) {
-    const auto &chooser = skyChoosers.at(action);
     if (const auto binding = skyChoosers.at(action).getValue()) {
       settings.bindings.skyBindings.emplace(binding.get(), action);
     }
   }
   settings.bindings.clientBindings.clear();
   for (const ClientAction action : clientActions) {
-    const auto &chooser = clientChoosers.at(action);
     if (const auto binding = clientChoosers.at(action).getValue()) {
       settings.bindings.clientBindings.emplace(binding.get(), action);
     }

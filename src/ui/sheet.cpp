@@ -2,6 +2,14 @@
 #include "sheet.h"
 
 namespace ui {
+
+SpriteSheet::SpriteSheet(ResID resource) :
+    tileDim{(float) record.tileX, (float) record.tileY},
+    sheet(textureOf(resource)),
+    record(recordOf(resource)),
+    res(res),
+    count(record.countX * record.countY) { }
+
 void SpriteSheet::drawIndex(ui::Frame &f, const sf::Vector2f &dims,
                             const int index) const {
   const int yShift(index % record.countY), xShift(index / record.countY);
@@ -37,4 +45,5 @@ void SpriteSheet::drawIndexAtRoll(ui::Frame &f, const sf::Vector2f &dims,
     drawIndex(f, dims, realIndex);
   });
 }
+
 }

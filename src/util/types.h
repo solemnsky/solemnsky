@@ -102,11 +102,11 @@ bool approach(T &x, const T target, const T amount) {
 class RollingSampler {
  private:
   std::vector<float> data;
-  const int maxMemory;
+  const unsigned int maxMemory;
 
  public:
   RollingSampler() = delete;
-  RollingSampler(const int maxMemory);
+  RollingSampler(const unsigned int maxMemory);
 
   void push(const float value);
 
@@ -136,7 +136,6 @@ struct SamplerSnapshot {
  * (Ideally it should be value templated).
  */
 struct Cooldown {
- public:
   float cooldown;
   float period;
 

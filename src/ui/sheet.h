@@ -18,13 +18,7 @@ public:
 
   SpriteSheet() = delete;
 
-  SpriteSheet(ResID resource) :
-      record(recordOf(resource)),
-      res(res),
-      sheet(textureOf(resource)),
-      tileDim{(float) record.tileX, (float) record.tileY},
-      count(record.countX * record.countY) {
-  }
+  SpriteSheet(ResID resource);
 
   void drawIndex(
       ui::Frame &f, const sf::Vector2f &dims, const int index) const;

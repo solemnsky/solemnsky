@@ -134,9 +134,9 @@ void SubsystemCaller::onDie(Player &player) {
 }
 
 Subsystem::Subsystem(Arena &arena) :
+    id(PID(arena.subsystems.size())),
     arena(arena),
-    caller(arena.caller),
-    id(PID(arena.subsystems.size())) {
+    caller(arena.caller) {
   arena.subsystems.push_back(this);
 }
 
@@ -203,10 +203,10 @@ void Arena::logEvent(const ArenaEvent &event) const {
 
 Arena::Arena(const ArenaInitializer &initializer) :
     Networked(initializer),
-    caller(*this),
     name(initializer.name),
     motd(initializer.motd),
-    mode(initializer.mode) {
+    mode(initializer.mode),
+    caller(*this) {
   for (auto const &player : initializer.players) {
     players.emplace(std::piecewise_construct,
                     std::forward_as_tuple(player.first),
