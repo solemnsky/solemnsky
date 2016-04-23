@@ -4,23 +4,26 @@
 namespace sky {
 
 Physics::Physics(const Map &map) :
-    dims(map.dimensions),
-    world({0, Settings().gravity / Settings().distanceScale}) {
+    world({0, Settings().gravity / Settings().distanceScale}),
+    dims(map.dimensions) {
   CTOR_LOG("physics");
 
+  // world boundaries
   b2Body *body;
-
   body = rectBody({dims.x, 1}, true);
   body->SetTransform(toPhysVec({dims.x / 2, dims.y}), 0);
-
   body = rectBody({dims.x, 1}, true);
   body->SetTransform(toPhysVec({dims.x / 2, 0}), 0);
-
   body = rectBody({1, dims.y}, true);
   body->SetTransform(toPhysVec({dims.x, dims.y / 2}), 0);
-
   body = rectBody({1, dims.y}, true);
   body->SetTransform(toPhysVec({0, dims.y / 2}), 0);
+
+  // obstacles
+  for (const auto &obstacle : map.obstacles) {
+    body = polyBody(obstacle.localVerticies, true);
+    body->SetTransform(toPhysVec(obstacle.pos), 0);
+  }
 }
 
 Physics::~Physics() {
@@ -53,16 +56,39 @@ float Physics::toPhysDistance(float x) const {
 
 b2Body *Physics::rectBody(sf::Vector2f dims, bool isStatic) {
   b2Body *body;
-  const b2Vec2 &&bdims = toPhysVec(dims);
+  const b2Vec2 bdims = toPhysVec(dims);
 
   b2BodyDef def;
   def.fixedRotation = false;
   def.type = isStatic ? b2_staticBody : b2_dynamicBody;
+  body = world.CreateBody(&def);
 
   b2PolygonShape shape;
   shape.SetAsBox(bdims.x / 2, bdims.y / 2);
-  body = world.CreateBody(&def);
   body->CreateFixture(&shape, 10.0f);
+
+  return body;
+}
+
+b2Body *Physics::polyBody(const std::vector<sf::Vector2f> &verticies,
+                          bool isStatic) {
+  b2Body *body;
+
+  b2BodyDef def;
+  def.fixedRotation = false;
+  def.type = isStatic ? b2_staticBody : b2_dynamicBody;
+  body = world.CreateBody(&def);
+
+  b2PolygonShape shape;
+  b2Vec2 *points = new b2Vec2[verticies.size()];
+  size_t i = 0;
+  for (const auto &vertex : verticies) {
+    points[i] = toPhysVec(vertex);
+    i++;
+  }
+  shape.Set(points, (int32) verticies.size());
+  body->CreateFixture(&shape, 10.0f);
+  delete[] points;
 
   return body;
 }

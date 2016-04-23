@@ -75,7 +75,7 @@ void SkyRender::renderBars(ui::Frame &f,
   sf::FloatRect barArea;
   barArea.height = height;
   barArea.left = area.left;
-  for (int i = 0; i < bars.size(); i++) {
+  for (size_t i = 0; i < bars.size(); i++) {
     const auto &bar = bars[i];
     barArea.top = area.top + i * height;
     barArea.width = area.width * bar.first;
@@ -86,7 +86,7 @@ void SkyRender::renderBars(ui::Frame &f,
 
 std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
   return std::pair<float, const sf::Color &>(x, c);
-};
+}
 
 void SkyRender::renderProps(ui::Frame &f,
                             const Plane &plane) {
@@ -114,11 +114,11 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
         sf::Transform()
             .translate(state.physical.pos)
             .rotate(state.physical.rot), [&]() {
-          f.withTransform(
-              sf::Transform().scale(state.afterburner, state.afterburner),
-              [&]() {
-                f.drawRect(style.skyRender.afterburnArea, sf::Color::Red);
-              });
+          f.withAlpha(state.afterburner,
+                      [&]() {
+                        f.drawRect(style.skyRender.afterburnArea,
+                                   sf::Color::Red);
+                      });
 
           planeSheet.drawIndexAtRoll(
               f, sf::Vector2f(style.skyRender.spriteSize,
@@ -154,10 +154,23 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
   }
 }
 
+void SkyRender::renderMap(ui::Frame &f) {
+  f.drawRect({0, 0}, sky.map->dimensions, style.base.pageBgColor);
+  f.drawSprite(textureOf(ResID::Title),
+               {(sky.map->dimensions.x / 2) - 800, 0},
+               {0, 0, 1600, 900});
+
+  for (const auto &obstacle : sky.map->obstacles) {
+    f.withTransform(sf::Transform().translate(obstacle.pos), [&]() {
+      f.drawPoly(obstacle.localVerticies, sf::Color::White);
+    });
+  }
+}
+
 SkyRender::SkyRender(Arena &arena, Sky &sky, const bool enableDebug) :
     Subsystem(arena), sky(sky),
-    enableDebug(enableDebug),
-    planeSheet(ResID::PlayerSheet) {
+    planeSheet(ResID::PlayerSheet),
+    enableDebug(enableDebug) {
   arena.forPlayers([&](Player &player) { registerPlayer(player); });
 }
 
@@ -177,20 +190,19 @@ void SkyRender::onTick(const float delta) {
 }
 
 void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
-  f.withTransform(
-      sf::Transform().translate(
-          {-findView(1600, sky.map.dimensions.x, pos.x),
-           -findView(900, sky.map.dimensions.y, pos.y)}
-      ),
-      [&]() {
-        // TODO: give the map visual data, including background
-        f.drawSprite(textureOf(ResID::Title),
-                     {0, 0}, {0, 0, 1600, 900});
-        f.drawSprite(textureOf(ResID::Title),
-                     {1600, 0}, {0, 0, 1600, 900});
-        for (auto &pair: graphics) renderPlaneGraphics(f, pair.second);
-      }
-  );
+  if (sky.map) {
+    f.withTransform(
+//        sf::Transform(),
+        sf::Transform().translate(
+            {-findView(1600, sky.map->dimensions.x, pos.x),
+             -findView(900, sky.map->dimensions.y, pos.y)}
+        ),
+        [&]() {
+          renderMap(f);
+          for (auto &pair: graphics) renderPlaneGraphics(f, pair.second);
+        }
+    );
+  }
 }
 
 }

@@ -3,7 +3,8 @@
 #include "util/methods.h"
 
 /**
- * The Subsystem abstraction.
+ * The Subsystem abstraction allows us to modularize state and functionality
+ * associated with an Arena.
  */
 class SubsystemTest: public testing::Test { };
 
@@ -59,11 +60,10 @@ class CounterSubsystem: public sky::Subsystem {
   }
 
   void onTick(const float delta) override {
-    for (auto &pair: arena.players) {
-      sky::Player &player = pair.second;
+    arena.forPlayers([&](sky::Player &player) {
       if (lifeSubsystem.getLifeData(player))
         getPlayerData<float>(player) += delta;
-    }
+    });
   }
 
  public:
@@ -80,11 +80,12 @@ class CounterSubsystem: public sky::Subsystem {
 };
 
 TEST_F(SubsystemTest, LifeCounter) {
-  sky::Arena arena(sky::ArenaInitializer("my arena"));
+  sky::Arena arena(sky::ArenaInitializer("my arena", "test1"));
   LifeSubsystem lifeSubsystem(arena);
   CounterSubsystem counterSubsystem(arena, lifeSubsystem);
 
-  sky::Player &player1 = arena.connectPlayer("player number 1");
+  arena.connectPlayer("player number 1");
+  auto &player1 = *arena.getPlayer(0);
   EXPECT_EQ(lifeSubsystem.getLifeData(player1), false);
   EXPECT_EQ(counterSubsystem.getTimeData(player1), 0);
   arena.tick(0.5);

@@ -9,7 +9,7 @@
  */
 
 std::unique_ptr<MultiplayerView> Multiplayer::mkView() {
-  switch (mShared.arena->mode) {
+  switch (mShared.arena->getMode()) {
     case sky::ArenaMode::Lobby:
       return std::make_unique<MultiplayerLobby>(shared, mShared);
     case sky::ArenaMode::Game:
@@ -17,14 +17,15 @@ std::unique_ptr<MultiplayerView> Multiplayer::mkView() {
     case sky::ArenaMode::Scoring:
       return std::make_unique<MultiplayerScoring>(shared, mShared);
   }
+  throw enum_error();
 }
 
 Multiplayer::Multiplayer(ClientShared &shared,
                          const std::string &serverHostname,
                          const unsigned short serverPort) :
     Game(shared, "multiplayer"),
-    view(nullptr),
-    mShared(shared, serverHostname, serverPort) { }
+    mShared(shared, serverHostname, serverPort),
+    view(nullptr) { }
 
 /**
  * Game interface.
@@ -63,7 +64,7 @@ void Multiplayer::tick(float delta) {
 
   if (mShared.arena) {
     mShared.arena->tick(delta);
-    if (!view or view->target != mShared.arena->mode) view = mkView();
+    if (!view or view->target != mShared.arena->getMode()) view = mkView();
     view->tick(delta);
   }
 }

@@ -16,30 +16,38 @@ void VanillaServer::onPacket(ENetPeer *const client,
                              sky::Player &player,
                              const sky::ClientPacket &packet) {
   if (packet.type == sky::ClientPacket::Type::RCon) {
-    if (!player.admin) {
+    if (!player.isAdmin()) {
       if (packet.stringData.get() == "auth password") {
         sky::PlayerDelta delta = player.zeroDelta();
         delta.admin = true;
-        sky::ArenaDelta adminDelta = sky::ArenaDelta::Delta(player.pid, delta);
-        arena.applyDelta(adminDelta);
-        shared.sendToClients(sky::ServerPacket::DeltaArena(adminDelta));
-
+        shared.applyAndSendDelta(sky::ArenaDelta::Delta(player.pid, delta));
         shared.rconResponse(client, "you're authenticated");
       }
-    }
-
-    if (player.admin) {
+    } else {
       // TODO: uniform command parsing
       if (packet.stringData.get() == "start") {
-        sky::ArenaDelta delta = sky::ArenaDelta::Mode(sky::ArenaMode::Game);
-        arena.applyDelta(delta);
-        shared.sendToClients(sky::ServerPacket::DeltaArena(delta));
+        shared.applyAndSendDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
+        return;
       }
 
       if (packet.stringData.get() == "stop") {
-        sky::ArenaDelta delta = sky::ArenaDelta::Mode(sky::ArenaMode::Lobby);
-        arena.applyDelta(delta);
-        shared.sendToClients(sky::ServerPacket::DeltaArena(delta));
+        shared.applyAndSendDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Lobby));
+        return;
+      }
+
+      if (packet.stringData.get() == "restart") {
+        sky.restart();
+        return;
+      }
+
+      if (packet.stringData.get() == "map1") {
+        shared.applyAndSendDelta(sky::ArenaDelta::MapChange("test1"));
+        return;
+      }
+
+      if (packet.stringData.get() == "map2") {
+        shared.applyAndSendDelta(sky::ArenaDelta::MapChange("test2"));
+        return;
       }
     }
   }

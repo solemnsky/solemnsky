@@ -3,103 +3,58 @@
 #include "util/methods.h"
 
 /**
- * Our Sky render works correctly.
+ * Our Sky subsystem works correctly.
  */
 class SkyTest: public testing::Test {
  public:
-  SkyTest() { }
+  SkyTest() :
+      arena(sky::ArenaInitializer("arena", "test1")),
+      sky(arena, sky::SkyInitializer()) { }
+
+  sky::Arena arena;
+  sky::Sky sky;
 };
 
 /**
- * We're attached to the arena, along for the ride.
+ * The map allocation is managed.
  */
-TEST_F(SkyTest, SubsystemTest) {
-  sky::Arena arena(sky::ArenaInitializer("my arena"));
-  sky::Sky sky(arena, sky::SkyInitializer("some map"));
+TEST_F(SkyTest, MapAlloc) {
+  ASSERT_EQ(bool(sky.map), false);
 
-  {
-    sky::Player &player = arena.connectPlayer("some name");
-    player.spawn({}, {300, 300}, 0);
-    EXPECT_EQ(sky.getPlane(player).vital->state.physical.pos.x, 300);
-    arena.tick(0.5);
-    EXPECT_NE(sky.getPlane(player).vital->state.physical.pos.x, 300);
-  }
+  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
 
-  {
-    sky::Player &player = arena.connectPlayer("some name");
-    EXPECT_EQ(bool(sky.getPlane(player).vital), false);
-  }
+  ASSERT_EQ(bool(sky.map), true);
+
+  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Scoring));
+
+  ASSERT_EQ(bool(sky.map), false);
 }
 
 /**
- * Initializers work correctly.
+ * We can affect the Sky, and copy the modified Sky over the network with
+ * SkyInitializer.
  */
 TEST_F(SkyTest, InitializerTest) {
-  sky::Arena serverArena(sky::ArenaInitializer("my arena"));
-  sky::Sky serverSky(serverArena, sky::SkyInitializer("some map"));
+  arena.connectPlayer("nameless plane");
+  sky::Player *player = arena.getPlayer(0);
+  player->spawn({}, {300, 300}, 0);
 
-  {
-    sky::Player &player0 = serverArena.connectPlayer("some guy");
-    sky::Player &player1 = serverArena.connectPlayer("some other guy");
-    player1.spawn({}, {200, 200}, 0);
-  }
+  ASSERT_EQ(sky.getPlane(*player).isSpawned(), true);
 
-  sky::Arena clientArena(serverArena.captureInitializer());
-  sky::Sky clientSky(clientArena, serverSky.captureInitializer());
+  sky::Arena remoteArena(arena.captureInitializer());
+  sky::Sky remoteSky(remoteArena, sky.captureInitializer());
 
-  {
-    sky::Player *player0(clientArena.getPlayer(0)),
-        *player1(clientArena.getPlayer(1));
-
-    ASSERT_EQ(bool(player0), true);
-    ASSERT_EQ(bool(player1), true);
-
-    sky::Plane &plane0 = clientSky.getPlane(*player0),
-        &plane1 = clientSky.getPlane(*player1);
-    EXPECT_EQ(bool(plane0.vital), false);
-    ASSERT_EQ(bool(plane1.vital), true);
-    EXPECT_EQ(plane1.vital->state.physical.pos.x, 200);
-  }
+  ASSERT_EQ(remoteSky.getPlane(*player).isSpawned(), true);
 }
 
 /**
- * Deltas work correctly.
+ * We can propogate changes over the network with a SkyDelta.
  */
 TEST_F(SkyTest, DeltaTest) {
-  sky::Arena serverArena(sky::ArenaInitializer("my arena"));
-  sky::Sky serverSky(serverArena, sky::SkyInitializer("some map"));
+  sky::Arena remoteArena(arena.captureInitializer());
+  sky::Sky remoteSky(remoteArena, sky.captureInitializer());
 
-  sky::Arena clientArena(serverArena.captureInitializer());
-  sky::Sky clientSky(clientArena, serverSky.captureInitializer());
-
-  sky::ArenaDelta arenaDelta;
-  {
-    // server joins player
-    sky::Player &player = serverArena.connectPlayer("some player");
-    arenaDelta = sky::ArenaDelta::Join(player.captureInitializer());
-  }
-
-  {
-    // client applies join delta
-    clientArena.applyDelta(arenaDelta);
-    sky::Player &newPlayer = *clientArena.getPlayer(0);
-    EXPECT_EQ(bool(clientSky.getPlane(newPlayer).vital), false);
-  }
-
-  sky::SkyDelta skyDelta;
-  {
-    // server spawns the player
-    serverArena.getPlayer(0)->spawn({}, {300, 300}, 0);
-    skyDelta = serverSky.collectDelta();
-  }
-
-  {
-    // client applies the sky delta
-    clientSky.applyDelta(skyDelta);
-    sky::Player &player = *clientArena.getPlayer(0);
-    sky::Plane &plane = clientSky.getPlane(player);
-
-    ASSERT_EQ(bool(plane.vital), true);
-    EXPECT_EQ(plane.vital->state.physical.pos.x, 300);
-  }
+  // TODO: finish
 }
+
+
