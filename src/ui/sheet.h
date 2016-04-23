@@ -8,16 +8,15 @@
 namespace ui {
 class SpriteSheet {
 private:
+  const ResRecord record;
   const sf::Vector2f tileDim;
   const sf::Texture &sheet;
-  const ResRecord record;
   const ResID res;
 
 public:
   const int count;
 
   SpriteSheet() = delete;
-
   SpriteSheet(ResID resource);
 
   void drawIndex(

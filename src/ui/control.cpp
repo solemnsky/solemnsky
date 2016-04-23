@@ -23,8 +23,8 @@ ProfilerSnapshot::ProfilerSnapshot(const Profiler &profiler) :
 
 AppState::AppState(const sf::RenderWindow &window,
                    const Profiler &profiler,
-                   const double &time)
-    : window(window), profiler(profiler), time(time) { }
+                   const double &time) :
+    time(time), window(window), profiler(profiler) { }
 
 double AppState::timeSince(const double event) const {
   return time - event;
@@ -189,11 +189,12 @@ ControlExec::ControlExec(
     window(sf::VideoMode(800, 600), "solemnsky",
            sf::Style::Default, makeSettings()),
     frame(window),
+    resizeCooldown(0.5),
+    time(0),
+
+    profiler(100),
     tickStep(1.0f / 60.0f),
     rollingTickTime(0),
-    time(0),
-    profiler(100),
-    resizeCooldown(0.5),
 
     appState(window, profiler, time),
     ctrl(std::make_unique<detail::ExecWrapper>(appState, initCtrl)) {

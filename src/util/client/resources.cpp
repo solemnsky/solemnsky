@@ -124,14 +124,14 @@ const sf::Texture &ResMan::textureOf(ResID res) {
   auto texture = textures.find(int(res));
   if (texture != textures.end()) {
     return texture->second;
-  } else appErrorRuntime("Accessing texture that isn't loaded yet!");
+  } else throw std::runtime_error("Accessing texture that isn't loaded yet!");
 }
 
 const sf::Font &ResMan::fontOf(ResID res) {
   auto font = fonts.find(int(res));
   if (font != fonts.end()) {
     return font->second;
-  } else appErrorRuntime("Accessing font that isn't loaded yet!");
+  } else throw std::runtime_error("Accessing font that isn't loaded yet!");
 }
 
 }
