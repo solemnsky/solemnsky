@@ -25,7 +25,7 @@ MultiplayerGame::MultiplayerGame(
     chatInput(appState,
               style.base.normalTextEntry,
               style.multi.chatPos,
-              "[enter to chat]"),
+              "[ENTER TO CHAT]"),
     scoreboardFocused(false) {
   areChildren({&chatInput});
 }
