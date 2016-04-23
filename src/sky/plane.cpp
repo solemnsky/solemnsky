@@ -124,19 +124,14 @@ PlaneInitializer::PlaneInitializer(
     spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)),
     controls(controls) { }
 
+PlaneInitializer::PlaneInitializer(
+    const PlaneControls &controls) : controls(controls) { }
+
 /**
  * PlaneDelta.
  */
 
 PlaneDelta::PlaneDelta() { }
-
-sky::PlaneDelta::PlaneDelta(const sky::PlaneTuning &tuning,
-                            const sky::PlaneState &state,
-                            const PlaneControls &controls) :
-    tuning(tuning), state(state), controls(controls) { }
-
-PlaneDelta::PlaneDelta(const PlaneState &state, const PlaneControls &controls) :
-    state(state), controls(controls) { }
 
 bool PlaneDelta::verifyStructure() const {
   return true;
@@ -360,30 +355,32 @@ void Plane::reset() {
 void Plane::applyDelta(const PlaneDelta &delta) {
   if (delta.tuning) {
     spawnWithState(delta.tuning.get(), delta.state.get());
-    return;
+  } else {
+    if (delta.state) {
+      if (vital) vital->state = *delta.state;
+    } else vital.reset();
   }
-  if (delta.state) {
-    if (vital) vital->state = *delta.state;
-  } else vital.reset();
-  controls = delta.controls;
+  if (delta.controls) {
+    controls = *delta.controls;
+  }
 }
 
 PlaneInitializer Plane::captureInitializer() const {
   if (vital) {
     return PlaneInitializer(controls, vital->tuning, vital->state);
   } else {
-    return {};
+    return PlaneInitializer(controls);
   }
 }
 
 PlaneDelta Plane::captureDelta() {
-  if (newlyAlive) {
-    newlyAlive = false;
-    return PlaneDelta(vital->tuning, vital->state, controls);
-  } else {
-    if (vital) return PlaneDelta(vital->state, controls);
-    else return PlaneDelta();
+  PlaneDelta delta;
+  if (vital) {
+    delta.state = vital->state;
+    if (newlyAlive) delta.tuning = vital->tuning;
   }
+  delta.controls = controls;
+  return delta;
 }
 
 Plane::Plane(Sky &parent, Player &player,
