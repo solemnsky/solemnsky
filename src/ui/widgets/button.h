@@ -31,8 +31,7 @@ class Button: public Control {
 
  private:
   Clamped heat;
-  bool inPreClick{false};
-  bool active;
+  bool inPreClick, active;
 
   sf::FloatRect getBody();
 

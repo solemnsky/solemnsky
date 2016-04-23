@@ -4,8 +4,8 @@
 namespace sky {
 
 Physics::Physics(const Map &map) :
-    dims(map.dimensions),
-    world({0, Settings().gravity / Settings().distanceScale}) {
+    world({0, Settings().gravity / Settings().distanceScale}),
+    dims(map.dimensions) {
   CTOR_LOG("physics");
 
   b2Body *body;
@@ -77,7 +77,7 @@ b2Body *Physics::polyBody(const std::vector<sf::Vector2f> &verticies,
   body = world.CreateBody(&def);
 
   b2PolygonShape shape;
-  b2Vec2 points[verticies.size()];
+  b2Vec2 *points = new b2Vec2[verticies.size()];
   size_t i = 0;
   for (const auto &vertex : verticies) {
     points[i] = toPhysVec(vertex);
@@ -85,6 +85,7 @@ b2Body *Physics::polyBody(const std::vector<sf::Vector2f> &verticies,
   }
   shape.Set(points, (int32) verticies.size());
   body->CreateFixture(&shape, 10.0f);
+  delete[] points;
 
   return body;
 }

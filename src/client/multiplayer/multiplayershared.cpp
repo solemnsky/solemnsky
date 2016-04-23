@@ -93,12 +93,14 @@ MultiplayerShared::MultiplayerShared(
     const std::string &serverHostname,
     const unsigned short serverPort) :
     shared(shared),
-    server(nullptr),
-    telegraph(),
     askedConnection(false),
     disconnectTimeout(5),
+
     host(tg::HostType::Client),
-    disconnected(false), disconnecting(false),
+    server(nullptr),
+
+    disconnecting(false), disconnected(false),
+
     player(nullptr), plane(nullptr) {
   host.connect(serverHostname, serverPort);
 }
@@ -228,7 +230,7 @@ MultiplayerView::MultiplayerView(
     ClientShared &shared,
     MultiplayerShared &mShared) :
     ui::Control(shared.appState),
-    target(target),
     shared(shared),
-    mShared(mShared) { }
+    mShared(mShared),
+    target(target) { }
 

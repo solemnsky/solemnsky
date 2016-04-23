@@ -28,27 +28,29 @@ TextEntry::TextEntry(AppState &appState,
                      const std::string &description,
                      const bool persistent) :
     Control(appState),
-    persistent(persistent),
-    pos(pos),
-    scroll(0),
-    cursor(0),
-    heat(0),
-    description(description),
     style(style),
 
-    pressedKeyboardEvent(),
+    heat(0),
+    scroll(0),
+    cursor(0),
+
     repeatActivate(0.3),
     repeatCooldown(0.06), // TODO: Cooldowns don't compensate for
     // wrap-around, making their behaviour erratic when the tick interval
     // approaches the cooldown interval
 
-    isHot(false),
-    isFocused(false),
-
     textFormat(style.fontSize, 0,
                ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
                ResID::Font),
-    descriptionFormat(textFormat) {
+    descriptionFormat(textFormat),
+
+    persistent(persistent),
+    pos(pos),
+
+    description(description),
+
+    isHot(false),
+    isFocused(false) {
   descriptionFormat.horizontal = HorizontalAlign::Right;
   descriptionFormat.vertical = VerticalAlign::Middle;
 }

@@ -75,19 +75,19 @@ PlaneState::PlaneState() : primaryCooldown(1) { }
 PlaneState::PlaneState(const PlaneTuning &tuning,
                        const sf::Vector2f &pos,
                        const float rot) :
-    primaryCooldown(1),
     physical(pos,
              tuning.flight.airspeedFactor * VecMath::fromAngle(rot),
              rot,
              0),
 
     stalled(false), afterburner(0),
-    airspeed(tuning.flight.throttleInfluence),
     leftoverVel(0, 0),
+    airspeed(tuning.flight.throttleInfluence),
     throttle(1),
 
     energy(1),
-    health(1) { }
+    health(1),
+    primaryCooldown(1) { }
 
 float PlaneState::forwardVelocity() const {
   return velocity() *
@@ -151,10 +151,12 @@ PlaneVital::PlaneVital(Sky &parent,
                        const PlaneControls &controls,
                        const PlaneTuning &tuning,
                        const PlaneState &state) :
-    parent(parent), physics(parent.physics.get()),
+    parent(parent),
+    physics(parent.physics.get()),
+    body(physics.rectBody(tuning.hitbox)),
     controls(controls),
-    tuning(tuning), state(state),
-    body(physics.rectBody(tuning.hitbox)) {
+    tuning(tuning),
+    state(state) {
   body = physics.rectBody(tuning.hitbox);
   this->state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(state.stalled ? 1 : 0);
@@ -162,7 +164,7 @@ PlaneVital::PlaneVital(Sky &parent,
 
 PlaneVital::~PlaneVital() {
   physics.clrBody(body);
-};
+}
 
 void PlaneVital::writeToBody() {
   state.physical.writeToBody(physics, body);

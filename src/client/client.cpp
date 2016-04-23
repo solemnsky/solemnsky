@@ -9,6 +9,14 @@
 
 Client::Client(ui::AppState &appState) :
     ui::Control(appState),
+    backButton(appState,
+               style.menu.lowButtonStyle,
+               style.menu.backButtonOffset,
+               style.menu.backButtonText),
+    closeButton(appState,
+                style.menu.lowButtonStyle,
+                style.menu.closeButtonOffset,
+                style.menu.closeButtonText),
     quitButton(appState,
                style.menu.highButtonStyle,
                style.menu.quitButtonOffset,
@@ -17,14 +25,6 @@ Client::Client(ui::AppState &appState) :
                 style.menu.highButtonStyle,
                 style.menu.aboutButtonOffset,
                 style.menu.aboutButtonText),
-    closeButton(appState,
-                style.menu.lowButtonStyle,
-                style.menu.closeButtonOffset,
-                style.menu.closeButtonText),
-    backButton(appState,
-               style.menu.lowButtonStyle,
-               style.menu.backButtonOffset,
-               style.menu.backButtonText),
 
     shared(appState, *this),
     homePage(shared),
@@ -52,6 +52,7 @@ Page &Client::referencePage(const PageType type) {
     case PageType::Listing:
       return listingPage;
   }
+  return homePage;
 }
 
 void Client::tick(float delta) {
@@ -118,8 +119,7 @@ void Client::drawPage(ui::Frame &f, const PageType type,
 
 
 void Client::drawUI(ui::Frame &f) {
-  const Clamped &gameFocusFactor = shared.ui.gameFocusFactor,
-      &pageFocusFactor = shared.ui.pageFocusFactor;
+  const Clamped &pageFocusFactor = shared.ui.pageFocusFactor;
 
   // draw the pages
   drawPage(
