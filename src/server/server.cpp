@@ -198,13 +198,19 @@ ServerExec::ServerExec(
     const sky::SkyInitializer &sky,
     std::function<std::unique_ptr<Server>(
         ServerShared &, sky::Arena &, sky::Sky &)> server) :
+    uptime(0),
+
     host(tg::HostType::Server, port),
     shared(host, telegraph, *this),
+
     arena(arena),
     sky(this->arena, sky),
+
     server(server(shared, this->arena, this->sky)),
-    logger(shared, this->arena),
     packetBroadcastTimer(0.03),
+
+    logger(shared, this->arena),
+
     running(true) {
   shared.logEvent(ServerEvent::Start(port, arena.name));
 }
