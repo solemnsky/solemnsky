@@ -4,10 +4,10 @@
 namespace ui {
 
 SpriteSheet::SpriteSheet(ResID resource) :
+    record(recordOf(resource)),
     tileDim{(float) record.tileX, (float) record.tileY},
     sheet(textureOf(resource)),
-    record(recordOf(resource)),
-    res(res),
+    res(resource),
     count(record.countX * record.countY) { }
 
 void SpriteSheet::drawIndex(ui::Frame &f, const sf::Vector2f &dims,

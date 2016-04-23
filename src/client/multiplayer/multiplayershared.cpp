@@ -99,7 +99,7 @@ MultiplayerShared::MultiplayerShared(
     host(tg::HostType::Client),
     server(nullptr),
 
-    disconnected(false), disconnecting(false),
+    disconnecting(false), disconnected(false),
 
     player(nullptr), plane(nullptr) {
   host.connect(serverHostname, serverPort);
