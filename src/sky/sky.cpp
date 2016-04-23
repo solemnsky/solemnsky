@@ -73,7 +73,7 @@ void Sky::onMode(const ArenaMode newMode) {
   }
 }
 
-void Sky::onMap(const MapName &map) {
+void Sky::onMapChange() {
   if (arena.getMode() == ArenaMode::Game) restart();
 }
 

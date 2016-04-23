@@ -102,7 +102,6 @@ class ControlExec {
   AppState appState;
   std::unique_ptr<Control> ctrl;
 
-
   // app loop
   void tick();
   void handle();

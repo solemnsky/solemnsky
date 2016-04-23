@@ -30,16 +30,23 @@ Button::Button(AppState &appState,
                const sf::Vector2f &pos,
                const std::string &text) :
     Control(appState),
-    pos(pos), text(text), style(style),
+    style(style),
     heat(0),
+    inPreClick(false),
     active(true),
-    isHot(false),
-    clickSignal(false),
+
     textFormat(style.fontSize, style.dimensions.x,
                HorizontalAlign::Center, VerticalAlign::Middle,
                ResID::Font),
-    descriptionFormat(textFormat) {
-  descriptionFormat.horizontal = HorizontalAlign::Right;
+    descriptionFormat(textFormat),
+
+    pos(pos),
+    text(text),
+
+    isHot(false),
+    clickSignal(false) {
+  descriptionFormat.
+      horizontal = HorizontalAlign::Right;
 }
 
 void Button::tick(float delta) {

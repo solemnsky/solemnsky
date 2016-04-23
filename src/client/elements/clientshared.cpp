@@ -7,8 +7,8 @@
 
 ClientUiState::ClientUiState() :
     focusedPage(PageType::Home),
-    gameFocusing(false),
     pageFocusing(false),
+    gameFocusing(false),
     pageFocusFactor(0),
     gameFocusFactor(0) { }
 
@@ -68,7 +68,7 @@ bindingFromEvent(const sf::Event &event,
   }
 
   return {};
-};
+}
 
 optional<std::pair<sky::Action, bool>>
 ClientShared::triggerSkyAction(const sf::Event &event) const {

@@ -17,14 +17,15 @@ std::unique_ptr<MultiplayerView> Multiplayer::mkView() {
     case sky::ArenaMode::Scoring:
       return std::make_unique<MultiplayerScoring>(shared, mShared);
   }
+  throw enum_error();
 }
 
 Multiplayer::Multiplayer(ClientShared &shared,
                          const std::string &serverHostname,
                          const unsigned short serverPort) :
     Game(shared, "multiplayer"),
-    view(nullptr),
-    mShared(shared, serverHostname, serverPort) { }
+    mShared(shared, serverHostname, serverPort),
+    view(nullptr) { }
 
 /**
  * Game interface.

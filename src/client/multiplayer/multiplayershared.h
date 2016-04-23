@@ -55,7 +55,7 @@ class MultiplayerShared {
   void logArenaEvent(const sky::ArenaEvent &event);
   std::vector<ClientEvent> eventLog;
 
-  //
+  // connection state
   tg::Host host;
   ENetPeer *server;
   bool disconnecting, // trying to disconnect

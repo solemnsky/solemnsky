@@ -1,4 +1,5 @@
 #include "text.h"
+#include "util/methods.h"
 #include <cmath>
 #include "frame.h"
 
@@ -13,6 +14,7 @@ float alignValue(const HorizontalAlign align) {
     case HorizontalAlign::Right:
       return 1;
   }
+  throw enum_error();
 }
 
 float alignValue(const VerticalAlign align) {
@@ -24,6 +26,7 @@ float alignValue(const VerticalAlign align) {
     case VerticalAlign::Bottom:
       return 1;
   }
+  throw enum_error();
 }
 
 /**
@@ -48,7 +51,9 @@ TextFormat::TextFormat(
 TextFrame::TextFrame(Frame *parent,
                      const sf::Vector2f &anchor,
                      const TextFormat &format) :
-    parent(parent), anchor(anchor), format(format),
+    parent(parent),
+    format(format),
+    anchor(anchor),
     font(fontOf(format.font)) { }
 
 sf::Vector2f TextFrame::endRender() {

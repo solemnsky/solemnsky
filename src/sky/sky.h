@@ -24,8 +24,6 @@ struct SkyInitializer: public VerifyStructure {
 };
 
 struct SkyDelta: public VerifyStructure {
-  // TODO: map changes will go here
-
   SkyDelta() = default; // packing
 
   template<typename Archive>
@@ -60,7 +58,7 @@ class Sky: public Subsystem {
   void onJoin(Player &player) override;
   void onQuit(Player &player) override;
   void onMode(const ArenaMode newMode) override;
-  void onMap(const MapName &map) override;
+  void onMapChange() override;
   void onAction(Player &player, const Action action, const bool state) override;
   void onSpawn(Player &player, const PlaneTuning &tuning,
                const sf::Vector2f &pos, const float rot) override;

@@ -13,7 +13,7 @@ UsageFlag::UsageFlag() {
   appLog("Initializing ENet...", LogOrigin::Network);
   if (enetUsageCount == 1) {
     if (enet_initialize() != 0)
-      appErrorRuntime("Failure on ENet initialization!");
+      throw std::runtime_error("Failure on ENet initialization!");
   }
 }
 
@@ -48,10 +48,10 @@ Host::Host(const HostType type, const Port port) :
 
   if (host == nullptr) {
     if (enetUsageCount == 0) {
-      appErrorRuntime("Failed to create ENet host: ENet global state "
-                          "not initialized!");
+      throw std::runtime_error("Failed to create ENet host: ENet global state "
+                                   "not initialized!");
     }
-    appErrorRuntime("Failed to create ENet host!");
+    throw std::runtime_error("Failed to create ENet host!");
   }
 }
 

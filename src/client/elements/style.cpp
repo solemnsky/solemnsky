@@ -47,17 +47,17 @@ Style::Menu::Menu(const Style::Base &base) :
     homeOffset(182.812, 121.875),
     settingsOffset(917.187, 121.875),
     listingOffset(550.000, 495.250),
-
     quitButtonOffset(182.812, 610.875),
     aboutButtonOffset(1217.188, 610.875),
     closeButtonOffset(1300, 0),
     backButtonOffset(1067.18, 850),
-    pageUnderlayColor(0, 0, 0, 20),
-    statusFontColor(200, 200, 200),
 
     homeArea(homeOffset, base.pageSize * unfocusedPageScale),
     settingsArea(settingsOffset, base.pageSize * unfocusedPageScale),
     listingArea(listingOffset, base.pageSize * unfocusedPageScale),
+
+    pageUnderlayColor(0, 0, 0, 20),
+    statusFontColor(200, 200, 200),
 
     descSize(base.normalFontSize),
 
@@ -73,10 +73,11 @@ Style::Menu::Menu(const Style::Base &base) :
     closeButtonText("CLOSE GAME"),
     quitButtonText("QUIT"),
     aboutButtonText("ABOUT"),
-    menuInGameFade(0.7),
 
     menuDescText(base.normalText),
-    gameDescText(base.normalText) {
+    gameDescText(base.normalText),
+
+    menuInGameFade(0.7) {
   highButtonStyle.fontSize = 50;
   highButtonStyle.dimensions.y = 70;
 
@@ -98,10 +99,10 @@ Style::Home::Home(const Style::Base &base) :
 Style::Settings::Settings(const Style::Base &base) :
     textEntry(base.normalTextEntry),
     checkbox(base.normalCheckbox),
+    entryOffset(150, -0.5f * base.normalTextEntry.dimensions.y),
     descText(40, {},
              ui::HorizontalAlign::Left, ui::VerticalAlign::Middle,
              ResID::Font),
-    entryOffset(150, -0.5f * base.normalTextEntry.dimensions.y),
 
     column1Pos(300, 80),
     column2Pos(800, 80),
@@ -124,14 +125,15 @@ Style::Multi::Multi(const Style::Base &base) :
     lobbyTopMargin(205),
     lobbyChatWidth(900),
     gameChatWidth(500),
-    chatCutoff(500),
-    chatIngameCutoff(150),
 
     chatPos(20, 850),
     messageLogPos(20, 840),
     playerListPos(1250, 200),
     lobbyButtonPos(lobbyChatWidth + 100, lobbyTopMargin),
     lobbyButtonSep(0, 100),
+
+    chatCutoff(500),
+    chatIngameCutoff(150),
 
     playerSpecColor(255, 255, 255),
     playerJoinedColor(0, 255, 0),
