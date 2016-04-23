@@ -4,7 +4,7 @@
 #include "gtest/gtest.h"
 
 /**
- * 'Telegraph' and 'Host', using the Packet / Pack system and the enet library.
+ * The Telegraph utility helps us send and receive data.
  */
 class TelegraphTest: public testing::Test {
  public:
@@ -51,13 +51,14 @@ TEST_F(TelegraphTest, TransmitReceive) {
   telegraph.transmit(client, serverPeer, std::string("hey there"));
   event = processHosts(server, client);
   EXPECT_EQ(event.type, ENET_EVENT_TYPE_RECEIVE); // server receives packet
-  EXPECT_EQ(*telegraph.receive(event.packet), "hey there");
+  EXPECT_EQ(telegraph.receive(event.packet).get(), "hey there");
 
   telegraph.transmit(server, clientPeer,
                      std::string("hey, I got your message ;D"));
   event = processHosts(client, server);
   EXPECT_EQ(event.type, ENET_EVENT_TYPE_RECEIVE); // client receives packet
-  EXPECT_EQ(*telegraph.receive(event.packet), "hey, I got your message ;D");
+  EXPECT_EQ(telegraph.receive(event.packet).get(),
+            "hey, I got your message ;D");
 }
 
 /**

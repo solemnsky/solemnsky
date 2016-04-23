@@ -28,7 +28,7 @@ void Map::loadTest1() {
       {-20, -20}, {-20, 20}, {20, 20}, {20, -20}
   };
 
-  for (float x = 0; x < 1600.0f; x += 500) {
+  for (float x = 0; x < 1600.0f; x += 200) {
     obstacles.emplace_back(sf::Vector2f(x, 450), square, 1);
   }
 }
