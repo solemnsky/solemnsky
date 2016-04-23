@@ -13,9 +13,10 @@ Prop::Prop(Sky &parent, const sf::Vector2f &pos, const sf::Vector2f &vel) :
 }
 
 Prop::Prop(Prop &&prop) :
-    parent(prop.parent), physics(prop.physics),
-    lifeTime(prop.lifeTime),
+    parent(prop.parent),
+    physics(prop.physics),
     body(prop.body),
+    lifeTime(prop.lifeTime),
     physical(prop.physical) {
   prop.body = nullptr;
 }
