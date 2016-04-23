@@ -6,8 +6,8 @@
 #include <cereal/archives/binary.hpp>
 
 /**
- * Our multiplayer protocol structs (ServerPacket, ClientPacket) and
- * associating packing rules.
+ * Our multiplayer protocol verbs encode all network communication, and are
+ * serialized through cereal.
  */
 class ProtocolTest: public testing::Test {
  public:
@@ -45,7 +45,7 @@ TEST_F(ProtocolTest, Cereal) {
 }
 
 /**
- * Protocol elements serialize correctly.
+ * Protocol verbs serialize correctly.
  */
 TEST_F(ProtocolTest, CerealProtocol) {
   {
@@ -82,5 +82,7 @@ TEST_F(ProtocolTest, Invariant) {
       sky::ServerPacket::Broadcast("some broadcast");
   EXPECT_EQ(sPacket.verifyStructure(), true);
   sPacket.type = sky::ServerPacket::Type::Chat;
+  EXPECT_EQ(sPacket.verifyStructure(), false);
+  sPacket.type = (sky::ServerPacket::Type) 50;
   EXPECT_EQ(sPacket.verifyStructure(), false);
 }
