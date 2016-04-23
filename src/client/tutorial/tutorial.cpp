@@ -2,10 +2,12 @@
 
 Tutorial::Tutorial(ClientShared &state) :
     Game(state, "tutorial"),
-    arena(sky::ArenaInitializer("tutorial")),
-    sky(arena, sky::SkyInitializer("some map")),
+    arena(sky::ArenaInitializer("tutorial", "test1")),
+    sky(arena, sky::SkyInitializer()),
     skyRender(arena, sky, shared.settings.enableDebug) {
-  player = &arena.connectPlayer("offline player");
+  arena.connectPlayer("offline player");
+  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
+  player = arena.getPlayer(0);
   player->spawn({}, {30, 30}, 0);
   status = "some status";
 }
@@ -15,7 +17,7 @@ Tutorial::Tutorial(ClientShared &state) :
  */
 
 void Tutorial::onChangeSettings(const SettingsDelta &settings) {
-  if (settings.nickname) player->nickname = *settings.nickname;
+  if (settings.nickname) player->getNickname() = *settings.nickname;
   if (settings.enableDebug) skyRender.enableDebug = settings.enableDebug.get();
 }
 

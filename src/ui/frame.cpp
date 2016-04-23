@@ -122,6 +122,19 @@ void Frame::drawRect(const sf::Vector2f &topLeft,
   window.draw(rect, transformStack.top());
 }
 
+void Frame::drawPoly(const std::vector<sf::Vector2f> &vertices,
+                     const sf::Color &color) {
+  primCount++;
+  sf::ConvexShape shape(vertices.size());
+  size_t i = 0;
+  for (const auto &vertex : vertices) {
+    shape.setPoint(i, vertex);
+    ++i;
+  }
+  shape.setFillColor(alphaScaleColor(color));
+  window.draw(shape, transformStack.top());
+}
+
 sf::Vector2f Frame::drawText(const sf::Vector2f &pos,
                              std::function<void(TextFrame &)> process,
                              const TextFormat &format) {

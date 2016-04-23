@@ -1,10 +1,20 @@
 #include "arena.h"
+#include "util/printer.h"
 #include "sky.h"
 
 namespace sky {
 
-SkyInitializer::SkyInitializer(const MapName &mapName) :
-    mapName(mapName) { }
+/**
+ * SkyInitializer.
+ */
+
+bool SkyInitializer::verifyStructure() const {
+  return true; // TODO: initializer invariants?
+}
+
+/**
+ * SkyDelta.
+ */
 
 bool SkyDelta::verifyStructure() const {
   for (auto const &x : planes)
@@ -12,14 +22,23 @@ bool SkyDelta::verifyStructure() const {
   return true;
 }
 
-void Sky::registerPlayer(Player &player) {
+/**
+ * Sky.
+ */
+
+void Sky::registerPlayerWith(Player &player,
+                             const PlaneInitializer &initializer) {
   const auto plane = planes.find(player.pid);
   if (plane == planes.end()) {
     planes.emplace(std::piecewise_construct,
                    std::forward_as_tuple(player.pid),
-                   std::forward_as_tuple(*this, player));
+                   std::forward_as_tuple(*this, player, initializer));
     player.data.push_back(&planes.at(player.pid));
   } else player.data.push_back(&plane->second);
+}
+
+void Sky::registerPlayer(Player &player) {
+  registerPlayerWith(player, {});
 }
 
 void Sky::unregisterPlayer(Player &player) {
@@ -28,18 +47,36 @@ void Sky::unregisterPlayer(Player &player) {
 }
 
 void Sky::onTick(const float delta) {
-  for (auto &elem : planes) {
-    elem.second.beforePhysics();
-  }
-  physics.tick(delta);
-  for (auto &elem : planes) {
-    elem.second.afterPhysics(delta);
+  if (physics) {
+    for (auto &elem : planes) {
+      elem.second.beforePhysics();
+    }
+    physics->tick(delta);
+    for (auto &elem : planes) {
+      elem.second.afterPhysics(delta);
+    }
   }
 }
 
 void Sky::onJoin(Player &player) { }
 
 void Sky::onQuit(Player &player) { }
+
+void Sky::onMode(const ArenaMode newMode) {
+  if (physics) {
+    if (newMode != ArenaMode::Game) {
+      stop();
+    }
+  } else {
+    if (newMode == ArenaMode::Game) {
+      start();
+    }
+  }
+}
+
+void Sky::onMapChange() {
+  if (arena.getMode() == ArenaMode::Game) restart();
+}
 
 void Sky::onAction(Player &player, const Action action, const bool state) {
   getPlane(player).doAction(action, state);
@@ -52,27 +89,43 @@ void Sky::onSpawn(Player &player,
   getPlane(player).spawn(tuning, pos, rot);
 }
 
+void Sky::stop() {
+  appLog("Resetting sky.");
+  for (auto &pair : planes) {
+    pair.second.reset();
+  }
+  map.reset();
+  physics.reset();
+}
+
+void Sky::start() {
+  appLog("Loading map " + inQuotes(arena.getMap()) + ".", LogOrigin::Engine);
+  map.emplace(arena.getMap());
+  physics.emplace(map.get());
+}
+
 Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
-    Subsystem(arena),
-    mapName(initializer.mapName),
-    map(mapName),
-    physics(map) {
-  for (auto &player : arena.players) {
-    const auto iter = initializer.planes.find(player.first);
-    if (iter != initializer.planes.end()) {
-      // initialize with the PlaneInitializer
-      planes.emplace(std::piecewise_construct,
-                     std::forward_as_tuple(player.first),
-                     std::forward_as_tuple(*this, player.second,
-                                           iter->second));
-    }
-    // initialize default plane
-    registerPlayer(player.second);
+    Subsystem(arena) {
+
+  if (arena.getMode() == ArenaMode::Game) {
+    start();
+    arena.forPlayers([&](Player &player) {
+      const auto iter = initializer.planes.find(player.pid);
+      if (iter != initializer.planes.end()) {
+        registerPlayerWith(player, iter->second);
+      } else {
+        registerPlayer(player);
+      }
+    });
+  } else {
+    arena.forPlayers([&](Player &player) {
+      registerPlayer(player);
+    });
   }
 }
 
 Sky::~Sky() {
-  planes.clear(); // destroy the planes before destroying the physics!
+  stop(); // necessary to correctly free the box2d world
 }
 
 Plane *Sky::planeFromPID(const PID pid) {
@@ -83,7 +136,6 @@ Plane *Sky::planeFromPID(const PID pid) {
 
 SkyInitializer Sky::captureInitializer() {
   SkyInitializer initializer;
-  initializer.mapName = mapName;
   for (const auto &pair : planes)
     initializer.planes.emplace(pair.first, pair.second.captureInitializer());
   return initializer;
@@ -106,6 +158,11 @@ void Sky::applyDelta(const SkyDelta &delta) {
 
 Plane &Sky::getPlane(const Player &player) const {
   return getPlayerData<Plane>(player);
+}
+
+void Sky::restart() {
+  stop();
+  start();
 }
 
 }

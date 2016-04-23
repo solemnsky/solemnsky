@@ -12,11 +12,11 @@
 #include <iostream>
 
 /**
- * Methods that the ServerExec exposes for use by Server and ServerLogger.
+ * Methods that the ServerExec exposes / shares with Server.
  */
 struct ServerShared {
  private:
-  class ServerExec &exec; // TODO: justify use
+  class ServerExec &exec;
 
  public:
   ServerShared(tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph,
@@ -27,7 +27,10 @@ struct ServerShared {
 
   sky::Player *playerFromPeer(ENetPeer *peer) const;
 
-  // transmission
+  // applyAndSendDelta
+  void applyAndSendDelta(const sky::ArenaDelta &arenaDelta);
+
+  // Transmission.
   void sendToClients(const sky::ServerPacket &packet);
   void sendToClientsExcept(const PID pid,
                            const sky::ServerPacket &packet);
@@ -35,7 +38,7 @@ struct ServerShared {
                     const sky::ServerPacket &packet);
   void rconResponse(ENetPeer *const client, const std::string &response);
 
-  // logging events
+  // Logging.
   void logEvent(const ServerEvent &event);
   void logArenaEvent(const sky::ArenaEvent &event);
 };
@@ -80,7 +83,7 @@ class ServerLogger: public sky::ArenaLogger {
  * We manage the basics here.
  */
 class ServerExec {
-  friend class ServerLogger;
+  friend class ServerShared;
 
  private:
   tg::UsageFlag flag; // for enet global state
@@ -97,6 +100,7 @@ class ServerExec {
 
   ServerLogger logger;
 
+  // Server loop subroutines.
   void processPacket(ENetPeer *client, const sky::ClientPacket &packet);
   void tick(float delta);
 

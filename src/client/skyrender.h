@@ -48,6 +48,7 @@ class SkyRender: public Subsystem {
                   sf::FloatRect area);
   void renderProps(ui::Frame &f, const Plane &plane);
   void renderPlaneGraphics(ui::Frame &f, const PlaneGraphics &graphics);
+  void renderMap(ui::Frame &f);
 
   /**
    * Subsystem listeners.

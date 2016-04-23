@@ -24,7 +24,7 @@ void save(Archive &ar, const optional<T> &x) {
     ar(true);
     ar(*x);
   } else ar(false);
-};
+}
 
 template<typename Archive, typename T>
 void load(Archive &ar, optional<T> &x) {
@@ -34,7 +34,7 @@ void load(Archive &ar, optional<T> &x) {
     x.emplace();
     ar(*x);
   } else x.reset();
-};
+}
 
 template<typename Archive>
 void serialize(Archive &ar, sf::Vector2f &x) {
@@ -102,11 +102,11 @@ bool approach(T &x, const T target, const T amount) {
 class RollingSampler {
  private:
   std::vector<float> data;
-  const int maxMemory;
+  const unsigned int maxMemory;
 
  public:
   RollingSampler() = delete;
-  RollingSampler(const int maxMemory);
+  RollingSampler(const unsigned int maxMemory);
 
   void push(const float value);
 
@@ -136,14 +136,13 @@ struct SamplerSnapshot {
  * (Ideally it should be value templated).
  */
 struct Cooldown {
- public:
   float cooldown;
   float period;
 
   Cooldown(const float period);
   bool cool(const float delta);
   void reset();
-  void prime();;
+  void prime();
 
   inline operator bool() { return cooldown == 0; }
 

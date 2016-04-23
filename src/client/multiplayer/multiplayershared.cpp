@@ -27,11 +27,9 @@ void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
     if (packet.type == ServerPacket::Type::Init) {
       initializeArena(
           packet.pid.get(), packet.arenaInit.get(), packet.skyInit.get());
-      appLog("Joined arena!", LogOrigin::Client);
 
       logEvent(ClientEvent::Connect(
-          "(haven't implemented server names lol)",
-          tg::printAddress(host.peers[0]->address)));
+          arena->getName(), tg::printAddress(host.peers[0]->address)));
     }
     return;
   }
@@ -56,7 +54,7 @@ void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
       if (sky::Player *chattyPlayer = arena->getPlayer(
           packet.pid.get())) {
         logEvent(ClientEvent::Chat(
-            chattyPlayer->nickname, packet.stringData.get()));
+            chattyPlayer->getNickname(), packet.stringData.get()));
       }
       break;
     }
@@ -95,12 +93,14 @@ MultiplayerShared::MultiplayerShared(
     const std::string &serverHostname,
     const unsigned short serverPort) :
     shared(shared),
-    server(nullptr),
-    telegraph(),
     askedConnection(false),
     disconnectTimeout(5),
+
     host(tg::HostType::Client),
-    disconnected(false), disconnecting(false),
+    server(nullptr),
+
+    disconnecting(false), disconnected(false),
+
     player(nullptr), plane(nullptr) {
   host.connect(serverHostname, serverPort);
 }
@@ -109,12 +109,14 @@ void MultiplayerShared::initializeArena(
     const PID pid,
     const sky::ArenaInitializer &arenaInit,
     const sky::SkyInitializer &skyInit) {
+  appLog("Loading arena...", LogOrigin::Client);
   arena.emplace(arenaInit);
   sky.emplace(arena.get(), skyInit);
   skyRender.emplace(arena.get(), sky.get(), shared.settings.enableDebug);
   logger.emplace(arena.get(), *this);
   player = arena->getPlayer(pid);
   plane = &sky->getPlane(*player);
+  appLog("Joined arena!", LogOrigin::Client);
 }
 
 void MultiplayerShared::transmit(const sky::ClientPacket &packet) {
@@ -228,7 +230,7 @@ MultiplayerView::MultiplayerView(
     ClientShared &shared,
     MultiplayerShared &mShared) :
     ui::Control(shared.appState),
-    target(target),
     shared(shared),
-    mShared(mShared) { }
+    mShared(mShared),
+    target(target) { }
 

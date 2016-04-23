@@ -14,10 +14,10 @@ PlayerInitializer::PlayerInitializer(
 Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     Networked(initializer),
     arena(arena),
-    pid(initializer.pid),
     nickname(initializer.nickname),
     admin(initializer.admin),
-    team(initializer.team) { }
+    team(initializer.team),
+    pid(initializer.pid) { }
 
 void Player::applyDelta(const PlayerDelta &delta) {
   if (delta.nickname) nickname = *delta.nickname;
@@ -40,14 +40,27 @@ PlayerDelta Player::zeroDelta() const {
   return delta;
 }
 
+std::string Player::getNickname() const {
+  return nickname;
+}
+
+bool Player::isAdmin() const {
+  return admin;
+}
+
+Team Player::getTeam() const {
+  return team;
+}
+
+
 void Player::doAction(const Action action, const bool state) {
-  arena.onAction(*this, action, state);
+  for (auto s : arena.subsystems) s->onAction(*this, action, state);
 }
 
 void Player::spawn(const PlaneTuning &tuning,
                    const sf::Vector2f &pos,
                    const float rot) {
-  arena.onSpawn(*this, tuning, pos, rot);
+  for (auto s : arena.subsystems) s->onSpawn(*this, tuning, pos, rot);
 }
 
 /**
@@ -68,6 +81,8 @@ bool ArenaDelta::verifyStructure() const {
       return verifyFields(motd);
     case Type::Mode:
       return verifyFields(mode);
+    case Type::MapChange:
+      return verifyFields(map);
   }
   return false; // enum out of bounds
 }
@@ -102,6 +117,12 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode) {
   return delta;
 }
 
+ArenaDelta ArenaDelta::MapChange(const MapName &map) {
+  ArenaDelta delta(Type::MapChange);
+  delta.map = map;
+  return delta;
+}
+
 /**
  * Subsystem.
  */
@@ -109,13 +130,13 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode) {
 SubsystemCaller::SubsystemCaller(Arena &arena) : arena(arena) { }
 
 void SubsystemCaller::onDie(Player &player) {
-  arena.onDie(player);
+  for (auto s : arena.subsystems) s->onDie(player);
 }
 
 Subsystem::Subsystem(Arena &arena) :
+    id(PID(arena.subsystems.size())),
     arena(arena),
-    caller(arena.caller),
-    id(PID(arena.subsystems.size())) {
+    caller(arena.caller) {
   arena.subsystems.push_back(this);
 }
 
@@ -131,8 +152,9 @@ ArenaLogger::ArenaLogger(Arena &arena) : arena(arena) {
  * Arena.
  */
 
-ArenaInitializer::ArenaInitializer(const std::string &name) :
-    name(name), mode(ArenaMode::Lobby) { }
+ArenaInitializer::ArenaInitializer(
+    const std::string &name, const MapName &map) :
+    name(name), map(map), mode(ArenaMode::Lobby) { }
 
 PID Arena::allocPid() const {
   std::vector<int> usedPids;
@@ -147,7 +169,7 @@ std::string Arena::allocNickname(const std::string &requested) const {
   std::vector<int> usedNumbers;
 
   for (const auto &player : players) {
-    const std::string &name = player.second.nickname;
+    const std::string &name = player.second.getNickname();
     if (name.size() < rsize) continue;
     if (name.substr(0, rsize) != requested) continue;
 
@@ -175,29 +197,17 @@ std::string Arena::allocNickname(const std::string &requested) const {
         + std::to_string(smallestUnused(usedNumbers)) + ")";
 }
 
-void Arena::onAction(Player &player, const Action action, const bool state) {
-  for (auto s : subsystems) s->onAction(player, action, state);
-}
-
-void Arena::onSpawn(Player &player, const PlaneTuning &tuning,
-                    const sf::Vector2f &pos, const float rot) {
-  for (auto s : subsystems) s->onSpawn(player, tuning, pos, rot);
-}
-
-void Arena::onDie(Player &player) {
-  for (auto s : subsystems) s->onDie(player);
-}
-
-void Arena::onEvent(const ArenaEvent &event) const {
+void Arena::logEvent(const ArenaEvent &event) const {
   for (auto l : loggers) l->onEvent(event);
 }
 
 Arena::Arena(const ArenaInitializer &initializer) :
     Networked(initializer),
-    caller(*this),
     name(initializer.name),
     motd(initializer.motd),
-    mode(initializer.mode) {
+    map(initializer.map),
+    mode(initializer.mode),
+    caller(*this) {
   for (auto const &player : initializer.players) {
     players.emplace(std::piecewise_construct,
                     std::forward_as_tuple(player.first),
@@ -209,13 +219,15 @@ void Arena::applyDelta(const ArenaDelta &delta) {
   switch (delta.type) {
     case ArenaDelta::Type::Quit: {
       if (Player *player = getPlayer(delta.quit.get())) {
+        for (auto s : subsystems) s->onQuit(*player);
         quitPlayer(*player);
       }
       break;
     }
 
     case ArenaDelta::Type::Join: {
-      joinPlayer(delta.join.get());
+      Player &player = joinPlayer(delta.join.get());
+      for (auto s : subsystems) s->onJoin(player);
       break;
     }
 
@@ -224,16 +236,18 @@ void Arena::applyDelta(const ArenaDelta &delta) {
       const PlayerDelta &playerDelta = delta.delta->second;
 
       if (Player *player = getPlayer(pid)) {
-        std::string oldNick = player->nickname;
-        Team oldTeam = player->team;
+        const auto oldNick = player->getNickname();
+        const auto oldTeam = player->getTeam();
 
         player->applyDelta(playerDelta);
 
-        if (player->nickname != oldNick)
-          onEvent(ArenaEvent::NickChange(oldNick, player->nickname));
-        if (player->team != oldTeam)
-          onEvent(ArenaEvent::TeamChange(
-              player->nickname, oldTeam, player->team));
+        const auto newNick = player->getNickname();
+        const auto newTeam = player->getTeam();
+
+        if (newNick != oldNick)
+          logEvent(ArenaEvent::NickChange(oldNick, newNick));
+        if (newTeam != oldTeam)
+          logEvent(ArenaEvent::TeamChange(newNick, oldTeam, newTeam));
       }
       break;
     }
@@ -246,20 +260,26 @@ void Arena::applyDelta(const ArenaDelta &delta) {
     case ArenaDelta::Type::Mode: {
       if (mode != *delta.mode) {
         mode = *delta.mode;
-        onEvent(ArenaEvent::ModeChange(mode));
+        logEvent(ArenaEvent::ModeChange(mode));
+        for (auto s : subsystems) s->onMode(mode);
       }
       break;
+    }
+
+    case ArenaDelta::Type::MapChange: {
+      map = *delta.map;
+      logEvent(ArenaEvent::MapChange(map));
+      for (auto s : subsystems) s->onMapChange();
     }
   }
 }
 
 ArenaInitializer Arena::captureInitializer() const {
-  ArenaInitializer initializer;
+  ArenaInitializer initializer(name, map);
   for (auto &player : players) {
     initializer.players.emplace(
         player.first, player.second.captureInitializer());
   }
-  initializer.name = name;
   initializer.motd = motd;
   initializer.mode = mode;
   return initializer;
@@ -273,7 +293,7 @@ Player &Arena::joinPlayer(const PlayerInitializer &initializer) {
     s->registerPlayer(newPlayer);
     s->onJoin(newPlayer);
   }
-  onEvent(ArenaEvent::Join(newPlayer.nickname));
+  logEvent(ArenaEvent::Join(newPlayer.getNickname()));
   return newPlayer;
 }
 
@@ -282,13 +302,8 @@ void Arena::quitPlayer(Player &player) {
     s->onQuit(player);
     s->unregisterPlayer(player);
   }
-  onEvent(ArenaEvent::Quit(player.nickname));
+  logEvent(ArenaEvent::Quit(player.getNickname()));
   players.erase(player.pid);
-}
-
-Player &Arena::connectPlayer(const std::string &requestedNick) {
-  return joinPlayer(
-      PlayerInitializer(allocPid(), allocNickname(requestedNick)));
 }
 
 Player *Arena::getPlayer(const PID pid) {
@@ -304,6 +319,30 @@ void Arena::forPlayers(std::function<void(const Player &)> f) const {
 void Arena::forPlayers(std::function<void(Player &)> f) {
   for (auto &pair : players) f(pair.second);
 }
+
+
+std::string Arena::getName() const {
+  return name;
+}
+
+std::string Arena::getMotd() const {
+  return motd;
+}
+
+MapName Arena::getMap() const {
+  return map;
+}
+
+ArenaMode Arena::getMode() const {
+  return mode;
+}
+
+ArenaDelta Arena::connectPlayer(const std::string &requestedNick) {
+  Player &player = joinPlayer(
+      PlayerInitializer(allocPid(), allocNickname(requestedNick)));
+  return ArenaDelta::Join(player.captureInitializer());
+}
+
 
 void Arena::tick(const float delta) {
   for (auto s : subsystems) s->onTick(delta);

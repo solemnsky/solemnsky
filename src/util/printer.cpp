@@ -45,6 +45,7 @@ std::string showOrigin(const LogOrigin origin) {
     case LogOrigin::Error:
       return "[error]   : ";
   }
+  throw enum_error();
 }
 
 void appLog(const std::string &contents, const LogOrigin origin) {

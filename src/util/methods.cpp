@@ -1,7 +1,7 @@
-
 #define _USE_MATH_DEFINES // for M_PI
 
 #include <sstream>
+#include "printer.h"
 #include <vector>
 #include <math.h>
 #include <iostream>
@@ -64,6 +64,11 @@ int smallestUnused(std::vector<int> &vec) {
     break;
   }
   return v;
-};
+}
 
+enum_error::enum_error() :
+    std::logic_error("An enum is outside its identified value space. Maybe "
+                         "you're connection to a corrupted server? Report this "
+                         "issue to the solemnsky team along with all the "
+                         "relevant logs you can find, it's a bug.") { }
 

@@ -15,6 +15,11 @@ sky::Player *ServerShared::playerFromPeer(ENetPeer *peer) const {
   else return nullptr;
 }
 
+void ServerShared::applyAndSendDelta(const sky::ArenaDelta &arenaDelta) {
+  exec.arena.applyDelta(arenaDelta);
+  sendToClients(sky::ServerPacket::DeltaArena(arenaDelta));
+}
+
 void ServerShared::sendToClients(const sky::ServerPacket &packet) {
   telegraph.transmit(
       host,
@@ -94,12 +99,10 @@ void ServerExec::processPacket(ENetPeer *client,
     switch (packet.type) {
       case ClientPacket::Type::ReqPlayerDelta: {
         const PlayerDelta &delta = packet.playerDelta.get();
-        if (delta.admin && not player->admin) return;
-
-        sky::ArenaDelta arenaDelta = sky::ArenaDelta::Delta(
-            player->pid, delta);
-        arena.applyDelta(arenaDelta);
-        shared.sendToClients(ServerPacket::DeltaArena(arenaDelta));
+        if (delta.admin && not player->isAdmin()) return;
+        shared.applyAndSendDelta(
+            sky::ArenaDelta::Delta(
+                player->pid, delta));
         break;
       }
 
@@ -139,17 +142,17 @@ void ServerExec::processPacket(ENetPeer *client,
     // client hasn't joined the arena yet
 
     if (packet.type == ClientPacket::Type::ReqJoin) {
-      sky::Player &newPlayer = arena.connectPlayer(packet.stringData.get());
-      client->data = &newPlayer;
+      const ArenaDelta delta = arena.connectPlayer(packet.stringData.get());
+      Player *newPlayer = arena.getPlayer(delta.join->pid);
+      client->data = newPlayer;
 
-      shared.logEvent(ServerEvent::Connect(newPlayer.nickname));
+      shared.logEvent(ServerEvent::Connect(newPlayer->getNickname()));
       shared.sendToClient(
           client, ServerPacket::Init(
-              newPlayer.pid, arena.captureInitializer(),
+              newPlayer->pid, arena.captureInitializer(),
               sky.captureInitializer()));
       shared.sendToClientsExcept(
-          newPlayer.pid, ServerPacket::DeltaArena(
-              ArenaDelta::Join(newPlayer.captureInitializer())));
+          newPlayer->pid, ServerPacket::DeltaArena(delta));
     }
   }
 }
@@ -175,12 +178,8 @@ void ServerExec::tick(float delta) {
     }
     case ENET_EVENT_TYPE_DISCONNECT: {
       if (sky::Player *player = shared.playerFromPeer(event.peer)) {
-        shared.logEvent(ServerEvent::Disconnect(player->nickname));
-        shared.sendToClientsExcept(
-            player->pid, sky::ServerPacket::DeltaArena(
-                sky::ArenaDelta::Quit(player->pid)));
-
-        arena.quitPlayer(*player);
+        shared.logEvent(ServerEvent::Disconnect(player->getNickname()));
+        shared.applyAndSendDelta(sky::ArenaDelta::Quit(player->pid));
         event.peer->data = nullptr;
       }
       break;
@@ -199,13 +198,19 @@ ServerExec::ServerExec(
     const sky::SkyInitializer &sky,
     std::function<std::unique_ptr<Server>(
         ServerShared &, sky::Arena &, sky::Sky &)> server) :
+    uptime(0),
+
     host(tg::HostType::Server, port),
     shared(host, telegraph, *this),
+
     arena(arena),
     sky(this->arena, sky),
+
     server(server(shared, this->arena, this->sky)),
-    logger(shared, this->arena),
     packetBroadcastTimer(0.03),
+
+    logger(shared, this->arena),
+
     running(true) {
   shared.logEvent(ServerEvent::Start(port, arena.name));
 }

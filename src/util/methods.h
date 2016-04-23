@@ -51,7 +51,7 @@ bool verifyFields(Field &field, Fields... fields) {
   if (!field) return false;
   if (!verifyValue(*field)) return false;
   return verifyFields(fields...);
-};
+}
 
 /**
  * Random stuff.
@@ -59,3 +59,8 @@ bool verifyFields(Field &field, Fields... fields) {
 
 std::string inQuotes(const std::string &str);
 int smallestUnused(std::vector<int> &vec);
+
+class enum_error: public std::logic_error {
+ public:
+  enum_error();
+};
