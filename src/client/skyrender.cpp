@@ -75,7 +75,7 @@ void SkyRender::renderBars(ui::Frame &f,
   sf::FloatRect barArea;
   barArea.height = height;
   barArea.left = area.left;
-  for (int i = 0; i < bars.size(); i++) {
+  for (size_t i = 0; i < bars.size(); i++) {
     const auto &bar = bars[i];
     barArea.top = area.top + i * height;
     barArea.width = area.width * bar.first;
@@ -86,7 +86,7 @@ void SkyRender::renderBars(ui::Frame &f,
 
 std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
   return std::pair<float, const sf::Color &>(x, c);
-};
+}
 
 void SkyRender::renderProps(ui::Frame &f,
                             const Plane &plane) {
@@ -156,8 +156,8 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
 
 SkyRender::SkyRender(Arena &arena, Sky &sky, const bool enableDebug) :
     Subsystem(arena), sky(sky),
-    enableDebug(enableDebug),
-    planeSheet(ResID::PlayerSheet) {
+    planeSheet(ResID::PlayerSheet),
+    enableDebug(enableDebug) {
   arena.forPlayers([&](Player &player) { registerPlayer(player); });
 }
 
