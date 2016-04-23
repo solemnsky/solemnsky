@@ -22,7 +22,15 @@ MapObstacle::MapObstacle(const sf::Vector2f &pos,
  */
 
 void Map::loadTest1() {
-  dimensions = {500, 500};
+  dimensions = {1600, 900};
+
+  const std::vector<sf::Vector2f> square = {
+      {-20, -20}, {-20, 20}, {20, 20}, {20, -20}
+  };
+
+  for (float x = 0; x < 1600.0f; x += 500) {
+    obstacles.emplace_back(sf::Vector2f(x, 450), square, 1);
+  }
 }
 
 void Map::loadTest2() {
