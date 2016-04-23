@@ -50,6 +50,7 @@ class Frame {
    * Drawing API.
    */
 
+  // Inline synonyms.
   inline void drawRect(const sf::FloatRect &rect, const sf::Color &color = {}) {
     drawRect(sf::Vector2f(rect.left, rect.top),
              sf::Vector2f(rect.left + rect.width, rect.top + rect.height),
@@ -66,14 +67,16 @@ class Frame {
     }, format);
   }
 
+  // Basic calls.
   void drawCircle(const sf::Vector2f &pos, const float radius,
                   const sf::Color &color = {});
   void drawRect(const sf::Vector2f &topLeft, const sf::Vector2f &bottomRight,
                 const sf::Color &color = {});
+  void drawPoly(const std::vector<sf::Vector2f> &vertices,
+                const sf::Color &color = {});
   sf::Vector2f drawText(const sf::Vector2f &pos,
                         std::function<void(TextFrame &)> process,
                         const TextFormat &format);
-  // PrintProcess has an implicit conversion to std::function<void(TextFrame &)>
   void drawSprite(const sf::Texture &texture, const sf::Vector2f &pos,
                   const sf::IntRect &portion);
 };

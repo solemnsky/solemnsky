@@ -135,6 +135,7 @@ Style::Multi::Multi(const Style::Base &base) :
     chatCutoff(500),
     chatIngameCutoff(150),
 
+
     playerSpecColor(255, 255, 255),
     playerJoinedColor(0, 255, 0),
     readyButtonActiveDesc("READY!"),

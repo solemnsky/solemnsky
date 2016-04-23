@@ -1,4 +1,5 @@
 #include "arena.h"
+#include "util/printer.h"
 #include "sky.h"
 
 namespace sky {
@@ -89,6 +90,7 @@ void Sky::onSpawn(Player &player,
 }
 
 void Sky::stop() {
+  appLog("Resetting sky.");
   for (auto &pair : planes) {
     pair.second.reset();
   }
@@ -97,6 +99,7 @@ void Sky::stop() {
 }
 
 void Sky::start() {
+  appLog("Loading map " + inQuotes(arena.getMap()) + ".", LogOrigin::Engine);
   map.emplace(arena.getMap());
   physics.emplace(map.get());
 }
@@ -105,8 +108,8 @@ Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
     Subsystem(arena) {
 
   if (arena.getMode() == ArenaMode::Game) {
+    start();
     arena.forPlayers([&](Player &player) {
-      start();
       const auto iter = initializer.planes.find(player.pid);
       if (iter != initializer.planes.end()) {
         registerPlayerWith(player, iter->second);

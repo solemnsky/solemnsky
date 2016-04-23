@@ -154,6 +154,19 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
   }
 }
 
+void SkyRender::renderMap(ui::Frame &f) {
+  f.drawRect({0, 0}, sky.map->dimensions, style.base.pageBgColor);
+  f.drawSprite(textureOf(ResID::Title),
+               {(sky.map->dimensions.x / 2) - 800, 0},
+               {0, 0, 1600, 900});
+
+  for (const auto &obstacle : sky.map->obstacles) {
+    f.withTransform(sf::Transform().translate(obstacle.pos), [&]() {
+      f.drawPoly(obstacle.localVerticies, sf::Color::White);
+    });
+  }
+}
+
 SkyRender::SkyRender(Arena &arena, Sky &sky, const bool enableDebug) :
     Subsystem(arena), sky(sky),
     planeSheet(ResID::PlayerSheet),
@@ -179,16 +192,13 @@ void SkyRender::onTick(const float delta) {
 void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
   if (sky.map) {
     f.withTransform(
+//        sf::Transform(),
         sf::Transform().translate(
             {-findView(1600, sky.map->dimensions.x, pos.x),
              -findView(900, sky.map->dimensions.y, pos.y)}
         ),
         [&]() {
-          // TODO: give the map visual data, including background
-          f.drawSprite(textureOf(ResID::Title),
-                       {0, 0}, {0, 0, 1600, 900});
-          f.drawSprite(textureOf(ResID::Title),
-                       {1600, 0}, {0, 0, 1600, 900});
+          renderMap(f);
           for (auto &pair: graphics) renderPlaneGraphics(f, pair.second);
         }
     );

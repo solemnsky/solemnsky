@@ -8,19 +8,22 @@ Physics::Physics(const Map &map) :
     dims(map.dimensions) {
   CTOR_LOG("physics");
 
+  // world boundaries
   b2Body *body;
-
   body = rectBody({dims.x, 1}, true);
   body->SetTransform(toPhysVec({dims.x / 2, dims.y}), 0);
-
   body = rectBody({dims.x, 1}, true);
   body->SetTransform(toPhysVec({dims.x / 2, 0}), 0);
-
   body = rectBody({1, dims.y}, true);
   body->SetTransform(toPhysVec({dims.x, dims.y / 2}), 0);
-
   body = rectBody({1, dims.y}, true);
   body->SetTransform(toPhysVec({0, dims.y / 2}), 0);
+
+  // obstacles
+  for (const auto &obstacle : map.obstacles) {
+    body = polyBody(obstacle.localVerticies, true);
+    body->SetTransform(toPhysVec(obstacle.pos), 0);
+  }
 }
 
 Physics::~Physics() {

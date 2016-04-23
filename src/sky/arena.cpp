@@ -205,6 +205,7 @@ Arena::Arena(const ArenaInitializer &initializer) :
     Networked(initializer),
     name(initializer.name),
     motd(initializer.motd),
+    map(initializer.map),
     mode(initializer.mode),
     caller(*this) {
   for (auto const &player : initializer.players) {
