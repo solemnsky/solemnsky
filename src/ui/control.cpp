@@ -118,12 +118,6 @@ sf::Event transformEvent(const sf::Transform trans,
  * ControlExec.
  */
 
-sf::ContextSettings ControlExec::makeSettings() {
-  sf::ContextSettings settings;
-  settings.antialiasingLevel = 8;
-  return settings;
-}
-
 void ControlExec::tick() {
   const float cycleDelta = cycleClock.restart().asSeconds();
   profiler.cycleTime.push(cycleDelta);
@@ -182,6 +176,12 @@ void ControlExec::renderAndSleep() {
   // window.display() doesn't seem to block when the window isn't focused
   // on certain platforms
   if (!window.hasFocus()) sf::sleep(sf::milliseconds(16));
+}
+
+sf::ContextSettings ControlExec::makeSettings() {
+  sf::ContextSettings settings;
+  settings.antialiasingLevel = 8;
+  return settings;
 }
 
 ControlExec::ControlExec(
