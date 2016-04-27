@@ -3,7 +3,7 @@
 with nixpkgs;
 
 stdenv.mkDerivation {
-  buildInputs = [cmake eudev xorg.libX11 xorg.xcbutilimage eudev libjpeg openal flac libogg freetype libvorbis glew glfw2 boost];
+  buildInputs = [gdb cmake mesa xorg.libX11 xorg.xcbutilimage eudev libjpeg openal flac libogg freetype libvorbis boost];
 
   name = "solemnsky";
   src = ./.;
