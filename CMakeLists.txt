@@ -2,7 +2,7 @@ project(solemnsky)
 
 # tool / compiler versions
 cmake_minimum_required(VERSION 3.2)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic -g")
 
 # we depend on Box2D, SFML, and enet, from submodules in thirdparty/
 add_subdirectory("thirdparty/Box2D/Box2D")
@@ -25,7 +25,7 @@ include_directories(
 )
 
 ###### libsolemnsky, for common use by client and server
-add_library(solemnsky SHARED
+add_library(solemnsky STATIC
         src/sky/arena.cpp
         src/sky/arena.h
 
