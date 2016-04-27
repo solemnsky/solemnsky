@@ -13,3 +13,4 @@ target_link_libraries(solemnsky_tests
         gtest_main
         solemnsky
         )
+install(TARGETS solemnsky_tests RUNTIME DESTINATION bin)

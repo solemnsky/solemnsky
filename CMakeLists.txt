@@ -180,5 +180,8 @@ target_link_libraries(solemnsky_client
 add_subdirectory(tests/)
 
 ###### installation
-SET(CPACK_GENERATOR "ZIP")
+install(TARGETS solemnsky_client solemnsky_server 
+        RUNTIME DESTINATION bin)
+install(DIRECTORY media DESTINATION share/solemnsky)
+set(CPACK_GENERATOR "ZIP")
 include(CPack)
