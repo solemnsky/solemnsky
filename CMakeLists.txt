@@ -6,21 +6,19 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic -g")
 
 # we depend on Box2D, SFML, and enet, from submodules in thirdparty/
 add_subdirectory("thirdparty/Box2D/Box2D")
-add_subdirectory("thirdparty/SFML")
 add_subdirectory("thirdparty/enet")
+add_subdirectory("thirdparty/SFML")
 
 # we also depend on boost and gthread from the host system
-find_package(Boost)
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
+find_package(Boost REQUIRED)
 
 # so we can #include stuff
 include_directories(
         src/
-        thirdparty/SFML/include/
         thirdparty/Box2D/Box2D/
         thirdparty/enet/include/
         thirdparty/cereal/
+        thirdparty/SFML/include/
         "${Boost_INCLUDE_DIRS}"
 )
 
@@ -67,7 +65,7 @@ target_link_libraries(solemnsky
         enet
         sfml-system
         sfml-network
-        Box2D_shared
+        Box2D
         ${Boost_LIBRARIES}
         )
 
@@ -176,12 +174,11 @@ target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics
         sfml-window
-        ${CMAKE_THREAD_LIBS_INIT}
         )
 
 ###### unit tests
 add_subdirectory(tests/)
 
-###### cpack configuration
+###### installation
 SET(CPACK_GENERATOR "ZIP")
 include(CPack)
