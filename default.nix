@@ -3,7 +3,21 @@
 with nixpkgs;
 
 stdenv.mkDerivation {
-  buildInputs = [gdb cmake mesa xorg.libX11 xorg.xcbutilimage eudev libjpeg openal flac libogg freetype libvorbis boost];
+  buildInputs = [ 
+    cmake 
+    xorg.libX11 
+    xorg.libXrandr 
+    xorg.libXrender 
+    xorg.xcbutilimage
+    flac
+    libvorbis
+    freetype 
+    libjpeg 
+    openal 
+    libsndfile 
+    glew 
+    udev 
+    boost ]; 
 
   name = "solemnsky";
   src = ./.;
