@@ -11,10 +11,10 @@ install:
   - nix-env -iA nixpkgs.cmake 
 
 before_script:
-  - git clone --recursive http://github.com/solemnsky/solemnsky
   - cd solemnsky
+  - nix-build . -A deps
 
 script:
-  - nix-build .
+  - nix-build . -A default
   - ./result/bin/solemnsky_tests
 
