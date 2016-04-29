@@ -87,12 +87,11 @@ void Client::drawPage(ui::Frame &f, const PageType type,
   float alpha, scale, offsetAmnt, titleAlpha;
   if (type == shared.ui.focusedPage) {
     alpha = 1;
-    scale = linearTween(style.menu.unfocusedPageScale, 1,
-                        focusFactor);
-    offsetAmnt = linearTween(1, 0, focusFactor);
-    titleAlpha = linearTween(1, 0, focusFactor);
+    scale = linearTween(style.menu.unfocusedPageScale, 1.0f, focusFactor);
+    offsetAmnt = linearTween(1.0f, 0.0f, focusFactor);
+    titleAlpha = linearTween(1.0f, 0.0f, focusFactor);
   } else {
-    alpha = linearTween(1, 0, focusFactor);
+    alpha = linearTween(1.0f, 0.0f, focusFactor);
     scale = style.menu.unfocusedPageScale;
     offsetAmnt = 1;
     titleAlpha = 1;
@@ -100,8 +99,8 @@ void Client::drawPage(ui::Frame &f, const PageType type,
 
   if (alpha == 0) return;
 
-  sf::Transform &transform =
-      sf::Transform().translate(offsetAmnt * offset).scale(scale, scale);
+  const sf::Transform &transform = sf::Transform();
+      // sf::Transform().translate(offsetAmnt * offset).scale(scale, scale);
 
   f.withAlpha(alpha, [&]() {
     f.withAlpha(titleAlpha, [&]() {
@@ -125,12 +124,12 @@ void Client::drawUI(ui::Frame &f) {
   drawPage(
       f, PageType::Home, style.menu.homeOffset,
       "HOME", homePage);
-  drawPage(
-      f, PageType::Listing, style.menu.listingOffset,
-      "SERVER LISTING", listingPage);
-  drawPage(
-      f, PageType::Settings, style.menu.settingsOffset,
-      "SETTINGS", settingsPage);
+  // drawPage(
+      // f, PageType::Listing, style.menu.listingOffset,
+      // "SERVER LISTING", listingPage);
+  // drawPage(
+      // f, PageType::Settings, style.menu.settingsOffset,
+      // "SETTINGS", settingsPage);
 
   if (shared.game) {
     f.drawText(
