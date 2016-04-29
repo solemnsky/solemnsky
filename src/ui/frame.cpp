@@ -42,7 +42,7 @@ void Frame::resize() {
 
 void Frame::beginDraw() {
   primCount = 0;
-  transformStack = std::stack<sf::Transform>({sf::Transform()});
+  transformStack = std::stack<sf::Transform>({sf::Transform::Identity});
   alphaStack = std::stack<float>({1});
   window.clear(sf::Color::Black);
 }
@@ -62,13 +62,12 @@ void Frame::endDraw() {
 }
 
 void Frame::pushTransform(const sf::Transform &transform) {
-  sf::Transform nextTransform{transformStack.top()};
-  nextTransform.combine(transform);
-  transformStack.push(nextTransform);
+  auto newTransform = transformStack.top();
+  transformStack.push(newTransform.combine(transform));
 
   std::string transformStr = "transform: ";
   for (size_t i = 0; i < 16; ++i) 
-    transformStr += std::to_string(nextTransform.getMatrix()[i]) + " ";
+    transformStr += std::to_string(transformStack.top().getMatrix()[i]) + " ";
   appLog(transformStr);
   
 }
