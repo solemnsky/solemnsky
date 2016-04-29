@@ -1,5 +1,6 @@
 #include "client/client.h"
 #include "style.h"
+#include "util/printer.h"
 
 /**
  * ClientUiState.

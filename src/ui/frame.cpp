@@ -65,6 +65,12 @@ void Frame::pushTransform(const sf::Transform &transform) {
   sf::Transform nextTransform{transformStack.top()};
   nextTransform.combine(transform);
   transformStack.push(nextTransform);
+
+  std::string transformStr = "transform: ";
+  for (size_t i = 0; i < 16; ++i) 
+    transformStr += std::to_string(nextTransform.getMatrix()[i]) + " ";
+  appLog(transformStr);
+  
 }
 
 void Frame::popTransform() {
