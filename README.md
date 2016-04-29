@@ -1,3 +1,5 @@
+Travis CI says: [![Build Status](https://travis-ci.org/solemnsky/solemnsky.svg?branch=master)](https://travis-ci.org/solemnsky/solemnsky)
+
 # solemnsky
 
 Hello wandering traveler.
@@ -46,4 +48,3 @@ Listed below are the particular setups that we test against.
  * Linux: Should build easily, if you're having problems nix is a sure-fire way 
 to not have problems anymore (see default.nix in top-level).
 
-[![Travis CI says:](https://travis-ci.org/solemnsky/solemnsky.svg?branch=master)](https://travis-ci.org/solemnsky/solemnsky)
