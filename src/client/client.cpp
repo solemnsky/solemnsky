@@ -99,8 +99,8 @@ void Client::drawPage(ui::Frame &f, const PageType type,
 
   if (alpha == 0) return;
 
-  const sf::Transform &transform = sf::Transform().translate(0, 0);
-      // sf::Transform().translate(offsetAmnt * offset).scale(scale, scale);
+  const sf::Transform transform = sf::Transform()
+      .translate(offsetAmnt * offset).scale(scale, scale);
 
   f.withAlpha(alpha, [&]() {
     f.withAlpha(titleAlpha, [&]() {
@@ -124,12 +124,12 @@ void Client::drawUI(ui::Frame &f) {
   drawPage(
       f, PageType::Home, style.menu.homeOffset,
       "HOME", homePage);
-  // drawPage(
-      // f, PageType::Listing, style.menu.listingOffset,
-      // "SERVER LISTING", listingPage);
-  // drawPage(
-      // f, PageType::Settings, style.menu.settingsOffset,
-      // "SETTINGS", settingsPage);
+  drawPage(
+      f, PageType::Listing, style.menu.listingOffset,
+      "SERVER LISTING", listingPage);
+  drawPage(
+      f, PageType::Settings, style.menu.settingsOffset,
+      "SETTINGS", settingsPage);
 
   if (shared.game) {
     f.drawText(
