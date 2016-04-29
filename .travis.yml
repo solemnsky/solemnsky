@@ -8,10 +8,6 @@ dist: trusty
 install: 
   - bash <(curl -sS https://nixos.org/nix/install)
   - source $HOME/.nix-profile/etc/profile.d/nix.sh
-  - nix-env -iA nixpkgs.cmake 
-
-before_script:
-  - cd solemnsky
   - nix-build . -A deps
 
 script:
