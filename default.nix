@@ -19,7 +19,7 @@ let
     udev 
     boost ]; 
 
-in:
+in
 
 {
   deps =
