@@ -8,11 +8,10 @@ add_executable(solemnsky_tests
         telegraphtest.cpp
         utiltest.cpp
         subsystemtest.cpp
-        transformtest.cpp)
+        )
 target_link_libraries(solemnsky_tests
         gtest
         gtest_main
         solemnsky
-        sfml-graphics
         )
 install(TARGETS solemnsky_tests RUNTIME DESTINATION bin)
