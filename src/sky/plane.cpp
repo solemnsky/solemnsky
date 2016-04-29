@@ -378,6 +378,7 @@ PlaneDelta Plane::captureDelta() {
   if (vital) {
     delta.state = vital->state;
     if (newlyAlive) delta.tuning = vital->tuning;
+    newlyAlive = false;
   }
   delta.controls = controls;
   return delta;
