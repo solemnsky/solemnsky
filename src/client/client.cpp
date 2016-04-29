@@ -99,7 +99,7 @@ void Client::drawPage(ui::Frame &f, const PageType type,
 
   if (alpha == 0) return;
 
-  const sf::Transform &transform = sf::Transform();
+  const sf::Transform &transform = sf::Transform().translate(0, 0);
       // sf::Transform().translate(offsetAmnt * offset).scale(scale, scale);
 
   f.withAlpha(alpha, [&]() {
