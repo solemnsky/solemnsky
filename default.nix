@@ -2,8 +2,8 @@
 
 with nixpkgs;
 
-stdenv.mkDerivation {
-  buildInputs = [ 
+let
+  deps = [
     cmake 
     xorg.libX11 
     xorg.libXrandr 
@@ -19,6 +19,21 @@ stdenv.mkDerivation {
     udev 
     boost ]; 
 
-  name = "solemnsky";
-  src = ./.;
+in
+
+{
+  deps =
+    stdenv.mkDerivation {
+      buildInputs = deps;
+      name = "deps";
+      phases = "installPhase";
+      installPhase = "touch $out";
+    };
+
+  default = 
+    stdenv.mkDerivation {
+      buildInputs = deps;
+      name = "solemnsky";
+      src = ./.;
+    };
 }
