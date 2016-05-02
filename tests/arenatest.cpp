@@ -37,15 +37,11 @@ TEST_F(ArenaTest, InitializerTest) {
  * Arena deltas can effect various changes.
  */
 TEST_F(ArenaTest, DeltaTest) {
-  arena.applyDelta(
-      sky::ArenaDelta::MapChange("test2")
-  );
+  arena.applyDelta(sky::ArenaDelta::MapChange("test2"));
 
   EXPECT_EQ(arena.getMap(), "test2");
 
-  arena.applyDelta(
-      sky::ArenaDelta::Motd("new motd")
-  );
+  arena.applyDelta(sky::ArenaDelta::Motd("new motd"));
 
   EXPECT_EQ(arena.getMotd(), "new motd");
 

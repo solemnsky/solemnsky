@@ -9,6 +9,25 @@
 namespace sky {
 
 /**
+ * Tag given to each body in the Sky's Physics, for handling collisions.
+ */
+struct BodyTag {
+  class Plane *plane; // exists if it's a Plane's body
+  float damage; // damage factor, if it's a wall
+  // TODO: stub
+};
+
+/**
+ * Interface to listen to physical events.
+ */
+class PhysicsListener {
+ protected:
+  friend class Physics;
+  virtual void onBeginContact(const b2Body &body1, const b2Body &body2) = 0;
+  virtual void onEndContact(const b2Body &body1, const b2Body &body2) = 0;
+};
+
+/**
  * A physical world.
  */
 class Physics {
@@ -22,10 +41,11 @@ class Physics {
   } settings;
 
   b2World world;
+  PhysicsListener *const listener;
 
  public:
   Physics() = delete;
-  Physics(const Map &map);
+  Physics(const Map &map, PhysicsListener *const listener);
   ~Physics();
 
   const sf::Vector2f dims;
@@ -43,17 +63,13 @@ class Physics {
   /**
    * Managing bodies.
    */
-  // construct a body with a rectangular fixture
-  b2Body *rectBody(sf::Vector2f dims, bool isStatic = false);
-  // or with a polygon fixture
-  b2Body *polyBody(const std::vector<sf::Vector2f> &verticies,
-                   bool isStatic = false);
+  b2Body *createBody(const b2PolygonShape &shape, bool isStatic = false,
+                     const BodyTag &tag);
+  void deleteBody(b2Body *&body);
+  b2PolygonShape rectShape(const sf::Vector2f &dims);
+  b2PolygonShape polygonShape(const std::vector<sf::Vector2f> &verticies);
 
-  // clear a body pointer
-  void clrBody(b2Body *&body);
-
-  // approach angular / linear velocities with impulses (to participate
-  // in the simulation correctly)
+  // approach rotational / linear velocities by applying impulses
   void approachRotVel(b2Body *body, float rotvel) const;
   void approachVel(b2Body *body, sf::Vector2f vel) const;
 };

@@ -3,8 +3,9 @@
 
 namespace sky {
 
-Physics::Physics(const Map &map) :
+Physics::Physics(const Map &map, PhysicsListener *const listener) :
     world({0, Settings().gravity / Settings().distanceScale}),
+    listener(listener),
     dims(map.dimensions) {
   CTOR_LOG("physics");
 
@@ -53,32 +54,25 @@ float Physics::toPhysDistance(float x) const {
   return x / settings.distanceScale;
 }
 
-
-b2Body *Physics::rectBody(sf::Vector2f dims, bool isStatic) {
-  b2Body *body;
-  const b2Vec2 bdims = toPhysVec(dims);
-
+b2Body *Physics::createBody(const b2PolygonShape &shape, bool isStatic,
+                            const BodyTag &tag) {
   b2BodyDef def;
   def.fixedRotation = false;
   def.type = isStatic ? b2_staticBody : b2_dynamicBody;
-  body = world.CreateBody(&def);
 
-  b2PolygonShape shape;
-  shape.SetAsBox(bdims.x / 2, bdims.y / 2);
+  b2Body *body = world.CreateBody(&def);
   body->CreateFixture(&shape, 10.0f);
-
   return body;
 }
 
-b2Body *Physics::polyBody(const std::vector<sf::Vector2f> &verticies,
-                          bool isStatic) {
-  b2Body *body;
+b2PolygonShape Physics::rectShape(const sf::Vector2f &dims) {
+  b2PolygonShape shape;
+  const auto bdims = toPhysVec(dims);
+  shape.SetAsBox(bdims.x / 2.0f, bdims.y / 2.0f);
+  return shape;
+}
 
-  b2BodyDef def;
-  def.fixedRotation = false;
-  def.type = isStatic ? b2_staticBody : b2_dynamicBody;
-  body = world.CreateBody(&def);
-
+b2PolygonShape Physics::polygonShape(const std::vector<sf::Vector2f> &verticies) {
   b2PolygonShape shape;
   b2Vec2 *points = new b2Vec2[verticies.size()];
   size_t i = 0;
@@ -87,13 +81,11 @@ b2Body *Physics::polyBody(const std::vector<sf::Vector2f> &verticies,
     i++;
   }
   shape.Set(points, (int32) verticies.size());
-  body->CreateFixture(&shape, 10.0f);
   delete[] points;
-
-  return body;
+  return shape;
 }
 
-void Physics::clrBody(b2Body *&body) {
+void Physics::deleteBody(b2Body *&body) {
   if (body) {
     world.DestroyBody(body);
     body = nullptr;

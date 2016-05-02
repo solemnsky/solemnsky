@@ -10,6 +10,9 @@
 
 namespace sky {
 
+/**
+ * Initializer for the Sky Networked impl.
+ */
 struct SkyInitializer: public VerifyStructure {
   SkyInitializer() = default;
 
@@ -23,6 +26,9 @@ struct SkyInitializer: public VerifyStructure {
   std::map<PID, PlaneInitializer> planes; // planes already in the arena
 };
 
+/**
+ * Delta for Sky Networked impl.
+ */
 struct SkyDelta: public VerifyStructure {
   SkyDelta() = default; // packing
 
@@ -39,7 +45,7 @@ struct SkyDelta: public VerifyStructure {
 /**
  * A Sky is a subsystem holding the potential state of a game being played.
  */
-class Sky: public Subsystem {
+class Sky: public Subsystem, public PhysicsListener {
  private:
   friend struct Plane;
   std::map<PID, Plane> planes;
@@ -66,6 +72,12 @@ class Sky: public Subsystem {
   // starting and stopping
   void stop();
   void start();
+
+  // physics listeners
+  virtual void
+      onBeginContact(const b2Body &body1, const b2Body &body2) override final;
+  virtual void
+      onEndContact(const b2Body &body1, const b2Body &body2) override final;
 
  public:
   Sky(class Arena &parent, const SkyInitializer &initializer);
