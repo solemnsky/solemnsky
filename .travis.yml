@@ -1,0 +1,16 @@
+#
+# Builds the nix expression for solemnsky, with server, client, and tests. Runs the tests.
+# 
+
+sudo: required
+dist: trusty
+
+install: 
+  - bash <(curl -sS https://nixos.org/nix/install)
+  - source $HOME/.nix-profile/etc/profile.d/nix.sh
+  - nix-build . -A deps
+
+script:
+  - nix-build . -A default
+  - ./result/bin/solemnsky_tests
+

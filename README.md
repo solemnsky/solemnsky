@@ -1,3 +1,5 @@
+Travis CI says: [![Build Status](https://travis-ci.org/solemnsky/solemnsky.svg?branch=master)](https://travis-ci.org/solemnsky/solemnsky)
+
 # solemnsky
 
 Hello wandering traveler.
@@ -41,7 +43,8 @@ A few other people shout at us to create things faster, thanks guys.
 It's possible to build this project on most Windows, OSX, and Linux setups. 
 Listed below are the particular setups that we test against.
 
-Windows: install http://nuwen.net/mingw.html -style MinGW, build with CLion.
-OSX: Install Boost (homebrew works fine), and CMake to Xcode projects. You can build those.
-Linux: Should build easily, if you're having problems nix is a sure-fire way 
+ * Windows: install http://nuwen.net/mingw.html -style MinGW, build with CLion.
+ * OSX: Install Boost (homebrew works fine), and CMake to Xcode projects. You can build those.
+ * Linux: Should build easily, if you're having problems nix is a sure-fire way 
 to not have problems anymore (see default.nix in top-level).
+
