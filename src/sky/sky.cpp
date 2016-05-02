@@ -104,12 +104,12 @@ void Sky::start() {
   physics.emplace(map.get(), nullptr);
 }
 
-void Sky::onBeginContact(const b2Body &body1, const b2Body &body2) {
-
+void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
+  appLog("contact starts");
 }
 
-void Sky::onEndContact(const b2Body &body1, const b2Body &body2) {
-
+void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
+  appLog("contact ends");
 }
 
 Sky::Sky(Arena &arena, const SkyInitializer &initializer) :

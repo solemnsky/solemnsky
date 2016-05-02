@@ -11,11 +11,7 @@ namespace sky {
 /**
  * Tag given to each body in the Sky's Physics, for handling collisions.
  */
-struct BodyTag {
-  class Plane *plane; // exists if it's a Plane's body
-  float damage; // damage factor, if it's a wall
-  // TODO: stub
-};
+struct BodyTag { };
 
 /**
  * Interface to listen to physical events.
@@ -23,8 +19,8 @@ struct BodyTag {
 class PhysicsListener {
  protected:
   friend class Physics;
-  virtual void onBeginContact(const b2Body &body1, const b2Body &body2) = 0;
-  virtual void onEndContact(const b2Body &body1, const b2Body &body2) = 0;
+  virtual void onBeginContact(const BodyTag &body1, const BodyTag &body2) = 0;
+  virtual void onEndContact(const BodyTag &body1, const BodyTag &body2) = 0;
 };
 
 /**
@@ -63,11 +59,13 @@ class Physics {
   /**
    * Managing bodies.
    */
-  b2Body *createBody(const b2PolygonShape &shape, bool isStatic = false,
-                     const BodyTag &tag);
+  b2Body *createBody(const b2PolygonShape &shape,
+                     const BodyTag &tag, bool isStatic = false);
   void deleteBody(b2Body *&body);
+
   b2PolygonShape rectShape(const sf::Vector2f &dims);
-  b2PolygonShape polygonShape(const std::vector<sf::Vector2f> &verticies);
+  b2PolygonShape polygonShape(const std::vector<sf::Vector2f>
+                                     &verticies);
 
   // approach rotational / linear velocities by applying impulses
   void approachRotVel(b2Body *body, float rotvel) const;

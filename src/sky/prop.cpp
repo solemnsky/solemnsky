@@ -6,7 +6,7 @@ namespace sky {
 Prop::Prop(Sky &parent, const sf::Vector2f &pos, const sf::Vector2f &vel) :
     parent(parent),
     physics(parent.physics.get()),
-    body(physics.rectBody({10, 10})),
+    body(physics.createBody(physics.rectShape({10, 10}), tag)),
     lifeTime(0),
     physical(pos, vel, 0, 0) {
   physical.hardWriteToBody(physics, body);

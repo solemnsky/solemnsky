@@ -148,11 +148,11 @@ PlaneVital::PlaneVital(Sky &parent,
                        const PlaneState &state) :
     parent(parent),
     physics(parent.physics.get()),
-    body(physics.rectBody(tuning.hitbox)),
+    body(physics.createBody(physics.rectShape(tuning.hitbox), BodyTag())),
     controls(controls),
     tuning(tuning),
     state(state) {
-  body = physics.rectBody(tuning.hitbox);
+  // almost ::writeToBody()
   this->state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(state.stalled ? 1 : 0);
 }
@@ -260,6 +260,7 @@ void PlaneVital::tickFlight(const float delta) {
     }
   }
 }
+
 void PlaneVital::tickWeapons(const float delta) {
   state.primaryCooldown.cool(delta);
   if (state.primaryCooldown
