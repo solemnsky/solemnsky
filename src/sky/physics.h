@@ -89,9 +89,9 @@ struct PhysicalState {
   Angle rot;
   float rotvel;
 
-  void hardWriteToBody(const Physics &physics, b2Body *const body);
+  void hardWriteToBody(const Physics &physics, b2Body *const body) const;
+  void writeToBody(const Physics &physics, b2Body *const body) const;
   void readFromBody(const Physics &physics, const b2Body *const body);
-  void writeToBody(const Physics &physics, b2Body *const body);
 };
 
 }

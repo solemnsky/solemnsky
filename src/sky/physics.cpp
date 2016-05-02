@@ -1,5 +1,6 @@
 #include "physics.h"
 #include "util/methods.h"
+#include "util/printer.h"
 
 namespace sky {
 
@@ -128,13 +129,14 @@ PhysicalState::PhysicalState(const sf::Vector2f &pos,
     pos(pos), vel(vel), rot(rot), rotvel(rotvel) { }
 
 void PhysicalState::hardWriteToBody(const Physics &physics,
-                                    b2Body *const body) {
+                                    b2Body *const body) const {
   body->SetLinearVelocity(physics.toPhysVec(vel));
   body->SetAngularVelocity(toRad(rotvel));
   body->SetTransform(physics.toPhysVec(pos), toRad(rot));
 }
 
-void PhysicalState::writeToBody(const Physics &physics, b2Body *const body) {
+void PhysicalState::writeToBody(const Physics &physics,
+                                b2Body *const body) const {
   // TODO: use proper motors / motor joints for this instead of impulses
   physics.approachVel(body, vel);
   body->SetTransform(physics.toPhysVec(pos), toRad(rot));
