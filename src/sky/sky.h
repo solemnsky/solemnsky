@@ -74,10 +74,10 @@ class Sky: public Subsystem, public PhysicsListener {
   void start();
 
   // physics listeners
-  virtual void
-      onBeginContact(const b2Body &body1, const b2Body &body2) override final;
-  virtual void
-      onEndContact(const b2Body &body1, const b2Body &body2) override final;
+  virtual void onBeginContact(const BodyTag &body1,
+                              const BodyTag &body2) override final;
+  virtual void onEndContact(const BodyTag &body1,
+                            const BodyTag &body2) override final;
 
  public:
   Sky(class Arena &parent, const SkyInitializer &initializer);
