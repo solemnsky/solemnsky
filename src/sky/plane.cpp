@@ -153,7 +153,7 @@ PlaneVital::PlaneVital(Sky &parent,
     tuning(tuning),
     state(state) {
   // almost ::writeToBody()
-  this->state.physical.hardWriteToBody(physics, body);
+  state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(state.stalled ? 1 : 0);
 }
 

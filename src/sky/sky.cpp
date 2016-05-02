@@ -1,6 +1,6 @@
 #include "arena.h"
-#include "util/printer.h"
 #include "sky.h"
+#include "util/printer.h"
 
 namespace sky {
 
@@ -90,15 +90,18 @@ void Sky::onSpawn(Player &player,
 }
 
 void Sky::stop() {
-  appLog("Resetting sky.");
-  for (auto &pair : planes) {
-    pair.second.reset();
+  if (physics) {
+    appLog("Stopping sky.");
+    for (auto &pair : planes) {
+      pair.second.reset();
+    }
+    map.reset();
+    physics.reset();
   }
-  map.reset();
-  physics.reset();
 }
 
 void Sky::start() {
+  if (physics) stop();
   appLog("Loading map " + inQuotes(arena.getMap()) + ".", LogOrigin::Engine);
   map.emplace(arena.getMap());
   physics.emplace(map.get(), nullptr);
