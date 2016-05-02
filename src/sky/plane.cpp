@@ -158,7 +158,7 @@ PlaneVital::PlaneVital(Sky &parent,
 }
 
 PlaneVital::~PlaneVital() {
-  physics.clrBody(body);
+  physics.deleteBody(body);
 }
 
 void PlaneVital::writeToBody() {

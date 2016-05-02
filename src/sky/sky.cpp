@@ -101,7 +101,15 @@ void Sky::stop() {
 void Sky::start() {
   appLog("Loading map " + inQuotes(arena.getMap()) + ".", LogOrigin::Engine);
   map.emplace(arena.getMap());
-  physics.emplace(map.get());
+  physics.emplace(map.get(), nullptr);
+}
+
+void Sky::onBeginContact(const b2Body &body1, const b2Body &body2) {
+
+}
+
+void Sky::onEndContact(const b2Body &body1, const b2Body &body2) {
+
 }
 
 Sky::Sky(Arena &arena, const SkyInitializer &initializer) :

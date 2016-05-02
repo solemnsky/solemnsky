@@ -23,7 +23,7 @@ Prop::Prop(Prop &&prop) :
 
 Prop::~Prop() {
   if (body) {
-    physics.clrBody(body);
+    physics.deleteBody(body);
   }
 }
 
