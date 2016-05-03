@@ -16,17 +16,23 @@ class SkyTest: public testing::Test {
 };
 
 /**
- * The map allocation is managed.
+ * The map allocation is managed and physics works properly.
  */
-TEST_F(SkyTest, MapAlloc) {
-  EXPECT_EQ(bool(sky.map), false);
+TEST_F(SkyTest, PhysicsTest) {
+  ASSERT_EQ(bool(sky.map), false);
 
   arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
+  ASSERT_EQ(bool(sky.map), true);
 
-  EXPECT_EQ(bool(sky.map), true);
+  const auto pid = arena.connectPlayer("nameless plane").join->pid;
+  sky::Player *player = arena.getPlayer(pid);
+  ASSERT_NO_FATAL_FAILURE(arena.tick(1));
+  player->spawn({}, {300, 300}, 0);
+  ASSERT_NO_FATAL_FAILURE(arena.tick(1));
 
   arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Scoring));
 
+  EXPECT_EQ(bool(sky.getPlane(*player).isSpawned()), false);
   EXPECT_EQ(bool(sky.map), false);
 }
 
@@ -65,9 +71,9 @@ TEST_F(SkyTest, DeltaTest) {
   remoteSky.applyDelta(sky.collectDelta());
 
   EXPECT_EQ(sky.getPlane(*player)
-                .controls.getState<sky::Action::Reverse>(), true);
+                .getControls().getState<sky::Action::Reverse>(), true);
   EXPECT_EQ(remoteSky.getPlane(*remoteArena.getPlayer(0))
-                .controls.getState<sky::Action::Reverse>(), true);
+                .getControls().getState<sky::Action::Reverse>(), true);
 }
 
 
