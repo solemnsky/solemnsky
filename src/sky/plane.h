@@ -101,14 +101,12 @@ struct PlaneState {
   /**
    * State.
    */
-  // physical state
   PhysicalState physical;
-  // flight mechanics
   bool stalled;
   Clamped afterburner;
   sf::Vector2f leftoverVel;
   Clamped airspeed, throttle;
-  // game mechanics
+
   Clamped energy, health;
   Cooldown primaryCooldown;
 
@@ -154,7 +152,6 @@ struct PlaneControls {
   Movement rotMovement() const;
 };
 
-
 /**
  * Initializer for Plane's Networked implementation.
  */
@@ -195,19 +192,28 @@ struct PlaneDelta: public VerifyStructure {
 
 /**
  * The state and Box2D allocation of a plane when alive, implementation
- * detail of Plane.
- * Only constructable when in an active game, because it binds to Sky::physics.
+ * detail of Plane. **Only exists when in an active game (i.e. parent.physics
+ * exists).
  */
 class PlaneVital {
  private:
+  friend class Sky;
+  // parameters
   Sky &parent;
   Physics &physics;
-  b2Body *body;
-
+  b2Body *const body;
   const PlaneControls &controls;
 
+  // helpers
+  void switchStall();
   void tickFlight(const float delta);
   void tickWeapons(const float delta);
+  void writeToBody();
+  void readFromBody();
+
+  // Sky API.
+  void beforePhysics();
+  void afterPhysics(const float delta);
 
  public:
   PlaneVital() = delete;
@@ -222,12 +228,12 @@ class PlaneVital {
   PlaneVital(const PlaneVital &) = delete;
   PlaneVital &operator=(const PlaneVital &) = delete;
 
+  void tick(const float delta);
+
+  // User API.
   PlaneTuning tuning;
   PlaneState state;
 
-  void writeToBody();
-  void readFromBody();
-  void tick(const float delta);
 };
 
 /**
@@ -236,23 +242,18 @@ class PlaneVital {
  */
 class Plane: private Networked<PlaneInitializer, PlaneDelta> {
  private:
+  friend class Sky;
   Sky &parent;
   class Player &player; // associated player
 
-  // For capturing deltas.
   bool newlyAlive;
-
-  friend class Sky;
 
   // Internal helpers.
   void spawnWithState(const PlaneTuning &tuning, const PlaneState &state);
 
   /**
-   * API for Sky.
+   * Sky API.
    */
-  void beforePhysics();
-  void afterPhysics(float delta);
-
   void spawn(const PlaneTuning &tuning,
              const sf::Vector2f pos,
              const float rot);
@@ -269,7 +270,7 @@ class Plane: private Networked<PlaneInitializer, PlaneDelta> {
         const PlaneInitializer &initializer);
 
   /**
-   * Top-level API.
+   * User API.
    */
   optional<PlaneVital> vital;
   PlaneControls controls;

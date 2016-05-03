@@ -127,16 +127,9 @@ ArenaDelta ArenaDelta::MapChange(const MapName &map) {
  * Subsystem.
  */
 
-SubsystemCaller::SubsystemCaller(Arena &arena) : arena(arena) { }
-
-void SubsystemCaller::onDie(Player &player) {
-  for (auto s : arena.subsystems) s->onDie(player);
-}
-
 Subsystem::Subsystem(Arena &arena) :
     id(PID(arena.subsystems.size())),
-    arena(arena),
-    caller(arena.caller) {
+    arena(arena) {
   arena.subsystems.push_back(this);
 }
 
