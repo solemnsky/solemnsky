@@ -64,3 +64,5 @@ class enum_error: public std::logic_error {
  public:
   enum_error();
 };
+
+

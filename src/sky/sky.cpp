@@ -104,7 +104,7 @@ void Sky::start() {
   if (physics) stop();
   appLog("Loading map " + inQuotes(arena.getMap()) + ".", LogOrigin::Engine);
   map.emplace(arena.getMap());
-  physics.emplace(map.get(), nullptr);
+  physics.emplace(map.get(), *this);
 }
 
 void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
