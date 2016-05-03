@@ -35,9 +35,10 @@ Physics::Physics(const Map &map, PhysicsListener *const listener) :
 }
 
 Physics::~Physics() {
-  const b2Body* bodies = world.GetBodyList();
-  for (int32 i = 0; i < world.GetBodyCount(); ++i) {
-    delete (BodyTag *) bodies[i].GetUserData();
+  for (b2Body *body = world.GetBodyList();
+       body != nullptr;
+       body = body->GetNext()) {
+    delete (BodyTag *) body->GetUserData();
   }
 }
 
