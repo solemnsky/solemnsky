@@ -14,14 +14,13 @@ class Prop {
  private:
   class Sky &parent;
   Physics &physics;
-  b2Body *body;
+  b2Body *const body;
 
  public:
   Prop() = delete;
   Prop(class Sky &parent,
        const sf::Vector2f &pos,
        const sf::Vector2f &vel);
-  Prop(Prop &&);
   ~Prop();
 
   float lifeTime;

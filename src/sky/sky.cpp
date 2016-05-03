@@ -49,11 +49,11 @@ void Sky::unregisterPlayer(Player &player) {
 void Sky::onTick(const float delta) {
   if (physics) {
     for (auto &elem : planes) {
-      elem.second.beforePhysics();
+      elem.second.vital->beforePhysics();
     }
     physics->tick(delta);
     for (auto &elem : planes) {
-      elem.second.afterPhysics(delta);
+      elem.second.vital->afterPhysics(delta);
     }
   }
 }

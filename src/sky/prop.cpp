@@ -13,19 +13,8 @@ Prop::Prop(Sky &parent, const sf::Vector2f &pos, const sf::Vector2f &vel) :
   physical.hardWriteToBody(physics, body);
 }
 
-Prop::Prop(Prop &&prop) :
-    parent(prop.parent),
-    physics(prop.physics),
-    body(prop.body),
-    lifeTime(prop.lifeTime),
-    physical(prop.physical) {
-  prop.body = nullptr;
-}
-
 Prop::~Prop() {
-  if (body) {
-    physics.deleteBody(body);
-  }
+  physics.deleteBody(body);
 }
 
 void Prop::writeToBody() {

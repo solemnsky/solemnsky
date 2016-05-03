@@ -119,11 +119,10 @@ b2Body *Physics::createBody(const b2PolygonShape &shape,
   return body;
 }
 
-void Physics::deleteBody(b2Body *&body) {
+void Physics::deleteBody(b2Body *const body) {
   if (body) {
     delete (BodyTag *) body->GetUserData();
     world.DestroyBody(body);
-    body = nullptr;
   }
 }
 

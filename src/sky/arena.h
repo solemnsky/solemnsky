@@ -87,24 +87,13 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
 };
 
 /**
- * Interface for subsystems to trigger certain subsystem callbacks.
- */
-class SubsystemCaller {
- private:
-  class Arena &arena;
-
- public:
-  SubsystemCaller(Arena &arena);
-
-  // callbacks that subsystems can trigger
-  void onDie(Player &player);
-  // TODO: takeDamage, etc
-};
-
-/**
  * The subsystem abstraction: attaches state to players and has various
  * callbacks. Some callbacks can be triggered by subsystems through
- * SubsystemCaller (i.e. onKill() and onTakeDamage() triggered by the sky).
+ * SubsystemCaller.
+ *
+ * Subsystem callbacks do not necessarily transmit over the network! If all
+ * clients need to register the same callbacks, they should by triggered by
+ * Arena / Subsystem Deltas (onMode, onMapChange, etc).
  */
 class Subsystem {
  protected:
@@ -112,7 +101,6 @@ class Subsystem {
   // subsystems to trigger events), or the Player (which is essentially an
   // extension of the Arena API)
   friend class Arena;
-  friend class SubsystemCaller;
   friend class Player;
 
   const PID id; // ID the render has allocated in the Arena
@@ -137,12 +125,8 @@ class Subsystem {
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
                        const sf::Vector2f &pos, const float rot) { };
 
-  // subsystem-triggered callbacks
-  virtual void onDie(Player &player) { }
-
  public:
   class Arena &arena;
-  SubsystemCaller caller;
 
   Subsystem() = delete;
   Subsystem(Arena &arena);
@@ -276,7 +260,6 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   Arena(const ArenaInitializer &initializer);
 
   // Subsystems and loggers.
-  SubsystemCaller caller;
   std::vector<Subsystem *> subsystems;
   std::vector<ArenaLogger *> loggers;
 

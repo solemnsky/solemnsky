@@ -134,8 +134,7 @@ PlaneInitializer::PlaneInitializer(
 PlaneDelta::PlaneDelta() { }
 
 bool PlaneDelta::verifyStructure() const {
-  return true;
-//  return not (!bool(tuning) or bool(state));
+  return imply(bool(tuning), bool(state));
 }
 
 /**
@@ -162,20 +161,30 @@ PlaneVital::~PlaneVital() {
   physics.deleteBody(body);
 }
 
-void PlaneVital::writeToBody() {
-  state.physical.writeToBody(physics, body);
-  body->SetGravityScale(state.stalled ? 1 : 0);
-}
+void PlaneVital::switchStall() {
+  const float forwardVel = state.forwardVelocity();
+  if (state.stalled) {
+    if (forwardVel > tuning.stall.threshold) {
+      state.stalled = false;
+      state.leftoverVel =
+          state.physical.vel
+              - (forwardVel * VecMath::fromAngle(state.physical.rot));
 
-void PlaneVital::readFromBody() {
-  state.physical.readFromBody(physics, body);
+      state.airspeed = forwardVel / tuning.flight.airspeedFactor;
+      state.throttle =
+          state.airspeed / tuning.flight.throttleInfluence;
+    }
+  } else {
+    if (forwardVel < tuning.flight.threshold) {
+      state.stalled = true;
+      state.throttle = 1;
+      state.airspeed = 0;
+    }
+  }
 }
 
 void PlaneVital::tickFlight(const float delta) {
-  // helpful synonyms
-  const float
-      forwardVel = state.forwardVelocity(),
-      velocity = state.velocity();
+  const float velocity = state.velocity();
 
   Movement throtCtrl =
       addMovement(controls.getState<Action::Reverse>(),
@@ -241,25 +250,7 @@ void PlaneVital::tickFlight(const float delta) {
         state.leftoverVel;
   }
 
-  // stall singularities
-  if (state.stalled) {
-    if (forwardVel > tuning.stall.threshold) {
-      state.stalled = false;
-      state.leftoverVel =
-          state.physical.vel
-              - (forwardVel * VecMath::fromAngle(state.physical.rot));
-
-      state.airspeed = forwardVel / tuning.flight.airspeedFactor;
-      state.throttle =
-          state.airspeed / tuning.flight.throttleInfluence;
-    }
-  } else {
-    if (forwardVel < tuning.flight.threshold) {
-      state.stalled = true;
-      state.throttle = 1;
-      state.airspeed = 0;
-    }
-  }
+  switchStall();
 }
 
 void PlaneVital::tickWeapons(const float delta) {
@@ -280,6 +271,41 @@ void PlaneVital::tickWeapons(const float delta) {
 //      primaryCooldown.reset();
     }
   }
+}
+
+void PlaneVital::writeToBody() {
+  state.physical.writeToBody(physics, body);
+  body->SetGravityScale(state.stalled ? 1 : 0);
+}
+
+void PlaneVital::readFromBody() {
+  state.physical.readFromBody(physics, body);
+}
+
+void PlaneVital::beforePhysics() {
+  writeToBody();
+//  for (auto &prop : props) prop.writeToBody();
+}
+
+void PlaneVital::afterPhysics(float delta) {
+  readFromBody();
+  tick(delta);
+
+//  for (auto &prop : props) {
+//    prop.readFromBody();
+//    prop.tick(delta);
+//  }
+
+//  props.remove_if([](Prop &prop) {
+//    return prop.lifeTime > 1;
+//  });
+}
+
+
+void PlaneVital::onBeginContact(const BodyTag &body) {
+}
+
+void PlaneVital::onEndContact(const BodyTag &body) {
 }
 
 void PlaneVital::tick(const float delta) {
@@ -312,28 +338,8 @@ Movement PlaneControls::rotMovement() const {
 
 void Plane::spawnWithState(const PlaneTuning &tuning,
                            const PlaneState &state) {
+  assert(bool(parent.physics));
   vital.emplace(parent, controls, tuning, state);
-}
-
-void Plane::beforePhysics() {
-  if (vital) vital->writeToBody();
-  for (auto &prop : props) prop.writeToBody();
-}
-
-void Plane::afterPhysics(float delta) {
-  if (isSpawned()) {
-    vital->readFromBody();
-    vital->tick(delta);
-
-    for (auto &prop : props) {
-      prop.readFromBody();
-      prop.tick(delta);
-    }
-
-    props.remove_if([](Prop &prop) {
-      return prop.lifeTime > 1;
-    });
-  }
 }
 
 void Plane::spawn(const PlaneTuning &tuning,
