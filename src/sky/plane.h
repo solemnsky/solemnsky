@@ -236,8 +236,6 @@ class PlaneVital {
   PlaneVital(const PlaneVital &) = delete;
   PlaneVital &operator=(const PlaneVital &) = delete;
 
-  void tick(const float delta);
-
   // User API.
   const PlaneTuning &getTuning() const;
   const PlaneState &getState() const;

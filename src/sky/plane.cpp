@@ -152,7 +152,7 @@ PlaneVital::PlaneVital(Sky &parent,
     tuning(tuning),
     state(state),
     body(physics.createBody(physics.rectShape(tuning.hitbox),
-                            BodyTag::PlaneTag())) {
+                            BodyTag::PlaneTag(*this))) {
   state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(state.stalled ? 1 : 0);
 }
@@ -289,7 +289,8 @@ void PlaneVital::beforePhysics() {
 
 void PlaneVital::afterPhysics(float delta) {
   readFromBody();
-  tick(delta);
+  tickFlight(delta);
+  tickWeapons(delta);
 
 //  for (auto &prop : props) {
 //    prop.readFromBody();
@@ -302,16 +303,11 @@ void PlaneVital::afterPhysics(float delta) {
 }
 
 void PlaneVital::onBeginContact(const BodyTag &body) {
-
+  appLog("ouch I'm touching something...");
 }
 
 void PlaneVital::onEndContact(const BodyTag &body) {
-
-}
-
-void PlaneVital::tick(const float delta) {
-  tickFlight(delta);
-  tickWeapons(delta);
+  appLog("ah good, not touching it anymore");
 }
 
 const PlaneTuning &PlaneVital::getTuning() const {
@@ -322,7 +318,7 @@ const PlaneState &PlaneVital::getState() const {
   return state;
 }
 
-const PlaneState &PlaneVital::getState() const {
+const std::forward_list<Prop> &PlaneVital::getProps() const {
   return props;
 }
 
