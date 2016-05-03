@@ -108,11 +108,17 @@ void Sky::start() {
 }
 
 void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
-  appLog("contact starts");
+  if (body1.type == BodyTag::Type::PlaneTag)
+    body1.planeVital->onBeginContact(body2);
+  if (body2.type == BodyTag::Type::PlaneTag)
+    body2.planeVital->onBeginContact(body1);
 }
 
 void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
-  appLog("contact ends");
+  if (body1.type == BodyTag::Type::PlaneTag)
+    body1.planeVital->onEndContact(body2);
+  if (body2.type == BodyTag::Type::PlaneTag)
+    body2.planeVital->onEndContact(body1);
 }
 
 Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
