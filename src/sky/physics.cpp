@@ -8,20 +8,27 @@ namespace sky {
  */
 
 BodyTag::BodyTag(const BodyTag::Type type) :
-    type(type) { }
+    type(type), planeVital(nullptr) { }
 
-BodyTag BodyTag::ObstacleTag() {
-  BodyTag tag(BodyTag::Type::ObstacleTag);
+BodyTag BodyTag::BoundaryTag() {
+  return BodyTag(Type::BoundaryTag);
+}
+
+BodyTag BodyTag::ObstacleTag(const class MapObstacle &obstacle) {
+  BodyTag tag(Type::ObstacleTag);
+  tag.obstacle = &obstacle;
   return tag;
 }
 
-BodyTag BodyTag::PlaneTag() {
-  BodyTag tag(BodyTag::Type::PlaneTag);
+BodyTag BodyTag::PlaneTag(class PlaneVital &planeVital) {
+  BodyTag tag(Type::PlaneTag);
+  tag.planeVital = &planeVital;
   return tag;
 }
 
-BodyTag BodyTag::PropTag() {
-  BodyTag tag(BodyTag::Type::PropTag);
+BodyTag BodyTag::PropTag(class Prop &prop) {
+  BodyTag tag(Type::PropTag);
+  tag.prop = &prop;
   return tag;
 }
 
@@ -54,21 +61,20 @@ Physics::Physics(const Map &map, PhysicsListener &listener) :
     converter(listener),
     dims(map.dimensions) {
   // world boundaries
-  // (regist urge to refactor please)
   b2Body *body;
-  body = createBody(rectShape({dims.x, 1}), BodyTag::ObstacleTag(), true);
+  body = createBody(rectShape({dims.x, 1}), BodyTag::BoundaryTag(), true);
   body->SetTransform(toPhysVec({dims.x / 2, dims.y}), 0);
-  body = createBody(rectShape({dims.x, 1}), BodyTag::ObstacleTag(), true);
+  body = createBody(rectShape({dims.x, 1}), BodyTag::BoundaryTag(), true);
   body->SetTransform(toPhysVec({dims.x / 2, 0}), 0);
-  body = createBody(rectShape({1, dims.y}), BodyTag::ObstacleTag(), true);
+  body = createBody(rectShape({1, dims.y}), BodyTag::BoundaryTag(), true);
   body->SetTransform(toPhysVec({dims.x, dims.y / 2}), 0);
-  body = createBody(rectShape({1, dims.y}), BodyTag::ObstacleTag(), true);
+  body = createBody(rectShape({1, dims.y}), BodyTag::BoundaryTag(), true);
   body->SetTransform(toPhysVec({0, dims.y / 2}), 0);
 
   // obstacles
   for (const auto &obstacle : map.obstacles) {
     body = createBody(polygonShape(obstacle.localVerticies),
-                      BodyTag::ObstacleTag(), true);
+                      BodyTag::ObstacleTag(obstacle), true);
     body->SetTransform(toPhysVec(obstacle.pos), 0);
   }
 

@@ -147,12 +147,12 @@ PlaneVital::PlaneVital(Sky &parent,
                        const PlaneState &state) :
     parent(parent),
     physics(parent.physics.get()),
-    body(physics.createBody(physics.rectShape(tuning.hitbox),
-                            BodyTag::PlaneTag())),
     controls(controls),
+
     tuning(tuning),
-    state(state) {
-  // almost ::writeToBody()
+    state(state),
+    body(physics.createBody(physics.rectShape(tuning.hitbox),
+                            BodyTag::PlaneTag())) {
   state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(state.stalled ? 1 : 0);
 }
@@ -301,16 +301,29 @@ void PlaneVital::afterPhysics(float delta) {
 //  });
 }
 
-
 void PlaneVital::onBeginContact(const BodyTag &body) {
+
 }
 
 void PlaneVital::onEndContact(const BodyTag &body) {
+
 }
 
 void PlaneVital::tick(const float delta) {
   tickFlight(delta);
   tickWeapons(delta);
+}
+
+const PlaneTuning &PlaneVital::getTuning() const {
+  return tuning;
+}
+
+const PlaneState &PlaneVital::getState() const {
+  return state;
+}
+
+const PlaneState &PlaneVital::getState() const {
+  return props;
 }
 
 /**
@@ -401,6 +414,14 @@ Plane::Plane(Sky &parent, Player &player,
   if (initializer.spawn)
     spawnWithState(initializer.spawn->first, initializer.spawn->second);
   controls = initializer.controls;
+}
+
+const optional<PlaneVital> &Plane::getVital() const {
+  return vital;
+}
+
+const PlaneControls &Plane::getControls() const {
+  return controls;
 }
 
 bool Plane::isSpawned() const {

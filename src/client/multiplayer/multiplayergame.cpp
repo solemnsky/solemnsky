@@ -35,8 +35,8 @@ void MultiplayerGame::tick(float delta) {
 }
 
 void MultiplayerGame::render(ui::Frame &f) {
-  if (mShared.plane->vital) {
-    mShared.skyRender->render(f, mShared.plane->vital->state.physical.pos);
+  if (auto &vital = mShared.plane->getVital()) {
+    mShared.skyRender->render(f, vital->getState().physical.pos);
   } else mShared.skyRender->render(f, {});
   ui::Control::render(f);
   if (chatInput.isFocused) mShared.drawEventLog(f, style.multi.chatCutoff);

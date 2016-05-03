@@ -45,7 +45,7 @@ struct PlayerDelta {
 
   optional<std::string> nickname;
   bool admin;
-  optional<Team> team; // 0 is spectator, 1 left, 2 right
+  optional<Team> team;
 };
 
 /**
@@ -55,7 +55,7 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
  private:
   class Arena &arena;
 
-  // State: managed through the Networked API.
+  // State.
   std::string nickname;
   bool admin;
   Team team;
@@ -67,20 +67,16 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
   const PID pid;
   std::vector<void *> data;
 
-  /**
-   * Top-level API.
-   */
-  // Networked API.
+  // Networked impl.
   void applyDelta(const PlayerDelta &delta) override;
   PlayerInitializer captureInitializer() const override;
   PlayerDelta zeroDelta() const;
 
-  // Accessing state.
+  // User API.
   std::string getNickname() const;
   bool isAdmin() const;
   Team getTeam() const;
 
-  // Subsystem triggers.
   void doAction(const Action action, const bool state);
   void spawn(const PlaneTuning &tuning,
              const sf::Vector2f &pos, const float rot);
@@ -88,8 +84,7 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
 
 /**
  * The subsystem abstraction: attaches state to players and has various
- * callbacks. Some callbacks can be triggered by subsystems through
- * SubsystemCaller.
+ * callbacks.
  *
  * Subsystem callbacks do not necessarily transmit over the network! If all
  * clients need to register the same callbacks, they should by triggered by
@@ -97,9 +92,6 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
  */
 class Subsystem {
  protected:
-  // subsystem callbacks can be triggered by the Arena, the SubsystemCaller (for
-  // subsystems to trigger events), or the Player (which is essentially an
-  // extension of the Arena API)
   friend class Arena;
   friend class Player;
 
@@ -110,11 +102,11 @@ class Subsystem {
     return *((Data *) player.data.at(id));
   }
 
-  // managing player registration
+  // Managing player registration.
   virtual void registerPlayer(Player &player) = 0;
   virtual void unregisterPlayer(Player &player) = 0;
 
-  // arena-triggered callbacks
+  // Callbacks.
   virtual void onTick(const float delta) { }
   virtual void onJoin(Player &player) { }
   virtual void onQuit(Player &player) { }
@@ -130,8 +122,7 @@ class Subsystem {
 
   Subsystem() = delete;
   Subsystem(Arena &arena);
-  // a subsystem has to make sure to manually register the arena's players on
-  // construction!
+  // TODO: enforce registration of players on ctor
 };
 
 /**
@@ -145,7 +136,6 @@ class ArenaLogger {
  public:
   class Arena &arena;
 
-  ArenaLogger() = delete;
   ArenaLogger(Arena &arena);
 
 };
@@ -244,7 +234,7 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   // Event logging.
   void logEvent(const ArenaEvent &event) const;
 
-  // State: managed through the Networked API.
+  // State.
   std::map<PID, Player> players;
   std::string name;
   std::string motd;
@@ -263,14 +253,11 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   std::vector<Subsystem *> subsystems;
   std::vector<ArenaLogger *> loggers;
 
-  /**
-   * Top-level API.
-   */
-  // Networked interface.
+  // Networked Impl.
   void applyDelta(const ArenaDelta &delta) override;
   ArenaInitializer captureInitializer() const override;
 
-  // Accessing state.
+  // User API.
   Player *getPlayer(const PID pid);
   void forPlayers(std::function<void(const Player &)> f) const;
   void forPlayers(std::function<void(Player &)> f);
@@ -280,11 +267,11 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   MapName getMap() const;
   ArenaMode getMode() const;
 
-  // Connecting players (for the server).
+  void tick(const float delta);
+
+  // Server-specific API.
   ArenaDelta connectPlayer(const std::string &requestedNick);
 
-  // Simulating.
-  void tick(const float delta);
 };
 
 }
