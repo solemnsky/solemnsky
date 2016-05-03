@@ -13,7 +13,7 @@ namespace sky {
  */
 struct BodyTag {
   enum class Type {
-    ObstacleTag, PlaneTag, PropTag
+    BoundaryTag, ObstacleTag, PlaneTag, PropTag
   };
 
   const Type type;
@@ -22,10 +22,16 @@ struct BodyTag {
   BodyTag(const Type type);
 
  public:
+  union {
+    const class MapObstacle *obstacle;
+    class PlaneVital *planeVital;
+    class Prop *prop;
+  };
 
-  static BodyTag ObstacleTag();
-  static BodyTag PlaneTag();
-  static BodyTag PropTag();
+  static BodyTag BoundaryTag();
+  static BodyTag ObstacleTag(const class MapObstacle &obstacle);
+  static BodyTag PlaneTag(class PlaneVital &planeVital);
+  static BodyTag PropTag(class Prop &prop);
 };
 
 /**

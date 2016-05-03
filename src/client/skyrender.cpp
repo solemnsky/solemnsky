@@ -18,12 +18,11 @@ PlaneGraphics::PlaneGraphics(const Plane &plane) :
     rollState(0) { }
 
 void PlaneGraphics::tick(const float delta) {
-  if (plane.vital) {
-    const auto &vital = plane.vital;
+  if (auto &vital = plane.getVital()) {
 
     // potentially switch orientation
-    bool newOrientation = Angle(vital->state.physical.rot + 90) > 180;
-    const Movement rotMovement = plane.controls.rotMovement();
+    bool newOrientation = Angle(vital->getState().physical.rot + 90) > 180;
+    const Movement rotMovement = plane.getControls().rotMovement();
     if (rotMovement == Movement::None) orientation = newOrientation;
 
     // flipping (when orientation changes)
@@ -46,7 +45,7 @@ Angle PlaneGraphics::roll() const {
 void PlaneGraphics::kill() { }
 
 void PlaneGraphics::spawn() {
-  orientation = Angle(plane.vital->state.physical.rot + 90) > 180;
+  orientation = Angle(plane.getVital()->getState().physical.rot + 90) > 180;
   flipState = 0;
   rollState = 0;
 }
@@ -90,7 +89,7 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
 
 void SkyRender::renderProps(ui::Frame &f,
                             const Plane &plane) {
-  for (auto &prop : plane.props) {
+  for (auto &prop : plane.getVital()->getProps()) {
     f.withTransform(
         sf::Transform()
             .translate(prop.physical.pos)
@@ -106,9 +105,9 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                     const PlaneGraphics &graphics) {
   renderProps(f, graphics.plane);
 
-  if (graphics.plane.isSpawned()) {
-    const auto &state = graphics.plane.vital->state;
-    const auto &tuning = graphics.plane.vital->tuning;
+  if (auto &vital = graphics.plane.getVital()) {
+    auto &state = vital->getState();
+    auto &tuning = vital->getTuning();
 
     f.withTransform(
         sf::Transform()
@@ -129,7 +128,6 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
             const auto halfHitbox = 0.5f * tuning.hitbox;
             f.drawRect(-halfHitbox, halfHitbox, sf::Color(255, 255, 255, 100));
           }
-
         });
 
     f.withTransform(sf::Transform().translate(state.physical.pos), [&]() {

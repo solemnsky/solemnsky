@@ -280,7 +280,7 @@ typedef unsigned short Port; // network port
 
 namespace sky {
 
-typedef unsigned char Team;
+typedef unsigned char Team; // 0 is spectator, 1 left, 2 right
 
 enum class ArenaMode {
   Lobby, // lobby, to make teams

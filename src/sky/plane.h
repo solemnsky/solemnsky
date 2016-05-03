@@ -196,15 +196,21 @@ struct PlaneDelta: public VerifyStructure {
  * exists).
  */
 class PlaneVital {
- private:
   friend class Sky;
-  // parameters
+  friend class Plane;
+ private:
+  // Parameters.
   Sky &parent;
   Physics &physics;
-  b2Body *const body;
   const PlaneControls &controls;
 
-  // helpers
+  // State.
+  PlaneTuning tuning;
+  PlaneState state;
+  b2Body *const body;
+  std::forward_list<Prop> props;
+
+  // Helpers.
   void switchStall();
   void tickFlight(const float delta);
   void tickWeapons(const float delta);
@@ -214,6 +220,8 @@ class PlaneVital {
   // Sky API.
   void beforePhysics();
   void afterPhysics(const float delta);
+  void onBeginContact(const BodyTag &body);
+  void onEndContact(const BodyTag &body);
 
  public:
   PlaneVital() = delete;
@@ -231,29 +239,32 @@ class PlaneVital {
   void tick(const float delta);
 
   // User API.
-  PlaneTuning tuning;
-  PlaneState state;
+  const PlaneTuning &getTuning() const;
+  const PlaneState &getState() const;
+  const std::forward_list<Prop> &getProps() const;
 
 };
 
 /**
- * Top-level entity representing a Player's participation in the Sky. Can be
- * alive or dead. Corresponds to a Player.
+ * Top-level entity representing a Player's participation in the Sky.
+ * Wraps a optional<PlaneVital>, providing a Networked impl / a few helpers.
  */
 class Plane: private Networked<PlaneInitializer, PlaneDelta> {
- private:
   friend class Sky;
+ private:
+  // Parameters.
   Sky &parent;
   class Player &player; // associated player
 
-  bool newlyAlive;
+  // State.
+  bool newlyAlive; // for deltas
+  optional<PlaneVital> vital;
+  PlaneControls controls;
 
   // Internal helpers.
   void spawnWithState(const PlaneTuning &tuning, const PlaneState &state);
 
-  /**
-   * Sky API.
-   */
+  // Sky API.
   void spawn(const PlaneTuning &tuning,
              const sf::Vector2f pos,
              const float rot);
@@ -269,12 +280,9 @@ class Plane: private Networked<PlaneInitializer, PlaneDelta> {
   Plane(Sky &parent, class Player &player,
         const PlaneInitializer &initializer);
 
-  /**
-   * User API.
-   */
-  optional<PlaneVital> vital;
-  PlaneControls controls;
-  std::forward_list<Prop> props;
+  // User API.
+  const optional<PlaneVital> &getVital() const;
+  const PlaneControls &getControls() const;
 
   bool isSpawned() const;
 

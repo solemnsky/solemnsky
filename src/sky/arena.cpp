@@ -199,8 +199,7 @@ Arena::Arena(const ArenaInitializer &initializer) :
     name(initializer.name),
     motd(initializer.motd),
     map(initializer.map),
-    mode(initializer.mode),
-    caller(*this) {
+    mode(initializer.mode) {
   for (auto const &player : initializer.players) {
     players.emplace(std::piecewise_construct,
                     std::forward_as_tuple(player.first),
