@@ -1,6 +1,5 @@
 #include "physics.h"
 #include "util/methods.h"
-#include "util/printer.h"
 
 namespace sky {
 
@@ -8,30 +7,73 @@ namespace sky {
  * BodyTag.
  */
 
+BodyTag::BodyTag(const BodyTag::Type type) :
+    type(type) { }
+
+BodyTag BodyTag::ObstacleTag() {
+  BodyTag tag(BodyTag::Type::ObstacleTag);
+  return tag;
+}
+
+BodyTag BodyTag::PlaneTag() {
+  BodyTag tag(BodyTag::Type::PlaneTag);
+  return tag;
+}
+
+BodyTag BodyTag::PropTag() {
+  BodyTag tag(BodyTag::Type::PropTag);
+  return tag;
+}
+
+/**
+ * PhysicsDispatcher.
+ */
+
+PhysicsDispatcher::PhysicsDispatcher(PhysicsListener &listener) :
+    listener(listener) { }
+
+void PhysicsDispatcher::BeginContact(b2Contact *contact) {
+  listener.onBeginContact(
+      *((BodyTag *) contact->GetFixtureA()->GetBody()->GetUserData()),
+      *((BodyTag *) contact->GetFixtureB()->GetBody()->GetUserData()));
+}
+
+void PhysicsDispatcher::EndContact(b2Contact *contact) {
+  listener.onEndContact(
+      *((BodyTag *) contact->GetFixtureA()->GetBody()->GetUserData()),
+      *((BodyTag *) contact->GetFixtureB()->GetBody()->GetUserData()));
+}
+
 /**
  * Physics.
  */
 
-Physics::Physics(const Map &map, PhysicsListener *const listener) :
+Physics::Physics(const Map &map, PhysicsListener &listener) :
     world({0, Settings().gravity / Settings().distanceScale}),
     listener(listener),
+    converter(listener),
     dims(map.dimensions) {
   // world boundaries
+  // (regist urge to refactor please)
   b2Body *body;
-  body = createBody(rectShape({dims.x, 1}), BodyTag(), true);
+  body = createBody(rectShape({dims.x, 1}), BodyTag::ObstacleTag(), true);
   body->SetTransform(toPhysVec({dims.x / 2, dims.y}), 0);
-  body = createBody(rectShape({dims.x, 1}), BodyTag(), true);
+  body = createBody(rectShape({dims.x, 1}), BodyTag::ObstacleTag(), true);
   body->SetTransform(toPhysVec({dims.x / 2, 0}), 0);
-  body = createBody(rectShape({1, dims.y}), BodyTag(), true);
+  body = createBody(rectShape({1, dims.y}), BodyTag::ObstacleTag(), true);
   body->SetTransform(toPhysVec({dims.x, dims.y / 2}), 0);
-  body = createBody(rectShape({1, dims.y}), BodyTag(), true);
+  body = createBody(rectShape({1, dims.y}), BodyTag::ObstacleTag(), true);
   body->SetTransform(toPhysVec({0, dims.y / 2}), 0);
 
   // obstacles
   for (const auto &obstacle : map.obstacles) {
-    body = createBody(polygonShape(obstacle.localVerticies), BodyTag(), true);
+    body = createBody(polygonShape(obstacle.localVerticies),
+                      BodyTag::ObstacleTag(), true);
     body->SetTransform(toPhysVec(obstacle.pos), 0);
   }
+
+  // listener
+  world.SetContactListener(&converter);
 }
 
 Physics::~Physics() {

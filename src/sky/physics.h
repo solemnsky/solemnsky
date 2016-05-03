@@ -9,18 +9,49 @@
 namespace sky {
 
 /**
- * Tag given to each body in the Sky's Physics, for handling collisions.
+ * Some metadata attached to a body in the simulation.
  */
-struct BodyTag { };
+struct BodyTag {
+  enum class Type {
+    ObstacleTag, PlaneTag, PropTag
+  };
+
+  const Type type;
+
+ private:
+  BodyTag(const Type type);
+
+ public:
+
+  static BodyTag ObstacleTag();
+  static BodyTag PlaneTag();
+  static BodyTag PropTag();
+};
 
 /**
  * Interface to listen to physical events.
  */
 class PhysicsListener {
  protected:
-  friend class Physics;
+  friend class PhysicsDispatcher;
   virtual void onBeginContact(const BodyTag &body1, const BodyTag &body2) = 0;
   virtual void onEndContact(const BodyTag &body1, const BodyTag &body2) = 0;
+};
+
+/**
+ * Listens to the b2World and dispatches to PhysicsListener.
+ */
+class PhysicsDispatcher: public b2ContactListener {
+ private:
+  PhysicsListener &listener;
+
+ public:
+  PhysicsDispatcher(PhysicsListener &listener);
+
+  // b2ContactListener
+  virtual void BeginContact(b2Contact *contact) override;
+  virtual void EndContact(b2Contact *contact) override;
+
 };
 
 /**
@@ -37,11 +68,12 @@ class Physics {
   } settings;
 
   b2World world;
-  PhysicsListener *const listener;
+  PhysicsListener &listener;
+  PhysicsDispatcher converter;
 
  public:
   Physics() = delete;
-  Physics(const Map &map, PhysicsListener *const listener);
+  Physics(const Map &map, PhysicsListener &listener);
   ~Physics();
 
   const sf::Vector2f dims;

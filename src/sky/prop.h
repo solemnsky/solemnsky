@@ -15,7 +15,6 @@ class Prop {
   class Sky &parent;
   Physics &physics;
   b2Body *body;
-  BodyTag tag;
 
  public:
   Prop() = delete;

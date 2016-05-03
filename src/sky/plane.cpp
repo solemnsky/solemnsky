@@ -148,7 +148,8 @@ PlaneVital::PlaneVital(Sky &parent,
                        const PlaneState &state) :
     parent(parent),
     physics(parent.physics.get()),
-    body(physics.createBody(physics.rectShape(tuning.hitbox), BodyTag())),
+    body(physics.createBody(physics.rectShape(tuning.hitbox),
+                            BodyTag::PlaneTag())),
     controls(controls),
     tuning(tuning),
     state(state) {
