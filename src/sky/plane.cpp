@@ -112,39 +112,39 @@ float PlaneState::requestEnergy(const float reqEnergy) {
 }
 
 /**
- * PlaneInitializer.
+ * SkyPlayerInit.
  */
 
-PlaneInitializer::PlaneInitializer() { }
+SkyPlayerInit::SkyPlayerInit() { }
 
-PlaneInitializer::PlaneInitializer(
+SkyPlayerInit::SkyPlayerInit(
     const PlaneControls &controls,
     const PlaneTuning &tuning,
     const PlaneState &state) :
     spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)),
     controls(controls) { }
 
-PlaneInitializer::PlaneInitializer(
+SkyPlayerInit::SkyPlayerInit(
     const PlaneControls &controls) : controls(controls) { }
 
 /**
- * PlaneDelta.
+ * SkyPlayerDelta.
  */
 
-PlaneDelta::PlaneDelta() { }
+SkyPlayerDelta::SkyPlayerDelta() { }
 
-bool PlaneDelta::verifyStructure() const {
+bool SkyPlayerDelta::verifyStructure() const {
   return imply(bool(tuning), bool(state));
 }
 
 /**
- * PlaneVital.
+ * GamePlane.
  */
 
-PlaneVital::PlaneVital(Sky &parent,
-                       const PlaneControls &controls,
-                       const PlaneTuning &tuning,
-                       const PlaneState &state) :
+Participation::Participation(Sky &parent,
+                             const PlaneControls &controls,
+                             const PlaneTuning &tuning,
+                             const PlaneState &state) :
     parent(parent),
     physics(parent.physics.get()),
     controls(controls),
@@ -157,11 +157,11 @@ PlaneVital::PlaneVital(Sky &parent,
   body->SetGravityScale(state.stalled ? 1 : 0);
 }
 
-PlaneVital::~PlaneVital() {
+Participation::~Participation() {
   physics.deleteBody(body);
 }
 
-void PlaneVital::switchStall() {
+void Participation::switchStall() {
   const float forwardVel = state.forwardVelocity();
   if (state.stalled) {
     if (forwardVel > tuning.stall.threshold) {
@@ -183,7 +183,9 @@ void PlaneVital::switchStall() {
   }
 }
 
-void PlaneVital::tickFlight(const float delta) {
+void Participation::tickFlight(const float delta) {
+  switchStall();
+
   const float velocity = state.velocity();
 
   Movement throtCtrl =
@@ -249,11 +251,9 @@ void PlaneVital::tickFlight(const float delta) {
     state.physical.vel = targetSpeed * VecMath::fromAngle(state.physical.rot) +
         state.leftoverVel;
   }
-
-  switchStall();
 }
 
-void PlaneVital::tickWeapons(const float delta) {
+void Participation::tickWeapons(const float delta) {
   state.primaryCooldown.cool(delta);
   if (state.primaryCooldown
       && this->controls.getState<Action::Primary>()) {
@@ -273,21 +273,21 @@ void PlaneVital::tickWeapons(const float delta) {
   }
 }
 
-void PlaneVital::writeToBody() {
+void Participation::writeToBody() {
   state.physical.writeToBody(physics, body);
   body->SetGravityScale(state.stalled ? 1 : 0);
 }
 
-void PlaneVital::readFromBody() {
+void Participation::readFromBody() {
   state.physical.readFromBody(physics, body);
 }
 
-void PlaneVital::beforePhysics() {
+void Participation::prePhysics() {
   writeToBody();
 //  for (auto &prop : props) prop.writeToBody();
 }
 
-void PlaneVital::afterPhysics(float delta) {
+void Participation::postPhysics(const float delta) {
   readFromBody();
   tickFlight(delta);
   tickWeapons(delta);
@@ -302,24 +302,20 @@ void PlaneVital::afterPhysics(float delta) {
 //  });
 }
 
-void PlaneVital::onBeginContact(const BodyTag &body) {
-  appLog("ouch I'm touching something...");
+void Participation::onBeginContact(const BodyTag &body) {
+//  appLog("ouch I'm touching something...");
 }
 
-void PlaneVital::onEndContact(const BodyTag &body) {
-  appLog("ah good, not touching it anymore");
+void Participation::onEndContact(const BodyTag &body) {
+//  appLog("ah good, not touching it anymore");
 }
 
-const PlaneTuning &PlaneVital::getTuning() const {
+const PlaneTuning &Participation::getTuning() const {
   return tuning;
 }
 
-const PlaneState &PlaneVital::getState() const {
+const PlaneState &Participation::getState() const {
   return state;
-}
-
-const std::forward_list<Prop> &PlaneVital::getProps() const {
-  return props;
 }
 
 /**
@@ -342,34 +338,33 @@ Movement PlaneControls::rotMovement() const {
 }
 
 /**
- * Plane.
+ * SkyPlayer.
  */
 
-void Plane::spawnWithState(const PlaneTuning &tuning,
-                           const PlaneState &state) {
-  assert(bool(parent.physics));
+void SkyPlayer::spawnWithState(const PlaneTuning &tuning,
+                               const PlaneState &state) {
   vital.emplace(parent, controls, tuning, state);
 }
 
-void Plane::spawn(const PlaneTuning &tuning,
-                  const sf::Vector2f pos,
-                  const float rot) {
+void SkyPlayer::spawn(const PlaneTuning &tuning,
+                      const sf::Vector2f pos,
+                      const float rot) {
   spawnWithState(tuning, PlaneState(tuning, pos, rot));
   newlyAlive = true;
 }
 
-void Plane::doAction(const Action action, bool actionState) {
+void SkyPlayer::doAction(const Action action, bool actionState) {
   controls.doAction(action, actionState);
   if (action == Action::Suicide && actionState) {
     reset();
   }
 }
 
-void Plane::reset() {
+void SkyPlayer::reset() {
   vital.reset();
 }
 
-void Plane::applyDelta(const PlaneDelta &delta) {
+void SkyPlayer::applyDelta(const SkyPlayerDelta &delta) {
   if (delta.tuning) {
     spawnWithState(delta.tuning.get(), delta.state.get());
   } else {
@@ -382,16 +377,16 @@ void Plane::applyDelta(const PlaneDelta &delta) {
   }
 }
 
-PlaneInitializer Plane::captureInitializer() const {
+SkyPlayerInit SkyPlayer::captureInitializer() const {
   if (vital) {
-    return PlaneInitializer(controls, vital->tuning, vital->state);
+    return SkyPlayerInit(controls, vital->tuning, vital->state);
   } else {
-    return PlaneInitializer(controls);
+    return SkyPlayerInit(controls);
   }
 }
 
-PlaneDelta Plane::captureDelta() {
-  PlaneDelta delta;
+SkyPlayerDelta SkyPlayer::captureDelta() {
+  SkyPlayerDelta delta;
   if (vital) {
     delta.state = vital->state;
     if (newlyAlive) delta.tuning = vital->tuning;
@@ -401,8 +396,8 @@ PlaneDelta Plane::captureDelta() {
   return delta;
 }
 
-Plane::Plane(Sky &parent, Player &player,
-             const PlaneInitializer &initializer) :
+SkyPlayer::SkyPlayer(Sky &parent, Player &player,
+                     const SkyPlayerInit &initializer) :
     Networked(initializer),
     parent(parent),
     player(player),
@@ -412,15 +407,19 @@ Plane::Plane(Sky &parent, Player &player,
   controls = initializer.controls;
 }
 
-const optional<PlaneVital> &Plane::getVital() const {
+const optional<Participation> &SkyPlayer::getVital() const {
   return vital;
 }
 
-const PlaneControls &Plane::getControls() const {
+const std::forward_list<Prop> &SkyPlayer::getProps() const {
+  return <#initializer#>;
+}
+
+const PlaneControls &SkyPlayer::getControls() const {
   return controls;
 }
 
-bool Plane::isSpawned() const {
+bool SkyPlayer::isSpawned() const {
   return bool(vital);
 }
 

@@ -2,7 +2,7 @@
 
 Tutorial::Tutorial(ClientShared &state) :
     Game(state, "tutorial"),
-    arena(sky::ArenaInitializer("tutorial", "test1")),
+    arena(sky::ArenaInit("tutorial", "test1")),
     sky(arena, sky::SkyInitializer()),
     skyRender(arena, sky, shared.settings.enableDebug) {
   arena.connectPlayer("offline player");
@@ -43,7 +43,7 @@ void Tutorial::tick(float delta) {
 }
 
 void Tutorial::render(ui::Frame &f) {
-  const sky::Plane &plane = sky.getPlane(*player);
+  const sky::SkyPlayer &plane = sky.getPlane(*player);
   skyRender.render(
       f, plane.isSpawned() ?
          plane.getVital()->getState().physical.pos : sf::Vector2f(0, 0));

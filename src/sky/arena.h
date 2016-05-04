@@ -141,11 +141,11 @@ class ArenaLogger {
 };
 
 /**
- * Initializer type for Arena's Networked implementation.
+ * Initializer for Arena's Networked implementation.
  */
-struct ArenaInitializer {
-  ArenaInitializer() = default; // packing
-  ArenaInitializer(const std::string &name, const MapName &map);
+struct ArenaInit {
+  ArenaInit() = default; // packing
+  ArenaInit(const std::string &name, const MapName &map);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -222,7 +222,7 @@ struct ArenaDelta: public VerifyStructure {
  * The backbone of a multiplayer game. Holds Players, Subsystems, and
  * an ArenaLoggers, and exposes a small API.
  */
-class Arena: public Networked<ArenaInitializer, ArenaDelta> {
+class Arena: public Networked<ArenaInit, ArenaDelta> {
  private:
   // Utilities.
   PID allocPid() const;
@@ -247,7 +247,7 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
 
  public:
   Arena() = delete;
-  Arena(const ArenaInitializer &initializer);
+  Arena(const ArenaInit &initializer);
 
   // Subsystems and loggers.
   std::vector<Subsystem *> subsystems;
@@ -255,7 +255,7 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
 
   // Networked Impl.
   void applyDelta(const ArenaDelta &delta) override;
-  ArenaInitializer captureInitializer() const override;
+  ArenaInit captureInitializer() const override;
 
   // User API.
   Player *getPlayer(const PID pid);

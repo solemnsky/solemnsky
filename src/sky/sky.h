@@ -23,7 +23,7 @@ struct SkyInitializer: public VerifyStructure {
 
   bool verifyStructure() const;
 
-  std::map<PID, PlaneInitializer> planes; // planes already in the arena
+  std::map<PID, SkyPlayerInit> planes; // planes already in the arena
 };
 
 /**
@@ -39,7 +39,7 @@ struct SkyDelta: public VerifyStructure {
 
   bool verifyStructure() const;
 
-  std::map<PID, PlaneDelta> planes;
+  std::map<PID, SkyPlayerDelta> planes;
 };
 
 /**
@@ -47,12 +47,12 @@ struct SkyDelta: public VerifyStructure {
  */
 class Sky: public Subsystem, public PhysicsListener {
  private:
-  friend struct Plane;
-  std::map<PID, Plane> planes;
-  Plane *planeFromPID(const PID pid);
+  friend struct SkyPlayer;
+  std::map<PID, SkyPlayer> planes;
+  SkyPlayer *planeFromPID(const PID pid);
 
  protected:
-  void registerPlayerWith(Player &player, const PlaneInitializer &initializer);
+  void registerPlayerWith(Player &player, const SkyPlayerInit &initializer);
 
   /**
    * Subsystem implementation.
@@ -96,7 +96,7 @@ class Sky: public Subsystem, public PhysicsListener {
   SkyInitializer captureInitializer();
   SkyDelta collectDelta();
   void applyDelta(const SkyDelta &delta);
-  Plane &getPlane(const Player &player) const;
+  SkyPlayer &getPlane(const Player &player) const;
 
   // restart, resetting state
   void restart();

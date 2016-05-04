@@ -64,14 +64,14 @@ class MultiplayerShared {
   // arena and subsystems
   void initializeArena(
       const PID pid,
-      const sky::ArenaInitializer &arenaInit,
+      const sky::ArenaInit &arenaInit,
       const sky::SkyInitializer &skyInit);
   optional<sky::Arena> arena;
   optional<sky::Sky> sky;
   optional<sky::SkyRender> skyRender;
   optional<MultiplayerLogger> logger;
   sky::Player *player;
-  sky::Plane *plane;
+  sky::SkyPlayer *plane;
 
   /**
    * Additional methods for Multiplayer.

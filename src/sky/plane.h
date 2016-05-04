@@ -14,7 +14,7 @@ namespace sky {
 class Sky;
 
 /**
- * Vectors of action to control a Plane. Passed along with a state,
+ * Vectors of action to control a SkyPlayer. Passed along with a state,
  * corresponding to whether the action was begun or ended.
  */
 enum class Action {
@@ -33,7 +33,7 @@ std::string showAction(const Action action);
 optional<Action> readAction(const std::string &string);
 
 /**
- * The POD static state of a PlaneVital.
+ * The POD static state of a GamePlane.
  */
 struct PlaneTuning {
   PlaneTuning(); // constructs with sensible defaults
@@ -82,7 +82,7 @@ struct PlaneTuning {
 };
 
 /**
- * The POD variable game state of a PlaneVital, that's necessary to sync over
+ * The POD variable game state of a GamePlane, that's necessary to sync over
  * the network.
  */
 struct PlaneState {
@@ -122,8 +122,8 @@ struct PlaneState {
 };
 
 /**
- * The persistent control state of a Plane; synchronized along with the
- * rest of the Plane's state.
+ * The persistent control state of a SkyPlayer; synchronized along with the
+ * rest of the SkyPlayer's state.
  */
 struct PlaneControls {
  private:
@@ -153,14 +153,14 @@ struct PlaneControls {
 };
 
 /**
- * Initializer for Plane's Networked implementation.
+ * Initializer for SkyPlayer's Networked implementation.
  */
-struct PlaneInitializer {
-  PlaneInitializer();
-  PlaneInitializer(const PlaneControls &controls,
-                   const PlaneTuning &tuning,
-                   const PlaneState &state);
-  PlaneInitializer(const PlaneControls &controls);
+struct SkyPlayerInit {
+  SkyPlayerInit();
+  SkyPlayerInit(const PlaneControls &controls,
+                const PlaneTuning &tuning,
+                const PlaneState &state);
+  SkyPlayerInit(const PlaneControls &controls);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -172,11 +172,10 @@ struct PlaneInitializer {
 };
 
 /**
- * Delta for Plane's Networked implementation.
- * TODO: make smarter
+ * Delta for SkyPlayer's Networked implementation.
  */
-struct PlaneDelta: public VerifyStructure {
-  PlaneDelta();
+struct SkyPlayerDelta: public VerifyStructure {
+  SkyPlayerDelta();
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -191,13 +190,9 @@ struct PlaneDelta: public VerifyStructure {
 };
 
 /**
- * The state and Box2D allocation of a plane when alive, implementation
- * detail of Plane. **Only exists when in an active game (i.e. parent.physics
- * exists).
+ * The plane element that can be associated with a participation.
  */
-class PlaneVital {
-  friend class Sky;
-  friend class Plane;
+class Plane {
  private:
   // Parameters.
   Sky &parent;
@@ -208,9 +203,8 @@ class PlaneVital {
   PlaneTuning tuning;
   PlaneState state;
   b2Body *const body;
-  std::forward_list<Prop> props;
 
-  // Helpers.
+  // Subroutines.
   void switchStall();
   void tickFlight(const float delta);
   void tickWeapons(const float delta);
@@ -218,36 +212,60 @@ class PlaneVital {
   void readFromBody();
 
   // Sky API.
-  void beforePhysics();
-  void afterPhysics(const float delta);
+  void prePhysics();
+  void postPhysics(const float delta);
   void onBeginContact(const BodyTag &body);
   void onEndContact(const BodyTag &body);
 
  public:
-  PlaneVital() = delete;
-  PlaneVital(Sky &, PlaneControls &&, const PlaneTuning &,
-             const PlaneState &) = delete; // `controls` must not be a temp
-  PlaneVital(Sky &parent,
-             const PlaneControls &controls,
-             const PlaneTuning &tuning,
-             const PlaneState &state);
-  ~PlaneVital();
-
-  PlaneVital(const PlaneVital &) = delete;
-  PlaneVital &operator=(const PlaneVital &) = delete;
-
-  // User API.
-  const PlaneTuning &getTuning() const;
-  const PlaneState &getState() const;
-  const std::forward_list<Prop> &getProps() const;
+  Plane() = delete;
+  Plane(Sky &, PlaneControls &&, const PlaneTuning &,
+        const PlaneState &) = delete; // `controls` must not be a temp
+  Plane(Sky &parent,
+        const PlaneControls &controls,
+        const PlaneTuning &tuning,
+        const PlaneState &state);
+  ~Plane();
 
 };
 
 /**
- * Top-level entity representing a Player's participation in the Sky.
- * Wraps a optional<PlaneVital>, providing a Networked impl / a few helpers.
+ * A Player's participation in an active game.
  */
-class Plane: private Networked<PlaneInitializer, PlaneDelta> {
+class Participation {
+  friend class Sky;
+  friend class SkyPlayer;
+ private:
+  // Parameters.
+  Sky &parent;
+  Physics &physics;
+  const PlaneControls &controls;
+
+  // State.
+
+
+  // Sky API.
+  void prePhysics();
+  void postPhysics(const float delta);
+
+ public:
+  Participation() = delete;
+  Participation(Sky &parent);
+
+  Participation(const Participation &) = delete;
+  Participation &operator=(const Participation &) = delete;
+
+  // User API.
+  const PlaneTuning &getTuning() const;
+  const PlaneState &getState() const;
+
+};
+
+/**
+ * Potential game state attached to a player: wraps optional<Participation>
+ * and manages deltas.
+ */
+class SkyPlayer: private Networked<SkyPlayerInit, SkyPlayerDelta> {
   friend class Sky;
  private:
   // Parameters.
@@ -256,8 +274,9 @@ class Plane: private Networked<PlaneInitializer, PlaneDelta> {
 
   // State.
   bool newlyAlive; // for deltas
-  optional<PlaneVital> vital;
+  optional<Participation> vital;
   PlaneControls controls;
+  std::forward_list<Prop> props;
 
   // Internal helpers.
   void spawnWithState(const PlaneTuning &tuning, const PlaneState &state);
@@ -269,17 +288,18 @@ class Plane: private Networked<PlaneInitializer, PlaneDelta> {
   void doAction(const Action action, bool state);
   void reset();
 
-  void applyDelta(const PlaneDelta &delta) override;
-  PlaneInitializer captureInitializer() const;
-  PlaneDelta captureDelta();
+  void applyDelta(const SkyPlayerDelta &delta) override;
+  SkyPlayerInit captureInitializer() const;
+  SkyPlayerDelta captureDelta();
 
  public:
-  Plane() = delete;
-  Plane(Sky &parent, class Player &player,
-        const PlaneInitializer &initializer);
+  SkyPlayer() = delete;
+  SkyPlayer(Sky &parent, class Player &player,
+            const SkyPlayerInit &initializer);
 
   // User API.
-  const optional<PlaneVital> &getVital() const;
+  const optional<Participation> &getVital() const;
+  const std::forward_list<Prop> &getProps() const;
   const PlaneControls &getControls() const;
 
   bool isSpawned() const;

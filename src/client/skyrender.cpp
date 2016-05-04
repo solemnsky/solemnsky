@@ -11,7 +11,7 @@ namespace sky {
  * PlayerGraphics.
  */
 
-PlaneGraphics::PlaneGraphics(const Plane &plane) :
+PlaneGraphics::PlaneGraphics(const SkyPlayer &plane) :
     plane(plane),
     orientation(false),
     flipState(0),
@@ -88,8 +88,8 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
 }
 
 void SkyRender::renderProps(ui::Frame &f,
-                            const Plane &plane) {
-  for (auto &prop : plane.getVital()->getProps()) {
+                            const Participation &planeVital) {
+  for (auto &prop : planeVital.getVital()->getProps()) {
     f.withTransform(
         sf::Transform()
             .translate(prop.physical.pos)
@@ -103,11 +103,12 @@ void SkyRender::renderProps(ui::Frame &f,
 
 void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                     const PlaneGraphics &graphics) {
-  renderProps(f, graphics.plane);
 
   if (auto &vital = graphics.plane.getVital()) {
     auto &state = vital->getState();
     auto &tuning = vital->getTuning();
+
+    renderProps(f, graphics.plane);
 
     f.withTransform(
         sf::Transform()
@@ -190,7 +191,6 @@ void SkyRender::onTick(const float delta) {
 void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
   if (sky.map) {
     f.withTransform(
-//        sf::Transform(),
         sf::Transform().translate(
             {-findView(1600, sky.map->dimensions.x, pos.x),
              -findView(900, sky.map->dimensions.y, pos.y)}

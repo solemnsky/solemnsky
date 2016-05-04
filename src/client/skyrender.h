@@ -12,11 +12,11 @@
 namespace sky {
 
 /**
- * Graphics state associated with a Plane.
+ * Graphics state associated with a SkyPlayer.
  */
 struct PlaneGraphics {
-  PlaneGraphics(const Plane &plane);
-  const Plane &plane;
+  PlaneGraphics(const SkyPlayer &plane);
+  const SkyPlayer &plane;
 
   bool orientation;
   float flipState, rollState; // these two values contribute to the roll
@@ -46,7 +46,7 @@ class SkyRender: public Subsystem {
   void renderBars(ui::Frame &f,
                   std::vector<std::pair<float, const sf::Color &>> bars,
                   sf::FloatRect area);
-  void renderProps(ui::Frame &f, const Plane &plane);
+  void renderProps(ui::Frame &f, const Participation &planeVital);
   void renderPlaneGraphics(ui::Frame &f, const PlaneGraphics &graphics);
   void renderMap(ui::Frame &f);
 

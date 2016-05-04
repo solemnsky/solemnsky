@@ -145,7 +145,7 @@ ArenaLogger::ArenaLogger(Arena &arena) : arena(arena) {
  * Arena.
  */
 
-ArenaInitializer::ArenaInitializer(
+ArenaInit::ArenaInit(
     const std::string &name, const MapName &map) :
     name(name), map(map), mode(ArenaMode::Lobby) { }
 
@@ -194,7 +194,7 @@ void Arena::logEvent(const ArenaEvent &event) const {
   for (auto l : loggers) l->onEvent(event);
 }
 
-Arena::Arena(const ArenaInitializer &initializer) :
+Arena::Arena(const ArenaInit &initializer) :
     Networked(initializer),
     name(initializer.name),
     motd(initializer.motd),
@@ -266,8 +266,8 @@ void Arena::applyDelta(const ArenaDelta &delta) {
   }
 }
 
-ArenaInitializer Arena::captureInitializer() const {
-  ArenaInitializer initializer(name, map);
+ArenaInit Arena::captureInitializer() const {
+  ArenaInit initializer(name, map);
   for (auto &player : players) {
     initializer.players.emplace(
         player.first, player.second.captureInitializer());
@@ -334,7 +334,6 @@ ArenaDelta Arena::connectPlayer(const std::string &requestedNick) {
       PlayerInitializer(allocPid(), allocNickname(requestedNick)));
   return ArenaDelta::Join(player.captureInitializer());
 }
-
 
 void Arena::tick(const float delta) {
   for (auto s : subsystems) s->onTick(delta);

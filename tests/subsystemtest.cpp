@@ -80,7 +80,7 @@ class CounterSubsystem: public sky::Subsystem {
 };
 
 TEST_F(SubsystemTest, LifeCounter) {
-  sky::Arena arena(sky::ArenaInitializer("my arena", "test1"));
+  sky::Arena arena(sky::ArenaInit("my arena", "test1"));
   LifeSubsystem lifeSubsystem(arena);
   CounterSubsystem counterSubsystem(arena, lifeSubsystem);
 

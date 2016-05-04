@@ -8,7 +8,7 @@
 class SkyTest: public testing::Test {
  public:
   SkyTest() :
-      arena(sky::ArenaInitializer("arena", "test1")),
+      arena(sky::ArenaInit("arena", "test1")),
       sky(arena, sky::SkyInitializer()) { }
 
   sky::Arena arena;
