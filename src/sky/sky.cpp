@@ -27,7 +27,7 @@ bool SkyDelta::verifyStructure() const {
  */
 
 void Sky::registerPlayerWith(Player &player,
-                             const PlaneInitializer &initializer) {
+                             const SkyPlayerInit &initializer) {
   const auto plane = planes.find(player.pid);
   if (plane == planes.end()) {
     planes.emplace(std::piecewise_construct,
@@ -49,11 +49,11 @@ void Sky::unregisterPlayer(Player &player) {
 void Sky::onTick(const float delta) {
   if (physics) {
     for (auto &elem : planes) {
-      elem.second.vital->beforePhysics();
+      elem.second.vital->prePhysics();
     }
     physics->tick(delta);
     for (auto &elem : planes) {
-      elem.second.vital->afterPhysics(delta);
+      elem.second.vital->postPhysics(delta);
     }
   }
 }
@@ -145,7 +145,7 @@ Sky::~Sky() {
   stop(); // necessary to correctly free the box2d world
 }
 
-Plane *Sky::planeFromPID(const PID pid) {
+SkyPlayer *Sky::planeFromPID(const PID pid) {
   auto plane = planes.find(pid);
   if (plane != planes.end()) return &plane->second;
   return nullptr;
@@ -167,14 +167,14 @@ SkyDelta Sky::collectDelta() {
 
 void Sky::applyDelta(const SkyDelta &delta) {
   for (auto const &pair : delta.planes) {
-    if (Plane *plane = planeFromPID(pair.first)) {
+    if (SkyPlayer *plane = planeFromPID(pair.first)) {
       plane->applyDelta(pair.second);
     }
   }
 }
 
-Plane &Sky::getPlane(const Player &player) const {
-  return getPlayerData<Plane>(player);
+SkyPlayer &Sky::getPlane(const Player &player) const {
+  return getPlayerData<SkyPlayer>(player);
 }
 
 void Sky::restart() {

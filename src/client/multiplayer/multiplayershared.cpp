@@ -107,7 +107,7 @@ MultiplayerShared::MultiplayerShared(
 
 void MultiplayerShared::initializeArena(
     const PID pid,
-    const sky::ArenaInitializer &arenaInit,
+    const sky::ArenaInit &arenaInit,
     const sky::SkyInitializer &skyInit) {
   appLog("Loading arena...", LogOrigin::Client);
   arena.emplace(arenaInit);
@@ -146,7 +146,7 @@ void MultiplayerShared::poll(const float delta) {
     // still trying to connect to the server...
     if (event.type == ENET_EVENT_TYPE_CONNECT) {
       server = event.peer;
-      appLog("Connected to server!", LogOrigin::Client);
+      appLog("Allocated connection!", LogOrigin::Client);
     }
   } else {
     // connected

@@ -84,7 +84,7 @@ struct ClientPacket: public VerifyStructure {
 struct ServerPacket: public VerifyStructure {
   enum class Type {
     Pong,
-    Init, // acknowledge a ReqJoin, send ArenaInitializer
+    Init, // acknowledge a ReqJoin, send ArenaInit
     DeltaArena, // broadcast a change in the Arena
     DeltaSky, // broadcast a change in the Arena's sky
 
@@ -131,7 +131,7 @@ struct ServerPacket: public VerifyStructure {
 
   Type type;
   optional<PID> pid;
-  optional<ArenaInitializer> arenaInit;
+  optional<ArenaInit> arenaInit;
   optional<ArenaDelta> arenaDelta;
   optional<SkyInitializer> skyInit;
   optional<SkyDelta> skyDelta;
@@ -140,7 +140,7 @@ struct ServerPacket: public VerifyStructure {
   bool verifyStructure() const override;
 
   static ServerPacket Pong();
-  static ServerPacket Init(const PID pid, const ArenaInitializer &arenaInit,
+  static ServerPacket Init(const PID pid, const ArenaInit &arenaInit,
                            const SkyInitializer &init);
   static ServerPacket DeltaArena(const ArenaDelta &arenaDelta);
   static ServerPacket DeltaSky(const SkyDelta &skyDelta);
