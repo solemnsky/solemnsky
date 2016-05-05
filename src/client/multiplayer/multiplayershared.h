@@ -11,7 +11,7 @@
 #include "client/elements/elements.h"
 
 /**
- * Subsystem used by the MultiplayerConnection to listen to events.
+ * Logger used by MultiplayerShared to listen to ArenaEvents.
  */
 class MultiplayerLogger: public sky::ArenaLogger {
  private:
@@ -25,25 +25,32 @@ class MultiplayerLogger: public sky::ArenaLogger {
                     class MultiplayerShared &connection);
 };
 
+/**
+ * Game state associated with a participation in an remote arena.
+ */
 struct ArenaConnection {
   ArenaConnection(
-      MultiplayerShared *shared,
+      MultiplayerShared &shared,
       const PID pid,
       const sky::ArenaInit &arenaInit,
       const sky::SkyInitializer &skyInit);
 
+  // State.
   sky::Arena arena;
-  sky::SkyManager sky;
-  sky::SkyRender skyRender;
-  MultiplayerLogger logger;
+  sky::SkyManager skyManager;
   sky::Player &player;
-  optional<sky::Participation> &participation;
+
+  optional<sky::SkyRender> skyRender;
+  MultiplayerLogger logger;
+
+  // Handy accessors.
+  const optional<sky::Participation> &getParticipation() const;
+
 };
 
 /**
- * The shared state of the multiplayer client, at the intersection of the
- * three multiplayer views. Holds the Arena and friends, Manages the basic
- * protocol, and provides utilities.
+ * The state of the multiplayer client, allocated for Multiplayer for use by
+ * MultiplayerView.
  */
 class MultiplayerShared {
  private:

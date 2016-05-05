@@ -19,16 +19,19 @@ MultiplayerLogger::MultiplayerLogger(sky::Arena &arena,
  * ArenaConnection.
  */
 ArenaConnection::ArenaConnection(
-    MultiplayerShared *shared,
+    MultiplayerShared &shared,
     const PID pid,
     const sky::ArenaInit &arenaInit,
     const sky::SkyInitializer &skyInit) :
     arena(arenaInit),
-    sky(arena, skyInit),
-    skyRender(arena, sky),
-    logger(arena, shared),
+    skyManager(arena, skyInit),
     player(*arena.getPlayer(pid)),
-    participation(sky.getParticipation(player)) {
+
+    skyRender(),
+    logger(arena, shared) { }
+
+const optional<sky::Participation> &ArenaConnection::getParticipation() const {
+  return skyManager.getParticipation(player);
 }
 
 /**
@@ -67,7 +70,7 @@ void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
     }
 
     case ServerPacket::Type::DeltaSky: {
-      conn->sky.applyDelta(packet.skyDelta.get());
+      conn->skyManager.applyDelta(packet.skyDelta.get());
       break;
     }
 
@@ -120,9 +123,7 @@ MultiplayerShared::MultiplayerShared(
     host(tg::HostType::Client),
     server(nullptr),
 
-    disconnecting(false), disconnected(false),
-
-    player(nullptr), participation(nullptr) {
+    disconnecting(false), disconnected(false) {
   host.connect(serverHostname, serverPort);
 }
 

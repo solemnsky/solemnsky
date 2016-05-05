@@ -58,7 +58,7 @@ Sky::Sky(const Arena &arena,
  */
 
 void SkyManager::registerPlayerWith(Player &player,
-                                    const SkyPlayerInit &initializer) {
+                                    const ParticipationInit &initializer) {
   participations[player.pid].reset();
   if (sky) participations.at(player.pid).emplace(sky->physics, initializer);
   player.data.push_back(findValue(participations, player.pid));
@@ -133,7 +133,7 @@ void SkyManager::start() {
   appLog("Loading map " + inQuotes(arena.getMap()) + ".", LogOrigin::Engine);
   sky.emplace(arena, participations);
   for (auto &pair : participations) {
-    pair.second.emplace(sky->physics, SkyPlayerInit());
+    pair.second.emplace(sky->physics, ParticipationInit());
   }
 }
 
