@@ -33,7 +33,7 @@ void Sky::onTick(const float delta) {
 }
 
 void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
-
+  if (body1.type == BodyTag::)
 }
 
 void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {

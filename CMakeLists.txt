@@ -59,7 +59,7 @@ add_library(solemnsky STATIC
 
         src/util/types.cpp
         src/util/types.h
-        )
+        src/sky/planestate.cpp src/sky/planestate.h)
 
 target_link_libraries(solemnsky
         enet

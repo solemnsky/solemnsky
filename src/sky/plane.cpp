@@ -7,109 +7,6 @@
 
 namespace sky {
 
-/**
- * Action.
- */
-
-static const std::vector<std::string> actionNames = {
-    "thrust",
-    "reverse",
-    "left",
-    "right",
-    "primary",
-    "secondary",
-    "special",
-    "suicide"
-};
-
-std::string showAction(const Action action) {
-  return actionNames.at((size_t) action);
-}
-
-optional<Action> readAction(const std::string &str) {
-  Action action = Action::Thrust;
-  for (const auto &search : actionNames) {
-    if (search == str) return action;
-    action = Action(char(action) + 1);
-  }
-  return {};
-}
-
-/**
- * PlaneTuning.
- */
-
-PlaneTuning::PlaneTuning() :
-    hitbox(110, 60),
-    maxHealth(10),
-    throttleSpeed(1.5) { }
-
-PlaneTuning::Energy::Energy() :
-    thrustDrain(1),
-    recharge(0.5),
-    laserGun(0.3) { }
-
-PlaneTuning::Stall::Stall() :
-    maxRotVel(200),
-    maxVel(300),
-    thrust(500),
-    damping(0.8),
-    threshold(130) { }
-
-PlaneTuning::Flight::Flight() :
-    maxRotVel(180),
-    airspeedFactor(330),
-    throttleInfluence(0.6),
-    throttleEffect(0.3),
-    gravityEffect(0.6),
-    afterburnDrive(0.9),
-    leftoverDamping(0.3),
-    threshold(110) { }
-
-/**
- * PlaneState.
- */
-
-PlaneState::PlaneState() : primaryCooldown(1) { }
-
-PlaneState::PlaneState(const PlaneTuning &tuning,
-                       const sf::Vector2f &pos,
-                       const float rot) :
-    physical(pos,
-             tuning.flight.airspeedFactor * VecMath::fromAngle(rot),
-             rot,
-             0),
-
-    stalled(false), afterburner(0),
-    leftoverVel(0, 0),
-    airspeed(tuning.flight.throttleInfluence),
-    throttle(1),
-
-    energy(1),
-    health(1),
-    primaryCooldown(1) { }
-
-float PlaneState::forwardVelocity() const {
-  return velocity() *
-      (const float) cos(
-          toRad(physical.rot) - std::atan2(physical.vel.y, physical.vel.x));
-}
-
-float PlaneState::velocity() const {
-  return VecMath::length(physical.vel);
-}
-
-bool PlaneState::requestDiscreteEnergy(const float reqEnergy) {
-  if (energy < reqEnergy) return false;
-  energy -= reqEnergy;
-  return true;
-}
-
-float PlaneState::requestEnergy(const float reqEnergy) {
-  const float initEnergy = energy;
-  energy -= reqEnergy;
-  return (initEnergy - energy) / reqEnergy;
-}
 
 /**
  * SkyPlayerInit.
@@ -140,26 +37,6 @@ bool SkyPlayerDelta::verifyStructure() const {
 /**
  * Plane.
  */
-
-Plane::Plane(SkyHolder &parent,
-             const PlaneControls &controls,
-             const PlaneTuning &tuning,
-             const PlaneState &state) :
-    parent(parent),
-    physics(parent.physics.get()),
-    controls(controls),
-
-    tuning(tuning),
-    state(state),
-    body(physics.createBody(physics.rectShape(tuning.hitbox),
-                            BodyTag::PlaneTag(*this))) {
-  state.physical.hardWriteToBody(physics, body);
-  body->SetGravityScale(state.stalled ? 1 : 0);
-}
-
-Plane::~Plane() {
-  physics.deleteBody(body);
-}
 
 void Plane::switchStall() {
   const float forwardVel = state.forwardVelocity();
@@ -203,7 +80,7 @@ void Plane::tickFlight(const float delta) {
   state.afterburner = 0;
 
   if (state.stalled) {
-    // afterburner
+    // Afterburner.
     if (throtCtrl == Movement::Up) {
       const float thrustEfficacy =
           state.requestEnergy(tuning.energy.thrustDrain * delta);
@@ -214,22 +91,22 @@ void Plane::tickFlight(const float delta) {
       state.afterburner = thrustEfficacy;
     }
 
-    // damping towards terminal velocity
+    // Damping towards terminal velocity.
     float excessVel = velocity - tuning.stall.maxVel;
     float dampingFactor = tuning.stall.maxVel / velocity;
     if (excessVel > 0)
       state.physical.vel = state.physical.vel * dampingFactor *
           std::pow(tuning.stall.damping, delta);
   } else {
-    // modify throttle and afterburner according to controls
+    // Modify throttle and afterburner according to controls.
     state.throttle += movementValue(throtCtrl) * delta;
     bool afterburning =
         (throtCtrl == Movement::Up) && state.throttle == 1;
 
-    // pick away at leftover velocity
+    // Pick away at leftover velocity.
     state.leftoverVel *= std::pow(tuning.flight.leftoverDamping, delta);
 
-    // modify vstate.airspeed
+    // Modify airspeed.
     float speedMod = 0;
     speedMod +=
         sin(toRad(state.physical.rot)) * tuning.flight.gravityEffect * delta;
@@ -247,7 +124,7 @@ void Plane::tickFlight(const float delta) {
 
     float targetSpeed = state.airspeed * tuning.flight.airspeedFactor;
 
-    // set velocity, according to target speed, rotation, and leftoverVel
+    // Set velocity, according to target speed, rotation, and leftoverVel.
     state.physical.vel = targetSpeed * VecMath::fromAngle(state.physical.rot) +
         state.leftoverVel;
   }
@@ -282,7 +159,6 @@ void Plane::readFromBody() {
   state.physical.readFromBody(physics, body);
 }
 
-
 void Plane::prePhysics() {
   writeToBody();
 }
@@ -294,16 +170,42 @@ void Plane::postPhysics(const float delta) {
 }
 
 void Plane::onBeginContact(const BodyTag &body) {
-
+  appLog("ouch");
 }
 
 void Plane::onEndContact(const BodyTag &body) {
+  appLog("that's better");
+}
 
+Plane::Plane(Physics &physics,
+             const PlaneControls &controls,
+             const PlaneTuning &tuning,
+             const PlaneState &state) :
+    physics(physics),
+    controls(controls),
+
+    tuning(tuning),
+    state(state),
+    body(physics.createBody(physics.rectShape(tuning.hitbox),
+                            BodyTag::PlaneTag(*this))) {
+  state.physical.hardWriteToBody(physics, body);
+  body->SetGravityScale(state.stalled ? 1 : 0);
+}
+
+Plane::~Plane() {
+  physics.deleteBody(body);
 }
 
 /**
  * SkyPlayer.
  */
+
+void SkyPlayer::doAction(const Action action, bool actionState) {
+  controls.doAction(action, actionState);
+  if (action == Action::Suicide && actionState) {
+    plane.reset();
+  }
+}
 
 void SkyPlayer::prePhysics() {
   if (plane) plane->prePhysics();
@@ -323,50 +225,13 @@ void SkyPlayer::postPhysics(const float delta) {
   });
 }
 
-/**
- * PlaneControls.
- */
-
-PlaneControls::PlaneControls() : controls(0) { }
-
-void PlaneControls::doAction(const Action action, const bool actionState) {
-  controls[size_t(action)] = actionState;
-}
-
-bool PlaneControls::getState(const Action action) const {
-  return controls[size_t(action)];
-}
-
-Movement PlaneControls::rotMovement() const {
-  return addMovement(getState<Action::Left>(),
-                     getState<Action::Right>());
-}
-
-/**
- * SkyPlayer.
- */
-
-void SkyPlayer::spawnWithState(const PlaneTuning &tuning,
-                               const PlaneState &state) {
-  participation.emplace(parent, controls, tuning, state);
-}
-
-void SkyPlayer::spawn(const PlaneTuning &tuning,
-                      const sf::Vector2f pos,
-                      const float rot) {
-  spawnWithState(tuning, PlaneState(tuning, pos, rot));
-  newlyAlive = true;
-}
-
-void SkyPlayer::doAction(const Action action, bool actionState) {
-  controls.doAction(action, actionState);
-  if (action == Action::Suicide && actionState) {
-    reset();
-  }
-}
-
-void SkyPlayer::reset() {
-  participation.reset();
+SkyPlayer::SkyPlayer(Physics &physics, const SkyPlayerInit &initializer) :
+    Networked(initializer),
+    physics(physics),
+    newlyAlive(false) {
+  if (initializer.spawn)
+    spawnWithState(initializer.spawn->first, initializer.spawn->second);
+  controls = initializer.controls;
 }
 
 void SkyPlayer::applyDelta(const SkyPlayerDelta &delta) {
@@ -374,8 +239,8 @@ void SkyPlayer::applyDelta(const SkyPlayerDelta &delta) {
     spawnWithState(delta.tuning.get(), delta.state.get());
   } else {
     if (delta.state) {
-      if (participation) participation->state = *delta.state;
-    } else participation.reset();
+      if (plane) plane->state = *delta.state;
+    } else plane.reset();
   }
   if (delta.controls) {
     controls = *delta.controls;
@@ -383,8 +248,8 @@ void SkyPlayer::applyDelta(const SkyPlayerDelta &delta) {
 }
 
 SkyPlayerInit SkyPlayer::captureInitializer() const {
-  if (participation) {
-    return SkyPlayerInit(controls, participation->tuning, participation->state);
+  if (plane) {
+    return SkyPlayerInit(controls, plane->tuning, plane->state);
   } else {
     return SkyPlayerInit(controls);
   }
@@ -392,32 +257,33 @@ SkyPlayerInit SkyPlayer::captureInitializer() const {
 
 SkyPlayerDelta SkyPlayer::captureDelta() {
   SkyPlayerDelta delta;
-  if (participation) {
-    delta.state = participation->state;
-    if (newlyAlive) delta.tuning = participation->tuning;
+  if (plane) {
+    delta.state = plane->state;
+    if (newlyAlive) delta.tuning = plane->tuning;
     newlyAlive = false;
   }
   delta.controls = controls;
   return delta;
 }
 
-SkyPlayer::SkyPlayer(SkyHolder &parent, Player &player,
-                     const SkyPlayerInit &initializer) :
-    Networked(initializer),
-    parent(parent),
-    player(player),
-    newlyAlive(false) {
-  if (initializer.spawn)
-    spawnWithState(initializer.spawn->first, initializer.spawn->second);
-  controls = initializer.controls;
+void SkyPlayer::spawnWithState(const PlaneTuning &tuning,
+                               const PlaneState &state) {
+  plane.emplace(controls, tuning, state);
 }
 
-const optional<Participation> &SkyPlayer::getParticipation() const {
-  return participation;
+void SkyPlayer::spawn(const PlaneTuning &tuning,
+                      const sf::Vector2f &pos,
+                      const float rot) {
+  spawnWithState(tuning, PlaneState(tuning, pos, rot));
+  newlyAlive = true;
+}
+
+const optional<Plane> &SkyPlayer::getPlane() const {
+  return plane;
 }
 
 const std::forward_list<Prop> &SkyPlayer::getProps() const {
-  return <#initializer#>;
+  return props;
 }
 
 const PlaneControls &SkyPlayer::getControls() const {
@@ -425,7 +291,7 @@ const PlaneControls &SkyPlayer::getControls() const {
 }
 
 bool SkyPlayer::isSpawned() const {
-  return bool(participation);
+  return bool(plane);
 }
 
 }

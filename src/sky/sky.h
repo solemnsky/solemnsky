@@ -47,6 +47,7 @@ struct SkyDelta: public VerifyStructure {
  */
 class Sky: public PhysicsListener {
   friend class SkyHolder;
+  friend class SkyPlayer;
  private:
   // Parameters.
   const Arena &arena;
