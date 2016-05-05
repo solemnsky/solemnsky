@@ -25,6 +25,21 @@ class MultiplayerLogger: public sky::ArenaLogger {
                     class MultiplayerShared &connection);
 };
 
+struct ArenaConnection {
+  ArenaConnection(
+      MultiplayerShared *shared,
+      const PID pid,
+      const sky::ArenaInit &arenaInit,
+      const sky::SkyInitializer &skyInit);
+
+  sky::Arena arena;
+  sky::SkyManager sky;
+  sky::SkyRender skyRender;
+  MultiplayerLogger logger;
+  sky::Player &player;
+  optional<sky::Participation> &participation;
+};
+
 /**
  * The shared state of the multiplayer client, at the intersection of the
  * three multiplayer views. Holds the Arena and friends, Manages the basic
@@ -60,18 +75,7 @@ class MultiplayerShared {
   ENetPeer *server;
   bool disconnecting, // trying to disconnect
       disconnected; // it's over, close the multiplayer client
-
-  // arena and subsystems
-  void initializeArena(
-      const PID pid,
-      const sky::ArenaInit &arenaInit,
-      const sky::SkyInitializer &skyInit);
-  optional<sky::Arena> arena;
-  optional<sky::SkyManager> sky;
-  optional<sky::SkyRender> skyRender;
-  optional<MultiplayerLogger> logger;
-  sky::Player *player;
-  sky::Participation *skyPlayer;
+  optional<ArenaConnection> conn;
 
   /**
    * Additional methods for Multiplayer.
@@ -103,9 +107,10 @@ class MultiplayerShared {
  */
 class MultiplayerView: public ui::Control {
  public:
-  // shared state
+  // Shared state.
   ClientShared &shared;
   MultiplayerShared &mShared;
+  ArenaConnection &conn;
 
   MultiplayerView(
       sky::ArenaMode target,

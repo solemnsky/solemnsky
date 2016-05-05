@@ -1,5 +1,5 @@
 /**
- * The state and logic of Planes.
+ * A player's participation in a Sky.
  */
 #pragma once
 #include <Box2D/Box2D.h>
@@ -88,6 +88,10 @@ class Plane {
         const PlaneTuning &tuning,
         const PlaneState &state);
   ~Plane();
+
+  // User API.
+  const PlaneTuning &getTuning() const;
+  const PlaneState &getState() const;
 
 };
 

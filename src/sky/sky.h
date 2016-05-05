@@ -5,7 +5,7 @@
 #include <map>
 #include <memory>
 #include "physics.h"
-#include "plane.h"
+#include "participation.h"
 #include "arena.h"
 
 namespace sky {
@@ -72,6 +72,10 @@ class Sky: public PhysicsListener {
   Sky(const Arena &arena,
       std::map<PID, optional<Participation>> &skyPlayers);
 
+  // User API.
+  const optional<Participation> &getParticipation(const Player &player) const;
+  const Map &getMap() const;
+
 };
 
 /**
@@ -122,7 +126,6 @@ class SkyManager: public Subsystem {
   void restart();
   const optional<Sky> &getSky() const;
   bool isActive() const;
-  const optional<Participation> &getParticipation(const Player &player) const;
 
 };
 

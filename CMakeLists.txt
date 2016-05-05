@@ -36,8 +36,8 @@ add_library(solemnsky STATIC
         src/sky/physics.cpp
         src/sky/physics.h
 
-        src/sky/plane.cpp
-        src/sky/plane.h
+        src/sky/participation.cpp
+        src/sky/participation.h
 
         src/sky/prop.cpp
         src/sky/prop.h

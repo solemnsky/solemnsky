@@ -1,4 +1,4 @@
-#include "sky/plane.h"
+#include "sky/participation.h"
 #include "client/elements/style.h"
 #include "skyrender.h"
 #include "sky/sky.h"
@@ -18,7 +18,7 @@ PlaneGraphics::PlaneGraphics(const Participation &plane) :
     rollState(0) { }
 
 void PlaneGraphics::tick(const float delta) {
-  if (auto &vital = plane.getParticipation()) {
+  if (auto &vital = plane) {
 
     // potentially switch orientation
     bool newOrientation = Angle(vital->getState().physical.rot + 90) > 180;
@@ -105,9 +105,9 @@ void SkyRender::renderProps(ui::Frame &f,
 void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                     const PlaneGraphics &graphics) {
 
-  if (auto &vital = graphics.plane.getParticipation()) {
-    auto &state = vital->getState();
-    auto &tuning = vital->getTuning();
+  if (auto &plane = graphics.plane.getPlane()) {
+    auto &state = plane->getState();
+    auto &tuning = plane->getTuning();
 
     renderProps(f, graphics.plane);
 
@@ -155,22 +155,25 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
 }
 
 void SkyRender::renderMap(ui::Frame &f) {
-  f.drawRect({0, 0}, sky.map->dimensions, style.base.pageBgColor);
+  const sky::Map &map = sky.getMap();
+
+  f.drawRect({0, 0}, map.dimensions, style.base.pageBgColor);
   f.drawSprite(textureOf(ResID::Title),
-               {(sky.map->dimensions.x / 2) - 800, 0},
+               {(map->dimensions.x / 2) - 800, 0},
                {0, 0, 1600, 900});
 
-  for (const auto &obstacle : sky.map->obstacles) {
+  for (const auto &obstacle : map.obstacles) {
     f.withTransform(sf::Transform().translate(obstacle.pos), [&]() {
       f.drawPoly(obstacle.localVerticies, sf::Color::White);
     });
   }
 }
 
-SkyRender::SkyRender(Arena &arena, SkyManager &sky, const bool enableDebug) :
-    Subsystem(arena), sky(sky),
+SkyRender::SkyRender(Arena &arena, const Sky &sky) :
+    Subsystem(arena),
+    sky(sky),
     planeSheet(ResID::PlayerSheet),
-    enableDebug(enableDebug) {
+    enableDebug(false) {
   arena.forPlayers([&](Player &player) { registerPlayer(player); });
 }
 
@@ -190,8 +193,7 @@ void SkyRender::onTick(const float delta) {
 }
 
 void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
-  if (sky.map) {
-    f.withTransform(
+  f.withTransform(
         sf::Transform().translate(
             {-findView(1600, sky.map->dimensions.x, pos.x),
              -findView(900, sky.map->dimensions.y, pos.y)}
@@ -201,7 +203,6 @@ void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
           for (auto &pair: graphics) renderPlaneGraphics(f, pair.second);
         }
     );
-  }
 }
 
 }
