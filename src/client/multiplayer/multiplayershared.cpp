@@ -16,20 +16,41 @@ MultiplayerLogger::MultiplayerLogger(sky::Arena &arena,
     sky::ArenaLogger(arena), connection(connection) { }
 
 /**
+ * ArenaConnection.
+ */
+ArenaConnection::ArenaConnection(
+    MultiplayerShared *shared,
+    const PID pid,
+    const sky::ArenaInit &arenaInit,
+    const sky::SkyInitializer &skyInit) :
+    arena(arenaInit),
+    sky(arena, skyInit),
+    skyRender(arena, sky),
+    logger(arena, shared),
+    player(*arena.getPlayer(pid)),
+    participation(sky.getParticipation(player)) {
+}
+
+/**
  * MultiplayerConnection.
  */
 
 void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
   using namespace sky;
 
-  if (!player) {
+  if (!conn) {
     // waiting for the arena connection request to be accepted
     if (packet.type == ServerPacket::Type::Init) {
-      initializeArena(
-          packet.pid.get(), packet.arenaInit.get(), packet.skyInit.get());
+      appLog("Loading arena...", LogOrigin::Client);
+      conn.emplace(
+          this,
+          packet.pid.get(),
+          packet.arenaInit.get(),
+          packet.skyInit.get());
+      appLog("Joined arena!", LogOrigin::Client);
 
       logEvent(ClientEvent::Connect(
-          arena->getName(), tg::printAddress(host.peers[0]->address)));
+          conn->arena.getName(), tg::printAddress(host.peers[0]->address)));
     }
     return;
   }
@@ -41,17 +62,17 @@ void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
     }
 
     case ServerPacket::Type::DeltaArena: {
-      arena->applyDelta(packet.arenaDelta.get());
+      conn->arena.applyDelta(packet.arenaDelta.get());
       break;
     }
 
     case ServerPacket::Type::DeltaSky: {
-      sky->applyDelta(packet.skyDelta.get());
+      conn->sky.applyDelta(packet.skyDelta.get());
       break;
     }
 
     case ServerPacket::Type::Chat: {
-      if (sky::Player *chattyPlayer = arena->getPlayer(
+      if (sky::Player *chattyPlayer = conn->arena.getPlayer(
           packet.pid.get())) {
         logEvent(ClientEvent::Chat(
             chattyPlayer->getNickname(), packet.stringData.get()));
@@ -101,22 +122,8 @@ MultiplayerShared::MultiplayerShared(
 
     disconnecting(false), disconnected(false),
 
-    player(nullptr), skyPlayer(nullptr) {
+    player(nullptr), participation(nullptr) {
   host.connect(serverHostname, serverPort);
-}
-
-void MultiplayerShared::initializeArena(
-    const PID pid,
-    const sky::ArenaInit &arenaInit,
-    const sky::SkyInitializer &skyInit) {
-  appLog("Loading arena...", LogOrigin::Client);
-  arena.emplace(arenaInit);
-  sky.emplace(arena.get(), skyInit);
-  skyRender.emplace(arena.get(), sky.get(), shared.settings.enableDebug);
-  logger.emplace(arena.get(), *this);
-  player = arena->getPlayer(pid);
-  skyPlayer = &sky->accessParticipation(*player);
-  appLog("Joined arena!", LogOrigin::Client);
 }
 
 void MultiplayerShared::transmit(const sky::ClientPacket &packet) {

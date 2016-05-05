@@ -33,7 +33,8 @@ struct PlaneGraphics {
  */
 class SkyRender: public Subsystem {
  private:
-  const SkyManager &sky;
+  const Sky &sky;
+
   std::map<PID, PlaneGraphics> graphics;
   const ui::SpriteSheet planeSheet;
 
@@ -60,7 +61,8 @@ class SkyRender: public Subsystem {
   void onTick(const float delta) override;
 
  public:
-  SkyRender(Arena &arena, SkyManager &sky, const bool enableDebug);
+  SkyRender(Arena &arena,
+            const Sky &sky);
   ~SkyRender();
 
   /**

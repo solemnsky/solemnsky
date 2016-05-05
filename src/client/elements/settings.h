@@ -3,7 +3,7 @@
  */
 #pragma once
 #include <SFML/Window.hpp>
-#include "sky/plane.h"
+#include "sky/participation.h"
 #include "util/types.h"
 
 /**

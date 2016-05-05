@@ -2,7 +2,7 @@
  * The place where the whole client converges.
  */
 #pragma once
-#include "sky/plane.h"
+#include "sky/participation.h"
 #include "ui/control.h"
 #include "settings.h"
 

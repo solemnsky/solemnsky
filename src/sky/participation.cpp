@@ -1,7 +1,7 @@
 #include <cmath>
 #include <SFML/Graphics/Rect.hpp>
 #include "arena.h"
-#include "plane.h"
+#include "participation.h"
 #include "sky.h"
 #include "util/printer.h"
 
@@ -195,6 +195,16 @@ Plane::Plane(Physics &physics,
 Plane::~Plane() {
   physics.deleteBody(body);
 }
+
+
+const PlaneTuning &Plane::getTuning() const {
+  return tuning;
+}
+
+const PlaneState &Plane::getState() const {
+  return state;
+}
+
 
 /**
  * Participation.
