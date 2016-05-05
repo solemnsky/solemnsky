@@ -13,7 +13,7 @@ int main() {
   ServerExec(4242, arenaInit, skyInit,
              [](ServerShared &telegraphy,
                 sky::Arena &arena,
-                sky::SkyHolder &sky) {
+                sky::SkyManager &sky) {
         return std::make_unique<VanillaServer>(telegraphy, arena, sky);
       }).run();
   // and lo, there appeared a server

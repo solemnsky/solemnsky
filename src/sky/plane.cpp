@@ -197,22 +197,22 @@ Plane::~Plane() {
 }
 
 /**
- * SkyPlayer.
+ * Participation.
  */
 
-void SkyPlayer::doAction(const Action action, bool actionState) {
+void Participation::doAction(const Action action, bool actionState) {
   controls.doAction(action, actionState);
   if (action == Action::Suicide && actionState) {
     plane.reset();
   }
 }
 
-void SkyPlayer::prePhysics() {
+void Participation::prePhysics() {
   if (plane) plane->prePhysics();
   for (auto &prop : props) prop.writeToBody();
 }
 
-void SkyPlayer::postPhysics(const float delta) {
+void Participation::postPhysics(const float delta) {
   if (plane) plane->postPhysics(delta);
 
   for (auto &prop : props) {
@@ -225,7 +225,8 @@ void SkyPlayer::postPhysics(const float delta) {
   });
 }
 
-SkyPlayer::SkyPlayer(Physics &physics, const SkyPlayerInit &initializer) :
+Participation::Participation(Physics &physics, const SkyPlayerInit &initializer)
+    :
     Networked(initializer),
     physics(physics),
     newlyAlive(false) {
@@ -234,7 +235,7 @@ SkyPlayer::SkyPlayer(Physics &physics, const SkyPlayerInit &initializer) :
   controls = initializer.controls;
 }
 
-void SkyPlayer::applyDelta(const SkyPlayerDelta &delta) {
+void Participation::applyDelta(const SkyPlayerDelta &delta) {
   if (delta.tuning) {
     spawnWithState(delta.tuning.get(), delta.state.get());
   } else {
@@ -247,7 +248,7 @@ void SkyPlayer::applyDelta(const SkyPlayerDelta &delta) {
   }
 }
 
-SkyPlayerInit SkyPlayer::captureInitializer() const {
+SkyPlayerInit Participation::captureInitializer() const {
   if (plane) {
     return SkyPlayerInit(controls, plane->tuning, plane->state);
   } else {
@@ -255,7 +256,7 @@ SkyPlayerInit SkyPlayer::captureInitializer() const {
   }
 }
 
-SkyPlayerDelta SkyPlayer::captureDelta() {
+SkyPlayerDelta Participation::captureDelta() {
   SkyPlayerDelta delta;
   if (plane) {
     delta.state = plane->state;
@@ -266,31 +267,31 @@ SkyPlayerDelta SkyPlayer::captureDelta() {
   return delta;
 }
 
-void SkyPlayer::spawnWithState(const PlaneTuning &tuning,
-                               const PlaneState &state) {
+void Participation::spawnWithState(const PlaneTuning &tuning,
+                                   const PlaneState &state) {
   plane.emplace(physics, controls, tuning, state);
 }
 
-void SkyPlayer::spawn(const PlaneTuning &tuning,
-                      const sf::Vector2f &pos,
-                      const float rot) {
+void Participation::spawn(const PlaneTuning &tuning,
+                          const sf::Vector2f &pos,
+                          const float rot) {
   spawnWithState(tuning, PlaneState(tuning, pos, rot));
   newlyAlive = true;
 }
 
-const optional<Plane> &SkyPlayer::getPlane() const {
+const optional<Plane> &Participation::getPlane() const {
   return plane;
 }
 
-const std::forward_list<Prop> &SkyPlayer::getProps() const {
+const std::forward_list<Prop> &Participation::getProps() const {
   return props;
 }
 
-const PlaneControls &SkyPlayer::getControls() const {
+const PlaneControls &Participation::getControls() const {
   return controls;
 }
 
-bool SkyPlayer::isSpawned() const {
+bool Participation::isSpawned() const {
   return bool(plane);
 }
 

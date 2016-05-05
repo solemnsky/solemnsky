@@ -12,11 +12,11 @@
 namespace sky {
 
 /**
- * Graphics state associated with a SkyPlayer.
+ * Graphics state associated with a Participation.
  */
 struct PlaneGraphics {
-  PlaneGraphics(const SkyPlayer &plane);
-  const SkyPlayer &plane;
+  PlaneGraphics(const Participation &plane);
+  const Participation &plane;
 
   bool orientation;
   float flipState, rollState; // these two values contribute to the roll
@@ -33,7 +33,7 @@ struct PlaneGraphics {
  */
 class SkyRender: public Subsystem {
  private:
-  const SkyHolder &sky;
+  const SkyManager &sky;
   std::map<PID, PlaneGraphics> graphics;
   const ui::SpriteSheet planeSheet;
 
@@ -46,7 +46,7 @@ class SkyRender: public Subsystem {
   void renderBars(ui::Frame &f,
                   std::vector<std::pair<float, const sf::Color &>> bars,
                   sf::FloatRect area);
-  void renderProps(ui::Frame &f, const SkyPlayer &planeVital);
+  void renderProps(ui::Frame &f, const Participation &planeVital);
   void renderPlaneGraphics(ui::Frame &f, const PlaneGraphics &graphics);
   void renderMap(ui::Frame &f);
 
@@ -60,7 +60,7 @@ class SkyRender: public Subsystem {
   void onTick(const float delta) override;
 
  public:
-  SkyRender(Arena &arena, SkyHolder &sky, const bool enableDebug);
+  SkyRender(Arena &arena, SkyManager &sky, const bool enableDebug);
   ~SkyRender();
 
   /**

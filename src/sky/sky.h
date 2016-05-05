@@ -23,7 +23,7 @@ struct SkyInitializer: public VerifyStructure {
 
   bool verifyStructure() const;
 
-  std::map<PID, SkyPlayerInit> planes; // skyPlayers already in the arena
+  std::map<PID, SkyPlayerInit> planes; // participations already in the arena
 };
 
 /**
@@ -46,8 +46,8 @@ struct SkyDelta: public VerifyStructure {
  * Game world when a game is in session.
  */
 class Sky: public PhysicsListener {
-  friend class SkyHolder;
-  friend class SkyPlayer;
+  friend class SkyManager;
+  friend class Participation;
  private:
   // Parameters.
   const Arena &arena;
@@ -55,7 +55,7 @@ class Sky: public PhysicsListener {
   // State.
   Map map;
   Physics physics;
-  std::map<PID, optional<SkyPlayer>> &skyPlayers;
+  std::map<PID, optional<Participation>> &skyPlayers;
 
  protected:
   // Internal API.
@@ -68,25 +68,25 @@ class Sky: public PhysicsListener {
                             const BodyTag &body2) override final;
 
  public:
-  Sky(Arena &&arena, std::map<PID, optional<SkyPlayer>> &) = delete;
+  Sky(Arena &&arena, std::map<PID, optional<Participation>> &) = delete;
   Sky(const Arena &arena,
-      std::map<PID, optional<SkyPlayer>> &skyPlayers);
+      std::map<PID, optional<Participation>> &skyPlayers);
 
 };
 
 /**
  * Wraps an optional<Sky>, binding it to the arena when the game is in session.
  */
-class SkyHolder: public Subsystem, public PhysicsListener {
+class SkyManager: public Subsystem {
  private:
   // State.
   optional<Sky> sky;
-  std::map<PID, optional<SkyPlayer>> skyPlayers;
-
-  SkyPlayer *planeFromPID(const PID pid);
+  std::map<PID, optional<Participation>> participations;
 
  protected:
+  // Internal help.
   void registerPlayerWith(Player &player, const SkyPlayerInit &initializer);
+  optional<Participation> &accessParticipation(const Player &player);
 
   // Subsystem impl.
   void registerPlayer(Player &player) override;
@@ -110,17 +110,20 @@ class SkyHolder: public Subsystem, public PhysicsListener {
   void start();
 
  public:
-  SkyHolder(class Arena &parent, const SkyInitializer &initializer);
-  ~SkyHolder();
+  SkyManager(class Arena &parent, const SkyInitializer &initializer);
+  ~SkyManager();
 
   // Networking.
   SkyInitializer captureInitializer();
   SkyDelta collectDelta();
   void applyDelta(const SkyDelta &delta);
-  SkyPlayer &getPlane(const Player &player) const;
 
   // User API.
   void restart();
+  const optional<Sky> &getSky() const;
+  bool isActive() const;
+  const optional<Participation> &getParticipation(const Player &player) const;
+
 };
 
 }
