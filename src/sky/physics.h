@@ -24,13 +24,13 @@ struct BodyTag {
  public:
   union {
     const class MapObstacle *obstacle;
-    class PlaneVital *planeVital;
+    class Plane *plane;
     class Prop *prop;
   };
 
   static BodyTag BoundaryTag();
   static BodyTag ObstacleTag(const class MapObstacle &obstacle);
-  static BodyTag PlaneTag(class PlaneVital &planeVital);
+  static BodyTag PlaneTag(Plane &plane);
   static BodyTag PropTag(class Prop &prop);
 };
 

@@ -8,149 +8,11 @@
 #include "prop.h"
 #include "physics.h"
 #include "util/types.h"
+#include "planestate.h"
 
 namespace sky {
 
 class SkyHolder;
-
-/**
- * Vectors of action to control a SkyPlayer. Passed along with a state,
- * corresponding to whether the action was begun or ended.
- */
-enum class Action {
-  Thrust,
-  Reverse,
-  Left,
-  Right,
-  Primary,
-  Secondary,
-  Special,
-  Suicide,
-  MAX
-};
-
-std::string showAction(const Action action);
-optional<Action> readAction(const std::string &string);
-
-/**
- * The POD static state of a GamePlane.
- */
-struct PlaneTuning {
-  PlaneTuning(); // constructs with sensible defaults
-
-  template<class Archive>
-  void serialize(Archive &ar) {
-    ar(energy.thrustDrain, energy.recharge, energy.laserGun);
-    ar(stall.maxRotVel, stall.maxVel, stall.thrust, stall.damping);
-    ar(flight.maxRotVel, flight.airspeedFactor, flight.throttleInfluence,
-       flight.throttleEffect, flight.gravityEffect, flight.afterburnDrive,
-       flight.leftoverDamping, flight.threshold, throttleSpeed);
-  }
-
-  sf::Vector2f hitbox; // x axis parallel with flight direction
-  float maxHealth, throttleSpeed;
-
-  struct Energy {
-    Energy();
-    // energy mechanics
-    float thrustDrain, recharge, laserGun;
-  } energy;
-
-  struct Stall {
-    Stall();
-    // mechanics when stalled
-    float maxRotVel, // how quickly we can turn, (deg / s)
-        maxVel, // our terminal velocity (px / s)
-        thrust, // thrust acceleration (ps / s^2)
-        damping; // how quickly we approach our terminal velocity
-    float threshold; // the minimum airspeed that we need to enter flight
-  } stall;
-
-  struct Flight {
-    Flight();
-    // mechanics when not stalled
-    float maxRotVel = 180, // how quickly we can turn
-        airspeedFactor,
-        throttleInfluence,
-        throttleEffect,
-        gravityEffect,
-        afterburnDrive,
-        leftoverDamping;
-    float threshold; // the maximum airspeed that we need to enter stall
-  } flight;
-
-};
-
-/**
- * The POD variable game state of a GamePlane, that's necessary to sync over
- * the network.
- */
-struct PlaneState {
-  PlaneState(); // for packing
-  PlaneState(const PlaneTuning &tuning,
-             const sf::Vector2f &pos,
-             const float rot);
-
-  template<class Archive>
-  void serialize(Archive &ar) {
-    ar(physical);
-    ar(stalled, afterburner, leftoverVel, airspeed, throttle);
-    ar(energy, health, primaryCooldown);
-  }
-
-  /**
-   * State.
-   */
-  PhysicalState physical;
-  bool stalled;
-  Clamped afterburner;
-  sf::Vector2f leftoverVel;
-  Clamped airspeed, throttle;
-
-  Clamped energy, health;
-  Cooldown primaryCooldown;
-
-  /**
-   * Helper methods.
-   */
-  float forwardVelocity() const;
-  float velocity() const;
-  // returns true if energy was drawn
-  bool requestDiscreteEnergy(const float reqEnergy);
-  // returns the fraction of the requested energy that was drawn
-  float requestEnergy(const float reqEnergy);
-};
-
-/**
- * The persistent control state of a SkyPlayer; synchronized along with the
- * rest of the SkyPlayer's state.
- */
-struct PlaneControls {
- private:
-  std::bitset<size_t(Action::MAX)> controls;
-
- public:
-  PlaneControls();
-
-  template<typename Archive>
-  void serialize(Archive &ar) {
-    bool x;
-    for (size_t i = 0; i < size_t(Action::MAX); ++i) {
-      x = controls[i];
-      ar(x);
-      controls[i] = x;
-      // hahahah
-    }
-  }
-
-  void doAction(const Action action, const bool actionState);
-  bool getState(const Action action) const;
-
-  template<Action action>
-  bool getState() const { return controls[size_t(action)]; }
-
-  Movement rotMovement() const;
-};
 
 /**
  * Initializer for SkyPlayer's Networked implementation.
@@ -196,7 +58,6 @@ class Plane {
   friend class SkyPlayer;
  private:
   // Parameters.
-  SkyHolder &parent;
   Physics &physics;
   const PlaneControls &controls;
 
@@ -220,9 +81,9 @@ class Plane {
 
  public:
   Plane() = delete;
-  Plane(SkyHolder &, PlaneControls &&, const PlaneTuning &,
+  Plane(Physics &, PlaneControls &&, const PlaneTuning &,
         const PlaneState &) = delete; // `controls` must not be a temp
-  Plane(SkyHolder &parent,
+  Plane(Physics &physics,
         const PlaneControls &controls,
         const PlaneTuning &tuning,
         const PlaneState &state);
@@ -237,28 +98,39 @@ class SkyPlayer: public Networked<SkyPlayerInit, SkyPlayerDelta> {
   friend class Sky;
  private:
   // Parameters.
-  Sky &parent;
   Physics &physics;
 
   // State.
   optional<Plane> plane;
   PlaneControls controls;
   std::forward_list<Prop> props;
+  bool newlyAlive;
 
   // Sky API.
+  void doAction(const Action action, bool actionState);
   void prePhysics();
   void postPhysics(const float delta);
 
  public:
   SkyPlayer() = delete;
-  SkyPlayer(Sky &parent);
+  SkyPlayer(Physics &physics, const SkyPlayerInit &initializer);
 
-  SkyPlayer(const SkyPlayer &) = delete;
-  SkyPlayer &operator=(const SkyPlayer &) = delete;
+  // Networked impl.
+  void applyDelta(const SkyPlayerDelta &delta) override;
+  SkyPlayerInit captureInitializer() const override;
+  SkyPlayerDelta captureDelta();
 
   // User API.
-  const PlaneTuning &getTuning() const;
-  const PlaneState &getState() const;
+  void spawnWithState(const PlaneTuning &tuning,
+                      const PlaneState &state);
+  void spawn(const PlaneTuning &tuning,
+             const sf::Vector2f &pos,
+             const float rot);
+
+  const optional<Plane> &getPlane() const;
+  const std::forward_list<Prop> &getProps() const;
+  const PlaneControls &getControls() const;
+  bool isSpawned() const;
 
 };
 

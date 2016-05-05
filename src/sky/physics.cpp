@@ -20,7 +20,7 @@ BodyTag BodyTag::ObstacleTag(const class MapObstacle &obstacle) {
   return tag;
 }
 
-BodyTag BodyTag::PlaneTag(class PlaneVital &planeVital) {
+BodyTag BodyTag::PlaneTag(Plane &planeVital) {
   BodyTag tag(Type::PlaneTag);
   tag.planeVital = &planeVital;
   return tag;
