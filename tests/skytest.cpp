@@ -12,7 +12,7 @@ class SkyTest: public testing::Test {
       sky(arena, sky::SkyInitializer()) { }
 
   sky::Arena arena;
-  sky::Sky sky;
+  sky::SkyHolder sky;
 };
 
 /**
@@ -49,7 +49,7 @@ TEST_F(SkyTest, InitializerTest) {
   EXPECT_EQ(sky.getPlane(*player).isSpawned(), true);
 
   sky::Arena remoteArena(arena.captureInitializer());
-  sky::Sky remoteSky(remoteArena, sky.captureInitializer());
+  sky::SkyHolder remoteSky(remoteArena, sky.captureInitializer());
 
   EXPECT_EQ(remoteSky.getPlane(*player).isSpawned(), true);
 }
@@ -60,7 +60,7 @@ TEST_F(SkyTest, InitializerTest) {
 TEST_F(SkyTest, DeltaTest) {
   arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
   sky::Arena remoteArena(arena.captureInitializer());
-  sky::Sky remoteSky(remoteArena, sky.captureInitializer());
+  sky::SkyHolder remoteSky(remoteArena, sky.captureInitializer());
 
   auto const delta = arena.connectPlayer("nameless plane");
   remoteArena.applyDelta(delta);

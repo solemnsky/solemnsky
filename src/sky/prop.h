@@ -12,13 +12,13 @@ namespace sky {
  */
 class Prop {
  private:
-  class Sky &parent;
+  class SkyHolder &parent;
   Physics &physics;
   b2Body *const body;
 
  public:
   Prop() = delete;
-  Prop(class Sky &parent,
+  Prop(class SkyHolder &parent,
        const sf::Vector2f &pos,
        const sf::Vector2f &vel);
   ~Prop();

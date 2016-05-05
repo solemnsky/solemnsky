@@ -18,6 +18,7 @@ class VanillaServer: public Server {
 
  public:
 
-  VanillaServer(ServerShared &telegraphy, sky::Arena &arena, sky::Sky &sky);
+  VanillaServer
+      (ServerShared &telegraphy, sky::Arena &arena, sky::SkyHolder &sky);
 
 };

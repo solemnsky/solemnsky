@@ -18,7 +18,7 @@ PlaneGraphics::PlaneGraphics(const SkyPlayer &plane) :
     rollState(0) { }
 
 void PlaneGraphics::tick(const float delta) {
-  if (auto &vital = plane.getVital()) {
+  if (auto &vital = plane.getParticipation()) {
 
     // potentially switch orientation
     bool newOrientation = Angle(vital->getState().physical.rot + 90) > 180;
@@ -45,7 +45,8 @@ Angle PlaneGraphics::roll() const {
 void PlaneGraphics::kill() { }
 
 void PlaneGraphics::spawn() {
-  orientation = Angle(plane.getVital()->getState().physical.rot + 90) > 180;
+  orientation =
+      Angle(plane.getParticipation()->getState().physical.rot + 90) > 180;
   flipState = 0;
   rollState = 0;
 }
@@ -88,7 +89,7 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
 }
 
 void SkyRender::renderProps(ui::Frame &f,
-                            const Participation &planeVital) {
+                            const SkyPlayer &planeVital) {
   for (auto &prop : planeVital.getVital()->getProps()) {
     f.withTransform(
         sf::Transform()
@@ -104,7 +105,7 @@ void SkyRender::renderProps(ui::Frame &f,
 void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                     const PlaneGraphics &graphics) {
 
-  if (auto &vital = graphics.plane.getVital()) {
+  if (auto &vital = graphics.plane.getParticipation()) {
     auto &state = vital->getState();
     auto &tuning = vital->getTuning();
 
@@ -166,7 +167,7 @@ void SkyRender::renderMap(ui::Frame &f) {
   }
 }
 
-SkyRender::SkyRender(Arena &arena, Sky &sky, const bool enableDebug) :
+SkyRender::SkyRender(Arena &arena, SkyHolder &sky, const bool enableDebug) :
     Subsystem(arena), sky(sky),
     planeSheet(ResID::PlayerSheet),
     enableDebug(enableDebug) {

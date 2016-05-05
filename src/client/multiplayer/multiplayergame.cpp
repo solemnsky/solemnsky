@@ -35,7 +35,7 @@ void MultiplayerGame::tick(float delta) {
 }
 
 void MultiplayerGame::render(ui::Frame &f) {
-  if (auto &vital = mShared.plane->getVital()) {
+  if (auto &vital = mShared.plane->getParticipation()) {
     mShared.skyRender->render(f, vital->getState().physical.pos);
   } else mShared.skyRender->render(f, {});
   ui::Control::render(f);

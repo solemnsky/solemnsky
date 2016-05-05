@@ -67,7 +67,7 @@ class MultiplayerShared {
       const sky::ArenaInit &arenaInit,
       const sky::SkyInitializer &skyInit);
   optional<sky::Arena> arena;
-  optional<sky::Sky> sky;
+  optional<sky::SkyHolder> sky;
   optional<sky::SkyRender> skyRender;
   optional<MultiplayerLogger> logger;
   sky::Player *player;

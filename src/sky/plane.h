@@ -11,7 +11,7 @@
 
 namespace sky {
 
-class Sky;
+class SkyHolder;
 
 /**
  * Vectors of action to control a SkyPlayer. Passed along with a state,
@@ -193,9 +193,10 @@ struct SkyPlayerDelta: public VerifyStructure {
  * The plane element that can be associated with a participation.
  */
 class Plane {
+  friend class SkyPlayer;
  private:
   // Parameters.
-  Sky &parent;
+  SkyHolder &parent;
   Physics &physics;
   const PlaneControls &controls;
 
@@ -219,9 +220,9 @@ class Plane {
 
  public:
   Plane() = delete;
-  Plane(Sky &, PlaneControls &&, const PlaneTuning &,
+  Plane(SkyHolder &, PlaneControls &&, const PlaneTuning &,
         const PlaneState &) = delete; // `controls` must not be a temp
-  Plane(Sky &parent,
+  Plane(SkyHolder &parent,
         const PlaneControls &controls,
         const PlaneTuning &tuning,
         const PlaneState &state);
@@ -232,77 +233,32 @@ class Plane {
 /**
  * A Player's participation in an active game.
  */
-class Participation {
+class SkyPlayer: public Networked<SkyPlayerInit, SkyPlayerDelta> {
   friend class Sky;
-  friend class SkyPlayer;
  private:
   // Parameters.
   Sky &parent;
   Physics &physics;
-  const PlaneControls &controls;
 
   // State.
-
+  optional<Plane> plane;
+  PlaneControls controls;
+  std::forward_list<Prop> props;
 
   // Sky API.
   void prePhysics();
   void postPhysics(const float delta);
 
  public:
-  Participation() = delete;
-  Participation(Sky &parent);
+  SkyPlayer() = delete;
+  SkyPlayer(Sky &parent);
 
-  Participation(const Participation &) = delete;
-  Participation &operator=(const Participation &) = delete;
+  SkyPlayer(const SkyPlayer &) = delete;
+  SkyPlayer &operator=(const SkyPlayer &) = delete;
 
   // User API.
   const PlaneTuning &getTuning() const;
   const PlaneState &getState() const;
-
-};
-
-/**
- * Potential game state attached to a player: wraps optional<Participation>
- * and manages deltas.
- */
-class SkyPlayer: private Networked<SkyPlayerInit, SkyPlayerDelta> {
-  friend class Sky;
- private:
-  // Parameters.
-  Sky &parent;
-  class Player &player; // associated player
-
-  // State.
-  bool newlyAlive; // for deltas
-  optional<Participation> vital;
-  PlaneControls controls;
-  std::forward_list<Prop> props;
-
-  // Internal helpers.
-  void spawnWithState(const PlaneTuning &tuning, const PlaneState &state);
-
-  // Sky API.
-  void spawn(const PlaneTuning &tuning,
-             const sf::Vector2f pos,
-             const float rot);
-  void doAction(const Action action, bool state);
-  void reset();
-
-  void applyDelta(const SkyPlayerDelta &delta) override;
-  SkyPlayerInit captureInitializer() const;
-  SkyPlayerDelta captureDelta();
-
- public:
-  SkyPlayer() = delete;
-  SkyPlayer(Sky &parent, class Player &player,
-            const SkyPlayerInit &initializer);
-
-  // User API.
-  const optional<Participation> &getVital() const;
-  const std::forward_list<Prop> &getProps() const;
-  const PlaneControls &getControls() const;
-
-  bool isSpawned() const;
 
 };
 

@@ -138,13 +138,13 @@ bool SkyPlayerDelta::verifyStructure() const {
 }
 
 /**
- * GamePlane.
+ * Plane.
  */
 
-Participation::Participation(Sky &parent,
-                             const PlaneControls &controls,
-                             const PlaneTuning &tuning,
-                             const PlaneState &state) :
+Plane::Plane(SkyHolder &parent,
+             const PlaneControls &controls,
+             const PlaneTuning &tuning,
+             const PlaneState &state) :
     parent(parent),
     physics(parent.physics.get()),
     controls(controls),
@@ -157,11 +157,11 @@ Participation::Participation(Sky &parent,
   body->SetGravityScale(state.stalled ? 1 : 0);
 }
 
-Participation::~Participation() {
+Plane::~Plane() {
   physics.deleteBody(body);
 }
 
-void Participation::switchStall() {
+void Plane::switchStall() {
   const float forwardVel = state.forwardVelocity();
   if (state.stalled) {
     if (forwardVel > tuning.stall.threshold) {
@@ -183,7 +183,7 @@ void Participation::switchStall() {
   }
 }
 
-void Participation::tickFlight(const float delta) {
+void Plane::tickFlight(const float delta) {
   switchStall();
 
   const float velocity = state.velocity();
@@ -253,7 +253,7 @@ void Participation::tickFlight(const float delta) {
   }
 }
 
-void Participation::tickWeapons(const float delta) {
+void Plane::tickWeapons(const float delta) {
   state.primaryCooldown.cool(delta);
   if (state.primaryCooldown
       && this->controls.getState<Action::Primary>()) {
@@ -264,58 +264,63 @@ void Participation::tickWeapons(const float delta) {
 // TODO: better props
 //      props.emplace_front(
 //          parent,
-//          vital->state.physical.pos + 100.0f * VecMath::fromAngle(
-//              vital->state.physical.rot),
-//          vital->state.physical.vel + 300.0f * VecMath::fromAngle
-//              (vital->state.physical.rot));
+//          participation->state.physical.pos + 100.0f * VecMath::fromAngle(
+//              participation->state.physical.rot),
+//          participation->state.physical.vel + 300.0f * VecMath::fromAngle
+//              (participation->state.physical.rot));
 //      primaryCooldown.reset();
     }
   }
 }
 
-void Participation::writeToBody() {
+void Plane::writeToBody() {
   state.physical.writeToBody(physics, body);
   body->SetGravityScale(state.stalled ? 1 : 0);
 }
 
-void Participation::readFromBody() {
+void Plane::readFromBody() {
   state.physical.readFromBody(physics, body);
 }
 
-void Participation::prePhysics() {
+
+void Plane::prePhysics() {
   writeToBody();
-//  for (auto &prop : props) prop.writeToBody();
 }
 
-void Participation::postPhysics(const float delta) {
+void Plane::postPhysics(const float delta) {
   readFromBody();
   tickFlight(delta);
   tickWeapons(delta);
-
-//  for (auto &prop : props) {
-//    prop.readFromBody();
-//    prop.tick(delta);
-//  }
-
-//  props.remove_if([](Prop &prop) {
-//    return prop.lifeTime > 1;
-//  });
 }
 
-void Participation::onBeginContact(const BodyTag &body) {
-//  appLog("ouch I'm touching something...");
+void Plane::onBeginContact(const BodyTag &body) {
+
 }
 
-void Participation::onEndContact(const BodyTag &body) {
-//  appLog("ah good, not touching it anymore");
+void Plane::onEndContact(const BodyTag &body) {
+
 }
 
-const PlaneTuning &Participation::getTuning() const {
-  return tuning;
+/**
+ * SkyPlayer.
+ */
+
+void SkyPlayer::prePhysics() {
+  if (plane) plane->prePhysics();
+  for (auto &prop : props) prop.writeToBody();
 }
 
-const PlaneState &Participation::getState() const {
-  return state;
+void SkyPlayer::postPhysics(const float delta) {
+  if (plane) plane->postPhysics(delta);
+
+  for (auto &prop : props) {
+    prop.readFromBody();
+    prop.tick(delta);
+  }
+
+  props.remove_if([](Prop &prop) {
+    return prop.lifeTime > 1;
+  });
 }
 
 /**
@@ -343,7 +348,7 @@ Movement PlaneControls::rotMovement() const {
 
 void SkyPlayer::spawnWithState(const PlaneTuning &tuning,
                                const PlaneState &state) {
-  vital.emplace(parent, controls, tuning, state);
+  participation.emplace(parent, controls, tuning, state);
 }
 
 void SkyPlayer::spawn(const PlaneTuning &tuning,
@@ -361,7 +366,7 @@ void SkyPlayer::doAction(const Action action, bool actionState) {
 }
 
 void SkyPlayer::reset() {
-  vital.reset();
+  participation.reset();
 }
 
 void SkyPlayer::applyDelta(const SkyPlayerDelta &delta) {
@@ -369,8 +374,8 @@ void SkyPlayer::applyDelta(const SkyPlayerDelta &delta) {
     spawnWithState(delta.tuning.get(), delta.state.get());
   } else {
     if (delta.state) {
-      if (vital) vital->state = *delta.state;
-    } else vital.reset();
+      if (participation) participation->state = *delta.state;
+    } else participation.reset();
   }
   if (delta.controls) {
     controls = *delta.controls;
@@ -378,8 +383,8 @@ void SkyPlayer::applyDelta(const SkyPlayerDelta &delta) {
 }
 
 SkyPlayerInit SkyPlayer::captureInitializer() const {
-  if (vital) {
-    return SkyPlayerInit(controls, vital->tuning, vital->state);
+  if (participation) {
+    return SkyPlayerInit(controls, participation->tuning, participation->state);
   } else {
     return SkyPlayerInit(controls);
   }
@@ -387,16 +392,16 @@ SkyPlayerInit SkyPlayer::captureInitializer() const {
 
 SkyPlayerDelta SkyPlayer::captureDelta() {
   SkyPlayerDelta delta;
-  if (vital) {
-    delta.state = vital->state;
-    if (newlyAlive) delta.tuning = vital->tuning;
+  if (participation) {
+    delta.state = participation->state;
+    if (newlyAlive) delta.tuning = participation->tuning;
     newlyAlive = false;
   }
   delta.controls = controls;
   return delta;
 }
 
-SkyPlayer::SkyPlayer(Sky &parent, Player &player,
+SkyPlayer::SkyPlayer(SkyHolder &parent, Player &player,
                      const SkyPlayerInit &initializer) :
     Networked(initializer),
     parent(parent),
@@ -407,8 +412,8 @@ SkyPlayer::SkyPlayer(Sky &parent, Player &player,
   controls = initializer.controls;
 }
 
-const optional<Participation> &SkyPlayer::getVital() const {
-  return vital;
+const optional<Participation> &SkyPlayer::getParticipation() const {
+  return participation;
 }
 
 const std::forward_list<Prop> &SkyPlayer::getProps() const {
@@ -420,7 +425,7 @@ const PlaneControls &SkyPlayer::getControls() const {
 }
 
 bool SkyPlayer::isSpawned() const {
-  return bool(vital);
+  return bool(participation);
 }
 
 }
