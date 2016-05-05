@@ -9,7 +9,7 @@
 namespace sky {
 
 /**
- * Vectors of action to control a SkyPlayer. Passed along with a state,
+ * Vectors of action to control a Participation. Passed along with a state,
  * corresponding to whether the action was begun or ended.
  */
 enum class Action {
@@ -117,8 +117,8 @@ struct PlaneState {
 };
 
 /**
- * The persistent control state of a SkyPlayer; synchronized along with the
- * rest of the SkyPlayer's state.
+ * The persistent control state of a Participation; synchronized along with the
+ * rest of the Participation's state.
  */
 struct PlaneControls {
  private:

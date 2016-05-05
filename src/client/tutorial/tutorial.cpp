@@ -43,7 +43,7 @@ void Tutorial::tick(float delta) {
 }
 
 void Tutorial::render(ui::Frame &f) {
-  const sky::SkyPlayer &plane = sky.getPlane(*player);
+  const sky::Participation &plane = sky.accessParticipation(*player);
   skyRender.render(
       f, plane.isSpawned() ?
          plane.getParticipation()->getState().physical.pos : sf::Vector2f(0,

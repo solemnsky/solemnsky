@@ -11,10 +11,10 @@
 
 namespace sky {
 
-class SkyHolder;
+class SkyManager;
 
 /**
- * Initializer for SkyPlayer's Networked implementation.
+ * Initializer for Participation's Networked implementation.
  */
 struct SkyPlayerInit {
   SkyPlayerInit();
@@ -33,7 +33,7 @@ struct SkyPlayerInit {
 };
 
 /**
- * Delta for SkyPlayer's Networked implementation.
+ * Delta for Participation's Networked implementation.
  */
 struct SkyPlayerDelta: public VerifyStructure {
   SkyPlayerDelta();
@@ -55,7 +55,7 @@ struct SkyPlayerDelta: public VerifyStructure {
  */
 class Plane {
   friend class Sky;
-  friend class SkyPlayer;
+  friend class Participation;
  private:
   // Parameters.
   Physics &physics;
@@ -94,9 +94,9 @@ class Plane {
 /**
  * A Player's participation in an active game.
  */
-class SkyPlayer: public Networked<SkyPlayerInit, SkyPlayerDelta> {
+class Participation: public Networked<SkyPlayerInit, SkyPlayerDelta> {
   friend class Sky;
-  friend class SkyHolder;
+  friend class SkyManager;
  private:
   // Parameters.
   Physics &physics;
@@ -113,8 +113,8 @@ class SkyPlayer: public Networked<SkyPlayerInit, SkyPlayerDelta> {
   void postPhysics(const float delta);
 
  public:
-  SkyPlayer() = delete;
-  SkyPlayer(Physics &physics, const SkyPlayerInit &initializer);
+  Participation() = delete;
+  Participation(Physics &physics, const SkyPlayerInit &initializer);
 
   // Networked impl.
   void applyDelta(const SkyPlayerDelta &delta) override;

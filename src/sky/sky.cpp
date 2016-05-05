@@ -47,55 +47,47 @@ void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
 }
 
 Sky::Sky(const Arena &arena,
-         std::map<PID, optional<SkyPlayer>> &skyPlayers) :
+         std::map<PID, optional<Participation>> &skyPlayers) :
     arena(arena),
     map(arena.getMap()),
     physics(map, *this),
     skyPlayers(skyPlayers) { }
 
 /**
- * SkyHolder.
+ * SkyManager.
  */
 
-void SkyHolder::registerPlayerWith(Player &player,
-                                   const SkyPlayerInit &initializer) {
-  if (!findValue(skyPlayers, player.pid)) {
-    optional<SkyPlayer> *newPlayer;
-    if (sky) {
-      skyPlayers.emplace(
-          std::piecewise_construct,
-          std::forward_as_tuple(player.pid),
-          std::forward_as_tuple(sky->physics,
-                                initializer));
-    } else {
-      skyPlayers.emplace(
-          std::piecewise_construct,
-          std::forward_as_tuple(player.pid),
-          std::forward_as_tuple());
-    }
-  }
-  player.data.push_back(findValue(skyPlayers, player.pid));
+void SkyManager::registerPlayerWith(Player &player,
+                                    const SkyPlayerInit &initializer) {
+  participations[player.pid].reset();
+  if (sky) participations.at(player.pid).emplace(sky->physics, initializer);
+  player.data.push_back(findValue(participations, player.pid));
 }
 
-void SkyHolder::registerPlayer(Player &player) {
+optional<Participation> &SkyManager::accessParticipation(
+    const Player &player) {
+  return getPlayerData<optional<Participation>>(player);
+}
+
+void SkyManager::registerPlayer(Player &player) {
   registerPlayerWith(player, {});
 }
 
-void SkyHolder::unregisterPlayer(Player &player) {
-  const auto plane = skyPlayers.find(player.pid);
-  if (plane != skyPlayers.end()) skyPlayers.erase(plane);
+void SkyManager::unregisterPlayer(Player &player) {
+  const auto plane = participations.find(player.pid);
+  if (plane != participations.end()) participations.erase(plane);
 }
 
-void SkyHolder::onTick(const float delta) {
+void SkyManager::onTick(const float delta) {
   if (sky) sky->onTick(delta);
 
 }
 
-void SkyHolder::onJoin(Player &player) { }
+void SkyManager::onJoin(Player &player) { }
 
-void SkyHolder::onQuit(Player &player) { }
+void SkyManager::onQuit(Player &player) { }
 
-void SkyHolder::onMode(const ArenaMode newMode) {
+void SkyManager::onMode(const ArenaMode newMode) {
   if (sky) {
     if (newMode != ArenaMode::Game) {
       stop();
@@ -107,43 +99,45 @@ void SkyHolder::onMode(const ArenaMode newMode) {
   }
 }
 
-void SkyHolder::onMapChange() {
+void SkyManager::onMapChange() {
   if (arena.getMode() == ArenaMode::Game) restart();
 }
 
-void SkyHolder::onAction(Player &player,
-                         const Action action,
-                         const bool state) {
-  getPlane(player).doAction(action, state);
+void SkyManager::onAction(Player &player,
+                          const Action action,
+                          const bool state) {
+  if (auto &p = accessParticipation(player))
+    p->doAction(action, state);
 }
 
-void SkyHolder::onSpawn(Player &player,
-                        const PlaneTuning &tuning,
-                        const sf::Vector2f &pos,
-                        const float rot) {
-  getPlane(player).spawn(tuning, pos, rot);
+void SkyManager::onSpawn(Player &player,
+                         const PlaneTuning &tuning,
+                         const sf::Vector2f &pos,
+                         const float rot) {
+  if (auto &p = accessParticipation(player))
+    p->spawn(tuning, pos, rot);
 }
 
-void SkyHolder::stop() {
+void SkyManager::stop() {
   if (sky) {
     appLog("Stopping sky.");
-    for (auto &pair : skyPlayers) {
+    for (auto &pair : participations) {
       pair.second.reset();
     }
     sky.reset();
   }
 }
 
-void SkyHolder::start() {
+void SkyManager::start() {
   if (sky) stop();
   appLog("Loading map " + inQuotes(arena.getMap()) + ".", LogOrigin::Engine);
-  sky.emplace(arena, skyPlayers);
-  for (auto &pair : skyPlayers) {
+  sky.emplace(arena, participations);
+  for (auto &pair : participations) {
     pair.second.emplace(sky->physics, SkyPlayerInit());
   }
 }
 
-SkyHolder::SkyHolder(Arena &arena, const SkyInitializer &initializer) :
+SkyManager::SkyManager(Arena &arena, const SkyInitializer &initializer) :
     Subsystem(arena) {
 
   if (arena.getMode() == ArenaMode::Game) {
@@ -163,44 +157,55 @@ SkyHolder::SkyHolder(Arena &arena, const SkyInitializer &initializer) :
   }
 }
 
-SkyHolder::~SkyHolder() {
+SkyManager::~SkyManager() {
   stop(); // necessary to correctly free the box2d world
 }
 
-SkyInitializer SkyHolder::captureInitializer() {
+SkyInitializer SkyManager::captureInitializer() {
   if (sky) {
     SkyInitializer initializer;
-    for (const auto &pair : skyPlayers)
+    for (const auto &pair : participations)
       initializer.planes.emplace(
           pair.first, pair.second->captureInitializer());
     return initializer;
   } else return {};
 }
 
-SkyDelta SkyHolder::collectDelta() {
+SkyDelta SkyManager::collectDelta() {
   if (sky) {
     SkyDelta delta;
-    for (auto &pair : skyPlayers)
+    for (auto &pair : participations)
       delta.planes.emplace(pair.first, pair.second->captureDelta());
     return delta;
   } else return {};
 }
 
-void SkyHolder::applyDelta(const SkyDelta &delta) {
+void SkyManager::applyDelta(const SkyDelta &delta) {
   for (auto const &pair : delta.planes) {
-    if (SkyPlayer *plane = planeFromPID(pair.first)) {
-      plane->applyDelta(pair.second);
+    if (optional<Participation>
+        *plane = findValue(participations, pair.first)) {
+      if (*plane) (*plane)->applyDelta(pair.second);
     }
   }
 }
 
-SkyPlayer &SkyHolder::getPlane(const Player &player) const {
-  return getPlayerData<SkyPlayer>(player);
-}
-
-void SkyHolder::restart() {
+void SkyManager::restart() {
   stop();
   start();
+}
+
+
+const optional<Sky> &SkyManager::getSky() const {
+  return sky;
+}
+
+bool SkyManager::isActive() const {
+  return bool(sky);
+}
+
+const optional<Participation> &SkyManager::getParticipation(
+    const Player &player) const {
+  return getPlayerData<optional<Participation>>(player);
 }
 
 }

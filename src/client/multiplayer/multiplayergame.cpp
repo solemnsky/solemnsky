@@ -35,7 +35,7 @@ void MultiplayerGame::tick(float delta) {
 }
 
 void MultiplayerGame::render(ui::Frame &f) {
-  if (auto &vital = mShared.plane->getParticipation()) {
+  if (auto &vital = mShared.skyPlayer->getParticipation()) {
     mShared.skyRender->render(f, vital->getState().physical.pos);
   } else mShared.skyRender->render(f, {});
   ui::Control::render(f);
@@ -51,7 +51,7 @@ void MultiplayerGame::render(ui::Frame &f) {
 bool MultiplayerGame::handle(const sf::Event &event) {
   if (ui::Control::handle(event)) return true;
 
-  if (mShared.plane->isSpawned()) {
+  if (mShared.skyPlayer->isSpawned()) {
     if (auto action = shared.triggerSkyAction(event)) {
       mShared.transmit(sky::ClientPacket::ReqAction(action->first,
                                                     action->second));

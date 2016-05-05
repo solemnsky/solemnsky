@@ -11,7 +11,7 @@ namespace sky {
  * PlayerGraphics.
  */
 
-PlaneGraphics::PlaneGraphics(const SkyPlayer &plane) :
+PlaneGraphics::PlaneGraphics(const Participation &plane) :
     plane(plane),
     orientation(false),
     flipState(0),
@@ -89,7 +89,7 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
 }
 
 void SkyRender::renderProps(ui::Frame &f,
-                            const SkyPlayer &planeVital) {
+                            const Participation &planeVital) {
   for (auto &prop : planeVital.getVital()->getProps()) {
     f.withTransform(
         sf::Transform()
@@ -167,7 +167,7 @@ void SkyRender::renderMap(ui::Frame &f) {
   }
 }
 
-SkyRender::SkyRender(Arena &arena, SkyHolder &sky, const bool enableDebug) :
+SkyRender::SkyRender(Arena &arena, SkyManager &sky, const bool enableDebug) :
     Subsystem(arena), sky(sky),
     planeSheet(ResID::PlayerSheet),
     enableDebug(enableDebug) {
@@ -177,7 +177,7 @@ SkyRender::SkyRender(Arena &arena, SkyHolder &sky, const bool enableDebug) :
 SkyRender::~SkyRender() { }
 
 void SkyRender::registerPlayer(Player &player) {
-  graphics.emplace(player.pid, sky.getPlane(player));
+  graphics.emplace(player.pid, sky.getParticipation(player));
   player.data.push_back(&graphics.at(player.pid));
 }
 

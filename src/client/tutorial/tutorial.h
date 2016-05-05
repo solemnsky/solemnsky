@@ -10,7 +10,7 @@ class Tutorial : public Game {
 private:
   sky::Arena arena;
   sky::Player *player;
-  sky::SkyHolder sky;
+  sky::SkyManager sky;
   sky::SkyRender skyRender;
 
 public:

@@ -11,7 +11,7 @@ namespace sky {
  * Currently just a bullet.
  */
 class Prop {
-  friend class SkyPlayer;
+  friend class Participation;
  private:
   // State.
   Physics &physics;

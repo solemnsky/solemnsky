@@ -101,7 +101,7 @@ MultiplayerShared::MultiplayerShared(
 
     disconnecting(false), disconnected(false),
 
-    player(nullptr), plane(nullptr) {
+    player(nullptr), skyPlayer(nullptr) {
   host.connect(serverHostname, serverPort);
 }
 
@@ -115,7 +115,7 @@ void MultiplayerShared::initializeArena(
   skyRender.emplace(arena.get(), sky.get(), shared.settings.enableDebug);
   logger.emplace(arena.get(), *this);
   player = arena->getPlayer(pid);
-  plane = &sky->getPlane(*player);
+  skyPlayer = &sky->accessParticipation(*player);
   appLog("Joined arena!", LogOrigin::Client);
 }
 
