@@ -221,7 +221,7 @@ void SkyPlayer::postPhysics(const float delta) {
   }
 
   props.remove_if([](Prop &prop) {
-    return prop.lifeTime > 1;
+    return prop.lifetime > 1;
   });
 }
 
@@ -268,7 +268,7 @@ SkyPlayerDelta SkyPlayer::captureDelta() {
 
 void SkyPlayer::spawnWithState(const PlaneTuning &tuning,
                                const PlaneState &state) {
-  plane.emplace(controls, tuning, state);
+  plane.emplace(physics, controls, tuning, state);
 }
 
 void SkyPlayer::spawn(const PlaneTuning &tuning,

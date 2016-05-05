@@ -1,8 +1,11 @@
 #include "planestate.h"
+#include "util/methods.h"
 
 /**
  * Action.
  */
+
+namespace sky {
 
 static const std::vector<std::string> actionNames = {
     "thrust",
@@ -70,8 +73,7 @@ PlaneState::PlaneState(const PlaneTuning &tuning,
                        const float rot) :
     physical(pos,
              tuning.flight.airspeedFactor * VecMath::fromAngle(rot),
-             rot,
-             0),
+             rot, 0),
 
     stalled(false), afterburner(0),
     leftoverVel(0, 0),
@@ -121,5 +123,7 @@ bool PlaneControls::getState(const Action action) const {
 Movement PlaneControls::rotMovement() const {
   return addMovement(getState<Action::Left>(),
                      getState<Action::Right>());
+}
+
 }
 

@@ -3,6 +3,10 @@
  */
 #pragma once
 #include "util/types.h"
+#include "physics.h"
+#include <bitset>
+
+namespace sky {
 
 /**
  * Vectors of action to control a SkyPlayer. Passed along with a state,
@@ -142,4 +146,6 @@ struct PlaneControls {
 
   Movement rotMovement() const;
 };
+
+}
 

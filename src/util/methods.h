@@ -66,3 +66,11 @@ class enum_error: public std::logic_error {
 };
 
 inline bool imply(const bool x, const bool y) { return y or !x; }
+
+template<typename K, typename V>
+V *findValue(std::map<K, V> &m, const K k) {
+  auto x = m.find(k);
+  if (x != m.end()) return &x->second;
+  return nullptr;
+}
+

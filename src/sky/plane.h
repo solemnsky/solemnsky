@@ -3,7 +3,6 @@
  */
 #pragma once
 #include <Box2D/Box2D.h>
-#include <bitset>
 #include <forward_list>
 #include "prop.h"
 #include "physics.h"
@@ -55,6 +54,7 @@ struct SkyPlayerDelta: public VerifyStructure {
  * The plane element that can be associated with a participation.
  */
 class Plane {
+  friend class Sky;
   friend class SkyPlayer;
  private:
   // Parameters.
@@ -96,6 +96,7 @@ class Plane {
  */
 class SkyPlayer: public Networked<SkyPlayerInit, SkyPlayerDelta> {
   friend class Sky;
+  friend class SkyHolder;
  private:
   // Parameters.
   Physics &physics;
