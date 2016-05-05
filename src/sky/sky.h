@@ -30,7 +30,7 @@ struct SkyInitializer: public VerifyStructure {
  * Delta for Sky Networked impl.
  */
 struct SkyDelta: public VerifyStructure {
-  SkyDelta() = default; // packing
+  SkyDelta() = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {

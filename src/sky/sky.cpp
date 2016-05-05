@@ -33,16 +33,25 @@ void Sky::onTick(const float delta) {
 }
 
 void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
-  if (body1.type == BodyTag::)
+  if (body1.type == BodyTag::Type::PlaneTag)
+    body1.plane->onBeginContact(body2);
+  if (body2.type == BodyTag::Type::PlaneTag)
+    body2.plane->onBeginContact(body1);
 }
 
 void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
-
+  if (body1.type == BodyTag::Type::PlaneTag)
+    body1.plane->onEndContact(body2);
+  if (body2.type == BodyTag::Type::PlaneTag)
+    body2.plane->onEndContact(body1);
 }
 
 Sky::Sky(const Arena &arena,
          std::map<PID, optional<SkyPlayer>> &skyPlayers) :
-    arena(arena), skyPlayers(skyPlayers) { }
+    arena(arena),
+    map(arena.getMap()),
+    physics(map, *this),
+    skyPlayers(skyPlayers) { }
 
 /**
  * SkyHolder.
@@ -50,13 +59,22 @@ Sky::Sky(const Arena &arena,
 
 void SkyHolder::registerPlayerWith(Player &player,
                                    const SkyPlayerInit &initializer) {
-  const auto plane = skyPlayers.find(player.pid);
-  if (plane == skyPlayers.end()) {
-    skyPlayers.emplace(std::piecewise_construct,
-                       std::forward_as_tuple(player.pid),
-                       std::forward_as_tuple(*this, player, initializer));
-    player.data.push_back(&skyPlayers.at(player.pid));
-  } else player.data.push_back(&plane->second);
+  if (!findValue(skyPlayers, player.pid)) {
+    optional<SkyPlayer> *newPlayer;
+    if (sky) {
+      skyPlayers.emplace(
+          std::piecewise_construct,
+          std::forward_as_tuple(player.pid),
+          std::forward_as_tuple(sky->physics,
+                                initializer));
+    } else {
+      skyPlayers.emplace(
+          std::piecewise_construct,
+          std::forward_as_tuple(player.pid),
+          std::forward_as_tuple());
+    }
+  }
+  player.data.push_back(findValue(skyPlayers, player.pid));
 }
 
 void SkyHolder::registerPlayer(Player &player) {
@@ -107,35 +125,22 @@ void SkyHolder::onSpawn(Player &player,
 }
 
 void SkyHolder::stop() {
-  if (physics) {
+  if (sky) {
     appLog("Stopping sky.");
     for (auto &pair : skyPlayers) {
       pair.second.reset();
     }
-    map.reset();
-    physics.reset();
+    sky.reset();
   }
 }
 
 void SkyHolder::start() {
-  if (physics) stop();
+  if (sky) stop();
   appLog("Loading map " + inQuotes(arena.getMap()) + ".", LogOrigin::Engine);
-  map.emplace(arena.getMap());
-  physics.emplace(map.get(), *this);
-}
-
-void SkyHolder::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
-  if (body1.type == BodyTag::Type::PlaneTag)
-    body1.planeVital->onBeginContact(body2);
-  if (body2.type == BodyTag::Type::PlaneTag)
-    body2.planeVital->onBeginContact(body1);
-}
-
-void SkyHolder::onEndContact(const BodyTag &body1, const BodyTag &body2) {
-  if (body1.type == BodyTag::Type::PlaneTag)
-    body1.planeVital->onEndContact(body2);
-  if (body2.type == BodyTag::Type::PlaneTag)
-    body2.planeVital->onEndContact(body1);
+  sky.emplace(arena, skyPlayers);
+  for (auto &pair : skyPlayers) {
+    pair.second.emplace(sky->physics, SkyPlayerInit());
+  }
 }
 
 SkyHolder::SkyHolder(Arena &arena, const SkyInitializer &initializer) :
@@ -162,24 +167,23 @@ SkyHolder::~SkyHolder() {
   stop(); // necessary to correctly free the box2d world
 }
 
-SkyPlayer *SkyHolder::planeFromPID(const PID pid) {
-  auto plane = skyPlayers.find(pid);
-  if (plane != skyPlayers.end()) return &plane->second;
-  return nullptr;
-}
-
 SkyInitializer SkyHolder::captureInitializer() {
-  SkyInitializer initializer;
-  for (const auto &pair : skyPlayers)
-    initializer.planes.emplace(pair.first, pair.second.captureInitializer());
-  return initializer;
+  if (sky) {
+    SkyInitializer initializer;
+    for (const auto &pair : skyPlayers)
+      initializer.planes.emplace(
+          pair.first, pair.second->captureInitializer());
+    return initializer;
+  } else return {};
 }
 
 SkyDelta SkyHolder::collectDelta() {
-  SkyDelta delta;
-  for (auto &pair : skyPlayers)
-    delta.planes.emplace(pair.first, pair.second.captureDelta());
-  return delta;
+  if (sky) {
+    SkyDelta delta;
+    for (auto &pair : skyPlayers)
+      delta.planes.emplace(pair.first, pair.second->captureDelta());
+    return delta;
+  } else return {};
 }
 
 void SkyHolder::applyDelta(const SkyDelta &delta) {
