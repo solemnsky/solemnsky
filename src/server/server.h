@@ -53,14 +53,14 @@ class Server: public sky::Subsystem {
 
  protected:
   ServerShared &shared;
-  sky::Sky &sky;
+  sky::SkyHolder &sky;
 
   virtual void onPacket(ENetPeer *const client,
                         sky::Player &player,
                         const sky::ClientPacket &packet) = 0;
 
  public:
-  Server(ServerShared &shared, sky::Arena &arena, sky::Sky &sky);
+  Server(ServerShared &shared, sky::Arena &arena, sky::SkyHolder &sky);
 
 };
 
@@ -94,7 +94,7 @@ class ServerExec {
   ServerShared shared;
 
   sky::Arena arena;
-  sky::Sky sky;
+  sky::SkyHolder sky;
   std::unique_ptr<Server> server;
   Cooldown packetBroadcastTimer;
 
@@ -109,7 +109,7 @@ class ServerExec {
              const sky::ArenaInit &arena,
              const sky::SkyInitializer &sky,
              std::function<std::unique_ptr<Server>(
-                 ServerShared &, sky::Arena &, sky::Sky &)> server);
+                 ServerShared &, sky::Arena &, sky::SkyHolder &)> server);
 
   void run();
 

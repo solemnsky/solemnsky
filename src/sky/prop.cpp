@@ -3,7 +3,8 @@
 
 namespace sky {
 
-Prop::Prop(Sky &parent, const sf::Vector2f &pos, const sf::Vector2f &vel) :
+Prop::Prop(SkyHolder &parent, const sf::Vector2f &pos, const sf::Vector2f &vel)
+    :
     parent(parent),
     physics(parent.physics.get()),
     body(physics.createBody(physics.rectShape({10, 10}),

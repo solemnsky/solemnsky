@@ -54,7 +54,7 @@ void VanillaServer::onPacket(ENetPeer *const client,
 }
 
 VanillaServer::VanillaServer(ServerShared &telegraphy,
-                             sky::Arena &arena, sky::Sky &sky)
+                             sky::Arena &arena, sky::SkyHolder &sky)
     : Server(telegraphy, arena, sky) {
   arena.forPlayers([&](sky::Player &player) { registerPlayer(player); });
 }

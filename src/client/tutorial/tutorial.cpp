@@ -46,7 +46,8 @@ void Tutorial::render(ui::Frame &f) {
   const sky::SkyPlayer &plane = sky.getPlane(*player);
   skyRender.render(
       f, plane.isSpawned() ?
-         plane.getVital()->getState().physical.pos : sf::Vector2f(0, 0));
+         plane.getParticipation()->getState().physical.pos : sf::Vector2f(0,
+                                                                          0));
 }
 
 bool Tutorial::handle(const sf::Event &event) {

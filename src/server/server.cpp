@@ -69,7 +69,7 @@ void ServerShared::logArenaEvent(const sky::ArenaEvent &event) {
  */
 
 Server::Server(ServerShared &shared,
-               sky::Arena &arena, sky::Sky &sky) :
+               sky::Arena &arena, sky::SkyHolder &sky) :
     Subsystem(arena),
     shared(shared),
     sky(sky) { }
@@ -197,7 +197,7 @@ ServerExec::ServerExec(
     const sky::ArenaInit &arena,
     const sky::SkyInitializer &sky,
     std::function<std::unique_ptr<Server>(
-        ServerShared &, sky::Arena &, sky::Sky &)> server) :
+        ServerShared &, sky::Arena &, sky::SkyHolder &)> server) :
     uptime(0),
 
     host(tg::HostType::Server, port),
