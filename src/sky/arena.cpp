@@ -146,8 +146,9 @@ ArenaLogger::ArenaLogger(Arena &arena) : arena(arena) {
  */
 
 ArenaInit::ArenaInit(
-    const std::string &name, const MapName &map) :
-    name(name), map(map), mode(ArenaMode::Lobby) { }
+    const std::string &name, const MapName &map,
+    const ArenaMode mode) :
+    name(name), map(map), mode(mode) { }
 
 PID Arena::allocPid() const {
   std::vector<int> usedPids;

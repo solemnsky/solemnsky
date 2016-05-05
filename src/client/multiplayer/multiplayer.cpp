@@ -9,7 +9,8 @@
  */
 
 std::unique_ptr<MultiplayerView> Multiplayer::mkView() {
-  switch (mShared.arena->getMode()) {
+  if (!conn) return {};
+  switch (conn->arena.getMode()) {
     case sky::ArenaMode::Lobby:
       return std::make_unique<MultiplayerLobby>(shared, mShared);
     case sky::ArenaMode::Game:
@@ -25,6 +26,7 @@ Multiplayer::Multiplayer(ClientShared &shared,
                          const unsigned short serverPort) :
     Game(shared, "multiplayer"),
     mShared(shared, serverHostname, serverPort),
+    conn(nullptr),
     view(nullptr) { }
 
 /**
@@ -35,9 +37,9 @@ void Multiplayer::onChangeSettings(const SettingsDelta &settings) {
   mShared.onChangeSettings(settings);
   if (view) view->onChangeSettings(settings);
 
-  if (mShared.player) {
+  if (conn) {
     if (settings.nickname) {
-      sky::PlayerDelta delta = mShared.player->zeroDelta();
+      sky::PlayerDelta delta = conn->player.zeroDelta();
       delta.nickname = *settings.nickname;
       mShared.transmit(sky::ClientPacket::ReqPlayerDelta(delta));
       // request a nickname change
@@ -62,9 +64,9 @@ void Multiplayer::tick(float delta) {
   if (mShared.disconnected) quitting = true;
   if (mShared.disconnecting) return;
 
-  if (mShared.arena) {
-    mShared.arena->tick(delta);
-    if (!view or view->target != mShared.arena->getMode()) view = mkView();
+  if (conn) {
+    conn->arena.tick(delta);
+    if (!view or view->target != conn->arena.getMode()) view = mkView();
     view->tick(delta);
   }
 }

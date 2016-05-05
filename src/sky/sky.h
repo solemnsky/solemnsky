@@ -11,7 +11,7 @@
 namespace sky {
 
 /**
- * Initializer for the Sky Networked impl.
+ * Initializer for the SkyManager Networked impl.
  */
 struct SkyInitializer: public VerifyStructure {
   SkyInitializer() = default;
@@ -23,11 +23,12 @@ struct SkyInitializer: public VerifyStructure {
 
   bool verifyStructure() const;
 
-  std::map<PID, SkyPlayerInit> planes; // participations already in the arena
+  std::map<PID, ParticipationInit>
+      planes; // participations already in the arena
 };
 
 /**
- * Delta for Sky Networked impl.
+ * Delta for SkyManager Networked impl.
  */
 struct SkyDelta: public VerifyStructure {
   SkyDelta() = default;
@@ -39,7 +40,7 @@ struct SkyDelta: public VerifyStructure {
 
   bool verifyStructure() const;
 
-  std::map<PID, SkyPlayerDelta> planes;
+  std::map<PID, ParticipationDelta> planes;
 };
 
 /**
@@ -73,7 +74,6 @@ class Sky: public PhysicsListener {
       std::map<PID, optional<Participation>> &skyPlayers);
 
   // User API.
-  const optional<Participation> &getParticipation(const Player &player) const;
   const Map &getMap() const;
 
 };
@@ -89,7 +89,7 @@ class SkyManager: public Subsystem {
 
  protected:
   // Internal help.
-  void registerPlayerWith(Player &player, const SkyPlayerInit &initializer);
+  void registerPlayerWith(Player &player, const ParticipationInit &initializer);
   optional<Participation> &accessParticipation(const Player &player);
 
   // Subsystem impl.
@@ -126,6 +126,7 @@ class SkyManager: public Subsystem {
   void restart();
   const optional<Sky> &getSky() const;
   bool isActive() const;
+  const optional<Participation> &getParticipation(const Player &player) const;
 
 };
 

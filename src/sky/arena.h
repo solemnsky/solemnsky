@@ -145,7 +145,8 @@ class ArenaLogger {
  */
 struct ArenaInit {
   ArenaInit() = default; // packing
-  ArenaInit(const std::string &name, const MapName &map);
+  ArenaInit(const std::string &name, const MapName &map,
+            const ArenaMode mode = ArenaMode::Lobby);
 
   template<typename Archive>
   void serialize(Archive &ar) {

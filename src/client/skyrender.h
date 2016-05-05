@@ -33,6 +33,7 @@ struct PlaneGraphics {
  */
 class SkyRender: public Subsystem {
  private:
+  const SkyManager &skyManager;
   const Sky &sky;
 
   std::map<PID, PlaneGraphics> graphics;
@@ -62,6 +63,7 @@ class SkyRender: public Subsystem {
 
  public:
   SkyRender(Arena &arena,
+            const SkyManager &skyManager,
             const Sky &sky);
   ~SkyRender();
 

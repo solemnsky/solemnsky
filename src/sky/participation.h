@@ -14,14 +14,14 @@ namespace sky {
 class SkyManager;
 
 /**
- * Initializer for Participation's Networked implementation.
+ * Initializer for Participation's Networked impl.
  */
-struct SkyPlayerInit {
-  SkyPlayerInit();
-  SkyPlayerInit(const PlaneControls &controls,
+struct ParticipationInit {
+  ParticipationInit();
+  ParticipationInit(const PlaneControls &controls,
                 const PlaneTuning &tuning,
                 const PlaneState &state);
-  SkyPlayerInit(const PlaneControls &controls);
+  ParticipationInit(const PlaneControls &controls);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -33,10 +33,10 @@ struct SkyPlayerInit {
 };
 
 /**
- * Delta for Participation's Networked implementation.
+ * Delta for Participation's Networked impl.
  */
-struct SkyPlayerDelta: public VerifyStructure {
-  SkyPlayerDelta();
+struct ParticipationDelta: public VerifyStructure {
+  ParticipationDelta();
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -98,7 +98,7 @@ class Plane {
 /**
  * A Player's participation in an active game.
  */
-class Participation: public Networked<SkyPlayerInit, SkyPlayerDelta> {
+class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   friend class Sky;
   friend class SkyManager;
  private:
@@ -111,27 +111,29 @@ class Participation: public Networked<SkyPlayerInit, SkyPlayerDelta> {
   std::forward_list<Prop> props;
   bool newlyAlive;
 
+  // Helpers.
+  void spawnWithState(const PlaneTuning &tuning,
+                      const PlaneState &state);
+
   // Sky API.
   void doAction(const Action action, bool actionState);
   void prePhysics();
   void postPhysics(const float delta);
 
- public:
-  Participation() = delete;
-  Participation(Physics &physics, const SkyPlayerInit &initializer);
-
-  // Networked impl.
-  void applyDelta(const SkyPlayerDelta &delta) override;
-  SkyPlayerInit captureInitializer() const override;
-  SkyPlayerDelta captureDelta();
-
-  // User API.
-  void spawnWithState(const PlaneTuning &tuning,
-                      const PlaneState &state);
   void spawn(const PlaneTuning &tuning,
              const sf::Vector2f &pos,
              const float rot);
 
+ public:
+  Participation() = delete;
+  Participation(Physics &physics, const ParticipationInit &initializer);
+
+  // Networked impl.
+  void applyDelta(const ParticipationDelta &delta) override;
+  ParticipationInit captureInitializer() const override;
+  ParticipationDelta captureDelta();
+
+  // User API.
   const optional<Plane> &getPlane() const;
   const std::forward_list<Prop> &getProps() const;
   const PlaneControls &getControls() const;
