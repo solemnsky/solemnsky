@@ -182,8 +182,10 @@ SkyRender::SkyRender(Arena &arena,
 SkyRender::~SkyRender() { }
 
 void SkyRender::registerPlayer(Player &player) {
-  graphics.emplace(player.pid, *skyManager.getParticipation(player));
-  player.data.push_back(&graphics.at(player.pid));
+  setPlayerData(
+      player,
+      graphics.emplace(
+          player.pid, *skyManager.getParticipation(player)).first->second);
 }
 
 void SkyRender::unregisterPlayer(Player &player) {
@@ -197,15 +199,15 @@ void SkyRender::onTick(const float delta) {
 void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
   const auto map = sky.getMap();
   f.withTransform(
-        sf::Transform().translate(
-            {-findView(1600, map.dimensions.x, pos.x),
-             -findView(900, map.dimensions.y, pos.y)}
-        ),
-        [&]() {
-          renderMap(f);
-          for (auto &pair: graphics) renderPlaneGraphics(f, pair.second);
-        }
-    );
+      sf::Transform().translate(
+          {-findView(1600, map.dimensions.x, pos.x),
+           -findView(900, map.dimensions.y, pos.y)}
+      ),
+      [&]() {
+        renderMap(f);
+        for (auto &pair: graphics) renderPlaneGraphics(f, pair.second);
+      }
+  );
 }
 
 }

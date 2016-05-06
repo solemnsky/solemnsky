@@ -33,7 +33,7 @@ struct PlaneGraphics {
  *
  * Invariant: `sky` remains alive.
  */
-class SkyRender: public Subsystem {
+class SkyRender: public Subsystem<PlaneGraphics> {
  private:
   // Parameters.
   const SkyManager &skyManager;

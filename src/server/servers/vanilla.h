@@ -4,7 +4,7 @@
 #pragma once
 #include "server/server.h"
 
-class VanillaServer: public Server {
+class VanillaServer: public Server<None> {
  protected:
   // subsystem callbacks
   void registerPlayer(sky::Player &player) override;

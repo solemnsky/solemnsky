@@ -8,14 +8,14 @@
  */
 class SubsystemTest: public testing::Test { };
 
-class LifeSubsystem: public sky::Subsystem {
+class LifeSubsystem: public sky::Subsystem<bool> {
  private:
   std::map<PID, bool> lives;
 
  protected:
   void registerPlayer(sky::Player &player) override {
     lives.emplace(player.pid, false);
-    player.data.push_back(&lives.at(player.pid));
+    setPlayerData(player, lives.at(player.pid));
   }
 
   void unregisterPlayer(sky::Player &player) override {
@@ -24,35 +24,36 @@ class LifeSubsystem: public sky::Subsystem {
 
   void onSpawn(sky::Player &player, const sky::PlaneTuning &,
                const sf::Vector2f &, const float) override {
-    getPlayerData<bool>(player) = true;
+    getPlayerData(player) = true;
   }
 
   void onAction(sky::Player &player, const sky::Action action,
                 const bool state) override {
-    if (action == sky::Action::Suicide) getPlayerData<bool>(player) = false;
+    if (action == sky::Action::Suicide) getPlayerData(player) = false;
   }
 
  public:
-  LifeSubsystem(sky::Arena &arena) : sky::Subsystem(arena) {
+  LifeSubsystem(sky::Arena &arena) : sky::Subsystem<bool>(arena) {
     arena.forPlayers([&](sky::Player &player) {
       registerPlayer(player);
     });
   }
 
-  bool getLifeData(const sky::Player &player) {
-    return getPlayerData<bool>(player);
+  bool getLifeData(const sky::Player &player) const {
+    return getPlayerData(player);
   }
 };
 
-class CounterSubsystem: public sky::Subsystem {
+class CounterSubsystem: public sky::Subsystem<float> {
  private:
   std::map<PID, float> myData;
   LifeSubsystem &lifeSubsystem;
 
  protected:
   void registerPlayer(sky::Player &player) override {
-    myData.emplace(player.pid, 0);
-    player.data.push_back(&myData.at(player.pid));
+    setPlayerData(
+        player,
+        myData.emplace(player.pid, 0).first->second);
   }
 
   void unregisterPlayer(sky::Player &player) override {
@@ -62,20 +63,20 @@ class CounterSubsystem: public sky::Subsystem {
   void onTick(const float delta) override {
     arena.forPlayers([&](sky::Player &player) {
       if (lifeSubsystem.getLifeData(player))
-        getPlayerData<float>(player) += delta;
+        getPlayerData(player) += delta;
     });
   }
 
  public:
   CounterSubsystem(sky::Arena &arena, LifeSubsystem &lifeSubsystem) :
-      sky::Subsystem(arena), lifeSubsystem(lifeSubsystem) {
+      sky::Subsystem<float>(arena), lifeSubsystem(lifeSubsystem) {
     arena.forPlayers([&](sky::Player &player) {
       registerPlayer(player);
     });
   }
 
-  float getTimeData(const sky::Player &player) {
-    return getPlayerData<float>(player);
+  float getTimeData(const sky::Player &player) const {
+    return getPlayerData(player);
   }
 };
 

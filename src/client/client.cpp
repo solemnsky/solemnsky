@@ -160,7 +160,7 @@ void Client::drawGame(ui::Frame &f) {
   shared.game->render(f);
 
   if (shared.settings.enableDebug) {
-    shared.game->debugRender(f);
+//    shared.game->debugRender(f);
   }
 }
 

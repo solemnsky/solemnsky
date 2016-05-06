@@ -65,16 +65,6 @@ void ServerShared::logArenaEvent(const sky::ArenaEvent &event) {
 }
 
 /**
- * Server.
- */
-
-Server::Server(ServerShared &shared,
-               sky::Arena &arena, sky::SkyManager &sky) :
-    Subsystem(arena),
-    shared(shared),
-    sky(sky) { }
-
-/**
  * ServerLogger.
  */
 
