@@ -40,7 +40,6 @@ struct ArenaConnection {
   sky::SkyManager skyManager;
   sky::Player &player;
 
-  optional<sky::SkyRender> skyRender;
   MultiplayerLogger logger;
 
   // Handy accessors.
@@ -117,7 +116,7 @@ class MultiplayerView: public ui::Control {
   // Shared state.
   ClientShared &shared;
   MultiplayerShared &mShared;
-  ArenaConnection &conn;
+  ArenaConnection &conn; // from mShared
 
   MultiplayerView(
       sky::ArenaMode target,

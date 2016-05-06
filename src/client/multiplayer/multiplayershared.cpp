@@ -26,8 +26,6 @@ ArenaConnection::ArenaConnection(
     arena(arenaInit),
     skyManager(arena, skyInit),
     player(*arena.getPlayer(pid)),
-
-    skyRender(),
     logger(arena, shared) { }
 
 const optional<sky::Participation> &ArenaConnection::getParticipation() const {
@@ -46,7 +44,7 @@ void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
     if (packet.type == ServerPacket::Type::Init) {
       appLog("Loading arena...", LogOrigin::Client);
       conn.emplace(
-          this,
+          *this,
           packet.pid.get(),
           packet.arenaInit.get(),
           packet.skyInit.get());
@@ -184,10 +182,7 @@ void MultiplayerShared::disconnect() {
 }
 
 void MultiplayerShared::onChangeSettings(const SettingsDelta &settings) {
-  if (skyRender) {
-    if (settings.enableDebug)
-      skyRender->enableDebug = settings.enableDebug.get();
-  }
+
 }
 
 void MultiplayerShared::chat(const std::string &message) {
@@ -210,8 +205,8 @@ void MultiplayerShared::handleChatInput(const std::string &input) {
 }
 
 void MultiplayerShared::requestTeamChange(const sky::Team team) {
-  if (player) {
-    sky::PlayerDelta delta = player->zeroDelta();
+  if (conn) {
+    sky::PlayerDelta delta = conn->player.zeroDelta();
     delta.team = team;
     transmit(sky::ClientPacket::ReqPlayerDelta(delta));
   }
@@ -240,5 +235,6 @@ MultiplayerView::MultiplayerView(
     ui::Control(shared.appState),
     shared(shared),
     mShared(mShared),
+    conn(mShared.conn.get()),
     target(target) { }
 

@@ -42,11 +42,11 @@ void Tutorial::tick(float delta) {
 }
 
 void Tutorial::render(ui::Frame &f) {
-  const sky::Participation &plane = skyManager.getParticipation(*player);
+  auto &plane = skyManager.getParticipation(*player)->getPlane();
   skyRender.render(
-      f, plane.isSpawned() ?
-         plane.getParticipation()->getState().physical.pos : sf::Vector2f(0,
-                                                                          0));
+      f, plane ?
+         plane->getState().physical.pos :
+         sf::Vector2f(0, 0));
 }
 
 bool Tutorial::handle(const sf::Event &event) {

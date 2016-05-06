@@ -14,7 +14,6 @@ class Multiplayer: public Game {
    * (mode-specific) interface that we show the user.
    */
   MultiplayerShared mShared;
-  ArenaConnection *conn;
   std::unique_ptr<MultiplayerView> view;
   std::unique_ptr<MultiplayerView> mkView();
 
