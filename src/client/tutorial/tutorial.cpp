@@ -53,6 +53,10 @@ bool Tutorial::handle(const sf::Event &event) {
   if (auto action = shared.triggerSkyAction(event)) {
     player->doAction(action->first, action->second);
   }
+  if (auto action = shared.triggerClientAction(event)) {
+    if (action->first == ClientAction::Spawn && action->second)
+      player->spawn({}, {300, 300}, 0);
+  }
   return false;
 }
 

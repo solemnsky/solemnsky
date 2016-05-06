@@ -124,7 +124,6 @@ void SkyManager::onSpawn(Player &player,
 
 void SkyManager::stop() {
   if (sky) {
-    appLog("Stopping sky.");
     for (auto &pair : participations) {
       pair.second.reset();
     }

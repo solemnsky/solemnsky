@@ -51,6 +51,11 @@ void VanillaServer::onPacket(ENetPeer *const client,
       }
     }
   }
+
+  if (packet.type == sky::ClientPacket::Type::ReqSpawn) {
+    appLog("got spawn request!");
+    player.spawn({}, {300, 300}, 0);
+  }
 }
 
 VanillaServer::VanillaServer(ServerShared &telegraphy,
