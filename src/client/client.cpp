@@ -198,7 +198,7 @@ void Client::render(ui::Frame &f) {
 
 bool Client::handle(const sf::Event &event) {
   if (shared.ui.gameFocused() and shared.game) {
-    if (shared.game->handle(event)) return true;
+    return shared.game->handle(event);
   }
 
   if (shared.game and (shared.ui.menuFocused() or shared.ui.pageFocused())) {
