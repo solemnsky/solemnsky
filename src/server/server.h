@@ -47,7 +47,8 @@ struct ServerShared {
  * The Server abstraction: a sky::Arena subsystem with additional callbacks
  * for networking and access to a ServerShared object.
  */
-class Server: public sky::Subsystem {
+template<typename PlayerData>
+class Server: public sky::Subsystem<PlayerData> {
   friend class ServerExec;
   // callbacks are protected, in the style of sky::Subsystem
 
@@ -60,7 +61,11 @@ class Server: public sky::Subsystem {
                         const sky::ClientPacket &packet) = 0;
 
  public:
-  Server(ServerShared &shared, sky::Arena &arena, sky::SkyManager &sky);
+  Server(ServerShared &shared,
+         sky::Arena &arena, sky::SkyManager &sky) :
+      sky::Subsystem<PlayerData>(arena),
+      shared(shared),
+      sky(sky) { }
 
 };
 

@@ -1,7 +1,7 @@
 #include "vanilla.h"
 
 void VanillaServer::registerPlayer(sky::Player &player) {
-  player.data.push_back(nullptr);
+
 }
 
 void VanillaServer::unregisterPlayer(sky::Player &player) {
