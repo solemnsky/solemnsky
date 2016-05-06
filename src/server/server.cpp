@@ -181,7 +181,7 @@ ServerExec::ServerExec(
     const Port port,
     const sky::ArenaInit &arena,
     const sky::SkyInitializer &sky,
-    std::function<std::unique_ptr<Server>(
+    std::function<std::unique_ptr<ServerListener>(
         ServerShared &, sky::Arena &, sky::SkyManager &)> server) :
     uptime(0),
 

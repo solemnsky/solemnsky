@@ -44,21 +44,26 @@ struct ServerShared {
 };
 
 /**
+ * Type-erasure for Server, representing the uniform API.
+ */
+class ServerListener: public sky::SubsystemListener {
+  friend class ServerExec;
+ protected:
+  virtual void onPacket(ENetPeer *const client,
+                        sky::Player &player,
+                        const sky::ClientPacket &packet) = 0;
+
+};
+
+/**
  * The Server abstraction: a sky::Arena subsystem with additional callbacks
  * for networking and access to a ServerShared object.
  */
 template<typename PlayerData>
-class Server: public sky::Subsystem<PlayerData> {
-  friend class ServerExec;
-  // callbacks are protected, in the style of sky::Subsystem
-
+class Server: public ServerListener, public sky::Subsystem<PlayerData> {
  protected:
   ServerShared &shared;
   sky::SkyManager &sky;
-
-  virtual void onPacket(ENetPeer *const client,
-                        sky::Player &player,
-                        const sky::ClientPacket &packet) = 0;
 
  public:
   Server(ServerShared &shared,
@@ -81,6 +86,7 @@ class ServerLogger: public sky::ArenaLogger {
 
  public:
   ServerLogger(ServerShared &shared, sky::Arena &arena);
+
 };
 
 /**
@@ -100,7 +106,7 @@ class ServerExec {
 
   sky::Arena arena;
   sky::SkyManager sky;
-  std::unique_ptr<Server> server;
+  std::unique_ptr<ServerListener> server;
   Cooldown packetBroadcastTimer;
 
   ServerLogger logger;
@@ -113,7 +119,7 @@ class ServerExec {
   ServerExec(const Port port,
              const sky::ArenaInit &arena,
              const sky::SkyInitializer &sky,
-             std::function<std::unique_ptr<Server>(
+             std::function<std::unique_ptr<ServerListener>(
                  ServerShared &, sky::Arena &, sky::SkyManager &)> server);
 
   void run();
