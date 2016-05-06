@@ -8,7 +8,8 @@ Tutorial::Tutorial(ClientShared &state) :
   arena.connectPlayer("offline player");
   player = arena.getPlayer(0);
   player->spawn({}, {30, 30}, 0);
-  status = "some status";
+  participation = &skyManager.getParticipation(*player).get();
+  status = "learning to play";
 }
 
 /**
@@ -50,13 +51,17 @@ void Tutorial::render(ui::Frame &f) {
 }
 
 bool Tutorial::handle(const sf::Event &event) {
+  if (auto action = shared.triggerClientAction(event)) {
+    if (participation->isSpawned()) {
+      if (action->first == ClientAction::Spawn && action->second)
+        player->spawn({}, {300, 300}, 0);
+    }
+  }
+
   if (auto action = shared.triggerSkyAction(event)) {
     player->doAction(action->first, action->second);
   }
-  if (auto action = shared.triggerClientAction(event)) {
-    if (action->first == ClientAction::Spawn && action->second)
-      player->spawn({}, {300, 300}, 0);
-  }
+
   return false;
 }
 

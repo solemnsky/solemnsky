@@ -124,16 +124,6 @@ ArenaDelta ArenaDelta::MapChange(const MapName &map) {
 }
 
 /**
- * Subsystem.
- */
-
-Subsystem::Subsystem(Arena &arena) :
-    id(PID(arena.subsystems.size())),
-    arena(arena) {
-  arena.subsystems.push_back(this);
-}
-
-/**
  * ArenaLogger.
  */
 

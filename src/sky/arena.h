@@ -52,20 +52,21 @@ struct PlayerDelta {
  * Represents a player in the arena, with some minimal metadata.
  */
 struct Player: public Networked<PlayerInitializer, PlayerDelta> {
+  friend class Arena &arena;
+  friend std::vector<void *> &accessPlayerData(Player &p);
+  friend const std::vector<void *> &readPlayerData(const Player &p);
  private:
-  class Arena &arena;
-
   // State.
   std::string nickname;
   bool admin;
   Team team;
+  std::vector<void *> data;
 
  public:
   Player() = delete;
   Player(Arena &arena, const PlayerInitializer &initializer);
 
   const PID pid;
-  std::vector<void *> data;
 
   // Networked impl.
   void applyDelta(const PlayerDelta &delta) override;
@@ -82,6 +83,15 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
              const sf::Vector2f &pos, const float rot);
 };
 
+namespace detail {
+inline std::vector<void *> &accessPlayerData(Player &p) {
+  return p.data;
+}
+inline const std::vector<void *> &readPlayerData(const Player &p) {
+  return p.data;
+}
+}
+
 /**
  * The subsystem abstraction: attaches state to players and has various
  * callbacks.
@@ -90,16 +100,19 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
  * clients need to register the same callbacks, they should by triggered by
  * Arena / Subsystem Deltas (onMode, onMapChange, etc).
  */
+template<typename PlayerData>
 class Subsystem {
- protected:
   friend class Arena;
   friend class Player;
-
+ protected:
   const PID id; // ID the render has allocated in the Arena
 
-  template<typename Data>
-  Data &getPlayerData(const Player &player) const {
-    return *((Data *) player.data.at(id));
+  PlayerData &getPlayerData(const Player &player) const {
+    return *((PlayerData *) detail::readPlayerData(player).at(id));
+  }
+
+  void setPlayerData(Player &player, PlayerData &data) {
+    detail::accessPlayerData(player)[id] = &data;
   }
 
   // Managing player registration.
@@ -121,8 +134,12 @@ class Subsystem {
   class Arena &arena;
 
   Subsystem() = delete;
-  Subsystem(Arena &arena);
-  // TODO: enforce registration of players on ctor
+  Subsystem::Subsystem(Arena &arena) :
+      id(PID(arena.subsystems.size())),
+      arena(arena) {
+    arena.subsystems.push_back(this);
+  }
+
 };
 
 /**

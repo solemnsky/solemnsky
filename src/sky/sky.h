@@ -81,7 +81,7 @@ class Sky: public PhysicsListener {
 /**
  * Wraps an optional<Sky>, binding it to the arena when the game is in session.
  */
-class SkyManager: public Subsystem {
+class SkyManager: public Subsystem<optional<Participation>> {
  private:
   // State.
   optional<Sky> sky;
@@ -90,7 +90,6 @@ class SkyManager: public Subsystem {
  protected:
   // Internal help.
   void registerPlayerWith(Player &player, const ParticipationInit &initializer);
-  optional<Participation> &accessParticipation(const Player &player);
 
   // Subsystem impl.
   void registerPlayer(Player &player) override;
