@@ -5,6 +5,7 @@ void MultiplayerGame::doClientAction(const ClientAction action,
                                      const bool state) {
   switch (action) {
     case ClientAction::Spawn: {
+      appLog("requesting spawn");
       if (state) mShared.transmit(sky::ClientPacket::ReqSpawn());
       break;
     }
@@ -57,15 +58,14 @@ void MultiplayerGame::render(ui::Frame &f) {
 bool MultiplayerGame::handle(const sf::Event &event) {
   if (ui::Control::handle(event)) return true;
 
-  if (conn.skyManager.isActive()) {
-    if (auto action = shared.triggerSkyAction(event)) {
+  if (auto action = shared.triggerSkyAction(event)) {
+    if (participation.isSpawned())
       mShared.transmit(
           sky::ClientPacket::ReqAction(action->first, action->second));
-      return true;
-    }
   }
 
   if (auto clientAction = shared.triggerClientAction(event)) {
+    appLog("caught client action");
     doClientAction(clientAction->first, clientAction->second);
     return true;
   }
