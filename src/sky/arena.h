@@ -87,7 +87,7 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
 };
 
 /**
- * The listener API associated with a subsystem.
+ * Type-erasure for Subsystem, representing the uniform API.
  */
 class SubsystemListener {
   friend class Arena;
