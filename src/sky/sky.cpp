@@ -65,12 +65,7 @@ void SkyManager::registerPlayerWith(Player &player,
                                     const ParticipationInit &initializer) {
   participations[player.pid].reset();
   if (sky) participations.at(player.pid).emplace(sky->physics, initializer);
-  player.data.push_back(findValue(participations, player.pid));
-}
-
-optional<Participation> &SkyManager::accessParticipation(
-    const Player &player) {
-  return getPlayerData<optional<Participation>>(player);
+  setPlayerData(player, findValue(participations, player.pid));
 }
 
 void SkyManager::registerPlayer(Player &player) {
@@ -110,7 +105,7 @@ void SkyManager::onMapChange() {
 void SkyManager::onAction(Player &player,
                           const Action action,
                           const bool state) {
-  if (auto &p = accessParticipation(player))
+  if (auto &p = getPlayerData(player))
     p->doAction(action, state);
 }
 
@@ -118,7 +113,7 @@ void SkyManager::onSpawn(Player &player,
                          const PlaneTuning &tuning,
                          const sf::Vector2f &pos,
                          const float rot) {
-  if (auto &p = accessParticipation(player))
+  if (auto &p = getPlayerData(player))
     p->spawn(tuning, pos, rot);
 }
 

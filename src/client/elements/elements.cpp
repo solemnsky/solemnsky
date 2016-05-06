@@ -24,3 +24,4 @@ Game::Game(ClientShared &shared,
     ui::Control(shared.appState),
     shared(shared),
     name(name) { }
+

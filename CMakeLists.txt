@@ -27,17 +27,23 @@ add_library(solemnsky STATIC
         src/sky/arena.cpp
         src/sky/arena.h
 
+        src/sky/debuginfo.cpp
+        src/sky/debuginfo.h
+
         src/sky/event.cpp
         src/sky/event.h
 
         src/sky/map.cpp
         src/sky/map.h
 
+        src/sky/participation.cpp
+        src/sky/participation.h
+
         src/sky/physics.cpp
         src/sky/physics.h
 
-        src/sky/participation.cpp
-        src/sky/participation.h
+        src/sky/planestate.cpp
+        src/sky/planestate.h
 
         src/sky/prop.cpp
         src/sky/prop.h
@@ -59,7 +65,7 @@ add_library(solemnsky STATIC
 
         src/util/types.cpp
         src/util/types.h
-        src/sky/planestate.cpp src/sky/planestate.h)
+        )
 
 target_link_libraries(solemnsky
         enet
