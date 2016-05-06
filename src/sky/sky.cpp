@@ -65,7 +65,7 @@ void SkyManager::registerPlayerWith(Player &player,
                                     const ParticipationInit &initializer) {
   participations[player.pid].reset();
   if (sky) participations.at(player.pid).emplace(sky->physics, initializer);
-  setPlayerData(player, findValue(participations, player.pid));
+  setPlayerData(player, *findValue(participations, player.pid));
 }
 
 void SkyManager::registerPlayer(Player &player) {
@@ -202,7 +202,7 @@ bool SkyManager::isActive() const {
 
 const optional<Participation> &SkyManager::getParticipation(
     const Player &player) const {
-  return getPlayerData<optional<Participation>>(player);
+  return getPlayerData(player);
 }
 
 }

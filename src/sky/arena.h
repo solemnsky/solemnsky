@@ -87,15 +87,8 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
 };
 
 /**
- * The subsystem abstraction: attaches state to players and has various
- * callbacks.
- *
- * Subsystem callbacks do not necessarily transmit over the network! If all
- * clients need to register the same callbacks, they should by triggered by
- * Arena / Subsystem Deltas (onMode, onMapChange, etc).
+ * The listener API associated with a subsystem.
  */
-
-namespace detail {
 class SubsystemListener {
   friend class Arena;
   friend class Player;
@@ -116,10 +109,17 @@ class SubsystemListener {
                        const sf::Vector2f &pos, const float rot) { };
 
 };
-}
 
+/**
+ * The subsystem abstraction: attaches state to players and has various
+ * callbacks.
+ *
+ * Subsystem callbacks do not necessarily transmit over the network! If all
+ * clients need to register the same callbacks, they should by triggered by
+ * Arena / Subsystem Deltas (onMode, onMapChange, etc).
+ */
 template<typename PlayerData>
-class Subsystem: public detail::SubsystemListener {
+class Subsystem: public SubsystemListener {
  protected:
   const PID id; // ID the render has allocated in the Arena
 
@@ -264,7 +264,7 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   Arena(const ArenaInit &initializer);
 
   // Subsystems and loggers.
-  std::vector<detail::SubsystemListener *> subsystems;
+  std::vector<SubsystemListener *> subsystems;
   std::vector<ArenaLogger *> loggers;
 
   // Networked Impl.
@@ -289,10 +289,10 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
 };
 
 template<typename PlayerData>
-Subsystem::Subsystem(Arena &arena) :
+Subsystem<PlayerData>::Subsystem(Arena &arena) :
     id(PID(arena.subsystems.size())),
     arena(arena) {
-  arena.subsystems.push_back((detail::SubsystemListener *) this);
+  arena.subsystems.push_back((SubsystemListener *) this);
 }
 
 }
