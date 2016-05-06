@@ -23,8 +23,7 @@ class DebugInfo: public Subsystem {
   DebugInfo() = delete;
   DebugInfo(Arena &arena,
             class Sky &sky,
-            const optional<PID> &player = {};
-  );
+            const optional<PID> &player = {});
 
   // User API.
   void printReport(Printer &p) const;
