@@ -42,7 +42,7 @@ void MultiplayerLobby::render(ui::Frame &f) {
   mShared.drawEventLog(f, style.multi.chatCutoff);
   f.drawText(
       style.multi.playerListPos, [&](Printer &p) {
-        mShared.arena->forPlayers([&](const sky::Player &player) {
+        conn.arena.forPlayers([&](const sky::Player &player) {
           p.setColor(0, 0, 0);
           if (player.getTeam() == 1) p.setColor(255, 0, 0);
           if (player.getTeam() == 2) p.setColor(0, 0, 255);

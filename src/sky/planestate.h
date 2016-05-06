@@ -93,9 +93,7 @@ struct PlaneState {
     ar(energy, health, primaryCooldown);
   }
 
-  /**
-   * State.
-   */
+  // State.
   PhysicalState physical;
   bool stalled;
   Clamped afterburner;
@@ -105,9 +103,7 @@ struct PlaneState {
   Clamped energy, health;
   Cooldown primaryCooldown;
 
-  /**
-   * Helper methods.
-   */
+  // Utility accessors / methods.
   float forwardVelocity() const;
   float velocity() const;
   // returns true if energy was drawn

@@ -53,6 +53,10 @@ Sky::Sky(const Arena &arena,
     physics(map, *this),
     skyPlayers(skyPlayers) { }
 
+const Map &Sky::getMap() const {
+  return map;
+}
+
 /**
  * SkyManager.
  */
@@ -193,7 +197,6 @@ void SkyManager::restart() {
   stop();
   start();
 }
-
 
 const optional<Sky> &SkyManager::getSky() const {
   return sky;
