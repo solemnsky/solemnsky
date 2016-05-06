@@ -52,9 +52,9 @@ struct PlayerDelta {
  * Represents a player in the arena, with some minimal metadata.
  */
 struct Player: public Networked<PlayerInitializer, PlayerDelta> {
-  friend class Arena &arena;
-  friend std::vector<void *> &accessPlayerData(Player &p);
-  friend const std::vector<void *> &readPlayerData(const Player &p);
+  template<typename T>
+  friend
+  class Subsystem;
  private:
   // State.
   std::string nickname;
@@ -64,8 +64,10 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
 
  public:
   Player() = delete;
-  Player(Arena &arena, const PlayerInitializer &initializer);
+  Player(class Arena &arena, const PlayerInitializer &initializer);
 
+  // Parameters.
+  class Arena &arena;
   const PID pid;
 
   // Networked impl.
@@ -81,16 +83,8 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
   void doAction(const Action action, const bool state);
   void spawn(const PlaneTuning &tuning,
              const sf::Vector2f &pos, const float rot);
-};
 
-namespace detail {
-inline std::vector<void *> &accessPlayerData(Player &p) {
-  return p.data;
-}
-inline const std::vector<void *> &readPlayerData(const Player &p) {
-  return p.data;
-}
-}
+};
 
 /**
  * The subsystem abstraction: attaches state to players and has various
@@ -100,21 +94,12 @@ inline const std::vector<void *> &readPlayerData(const Player &p) {
  * clients need to register the same callbacks, they should by triggered by
  * Arena / Subsystem Deltas (onMode, onMapChange, etc).
  */
-template<typename PlayerData>
-class Subsystem {
+
+namespace detail {
+class SubsystemListener {
   friend class Arena;
   friend class Player;
  protected:
-  const PID id; // ID the render has allocated in the Arena
-
-  PlayerData &getPlayerData(const Player &player) const {
-    return *((PlayerData *) detail::readPlayerData(player).at(id));
-  }
-
-  void setPlayerData(Player &player, PlayerData &data) {
-    detail::accessPlayerData(player)[id] = &data;
-  }
-
   // Managing player registration.
   virtual void registerPlayer(Player &player) = 0;
   virtual void unregisterPlayer(Player &player) = 0;
@@ -130,16 +115,27 @@ class Subsystem {
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
                        const sf::Vector2f &pos, const float rot) { };
 
+};
+}
+
+template<typename PlayerData>
+class Subsystem: public detail::SubsystemListener {
+ protected:
+  const PID id; // ID the render has allocated in the Arena
+
+  PlayerData &getPlayerData(const Player &player) const {
+    return *((PlayerData *) player.data.at(id));
+  }
+
+  void setPlayerData(Player &player, PlayerData &data) {
+    player.data[id] = &data;
+  }
+
  public:
   class Arena &arena;
 
   Subsystem() = delete;
-  Subsystem::Subsystem(Arena &arena) :
-      id(PID(arena.subsystems.size())),
-      arena(arena) {
-    arena.subsystems.push_back(this);
-  }
-
+  Subsystem(Arena &arena);
 };
 
 /**
@@ -268,7 +264,7 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   Arena(const ArenaInit &initializer);
 
   // Subsystems and loggers.
-  std::vector<Subsystem *> subsystems;
+  std::vector<detail::SubsystemListener *> subsystems;
   std::vector<ArenaLogger *> loggers;
 
   // Networked Impl.
@@ -291,5 +287,12 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   ArenaDelta connectPlayer(const std::string &requestedNick);
 
 };
+
+template<typename PlayerData>
+Subsystem::Subsystem(Arena &arena) :
+    id(PID(arena.subsystems.size())),
+    arena(arena) {
+  arena.subsystems.push_back((detail::SubsystemListener *) this);
+}
 
 }
