@@ -60,7 +60,7 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
   std::string nickname;
   bool admin;
   Team team;
-  std::vector<void *> data;
+  std::map<PID, void *> data; // this is a good and not a bad idea
 
  public:
   Player() = delete;
