@@ -67,7 +67,6 @@ void Multiplayer::tick(float delta) {
     mShared.conn->arena.tick(delta);
     if (!view or view->target != mShared.conn->arena.getMode()) {
       view = mkView();
-      appLog("made new MultiplayerView.");
     }
     view->tick(delta);
   }

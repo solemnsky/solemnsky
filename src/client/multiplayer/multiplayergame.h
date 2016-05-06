@@ -18,6 +18,7 @@ class MultiplayerGame: public MultiplayerView {
   ui::TextEntry chatInput;
   bool scoreboardFocused;
   sky::SkyRender skyRender;
+  sky::Participation participation;
 
   void doClientAction(const ClientAction action, const bool state);
 

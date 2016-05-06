@@ -34,7 +34,6 @@ TEST_F(SkyTest, PhysicsTest) {
   ASSERT_EQ(bool(skyManager.getParticipation(*player)->getPlane()), true);
   ASSERT_NO_FATAL_FAILURE(arena.tick(1));
 
-
   arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Scoring));
   ASSERT_EQ(bool(skyManager.isActive()), false);
 }

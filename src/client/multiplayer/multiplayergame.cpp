@@ -27,7 +27,8 @@ MultiplayerGame::MultiplayerGame(
               style.multi.chatPos,
               "[ENTER TO CHAT]"),
     scoreboardFocused(false),
-    skyRender(conn.arena, conn.skyManager, *conn.skyManager.getSky()) {
+    skyRender(conn.arena, conn.skyManager, *conn.skyManager.getSky()),
+    participation(*conn.getParticipation()) {
   areChildren({&chatInput});
 }
 
@@ -36,13 +37,16 @@ void MultiplayerGame::tick(float delta) {
 }
 
 void MultiplayerGame::render(ui::Frame &f) {
-  if (const auto &participation = conn.getParticipation()) {
-    skyRender.render(
-        f, participation->getPlane()->getState().physical.pos);
-  } else skyRender.render(f, {});
-  ui::Control::render(f);
+  skyRender.render(
+      f, participation.getPlane() ?
+         participation.getPlane()->getState().physical.pos :
+         sf::Vector2f(0, 0));
+
   if (chatInput.isFocused) mShared.drawEventLog(f, style.multi.chatCutoff);
   else mShared.drawEventLog(f, style.multi.chatIngameCutoff);
+
+  ui::Control::render(f);
+
   if (scoreboardFocused) {
     // TODO: scoreboard
     f.drawText({20, 20}, "<scoreboard goes here>",
@@ -53,7 +57,7 @@ void MultiplayerGame::render(ui::Frame &f) {
 bool MultiplayerGame::handle(const sf::Event &event) {
   if (ui::Control::handle(event)) return true;
 
-  if (mShared.conn->skyManager.isActive()) {
+  if (conn.skyManager.isActive()) {
     if (auto action = shared.triggerSkyAction(event)) {
       mShared.transmit(
           sky::ClientPacket::ReqAction(action->first, action->second));

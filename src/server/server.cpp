@@ -111,11 +111,6 @@ void ServerExec::processPacket(ENetPeer *client,
         break;
       }
 
-      case ClientPacket::Type::ReqSpawn: {
-        player->spawn({}, {300, 300}, 0);
-        break;
-      }
-
       case ClientPacket::Type::Chat: {
         shared.sendToClients(sky::ServerPacket::Chat(
             player->pid, packet.stringData.get()));
