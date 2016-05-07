@@ -87,7 +87,11 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
 };
 
 /**
- * Type-erasure for Subsystem, representing the uniform API.
+ * Type-erasure for Subsystem, representing the uniform callback API.
+ *
+ * Subsystem callbacks do not necessarily transmit over the network! If all
+ * clients need to register the same callbacks, they should by triggered by
+ * Arena / Subsystem Deltas (onMode, onMapChange, etc).
  */
 class SubsystemListener {
   friend class Arena;
@@ -111,12 +115,7 @@ class SubsystemListener {
 };
 
 /**
- * The subsystem abstraction: attaches state to players and has various
- * callbacks.
- *
- * Subsystem callbacks do not necessarily transmit over the network! If all
- * clients need to register the same callbacks, they should by triggered by
- * Arena / Subsystem Deltas (onMode, onMapChange, etc).
+ * The subsystem abstraction: attaches additional layers of state and logic to the game.
  */
 template<typename PlayerData>
 class Subsystem: public SubsystemListener {

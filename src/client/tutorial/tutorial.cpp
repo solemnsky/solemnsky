@@ -52,9 +52,11 @@ void Tutorial::render(ui::Frame &f) {
 
 bool Tutorial::handle(const sf::Event &event) {
   if (auto action = shared.triggerClientAction(event)) {
-    if (participation->isSpawned()) {
-      if (action->first == ClientAction::Spawn && action->second)
-        player->spawn({}, {300, 300}, 0);
+    if (action->first == ClientAction::Spawn 
+        and action->second 
+        and !participation->isSpawned()) {
+      player->spawn({}, {300, 300}, 0);
+      return true;
     }
   }
 

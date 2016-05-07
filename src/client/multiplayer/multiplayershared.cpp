@@ -18,6 +18,7 @@ MultiplayerLogger::MultiplayerLogger(sky::Arena &arena,
 /**
  * ArenaConnection.
  */
+
 ArenaConnection::ArenaConnection(
     MultiplayerShared &shared,
     const PID pid,
