@@ -124,7 +124,7 @@ class MultiplayerView: public ui::Control {
       MultiplayerShared &mShared);
   virtual ~MultiplayerView() { }
 
-  const sky::ArenaMode target; // the target of this view
+  const sky::ArenaMode target; 
 
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
 };

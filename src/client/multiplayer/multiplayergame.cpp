@@ -59,9 +59,9 @@ bool MultiplayerGame::handle(const sf::Event &event) {
 
   if (auto action = shared.triggerSkyAction(event)) {
     if (participation.isSpawned()) {
-      appLog("transmitting action");
       mShared.transmit(
           sky::ClientPacket::ReqAction(action->first, action->second));
+      return true;
     }
   }
 
