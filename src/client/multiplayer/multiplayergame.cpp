@@ -30,6 +30,7 @@ MultiplayerGame::MultiplayerGame(
     skyRender(conn.arena, conn.skyManager, *conn.skyManager.getSky()),
     participation(*conn.getParticipation()) {
   areChildren({&chatInput});
+  skyRender.enableDebug = shared.settings.enableDebug;
 }
 
 void MultiplayerGame::tick(float delta) {

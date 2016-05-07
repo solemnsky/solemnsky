@@ -160,7 +160,14 @@ void Client::drawGame(ui::Frame &f) {
   shared.game->render(f);
 
   if (shared.settings.enableDebug) {
-//    shared.game->debugRender(f);
+    f.drawText(
+      {10, 10},
+      [&](ui::TextFrame &tf) {
+        tf.setColor(sf::Color::White);
+        tf.printLn("cycle:" + profilerSnap.cycleTime.print());
+        tf.printLn("logic:" + profilerSnap.logicTime.print());
+        tf.printLn("render:" + profilerSnap.renderTime.print());
+      }, style.base.normalText);
   }
 }
 
