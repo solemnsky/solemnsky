@@ -4,7 +4,7 @@
 #pragma once
 #include "util/types.h"
 #include "util/methods.h"
-#include "plane.h"
+#include "participation.h"
 #include <map>
 #include <list>
 #include <vector>
@@ -52,20 +52,23 @@ struct PlayerDelta {
  * Represents a player in the arena, with some minimal metadata.
  */
 struct Player: public Networked<PlayerInitializer, PlayerDelta> {
+  template<typename T>
+  friend
+  class Subsystem;
  private:
-  class Arena &arena;
-
   // State.
   std::string nickname;
   bool admin;
   Team team;
+  std::map<PID, void *> data; // this is a good and not a bad idea
 
  public:
   Player() = delete;
-  Player(Arena &arena, const PlayerInitializer &initializer);
+  Player(class Arena &arena, const PlayerInitializer &initializer);
 
+  // Parameters.
+  class Arena &arena;
   const PID pid;
-  std::vector<void *> data;
 
   // Networked impl.
   void applyDelta(const PlayerDelta &delta) override;
@@ -80,28 +83,20 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
   void doAction(const Action action, const bool state);
   void spawn(const PlaneTuning &tuning,
              const sf::Vector2f &pos, const float rot);
+
 };
 
 /**
- * The subsystem abstraction: attaches state to players and has various
- * callbacks.
+ * Type-erasure for Subsystem, representing the uniform callback API.
  *
  * Subsystem callbacks do not necessarily transmit over the network! If all
  * clients need to register the same callbacks, they should by triggered by
  * Arena / Subsystem Deltas (onMode, onMapChange, etc).
  */
-class Subsystem {
- protected:
+class SubsystemListener {
   friend class Arena;
   friend class Player;
-
-  const PID id; // ID the render has allocated in the Arena
-
-  template<typename Data>
-  Data &getPlayerData(const Player &player) const {
-    return *((Data *) player.data.at(id));
-  }
-
+ protected:
   // Managing player registration.
   virtual void registerPlayer(Player &player) = 0;
   virtual void unregisterPlayer(Player &player) = 0;
@@ -117,12 +112,29 @@ class Subsystem {
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
                        const sf::Vector2f &pos, const float rot) { };
 
+};
+
+/**
+ * The subsystem abstraction: attaches additional layers of state and logic to the game.
+ */
+template<typename PlayerData>
+class Subsystem: public SubsystemListener {
+ protected:
+  const PID id; // ID the render has allocated in the Arena
+
+  PlayerData &getPlayerData(const Player &player) const {
+    return *((PlayerData *) player.data.at(id));
+  }
+
+  void setPlayerData(Player &player, PlayerData &data) {
+    player.data[id] = &data;
+  }
+
  public:
   class Arena &arena;
 
   Subsystem() = delete;
   Subsystem(Arena &arena);
-  // TODO: enforce registration of players on ctor
 };
 
 /**
@@ -141,11 +153,12 @@ class ArenaLogger {
 };
 
 /**
- * Initializer type for Arena's Networked implementation.
+ * Initializer for Arena's Networked implementation.
  */
-struct ArenaInitializer {
-  ArenaInitializer() = default; // packing
-  ArenaInitializer(const std::string &name, const MapName &map);
+struct ArenaInit {
+  ArenaInit() = default; // packing
+  ArenaInit(const std::string &name, const MapName &map,
+            const ArenaMode mode = ArenaMode::Lobby);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -222,7 +235,7 @@ struct ArenaDelta: public VerifyStructure {
  * The backbone of a multiplayer game. Holds Players, Subsystems, and
  * an ArenaLoggers, and exposes a small API.
  */
-class Arena: public Networked<ArenaInitializer, ArenaDelta> {
+class Arena: public Networked<ArenaInit, ArenaDelta> {
  private:
   // Utilities.
   PID allocPid() const;
@@ -247,15 +260,15 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
 
  public:
   Arena() = delete;
-  Arena(const ArenaInitializer &initializer);
+  Arena(const ArenaInit &initializer);
 
   // Subsystems and loggers.
-  std::vector<Subsystem *> subsystems;
+  std::vector<SubsystemListener *> subsystems;
   std::vector<ArenaLogger *> loggers;
 
   // Networked Impl.
   void applyDelta(const ArenaDelta &delta) override;
-  ArenaInitializer captureInitializer() const override;
+  ArenaInit captureInitializer() const override;
 
   // User API.
   Player *getPlayer(const PID pid);
@@ -273,5 +286,12 @@ class Arena: public Networked<ArenaInitializer, ArenaDelta> {
   ArenaDelta connectPlayer(const std::string &requestedNick);
 
 };
+
+template<typename PlayerData>
+Subsystem<PlayerData>::Subsystem(Arena &arena) :
+    id(PID(arena.subsystems.size())),
+    arena(arena) {
+  arena.subsystems.push_back((SubsystemListener *) this);
+}
 
 }

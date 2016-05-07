@@ -2,7 +2,7 @@
  * The place where the whole client converges.
  */
 #pragma once
-#include "sky/plane.h"
+#include "sky/participation.h"
 #include "ui/control.h"
 #include "settings.h"
 
@@ -55,15 +55,13 @@ private:
  public:
   ClientShared(ui::AppState &appState, Client &client);
 
-  ui::AppState appState;
+  // AppState.
+  ui::AppState &appState;
 
+  // State.
   Settings settings;
   double uptime;
-
-  // the game
   std::unique_ptr<class Game> game;
-
-  // UI state, read-only by elements.
   ClientUiState ui;
 
   // query key bindings
@@ -71,7 +69,6 @@ private:
       const sf::Event &event) const;
   optional<std::pair<ClientAction, bool>> triggerClientAction(
       const sf::Event &event) const;
-
 
   // Relays to client. This seems to be useful enough to justify violating DRY.
   void beginGame(std::unique_ptr<Game> &&game);

@@ -10,7 +10,7 @@ namespace sky {
 
 using MapName = std::string;
 
-// a convex shape that planes collide with, ouch
+// a convex shape that participations collide with, ouch
 struct MapObstacle {
   MapObstacle();
   MapObstacle(const sf::Vector2f &pos,

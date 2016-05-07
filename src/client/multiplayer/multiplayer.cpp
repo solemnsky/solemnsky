@@ -9,7 +9,8 @@
  */
 
 std::unique_ptr<MultiplayerView> Multiplayer::mkView() {
-  switch (mShared.arena->getMode()) {
+  if (!mShared.conn) return {};
+  switch (mShared.conn->arena.getMode()) {
     case sky::ArenaMode::Lobby:
       return std::make_unique<MultiplayerLobby>(shared, mShared);
     case sky::ArenaMode::Game:
@@ -35,9 +36,9 @@ void Multiplayer::onChangeSettings(const SettingsDelta &settings) {
   mShared.onChangeSettings(settings);
   if (view) view->onChangeSettings(settings);
 
-  if (mShared.player) {
+  if (mShared.conn) {
     if (settings.nickname) {
-      sky::PlayerDelta delta = mShared.player->zeroDelta();
+      sky::PlayerDelta delta = mShared.conn->player.zeroDelta();
       delta.nickname = *settings.nickname;
       mShared.transmit(sky::ClientPacket::ReqPlayerDelta(delta));
       // request a nickname change
@@ -62,9 +63,11 @@ void Multiplayer::tick(float delta) {
   if (mShared.disconnected) quitting = true;
   if (mShared.disconnecting) return;
 
-  if (mShared.arena) {
-    mShared.arena->tick(delta);
-    if (!view or view->target != mShared.arena->getMode()) view = mkView();
+  if (mShared.conn) {
+    mShared.conn->arena.tick(delta);
+    if (!view or view->target != mShared.conn->arena.getMode()) {
+      view = mkView();
+    }
     view->tick(delta);
   }
 }
@@ -74,12 +77,11 @@ void Multiplayer::render(ui::Frame &f) {
     if (mShared.disconnecting) {
       f.drawText({400, 400}, "Disconnecting...",
                  sf::Color::White, style.base.normalText);
-      return;
     } else {
       f.drawText({400, 400}, {"Connecting..."}, sf::Color::White,
                  style.base.normalText);
-      return;
     }
+    return;
   }
 
   if (view) view->render(f);

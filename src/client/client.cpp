@@ -161,13 +161,13 @@ void Client::drawGame(ui::Frame &f) {
 
   if (shared.settings.enableDebug) {
     f.drawText(
-        {10, 10},
-        [&](ui::TextFrame &tf) {
-          tf.setColor(sf::Color::White);
-          tf.printLn("cycle:" + profilerSnap.cycleTime.print());
-          tf.printLn("logic:" + profilerSnap.logicTime.print());
-          tf.printLn("render:" + profilerSnap.renderTime.print());
-        }, style.base.normalText);
+      {10, 10},
+      [&](ui::TextFrame &tf) {
+        tf.setColor(sf::Color::White);
+        tf.printLn("cycle:" + profilerSnap.cycleTime.print());
+        tf.printLn("logic:" + profilerSnap.logicTime.print());
+        tf.printLn("render:" + profilerSnap.renderTime.print());
+      }, style.base.normalText);
   }
 }
 
@@ -197,12 +197,12 @@ void Client::render(ui::Frame &f) {
 }
 
 bool Client::handle(const sf::Event &event) {
-  if (shared.ui.gameFocused() and shared.game) {
-    if (shared.game->handle(event)) return true;
-  }
-
-  if (shared.game and (shared.ui.menuFocused() or shared.ui.pageFocused())) {
-    if (closeButton.handle(event)) return true;
+  if (shared.game) {
+    if (shared.ui.gameFocused()) {
+      if (shared.game->handle(event)) return true;
+    } else {
+      if (closeButton.handle(event)) return true;
+    }
   }
 
   if (shared.ui.pageFocused()) {
@@ -217,7 +217,7 @@ bool Client::handle(const sf::Event &event) {
       if (shared.ui.gameFocused()) blurGame();
       else focusGame();
     } else blurPage();
-    return true;
+    return false;
   }
 
   if (shared.ui.menuFocused()) {

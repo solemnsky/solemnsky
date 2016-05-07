@@ -5,13 +5,13 @@
 #include <map>
 #include <memory>
 #include "physics.h"
-#include "plane.h"
+#include "participation.h"
 #include "arena.h"
 
 namespace sky {
 
 /**
- * Initializer for the Sky Networked impl.
+ * Initializer for the SkyManager Networked impl.
  */
 struct SkyInitializer: public VerifyStructure {
   SkyInitializer() = default;
@@ -23,14 +23,15 @@ struct SkyInitializer: public VerifyStructure {
 
   bool verifyStructure() const;
 
-  std::map<PID, PlaneInitializer> planes; // planes already in the arena
+  std::map<PID, ParticipationInit>
+      planes; // participations already in the arena
 };
 
 /**
- * Delta for Sky Networked impl.
+ * Delta for SkyManager Networked impl.
  */
 struct SkyDelta: public VerifyStructure {
-  SkyDelta() = default; // packing
+  SkyDelta() = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -39,24 +40,58 @@ struct SkyDelta: public VerifyStructure {
 
   bool verifyStructure() const;
 
-  std::map<PID, PlaneDelta> planes;
+  std::map<PID, ParticipationDelta> planes;
 };
 
 /**
- * A Sky is a subsystem holding the potential state of a game being played.
+ * Game world when a game is in session.
  */
-class Sky: public Subsystem, public PhysicsListener {
+class Sky: public PhysicsListener {
+  friend class SkyManager;
+  friend class Participation;
  private:
-  friend struct Plane;
-  std::map<PID, Plane> planes;
-  Plane *planeFromPID(const PID pid);
+  // Parameters.
+  const Arena &arena;
+
+  // State.
+  Map map;
+  Physics physics;
+  std::map<PID, optional<Participation>> &skyPlayers;
 
  protected:
-  void registerPlayerWith(Player &player, const PlaneInitializer &initializer);
+  // Internal API.
+  void onTick(const float delta);
 
-  /**
-   * Subsystem implementation.
-   */
+  // Physics listeners.
+  virtual void onBeginContact(const BodyTag &body1,
+                              const BodyTag &body2) override final;
+  virtual void onEndContact(const BodyTag &body1,
+                            const BodyTag &body2) override final;
+
+ public:
+  Sky(Arena &&arena, std::map<PID, optional<Participation>> &) = delete;
+  Sky(const Arena &arena,
+      std::map<PID, optional<Participation>> &skyPlayers);
+
+  // User API.
+  const Map &getMap() const;
+
+};
+
+/**
+ * Wraps an optional<Sky>, binding it to the arena when the game is in session.
+ */
+class SkyManager: public Subsystem<optional<Participation>> {
+ private:
+  // State.
+  optional<Sky> sky;
+  std::map<PID, optional<Participation>> participations;
+
+ protected:
+  // Internal help.
+  void registerPlayerWith(Player &player, const ParticipationInit &initializer);
+
+  // Subsystem impl.
   void registerPlayer(Player &player) override;
   void unregisterPlayer(Player &player) override;
 
@@ -65,41 +100,33 @@ class Sky: public Subsystem, public PhysicsListener {
   void onQuit(Player &player) override;
   void onMode(const ArenaMode newMode) override;
   void onMapChange() override;
-  void onAction(Player &player, const Action action, const bool state) override;
-  void onSpawn(Player &player, const PlaneTuning &tuning,
-               const sf::Vector2f &pos, const float rot) override;
+  void onAction(Player &player,
+                const Action action,
+                const bool state) override;
+  void onSpawn(Player &player,
+               const PlaneTuning &tuning,
+               const sf::Vector2f &pos,
+               const float rot) override;
 
-  // starting and stopping
+  // Starting / stopping.
   void stop();
   void start();
 
-  // physics listeners
-  virtual void onBeginContact(const BodyTag &body1,
-                              const BodyTag &body2) override final;
-  virtual void onEndContact(const BodyTag &body1,
-                            const BodyTag &body2) override final;
-
  public:
-  Sky(class Arena &parent, const SkyInitializer &initializer);
-  ~Sky();
+  SkyManager(class Arena &parent, const SkyInitializer &initializer);
+  ~SkyManager();
 
-  optional<Map> map;
-  optional<Physics> physics;
-  // instantiated when the sky is running
-  // invariant: this is the case when arena.mode == ArenaMode::Game
-  // (guaranteed by constructor and onMode() subsystem callback)
-
-  /**
-   * API for the user.
-   */
-  // networking
+  // Networking.
   SkyInitializer captureInitializer();
   SkyDelta collectDelta();
   void applyDelta(const SkyDelta &delta);
-  Plane &getPlane(const Player &player) const;
 
-  // restart, resetting state
+  // User API.
   void restart();
+  const optional<Sky> &getSky() const;
+  bool isActive() const;
+  const optional<Participation> &getParticipation(const Player &player) const;
+
 };
 
 }

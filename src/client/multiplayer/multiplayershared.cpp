@@ -16,20 +16,43 @@ MultiplayerLogger::MultiplayerLogger(sky::Arena &arena,
     sky::ArenaLogger(arena), connection(connection) { }
 
 /**
+ * ArenaConnection.
+ */
+
+ArenaConnection::ArenaConnection(
+    MultiplayerShared &shared,
+    const PID pid,
+    const sky::ArenaInit &arenaInit,
+    const sky::SkyInitializer &skyInit) :
+    arena(arenaInit),
+    skyManager(arena, skyInit),
+    player(*arena.getPlayer(pid)),
+    logger(arena, shared) { }
+
+const optional<sky::Participation> &ArenaConnection::getParticipation() const {
+  return skyManager.getParticipation(player);
+}
+
+/**
  * MultiplayerConnection.
  */
 
 void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
   using namespace sky;
 
-  if (!player) {
+  if (!conn) {
     // waiting for the arena connection request to be accepted
     if (packet.type == ServerPacket::Type::Init) {
-      initializeArena(
-          packet.pid.get(), packet.arenaInit.get(), packet.skyInit.get());
+      appLog("Loading arena...", LogOrigin::Client);
+      conn.emplace(
+          *this,
+          packet.pid.get(),
+          packet.arenaInit.get(),
+          packet.skyInit.get());
+      appLog("Joined arena!", LogOrigin::Client);
 
       logEvent(ClientEvent::Connect(
-          arena->getName(), tg::printAddress(host.peers[0]->address)));
+          conn->arena.getName(), tg::printAddress(host.peers[0]->address)));
     }
     return;
   }
@@ -41,17 +64,17 @@ void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
     }
 
     case ServerPacket::Type::DeltaArena: {
-      arena->applyDelta(packet.arenaDelta.get());
+      conn->arena.applyDelta(packet.arenaDelta.get());
       break;
     }
 
     case ServerPacket::Type::DeltaSky: {
-      sky->applyDelta(packet.skyDelta.get());
+      conn->skyManager.applyDelta(packet.skyDelta.get());
       break;
     }
 
     case ServerPacket::Type::Chat: {
-      if (sky::Player *chattyPlayer = arena->getPlayer(
+      if (sky::Player *chattyPlayer = conn->arena.getPlayer(
           packet.pid.get())) {
         logEvent(ClientEvent::Chat(
             chattyPlayer->getNickname(), packet.stringData.get()));
@@ -99,24 +122,8 @@ MultiplayerShared::MultiplayerShared(
     host(tg::HostType::Client),
     server(nullptr),
 
-    disconnecting(false), disconnected(false),
-
-    player(nullptr), plane(nullptr) {
+    disconnecting(false), disconnected(false) {
   host.connect(serverHostname, serverPort);
-}
-
-void MultiplayerShared::initializeArena(
-    const PID pid,
-    const sky::ArenaInitializer &arenaInit,
-    const sky::SkyInitializer &skyInit) {
-  appLog("Loading arena...", LogOrigin::Client);
-  arena.emplace(arenaInit);
-  sky.emplace(arena.get(), skyInit);
-  skyRender.emplace(arena.get(), sky.get(), shared.settings.enableDebug);
-  logger.emplace(arena.get(), *this);
-  player = arena->getPlayer(pid);
-  plane = &sky->getPlane(*player);
-  appLog("Joined arena!", LogOrigin::Client);
 }
 
 void MultiplayerShared::transmit(const sky::ClientPacket &packet) {
@@ -146,7 +153,7 @@ void MultiplayerShared::poll(const float delta) {
     // still trying to connect to the server...
     if (event.type == ENET_EVENT_TYPE_CONNECT) {
       server = event.peer;
-      appLog("Connected to server!", LogOrigin::Client);
+      appLog("Allocated connection!", LogOrigin::Client);
     }
   } else {
     // connected
@@ -176,10 +183,7 @@ void MultiplayerShared::disconnect() {
 }
 
 void MultiplayerShared::onChangeSettings(const SettingsDelta &settings) {
-  if (skyRender) {
-    if (settings.enableDebug)
-      skyRender->enableDebug = settings.enableDebug.get();
-  }
+
 }
 
 void MultiplayerShared::chat(const std::string &message) {
@@ -202,8 +206,8 @@ void MultiplayerShared::handleChatInput(const std::string &input) {
 }
 
 void MultiplayerShared::requestTeamChange(const sky::Team team) {
-  if (player) {
-    sky::PlayerDelta delta = player->zeroDelta();
+  if (conn) {
+    sky::PlayerDelta delta = conn->player.zeroDelta();
     delta.team = team;
     transmit(sky::ClientPacket::ReqPlayerDelta(delta));
   }
@@ -232,5 +236,6 @@ MultiplayerView::MultiplayerView(
     ui::Control(shared.appState),
     shared(shared),
     mShared(mShared),
+    conn(mShared.conn.get()),
     target(target) { }
 

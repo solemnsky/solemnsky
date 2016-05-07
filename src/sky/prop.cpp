@@ -3,13 +3,13 @@
 
 namespace sky {
 
-Prop::Prop(Sky &parent, const sf::Vector2f &pos, const sf::Vector2f &vel) :
-    parent(parent),
-    physics(parent.physics.get()),
+Prop::Prop(Physics &physics, const sf::Vector2f &pos,
+           const sf::Vector2f &vel) :
+    physics(physics),
     body(physics.createBody(physics.rectShape({10, 10}),
                             BodyTag::PropTag(*this))),
-    lifeTime(0),
-    physical(pos, vel, 0, 0) {
+    physical(pos, vel, 0, 0),
+    lifetime(0) {
   physical.hardWriteToBody(physics, body);
 }
 
@@ -26,7 +26,15 @@ void Prop::readFromBody() {
 }
 
 void Prop::tick(const float delta) {
-  lifeTime += delta;
+  lifetime += delta;
+}
+
+const PhysicalState &Prop::getPhysical() const {
+  return physical;
+}
+
+float Prop::getLifetime() const {
+  return lifetime;
 }
 
 }
