@@ -8,7 +8,7 @@ namespace sky {
  */
 
 BodyTag::BodyTag(const BodyTag::Type type) :
-    type(type), planeVital(nullptr) { }
+    type(type), plane(nullptr) { }
 
 BodyTag BodyTag::BoundaryTag() {
   return BodyTag(Type::BoundaryTag);
@@ -20,9 +20,9 @@ BodyTag BodyTag::ObstacleTag(const class MapObstacle &obstacle) {
   return tag;
 }
 
-BodyTag BodyTag::PlaneTag(class PlaneVital &planeVital) {
+BodyTag BodyTag::PlaneTag(Plane &plane) {
   BodyTag tag(Type::PlaneTag);
-  tag.planeVital = &planeVital;
+  tag.plane = &plane;
   return tag;
 }
 

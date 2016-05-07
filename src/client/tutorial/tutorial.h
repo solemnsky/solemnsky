@@ -9,9 +9,11 @@
 class Tutorial : public Game {
 private:
   sky::Arena arena;
-  sky::Player *player;
-  sky::Sky sky;
+  sky::SkyManager skyManager;
   sky::SkyRender skyRender;
+
+  sky::Player *player;
+  const sky::Participation *participation;
 
 public:
   Tutorial(ClientShared &state);

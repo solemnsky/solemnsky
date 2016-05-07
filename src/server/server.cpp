@@ -65,16 +65,6 @@ void ServerShared::logArenaEvent(const sky::ArenaEvent &event) {
 }
 
 /**
- * Server.
- */
-
-Server::Server(ServerShared &shared,
-               sky::Arena &arena, sky::Sky &sky) :
-    Subsystem(arena),
-    shared(shared),
-    sky(sky) { }
-
-/**
  * ServerLogger.
  */
 
@@ -108,11 +98,6 @@ void ServerExec::processPacket(ENetPeer *client,
 
       case ClientPacket::Type::ReqAction: {
         player->doAction(packet.action.get(), packet.state.get());
-        break;
-      }
-
-      case ClientPacket::Type::ReqSpawn: {
-        player->spawn({}, {300, 300}, 0);
         break;
       }
 
@@ -194,10 +179,10 @@ void ServerExec::tick(float delta) {
 
 ServerExec::ServerExec(
     const Port port,
-    const sky::ArenaInitializer &arena,
+    const sky::ArenaInit &arena,
     const sky::SkyInitializer &sky,
-    std::function<std::unique_ptr<Server>(
-        ServerShared &, sky::Arena &, sky::Sky &)> server) :
+    std::function<std::unique_ptr<ServerListener>(
+        ServerShared &, sky::Arena &, sky::SkyManager &)> server) :
     uptime(0),
 
     host(tg::HostType::Server, port),

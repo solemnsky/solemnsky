@@ -44,23 +44,33 @@ struct ServerShared {
 };
 
 /**
- * The Server abstraction: a sky::Arena subsystem with additional callbacks
- * for networking and access to a ServerShared object.
+ * Type-erasure for Server, representing the uniform API.
  */
-class Server: public sky::Subsystem {
+class ServerListener: public sky::SubsystemListener {
   friend class ServerExec;
-  // callbacks are protected, in the style of sky::Subsystem
-
  protected:
-  ServerShared &shared;
-  sky::Sky &sky;
-
   virtual void onPacket(ENetPeer *const client,
                         sky::Player &player,
                         const sky::ClientPacket &packet) = 0;
 
+};
+
+/**
+ * The Server abstraction: a sky::Arena subsystem with additional callbacks
+ * for networking and access to a ServerShared object.
+ */
+template<typename PlayerData>
+class Server: public ServerListener, public sky::Subsystem<PlayerData> {
+ protected:
+  ServerShared &shared;
+  sky::SkyManager &sky;
+
  public:
-  Server(ServerShared &shared, sky::Arena &arena, sky::Sky &sky);
+  Server(ServerShared &shared,
+         sky::Arena &arena, sky::SkyManager &sky) :
+      sky::Subsystem<PlayerData>(arena),
+      shared(shared),
+      sky(sky) { }
 
 };
 
@@ -76,6 +86,7 @@ class ServerLogger: public sky::ArenaLogger {
 
  public:
   ServerLogger(ServerShared &shared, sky::Arena &arena);
+
 };
 
 /**
@@ -94,8 +105,8 @@ class ServerExec {
   ServerShared shared;
 
   sky::Arena arena;
-  sky::Sky sky;
-  std::unique_ptr<Server> server;
+  sky::SkyManager sky;
+  std::unique_ptr<ServerListener> server;
   Cooldown packetBroadcastTimer;
 
   ServerLogger logger;
@@ -106,10 +117,10 @@ class ServerExec {
 
  public:
   ServerExec(const Port port,
-             const sky::ArenaInitializer &arena,
+             const sky::ArenaInit &arena,
              const sky::SkyInitializer &sky,
-             std::function<std::unique_ptr<Server>(
-                 ServerShared &, sky::Arena &, sky::Sky &)> server);
+             std::function<std::unique_ptr<ServerListener>(
+                 ServerShared &, sky::Arena &, sky::SkyManager &)> server);
 
   void run();
 

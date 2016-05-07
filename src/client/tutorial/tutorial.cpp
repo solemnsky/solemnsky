@@ -2,14 +2,14 @@
 
 Tutorial::Tutorial(ClientShared &state) :
     Game(state, "tutorial"),
-    arena(sky::ArenaInitializer("tutorial", "test1")),
-    sky(arena, sky::SkyInitializer()),
-    skyRender(arena, sky, shared.settings.enableDebug) {
+    arena(sky::ArenaInit("tutorial", "test1", sky::ArenaMode::Game)),
+    skyManager(arena, sky::SkyInitializer()),
+    skyRender(arena, skyManager, *skyManager.getSky()) {
   arena.connectPlayer("offline player");
-  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
   player = arena.getPlayer(0);
   player->spawn({}, {30, 30}, 0);
-  status = "some status";
+  participation = &skyManager.getParticipation(*player).get();
+  status = "learning to play";
 }
 
 /**
@@ -43,16 +43,27 @@ void Tutorial::tick(float delta) {
 }
 
 void Tutorial::render(ui::Frame &f) {
-  const sky::Plane &plane = sky.getPlane(*player);
+  auto &plane = skyManager.getParticipation(*player)->getPlane();
   skyRender.render(
-      f, plane.isSpawned() ?
-         plane.getVital()->getState().physical.pos : sf::Vector2f(0, 0));
+      f, plane ?
+         plane->getState().physical.pos :
+         sf::Vector2f(0, 0));
 }
 
 bool Tutorial::handle(const sf::Event &event) {
+  if (auto action = shared.triggerClientAction(event)) {
+    if (action->first == ClientAction::Spawn 
+        and action->second 
+        and !participation->isSpawned()) {
+      player->spawn({}, {300, 300}, 0);
+      return true;
+    }
+  }
+
   if (auto action = shared.triggerSkyAction(event)) {
     player->doAction(action->first, action->second);
   }
+
   return false;
 }
 

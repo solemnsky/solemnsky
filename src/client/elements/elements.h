@@ -41,6 +41,7 @@ class Game: public ui::Control {
   Game(ClientShared &shared, const std::string &name);
   virtual ~Game() { }
 
+  // Internal API.
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
   virtual void onBlur() = 0;
   virtual void onFocus() = 0;

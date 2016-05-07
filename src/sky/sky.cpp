@@ -26,46 +26,68 @@ bool SkyDelta::verifyStructure() const {
  * Sky.
  */
 
-void Sky::registerPlayerWith(Player &player,
-                             const PlaneInitializer &initializer) {
-  const auto plane = planes.find(player.pid);
-  if (plane == planes.end()) {
-    planes.emplace(std::piecewise_construct,
-                   std::forward_as_tuple(player.pid),
-                   std::forward_as_tuple(*this, player, initializer));
-    player.data.push_back(&planes.at(player.pid));
-  } else player.data.push_back(&plane->second);
+void Sky::onTick(const float delta) {
+  for (auto &p: skyPlayers) p.second->prePhysics();
+  physics.tick(delta);
+  for (auto &p: skyPlayers) p.second->postPhysics(delta);
 }
 
-void Sky::registerPlayer(Player &player) {
+void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
+  if (body1.type == BodyTag::Type::PlaneTag)
+    body1.plane->onBeginContact(body2);
+  if (body2.type == BodyTag::Type::PlaneTag)
+    body2.plane->onBeginContact(body1);
+}
+
+void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
+  if (body1.type == BodyTag::Type::PlaneTag)
+    body1.plane->onEndContact(body2);
+  if (body2.type == BodyTag::Type::PlaneTag)
+    body2.plane->onEndContact(body1);
+}
+
+Sky::Sky(const Arena &arena,
+         std::map<PID, optional<Participation>> &skyPlayers) :
+    arena(arena),
+    map(arena.getMap()),
+    physics(map, *this),
+    skyPlayers(skyPlayers) { }
+
+const Map &Sky::getMap() const {
+  return map;
+}
+
+/**
+ * SkyManager.
+ */
+
+void SkyManager::registerPlayerWith(Player &player,
+                                    const ParticipationInit &initializer) {
+  participations[player.pid].reset();
+  if (sky) participations.at(player.pid).emplace(sky->physics, initializer);
+  setPlayerData(player, *findValue(participations, player.pid));
+}
+
+void SkyManager::registerPlayer(Player &player) {
   registerPlayerWith(player, {});
 }
 
-void Sky::unregisterPlayer(Player &player) {
-  const auto plane = planes.find(player.pid);
-  if (plane != planes.end()) planes.erase(plane);
+void SkyManager::unregisterPlayer(Player &player) {
+  const auto plane = participations.find(player.pid);
+  if (plane != participations.end()) participations.erase(plane);
 }
 
-void Sky::onTick(const float delta) {
-  if (physics) {
-    for (auto &elem : planes) {
-      if (bool(elem.second.vital))
-        elem.second.vital->beforePhysics();
-    }
-    physics->tick(delta);
-    for (auto &elem : planes) {
-      if (bool(elem.second.vital))
-        elem.second.vital->afterPhysics(delta);
-    }
-  }
+void SkyManager::onTick(const float delta) {
+  if (sky) sky->onTick(delta);
+
 }
 
-void Sky::onJoin(Player &player) { }
+void SkyManager::onJoin(Player &player) { }
 
-void Sky::onQuit(Player &player) { }
+void SkyManager::onQuit(Player &player) { }
 
-void Sky::onMode(const ArenaMode newMode) {
-  if (physics) {
+void SkyManager::onMode(const ArenaMode newMode) {
+  if (sky) {
     if (newMode != ArenaMode::Game) {
       stop();
     }
@@ -76,54 +98,44 @@ void Sky::onMode(const ArenaMode newMode) {
   }
 }
 
-void Sky::onMapChange() {
+void SkyManager::onMapChange() {
   if (arena.getMode() == ArenaMode::Game) restart();
 }
 
-void Sky::onAction(Player &player, const Action action, const bool state) {
-  getPlane(player).doAction(action, state);
+void SkyManager::onAction(Player &player,
+                          const Action action,
+                          const bool state) {
+  if (auto &p = getPlayerData(player))
+    p->doAction(action, state);
 }
 
-void Sky::onSpawn(Player &player,
-                  const PlaneTuning &tuning,
-                  const sf::Vector2f &pos,
-                  const float rot) {
-  getPlane(player).spawn(tuning, pos, rot);
+void SkyManager::onSpawn(Player &player,
+                         const PlaneTuning &tuning,
+                         const sf::Vector2f &pos,
+                         const float rot) {
+  if (auto &p = getPlayerData(player))
+    p->spawn(tuning, pos, rot);
 }
 
-void Sky::stop() {
-  if (physics) {
-    appLog("Stopping sky.");
-    for (auto &pair : planes) {
+void SkyManager::stop() {
+  if (sky) {
+    for (auto &pair : participations) {
       pair.second.reset();
     }
-    map.reset();
-    physics.reset();
+    sky.reset();
   }
 }
 
-void Sky::start() {
-  if (physics) stop();
+void SkyManager::start() {
+  if (sky) stop();
   appLog("Loading map " + inQuotes(arena.getMap()) + ".", LogOrigin::Engine);
-  map.emplace(arena.getMap());
-  physics.emplace(map.get(), *this);
+  sky.emplace(arena, participations);
+  for (auto &pair : participations) {
+    pair.second.emplace(sky->physics, ParticipationInit());
+  }
 }
 
-void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
-  if (body1.type == BodyTag::Type::PlaneTag)
-    body1.planeVital->onBeginContact(body2);
-  if (body2.type == BodyTag::Type::PlaneTag)
-    body2.planeVital->onBeginContact(body1);
-}
-
-void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
-  if (body1.type == BodyTag::Type::PlaneTag)
-    body1.planeVital->onEndContact(body2);
-  if (body2.type == BodyTag::Type::PlaneTag)
-    body2.planeVital->onEndContact(body1);
-}
-
-Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
+SkyManager::SkyManager(Arena &arena, const SkyInitializer &initializer) :
     Subsystem(arena) {
 
   if (arena.getMode() == ArenaMode::Game) {
@@ -143,45 +155,54 @@ Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
   }
 }
 
-Sky::~Sky() {
+SkyManager::~SkyManager() {
   stop(); // necessary to correctly free the box2d world
 }
 
-Plane *Sky::planeFromPID(const PID pid) {
-  auto plane = planes.find(pid);
-  if (plane != planes.end()) return &plane->second;
-  return nullptr;
+SkyInitializer SkyManager::captureInitializer() {
+  if (sky) {
+    SkyInitializer initializer;
+    for (const auto &pair : participations)
+      initializer.planes.emplace(
+          pair.first, pair.second->captureInitializer());
+    return initializer;
+  } else return {};
 }
 
-SkyInitializer Sky::captureInitializer() {
-  SkyInitializer initializer;
-  for (const auto &pair : planes)
-    initializer.planes.emplace(pair.first, pair.second.captureInitializer());
-  return initializer;
+SkyDelta SkyManager::collectDelta() {
+  if (sky) {
+    SkyDelta delta;
+    for (auto &pair : participations)
+      delta.planes.emplace(pair.first, pair.second->captureDelta());
+    return delta;
+  } else return {};
 }
 
-SkyDelta Sky::collectDelta() {
-  SkyDelta delta;
-  for (auto &pair : planes)
-    delta.planes.emplace(pair.first, pair.second.captureDelta());
-  return delta;
-}
-
-void Sky::applyDelta(const SkyDelta &delta) {
+void SkyManager::applyDelta(const SkyDelta &delta) {
   for (auto const &pair : delta.planes) {
-    if (Plane *plane = planeFromPID(pair.first)) {
-      plane->applyDelta(pair.second);
+    if (optional<Participation>
+        *plane = findValue(participations, pair.first)) {
+      if (*plane) (*plane)->applyDelta(pair.second);
     }
   }
 }
 
-Plane &Sky::getPlane(const Player &player) const {
-  return getPlayerData<Plane>(player);
-}
-
-void Sky::restart() {
+void SkyManager::restart() {
   stop();
   start();
+}
+
+const optional<Sky> &SkyManager::getSky() const {
+  return sky;
+}
+
+bool SkyManager::isActive() const {
+  return bool(sky);
+}
+
+const optional<Participation> &SkyManager::getParticipation(
+    const Player &player) const {
+  return getPlayerData(player);
 }
 
 }

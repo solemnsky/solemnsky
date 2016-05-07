@@ -11,24 +11,30 @@ namespace sky {
  * Currently just a bullet.
  */
 class Prop {
+  friend class Participation;
  private:
-  class Sky &parent;
+  // State.
   Physics &physics;
   b2Body *const body;
+  PhysicalState physical;
+  float lifetime;
+
+  // Sky API.
+  void writeToBody();
+  void readFromBody();
+  void tick(const float delta);
 
  public:
   Prop() = delete;
-  Prop(class Sky &parent,
+  Prop(Physics &physics,
        const sf::Vector2f &pos,
        const sf::Vector2f &vel);
   ~Prop();
 
-  float lifeTime;
-  PhysicalState physical;
+  // User API.
+  const PhysicalState &getPhysical() const;
+  float getLifetime() const;
 
-  void writeToBody();
-  void readFromBody();
-  void tick(const float delta);
 };
 
 }

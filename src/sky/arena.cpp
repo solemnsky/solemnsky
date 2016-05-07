@@ -13,10 +13,10 @@ PlayerInitializer::PlayerInitializer(
 
 Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     Networked(initializer),
-    arena(arena),
     nickname(initializer.nickname),
     admin(initializer.admin),
     team(initializer.team),
+    arena(arena),
     pid(initializer.pid) { }
 
 void Player::applyDelta(const PlayerDelta &delta) {
@@ -124,16 +124,6 @@ ArenaDelta ArenaDelta::MapChange(const MapName &map) {
 }
 
 /**
- * Subsystem.
- */
-
-Subsystem::Subsystem(Arena &arena) :
-    id(PID(arena.subsystems.size())),
-    arena(arena) {
-  arena.subsystems.push_back(this);
-}
-
-/**
  * ArenaLogger.
  */
 
@@ -145,9 +135,10 @@ ArenaLogger::ArenaLogger(Arena &arena) : arena(arena) {
  * Arena.
  */
 
-ArenaInitializer::ArenaInitializer(
-    const std::string &name, const MapName &map) :
-    name(name), map(map), mode(ArenaMode::Lobby) { }
+ArenaInit::ArenaInit(
+    const std::string &name, const MapName &map,
+    const ArenaMode mode) :
+    name(name), map(map), mode(mode) { }
 
 PID Arena::allocPid() const {
   std::vector<int> usedPids;
@@ -194,7 +185,7 @@ void Arena::logEvent(const ArenaEvent &event) const {
   for (auto l : loggers) l->onEvent(event);
 }
 
-Arena::Arena(const ArenaInitializer &initializer) :
+Arena::Arena(const ArenaInit &initializer) :
     Networked(initializer),
     name(initializer.name),
     motd(initializer.motd),
@@ -266,8 +257,8 @@ void Arena::applyDelta(const ArenaDelta &delta) {
   }
 }
 
-ArenaInitializer Arena::captureInitializer() const {
-  ArenaInitializer initializer(name, map);
+ArenaInit Arena::captureInitializer() const {
+  ArenaInit initializer(name, map);
   for (auto &player : players) {
     initializer.players.emplace(
         player.first, player.second.captureInitializer());
@@ -334,7 +325,6 @@ ArenaDelta Arena::connectPlayer(const std::string &requestedNick) {
       PlayerInitializer(allocPid(), allocNickname(requestedNick)));
   return ArenaDelta::Join(player.captureInitializer());
 }
-
 
 void Arena::tick(const float delta) {
   for (auto s : subsystems) s->onTick(delta);

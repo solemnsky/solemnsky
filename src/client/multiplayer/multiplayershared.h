@@ -11,7 +11,7 @@
 #include "client/elements/elements.h"
 
 /**
- * Subsystem used by the MultiplayerConnection to listen to events.
+ * Logger used by MultiplayerShared to listen to ArenaEvents.
  */
 class MultiplayerLogger: public sky::ArenaLogger {
  private:
@@ -26,9 +26,30 @@ class MultiplayerLogger: public sky::ArenaLogger {
 };
 
 /**
- * The shared state of the multiplayer client, at the intersection of the
- * three multiplayer views. Holds the Arena and friends, Manages the basic
- * protocol, and provides utilities.
+ * Game state associated with a participation in an remote arena.
+ */
+struct ArenaConnection {
+  ArenaConnection(
+      MultiplayerShared &shared,
+      const PID pid,
+      const sky::ArenaInit &arenaInit,
+      const sky::SkyInitializer &skyInit);
+
+  // State.
+  sky::Arena arena;
+  sky::SkyManager skyManager;
+  sky::Player &player;
+
+  MultiplayerLogger logger;
+
+  // Handy accessors.
+  const optional<sky::Participation> &getParticipation() const;
+
+};
+
+/**
+ * The state of the multiplayer client, allocated for Multiplayer for use by
+ * MultiplayerView.
  */
 class MultiplayerShared {
  private:
@@ -60,18 +81,7 @@ class MultiplayerShared {
   ENetPeer *server;
   bool disconnecting, // trying to disconnect
       disconnected; // it's over, close the multiplayer client
-
-  // arena and subsystems
-  void initializeArena(
-      const PID pid,
-      const sky::ArenaInitializer &arenaInit,
-      const sky::SkyInitializer &skyInit);
-  optional<sky::Arena> arena;
-  optional<sky::Sky> sky;
-  optional<sky::SkyRender> skyRender;
-  optional<MultiplayerLogger> logger;
-  sky::Player *player;
-  sky::Plane *plane;
+  optional<ArenaConnection> conn;
 
   /**
    * Additional methods for Multiplayer.
@@ -103,9 +113,10 @@ class MultiplayerShared {
  */
 class MultiplayerView: public ui::Control {
  public:
-  // shared state
+  // Shared state.
   ClientShared &shared;
   MultiplayerShared &mShared;
+  ArenaConnection &conn; // from mShared
 
   MultiplayerView(
       sky::ArenaMode target,
@@ -113,7 +124,7 @@ class MultiplayerView: public ui::Control {
       MultiplayerShared &mShared);
   virtual ~MultiplayerView() { }
 
-  const sky::ArenaMode target; // the target of this view
+  const sky::ArenaMode target; 
 
   virtual void onChangeSettings(const SettingsDelta &settings) = 0;
 };

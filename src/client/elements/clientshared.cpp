@@ -41,12 +41,16 @@ void ClientUiState::tick(float delta) {
       * delta * (gameFocusing ? 1 : -1);
 }
 
-bool ClientUiState::pageFocused() const { return pageFocusFactor == 1; }
+bool ClientUiState::pageFocused() const {
+  return pageFocusFactor == 1 and gameFocusFactor == 0;
+}
 
-bool ClientUiState::gameFocused() const { return gameFocusFactor == 1; }
+bool ClientUiState::gameFocused() const {
+  return gameFocusFactor == 1;
+}
 
 bool ClientUiState::menuFocused() const {
-  return pageFocusFactor == 0 and gameFocusFactor == 0;
+  return pageFocusFactor == 0;
 }
 
 /**
@@ -54,8 +58,7 @@ bool ClientUiState::menuFocused() const {
  */
 
 ClientShared::ClientShared(ui::AppState &appState, Client &client) :
-    client(client),
-    appState(appState) { }
+    client(client), appState(appState) { }
 
 template<typename T>
 optional<std::pair<T, bool>>

@@ -7,7 +7,7 @@
 class ArenaTest: public testing::Test {
  public:
   ArenaTest() :
-      arena(sky::ArenaInitializer("home arena", "test1")) { }
+      arena(sky::ArenaInit("home arena", "test1")) { }
 
   sky::Arena arena;
 };

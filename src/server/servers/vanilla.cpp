@@ -1,7 +1,7 @@
 #include "vanilla.h"
 
 void VanillaServer::registerPlayer(sky::Player &player) {
-  player.data.push_back(nullptr);
+
 }
 
 void VanillaServer::unregisterPlayer(sky::Player &player) {
@@ -51,10 +51,14 @@ void VanillaServer::onPacket(ENetPeer *const client,
       }
     }
   }
+
+  if (packet.type == sky::ClientPacket::Type::ReqSpawn) {
+    player.spawn({}, {300, 300}, 0);
+  }
 }
 
 VanillaServer::VanillaServer(ServerShared &telegraphy,
-                             sky::Arena &arena, sky::Sky &sky)
+                             sky::Arena &arena, sky::SkyManager &sky)
     : Server(telegraphy, arena, sky) {
   arena.forPlayers([&](sky::Player &player) { registerPlayer(player); });
 }

@@ -103,7 +103,7 @@ ServerPacket ServerPacket::Pong() {
 }
 
 ServerPacket ServerPacket::Init(const PID pid,
-                                const ArenaInitializer &arenaInit,
+                                const ArenaInit &arenaInit,
                                 const SkyInitializer &skyInit) {
   ServerPacket packet(Type::Init);
   packet.pid = pid;

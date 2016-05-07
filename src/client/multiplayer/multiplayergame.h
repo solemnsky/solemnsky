@@ -11,14 +11,14 @@
  * point of the screen; peripheries include a chat / message interface, and a
  * score screen you can call up with tab.
  *
- * MultiplayerGame assumes connection.arena.sky exists. This is safe, but if
- * it's violated *bad things* happen.
+ * Invariant: conn->skyManager
  */
-
 class MultiplayerGame: public MultiplayerView {
  private:
   ui::TextEntry chatInput;
   bool scoreboardFocused;
+  sky::SkyRender skyRender;
+  const sky::Participation &participation;
 
   void doClientAction(const ClientAction action, const bool state);
 
