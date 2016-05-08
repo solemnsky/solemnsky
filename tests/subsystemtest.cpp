@@ -6,7 +6,11 @@
  * The Subsystem abstraction allows us to modularize state and functionality
  * associated with an Arena.
  */
-class SubsystemTest: public testing::Test { };
+class SubsystemTest: public testing::Test {
+ public:
+  SubsystemTest() : arena(sky::ArenaInit("my arena", "test1")) { }
+  sky::Arena arena;
+};
 
 class LifeSubsystem: public sky::Subsystem<bool> {
  private:
@@ -80,8 +84,21 @@ class CounterSubsystem: public sky::Subsystem<float> {
   }
 };
 
+TEST_F(SubsystemTest, DynamicTest) {
+  {
+    LifeSubsystem lifeSubsystem(arena);
+    arena.connectPlayer("somebody");
+    EXPECT_EQ(lifeSubsystem.getLifeData(*arena.getPlayer(0)), false);
+  }
+
+  {
+    LifeSubsystem lifeSubsystem(arena);
+    arena.getPlayer(0)->spawn({}, {}, {});
+    EXPECT_EQ(lifeSubsystem.getLifeData(*arena.getPlayer(0)), true);
+  }
+}
+
 TEST_F(SubsystemTest, LifeCounter) {
-  sky::Arena arena(sky::ArenaInit("my arena", "test1"));
   LifeSubsystem lifeSubsystem(arena);
   CounterSubsystem counterSubsystem(arena, lifeSubsystem);
 

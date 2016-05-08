@@ -9,7 +9,6 @@
 #include <list>
 #include <vector>
 
-
 namespace sky {
 
 struct ArenaEvent; // event.h
