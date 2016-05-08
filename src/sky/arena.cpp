@@ -54,13 +54,13 @@ Team Player::getTeam() const {
 
 
 void Player::doAction(const Action action, const bool state) {
-  for (auto s : arena.subsystems) s->onAction(*this, action, state);
+  for (auto s : arena.subsystems) s.second->onAction(*this, action, state);
 }
 
 void Player::spawn(const PlaneTuning &tuning,
                    const sf::Vector2f &pos,
                    const float rot) {
-  for (auto s : arena.subsystems) s->onSpawn(*this, tuning, pos, rot);
+  for (auto s : arena.subsystems) s.second->onSpawn(*this, tuning, pos, rot);
 }
 
 /**
@@ -141,16 +141,14 @@ ArenaInit::ArenaInit(
     name(name), map(map), mode(mode) { }
 
 PID Arena::allocPid() const {
-  std::vector<int> usedPids;
-  for (const auto &player : players) usedPids.push_back(player.first);
-  return (PID) smallestUnused(usedPids);
+  return smallestUnused(players);
 }
 
 std::string Arena::allocNickname(const std::string &requested) const {
   std::stringstream readStream;
-  int nickNumber;
+  PID nickNumber;
   const size_t rsize = requested.size();
-  std::vector<int> usedNumbers;
+  std::vector<PID> usedNumbers;
 
   for (const auto &player : players) {
     const std::string &name = player.second.getNickname();
@@ -174,7 +172,7 @@ std::string Arena::allocNickname(const std::string &requested) const {
     usedNumbers.push_back(nickNumber);
   }
 
-  int allocated = smallestUnused(usedNumbers);
+  PID allocated = smallestUnused(usedNumbers);
   if (allocated == 0) return requested;
   else
     return requested + "("
@@ -202,7 +200,7 @@ void Arena::applyDelta(const ArenaDelta &delta) {
   switch (delta.type) {
     case ArenaDelta::Type::Quit: {
       if (Player *player = getPlayer(delta.quit.get())) {
-        for (auto s : subsystems) s->onQuit(*player);
+        for (auto s : subsystems) s.second->onQuit(*player);
         quitPlayer(*player);
       }
       break;
@@ -210,7 +208,7 @@ void Arena::applyDelta(const ArenaDelta &delta) {
 
     case ArenaDelta::Type::Join: {
       Player &player = joinPlayer(delta.join.get());
-      for (auto s : subsystems) s->onJoin(player);
+      for (auto s : subsystems) s.second->onJoin(player);
       break;
     }
 
@@ -244,7 +242,7 @@ void Arena::applyDelta(const ArenaDelta &delta) {
       if (mode != *delta.mode) {
         mode = *delta.mode;
         logEvent(ArenaEvent::ModeChange(mode));
-        for (auto s : subsystems) s->onMode(mode);
+        for (auto s : subsystems) s.second->onMode(mode);
       }
       break;
     }
@@ -252,7 +250,7 @@ void Arena::applyDelta(const ArenaDelta &delta) {
     case ArenaDelta::Type::MapChange: {
       map = *delta.map;
       logEvent(ArenaEvent::MapChange(map));
-      for (auto s : subsystems) s->onMapChange();
+      for (auto s : subsystems) s.second->onMapChange();
     }
   }
 }
@@ -273,8 +271,8 @@ Player &Arena::joinPlayer(const PlayerInitializer &initializer) {
   players.emplace(initializer.pid, Player(*this, initializer));
   Player &newPlayer = players.at(initializer.pid);
   for (auto s : subsystems) {
-    s->registerPlayer(newPlayer);
-    s->onJoin(newPlayer);
+    s.second->registerPlayer(newPlayer);
+    s.second->onJoin(newPlayer);
   }
   logEvent(ArenaEvent::Join(newPlayer.getNickname()));
   return newPlayer;
@@ -282,8 +280,8 @@ Player &Arena::joinPlayer(const PlayerInitializer &initializer) {
 
 void Arena::quitPlayer(Player &player) {
   for (auto s : subsystems) {
-    s->onQuit(player);
-    s->unregisterPlayer(player);
+    s.second->onQuit(player);
+    s.second->unregisterPlayer(player);
   }
   logEvent(ArenaEvent::Quit(player.getNickname()));
   players.erase(player.pid);
@@ -302,7 +300,6 @@ void Arena::forPlayers(std::function<void(const Player &)> f) const {
 void Arena::forPlayers(std::function<void(Player &)> f) {
   for (auto &pair : players) f(pair.second);
 }
-
 
 std::string Arena::getName() const {
   return name;
@@ -327,7 +324,7 @@ ArenaDelta Arena::connectPlayer(const std::string &requestedNick) {
 }
 
 void Arena::tick(const float delta) {
-  for (auto s : subsystems) s->onTick(delta);
+  for (auto s : subsystems) s.second->onTick(delta);
 }
 
 }
