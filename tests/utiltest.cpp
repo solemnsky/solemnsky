@@ -58,10 +58,10 @@ TEST_F(UtilTest, AngleTest) {
 }
 
 TEST_F(UtilTest, AllocTest) {
-  std::vector<int> x = {3, 1, 0};
-  EXPECT_EQ(smallestUnused(x), 2);
+  std::vector<PID> x = {3, 1, 0};
+  EXPECT_EQ(smallestUnused(x), PID(2));
   x = {2, 1, 0};
-  EXPECT_EQ(smallestUnused(x), 3);
+  EXPECT_EQ(smallestUnused(x), PID(3));
   x = {2, 1, 3};
-  EXPECT_EQ(smallestUnused(x), 0);
+  EXPECT_EQ(smallestUnused(x), PID(0));
 }
