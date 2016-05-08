@@ -135,6 +135,7 @@ class Subsystem: public SubsystemListener {
 
   Subsystem() = delete;
   Subsystem(Arena &arena);
+  virtual ~Subsystem();
 };
 
 /**
@@ -263,7 +264,7 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   Arena(const ArenaInit &initializer);
 
   // Subsystems and loggers.
-  std::vector<SubsystemListener *> subsystems;
+  std::map<PID, SubsystemListener *> subsystems;
   std::vector<ArenaLogger *> loggers;
 
   // Networked Impl.
@@ -289,9 +290,14 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
 
 template<typename PlayerData>
 Subsystem<PlayerData>::Subsystem(Arena &arena) :
-    id(PID(arena.subsystems.size())),
+    id(PID(smallestUnused(arena.subsystems))),
     arena(arena) {
-  arena.subsystems.push_back((SubsystemListener *) this);
+  arena.subsystems[id] = (SubsystemListener *) this;
+}
+
+template<typename PlayerData>
+Subsystem<PlayerData>::~Subsystem() {
+  arena.subsystems.erase(id);
 }
 
 }

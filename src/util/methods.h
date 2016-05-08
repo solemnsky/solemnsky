@@ -58,7 +58,17 @@ bool verifyFields(Field &field, Fields... fields) {
  */
 
 std::string inQuotes(const std::string &str);
-int smallestUnused(std::vector<int> &vec);
+PID smallestUnused(std::vector<PID> &vec);
+
+template<typename T>
+PID smallestUnused(const std::map<PID, T> &map) {
+  PID i{0};
+  for (const auto &pair: map) {
+    if (pair.first == i) ++i;
+    else break;
+  }
+  return i;
+}
 
 class enum_error: public std::logic_error {
  public:

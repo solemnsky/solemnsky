@@ -10,7 +10,7 @@
 
 /**
  * The main client app.
- * Its various components (the various pages and potential running tutorial) are
+ * Its various components (the various pages and potential running game) are
  * neatly modularized; see client/elements/elements.h. This is simply the glue
  * that brings everything together.
  */

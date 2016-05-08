@@ -52,16 +52,13 @@ std::string inQuotes(const std::string &str) {
   return "\"" + str + "\"";
 }
 
-int smallestUnused(std::vector<int> &vec) {
+PID smallestUnused(std::vector<PID> &vec) {
   // TODO: this could be faster
   std::sort(vec.begin(), vec.end());
-  int v = 0;
-  for (const int x : vec) {
-    if (x == v) {
-      v++;
-      continue;
-    }
-    break;
+  PID v{0};
+  for (const auto x : vec) {
+    if (x == v) ++v;
+    else break;
   }
   return v;
 }

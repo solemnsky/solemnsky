@@ -48,7 +48,7 @@ void HomePage::signalRead() {
 
   if (localhostButton.clickSignal)
     shared.beginGame(
-        std::make_unique<Multiplayer>(shared, "localhost", 4242));
+        std::make_unique<Multiplayer>(shared, "46.101.20.237", 4242));
 }
 
 void HomePage::signalClear() {
