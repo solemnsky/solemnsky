@@ -5,7 +5,7 @@ Welcome to the solemnsky technical documentation. This directory aims to give an
 
 ## Necessary Technology
 
-solemnsky is built from the ground up on a GCC toolchain. Our only non-trivial 
+solemnsky is built from the ground up on a GCC / CMake toolchain. Our only non-trivial 
  dependency is boost; a comprehensive list of our dependencies can be found in the
  nix build file (default.nix) at the top-level.
 
@@ -14,16 +14,17 @@ The project should be buildable on Windows, Linux, and OSX. It is, however, curr
 
  * Windows: install http://nuwen.net/mingw.html -style MinGW, build with CMake.
  * OSX: Install Boost (homebrew works fine), and CMake to Xcode projects. You can build those.
- * Linux: Should build easily with CMake, if you're having problems just `nix-build . -A default` and then you don't have problems anymore.
+ * Linux: Should build easily with CMake, if you're having problems just 
+ `nix-build . -A default` and then you don't have problems anymore.
 
 ## Thirdparty
 
 We source 4 thirdparty libraries in the thirdparty/ directory:
 
-* Box2D: Simple 2d physics.
+* Box2D: Simple 2D physics.
 * cereal: Efficient binary serialization / deserialization.
-* enet: packet-based transmission control.
-* SFML: graphics and geometry types.
+* enet: Packet-based transmission control.
+* SFML: Graphics for the client and geometry types.
 
 ## Global Structure
 

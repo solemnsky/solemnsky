@@ -42,7 +42,7 @@ At the very heart of solemnsky is the `sky` namespace. It defines a small game e
  held together by `sky::Arena`, which represents the backbone of a multiplayer game.
  An Arena manages players along with some basic associated data, controls their join / quits,
  and stores some basic game / server state (name, motd, etc.). Both the client and
- server hold an Arena to model the game.
+ server hold an Arena to model the game being played.
 
 The arena itself does not manage the more complex state / logic associated
  with a game, such as physical game state or client-side graphical state. Instead,
