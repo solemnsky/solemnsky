@@ -8,7 +8,7 @@ Travis CI says: [![Build Status](https://travis-ci.org/solemnsky/solemnsky.svg?b
 
 However, it suffers some unfortunate limitations and in recent years has become
  increasingly stagnant. Cue solemnsky: a new altitude -- an al2itude, if you will -- that 
- exposes itself to community development and addresses its successor's old problems with 
+ exposes itself to community development and addresses its predecessor's old problems with 
  a new light.
 
 Welcome to solemnsky: the open-source competitive multiplayer 2d plane game.
