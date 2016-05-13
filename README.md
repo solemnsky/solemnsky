@@ -26,7 +26,7 @@ There are a lot of roles to fill on our team! Whether you want to contribute or 
  [email](mailto:zenmags@gmail.com) or via skype (magnetic.duck). He'll add you to the 
  slack group, with the rest of the team.
 
-Example of roles we'd like filled:
+Examples of roles we'd like filled:
  * Graphic designer.
  * Lua scripter.
  * C++ programmer.
@@ -44,6 +44,6 @@ solemnsky is licensed under GPL.v3
   things I mess up in C++.
 * A few other people shout at us to create things faster, thanks guys.
 
-Of course, we'd like to thank (Nimbly Games)[http://nimblygames.com], the authors of
+Of course, we'd like to thank [Nimbly Games](http://nimblygames.com), the authors of
  Altitude, for their great work that started this whole mess!
 
