@@ -1,50 +1,48 @@
 Travis CI says: [![Build Status](https://travis-ci.org/solemnsky/solemnsky.svg?branch=master)](https://travis-ci.org/solemnsky/solemnsky)
 
 # solemnsky
+ 
+Altitude demonstrated the viability of an uncommon genera of multiplayer game.
+ Beyond its cartoonish appearance, it offered a competitive multiplayer experience
+ that kept a small dedicated player-base coming back year after year.
 
-Hello wandering traveler.
+However, it does suffer some unfortunate limitations, and in recent years has become
+ increasingly stagnant. Cue solemnsky: the second attempt at an altitude-like game.
+ We aim to make a new altitude that exposes itself to community development and addresses
+ altitude's old problems from a different light.
 
-solemnsky is an endeavour to, finding foundations in http://altitudegame.com,
- create a new open-source multiplayer 2d plane game designed to support 
- competition and community-driven design.
- 
-This is the solemnsky codebase. It's our best shot at making solemnsky happen.
- 
-## the making of solemnsky
+solemnsky is not an altitude clone; it's a new look at what made altitude great.
 
-Our design process consists in simultaneously writing useful code and not 
- making everything into a great Big Ball of Mud (a surprisingly difficult task).
- 
-After due consideration, we've chosen C++ as our _langage de résistance_. 
- Eventually, we plan to use Lua for scripting, in order to make design 
- iteration faster and modding easier.
- 
-## roadmap
+## Technical Documentation
 
-LOC is the only honest quantifier of project growth; therefore all roadmapping 
- and growth extrapolation will be metricized in LOC and its derivatives. 
- Teeworlds (a comparable game written in a comparable source) has ~48,000 LOC;
- after due ~~hopeful guessing~~ calculation, I'm aiming for a solid release of 
- solemnsky at ~30,000 LOC. Extrapolation is possible, but probably 
- disheartening.
- 
-## licensing and credits
+Solemnsky is in active development. See the top-level `docs/` directory for an overview
+ into the technical design and current status of our continuing efforts to build the best
+ "alti2ude" 
+
+## You Can Help!
+
+There are a lot of roles to fill on our team! Whether you want to be of use or just 
+ drop by and say hi, contact MagneticDuck via [email](mailto:zenmags@gmail.com) 
+ or via skype (magnetic.duck). He'll add you to the slack group, with the rest of the team.
+
+Example of roles we'd like filled:
+ * Graphic designer.
+ * Lua scripter.
+ * C++ programmer.
+ * Web designer.
+
+We're dedicated to pulling this project through; your contributions will be matched.
+
+## Licensing and Credits.
 
 solemnsky is licensed under GPL.v3
 
-Magnetic Duck writes the code.
-LeGrape draws the graphics stuff.
-CouleeApps (glcoulee) and the one known only as 'Jeff' occasionally fix 
-things I mess up in C++.
-A few other people shout at us to create things faster, thanks guys.
+* Magnetic Duck writes the code.
+* LeGrape draws the graphics stuff.
+* CouleeApps (glcoulee) and the one known only as 'Jeff' occasionally fix 
+  things I mess up in C++.
+* A few other people shout at us to create things faster, thanks guys.
 
-## Building
-
-It's possible to build this project on most Windows, OSX, and Linux setups. 
-Listed below are the particular setups that we test against.
-
- * Windows: install http://nuwen.net/mingw.html -style MinGW, build with CLion.
- * OSX: Install Boost (homebrew works fine), and CMake to Xcode projects. You can build those.
- * Linux: Should build easily, if you're having problems nix is a sure-fire way 
-to not have problems anymore (see default.nix in top-level).
+Of course, we'd like to thank (Nimbly Games)[http://nimblygames.com], the authors of
+ Altitude, for their great work that started this whole mess!
 
