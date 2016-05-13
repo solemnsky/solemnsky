@@ -29,9 +29,11 @@ We source 4 thirdparty libraries in the thirdparty/ directory:
 ## Global Structure
 
 To supplement the per-component documentation present in the code, this directory
- contains an overview of solemnsky's design, in three components:
+ contains a narrative overview of solemnsky's design, in three components:
 
  * `engine.md`: The `sky` namespace and control types. The core of solemnsky. Corresponds to `src/sky` and `src/util`.
  * `client.md`: The `ui` namespace, and the game client. The UI of solemnsky. Corresponds to `src/ui` and `src/client`
  * `server.md`: The game server. Corresponds to `src/server`.
+
+This is further supplemented by some rough UML sketches in `uml/`.
 
