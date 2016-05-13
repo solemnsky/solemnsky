@@ -2,11 +2,11 @@ Travis CI says: [![Build Status](https://travis-ci.org/solemnsky/solemnsky.svg?b
 
 # solemnsky
  
-Altitude demonstrated the viability of an uncommon genera of multiplayer game.
- Beyond its cartoonish appearance, it offered a competitive multiplayer experience
- that kept a small dedicated player-base coming back year after year.
+[Altitude](http://altitudegame.com) demonstrated the viability of an uncommon genera 
+ of multiplayer game. Beyond its cartoonish appearance, it offered a competitive 
+ multiplayer experience that kept a small dedicated player-base coming back year after year.
 
-However, it does suffer some unfortunate limitations, and in recent years has become
+However, it does suffer some unfortunate limitations and in recent years has become
  increasingly stagnant. Cue solemnsky: the second attempt at an altitude-like game.
  We aim to make a new altitude that exposes itself to community development and addresses
  altitude's old problems from a different light.
@@ -17,13 +17,14 @@ solemnsky is not an altitude clone; it's a new look at what made altitude great.
 
 Solemnsky is in active development. See the top-level `docs/` directory for an overview
  into the technical design and current status of our continuing efforts to build the best
- "alti2ude" 
+ "alti2ude" we can manage.
 
 ## You Can Help!
 
-There are a lot of roles to fill on our team! Whether you want to be of use or just 
- drop by and say hi, contact MagneticDuck via [email](mailto:zenmags@gmail.com) 
- or via skype (magnetic.duck). He'll add you to the slack group, with the rest of the team.
+There are a lot of roles to fill on our team! Whether you want to contribute or just 
+ drop by and say hi, contact Chris Gadzinski (MagneticDuck) via 
+ [email](mailto:zenmags@gmail.com) or via skype (magnetic.duck). He'll add you to the 
+ slack group, with the rest of the team.
 
 Example of roles we'd like filled:
  * Graphic designer.

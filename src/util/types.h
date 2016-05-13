@@ -263,8 +263,8 @@ bool verifyValue(
 template<typename Init, typename Delta>
 class Networked {
  public:
-  // you have to construct a Networked object with its initializer type
-  // this guarantees orthogonality
+  // you are required to construct a Networked object with its 
+  // initializer type; this supports an orthogonal interface
   Networked() = delete;
   Networked(const Init &) { }
   virtual void applyDelta(const Delta &) = 0;
