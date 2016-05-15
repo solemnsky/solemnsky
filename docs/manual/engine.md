@@ -36,7 +36,7 @@ The particular way in which Deltas are formed is variable; `sky::Arena`'s deltas
 ### Invariant Protection in Packets
 
 The `VerifyStructure` interface is used to protect against invariant violations in packets;
- defined in `src/util/types.h` it describes a class that can check the integrity of its 
+ defined in `src/util/types.h`, it describes a class that can check the integrity of its 
  invariants. `tg::Telegraph` protects against malformed packets through this interface
  when available, printing an error message and refusing to catch the responsible packet when 
  invariant are not respected.

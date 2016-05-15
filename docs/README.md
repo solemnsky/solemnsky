@@ -1,9 +1,6 @@
-# solemnsky technical documentation
+# solemnsky technical guide
 
-Welcome to the solemnsky technical documentation. This directory aims to give an 
- up-to-date overview of the solemnsky project for developers.
-
-## Necessary Technology
+## Building
 
 solemnsky is built from the ground up on a GCC / CMake toolchain. Our only non-trivial 
  dependency is boost; a comprehensive list of our dependencies can be found in the
@@ -15,25 +12,30 @@ The project should be buildable on Windows, Linux, and OSX. It is, however, curr
  * Windows: install http://nuwen.net/mingw.html -style MinGW, build with CMake.
  * OSX: Install Boost (homebrew works fine), and CMake to Xcode projects. You can build those.
  * Linux: Should build easily with CMake, if you're having problems just 
- `nix-build . -A default` and then you don't have problems anymore.
+   `nix-build . -A default` and then you don't have problems anymore.
 
 ## Thirdparty
 
 We source 4 thirdparty libraries in the thirdparty/ directory:
 
-* Box2D: Simple 2D physics.
-* cereal: Efficient binary serialization / deserialization.
-* enet: Packet-based transmission control.
-* SFML: Graphics for the client and geometry types.
+ * Box2D: Simple 2D physics.
+ * cereal: Efficient binary serialization / deserialization.
+ * enet: Packet-based transmission control.
+ * SFML: Graphics for the client and geometry types.
 
-## Global Structure
+## Documentation
 
-To supplement the per-component documentation present in the code, this directory
- contains a narrative overview of solemnsky's design, in three components:
+solemnsky's documentation is intended to provide a sufficiently detailed overview of the
+ core C++ codebase to allow developers to contribute in meaningful ways.
 
- * `engine.md`: The `sky` namespace and control types. The core of solemnsky. Corresponds to `src/sky` and `src/util`.
- * `client.md`: The `ui` namespace, and the game client. The UI of solemnsky. Corresponds to `src/ui` and `src/client`
- * `server.md`: The game server. Corresponds to `src/server`.
+It is present in the form of three components:
 
-This is further supplemented by some rough UML sketches in `uml/`.
+ * Inline documentation alongside declarations in the header files.
+ * A brief manual in this directory (`manual/`)
+ * Some blueprint diagrams, to give a sense of the project's overall structure (`uml/`).
+
+## Status
+
+To give a sense of how the project is moving along, we periodically publish a status update;
+ an archive of past updates, along with the current one, can be found in `status/`.
 
