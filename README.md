@@ -37,6 +37,7 @@ We're dedicated to pulling this project through; your contributions will be matc
 ## Licensing and Credits.
 
 solemnsky  Copyright (C) 2016 Chris Gadzinski
+
 This program is licensed under GPL v3, see LICENSE.
 
 Credits: coming soon.
