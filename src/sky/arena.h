@@ -114,8 +114,8 @@ class SubsystemListener {
   friend class Player;
  protected:
   // Managing player registration.
-  virtual void registerPlayer(Player &player) = 0;
-  virtual void unregisterPlayer(Player &player) = 0;
+  virtual void registerPlayer(Player &player) { }
+  virtual void unregisterPlayer(Player &player) { }
 
   // Callbacks.
   virtual void onTick(const float delta) { }

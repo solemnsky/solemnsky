@@ -53,7 +53,6 @@ struct PlaneGraphics {
 class SkyRender: public Subsystem<PlaneGraphics> {
  private:
   // Parameters.
-  const SkyManager &skyManager;
   const Sky &sky;
 
   // State.
@@ -78,9 +77,7 @@ class SkyRender: public Subsystem<PlaneGraphics> {
   void onTick(const float delta) override;
 
  public:
-  SkyRender(Arena &arena,
-            const SkyManager &skyManager,
-            const Sky &sky);
+  SkyRender(Arena &arena, const Sky &sky);
   ~SkyRender();
 
   // User API.

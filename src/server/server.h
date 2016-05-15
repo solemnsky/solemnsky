@@ -80,11 +80,11 @@ template<typename PlayerData>
 class Server: public ServerListener, public sky::Subsystem<PlayerData> {
  protected:
   ServerShared &shared;
-  sky::SkyManager &sky;
+  sky::SkyHandle &sky;
 
  public:
   Server(ServerShared &shared,
-         sky::Arena &arena, sky::SkyManager &sky) :
+         sky::Arena &arena, sky::SkyHandle &sky) :
       sky::Subsystem<PlayerData>(arena),
       shared(shared),
       sky(sky) { }
@@ -122,7 +122,7 @@ class ServerExec {
   ServerShared shared;
 
   sky::Arena arena;
-  sky::SkyManager sky;
+  sky::SkyHandle sky;
   std::unique_ptr<ServerListener> server;
   Cooldown packetBroadcastTimer;
 
@@ -137,7 +137,7 @@ class ServerExec {
              const sky::ArenaInit &arena,
              const sky::SkyInitializer &sky,
              std::function<std::unique_ptr<ServerListener>(
-                 ServerShared &, sky::Arena &, sky::SkyManager &)> server);
+                 ServerShared &, sky::Arena &, sky::SkyHandle &)> server);
 
   void run();
 

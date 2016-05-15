@@ -199,7 +199,7 @@ ServerExec::ServerExec(
     const sky::ArenaInit &arena,
     const sky::SkyInitializer &sky,
     std::function<std::unique_ptr<ServerListener>(
-        ServerShared &, sky::Arena &, sky::SkyManager &)> server) :
+        ServerShared &, sky::Arena &, sky::SkyHandle &)> server) :
     uptime(0),
 
     host(tg::HostType::Server, port),

@@ -28,7 +28,7 @@
 
 namespace sky {
 
-class SkyManager;
+class SkyHandle;
 
 /**
  * Initializer for Participation's Networked impl.
@@ -117,7 +117,7 @@ class Plane {
  */
 class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   friend class Sky;
-  friend class SkyManager;
+  friend class SkyHandle;
  private:
   // Parameters.
   Physics &physics;
