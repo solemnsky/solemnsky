@@ -185,11 +185,8 @@ void SkyRender::renderMap(ui::Frame &f) {
   }
 }
 
-SkyRender::SkyRender(Arena &arena,
-                     const SkyManager &skyManager,
-                     const Sky &sky) :
+SkyRender::SkyRender(Arena &arena, const Sky &sky) :
     Subsystem(arena),
-    skyManager(skyManager),
     sky(sky),
     planeSheet(ResID::PlayerSheet),
     enableDebug(false) {
@@ -202,7 +199,7 @@ void SkyRender::registerPlayer(Player &player) {
   setPlayerData(
       player,
       graphics.emplace(
-          player.pid, *skyManager.getParticipation(player)).first->second);
+          player.pid, sky.getParticipation(player)).first->second);
 }
 
 void SkyRender::unregisterPlayer(Player &player) {
