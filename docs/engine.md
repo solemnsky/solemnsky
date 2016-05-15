@@ -96,5 +96,6 @@ To provide an overview of events that occured in an Arena to a user, an `ArenaLo
  on ArenaEvent. They encode, in addition to ArenaEvent, events specific to the client
  or the server, respectively.
 
+#### TODO: complete
 
 
