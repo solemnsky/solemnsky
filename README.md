@@ -11,7 +11,7 @@ However, it suffers some unfortunate limitations and in recent years has become
  exposes itself to community development and addresses its predecessor's old problems with 
  a new light.
 
-This is solemnsky: the open-source competitive multiplayer 2d plane game.
+This is solemnsky: the open-source competitive multiplayer 2D plane game.
 
 ## Technical Documentation
 
