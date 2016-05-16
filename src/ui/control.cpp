@@ -26,7 +26,7 @@ namespace ui {
  * Profiler.
  */
 
-Profiler::Profiler(int size) :
+Profiler::Profiler(const unsigned int size) :
     cycleTime(size), logicTime(size),
     renderTime(size), primCount(size) { }
 

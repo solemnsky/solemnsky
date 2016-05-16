@@ -58,16 +58,55 @@ float linearTween(const float begin, const float end, const float time);
 float sineAnim(const float time, const float period);
 
 /**
- * Certify that a bunch of optional fields are instantiated and have valid
- * values.
+ * Verify that a value respects any potential invariants.
  */
-bool verifyFields();
+template<typename X>
+bool verifyValue(
+    const X &x,
+    typename std::enable_if<std::is_base_of<
+        VerifyStructure, X>::value>::type * = 0) {
+  return x.verifyStructure();
+}
+
+template<typename X>
+bool verifyValue(
+    const X &x,
+    typename std::enable_if<!std::is_base_of<
+        VerifyStructure, X>::value>::type * = 0) {
+  return true;
+}
+
+/**
+ * Verify that a series of optionals are instantiated, and
+ * that the values respect any potential invariants.
+ */
+bool verifyOptionals();
 
 template<typename Field, typename... Fields>
 bool verifyFields(Field &field, Fields... fields) {
-  if (!field) return false;
+  if (!bool(field)) return false;
   if (!verifyValue(*field)) return false;
-  return verifyFields(fields...);
+  return verifyOptionals(fields...);
+}
+
+/**
+ * Verify that the values of a map respect any potential invariants.
+ */
+template<typename Key, typename Value>
+bool verifyMap(const std::map<Key, Value> &map) {
+  for (const auto &x : map)
+    if (!verifyValue(x.second)) return false;
+  return true;
+};
+
+/**
+ * Verify that the values of a vector respect any potential invariants.
+ */
+template<typename Value>
+bool verifyVector(const std::vector<Value> &vec) {
+  for (const auto &x : vec)
+    if (!verifyValue(x)) return false;
+  return true;
 }
 
 /**
@@ -79,6 +118,8 @@ PID smallestUnused(std::vector<PID> &vec);
 
 template<typename T>
 PID smallestUnused(const std::map<PID, T> &map) {
+  // this could be faster, but it really doesn't need to be
+  // don't waste your effort here, waste it in other places!
   PID i{0};
   for (const auto &pair: map) {
     if (pair.first == i) ++i;
@@ -94,10 +135,7 @@ class enum_error: public std::logic_error {
 
 inline bool imply(const bool x, const bool y) { return y or !x; }
 
-template<typename K, typename V>
-V *findValue(std::map<K, V> &m, const K k) {
-  auto x = m.find(k);
-  if (x != m.end()) return &x->second;
-  return nullptr;
+inline bool all(std::initializer_list<bool> list) {
+  for (const v : list) if (!v) return false;
+  return true;
 }
-

@@ -55,6 +55,7 @@ void Map::loadTest2() {
 }
 
 Map::Map(const MapName &name) :
+    name(name),
     dimensions(3200, 900) {
   if (name == "test1") {
     loadTest1();

@@ -26,7 +26,7 @@ namespace sky {
  */
 
 bool SkyInitializer::verifyStructure() const {
-  return true; // TODO: initializer invariants?
+  return verifyMap(participations);
 }
 
 /**
@@ -34,9 +34,7 @@ bool SkyInitializer::verifyStructure() const {
  */
 
 bool SkyDelta::verifyStructure() const {
-  for (auto const &x : planes)
-    if (!x.second.verifyStructure()) return false;
-  return true;
+  return verifyMap(participations);
 }
 
 /**
@@ -107,17 +105,30 @@ void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
 }
 
 Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
+    Networked(initializer),
     Subsystem(arena),
     map(arena.getMap()),
     physics(map, *this) {
   arena.forPlayers([&](Player &player) {
-    const auto iter = initializer.planes.find(player.pid);
-    if (iter != initializer.planes.end()) {
+    const auto iter = initializer.participations.find(player.pid);
+    if (iter != initializer.participations.end()) {
       registerPlayerWith(player, iter->second);
     } else {
       registerPlayer(player);
     }
   });
+}
+
+void Sky::applyDelta(const SkyDelta &delta) {
+  for (const auto &participation: delta.participations) {
+    if (const Player *player = arena.getPlayer(participation.first)) {
+      getPlayerData(*player).applyDelta(participation.second);
+    }
+  }
+}
+
+SkyInitializer Sky::captureInitializer() const {
+  return sky::SkyInitializer();
 }
 
 const Map &Sky::getMap() const {
@@ -127,6 +138,19 @@ const Map &Sky::getMap() const {
 const Participation &Sky::getParticipation(const Player &player) const {
   return getPlayerData(player);
 }
+
+/**
+ * SkyHandleInitializer.
+ */
+
+bool SkyHandleInitializer::verifyStructure() const {
+  return false;
+}
+
+
+/**
+ * SkyHandleDelta.
+ */
 
 /**
  * SkyHandle.
@@ -178,26 +202,29 @@ SkyInitializer SkyHandle::captureInitializer() {
   if (sky) {
     SkyInitializer initializer;
     for (const auto &pair : sky->participations)
-      initializer.planes.emplace(
+      initializer.participations.emplace(
           pair.first, pair.second.captureInitializer());
     return initializer;
   } else return {};
 }
 
 SkyDelta SkyHandle::collectDelta() {
+  SkyDelta delta;
+  delta.isActive = isActive();
+
   if (sky) {
-    SkyDelta delta;
     for (auto &pair : sky->participations)
-      delta.planes.emplace(pair.first, pair.second->captureDelta());
-    return delta;
-  } else return {};
+      delta.participations.emplace(pair.first, pair.second.captureDelta());
+  }
+  return delta;
 }
 
 void SkyHandle::applyDelta(const SkyDelta &delta) {
-  for (auto const &pair : delta.planes) {
-    if (optional<Participation>
-        *plane = findValue(sky->participations, pair.first)) {
-      if (*plane) (*plane)->applyDelta(pair.second);
+  if (sky) {
+    for (const auto &participation : delta.participations) {
+      if (const auto *player = arena.getPlayer(participation.first)) {
+        sky->getPlayerData(*player).applyDelta(participation.second);
+      }
     }
   }
 }

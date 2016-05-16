@@ -28,42 +28,43 @@
 namespace sky {
 
 /**
- * Initializer for the SkyHandle Networked impl.
+ * Initializer for Sky.
  */
 struct SkyInitializer: public VerifyStructure {
   SkyInitializer() = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(planes);
+    ar(mapName, participations);
   }
 
   bool verifyStructure() const;
 
-  std::map<PID, ParticipationInit>
-      planes; // participations already in the arena
+  MapName mapName;
+  std::map<PID, ParticipationInit> participations;
 };
 
 /**
- * Delta for SkyHandle Networked impl.
+ * Delta for Sky.
  */
 struct SkyDelta: public VerifyStructure {
   SkyDelta() = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(planes);
+    ar(participations);
   }
 
   bool verifyStructure() const;
 
-  std::map<PID, ParticipationDelta> planes;
+  std::map<PID, ParticipationDelta> participations;
 };
 
 /**
  * Game world when a game is in session.
  */
-class Sky: public PhysicsListener, public Subsystem<Participation> {
+class Sky: public PhysicsListener, public Subsystem<Participation>,
+           public Networked<SkyInitializer, SkyDelta> {
   friend class SkyHandle;
   friend class Participation;
  private:
@@ -78,7 +79,7 @@ class Sky: public PhysicsListener, public Subsystem<Participation> {
 
   // Subsystem impl.
   void registerPlayerWith(Player &player,
-                               const ParticipationInit &initializer);
+                          const ParticipationInit &initializer);
   void registerPlayer(Player &player) override final;
   void unregisterPlayer(Player &player) override final;
   void onJoin(Player &player) override final;
@@ -103,6 +104,10 @@ class Sky: public PhysicsListener, public Subsystem<Participation> {
   Sky(Arena &&arena, std::map<PID, optional<Participation>> &) = delete;
   Sky(Arena &arena, const SkyInitializer &initializer);
 
+  // Networked impl.
+  virtual void applyDelta(const SkyDelta &delta) override;
+  virtual SkyInitializer captureInitializer() const override;
+
   // User API.
   const Map &getMap() const;
   const Participation &getParticipation(const Player &player) const;
@@ -110,7 +115,42 @@ class Sky: public PhysicsListener, public Subsystem<Participation> {
 };
 
 /**
+ * Initializer for SkyHandle.
+ */
+
+struct SkyHandleInitializer {
+  SkyHandleInitializer() = default;
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(initializer);
+  }
+
+  bool verifyStructure() const;
+
+  optional<SkyInitializer> initializer;
+};
+
+/**
+ * Delta for SkyHandle.
+ */
+
+struct SkyHandleDelta {
+  SkyHandleDelta() = default;
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(initializer);
+  }
+
+  bool verifyStructure() const;
+
+  optional<SkyInitializer> initializer;
+};
+
+/**
  * Wraps an optional<Sky>, binding it to the arena when the game is in session.
+ * Also wraps its Networked implementation.
  */
 class SkyHandle: public Subsystem<optional<Participation>> {
  private:
