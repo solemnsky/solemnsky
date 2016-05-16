@@ -28,7 +28,7 @@
  * point of the screen; peripheries include a chat / message interface, and a
  * score screen you can call up with tab.
  *
- * Invariant: conn->skyManager
+ * Invariant: conn->skyHandle
  */
 class MultiplayerGame: public MultiplayerView {
  private:

@@ -52,6 +52,7 @@ void Sky::onTick(const float delta) {
 
 void Sky::registerPlayerWith(Player &player,
                              const ParticipationInit &initializer) {
+  appLog("registering player");
   participations.emplace(
       std::piecewise_construct,
       std::forward_as_tuple(player.pid),
@@ -70,6 +71,13 @@ void Sky::unregisterPlayer(Player &player) {
 
 void Sky::onAction(Player &player, const Action action, const bool state) {
   getPlayerData(player).doAction(action, state);
+}
+
+void Sky::onSpawn(Player &player,
+                  const PlaneTuning &tuning,
+                  const sf::Vector2f &pos,
+                  const float rot) {
+  getPlayerData(player).spawn(tuning, pos, rot);
 }
 
 void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
