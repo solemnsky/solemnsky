@@ -32,6 +32,7 @@ namespace sky {
  */
 struct SkyInitializer: public VerifyStructure {
   SkyInitializer() = default;
+  SkyInitializer(const MapName &mapName);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -83,17 +84,9 @@ class Sky
                           const ParticipationInit &initializer);
   void registerPlayer(Player &player) override final;
   void unregisterPlayer(Player &player) override final;
-  void onJoin(Player &player) override final;
-  void onQuit(Player &player) override final;
-  void onMode(const ArenaMode newMode) override final;
-  void onMapChange() override;
   void onAction(Player &player,
                 const Action action,
                 const bool state) override final;
-  void onSpawn(Player &player,
-               const PlaneTuning &tuning,
-               const sf::Vector2f &pos,
-               const float rot) override final;
 
   // PhysicsListener impl.
   virtual void onBeginContact(const BodyTag &body1,
@@ -106,8 +99,9 @@ class Sky
   Sky(Arena &arena, const SkyInitializer &initializer);
 
   // Networked impl.
-  virtual void applyDelta(const SkyDelta &delta) override;
-  virtual SkyInitializer captureInitializer() const override;
+  void applyDelta(const SkyDelta &delta) override final;
+  SkyInitializer captureInitializer() const override final;
+  SkyDelta collectDelta();
 
   // User API.
   const Map &getMap() const;
@@ -121,6 +115,7 @@ class Sky
 
 struct SkyHandleInitializer {
   SkyHandleInitializer() = default;
+  SkyHandleInitializer(const SkyInitializer &initializer);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -146,6 +141,7 @@ struct SkyHandleDelta {
 
   bool verifyStructure() const;
 
+  optional<SkyInitializer> initializer;
   optional<SkyDelta> delta;
 };
 
@@ -159,27 +155,20 @@ class SkyHandle
  private:
   // State.
   optional<Sky> sky;
-
- protected:
-  // Subsystem impl.
-  void onMode(const ArenaMode newMode) override;
-  void onMapChange() override;
-
-  // Starting / stopping.
-  void stop();
-  void start();
+  bool skyIsNew;
 
  public:
   SkyHandle(class Arena &parent, const SkyHandleInitializer &initializer);
-  ~SkyHandle();
 
   // Networking.
-  SkyInitializer captureInitializer();
-  SkyDelta collectDelta();
-  void applyDelta(const SkyDelta &delta);
+  SkyHandleInitializer captureInitializer() const override final;
+  SkyHandleDelta collectDelta();
+  void applyDelta(const SkyHandleDelta &delta) override final;
 
   // User API.
-  void restart();
+  void start(const MapName &mapName);
+  void stop();
+
   const optional<Sky> &getSky() const;
   bool isActive() const;
 

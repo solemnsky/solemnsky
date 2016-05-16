@@ -25,6 +25,9 @@ namespace sky {
  * SkyInitializer.
  */
 
+SkyInitializer::SkyInitializer(const MapName &mapName) :
+    mapName(mapName) { }
+
 bool SkyInitializer::verifyStructure() const {
   return verifyMap(participations);
 }
@@ -49,9 +52,8 @@ void Sky::onTick(const float delta) {
 
 void Sky::registerPlayerWith(Player &player,
                              const ParticipationInit &initializer) {
-  // participations.emplace(std::forward_as_tuple);
-  // if (sky) participations.at(player.pid).emplace(sky->physics, initializer);
-  // setPlayerData(player, *findValue(participations, player.pid));
+  participations.emplace(player.pid, initializer);
+  setPlayerData(player, participations.find(player.pid)->second);
 }
 
 void Sky::registerPlayer(Player &player) {
@@ -63,31 +65,8 @@ void Sky::unregisterPlayer(Player &player) {
   if (plane != participations.end()) participations.erase(plane);
 }
 
-void Sky::onJoin(Player &player) {
-
-}
-
-void Sky::onQuit(Player &player) {
-
-}
-
-void Sky::onMode(const ArenaMode newMode) {
-
-}
-
-void Sky::onMapChange() {
-
-}
-
 void Sky::onAction(Player &player, const Action action, const bool state) {
-
-}
-
-void Sky::onSpawn(Player &player,
-                  const PlaneTuning &tuning,
-                  const sf::Vector2f &pos,
-                  const float rot) {
-  SubsystemListener::onSpawn(player, tuning, pos, rot);
+  getPlayerData(player).doAction(action, state);
 }
 
 void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
@@ -111,11 +90,10 @@ Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
     physics(map, *this) {
   arena.forPlayers([&](Player &player) {
     const auto iter = initializer.participations.find(player.pid);
-    if (iter != initializer.participations.end()) {
-      registerPlayerWith(player, iter->second);
-    } else {
-      registerPlayer(player);
-    }
+    registerPlayerWith(
+        player,
+        (iter == initializer.participations.end())
+        ? {} : iter->second);
   });
 
   appLog("Started game on " + map.name, LogOrigin::Engine);
@@ -130,7 +108,20 @@ void Sky::applyDelta(const SkyDelta &delta) {
 }
 
 SkyInitializer Sky::captureInitializer() const {
-  return sky::SkyInitializer();
+  SkyInitializer initializer;
+  for (const auto &participation : participations)
+    initializer.participations.emplace(
+        participation.first, participation.second.captureInitializer());
+  return initializer;
+}
+
+SkyDelta Sky::collectDelta() {
+  SkyDelta delta;
+  for (auto &participation : participations) {
+    delta.participations.emplace(
+        participation.first, participation.second.captureDelta())
+  }
+  return delta;
 }
 
 const Map &Sky::getMap() const {
@@ -145,6 +136,10 @@ const Participation &Sky::getParticipation(const Player &player) const {
  * SkyHandleInitializer.
  */
 
+SkyHandleInitializer::SkyHandleInitializer(
+    const SkyInitializer &initializer) :
+    initializer(initializer) { }
+
 bool SkyHandleInitializer::verifyStructure() const {
   return verifyValue(initializer);
 }
@@ -154,88 +149,58 @@ bool SkyHandleInitializer::verifyStructure() const {
  */
 
 bool SkyHandleDelta::verifyStructure() const {
-  return verifyValue(delta);
+  if (bool(initializer) and bool(delta)) return false;
+
+  if (initializer) return verifyValue(initializer.get());
+  if (delta) return verifyValue(delta.get());
+  return true;
 }
 
 /**
  * SkyHandle.
  */
 
-void SkyHandle::onMode(const ArenaMode newMode) {
-  if (sky) {
-    if (newMode != ArenaMode::Game) {
-      stop();
-    }
-  } else {
-    if (newMode == ArenaMode::Game) {
-      start();
-    }
-  }
-}
-
-void SkyHandle::onMapChange() {
-  if (arena.getMode() == ArenaMode::Game) restart();
-}
-
-void SkyHandle::stop() {
-  if (sky) sky.reset();
-}
-
-void SkyHandle::start() {
-  if (sky) stop();
-  sky.emplace(arena);
-}
-
 SkyHandle::SkyHandle(Arena &arena, const SkyHandleInitializer &initializer) :
     Networked(initializer),
     Subsystem(arena) {
-  if (arena.getMode() == ArenaMode::Game) {
-    start();
-  } else {
-    arena.forPlayers([&](Player &player) {
-      registerPlayer(player);
-    });
+  if (const auto &skyInit = initializer.initializer) {
+    sky.emplace(skyInit.get());
   }
 }
 
-SkyHandle::~SkyHandle() {
-  stop(); // necessary to correctly free the box2d world
+SkyHandleInitializer SkyHandle::captureInitializer() const {
+  SkyHandleInitializer initializer;
+  if (sky) {
+    initializer.initializer = sky->captureInitializer();
+  }
+  return initializer;
 }
 
-SkyInitializer SkyHandle::captureInitializer() {
-  if (sky) {
-    SkyInitializer initializer;
-    for (const auto &pair : sky->participations)
-      initializer.participations.emplace(
-          pair.first, pair.second.captureInitializer());
-    return initializer;
-  } else return {};
+void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
+  if (!sky) {
+    if (delta.initializer) sky.emplace(arena, delta.initializer.get());
+  } else {
+    if (delta.delta) sky->applyDelta(delta.delta.get());
+  }
 }
 
-SkyDelta SkyHandle::collectDelta() {
-  SkyDelta delta;
-  delta.isActive = isActive();
-
-  if (sky) {
-    for (auto &pair : sky->participations)
-      delta.participations.emplace(pair.first, pair.second.captureDelta());
+SkyHandleDelta SkyHandle::collectDelta() {
+  SkyHandleDelta delta;
+  if (skyIsNew) {
+    delta.initializer = sky->captureInitializer();
+  } else {
+    if (sky) delta.delta = sky->collectDelta();
   }
   return delta;
 }
 
-void SkyHandle::applyDelta(const SkyDelta &delta) {
-  if (sky) {
-    for (const auto &participation : delta.participations) {
-      if (const auto *player = arena.getPlayer(participation.first)) {
-        sky->getPlayerData(*player).applyDelta(participation.second);
-      }
-    }
-  }
+void SkyHandle::start(const MapName &mapName) {
+  stop();
+  sky.emplace(arena, SkyInitializer(mapName));
 }
 
-void SkyHandle::restart() {
-  stop();
-  start();
+void SkyHandle::stop() {
+  if (sky) sky.reset();
 }
 
 const optional<Sky> &SkyHandle::getSky() const {
@@ -244,11 +209,6 @@ const optional<Sky> &SkyHandle::getSky() const {
 
 bool SkyHandle::isActive() const {
   return bool(sky);
-}
-
-const optional<Participation> &SkyHandle::getParticipation(
-    const Player &player) const {
-  return getPlayerData(player);
 }
 
 }
