@@ -87,6 +87,11 @@ class Sky
   void onAction(Player &player,
                 const Action action,
                 const bool state) override final;
+  virtual void onSpawn(Player &player,
+                       const PlaneTuning &tuning,
+                       const sf::Vector2f &pos,
+                       const float rot) override final;
+
 
   // PhysicsListener impl.
   virtual void onBeginContact(const BodyTag &body1,
@@ -115,7 +120,7 @@ class Sky
 
 struct SkyHandleInitializer {
   SkyHandleInitializer() = default;
-  SkyHandleInitializer(const SkyInitializer &initializer);
+  explicit SkyHandleInitializer(const SkyInitializer &initializer);
 
   template<typename Archive>
   void serialize(Archive &ar) {

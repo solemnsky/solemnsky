@@ -9,33 +9,35 @@ class SkyTest: public testing::Test {
  public:
   SkyTest() :
       arena(sky::ArenaInit("arena", "test1")),
-      skyManager(arena, sky::SkyInitializer()) { }
+      skyHandle(arena, sky::SkyHandleInitializer()) { }
 
   sky::Arena arena;
-  sky::SkyHandle skyManager;
+  sky::SkyHandle skyHandle;
 };
 
 /**
  * The allocation of the game world is managed correctly.
  */
-TEST_F(SkyTest, PhysicsTest) {
-  ASSERT_EQ(bool(skyManager.isActive()), false);
+TEST_F(SkyTest, AllocTest) {
+  ASSERT_EQ(bool(skyHandle.isActive()), false);
 
-  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
-  ASSERT_EQ(bool(skyManager.isActive()), true);
+  {
+    skyHandle.start("test1");
+    ASSERT_EQ(bool(skyHandle.isActive()), true);
+    const sky::Sky &sky = *skyHandle.getSky();
 
-  const auto pid = arena.connectPlayer("nameless plane").join->pid;
-  sky::Player *player = arena.getPlayer(pid);
-  ASSERT_EQ(bool(skyManager.getParticipation(*player)), true);
-  ASSERT_EQ(bool(skyManager.getParticipation(*player)->getPlane()), false);
-  ASSERT_NO_FATAL_FAILURE(arena.tick(1));
+    const auto pid = arena.connectPlayer("nameless plane").join->pid;
+    sky::Player &player = *arena.getPlayer(pid);
+    ASSERT_EQ(bool(sky.getParticipation(player).isSpawned()), false);
+    ASSERT_NO_FATAL_FAILURE(arena.tick(1));
 
-  player->spawn({}, {300, 300}, 0);
-  ASSERT_EQ(bool(skyManager.getParticipation(*player)->getPlane()), true);
-  ASSERT_NO_FATAL_FAILURE(arena.tick(1));
+    player.spawn({}, {300, 300}, 0);
+    ASSERT_EQ(bool(sky.getParticipation(player).isSpawned()), true);
+    ASSERT_NO_FATAL_FAILURE(arena.tick(1));
+  }
 
-  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Scoring));
-  ASSERT_EQ(bool(skyManager.isActive()), false);
+  skyHandle.stop();
+  ASSERT_EQ(bool(skyHandle.isActive()), false);
 }
 
 /**
@@ -44,38 +46,56 @@ TEST_F(SkyTest, PhysicsTest) {
  */
 TEST_F(SkyTest, InitializerTest) {
   arena.connectPlayer("nameless plane");
-  sky::Player *player = arena.getPlayer(0);
-  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
-  player->spawn({}, {300, 300}, 0);
+  arena.connectPlayer("nameless plane 2");
 
-  ASSERT_EQ(skyManager.getParticipation(*player)->isSpawned(), true);
+  {
+    sky::Player player1 = *arena.getPlayer(0);
+    skyHandle.start("test1");
+    player1.spawn({}, {300, 300}, 0);
+  }
 
   sky::Arena remoteArena(arena.captureInitializer());
-  sky::SkyHandle remoteSky(remoteArena, skyManager.captureInitializer());
+  sky::SkyHandle remoteSkyHandle(remoteArena, skyHandle.captureInitializer());
+  ASSERT_EQ(remoteSkyHandle.isActive(), true);
+  const sky::Sky &remoteSky = remoteSkyHandle.getSky().get();
 
-  ASSERT_EQ(remoteSky.getParticipation(*player)->isSpawned(), true);
+  {
+    sky::Player player1 = *remoteArena.getPlayer(0);
+    sky::Player player2 = *remoteArena.getPlayer(1);
+    ASSERT_EQ(remoteSky.getParticipation(player1).isSpawned(), true);
+    ASSERT_EQ(remoteSky.getParticipation(player2).isSpawned(), false);
+    ASSERT_EQ(skyHandle.getSky()->getParticipation(player1).getPlane()->
+        getState().physical.pos.x, 300);
+  }
+
 }
 
 /**
  * We can propagate changes over the network with a SkyDelta.
  */
 TEST_F(SkyTest, DeltaTest) {
-  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
+  skyHandle.start("test1");
+  const sky::Sky &sky = skyHandle.getSky().get();
+
   sky::Arena remoteArena(arena.captureInitializer());
-  sky::SkyHandle remoteSky(remoteArena, skyManager.captureInitializer());
+  sky::SkyHandle remoteSkyHandle(remoteArena, skyHandle.captureInitializer());
+  const sky::Sky &remoteSky = remoteSkyHandle.getSky().get();
 
   auto const delta = arena.connectPlayer("nameless plane");
   remoteArena.applyDelta(delta);
 
-  sky::Player *player = arena.getPlayer(0);
-  player->spawn({}, {}, 0);
-  player->doAction(sky::Action::Reverse, true);
-  remoteSky.applyDelta(skyManager.collectDelta());
+  sky::Player &player = *arena.getPlayer(0);
+  player.spawn({}, {}, 0);
+  player.doAction(sky::Action::Reverse, true);
+  ASSERT_EQ(sky.getParticipation(player)
+                .getControls().getState<sky::Action::Reverse>(), true);
+  remoteSkyHandle.applyDelta(skyHandle.collectDelta());
 
-  ASSERT_EQ(skyManager.getParticipation(*player)
-                ->getControls().getState<sky::Action::Reverse>(), true);
-  ASSERT_EQ(remoteSky.getParticipation(*remoteArena.getPlayer(0))
-                ->getControls().getState<sky::Action::Reverse>(), true);
+  {
+    sky::Player &remotePlayer = *remoteArena.getPlayer(0);
+    ASSERT_EQ(remoteSky.getParticipation(remotePlayer)
+                  .getControls().getState<sky::Action::Reverse>(), true);
+  }
 }
 
 
