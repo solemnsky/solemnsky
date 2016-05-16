@@ -107,7 +107,7 @@ void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
 Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
     Networked(initializer),
     Subsystem(arena),
-    map(arena.getMap()),
+    map(initializer.mapName),
     physics(map, *this) {
   arena.forPlayers([&](Player &player) {
     const auto iter = initializer.participations.find(player.pid);
@@ -117,6 +117,8 @@ Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
       registerPlayer(player);
     }
   });
+
+  appLog("Started game on " + map.name, LogOrigin::Engine);
 }
 
 void Sky::applyDelta(const SkyDelta &delta) {
@@ -144,13 +146,16 @@ const Participation &Sky::getParticipation(const Player &player) const {
  */
 
 bool SkyHandleInitializer::verifyStructure() const {
-  return false;
+  return verifyValue(initializer);
 }
-
 
 /**
  * SkyHandleDelta.
  */
+
+bool SkyHandleDelta::verifyStructure() const {
+  return verifyValue(delta);
+}
 
 /**
  * SkyHandle.
@@ -178,13 +183,12 @@ void SkyHandle::stop() {
 
 void SkyHandle::start() {
   if (sky) stop();
-  appLog("Loading map " + inQuotes(arena.getMap()) + ".", LogOrigin::Engine);
   sky.emplace(arena);
 }
 
-SkyHandle::SkyHandle(Arena &arena, const SkyInitializer &initializer) :
+SkyHandle::SkyHandle(Arena &arena, const SkyHandleInitializer &initializer) :
+    Networked(initializer),
     Subsystem(arena) {
-
   if (arena.getMode() == ArenaMode::Game) {
     start();
   } else {

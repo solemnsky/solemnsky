@@ -64,4 +64,16 @@ Map::Map(const MapName &name) :
   }
 }
 
+const sf::Vector2f &Map::getDimensions() const {
+  return dimensions;
+}
+
+const std::vector<MapObstacle> &Map::getObstacles() const {
+  return obstacles;
+}
+
+const std::vector<MapItem> &Map::getItems() const {
+  return items;
+}
+
 }
