@@ -150,7 +150,7 @@ struct SkyHandleDelta {
  * Also wraps its Networked implementation.
  */
 class SkyHandle
-    : public Subsystem<nullptr_t>,
+    : public Subsystem<Nothing>,
       public Networked<SkyHandleInitializer, SkyHandleDelta> {
  private:
   // State.

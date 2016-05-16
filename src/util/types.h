@@ -252,7 +252,6 @@ struct Angle {
  * The concept of a type that can verify some invariant that could be
  * violated when it's transmitted over the network.
  */
-
 class VerifyStructure {
  public:
   virtual bool verifyStructure() const = 0;
@@ -288,5 +287,8 @@ enum class ArenaMode {
   Game, // playing tutorial
   Scoring // viewing tutorial results
 };
+
+// the null type, for when you want to convey no information
+struct Nothing { };
 
 }

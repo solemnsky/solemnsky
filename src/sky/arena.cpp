@@ -89,17 +89,17 @@ ArenaDelta::ArenaDelta(const ArenaDelta::Type type) : type(type) { }
 bool ArenaDelta::verifyStructure() const {
   switch (type) {
     case Type::Quit:
-      return verifyFields(quit);
+      return verifyOptionals(quit);
     case Type::Join:
-      return verifyFields(join);
+      return verifyOptionals(join);
     case Type::Delta:
-      return verifyFields(delta);
+      return verifyOptionals(delta);
     case Type::Motd:
-      return verifyFields(motd);
+      return verifyOptionals(motd);
     case Type::Mode:
-      return verifyFields(mode);
+      return verifyOptionals(mode);
     case Type::MapChange:
-      return verifyFields(map);
+      return verifyOptionals(map);
   }
   return false; // enum out of bounds
 }
