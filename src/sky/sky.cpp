@@ -52,7 +52,10 @@ void Sky::onTick(const float delta) {
 
 void Sky::registerPlayerWith(Player &player,
                              const ParticipationInit &initializer) {
-  participations.emplace(player.pid, initializer);
+  participations.emplace(
+      std::piecewise_construct,
+      std::forward_as_tuple(player.pid),
+      std::forward_as_tuple(physics, initializer));
   setPlayerData(player, participations.find(player.pid)->second);
 }
 
@@ -84,16 +87,16 @@ void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
 }
 
 Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
-    Networked(initializer),
     Subsystem(arena),
+    Networked(initializer),
     map(initializer.mapName),
     physics(map, *this) {
   arena.forPlayers([&](Player &player) {
     const auto iter = initializer.participations.find(player.pid);
     registerPlayerWith(
         player,
-        (iter == initializer.participations.end())
-        ? {} : iter->second);
+        (iter == initializer.participations.end()) ?
+        ParticipationInit{} : iter->second);
   });
 
   appLog("Started game on " + map.name, LogOrigin::Engine);
@@ -119,7 +122,7 @@ SkyDelta Sky::collectDelta() {
   SkyDelta delta;
   for (auto &participation : participations) {
     delta.participations.emplace(
-        participation.first, participation.second.captureDelta())
+        participation.first, participation.second.captureDelta());
   }
   return delta;
 }
@@ -161,10 +164,10 @@ bool SkyHandleDelta::verifyStructure() const {
  */
 
 SkyHandle::SkyHandle(Arena &arena, const SkyHandleInitializer &initializer) :
-    Networked(initializer),
-    Subsystem(arena) {
+    Subsystem(arena),
+    Networked(initializer) {
   if (const auto &skyInit = initializer.initializer) {
-    sky.emplace(skyInit.get());
+    sky.emplace(arena, skyInit.get());
   }
 }
 

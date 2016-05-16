@@ -83,7 +83,7 @@ bool verifyValue(
 bool verifyOptionals();
 
 template<typename Field, typename... Fields>
-bool verifyFields(Field &field, Fields... fields) {
+bool verifyOptionals(Field &field, Fields... fields) {
   if (!bool(field)) return false;
   if (!verifyValue(*field)) return false;
   return verifyOptionals(fields...);
@@ -97,7 +97,7 @@ bool verifyMap(const std::map<Key, Value> &map) {
   for (const auto &x : map)
     if (!verifyValue(x.second)) return false;
   return true;
-};
+}
 
 /**
  * Verify that the values of a vector respect any potential invariants.
