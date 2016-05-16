@@ -26,8 +26,8 @@ TEST_F(SkyTest, AllocTest) {
     ASSERT_EQ(bool(skyHandle.isActive()), true);
     const sky::Sky &sky = *skyHandle.getSky();
 
-    const auto pid = arena.connectPlayer("nameless plane").join->pid;
-    sky::Player &player = *arena.getPlayer(pid);
+    arena.connectPlayer("nameless plane");
+    sky::Player &player = *arena.getPlayer(0);
     ASSERT_EQ(bool(sky.getParticipation(player).isSpawned()), false);
     ASSERT_NO_FATAL_FAILURE(arena.tick(1));
 
@@ -49,9 +49,9 @@ TEST_F(SkyTest, InitializerTest) {
   arena.connectPlayer("nameless plane 2");
 
   {
-    sky::Player player1 = *arena.getPlayer(0);
+    sky::Player &player = *arena.getPlayer(0);
     skyHandle.start("test1");
-    player1.spawn({}, {300, 300}, 0);
+    player.spawn({}, {300, 300}, 0);
   }
 
   sky::Arena remoteArena(arena.captureInitializer());

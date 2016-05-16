@@ -52,7 +52,6 @@ void Sky::onTick(const float delta) {
 
 void Sky::registerPlayerWith(Player &player,
                              const ParticipationInit &initializer) {
-  appLog("registering player");
   participations.emplace(
       std::piecewise_construct,
       std::forward_as_tuple(player.pid),
