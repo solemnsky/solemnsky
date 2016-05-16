@@ -63,8 +63,9 @@ struct SkyDelta: public VerifyStructure {
 /**
  * Game world when a game is in session.
  */
-class Sky: public PhysicsListener, public Subsystem<Participation>,
-           public Networked<SkyInitializer, SkyDelta> {
+class Sky
+    : public PhysicsListener, public Subsystem<Participation>,
+      public Networked<SkyInitializer, SkyDelta> {
   friend class SkyHandle;
   friend class Participation;
  private:
@@ -140,19 +141,21 @@ struct SkyHandleDelta {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(initializer);
+    ar(delta);
   }
 
   bool verifyStructure() const;
 
-  optional<SkyInitializer> initializer;
+  optional<SkyDelta> delta;
 };
 
 /**
  * Wraps an optional<Sky>, binding it to the arena when the game is in session.
  * Also wraps its Networked implementation.
  */
-class SkyHandle: public Subsystem<optional<Participation>> {
+class SkyHandle
+    : public Subsystem<nullptr_t>,
+      public Networked<SkyHandleInitializer, SkyHandleDelta> {
  private:
   // State.
   optional<Sky> sky;
@@ -167,7 +170,7 @@ class SkyHandle: public Subsystem<optional<Participation>> {
   void start();
 
  public:
-  SkyHandle(class Arena &parent, const SkyInitializer &initializer);
+  SkyHandle(class Arena &parent, const SkyHandleInitializer &initializer);
   ~SkyHandle();
 
   // Networking.

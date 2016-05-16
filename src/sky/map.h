@@ -20,6 +20,7 @@
  */
 #pragma once
 #include <SFML/System.hpp>
+#include "util/types.h"
 #include <string>
 
 namespace sky {
@@ -60,13 +61,17 @@ struct Map {
   void loadTest2();
 
   // State, all constant after loading.
-  const MapName name;
   sf::Vector2f dimensions;
   std::vector<MapObstacle> obstacles;
   std::vector<MapItem> items;
 
  public:
   Map(const MapName &name);
+
+  const MapName name;
+  const sf::Vector2f &getDimensions() const;
+  const std::vector<MapObstacle> &getObstacles() const;
+  const std::vector<MapItem> &getItems() const;
 
 };
 

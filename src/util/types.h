@@ -290,9 +290,3 @@ enum class ArenaMode {
 };
 
 }
-
-/**
- * None.
- */
-struct None { };
-
