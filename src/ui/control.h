@@ -35,7 +35,7 @@ namespace ui {
  * Manager for performance profile data collected by the game loop.
  */
 struct Profiler {
-  Profiler(int size);
+  Profiler(const unsigned int size);
 
   RollingSampler cycleTime;
   RollingSampler logicTime;

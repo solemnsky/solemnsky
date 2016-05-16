@@ -258,22 +258,6 @@ class VerifyStructure {
   virtual bool verifyStructure() const = 0;
 };
 
-template<typename X>
-bool verifyValue(
-    const X &x,
-    typename std::enable_if<std::is_base_of<
-        VerifyStructure, X>::value>::type * = 0) {
-  return x.verifyStructure();
-}
-
-template<typename X>
-bool verifyValue(
-    const X &x,
-    typename std::enable_if<!std::is_base_of<
-        VerifyStructure, X>::value>::type * = 0) {
-  return true;
-}
-
 /**
  * The concept of a type that can be synced over the network.
  */
