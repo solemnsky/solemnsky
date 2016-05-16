@@ -76,7 +76,7 @@ Physics::Physics(const Map &map, PhysicsListener &listener) :
     world({0, Settings().gravity / Settings().distanceScale}),
     listener(listener),
     converter(listener),
-    dims(map.dimensions) {
+    dims(map.getDimensions()) {
   // world boundaries
   b2Body *body;
   body = createBody(rectShape({dims.x, 1}), BodyTag::BoundaryTag(), true);
@@ -89,7 +89,7 @@ Physics::Physics(const Map &map, PhysicsListener &listener) :
   body->SetTransform(toPhysVec({0, dims.y / 2}), 0);
 
   // obstacles
-  for (const auto &obstacle : map.obstacles) {
+  for (const auto &obstacle : map.getObstacles()) {
     body = createBody(polygonShape(obstacle.localVerticies),
                       BodyTag::ObstacleTag(obstacle), true);
     body->SetTransform(toPhysVec(obstacle.pos), 0);

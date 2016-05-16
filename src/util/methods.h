@@ -134,8 +134,3 @@ class enum_error: public std::logic_error {
 };
 
 inline bool imply(const bool x, const bool y) { return y or !x; }
-
-inline bool all(std::initializer_list<bool> list) {
-  for (const v : list) if (!v) return false;
-  return true;
-}
