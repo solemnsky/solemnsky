@@ -29,12 +29,18 @@ void Multiplayer::useView(
     const sky::ArenaMode arenaMode) {
   if (view) { if (view->target == arenaMode) return; }
   switch (arenaMode) {
-    case sky::ArenaMode::Lobby:
+    case sky::ArenaMode::Lobby: {
       view = std::make_unique<MultiplayerLobby>(shared, mShared);
-    case sky::ArenaMode::Game:
+      break;
+    }
+    case sky::ArenaMode::Game: {
       view = std::make_unique<MultiplayerGame>(shared, mShared);
-    case sky::ArenaMode::Scoring:
+      break;
+    }
+    case sky::ArenaMode::Scoring: {
       view = std::make_unique<MultiplayerScoring>(shared, mShared);
+      break;
+    }
   }
 }
 
@@ -84,6 +90,10 @@ void Multiplayer::tick(float delta) {
     mShared.conn->arena.tick(delta);
 
     const sky::ArenaMode currentMode = mShared.conn->arena.getMode();
+
+    if (mShared.conn->skyHandle.isActive())
+      appLog("the sky is instantiated");
+
     if (currentMode == sky::ArenaMode::Game
         and !mShared.conn->skyHandle.isActive()) {
       useView(sky::ArenaMode::Lobby);
