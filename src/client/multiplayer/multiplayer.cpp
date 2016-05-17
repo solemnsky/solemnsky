@@ -27,7 +27,7 @@
 
 void Multiplayer::useView(
     const sky::ArenaMode arenaMode) {
-  if (view and view->target == arenaMode) return;
+  if (view) { if (view->target == arenaMode) return; }
   switch (arenaMode) {
     case sky::ArenaMode::Lobby:
       view = std::make_unique<MultiplayerLobby>(shared, mShared);
