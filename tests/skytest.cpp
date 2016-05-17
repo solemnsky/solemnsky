@@ -98,4 +98,19 @@ TEST_F(SkyTest, DeltaTest) {
   }
 }
 
+/**
+ * We can transmit a Sky instantiation through a SkyHandleDelta.
+ */
+TEST_F(SkyTest, DeltaAllocTest) {
+  sky::Arena remoteArena(arena.captureInitializer());
+  sky::SkyHandle remoteSkyHandle(remoteArena, skyHandle.captureInitializer());
+
+  ASSERT_EQ(remoteSkyHandle.isActive(), false);
+
+  skyHandle.start("test1");
+  remoteSkyHandle.applyDelta(skyHandle.collectDelta());
+
+  ASSERT_EQ(remoteSkyHandle.isActive(), true);
+}
+
 

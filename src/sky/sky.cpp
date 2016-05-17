@@ -172,7 +172,8 @@ bool SkyHandleDelta::verifyStructure() const {
 
 SkyHandle::SkyHandle(Arena &arena, const SkyHandleInitializer &initializer) :
     Subsystem(arena),
-    Networked(initializer) {
+    Networked(initializer),
+    skyIsNew(false) {
   if (const auto &skyInit = initializer.initializer) {
     sky.emplace(arena, skyInit.get());
   }
@@ -198,6 +199,7 @@ SkyHandleDelta SkyHandle::collectDelta() {
   SkyHandleDelta delta;
   if (skyIsNew) {
     delta.initializer = sky->captureInitializer();
+    skyIsNew = false;
   } else {
     if (sky) delta.delta = sky->collectDelta();
   }
@@ -207,6 +209,7 @@ SkyHandleDelta SkyHandle::collectDelta() {
 void SkyHandle::start(const MapName &mapName) {
   stop();
   sky.emplace(arena, SkyInitializer(mapName));
+  skyIsNew = true;
 }
 
 void SkyHandle::stop() {

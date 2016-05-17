@@ -17,14 +17,6 @@
  */
 #include "vanilla.h"
 
-void VanillaServer::registerPlayer(sky::Player &player) {
-
-}
-
-void VanillaServer::unregisterPlayer(sky::Player &player) {
-
-}
-
 void VanillaServer::onTick(const float delta) {
 
 }
@@ -77,7 +69,5 @@ void VanillaServer::onPacket(ENetPeer *const client,
 
 VanillaServer::VanillaServer(ServerShared &telegraphy,
                              sky::Arena &arena, sky::SkyHandle &sky)
-    : Server(telegraphy, arena, sky) {
-  arena.forPlayers([&](sky::Player &player) { registerPlayer(player); });
-}
+    : Server(telegraphy, arena, sky) { }
 
