@@ -44,8 +44,8 @@ MultiplayerGame::MultiplayerGame(
               style.multi.chatPos,
               "[ENTER TO CHAT]"),
     scoreboardFocused(false),
-    skyRender(conn.arena, conn.skyManager, *conn.skyManager.getSky()),
-    participation(*conn.getParticipation()) {
+    skyRender(conn.arena, conn.skyManager.getSky().get()),
+    participation(conn.getSky()->getParticipation(conn.player)) {
   areChildren({&chatInput});
   skyRender.enableDebug = shared.settings.enableDebug;
 }

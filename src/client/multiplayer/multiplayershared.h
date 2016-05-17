@@ -50,7 +50,7 @@ struct ArenaConnection {
       MultiplayerShared &shared,
       const PID pid,
       const sky::ArenaInit &arenaInit,
-      const sky::SkyInitializer &skyInit);
+      const sky::SkyHandleInitializer &skyInit);
 
   // State.
   sky::Arena arena;
@@ -60,7 +60,7 @@ struct ArenaConnection {
   MultiplayerLogger logger;
 
   // Handy accessors.
-  const optional<sky::Participation> &getParticipation() const;
+  const optional<sky::Sky> &getSky() const;
 
 };
 

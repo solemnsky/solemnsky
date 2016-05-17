@@ -26,7 +26,7 @@
 class Tutorial : public Game {
 private:
   sky::Arena arena;
-  sky::SkyHandle skyManager;
+  sky::Sky sky;
   sky::SkyRender skyRender;
 
   sky::Player *player;

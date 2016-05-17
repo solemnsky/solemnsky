@@ -40,14 +40,14 @@ ArenaConnection::ArenaConnection(
     MultiplayerShared &shared,
     const PID pid,
     const sky::ArenaInit &arenaInit,
-    const sky::SkyInitializer &skyInit) :
+    const sky::SkyHandleInitializer &skyInit) :
     arena(arenaInit),
     skyManager(arena, skyInit),
     player(*arena.getPlayer(pid)),
     logger(arena, shared) { }
 
-const optional<sky::Participation> &ArenaConnection::getParticipation() const {
-  return skyManager.getParticipation(player);
+const optional<sky::Sky> &ArenaConnection::getSky() const {
+  return skyManager.getSky();
 }
 
 /**

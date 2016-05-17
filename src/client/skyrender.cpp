@@ -172,13 +172,14 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
 
 void SkyRender::renderMap(ui::Frame &f) {
   const sky::Map &map = sky.getMap();
+  const auto &dims = map.getDimensions();
 
-  f.drawRect({0, 0}, map.dimensions, style.base.pageBgColor);
+  f.drawRect({0, 0}, dims, style.base.pageBgColor);
   f.drawSprite(textureOf(ResID::Title),
-               {(map.dimensions.x / 2) - 800, 0},
+               {(dims.x / 2) - 800, 0},
                {0, 0, 1600, 900});
 
-  for (const auto &obstacle : map.obstacles) {
+  for (const auto &obstacle : map.getObstacles()) {
     f.withTransform(sf::Transform().translate(obstacle.pos), [&]() {
       f.drawPoly(obstacle.localVerticies, sf::Color::White);
     });
@@ -212,10 +213,12 @@ void SkyRender::onTick(const float delta) {
 
 void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
   const auto map = sky.getMap();
+  const auto &dims = map.getDimensions();
+
   f.withTransform(
       sf::Transform().translate(
-          {-findView(1600, map.dimensions.x, pos.x),
-           -findView(900, map.dimensions.y, pos.y)}
+          {-findView(1600, dims.x, pos.x),
+           -findView(900, dims.y, pos.y)}
       ),
       [&]() {
         renderMap(f);
