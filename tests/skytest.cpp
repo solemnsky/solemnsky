@@ -79,22 +79,24 @@ TEST_F(SkyTest, DeltaTest) {
 
   sky::Arena remoteArena(arena.captureInitializer());
   sky::SkyHandle remoteSkyHandle(remoteArena, skyHandle.captureInitializer());
-  const sky::Sky &remoteSky = remoteSkyHandle.getSky().get();
 
   auto const delta = arena.connectPlayer("nameless plane");
   remoteArena.applyDelta(delta);
 
   sky::Player &player = *arena.getPlayer(0);
-  player.spawn({}, {}, 0);
+  player.spawn({}, {300, 300}, 0);
   player.doAction(sky::Action::Reverse, true);
   ASSERT_EQ(sky.getParticipation(player)
                 .getControls().getState<sky::Action::Reverse>(), true);
   remoteSkyHandle.applyDelta(skyHandle.collectDelta());
 
   {
+    const sky::Sky &remoteSky = remoteSkyHandle.getSky().get();
     sky::Player &remotePlayer = *remoteArena.getPlayer(0);
-    ASSERT_EQ(remoteSky.getParticipation(remotePlayer)
-                  .getControls().getState<sky::Action::Reverse>(), true);
+    const auto &participation = remoteSky.getParticipation(remotePlayer);
+    ASSERT_EQ(participation.getControls().getState<sky::Action::Reverse>(), true);
+    ASSERT_EQ(participation.isSpawned(), true);
+    ASSERT_EQ(participation.getPlane()->getState().physical.pos.x, 300);
   }
 }
 

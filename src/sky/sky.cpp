@@ -129,7 +129,7 @@ SkyDelta Sky::collectDelta() {
   SkyDelta delta;
   for (auto &participation : participations) {
     delta.participations.emplace(
-        participation.first, participation.second.captureDelta());
+        participation.first, participation.second.collectDelta());
   }
   return delta;
 }
@@ -190,7 +190,8 @@ SkyHandleInitializer SkyHandle::captureInitializer() const {
 void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
   if (!sky) {
     if (delta.initializer) sky.emplace(arena, delta.initializer.get());
-  } else {
+  } 
+  if (sky) {
     if (delta.delta) sky->applyDelta(delta.delta.get());
   }
 }
@@ -200,9 +201,8 @@ SkyHandleDelta SkyHandle::collectDelta() {
   if (skyIsNew) {
     delta.initializer = sky->captureInitializer();
     skyIsNew = false;
-  } else {
-    if (sky) delta.delta = sky->collectDelta();
-  }
+  } 
+  if (sky) delta.delta = sky->collectDelta();
   return delta;
 }
 

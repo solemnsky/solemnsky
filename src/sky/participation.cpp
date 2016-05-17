@@ -187,11 +187,9 @@ void Plane::postPhysics(const float delta) {
 }
 
 void Plane::onBeginContact(const BodyTag &body) {
-  appLog("ouch");
 }
 
 void Plane::onEndContact(const BodyTag &body) {
-  appLog("that's better");
 }
 
 Plane::Plane(Physics &physics,
@@ -295,7 +293,7 @@ ParticipationInit Participation::captureInitializer() const {
   }
 }
 
-ParticipationDelta Participation::captureDelta() {
+ParticipationDelta Participation::collectDelta() {
   ParticipationDelta delta;
   if (plane) {
     delta.state = plane->state;

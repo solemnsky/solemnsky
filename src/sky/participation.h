@@ -148,7 +148,7 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   // Networked impl.
   void applyDelta(const ParticipationDelta &delta) override;
   ParticipationInit captureInitializer() const override;
-  ParticipationDelta captureDelta();
+  ParticipationDelta collectDelta();
 
   // User API.
   const optional<Plane> &getPlane() const;
