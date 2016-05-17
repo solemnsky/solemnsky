@@ -44,8 +44,8 @@ struct ServerShared {
 
   sky::Player *playerFromPeer(ENetPeer *peer) const;
 
-  // applyAndSendDelta
-  void applyAndSendDelta(const sky::ArenaDelta &arenaDelta);
+  // registerArenaDelta
+  void registerArenaDelta(const sky::ArenaDelta &arenaDelta);
 
   // Transmission.
   void sendToClients(const sky::ServerPacket &packet);
@@ -80,14 +80,14 @@ template<typename PlayerData>
 class Server: public ServerListener, public sky::Subsystem<PlayerData> {
  protected:
   ServerShared &shared;
-  sky::SkyHandle &sky;
+  sky::SkyHandle &skyHandle;
 
  public:
   Server(ServerShared &shared,
          sky::Arena &arena, sky::SkyHandle &sky) :
       sky::Subsystem<PlayerData>(arena),
       shared(shared),
-      sky(sky) { }
+      skyHandle(sky) { }
 
 };
 
