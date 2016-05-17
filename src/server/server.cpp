@@ -32,7 +32,7 @@ sky::Player *ServerShared::playerFromPeer(ENetPeer *peer) const {
   else return nullptr;
 }
 
-void ServerShared::applyAndSendDelta(const sky::ArenaDelta &arenaDelta) {
+void ServerShared::registerArenaDelta(const sky::ArenaDelta &arenaDelta) {
   exec.arena.applyDelta(arenaDelta);
   sendToClients(sky::ServerPacket::DeltaArena(arenaDelta));
 }
@@ -107,7 +107,7 @@ void ServerExec::processPacket(ENetPeer *client,
       case ClientPacket::Type::ReqPlayerDelta: {
         const PlayerDelta &delta = packet.playerDelta.get();
         if (delta.admin && not player->isAdmin()) return;
-        shared.applyAndSendDelta(
+        shared.registerArenaDelta(
             sky::ArenaDelta::Delta(
                 player->pid, delta));
         break;
@@ -152,7 +152,7 @@ void ServerExec::processPacket(ENetPeer *client,
       shared.sendToClient(
           client, ServerPacket::Init(
               newPlayer->pid, arena.captureInitializer(),
-              sky.captureInitializer()));
+              skyHandle.captureInitializer()));
       shared.sendToClientsExcept(
           newPlayer->pid, ServerPacket::DeltaArena(delta));
     }
@@ -164,7 +164,7 @@ void ServerExec::tick(float delta) {
   arena.tick(delta);
 
   if (packetBroadcastTimer.cool(delta)) {
-    shared.sendToClients(sky::ServerPacket::DeltaSky(sky.collectDelta()));
+    shared.sendToClients(sky::ServerPacket::DeltaSky(skyHandle.collectDelta()));
     packetBroadcastTimer.reset();
   }
 
@@ -181,7 +181,7 @@ void ServerExec::tick(float delta) {
     case ENET_EVENT_TYPE_DISCONNECT: {
       if (sky::Player *player = shared.playerFromPeer(event.peer)) {
         shared.logEvent(ServerEvent::Disconnect(player->getNickname()));
-        shared.applyAndSendDelta(sky::ArenaDelta::Quit(player->pid));
+        shared.registerArenaDelta(sky::ArenaDelta::Quit(player->pid));
         event.peer->data = nullptr;
       }
       break;
@@ -196,25 +196,24 @@ void ServerExec::tick(float delta) {
 
 ServerExec::ServerExec(
     const Port port,
-    const sky::ArenaInit &arena,
-    const sky::SkyInitializer &sky,
+    const sky::ArenaInit &arenaInit,
     std::function<std::unique_ptr<ServerListener>(
-        ServerShared &, sky::Arena &, sky::SkyManager &)> server) :
+        ServerShared &, sky::Arena &, sky::SkyHandle &)> server) :
     uptime(0),
 
     host(tg::HostType::Server, port),
     shared(host, telegraph, *this),
 
-    arena(arena),
-    sky(this->arena, sky),
+    arena(arenaInit),
+    skyHandle(arena, {}),
 
-    server(server(shared, this->arena, this->sky)),
+    server(server(shared, arena, skyHandle)),
     packetBroadcastTimer(0.03),
 
-    logger(shared, this->arena),
+    logger(shared, arena),
 
     running(true) {
-  shared.logEvent(ServerEvent::Start(port, arena.name));
+  shared.logEvent(ServerEvent::Start(port, arenaInit.name));
 }
 
 void ServerExec::run() {

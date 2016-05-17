@@ -25,12 +25,10 @@ int main() {
   // TODO: commandline arguments
 
   // and He said,
-  const sky::ArenaInit arenaInit{"my special server", "test_map"};
-  const sky::SkyInitializer skyInit{};
-  ServerExec(4242, arenaInit, skyInit,
+  ServerExec(4242, sky::ArenaInit("my special server", "test1"),
              [](ServerShared &telegraphy,
                 sky::Arena &arena,
-                sky::SkyManager &sky) {
+                sky::SkyHandle &sky) {
         return std::make_unique<VanillaServer>(telegraphy, arena, sky);
       }).run();
   // and lo, there appeared a server

@@ -150,17 +150,17 @@ struct ServerPacket: public VerifyStructure {
   optional<PID> pid;
   optional<ArenaInit> arenaInit;
   optional<ArenaDelta> arenaDelta;
-  optional<SkyInitializer> skyInit;
-  optional<SkyDelta> skyDelta;
+  optional<SkyHandleInitializer> skyInit;
+  optional<SkyHandleDelta> skyDelta;
   optional<std::string> stringData;
 
   bool verifyStructure() const override;
 
   static ServerPacket Pong();
   static ServerPacket Init(const PID pid, const ArenaInit &arenaInit,
-                           const SkyInitializer &init);
+                           const SkyHandleInitializer &init);
   static ServerPacket DeltaArena(const ArenaDelta &arenaDelta);
-  static ServerPacket DeltaSky(const SkyDelta &skyDelta);
+  static ServerPacket DeltaSky(const SkyHandleDelta &skyDelta);
   static ServerPacket Chat(const PID pid, const std::string &chat);
   static ServerPacket Broadcast(const std::string &broadcast);
   static ServerPacket RCon(const std::string &message);

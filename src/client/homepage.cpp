@@ -25,11 +25,14 @@ HomePage::HomePage(ClientShared &clientState) :
     Page(clientState),
     tutorialButton(appState, style.base.normalButton,
                    style.home.tutorialButtonPos,
-                   style.home.tutorialButtonDesc),
+                   "TUTORIAL"),
     localhostButton(appState, style.base.normalButton,
                     style.home.localhostButtonPos,
-                    style.home.localhostButtonDesc) {
-  areChildren({&tutorialButton, &localhostButton});
+                    "LOCAL GAME"),
+    remoteButton(appState, style.base.normalButton,
+                 style.home.remoteButtonPos,
+                 "REMOTE GAME") {
+  areChildren({&tutorialButton, &localhostButton, &remoteButton});
 }
 
 void HomePage::tick(float delta) {
@@ -64,6 +67,10 @@ void HomePage::signalRead() {
     shared.beginGame(std::make_unique<Tutorial>(shared));
 
   if (localhostButton.clickSignal)
+    shared.beginGame(
+        std::make_unique<Multiplayer>(shared, "localhost", 4242));
+
+  if (remoteButton.clickSignal)
     shared.beginGame(
         std::make_unique<Multiplayer>(shared, "46.101.20.237", 4242));
 }

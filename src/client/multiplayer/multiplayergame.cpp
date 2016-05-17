@@ -44,10 +44,10 @@ MultiplayerGame::MultiplayerGame(
               style.multi.chatPos,
               "[ENTER TO CHAT]"),
     scoreboardFocused(false),
-    skyRender(conn.arena, conn.skyManager, *conn.skyManager.getSky()),
-    participation(*conn.getParticipation()) {
+    skyRender(shared, conn.arena, conn.skyHandle.getSky().get()),
+    participation(conn.getSky()->getParticipation(conn.player)) {
   areChildren({&chatInput});
-  skyRender.enableDebug = shared.settings.enableDebug;
+  areChildComponents({&skyRender});
 }
 
 void MultiplayerGame::tick(float delta) {
@@ -101,8 +101,3 @@ void MultiplayerGame::signalRead() {
 void MultiplayerGame::signalClear() {
   ui::Control::signalClear();
 }
-
-void MultiplayerGame::onChangeSettings(const SettingsDelta &settings) {
-
-}
-

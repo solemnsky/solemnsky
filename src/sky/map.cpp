@@ -55,12 +55,25 @@ void Map::loadTest2() {
 }
 
 Map::Map(const MapName &name) :
-    dimensions(3200, 900) {
+    dimensions(3200, 900),
+    name(name) {
   if (name == "test1") {
     loadTest1();
   } else if (name == "test2") {
     loadTest2();
   }
+}
+
+const sf::Vector2f &Map::getDimensions() const {
+  return dimensions;
+}
+
+const std::vector<MapObstacle> &Map::getObstacles() const {
+  return obstacles;
+}
+
+const std::vector<MapItem> &Map::getItems() const {
+  return items;
 }
 
 }

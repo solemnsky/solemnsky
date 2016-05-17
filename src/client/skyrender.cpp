@@ -120,7 +120,6 @@ void SkyRender::renderProps(ui::Frame &f,
 
 void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                     const PlaneGraphics &graphics) {
-
   if (auto &plane = graphics.participation.getPlane()) {
     auto &state = plane->getState();
     auto &tuning = plane->getTuning();
@@ -137,10 +136,7 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                    sf::Color::Red);
                       });
 
-          planeSheet.drawIndexAtRoll(
-              f, sf::Vector2f(style.skyRender.spriteSize,
-                              style.skyRender.spriteSize),
-              graphics.roll());
+          planeSheet.drawIndexAtRoll(f, sf::Vector2f(200, 200), graphics.roll());
 
           if (enableDebug) {
             const auto halfHitbox = 0.5f * tuning.hitbox;
@@ -172,27 +168,26 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
 
 void SkyRender::renderMap(ui::Frame &f) {
   const sky::Map &map = sky.getMap();
+  const auto &dims = map.getDimensions();
 
-  f.drawRect({0, 0}, map.dimensions, style.base.pageBgColor);
+  f.drawRect({0, 0}, dims, style.base.pageBgColor);
   f.drawSprite(textureOf(ResID::Title),
-               {(map.dimensions.x / 2) - 800, 0},
+               {(dims.x / 2) - 800, 0},
                {0, 0, 1600, 900});
 
-  for (const auto &obstacle : map.obstacles) {
+  for (const auto &obstacle : map.getObstacles()) {
     f.withTransform(sf::Transform().translate(obstacle.pos), [&]() {
       f.drawPoly(obstacle.localVerticies, sf::Color::White);
     });
   }
 }
 
-SkyRender::SkyRender(Arena &arena,
-                     const SkyManager &skyManager,
-                     const Sky &sky) :
+SkyRender::SkyRender(ClientShared &shared, Arena &arena, const Sky &sky) :
+    ClientComponent(shared),
     Subsystem(arena),
-    skyManager(skyManager),
     sky(sky),
     planeSheet(ResID::PlayerSheet),
-    enableDebug(false) {
+    enableDebug(shared.settings.enableDebug) {
   arena.forPlayers([&](Player &player) { registerPlayer(player); });
 }
 
@@ -202,7 +197,7 @@ void SkyRender::registerPlayer(Player &player) {
   setPlayerData(
       player,
       graphics.emplace(
-          player.pid, *skyManager.getParticipation(player)).first->second);
+          player.pid, sky.getParticipation(player)).first->second);
 }
 
 void SkyRender::unregisterPlayer(Player &player) {
@@ -213,12 +208,18 @@ void SkyRender::onTick(const float delta) {
   for (auto &pair : graphics) pair.second.tick(delta);
 }
 
+void SkyRender::onChangeSettings(const SettingsDelta &settings) {
+  if (settings.enableDebug) enableDebug = settings.enableDebug.get();
+}
+
 void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
   const auto map = sky.getMap();
+  const auto &dims = map.getDimensions();
+
   f.withTransform(
       sf::Transform().translate(
-          {-findView(1600, map.dimensions.x, pos.x),
-           -findView(900, map.dimensions.y, pos.y)}
+          {-findView(1600, dims.x, pos.x),
+           -findView(900, dims.y, pos.y)}
       ),
       [&]() {
         renderMap(f);
