@@ -25,8 +25,6 @@
 class VanillaServer: public Server<Nothing> {
  protected:
   // subsystem callbacks
-  void registerPlayer(sky::Player &player) override;
-  void unregisterPlayer(sky::Player &player) override;
   void onTick(const float delta) override;
 
   // server callbacks

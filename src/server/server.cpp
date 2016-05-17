@@ -196,7 +196,7 @@ void ServerExec::tick(float delta) {
 
 ServerExec::ServerExec(
     const Port port,
-    const sky::ArenaInit &arena,
+    const sky::ArenaInit &arenaInit,
     std::function<std::unique_ptr<ServerListener>(
         ServerShared &, sky::Arena &, sky::SkyHandle &)> server) :
     uptime(0),
@@ -204,16 +204,16 @@ ServerExec::ServerExec(
     host(tg::HostType::Server, port),
     shared(host, telegraph, *this),
 
-    arena(arena),
-    skyHandle(this->arena, {}),
+    arena(arenaInit),
+    skyHandle(arena, {}),
 
-    server(server(shared, this->arena, this->skyHandle)),
+    server(server(shared, arena, skyHandle)),
     packetBroadcastTimer(0.03),
 
-    logger(shared, this->arena),
+    logger(shared, arena),
 
     running(true) {
-  shared.logEvent(ServerEvent::Start(port, arena.name));
+  shared.logEvent(ServerEvent::Start(port, arenaInit.name));
 }
 
 void ServerExec::run() {

@@ -134,7 +134,7 @@ class ServerExec {
 
  public:
   ServerExec(const Port port,
-             const sky::ArenaInit &arena,
+             const sky::ArenaInit &arenaInit,
              std::function<std::unique_ptr<ServerListener>(
                  ServerShared &, sky::Arena &, sky::SkyHandle &)> server);
 
