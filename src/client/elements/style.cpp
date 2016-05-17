@@ -110,8 +110,7 @@ Style::Menu::Menu(const Style::Base &base) :
 Style::Home::Home(const Style::Base &base) :
     tutorialButtonPos(500, 300),
     localhostButtonPos(1100, 300),
-    tutorialButtonDesc("START TUTORIAL"),
-    localhostButtonDesc("CONNECT TO LOCALHOST") { }
+    remoteButtonPos(800, 600) { }
 
 Style::Settings::Settings(const Style::Base &base) :
     textEntry(base.normalTextEntry),
@@ -163,7 +162,17 @@ Style::Multi::Multi(const Style::Base &base) :
   messageLogText.vertical = ui::VerticalAlign::Bottom;
 }
 
-Style::SkyRender::SkyRender() { }
+Style::SkyRender::SkyRender() :
+    rollAmount(25),
+    rollSpeed(2),
+    flipSpeed(2),
+    afterburnArea(-70, -10, 70, 20),
+    barArea(-100, -100, 200, 30),
+    throttleStall(0, 0, 0, 100),
+    throttle(sf::Color::Black),
+    health(sf::Color::Green),
+    energy(sf::Color::Blue),
+    deathRate(0.5) { }
 
 Style::Style() :
     base(),

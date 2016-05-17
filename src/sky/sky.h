@@ -28,58 +28,72 @@
 namespace sky {
 
 /**
- * Initializer for the SkyManager Networked impl.
+ * Initializer for Sky.
  */
 struct SkyInitializer: public VerifyStructure {
   SkyInitializer() = default;
+  SkyInitializer(const MapName &mapName);
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(planes);
+    ar(mapName, participations);
   }
 
   bool verifyStructure() const;
 
-  std::map<PID, ParticipationInit>
-      planes; // participations already in the arena
+  MapName mapName;
+  std::map<PID, ParticipationInit> participations;
 };
 
 /**
- * Delta for SkyManager Networked impl.
+ * Delta for Sky.
  */
 struct SkyDelta: public VerifyStructure {
   SkyDelta() = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(planes);
+    ar(participations);
   }
 
   bool verifyStructure() const;
 
-  std::map<PID, ParticipationDelta> planes;
+  std::map<PID, ParticipationDelta> participations;
 };
 
 /**
  * Game world when a game is in session.
  */
-class Sky: public PhysicsListener {
-  friend class SkyManager;
+class Sky
+    : public PhysicsListener, public Subsystem<Participation>,
+      public Networked<SkyInitializer, SkyDelta> {
+  friend class SkyHandle;
   friend class Participation;
  private:
-  // Parameters.
-  const Arena &arena;
-
   // State.
   Map map;
   Physics physics;
-  std::map<PID, optional<Participation>> &skyPlayers;
+  std::map<PID, Participation> participations;
 
  protected:
   // Internal API.
   void onTick(const float delta);
 
-  // Physics listeners.
+  // Subsystem impl.
+  void registerPlayerWith(Player &player,
+                          const ParticipationInit &initializer);
+  void registerPlayer(Player &player) override final;
+  void unregisterPlayer(Player &player) override final;
+  void onAction(Player &player,
+                const Action action,
+                const bool state) override final;
+  virtual void onSpawn(Player &player,
+                       const PlaneTuning &tuning,
+                       const sf::Vector2f &pos,
+                       const float rot) override final;
+
+
+  // PhysicsListener impl.
   virtual void onBeginContact(const BodyTag &body1,
                               const BodyTag &body2) override final;
   virtual void onEndContact(const BodyTag &body1,
@@ -87,62 +101,81 @@ class Sky: public PhysicsListener {
 
  public:
   Sky(Arena &&arena, std::map<PID, optional<Participation>> &) = delete;
-  Sky(const Arena &arena,
-      std::map<PID, optional<Participation>> &skyPlayers);
+  Sky(Arena &arena, const SkyInitializer &initializer);
+
+  // Networked impl.
+  void applyDelta(const SkyDelta &delta) override final;
+  SkyInitializer captureInitializer() const override final;
+  SkyDelta collectDelta();
 
   // User API.
   const Map &getMap() const;
+  const Participation &getParticipation(const Player &player) const;
 
 };
 
 /**
- * Wraps an optional<Sky>, binding it to the arena when the game is in session.
+ * Initializer for SkyHandle.
  */
-class SkyManager: public Subsystem<optional<Participation>> {
+
+struct SkyHandleInitializer {
+  SkyHandleInitializer() = default;
+  explicit SkyHandleInitializer(const SkyInitializer &initializer);
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(initializer);
+  }
+
+  bool verifyStructure() const;
+
+  optional<SkyInitializer> initializer;
+};
+
+/**
+ * Delta for SkyHandle.
+ */
+
+struct SkyHandleDelta {
+  SkyHandleDelta() = default;
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(delta);
+  }
+
+  bool verifyStructure() const;
+
+  optional<SkyInitializer> initializer;
+  optional<SkyDelta> delta;
+};
+
+/**
+ * Wraps an optional<Sky>, binding it to the arena when the game is in session.
+ * Also wraps its Networked implementation.
+ */
+class SkyHandle
+    : public Subsystem<Nothing>,
+      public Networked<SkyHandleInitializer, SkyHandleDelta> {
  private:
   // State.
   optional<Sky> sky;
-  std::map<PID, optional<Participation>> participations;
-
- protected:
-  // Internal help.
-  void registerPlayerWith(Player &player, const ParticipationInit &initializer);
-
-  // Subsystem impl.
-  void registerPlayer(Player &player) override;
-  void unregisterPlayer(Player &player) override;
-
-  void onTick(const float delta) override;
-  void onJoin(Player &player) override;
-  void onQuit(Player &player) override;
-  void onMode(const ArenaMode newMode) override;
-  void onMapChange() override;
-  void onAction(Player &player,
-                const Action action,
-                const bool state) override;
-  void onSpawn(Player &player,
-               const PlaneTuning &tuning,
-               const sf::Vector2f &pos,
-               const float rot) override;
-
-  // Starting / stopping.
-  void stop();
-  void start();
+  bool skyIsNew;
 
  public:
-  SkyManager(class Arena &parent, const SkyInitializer &initializer);
-  ~SkyManager();
+  SkyHandle(class Arena &parent, const SkyHandleInitializer &initializer);
 
   // Networking.
-  SkyInitializer captureInitializer();
-  SkyDelta collectDelta();
-  void applyDelta(const SkyDelta &delta);
+  SkyHandleInitializer captureInitializer() const override final;
+  SkyHandleDelta collectDelta();
+  void applyDelta(const SkyHandleDelta &delta) override final;
 
   // User API.
-  void restart();
+  void start(const MapName &mapName);
+  void stop();
+
   const optional<Sky> &getSky() const;
   bool isActive() const;
-  const optional<Participation> &getParticipation(const Player &player) const;
 
 };
 

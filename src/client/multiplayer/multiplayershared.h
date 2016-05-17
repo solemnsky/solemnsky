@@ -50,17 +50,17 @@ struct ArenaConnection {
       MultiplayerShared &shared,
       const PID pid,
       const sky::ArenaInit &arenaInit,
-      const sky::SkyInitializer &skyInit);
+      const sky::SkyHandleInitializer &skyInit);
 
   // State.
   sky::Arena arena;
-  sky::SkyManager skyManager;
+  sky::SkyHandle skyHandle;
   sky::Player &player;
 
   MultiplayerLogger logger;
 
   // Handy accessors.
-  const optional<sky::Participation> &getParticipation() const;
+  const optional<sky::Sky> &getSky() const;
 
 };
 
@@ -128,10 +128,9 @@ class MultiplayerShared {
  * These classes act assuming that the connection is active
  * (conneciton.myPlayer is not null).
  */
-class MultiplayerView: public ui::Control {
+class MultiplayerView: public ClientComponent, public ui::Control {
  public:
   // Shared state.
-  ClientShared &shared;
   MultiplayerShared &mShared;
   ArenaConnection &conn; // from mShared
 
@@ -141,7 +140,6 @@ class MultiplayerView: public ui::Control {
       MultiplayerShared &mShared);
   virtual ~MultiplayerView() { }
 
-  const sky::ArenaMode target; 
+  const sky::ArenaMode target;
 
-  virtual void onChangeSettings(const SettingsDelta &settings) = 0;
 };

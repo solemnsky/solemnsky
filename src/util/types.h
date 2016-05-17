@@ -25,16 +25,15 @@
 #include <SFML/System.hpp>
 #include <boost/optional.hpp>
 
-/****
- * Optional.
+/**
+ * Small comforts.
  */
-
+struct Nothing { };
 using boost::optional;
 
 /**
  * Cereal rules, in both meanings of the word.
  */
-
 template<typename Archive, typename T>
 void save(Archive &ar, const optional<T> &x) {
   if (x) {
@@ -115,7 +114,6 @@ bool approach(T &x, const T target, const T amount) {
  * RollingSampler.
  * TODO: optimize this if necessary
  */
-
 class RollingSampler {
  private:
   std::vector<float> data;
@@ -215,9 +213,8 @@ bool cyclicApproach(Cyclic &x, const float target, const float amount);
 float cyclicDistance(const Cyclic x, const float y);
 
 /**
- * The movement of a one-dimensional variable at a constant or null rate.
+ * The linear movement of a one-dimensional variable at a unit or null rate.
  */
-
 enum class Movement {
   Up, Down, None
 };
@@ -252,27 +249,10 @@ struct Angle {
  * The concept of a type that can verify some invariant that could be
  * violated when it's transmitted over the network.
  */
-
 class VerifyStructure {
  public:
   virtual bool verifyStructure() const = 0;
 };
-
-template<typename X>
-bool verifyValue(
-    const X &x,
-    typename std::enable_if<std::is_base_of<
-        VerifyStructure, X>::value>::type * = 0) {
-  return x.verifyStructure();
-}
-
-template<typename X>
-bool verifyValue(
-    const X &x,
-    typename std::enable_if<!std::is_base_of<
-        VerifyStructure, X>::value>::type * = 0) {
-  return true;
-}
 
 /**
  * The concept of a type that can be synced over the network.
@@ -291,7 +271,6 @@ class Networked {
 /**
  * Types and type synonyms for the game.
  */
-
 typedef unsigned int PID; // ID type for various things in the game
 typedef unsigned short Port; // network port
 
@@ -306,9 +285,3 @@ enum class ArenaMode {
 };
 
 }
-
-/**
- * None.
- */
-struct None { };
-

@@ -20,12 +20,11 @@
  */
 #pragma once
 #include "server/server.h"
+#include "util/types.h"
 
-class VanillaServer: public Server<None> {
+class VanillaServer: public Server<Nothing> {
  protected:
   // subsystem callbacks
-  void registerPlayer(sky::Player &player) override;
-  void unregisterPlayer(sky::Player &player) override;
   void onTick(const float delta) override;
 
   // server callbacks
@@ -36,6 +35,6 @@ class VanillaServer: public Server<None> {
  public:
 
   VanillaServer
-      (ServerShared &telegraphy, sky::Arena &arena, sky::SkyManager &sky);
+      (ServerShared &telegraphy, sky::Arena &arena, sky::SkyHandle &sky);
 
 };

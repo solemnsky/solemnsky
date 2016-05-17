@@ -32,17 +32,17 @@ bool ClientPacket::verifyStructure() const {
     case Type::Ping:
       return true;
     case Type::ReqJoin:
-      return verifyFields(stringData);
+      return verifyOptionals(stringData);
     case Type::ReqPlayerDelta:
-      return verifyFields(playerDelta);
+      return verifyOptionals(playerDelta);
     case Type::ReqAction:
-      return verifyFields(action, state);
+      return verifyOptionals(action, state);
     case Type::ReqSpawn:
       return true;
     case Type::Chat:
-      return verifyFields(stringData);
+      return verifyOptionals(stringData);
     case Type::RCon:
-      return verifyFields(stringData);
+      return verifyOptionals(stringData);
   }
   return false;
 }
@@ -100,17 +100,17 @@ bool ServerPacket::verifyStructure() const {
     case Type::Pong:
       return true;
     case Type::Init:
-      return verifyFields(pid, arenaInit, skyInit);
+      return verifyOptionals(pid, arenaInit, skyInit);
     case Type::DeltaArena:
-      return verifyFields(arenaDelta);
+      return verifyOptionals(arenaDelta);
     case Type::DeltaSky:
-      return verifyFields(skyDelta);
+      return verifyOptionals(skyDelta);
     case Type::Chat:
-      return verifyFields(pid, stringData);
+      return verifyOptionals(pid, stringData);
     case Type::Broadcast:
-      return verifyFields(stringData);
+      return verifyOptionals(stringData);
     case Type::RCon:
-      return verifyFields(stringData);
+      return verifyOptionals(stringData);
   }
   return false;
 }
@@ -121,7 +121,7 @@ ServerPacket ServerPacket::Pong() {
 
 ServerPacket ServerPacket::Init(const PID pid,
                                 const ArenaInit &arenaInit,
-                                const SkyInitializer &skyInit) {
+                                const SkyHandleInitializer &skyInit) {
   ServerPacket packet(Type::Init);
   packet.pid = pid;
   packet.arenaInit = arenaInit;
@@ -135,7 +135,7 @@ ServerPacket ServerPacket::DeltaArena(const ArenaDelta &arenaDelta) {
   return packet;
 }
 
-ServerPacket ServerPacket::DeltaSky(const SkyDelta &skyDelta) {
+ServerPacket ServerPacket::DeltaSky(const SkyHandleDelta &skyDelta) {
   ServerPacket packet(Type::DeltaSky);
   packet.skyDelta = skyDelta;
   return packet;
