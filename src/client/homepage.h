@@ -28,6 +28,7 @@ class HomePage: public Page {
  private:
   ui::Button tutorialButton;
   ui::Button localhostButton;
+  ui::Button remoteButton;
 
  public:
   HomePage(ClientShared &state);
