@@ -250,8 +250,8 @@ MultiplayerView::MultiplayerView(
     sky::ArenaMode target,
     ClientShared &shared,
     MultiplayerShared &mShared) :
+    ClientComponent(shared),
     ui::Control(shared.appState),
-    shared(shared),
     mShared(mShared),
     conn(mShared.conn.get()),
     target(target) { }

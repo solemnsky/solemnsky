@@ -128,10 +128,9 @@ class MultiplayerShared {
  * These classes act assuming that the connection is active
  * (conneciton.myPlayer is not null).
  */
-class MultiplayerView: public ui::Control {
+class MultiplayerView: public ClientComponent, public ui::Control {
  public:
   // Shared state.
-  ClientShared &shared;
   MultiplayerShared &mShared;
   ArenaConnection &conn; // from mShared
 
@@ -141,7 +140,6 @@ class MultiplayerView: public ui::Control {
       MultiplayerShared &mShared);
   virtual ~MultiplayerView() { }
 
-  const sky::ArenaMode target; 
+  const sky::ArenaMode target;
 
-  virtual void onChangeSettings(const SettingsDelta &settings) = 0;
 };

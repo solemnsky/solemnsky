@@ -75,9 +75,7 @@ class Control {
 
   std::vector<Control *> children;
 
-  inline void areChildren(std::initializer_list<Control *> controls) {
-    for (auto control : controls) children.push_back(control);
-  }
+  void areChildren(std::initializer_list<Control *> controls);
 
  public:
   Control(AppState &appState);

@@ -33,16 +33,16 @@
  */
 class Client: public ui::Control {
  private:
-  // buttons
+  // Buttons.
   ui::Button backButton, // for exiting menus, lower right
       closeButton, // for closing the current tutorial, lower left
       quitButton, // quitting solemnsky
       aboutButton; // for seeing the about screen
 
-  // shared state
+  // Shared state.
   ClientShared shared;
 
-  // misc ui
+  // Misc ui.
   HomePage homePage;
   ListingPage listingPage;
   SettingsPage settingsPage;
@@ -51,7 +51,7 @@ class Client: public ui::Control {
   Cooldown profilerCooldown;
   ui::ProfilerSnapshot profilerSnap;
 
-  // helpers
+  // Internal helpers.
   void forAllPages(std::function<void(Page &)> f);
   Page &referencePage(const PageType type);
   void drawPage(ui::Frame &f, const PageType type,
@@ -63,9 +63,7 @@ class Client: public ui::Control {
  public:
   Client(ui::AppState &appState);
 
-  /**
-   * Control interface.
-   */
+  // Control impl.
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
@@ -73,9 +71,7 @@ class Client: public ui::Control {
   void signalRead() override;
   void signalClear() override;
 
-  /**
-   * UI methods.
-   */
+  // UI API.
   void beginGame(std::unique_ptr<Game> &&game);
   void focusGame();
   void blurGame();

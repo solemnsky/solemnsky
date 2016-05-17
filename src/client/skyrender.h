@@ -19,6 +19,7 @@
  * Rendering the sky.
  */
 #pragma once
+#include "elements/elements.h"
 #include "util/client/resources.h"
 #include <list>
 #include "ui/control.h"
@@ -50,7 +51,7 @@ struct PlaneGraphics {
  *
  * Invariant: `sky` remains alive.
  */
-class SkyRender: public Subsystem<PlaneGraphics> {
+class SkyRender: public ClientComponent, public Subsystem<PlaneGraphics> {
  private:
   // Parameters.
   const Sky &sky;
@@ -77,8 +78,11 @@ class SkyRender: public Subsystem<PlaneGraphics> {
   void onTick(const float delta) override;
 
  public:
-  SkyRender(Arena &arena, const Sky &sky);
+  SkyRender(ClientShared &shared, Arena &arena, const Sky &sky);
   ~SkyRender();
+
+  // ClientComponent impl.
+  virtual void onChangeSettings(const SettingsDelta &settings) override final;
 
   // User API.
   void render(ui::Frame &f, const sf::Vector2f &pos);
