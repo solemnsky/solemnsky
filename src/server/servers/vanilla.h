@@ -20,8 +20,9 @@
  */
 #pragma once
 #include "server/server.h"
+#include "util/types.h"
 
-class VanillaServer: public Server<None> {
+class VanillaServer: public Server<Nothing> {
  protected:
   // subsystem callbacks
   void registerPlayer(sky::Player &player) override;

@@ -121,7 +121,7 @@ ServerPacket ServerPacket::Pong() {
 
 ServerPacket ServerPacket::Init(const PID pid,
                                 const ArenaInit &arenaInit,
-                                const SkyInitializer &skyInit) {
+                                const SkyHandleInitializer &skyInit) {
   ServerPacket packet(Type::Init);
   packet.pid = pid;
   packet.arenaInit = arenaInit;
@@ -135,7 +135,7 @@ ServerPacket ServerPacket::DeltaArena(const ArenaDelta &arenaDelta) {
   return packet;
 }
 
-ServerPacket ServerPacket::DeltaSky(const SkyDelta &skyDelta) {
+ServerPacket ServerPacket::DeltaSky(const SkyHandleDelta &skyDelta) {
   ServerPacket packet(Type::DeltaSky);
   packet.skyDelta = skyDelta;
   return packet;
