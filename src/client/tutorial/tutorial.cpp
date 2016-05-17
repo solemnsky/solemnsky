@@ -21,11 +21,14 @@ Tutorial::Tutorial(ClientShared &state) :
     Game(state, "tutorial"),
     arena(sky::ArenaInit("tutorial", "test1")),
     sky(arena, sky::SkyInitializer("test1")),
-    skyRender(arena, sky) {
+    skyRender(shared, arena, sky) {
+  areChildComponents({&skyRender});
   arena.connectPlayer("offline player");
+
   player = arena.getPlayer(0);
   player->spawn({}, {30, 30}, 0);
   participation = &sky.getParticipation(*player);
+
   status = "learning to play";
 }
 
@@ -34,8 +37,8 @@ Tutorial::Tutorial(ClientShared &state) :
  */
 
 void Tutorial::onChangeSettings(const SettingsDelta &settings) {
+  ClientComponent::onChangeSettings(settings);
   if (settings.nickname) player->getNickname() = *settings.nickname;
-  if (settings.enableDebug) skyRender.enableDebug = settings.enableDebug.get();
 }
 
 void Tutorial::onBlur() {

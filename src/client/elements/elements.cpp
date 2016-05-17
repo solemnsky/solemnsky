@@ -57,6 +57,5 @@ Game::Game(ClientShared &shared,
            const std::string &name) :
     ClientComponent(shared),
     ui::Control(shared.appState),
-    shared(shared),
     name(name) { }
 
