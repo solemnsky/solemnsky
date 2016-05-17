@@ -30,7 +30,7 @@ HomePage::HomePage(ClientShared &clientState) :
                     style.home.localhostButtonPos,
                     "LOCAL GAME"),
     remoteButton(appState, style.base.normalButton,
-                 style.home.localhostButtonPos,
+                 style.home.remoteButtonPos,
                  "REMOTE GAME") {
   areChildren({&tutorialButton, &localhostButton, &remoteButton});
 }

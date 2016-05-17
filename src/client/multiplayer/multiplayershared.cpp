@@ -42,12 +42,12 @@ ArenaConnection::ArenaConnection(
     const sky::ArenaInit &arenaInit,
     const sky::SkyHandleInitializer &skyInit) :
     arena(arenaInit),
-    skyManager(arena, skyInit),
+    skyHandle(arena, skyInit),
     player(*arena.getPlayer(pid)),
     logger(arena, shared) { }
 
 const optional<sky::Sky> &ArenaConnection::getSky() const {
-  return skyManager.getSky();
+  return skyHandle.getSky();
 }
 
 /**
@@ -86,7 +86,7 @@ void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
     }
 
     case ServerPacket::Type::DeltaSky: {
-      conn->skyManager.applyDelta(packet.skyDelta.get());
+      conn->skyHandle.applyDelta(packet.skyDelta.get());
       break;
     }
 

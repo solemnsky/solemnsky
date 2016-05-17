@@ -32,7 +32,7 @@ class Multiplayer: public Game {
    */
   MultiplayerShared mShared;
   std::unique_ptr<MultiplayerView> view;
-  std::unique_ptr<MultiplayerView> mkView();
+  void useView(const sky::ArenaMode arenaMode);
 
  public:
   Multiplayer(ClientShared &shared,

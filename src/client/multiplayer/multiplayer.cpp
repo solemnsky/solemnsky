@@ -25,17 +25,17 @@
  * Multiplayer.
  */
 
-std::unique_ptr<MultiplayerView> Multiplayer::mkView() {
-  if (!mShared.conn) return {};
-  switch (mShared.conn->arena.getMode()) {
+void Multiplayer::useView(
+    const sky::ArenaMode arenaMode) {
+  if (view and view->target == arenaMode) return;
+  switch (arenaMode) {
     case sky::ArenaMode::Lobby:
-      return std::make_unique<MultiplayerLobby>(shared, mShared);
+      view = std::make_unique<MultiplayerLobby>(shared, mShared);
     case sky::ArenaMode::Game:
-      return std::make_unique<MultiplayerGame>(shared, mShared);
+      view = std::make_unique<MultiplayerGame>(shared, mShared);
     case sky::ArenaMode::Scoring:
-      return std::make_unique<MultiplayerScoring>(shared, mShared);
+      view = std::make_unique<MultiplayerScoring>(shared, mShared);
   }
-  throw enum_error();
 }
 
 Multiplayer::Multiplayer(ClientShared &shared,
@@ -82,9 +82,13 @@ void Multiplayer::tick(float delta) {
 
   if (mShared.conn) {
     mShared.conn->arena.tick(delta);
-    if (!view or view->target != mShared.conn->arena.getMode()) {
-      view = mkView();
-    }
+
+    const sky::ArenaMode currentMode = mShared.conn->arena.getMode();
+    if (currentMode == sky::ArenaMode::Game
+        and !mShared.conn->skyHandle.isActive()) {
+      useView(sky::ArenaMode::Lobby);
+    } else useView(currentMode);
+
     view->tick(delta);
   }
 }

@@ -54,7 +54,7 @@ struct ArenaConnection {
 
   // State.
   sky::Arena arena;
-  sky::SkyHandle skyManager;
+  sky::SkyHandle skyHandle;
   sky::Player &player;
 
   MultiplayerLogger logger;

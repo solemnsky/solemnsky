@@ -32,7 +32,7 @@ sky::Player *ServerShared::playerFromPeer(ENetPeer *peer) const {
   else return nullptr;
 }
 
-void ServerShared::applyAndSendDelta(const sky::ArenaDelta &arenaDelta) {
+void ServerShared::registerArenaDelta(const sky::ArenaDelta &arenaDelta) {
   exec.arena.applyDelta(arenaDelta);
   sendToClients(sky::ServerPacket::DeltaArena(arenaDelta));
 }
@@ -107,7 +107,7 @@ void ServerExec::processPacket(ENetPeer *client,
       case ClientPacket::Type::ReqPlayerDelta: {
         const PlayerDelta &delta = packet.playerDelta.get();
         if (delta.admin && not player->isAdmin()) return;
-        shared.applyAndSendDelta(
+        shared.registerArenaDelta(
             sky::ArenaDelta::Delta(
                 player->pid, delta));
         break;
@@ -181,7 +181,7 @@ void ServerExec::tick(float delta) {
     case ENET_EVENT_TYPE_DISCONNECT: {
       if (sky::Player *player = shared.playerFromPeer(event.peer)) {
         shared.logEvent(ServerEvent::Disconnect(player->getNickname()));
-        shared.applyAndSendDelta(sky::ArenaDelta::Quit(player->pid));
+        shared.registerArenaDelta(sky::ArenaDelta::Quit(player->pid));
         event.peer->data = nullptr;
       }
       break;
