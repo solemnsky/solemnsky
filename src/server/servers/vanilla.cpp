@@ -53,7 +53,8 @@ void VanillaServer::onPacket(ENetPeer *const client,
       }
 
       if (packet.stringData.get() == "restart") {
-        sky.restart();
+        sky.stop();
+        sky.start(arena.getMap());
         return;
       }
 

@@ -152,7 +152,7 @@ void ServerExec::processPacket(ENetPeer *client,
       shared.sendToClient(
           client, ServerPacket::Init(
               newPlayer->pid, arena.captureInitializer(),
-              sky.captureInitializer()));
+              skyHandle.captureInitializer()));
       shared.sendToClientsExcept(
           newPlayer->pid, ServerPacket::DeltaArena(delta));
     }
@@ -164,7 +164,7 @@ void ServerExec::tick(float delta) {
   arena.tick(delta);
 
   if (packetBroadcastTimer.cool(delta)) {
-    shared.sendToClients(sky::ServerPacket::DeltaSky(sky.collectDelta()));
+    shared.sendToClients(sky::ServerPacket::DeltaSky(skyHandle.collectDelta()));
     packetBroadcastTimer.reset();
   }
 
@@ -197,7 +197,6 @@ void ServerExec::tick(float delta) {
 ServerExec::ServerExec(
     const Port port,
     const sky::ArenaInit &arena,
-    const sky::SkyInitializer &sky,
     std::function<std::unique_ptr<ServerListener>(
         ServerShared &, sky::Arena &, sky::SkyHandle &)> server) :
     uptime(0),
@@ -206,9 +205,9 @@ ServerExec::ServerExec(
     shared(host, telegraph, *this),
 
     arena(arena),
-    sky(this->arena, sky),
+    skyHandle(this->arena, {}),
 
-    server(server(shared, this->arena, this->sky)),
+    server(server(shared, this->arena, this->skyHandle)),
     packetBroadcastTimer(0.03),
 
     logger(shared, this->arena),

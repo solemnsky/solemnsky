@@ -122,7 +122,7 @@ class ServerExec {
   ServerShared shared;
 
   sky::Arena arena;
-  sky::SkyHandle sky;
+  sky::SkyHandle skyHandle;
   std::unique_ptr<ServerListener> server;
   Cooldown packetBroadcastTimer;
 
@@ -135,7 +135,6 @@ class ServerExec {
  public:
   ServerExec(const Port port,
              const sky::ArenaInit &arena,
-             const sky::SkyInitializer &sky,
              std::function<std::unique_ptr<ServerListener>(
                  ServerShared &, sky::Arena &, sky::SkyHandle &)> server);
 
