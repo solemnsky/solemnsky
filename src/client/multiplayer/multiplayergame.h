@@ -48,6 +48,5 @@ class MultiplayerGame: public MultiplayerView {
   void signalRead() override;
   void signalClear() override;
 
-  void onChangeSettings(const SettingsDelta &settings) override;
 };
 

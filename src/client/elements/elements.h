@@ -22,6 +22,26 @@
 #include "clientshared.h"
 
 /**
+ * There are various elements in our client that need to have access to the
+ * ClientShared object and get a notification when settings change.
+ */
+class ClientComponent {
+ protected:
+  ClientShared &shared;
+  std::vector<ClientComponent *> childComponents;
+
+  void areChildComponents(
+      std::initializer_list<ClientComponent *> newChildren);
+
+ public:
+  ClientComponent(ClientShared &shared);
+
+  // Interface API.
+  virtual void onChangeSettings(const SettingsDelta &settings);
+
+};
+
+/**
  * Pages are the portals through which users interface with the tutorial
  * periphery: looking for servers, editing settings, loading tutorial records,
  * etc.
@@ -30,19 +50,14 @@
  * that they always exist, with their state and tick() operations, whether they
  * are displayed or not.
  */
-class Page: public ui::Control {
- protected:
-  ClientShared &shared;
-
+class Page: public ClientComponent, public ui::Control {
  public:
   Page(ClientShared &shared);
-  // a page's lifetime is never handled by a reference to a Page
-  // so we need no virtual dtor
 
-  virtual void onChangeSettings(const SettingsDelta &settings) = 0;
-  virtual void onBlur() = 0;
-
+  // Interface API.
+  virtual void onBlur() { }
   void drawBackground(ui::Frame &f);
+
 };
 
 /**
@@ -50,18 +65,14 @@ class Page: public ui::Control {
  * are various game-like interfaces we can provide: a tutorial, a multiplayer
  * client, etc.
  */
-class Game: public ui::Control {
- protected:
-  ClientShared &shared;
-
+class Game: public ClientComponent, public ui::Control {
  public:
   Game(ClientShared &shared, const std::string &name);
   virtual ~Game() { }
 
-  // Internal API.
-  virtual void onChangeSettings(const SettingsDelta &settings) = 0;
-  virtual void onBlur() = 0;
-  virtual void onFocus() = 0;
+  // Interface API.
+  virtual void onBlur() { }
+  virtual void onFocus() { }
   // try to exit, set Control::quitting flag eventually
   // (a multiplayer connection may want to do this at its leisure to
   // disconnect gracefully)
@@ -69,4 +80,5 @@ class Game: public ui::Control {
 
   std::string name; // identifier of the type of game being played
   std::string status; // brief status of the game
+
 };

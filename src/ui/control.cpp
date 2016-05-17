@@ -51,6 +51,10 @@ double AppState::timeSince(const double event) const {
  * Control.
  */
 
+void Control::areChildren(std::initializer_list<Control *> controls) {
+  for (auto control : controls) children.push_back(control);
+}
+
 Control::Control(AppState &appState) :
     appState(appState),
     quitting(false) { }

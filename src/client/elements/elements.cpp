@@ -19,12 +19,29 @@
 #include "style.h"
 
 /**
+ * ClientComponent.
+ */
+
+void ClientComponent::areChildComponents(
+    std::initializer_list<ClientComponent *> newChildren) {
+  for (const auto child : newChildren) childComponents.push_back(child);
+}
+
+ClientComponent::ClientComponent(ClientShared &shared) :
+    shared(shared) { }
+
+void ClientComponent::onChangeSettings(const SettingsDelta &settings) {
+  for (const auto child : childComponents)
+    child->onChangeSettings(settings);
+}
+
+/**
  * Page.
  */
 
 Page::Page(ClientShared &shared) :
-    ui::Control(shared.appState),
-    shared(shared) { }
+    ClientComponent(shared),
+    ui::Control(shared.appState) { }
 
 void Page::drawBackground(ui::Frame &f) {
   const float margins = style.base.pageMargins;
@@ -38,6 +55,7 @@ void Page::drawBackground(ui::Frame &f) {
 
 Game::Game(ClientShared &shared,
            const std::string &name) :
+    ClientComponent(shared),
     ui::Control(shared.appState),
     shared(shared),
     name(name) { }

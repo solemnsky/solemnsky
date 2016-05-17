@@ -120,7 +120,6 @@ void SkyRender::renderProps(ui::Frame &f,
 
 void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                     const PlaneGraphics &graphics) {
-
   if (auto &plane = graphics.participation.getPlane()) {
     auto &state = plane->getState();
     auto &tuning = plane->getTuning();
@@ -186,11 +185,12 @@ void SkyRender::renderMap(ui::Frame &f) {
   }
 }
 
-SkyRender::SkyRender(Arena &arena, const Sky &sky) :
+SkyRender::SkyRender(ClientShared &shared, Arena &arena, const Sky &sky) :
+    ClientComponent(shared),
     Subsystem(arena),
     sky(sky),
     planeSheet(ResID::PlayerSheet),
-    enableDebug(false) {
+    enableDebug(shared.settings.enableDebug) {
   arena.forPlayers([&](Player &player) { registerPlayer(player); });
 }
 
@@ -209,6 +209,10 @@ void SkyRender::unregisterPlayer(Player &player) {
 
 void SkyRender::onTick(const float delta) {
   for (auto &pair : graphics) pair.second.tick(delta);
+}
+
+void SkyRender::onChangeSettings(const SettingsDelta &settings) {
+  if (settings.enableDebug) enableDebug = settings.enableDebug.get();
 }
 
 void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
