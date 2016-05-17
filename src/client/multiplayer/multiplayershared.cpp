@@ -134,7 +134,7 @@ MultiplayerShared::MultiplayerShared(
     const unsigned short serverPort) :
     shared(shared),
     askedConnection(false),
-    disconnectTimeout(5),
+    disconnectTimeout(1),
 
     host(tg::HostType::Client),
     server(nullptr),

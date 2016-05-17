@@ -41,7 +41,7 @@ TEST_F(SkyTest, AllocTest) {
 }
 
 /**
- * We can affect the Sky, and copy the modified Sky over the network with
+ * We can modify the Sky and copy the modified Sky over the network with
  * SkyInitializer.
  */
 TEST_F(SkyTest, InitializerTest) {

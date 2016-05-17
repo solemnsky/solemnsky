@@ -136,7 +136,7 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                    sf::Color::Red);
                       });
 
-          planeSheet.drawIndexAtRoll(f, tuning.hitbox, graphics.roll());
+          planeSheet.drawIndexAtRoll(f, sf::Vector2f(200, 200), graphics.roll());
 
           if (enableDebug) {
             const auto halfHitbox = 0.5f * tuning.hitbox;

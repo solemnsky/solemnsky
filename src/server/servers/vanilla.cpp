@@ -29,6 +29,7 @@ void VanillaServer::onPacket(ENetPeer *const client,
       if (packet.stringData.get() == "auth password") {
         sky::PlayerDelta delta = player.zeroDelta();
         delta.admin = true;
+        shared.registerArenaDelta(sky::ArenaDelta::Delta(player.pid, delta));
         shared.rconResponse(client, "you're authenticated");
       }
     } else {
