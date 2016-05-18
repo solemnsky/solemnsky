@@ -24,7 +24,7 @@
 /**
  * Top-level multiplayer client.
  */
-class Multiplayer: public Game {
+class Multiplayer: public Game, public MultiplayerListener {
  private:
   /**
    * Arena connection state / protocol implementation and the current
@@ -39,18 +39,17 @@ class Multiplayer: public Game {
               const std::string &serverHostname,
               const unsigned short serverPort);
 
-  /**
-   * Game interface.
-   */
+  // MultiplayerListener impl.
+  void onLoadMode(const sky::ArenaMode mode) override final;
+
+  // Game impl.
   void onChangeSettings(const SettingsDelta &settings) override final;
   void onBlur() override final;
   void onFocus() override final;
   void doExit() override final;
   void printDebug(Printer &p) override final;
 
-  /**
-   * Control interface.
-   */
+  // Control impl.
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
