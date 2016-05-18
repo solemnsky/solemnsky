@@ -40,7 +40,7 @@ class MultiplayerGame: public MultiplayerView {
   void doClientAction(const ClientAction action, const bool state);
 
  public:
-  MultiplayerGame(ClientShared &shared, MultiplayerShared &connection);
+  MultiplayerGame(ClientShared &shared, MultiplayerCore &connection);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;

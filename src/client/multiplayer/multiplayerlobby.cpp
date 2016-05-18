@@ -33,7 +33,7 @@ void MultiplayerLobby::doClientAction(const ClientAction action,
 }
 
 MultiplayerLobby::MultiplayerLobby(
-    ClientShared &shared, MultiplayerShared &connection) :
+    ClientShared &shared, MultiplayerCore &connection) :
     MultiplayerView(sky::ArenaMode::Lobby, shared, connection),
 
     specButton(appState, style.base.normalButton, style.multi.lobbyButtonPos,

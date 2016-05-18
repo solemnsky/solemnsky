@@ -30,7 +30,7 @@ class MultiplayerScoring: public MultiplayerView {
  private:
 
  public:
-  MultiplayerScoring(ClientShared &shared, MultiplayerShared &connection);
+  MultiplayerScoring(ClientShared &shared, MultiplayerCore &connection);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;
