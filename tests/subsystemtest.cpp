@@ -84,6 +84,9 @@ class CounterSubsystem: public sky::Subsystem<float> {
   }
 };
 
+/**
+ * Subsystems can be dynamically attached.
+ */
 TEST_F(SubsystemTest, DynamicTest) {
   {
     LifeSubsystem lifeSubsystem(arena);
@@ -98,6 +101,9 @@ TEST_F(SubsystemTest, DynamicTest) {
   }
 }
 
+/**
+ * Subsystems get passed callbacks and can store state.
+ */
 TEST_F(SubsystemTest, LifeCounter) {
   LifeSubsystem lifeSubsystem(arena);
   CounterSubsystem counterSubsystem(arena, lifeSubsystem);

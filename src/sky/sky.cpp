@@ -119,6 +119,7 @@ void Sky::applyDelta(const SkyDelta &delta) {
 
 SkyInitializer Sky::captureInitializer() const {
   SkyInitializer initializer;
+  initializer.mapName = map.name;
   for (const auto &participation : participations)
     initializer.participations.emplace(
         participation.first, participation.second.captureInitializer());
@@ -193,12 +194,13 @@ void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
   } 
   if (sky) {
     if (delta.delta) sky->applyDelta(delta.delta.get());
+    else sky.reset();
   }
 }
 
 SkyHandleDelta SkyHandle::collectDelta() {
   SkyHandleDelta delta;
-  if (skyIsNew) {
+  if (sky and skyIsNew) {
     delta.initializer = sky->captureInitializer();
     skyIsNew = false;
   } 
