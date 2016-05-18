@@ -204,7 +204,7 @@ Arena::Arena(const ArenaInit &initializer) :
     Networked(initializer),
     name(initializer.name),
     motd(initializer.motd),
-    map(initializer.map),
+    nextMap(initializer.map),
     mode(initializer.mode) {
   for (auto const &player : initializer.players) {
     players.emplace(std::piecewise_construct,
@@ -265,15 +265,15 @@ void Arena::applyDelta(const ArenaDelta &delta) {
     }
 
     case ArenaDelta::Type::MapChange: {
-      map = *delta.map;
-      logEvent(ArenaEvent::MapChange(map));
+      nextMap = *delta.map;
+      logEvent(ArenaEvent::MapChange(nextMap));
       for (auto s : subsystems) s.second->onMapChange();
     }
   }
 }
 
 ArenaInit Arena::captureInitializer() const {
-  ArenaInit initializer(name, map);
+  ArenaInit initializer(name, nextMap);
   for (auto &player : players) {
     initializer.players.emplace(
         player.first, player.second.captureInitializer());
@@ -318,6 +318,10 @@ void Arena::forPlayers(std::function<void(Player &)> f) {
   for (auto &pair : players) f(pair.second);
 }
 
+const std::map<PID, Player> &Arena::getPlayers() const {
+  return players;
+}
+
 std::string Arena::getName() const {
   return name;
 }
@@ -326,8 +330,8 @@ std::string Arena::getMotd() const {
   return motd;
 }
 
-MapName Arena::getMap() const {
-  return map;
+MapName Arena::getNextMap() const {
+  return nextMap;
 }
 
 ArenaMode Arena::getMode() const {

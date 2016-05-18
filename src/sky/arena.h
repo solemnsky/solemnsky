@@ -268,7 +268,7 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   std::map<PID, Player> players;
   std::string name;
   std::string motd;
-  MapName map;
+  MapName nextMap;
   ArenaMode mode;
 
   // Managing players.
@@ -291,10 +291,11 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   Player *getPlayer(const PID pid);
   void forPlayers(std::function<void(const Player &)> f) const;
   void forPlayers(std::function<void(Player &)> f);
+  const std::map<PID, Player> &getPlayers() const;
 
   std::string getName() const;
   std::string getMotd() const;
-  MapName getMap() const;
+  MapName getNextMap() const;
   ArenaMode getMode() const;
 
   void tick(const float delta);

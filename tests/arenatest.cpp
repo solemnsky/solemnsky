@@ -31,7 +31,7 @@ TEST_F(ArenaTest, ConnectionTest) {
 
   // Reusing PIDs.
   arena.applyDelta(sky::ArenaDelta::Quit(0));
-  EXPECT_EQ(arena.connectPlayer("nameless plane").join->pid, 0);
+  EXPECT_EQ(arena.connectPlayer("nameless plane").join->pid, PID(0));
   EXPECT_EQ(arena.getPlayer(0)->getNickname(), "nameless plane");
 
   // Nickname qualification.
@@ -48,7 +48,7 @@ TEST_F(ArenaTest, DeltaTest) {
   arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
   arena.applyDelta(sky::ArenaDelta::Motd("new motd"));
 
-  EXPECT_EQ(arena.getMap(), "test2");
+  EXPECT_EQ(arena.getNextMap(), "test2");
   EXPECT_EQ(arena.getMode(), sky::ArenaMode::Game);
   EXPECT_EQ(arena.getMotd(), "new motd");
 
@@ -75,7 +75,7 @@ TEST_F(ArenaTest, InitializerTest) {
   sky::Arena remoteArena(arena.captureInitializer());
 
   EXPECT_EQ(remoteArena.getName(), "home arena");
-  EXPECT_EQ(remoteArena.getMap(), "test1");
+  EXPECT_EQ(remoteArena.getNextMap(), "test1");
   EXPECT_EQ(remoteArena.getMotd(), "some motd");
   EXPECT_EQ(remoteArena.getMode(), sky::ArenaMode::Game);
   EXPECT_EQ(remoteArena.getPlayer(0)->getNickname(), "nameless plane");

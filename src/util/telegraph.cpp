@@ -92,6 +92,10 @@ void Host::unregisterPeer(ENetPeer *peer) {
   }
 }
 
+const std::vector<ENetPeer *> &Host::getPeers() const {
+  return peers;
+}
+
 ENetPeer *Host::connect(const std::string &address, const Port port) {
   ENetAddress eaddress;
   enet_address_set_host(&eaddress, address.c_str());
@@ -121,6 +125,15 @@ ENetEvent Host::poll() {
     unregisterPeer(event.peer);
 
   return event;
+}
+
+float Host::incomingBandwidth() const {
+  // TODO
+  return 0;
+}
+
+float Host::outgoingBandwidth() const {
+  return 0;
 }
 
 std::string printAddress(const ENetAddress &addr) {

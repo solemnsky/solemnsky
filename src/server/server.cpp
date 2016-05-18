@@ -41,7 +41,7 @@ void ServerShared::sendToClients(const sky::ServerPacket &packet) {
   telegraph.transmit(
       host,
       [&](std::function<void(ENetPeer *const)> transmit) {
-        for (auto const peer : host.peers) { transmit(peer); }
+        for (auto const peer : host.getPeers()) { transmit(peer); }
       }, packet);
 }
 
@@ -50,7 +50,7 @@ void ServerShared::sendToClientsExcept(const PID pid,
   telegraph.transmit(
       host,
       [&](std::function<void(ENetPeer *const)> transmit) {
-        for (auto const peer : host.peers) {
+        for (auto const peer : host.getPeers()) {
           if (sky::Player *player = playerFromPeer(peer)) {
             if (player->pid != pid) transmit(peer);
           }

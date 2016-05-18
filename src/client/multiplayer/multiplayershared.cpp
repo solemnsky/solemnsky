@@ -69,7 +69,8 @@ void MultiplayerShared::processPacket(const sky::ServerPacket &packet) {
       appLog("Joined arena!", LogOrigin::Client);
 
       logEvent(ClientEvent::Connect(
-          conn->arena.getName(), tg::printAddress(host.peers[0]->address)));
+          conn->arena.getName(),
+          tg::printAddress(host.getPeers()[0]->address)));
     }
     return;
   }
