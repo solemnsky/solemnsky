@@ -81,6 +81,15 @@ void Multiplayer::doExit() {
   mShared.disconnect();
 }
 
+void Multiplayer::printDebug(Printer &p) {
+  if (mShared.conn) {
+    p.printLn("game active: " + mShared.conn->skyHandle.isActive()
+              ? "yes" : "no");
+  } else {
+    p.printLn("not connected...");
+  }
+}
+
 void Multiplayer::tick(float delta) {
   mShared.poll(delta);
   if (mShared.disconnected) quitting = true;
@@ -90,9 +99,6 @@ void Multiplayer::tick(float delta) {
     mShared.conn->arena.tick(delta);
 
     const sky::ArenaMode currentMode = mShared.conn->arena.getMode();
-
-    if (mShared.conn->skyHandle.isActive())
-      appLog("the sky is instantiated");
 
     if (currentMode == sky::ArenaMode::Game
         and !mShared.conn->skyHandle.isActive()) {

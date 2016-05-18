@@ -126,7 +126,7 @@ class MultiplayerShared {
  * interface is modal, we should write it in modes.
  *
  * These classes act assuming that the connection is active
- * (conneciton.myPlayer is not null).
+ * (mShared.conn is instantiated).
  */
 class MultiplayerView: public ClientComponent, public ui::Control {
  public:

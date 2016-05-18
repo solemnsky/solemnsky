@@ -180,10 +180,16 @@ void Client::drawGame(ui::Frame &f) {
     f.drawText(
       {10, 10},
       [&](ui::TextFrame &tf) {
+        tf.setColor(sf::Color::Red);
+        tf.printLn("PERFORMANCE STATS:");
         tf.setColor(sf::Color::White);
         tf.printLn("cycle:" + profilerSnap.cycleTime.print());
         tf.printLn("logic:" + profilerSnap.logicTime.print());
         tf.printLn("render:" + profilerSnap.renderTime.print());
+        tf.setColor(sf::Color::Red);
+        tf.printLn("GAME STATS:");
+        tf.setColor(sf::Color::White);
+        shared.game->printDebug(tf);
       }, style.base.normalText);
   }
 }

@@ -42,10 +42,11 @@ class Multiplayer: public Game {
   /**
    * Game interface.
    */
-  void onChangeSettings(const SettingsDelta &settings) override;
-  void onBlur() override;
-  void onFocus() override;
-  void doExit() override;
+  void onChangeSettings(const SettingsDelta &settings) override final;
+  void onBlur() override final;
+  void onFocus() override final;
+  void doExit() override final;
+  void printDebug(Printer &p) override final;
 
   /**
    * Control interface.

@@ -59,3 +59,6 @@ Game::Game(ClientShared &shared,
     ui::Control(shared.appState),
     name(name) { }
 
+void Game::printDebug(Printer &p) {
+  p.printLn("(nothing noteworthy)");
+}
