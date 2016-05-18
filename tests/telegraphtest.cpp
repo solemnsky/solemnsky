@@ -19,7 +19,6 @@ class TelegraphTest: public testing::Test {
   TelegraphTest() :
       server(tg::HostType::Server, 4242),
       client(tg::HostType::Client) {
-
     serverPeer = client.connect("localhost", 4242);
     event = processHosts(client, server);
     EXPECT_EQ(event.type, ENET_EVENT_TYPE_CONNECT); // client gets connect event

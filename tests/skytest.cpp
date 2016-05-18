@@ -22,18 +22,20 @@ TEST_F(SkyTest, AllocTest) {
   ASSERT_EQ(bool(skyHandle.isActive()), false);
 
   {
+    // Starting the sky with a map.
     skyHandle.start("test1");
     ASSERT_EQ(bool(skyHandle.isActive()), true);
     const sky::Sky &sky = *skyHandle.getSky();
+    ASSERT_EQ(sky.getMap().name, "test1");
 
+    // Spawning is managed correctly.
     arena.connectPlayer("nameless plane");
     sky::Player &player = *arena.getPlayer(0);
     ASSERT_EQ(bool(sky.getParticipation(player).isSpawned()), false);
-    ASSERT_NO_FATAL_FAILURE(arena.tick(1));
-
     player.spawn({}, {300, 300}, 0);
     ASSERT_EQ(bool(sky.getParticipation(player).isSpawned()), true);
-    ASSERT_NO_FATAL_FAILURE(arena.tick(1));
+    ASSERT_EQ(sky.getParticipation(player).getPlane()
+                  ->getState().physical.pos.x, 300);
   }
 
   skyHandle.stop();
@@ -41,8 +43,7 @@ TEST_F(SkyTest, AllocTest) {
 }
 
 /**
- * We can modify the Sky and copy the modified Sky over the network with
- * SkyInitializer.
+ * A modified Sky can be copied to a remote client with SkyInitializer.
  */
 TEST_F(SkyTest, InitializerTest) {
   arena.connectPlayer("nameless plane");
@@ -52,67 +53,81 @@ TEST_F(SkyTest, InitializerTest) {
     sky::Player &player = *arena.getPlayer(0);
     skyHandle.start("test1");
     player.spawn({}, {300, 300}, 0);
+    player.doAction(sky::Action::Left, true);
   }
 
   sky::Arena remoteArena(arena.captureInitializer());
   sky::SkyHandle remoteSkyHandle(remoteArena, skyHandle.captureInitializer());
-  ASSERT_EQ(remoteSkyHandle.isActive(), true);
-  const sky::Sky &remoteSky = remoteSkyHandle.getSky().get();
 
   {
+    // The sky instantiation copied through.
+    ASSERT_EQ(remoteSkyHandle.isActive(), true);
+    ASSERT_EQ(remoteSkyHandle.getSky()->getMap().name, "test1");
+    const sky::Sky &remoteSky = remoteSkyHandle.getSky().get();
+
+    // The participations copied.
     sky::Player player1 = *remoteArena.getPlayer(0);
     sky::Player player2 = *remoteArena.getPlayer(1);
     ASSERT_EQ(remoteSky.getParticipation(player1).isSpawned(), true);
     ASSERT_EQ(remoteSky.getParticipation(player2).isSpawned(), false);
-    ASSERT_EQ(skyHandle.getSky()->getParticipation(player1).getPlane()->
+    ASSERT_EQ(remoteSky.getParticipation(player1).getPlane()->
         getState().physical.pos.x, 300);
+    ASSERT_EQ(remoteSky.getParticipation(player1).getControls()
+                  .getState<sky::Action::Left>(), true);
   }
-
 }
 
 /**
- * We can propagate changes over the network with a SkyDelta.
+ * We can propagate changes between SkyHandles with a SkyHandleDelta.
  */
 TEST_F(SkyTest, DeltaTest) {
+  // Initialize: body Skies are instantiated and a player joined.
+  arena.connectPlayer("nameless plane");
   skyHandle.start("test1");
-  const sky::Sky &sky = skyHandle.getSky().get();
-
   sky::Arena remoteArena(arena.captureInitializer());
   sky::SkyHandle remoteSkyHandle(remoteArena, skyHandle.captureInitializer());
 
-  auto const delta = arena.connectPlayer("nameless plane");
-  remoteArena.applyDelta(delta);
-
-  sky::Player &player = *arena.getPlayer(0);
-  player.spawn({}, {300, 300}, 0);
-  player.doAction(sky::Action::Reverse, true);
-  ASSERT_EQ(sky.getParticipation(player)
-                .getControls().getState<sky::Action::Reverse>(), true);
-  remoteSkyHandle.applyDelta(skyHandle.collectDelta());
-
   {
     const sky::Sky &remoteSky = remoteSkyHandle.getSky().get();
+
+    // Spawning and controls can be transmitted over deltas.
+    sky::Player &player = *arena.getPlayer(0);
+    player.spawn({}, {300, 300}, 0);
+    player.doAction(sky::Action::Reverse, true);
+    remoteSkyHandle.applyDelta(skyHandle.collectDelta());
+
     sky::Player &remotePlayer = *remoteArena.getPlayer(0);
     const auto &participation = remoteSky.getParticipation(remotePlayer);
-    ASSERT_EQ(participation.getControls().getState<sky::Action::Reverse>(), true);
+    ASSERT_EQ(participation.getControls().getState<sky::Action::Reverse>(),
+              true);
     ASSERT_EQ(participation.isSpawned(), true);
     ASSERT_EQ(participation.getPlane()->getState().physical.pos.x, 300);
   }
 }
 
 /**
- * We can transmit a Sky instantiation through a SkyHandleDelta.
+ * We can transmit a Sky {de}instantiation through a SkyHandleDelta.
  */
 TEST_F(SkyTest, DeltaAllocTest) {
   sky::Arena remoteArena(arena.captureInitializer());
   sky::SkyHandle remoteSkyHandle(remoteArena, skyHandle.captureInitializer());
-
   ASSERT_EQ(remoteSkyHandle.isActive(), false);
 
+  // Starting.
   skyHandle.start("test1");
   remoteSkyHandle.applyDelta(skyHandle.collectDelta());
-
   ASSERT_EQ(remoteSkyHandle.isActive(), true);
+
+  // Stopping.
+  skyHandle.stop();
+  remoteSkyHandle.applyDelta(skyHandle.collectDelta());
+  ASSERT_EQ(remoteSkyHandle.isActive(), false);
+
+  // Starting followed by stopping.
+  skyHandle.start("test1");
+  skyHandle.stop();
+  ASSERT_EQ(remoteSkyHandle.isActive(), false);
+
 }
 
 
