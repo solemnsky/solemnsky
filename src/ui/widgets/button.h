@@ -55,6 +55,13 @@ class Button: public Control {
   friend class KeySelector;
   TextFormat textFormat, descriptionFormat; // deduced from the style
 
+  // Control impl.
+  void tick(float delta) override;
+  void render(Frame &f) override;
+  bool handle(const sf::Event &event) override;
+  void signalClear() override;
+  void reset() override;
+
  public:
   Button(AppState &appState,
          const Style &style,
@@ -64,18 +71,7 @@ class Button: public Control {
   sf::Vector2f pos;
   std::string text; // what the button has to say
 
-  /**
-   * Control implementation.
-   */
-  void tick(float delta) override;
-  void render(Frame &f) override;
-  bool handle(const sf::Event &event) override;
-  void signalClear() override;
-  void reset() override;
-
-  /**
-   * Custom.
-   */
+  // User API.
   optional<std::string> description;
 
   void setActive(const bool active);

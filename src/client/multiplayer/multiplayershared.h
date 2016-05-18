@@ -28,24 +28,11 @@
 #include "client/elements/elements.h"
 
 /**
- * Logger used by MultiplayerCore to listen to ArenaEvents.
- */
-class MultiplayerLogger: public sky::ArenaLogger {
- protected:
-  class MultiplayerCore &connection;
-  void onEvent(const sky::ArenaEvent &event) override;
-
- public:
-  MultiplayerLogger(sky::Arena &arena,
-                    class MultiplayerCore &connection);
-};
-
-/**
- * Game state associated with a participation in an remote arena.
+ * State associated with a participation in an remote arena.
+ * Instantiated by MultiplayerCore when the connection is active.
  */
 struct ArenaConnection {
   ArenaConnection(
-      MultiplayerCore &shared,
       const PID pid,
       const sky::ArenaInit &arenaInit,
       const sky::SkyHandleInitializer &skyInit);
@@ -55,34 +42,55 @@ struct ArenaConnection {
   sky::SkyHandle skyHandle;
   sky::Player &player;
 
-  MultiplayerLogger logger;
-
   // Handy accessors.
   const optional<sky::Sky> &getSky() const;
 
 };
 
 /**
+ * Entity that listens to changes in the ArenaConnection.
+ * Multiplayer has to do this, to keep the MultiplayerView synced with the ArenaConnection.
+ */
+class ConnectionListener {
+ public:
+  virtual void onLoadMode(const sky::ArenaMode newMode) { }
+
+}
+
+/**
  * The state of the multiplayer client, allocated for Multiplayer for use by
  * MultiplayerView.
  */
-class MultiplayerCore {
- private:
+class MultiplayerCore : public sky::ArenaLogger {
   friend class MultiplayerLogger;
+ private:
+  ConnectionListener &listener;
 
   ClientShared &shared;
   ENetEvent event;
 
+  // Connection state.
   tg::Telegraph<sky::ServerPacket> telegraph;
   bool askedConnection;
   Cooldown disconnectTimeout;
 
-  // process a packet, after we're connected via enet and have send a ReqJoin
+  tg::Host host;
+  ENetPeer *server;
+  bool disconnecting, // trying to disconnect
+      disconnected; // it's over, close the multiplayer client
+  optional<ArenaConnection> conn;
+
+  // Packet processing submethod.
   void processPacket(const sky::ServerPacket &packet);
+
+ protected:
+  // sky::ArenaLogger impl.
+  void onEvent(const sky::ArenaEvent &event);
 
  public:
   MultiplayerCore(
       ClientShared &shared,
+      ConnectionListener &listener,
       const std::string &serverHostname,
       const unsigned short serverPort);
 
@@ -93,11 +101,6 @@ class MultiplayerCore {
   void drawEventLog(ui::Frame &f, const float cutoff);
 
   // Connection state.
-  tg::Host host;
-  ENetPeer *server;
-  bool disconnecting, // trying to disconnect
-      disconnected; // it's over, close the multiplayer client
-  optional<ArenaConnection> conn;
 
   // User API.
   void transmit(const sky::ClientPacket &packet);

@@ -117,9 +117,11 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
 
 MultiplayerCore::MultiplayerCore(
     ClientShared &shared,
+    ConnectionListener &listener,
     const std::string &serverHostname,
     const unsigned short serverPort) :
     shared(shared),
+    listener(listener),
     askedConnection(false),
     disconnectTimeout(1),
 

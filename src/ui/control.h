@@ -70,30 +70,32 @@ struct AppState {
  * The control abstraction: a tangible GUI entity.
  */
 class Control {
+  friend class ControlExec;
  protected:
   AppState &appState;
 
   std::vector<Control *> children;
 
   void areChildren(std::initializer_list<Control *> controls);
-
- public:
-  Control(AppState &appState);
-  virtual ~Control() { }
-
-  // quitting flag
+  
+  // Quitting flag.
   bool quitting;
 
-  // callbacks
+  // Callbacks.
   virtual void poll(float delta);
   virtual void tick(float delta);
   virtual void render(Frame &f);
   virtual bool handle(const sf::Event &event);
   virtual void reset();
 
-  // signals
+  // Signal callbacks.
   virtual void signalRead();
   virtual void signalClear();
+
+ public:
+  Control(AppState &appState);
+  virtual ~Control() { }
+
 };
 
 /**
@@ -117,7 +119,7 @@ class ControlExec {
   AppState appState;
   std::unique_ptr<Control> ctrl;
 
-  // app loop
+  // App loop submethods.
   void tick();
   void handle();
   void renderAndSleep();
@@ -130,4 +132,6 @@ class ControlExec {
 };
 
 void runSFML(std::function<std::unique_ptr<Control>(AppState &)> initCtrl);
+
 }
+

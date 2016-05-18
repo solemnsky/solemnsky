@@ -40,9 +40,7 @@ class Checkbox: public ui::Control {
   void signalRead() override;
   void signalClear() override;
 
-  /**
-   * Custom API.
-   */
+  // User API.
   void setValue(const bool newValue);
   bool getValue() const;
 

@@ -65,6 +65,14 @@ class TextEntry: public Control {
   sf::FloatRect getBody();
   void handleKeyboardEvent(const sf::Event &event);
 
+ protected:
+  // Control impl.
+  void tick(float delta) override final;
+  void render(Frame &f) override final;
+  bool handle(const sf::Event &event) override final;
+  void signalRead() override final;
+  void signalClear() override final;
+
  public:
   TextEntry() = delete;
   TextEntry(AppState &appState,
@@ -77,27 +85,14 @@ class TextEntry: public Control {
   // and the displayed description is the contents
   sf::Vector2f pos;
 
-  /**
-   * Control implementation.
-   */
-  virtual void tick(float delta) override;
-  virtual void render(Frame &f) override;
-  virtual bool handle(const sf::Event &event) override;
-  virtual void signalRead() override;
-  virtual void signalClear() override;
-
-  /**
-   * UI methods.
-   */
+  // User API.
   std::string contents;
   std::string description;
   void reset(); // reset animations
   void focus();
   void unfocus();
 
-  /**
-   * UI state and signals, read-only.
-   */
+  // Signals.
   bool isHot;
   bool isFocused;
   optional<std::string> inputSignal;

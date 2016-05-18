@@ -42,9 +42,7 @@ class KeySelector: public ui::Control {
   void signalRead() override;
   void signalClear() override;
 
-  /**
-   * Custom API.
-   */
+  // Custom API.
   void setValue(const optional<sf::Keyboard::Key> key);
   optional<sf::Keyboard::Key> getValue() const;
 
