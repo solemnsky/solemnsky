@@ -28,18 +28,16 @@
 #include "client/elements/elements.h"
 
 /**
- * Logger used by MultiplayerShared to listen to ArenaEvents.
+ * Logger used by MultiplayerCore to listen to ArenaEvents.
  */
 class MultiplayerLogger: public sky::ArenaLogger {
- private:
-  class MultiplayerShared &connection;
-
  protected:
+  class MultiplayerCore &connection;
   void onEvent(const sky::ArenaEvent &event) override;
 
  public:
   MultiplayerLogger(sky::Arena &arena,
-                    class MultiplayerShared &connection);
+                    class MultiplayerCore &connection);
 };
 
 /**
@@ -47,7 +45,7 @@ class MultiplayerLogger: public sky::ArenaLogger {
  */
 struct ArenaConnection {
   ArenaConnection(
-      MultiplayerShared &shared,
+      MultiplayerCore &shared,
       const PID pid,
       const sky::ArenaInit &arenaInit,
       const sky::SkyHandleInitializer &skyInit);
@@ -68,7 +66,7 @@ struct ArenaConnection {
  * The state of the multiplayer client, allocated for Multiplayer for use by
  * MultiplayerView.
  */
-class MultiplayerShared {
+class MultiplayerCore {
  private:
   friend class MultiplayerLogger;
 
@@ -83,41 +81,33 @@ class MultiplayerShared {
   void processPacket(const sky::ServerPacket &packet);
 
  public:
-  MultiplayerShared(
+  MultiplayerCore(
       ClientShared &shared,
       const std::string &serverHostname,
       const unsigned short serverPort);
 
-  // event logging
+  // Event logging.
+  std::vector<ClientEvent> eventLog;
   void logEvent(const ClientEvent &event);
   void logArenaEvent(const sky::ArenaEvent &event);
-  std::vector<ClientEvent> eventLog;
+  void drawEventLog(ui::Frame &f, const float cutoff);
 
-  // connection state
+  // Connection state.
   tg::Host host;
   ENetPeer *server;
   bool disconnecting, // trying to disconnect
       disconnected; // it's over, close the multiplayer client
   optional<ArenaConnection> conn;
 
-  /**
-   * Additional methods for Multiplayer.
-   */
+  // User API.
   void transmit(const sky::ClientPacket &packet);
   void poll(const float delta);
   void disconnect();
-  void onChangeSettings(const SettingsDelta &settings);
 
-  /**
-   * Additional methods for MultiplayerView.
-   */
   void chat(const std::string &message);
   void rcon(const std::string &command);
   void handleChatInput(const std::string &input);
-
   void requestTeamChange(const sky::Team team);
-
-  void drawEventLog(ui::Frame &f, const float cutoff);
 
 };
 
@@ -131,13 +121,13 @@ class MultiplayerShared {
 class MultiplayerView: public ClientComponent, public ui::Control {
  public:
   // Shared state.
-  MultiplayerShared &mShared;
+  MultiplayerCore &mShared;
   ArenaConnection &conn; // from mShared
 
   MultiplayerView(
       sky::ArenaMode target,
       ClientShared &shared,
-      MultiplayerShared &mShared);
+      MultiplayerCore &mShared);
   virtual ~MultiplayerView() { }
 
   const sky::ArenaMode target;

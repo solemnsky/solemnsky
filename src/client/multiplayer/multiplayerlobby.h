@@ -39,7 +39,7 @@ class MultiplayerLobby: public MultiplayerView {
   void doClientAction(const ClientAction action, const bool state);
 
  public:
-  MultiplayerLobby(ClientShared &shared, MultiplayerShared &connection);
+  MultiplayerLobby(ClientShared &shared, MultiplayerCore &connection);
 
   void tick(float delta) override;
   void render(ui::Frame &f) override;

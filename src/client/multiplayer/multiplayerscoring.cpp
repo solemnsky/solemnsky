@@ -19,7 +19,7 @@
 #include "client/elements/style.h"
 
 MultiplayerScoring::MultiplayerScoring(
-    ClientShared &shared, MultiplayerShared &connection) :
+    ClientShared &shared, MultiplayerCore &connection) :
     MultiplayerView(sky::ArenaMode::Scoring, shared, connection) {
 }
 

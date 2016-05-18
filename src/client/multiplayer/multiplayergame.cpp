@@ -37,7 +37,7 @@ void MultiplayerGame::doClientAction(const ClientAction action,
 }
 
 MultiplayerGame::MultiplayerGame(
-    ClientShared &shared, MultiplayerShared &connection) :
+    ClientShared &shared, MultiplayerCore &connection) :
     MultiplayerView(sky::ArenaMode::Game, shared, connection),
     chatInput(appState,
               style.base.normalTextEntry,
