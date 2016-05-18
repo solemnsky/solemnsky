@@ -177,20 +177,23 @@ void Client::drawGame(ui::Frame &f) {
   shared.game->render(f);
 
   if (shared.settings.enableDebug) {
-    f.drawText(
-      {10, 10},
-      [&](ui::TextFrame &tf) {
-        tf.setColor(sf::Color::Red);
-        tf.printLn("PERFORMANCE STATS:");
-        tf.setColor(sf::Color::White);
-        tf.printLn("cycle:" + profilerSnap.cycleTime.print());
-        tf.printLn("logic:" + profilerSnap.logicTime.print());
-        tf.printLn("render:" + profilerSnap.renderTime.print());
-        tf.setColor(sf::Color::Red);
-        tf.printLn("GAME STATS:");
-        tf.setColor(sf::Color::White);
-        shared.game->printDebug(tf);
-      }, style.base.normalText);
+    f.withAlpha(0.5, [&]() {
+      f.drawText(
+          {20, 20},
+          [&](ui::TextFrame &tf) {
+            tf.setColor(sf::Color::Red);
+            tf.printLn("PERFORMANCE STATS:");
+            tf.setColor(sf::Color::White);
+            tf.printLn("cycle:" + profilerSnap.cycleTime.print());
+            tf.printLn("logic:" + profilerSnap.logicTime.print());
+            tf.printLn("render:" + profilerSnap.renderTime.print());
+            tf.setColor(sf::Color::Red);
+            tf.breakLine();
+            tf.printLn("GAME STATS:");
+            tf.setColor(sf::Color::White);
+            shared.game->printDebug(tf);
+          }, style.base.normalText);
+    });
   }
 }
 

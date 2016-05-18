@@ -83,8 +83,21 @@ void Multiplayer::doExit() {
 
 void Multiplayer::printDebug(Printer &p) {
   if (mShared.conn) {
-    p.printLn("game active: " + mShared.conn->skyHandle.isActive()
-              ? "yes" : "no");
+    const bool active = mShared.conn->skyHandle.isActive();
+    p.printLn(std::string("game active: ") + (active ? "yes" : "no"));
+    if (active)
+      p.printLn("current map: " + mShared.conn->getSky()->getMap().name);
+    p.printLn("next map: " + mShared.conn->arena.getNextMap());
+    p.printLn("player ID: " +
+        std::to_string(mShared.conn->player.pid));
+    p.printLn("player count: " +
+        std::to_string(mShared.conn->arena.getPlayers().size()));
+
+    p.breakLine();
+    p.printLn("inbound bandwidth: " +
+        std::to_string(mShared.host.incomingBandwidth()));
+    p.printLn("outbound bandwidth: " +
+        std::to_string(mShared.host.outgoingBandwidth()));
   } else {
     p.printLn("not connected...");
   }

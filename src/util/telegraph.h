@@ -48,32 +48,32 @@ class Host {
  private:
   ENetHost *host;
   ENetEvent event;
+  std::vector<ENetPeer *> peers;
 
-  /**
-   * Keeping track of peers.
-   */
+  // Manging peers.
   void registerPeer(ENetPeer *peer);
   void unregisterPeer(ENetPeer *peer);
 
  public:
+  Host(const Host &) = delete;
+  Host &operator=(const Host &) = delete;
   Host(const HostType type,
        const Port port = 0);
   ~Host();
 
-  // uncopyable + unassignable
-  Host(const Host &) = delete;
-  Host &operator=(const Host &) = delete;
-
-  /**
-   * API.
-   */
-  std::vector<ENetPeer *> peers;
+  // User API.
+  const std::vector<ENetPeer *> &getPeers() const;
   ENetPeer *connect(const std::string &address, const Port port);
   void disconnect(ENetPeer *);
   void transmit(ENetPeer *const peer,
                 unsigned char *data, size_t size,
                 const ENetPacketFlag flag);
   ENetEvent poll();
+
+  // Expressed in average kB per second.
+  float incomingBandwidth() const;
+  float outgoingBandwidth() const;
+
 };
 
 /**
