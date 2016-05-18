@@ -190,7 +190,9 @@ SkyHandleInitializer SkyHandle::captureInitializer() const {
 
 void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
   if (!sky) {
-    if (delta.initializer) sky.emplace(arena, delta.initializer.get());
+    if (delta.initializer) {
+      sky.emplace(arena, delta.initializer.get());
+    }
   } 
   if (sky) {
     if (delta.delta) sky->applyDelta(delta.delta.get());

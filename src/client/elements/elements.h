@@ -77,6 +77,7 @@ class Game: public ClientComponent, public ui::Control {
   // (a multiplayer connection may want to do this at its leisure to
   // disconnect gracefully)
   virtual void doExit() = 0;
+  virtual void printDebug(Printer &p);
 
   std::string name; // identifier of the type of game being played
   std::string status; // brief status of the game

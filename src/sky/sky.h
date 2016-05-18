@@ -141,7 +141,7 @@ struct SkyHandleDelta {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(delta);
+    ar(initializer, delta);
   }
 
   bool verifyStructure() const;
