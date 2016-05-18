@@ -106,7 +106,7 @@ TEST_F(SkyTest, DeltaTest) {
 }
 
 /**
- * We can transmit a Sky {de}instantiation through a SkyHandleDelta.
+ * We can transmit a Sky {de,re,}instantiation through a SkyHandleDelta.
  */
 TEST_F(SkyTest, DeltaAllocTest) {
   sky::Arena remoteArena(arena.captureInitializer());
@@ -126,7 +126,16 @@ TEST_F(SkyTest, DeltaAllocTest) {
   // Starting followed by stopping.
   skyHandle.start("test1");
   skyHandle.stop();
+  remoteSkyHandle.applyDelta(skyHandle.collectDelta());
   ASSERT_EQ(remoteSkyHandle.isActive(), false);
+
+  // Restarting.
+  skyHandle.start("test1");
+  remoteSkyHandle.applyDelta(skyHandle.collectDelta());
+  skyHandle.stop();
+  skyHandle.start("test2");
+  remoteSkyHandle.applyDelta(skyHandle.collectDelta());
+  ASSERT_EQ(remoteSkyHandle.getSky()->getMap().name, "test2");
 
 }
 
