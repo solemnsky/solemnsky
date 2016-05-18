@@ -57,4 +57,5 @@ class Multiplayer: public Game {
   void reset() override;
   void signalRead() override;
   void signalClear() override;
+
 };
