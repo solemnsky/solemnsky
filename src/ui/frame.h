@@ -91,6 +91,8 @@ class Frame {
                 const sf::Color &color = {});
   void drawPoly(const std::vector<sf::Vector2f> &vertices,
                 const sf::Color &color = {});
+  void drawPolyOutline(const std::vector<sf::Vector2f> &vertices,
+                       const sf::Color &color = {});
   sf::Vector2f drawText(const sf::Vector2f &pos,
                         std::function<void(TextFrame &)> process,
                         const TextFormat &format);
