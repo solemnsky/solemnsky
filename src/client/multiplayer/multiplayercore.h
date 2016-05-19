@@ -48,8 +48,6 @@ class MultiplayerSubsystem: public sky::Subsystem<Nothing> {
  private:
   class MultiplayerCore &core;
 
- protected:
-
  public:
   MultiplayerSubsystem(sky::Arena &arena, class MultiplayerCore &core);
 
@@ -118,6 +116,7 @@ class MultiplayerCore: public ClientComponent {
       ConnectionListener &listener,
       const std::string &serverHostname,
       const unsigned short serverPort);
+  ~MultiplayerCore();
 
   // Event logging.
   std::vector<ClientEvent> eventLog;
@@ -137,8 +136,9 @@ class MultiplayerCore: public ClientComponent {
 
   // User API.
   void transmit(const sky::ClientPacket &packet);
-  void poll(const float delta);
   void disconnect();
+  void poll(const float delta);
+  void tick(const float delta);
 
   void chat(const std::string &message);
   void rcon(const std::string &command);

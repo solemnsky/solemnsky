@@ -141,6 +141,23 @@ ArenaDelta ArenaDelta::MapChange(const MapName &map) {
 }
 
 /**
+ * SubsystemCaller.
+ */
+
+SubsystemCaller::SubsystemCaller(Arena &arena) :
+    arena(arena) { }
+
+void SubsystemCaller::doStartGame() {
+  for (const auto &pair : arena.subsystems)
+    pair.second->doStartGame();
+}
+
+void SubsystemCaller::doEndGame() {
+  for (const auto &pair : arena.subsystems)
+    pair.second->doEndGame();
+}
+
+/**
  * ArenaLogger.
  */
 
@@ -205,7 +222,8 @@ Arena::Arena(const ArenaInit &initializer) :
     name(initializer.name),
     motd(initializer.motd),
     nextMap(initializer.map),
-    mode(initializer.mode) {
+    mode(initializer.mode),
+    subsystemCaller(*this) {
   for (auto const &player : initializer.players) {
     players.emplace(std::piecewise_construct,
                     std::forward_as_tuple(player.first),
