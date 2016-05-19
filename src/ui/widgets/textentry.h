@@ -65,14 +65,6 @@ class TextEntry: public Control {
   sf::FloatRect getBody();
   void handleKeyboardEvent(const sf::Event &event);
 
- protected:
-  // Control impl.
-  void tick(float delta) override final;
-  void render(Frame &f) override final;
-  bool handle(const sf::Event &event) override final;
-  void signalRead() override final;
-  void signalClear() override final;
-
  public:
   TextEntry() = delete;
   TextEntry(AppState &appState,
@@ -84,6 +76,13 @@ class TextEntry: public Control {
   bool persistent; // text is persistent, doesn't reset on focus change / entry
   // and the displayed description is the contents
   sf::Vector2f pos;
+  
+  // Control impl.
+  void tick(float delta) override final;
+  void render(Frame &f) override final;
+  bool handle(const sf::Event &event) override final;
+  void signalRead() override final;
+  void signalClear() override final;
 
   // User API.
   std::string contents;

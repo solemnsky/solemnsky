@@ -70,14 +70,16 @@ struct AppState {
  * The control abstraction: a tangible GUI entity.
  */
 class Control {
-  friend class ControlExec;
  protected:
   AppState &appState;
-
   std::vector<Control *> children;
 
   void areChildren(std::initializer_list<Control *> controls);
   
+ public: 
+  Control(AppState &appState);
+  virtual ~Control() { }
+
   // Quitting flag.
   bool quitting;
 
@@ -91,10 +93,6 @@ class Control {
   // Signal callbacks.
   virtual void signalRead();
   virtual void signalClear();
-
- public:
-  Control(AppState &appState);
-  virtual ~Control() { }
 
 };
 
