@@ -131,11 +131,27 @@ class SubsystemListener {
 };
 
 /**
+ * Set of callback triggers for Subsystems to call.
+ */
+class SubsystemCaller {
+ private:
+  Arena &arena;
+
+ public:
+  SubsystemCaller(Arena &arena);
+
+  void doStartGame();
+  void doEndGame();
+
+};
+
+/**
  * The subsystem abstraction: attaches additional layers of state and logic to the game.
  */
 template<typename PlayerData>
 class Subsystem: public SubsystemListener {
  protected:
+  SubsystemCaller &caller;
   const PID id; // ID the render has allocated in the Arena
 
   PlayerData &getPlayerData(const Player &player) const {
@@ -255,13 +271,12 @@ struct ArenaDelta: public VerifyStructure {
  * an ArenaLoggers, and exposes a small API.
  */
 class Arena: public Networked<ArenaInit, ArenaDelta> {
+  friend class Player;
+  friend class SubsystemCaller;
  private:
   // Utilities.
   PID allocPid() const;
   std::string allocNickname(const std::string &requested) const;
-
-  friend class Player;
-  friend class SubsystemCaller;
 
   // Event logging.
   void logEvent(const ArenaEvent &event) const;
@@ -281,7 +296,8 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   Arena() = delete;
   Arena(const ArenaInit &initializer);
 
-  // Subsystems and loggers.
+  // Attachments.
+  SubsystemCaller subsystemCaller;
   std::map<PID, SubsystemListener *> subsystems;
   std::vector<ArenaLogger *> loggers;
 
@@ -309,6 +325,7 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
 
 template<typename PlayerData>
 Subsystem<PlayerData>::Subsystem(Arena &arena) :
+    caller(arena.subsystemCaller),
     id(PID(smallestUnused(arena.subsystems))),
     arena(arena) {
   arena.subsystems[id] = (SubsystemListener *) this;

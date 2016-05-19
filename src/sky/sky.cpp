@@ -191,10 +191,14 @@ SkyHandleInitializer SkyHandle::captureInitializer() const {
 void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
   if (delta.initializer) {
     sky.emplace(arena, delta.initializer.get());
+    caller.doStartGame();
   }
   if (sky) {
     if (delta.delta) sky->applyDelta(delta.delta.get());
-    else sky.reset();
+    else {
+      sky.reset();
+      caller.doEndGame();
+    }
   }
 }
 
@@ -212,10 +216,12 @@ void SkyHandle::start(const MapName &mapName) {
   stop();
   sky.emplace(arena, SkyInitializer(mapName));
   skyIsNew = true;
+  caller.doStartGame();
 }
 
 void SkyHandle::stop() {
   if (sky) sky.reset();
+  caller.doEndGame();
 }
 
 const optional<Sky> &SkyHandle::getSky() const {

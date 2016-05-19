@@ -32,7 +32,7 @@ class Multiplayer: public Game, public ConnectionListener {
    */
   MultiplayerCore core;
   std::unique_ptr<MultiplayerView> view;
-  void useView(const sky::ArenaMode arenaMode);
+  void loadView(const sky::ArenaMode arenaMode);
 
  public:
   Multiplayer(ClientShared &shared,
@@ -50,6 +50,7 @@ class Multiplayer: public Game, public ConnectionListener {
   void printDebug(Printer &p) override final;
 
   // Control impl.
+  void poll(float delta) override;
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;

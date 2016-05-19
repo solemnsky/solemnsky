@@ -25,9 +25,7 @@
  * Multiplayer.
  */
 
-void Multiplayer::useView(
-    const sky::ArenaMode arenaMode) {
-  if (view) { if (view->target == arenaMode) return; }
+void Multiplayer::loadView(const sky::ArenaMode arenaMode) {
   switch (arenaMode) {
     case sky::ArenaMode::Lobby: {
       view = std::make_unique<MultiplayerLobby>(shared, core);
@@ -54,7 +52,7 @@ Multiplayer::Multiplayer(ClientShared &shared,
 }
 
 void Multiplayer::onLoadMode(const sky::ArenaMode mode) {
-  ConnectionListener::onLoadMode(mode);
+  loadView(mode);
 }
 
 void Multiplayer::onChangeSettings(const SettingsDelta &settings) {
@@ -96,21 +94,17 @@ void Multiplayer::printDebug(Printer &p) {
   }
 }
 
-void Multiplayer::tick(float delta) {
+void Multiplayer::poll(const float delta) {
   core.poll(delta);
+}
+
+void Multiplayer::tick(const float delta) {
+  core.tick(delta);
   if (core.isDisconnected()) quitting = true;
   if (core.isDisconnecting()) return;
 
   if (core.conn) {
     core.conn->arena.tick(delta);
-
-    const sky::ArenaMode currentMode = core.conn->arena.getMode();
-
-    if (currentMode == sky::ArenaMode::Game
-        and !core.conn->skyHandle.isActive()) {
-      useView(sky::ArenaMode::Lobby);
-    } else useView(currentMode);
-
     view->tick(delta);
   }
 }
