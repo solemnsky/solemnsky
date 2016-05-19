@@ -52,7 +52,18 @@ Multiplayer::Multiplayer(ClientShared &shared,
 }
 
 void Multiplayer::onLoadMode(const sky::ArenaMode mode) {
-  loadView(mode);
+  if (mode != sky::ArenaMode::Game) loadView(mode);
+}
+
+void Multiplayer::onStartGame() {
+  if (core.conn->arena.getMode() == sky::ArenaMode::Game) {
+    loadView(sky::ArenaMode::Game);
+  }
+}
+
+void Multiplayer::onEndGame() {
+  if (core.conn->arena.getMode() == sky::ArenaMode::Game)
+    loadView(sky::ArenaMode::Scoring);
 }
 
 void Multiplayer::onChangeSettings(const SettingsDelta &settings) {

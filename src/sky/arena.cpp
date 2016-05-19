@@ -149,12 +149,12 @@ SubsystemCaller::SubsystemCaller(Arena &arena) :
 
 void SubsystemCaller::doStartGame() {
   for (const auto &pair : arena.subsystems)
-    pair.second->doStartGame();
+    pair.second->onStartGame();
 }
 
 void SubsystemCaller::doEndGame() {
   for (const auto &pair : arena.subsystems)
-    pair.second->doEndGame();
+    pair.second->onEndGame();
 }
 
 /**

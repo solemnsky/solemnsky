@@ -112,6 +112,7 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
 class SubsystemListener {
   friend class Arena;
   friend class Player;
+  friend class SubsystemCaller;
  protected:
   // Managing player registration.
   virtual void registerPlayer(Player &player) { }
@@ -126,7 +127,10 @@ class SubsystemListener {
   virtual void onAction(Player &player,
                         const Action action, const bool state) { }
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
-                       const sf::Vector2f &pos, const float rot) { };
+                       const sf::Vector2f &pos, const float rot) { }
+
+  virtual void onStartGame() { }
+  virtual void onEndGame() { }
 
 };
 
