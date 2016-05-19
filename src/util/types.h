@@ -24,6 +24,7 @@
 #include <cmath>
 #include <SFML/System.hpp>
 #include <boost/optional.hpp>
+#include <cereal/cereal.hpp>
 
 /**
  * Small comforts.
@@ -52,9 +53,13 @@ void load(Archive &ar, optional<T> &x) {
   } else x.reset();
 }
 
-template<typename Archive>
-void serialize(Archive &ar, sf::Vector2f &x) {
-  ar(x.x, x.y);
+namespace sf {
+  template<typename Archive>
+  void serialize(Archive &ar, sf::Vector2f &x) {
+    //ar(cereal::make_nvp("x",x.x), cereal::make_nvp("y",x.y));
+    //ar(x.x,x.y);
+    ar(CEREAL_NVP(x.x), CEREAL_NVP(x.y));
+  }
 }
 
 #include <cereal/types/string.hpp>
