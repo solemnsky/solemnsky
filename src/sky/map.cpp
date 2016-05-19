@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "map.h"
+#include <fstream>
+#include <cereal/archives/json.hpp>
 
 namespace sky {
 
@@ -48,6 +50,8 @@ void Map::loadTest1() {
   for (float x = 0; x < 1600.0f; x += 200) {
     obstacles.emplace_back(sf::Vector2f(x, 450), square, 1);
   }
+  auto file = std::ofstream("map_test.json");
+  save(file);
 }
 
 void Map::loadTest2() {
@@ -74,6 +78,12 @@ const std::vector<MapObstacle> &Map::getObstacles() const {
 
 const std::vector<MapItem> &Map::getItems() const {
   return items;
+}
+
+void Map::save(std::ostream& s) {
+  cereal::JSONOutputArchive archive(s);
+  archive( cereal::make_nvp("dimensions",dimensions),
+           cereal::make_nvp("obstacles",obstacles) );
 }
 
 }
