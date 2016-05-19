@@ -28,7 +28,7 @@
 #include "client/elements/elements.h"
 
 /**
- * ArenaLogger proxy for MultiplayerCore.
+ * ArenaLogger proxy for MultiplayerCore, to intercept arena events.
  */
 class MultiplayerLogger: public sky::ArenaLogger {
  private:
@@ -39,6 +39,20 @@ class MultiplayerLogger: public sky::ArenaLogger {
 
  public:
   MultiplayerLogger(sky::Arena &arena, class MultiplayerCore &core);
+};
+
+/**
+ * Subsystem proxy for MultiplayerCore, to intercept subsystem callbacks.
+ */
+class MultiplayerSubsystem: public sky::Subsystem<Nothing> {
+ private:
+  class MultiplayerCore &core;
+
+ protected:
+
+ public:
+  MultiplayerSubsystem(sky::Arena &arena, class MultiplayerCore &core);
+
 };
 
 /**
@@ -82,7 +96,8 @@ class MultiplayerCore: public ClientComponent {
   ConnectionListener &listener;
 
   // Connection state.
-  optional<MultiplayerLogger> logger;
+  optional<MultiplayerLogger> proxyLogger;
+  optional<MultiplayerSubsystem> proxySubsystem;
   bool askedConnection;
   Cooldown disconnectTimeout;
 
