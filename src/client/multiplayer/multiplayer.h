@@ -30,7 +30,7 @@ class Multiplayer: public Game, public ConnectionListener {
    * Arena connection state / protocol implementation and the current
    * (mode-specific) interface that we show the user.
    */
-  MultiplayerCore mShared;
+  MultiplayerCore core;
   std::unique_ptr<MultiplayerView> view;
   void useView(const sky::ArenaMode arenaMode);
 
