@@ -16,15 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Play a game on a server.
+ * Game played on a remote server.
  */
 #pragma once
-#include "multiplayershared.h"
+#include "multiplayercore.h"
 
 /**
  * Top-level multiplayer client.
  */
-class Multiplayer: public Game, public MultiplayerListener {
+class Multiplayer: public Game, public ConnectionListener {
  private:
   /**
    * Arena connection state / protocol implementation and the current

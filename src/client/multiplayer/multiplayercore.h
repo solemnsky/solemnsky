@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Where the multiplayer client converges.
+ * Connection management for the multiplayer client.
  */
 #pragma once
 #include "ui/control.h"
@@ -55,7 +55,7 @@ class ConnectionListener {
  public:
   virtual void onLoadMode(const sky::ArenaMode newMode) { }
 
-}
+};
 
 /**
  * The state of the multiplayer client, allocated for Multiplayer for use by
@@ -78,7 +78,6 @@ class MultiplayerCore : public sky::ArenaLogger {
   ENetPeer *server;
   bool disconnecting, // trying to disconnect
       disconnected; // it's over, close the multiplayer client
-  optional<ArenaConnection> conn;
 
   // Packet processing submethod.
   void processPacket(const sky::ServerPacket &packet);
@@ -101,6 +100,10 @@ class MultiplayerCore : public sky::ArenaLogger {
   void drawEventLog(ui::Frame &f, const float cutoff);
 
   // Connection state.
+  optional<ArenaConnection> conn;
+  bool isConnected() const; 
+  bool isDisconnecting() const;
+  bool isDisconnected() const;
 
   // User API.
   void transmit(const sky::ClientPacket &packet);
@@ -115,17 +118,16 @@ class MultiplayerCore : public sky::ArenaLogger {
 };
 
 /**
- * The interface for the client in a certain Arena mode; given that the
- * interface is modal, we should write it in modes.
+ * A particular interface we can offer the user.
  *
- * These classes act assuming that the connection is active
- * (mShared.conn is instantiated).
+ * Throughout the course of a client's activity in a server, we may go through various
+ * interfaces: the lobby, a loading screen, the game, the scoring screen, etc.
  */
 class MultiplayerView: public ClientComponent, public ui::Control {
  public:
   // Shared state.
   MultiplayerCore &mShared;
-  ArenaConnection &conn; // from mShared
+  ArenaConnection &conn; 
 
   MultiplayerView(
       sky::ArenaMode target,

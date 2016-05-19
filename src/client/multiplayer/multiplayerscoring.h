@@ -19,7 +19,7 @@
  * The various interfaces the multiplayer client can show.
  */
 #pragma once
-#include "multiplayershared.h"
+#include "multiplayercore.h"
 #include "ui/widgets/widgets.h"
 
 /**

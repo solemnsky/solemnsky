@@ -19,7 +19,7 @@
  * Component of the multiplayer client corresponding to ArenaMode::Game.
  */
 #pragma once
-#include "multiplayershared.h"
+#include "multiplayercore.h"
 #include "client/skyrender.h"
 #include "ui/widgets/widgets.h"
 
