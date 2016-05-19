@@ -51,6 +51,8 @@ void Map::loadTest1() {
   for (float x = 0; x < 1600.0f; x += 200) {
     obstacles.emplace_back(sf::Vector2f(x, 450), square, 1);
   }
+  //auto file = std::ofstream("map_test.json");
+  //save(file);
 }
 
 void Map::loadTest2() {
@@ -64,7 +66,7 @@ Map::Map(const MapName &name) :
     loadTest1();
   } else if (name == "test2") {
     loadTest2();
-  } else {
+  } else if (name != ""){
     auto file = std::ifstream(rootPath() + "maps/" + name + ".json");
     cereal::JSONInputArchive archive(file);
     archive( cereal::make_nvp("dimensions",dimensions),
