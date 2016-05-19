@@ -17,13 +17,10 @@
  */
 #include "multiplayercore.h"
 #include "client/elements/style.h"
-#include "sky/event.h"
-#include "util/printer.h"
 
 /**
  * MultiplayerLogger.
  */
-
 
 void MultiplayerLogger::onEvent(const sky::ArenaEvent &event) {
   core.logEvent(event);
@@ -140,8 +137,12 @@ MultiplayerCore::MultiplayerCore(
     server(nullptr),
 
     disconnecting(false), disconnected(false) {
-  ;
   host.connect(serverHostname, serverPort);
+}
+
+MultiplayerCore::~MultiplayerCore() {
+  proxyLogger.reset();
+  proxySubsystem.reset(); // must destroy subsystem before its arena
 }
 
 void MultiplayerCore::logClientEvent(const ClientEvent &event) {
@@ -201,6 +202,16 @@ void MultiplayerCore::transmit(const sky::ClientPacket &packet) {
   if (server) telegraph.transmit(host, server, packet);
 }
 
+void MultiplayerCore::disconnect() {
+  if (server) {
+    host.disconnect(server);
+    disconnecting = true;
+    disconnectTimeout.reset();
+  } else {
+    disconnected = true;
+  }
+}
+
 void MultiplayerCore::poll(const float delta) {
   if (disconnected) return;
 
@@ -243,13 +254,9 @@ void MultiplayerCore::poll(const float delta) {
   }
 }
 
-void MultiplayerCore::disconnect() {
-  if (server) {
-    host.disconnect(server);
-    disconnecting = true;
-    disconnectTimeout.reset();
-  } else {
-    disconnected = true;
+void MultiplayerCore::tick(const float delta) {
+  if (conn) {
+    conn->arena.tick(delta);
   }
 }
 
