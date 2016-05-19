@@ -134,3 +134,5 @@ class enum_error: public std::logic_error {
 };
 
 inline bool imply(const bool x, const bool y) { return y or !x; }
+
+inline const std::string rootPath() { return "../../"; }

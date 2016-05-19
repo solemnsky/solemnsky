@@ -36,7 +36,7 @@ ResRecord::ResRecord(
     tileX(tileX), tileY(tileY), countX(countX), countY(countY) { }
 
 std::string ResRecord::realPath() const {
-  return "../../media/" + path;
+  return rootPath() + "media/" + path;
 }
 
 /**
