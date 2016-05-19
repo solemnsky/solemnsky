@@ -114,12 +114,14 @@ class Physics {
   /**
    * Managing bodies.
    */
-  b2Body *createBody(const b2PolygonShape &shape,
+  b2Body *createBody(const b2Shape &shape,
                      const BodyTag &tag, bool isStatic = false);
   void deleteBody(b2Body *const body);
 
   b2PolygonShape rectShape(const sf::Vector2f &dims);
   b2PolygonShape polygonShape(const std::vector<sf::Vector2f>
+                                     &verticies);
+  b2ChainShape chainLoopShape(const std::vector<sf::Vector2f>
                                      &verticies);
 
   // approach rotational / linear velocities by applying impulses

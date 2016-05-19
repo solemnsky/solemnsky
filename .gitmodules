@@ -13,3 +13,6 @@
 [submodule "thirdparty/enetpp"]
 	path = thirdparty/enetpp
 	url = https://github.com/jseward/enetpp
+[submodule "maps"]
+	path = maps
+	url = http://github.com/solemnsky/solemnsky-maps

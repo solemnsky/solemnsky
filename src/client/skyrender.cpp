@@ -177,7 +177,7 @@ void SkyRender::renderMap(ui::Frame &f) {
 
   for (const auto &obstacle : map.getObstacles()) {
     f.withTransform(sf::Transform().translate(obstacle.pos), [&]() {
-      f.drawPoly(obstacle.localVerticies, sf::Color::White);
+      f.drawPolyOutline(obstacle.localVerticies, sf::Color::White);
     });
   }
 }

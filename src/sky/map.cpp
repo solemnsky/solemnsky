@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "map.h"
+#include "util/methods.h"
+#include <fstream>
+#include <cereal/archives/json.hpp>
 
 namespace sky {
 
@@ -61,6 +64,11 @@ Map::Map(const MapName &name) :
     loadTest1();
   } else if (name == "test2") {
     loadTest2();
+  } else {
+    auto file = std::ifstream(rootPath() + "maps/" + name + ".json");
+    cereal::JSONInputArchive archive(file);
+    archive( cereal::make_nvp("dimensions",dimensions),
+             cereal::make_nvp("obstacles",obstacles) );
   }
 }
 
@@ -74,6 +82,12 @@ const std::vector<MapObstacle> &Map::getObstacles() const {
 
 const std::vector<MapItem> &Map::getItems() const {
   return items;
+}
+
+void Map::save(std::ostream& s) {
+  cereal::JSONOutputArchive archive(s);
+  archive( cereal::make_nvp("dimensions",dimensions),
+           cereal::make_nvp("obstacles",obstacles) );
 }
 
 }
