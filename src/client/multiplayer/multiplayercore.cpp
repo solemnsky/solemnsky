@@ -34,6 +34,14 @@ MultiplayerLogger::MultiplayerLogger(sky::Arena &arena,
     sky::ArenaLogger(arena),
     core(core) { }
 
+/**
+ * MultiplayerSubsystem.
+ */
+
+MultiplayerSubsystem::MultiplayerSubsystem(sky::Arena &arena,
+                                           class MultiplayerCore &core) :
+    sky::Subsystem(arena),
+    core(core) { }
 
 /**
  * ArenaConnection.
@@ -63,10 +71,11 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
     if (packet.type == ServerPacket::Type::Init) {
       appLog("Loading arena...", LogOrigin::Client);
       conn.emplace(
-          *this,
           packet.pid.get(),
           packet.arenaInit.get(),
           packet.skyInit.get());
+      proxyLogger.emplace(conn->arena, *this);
+      proxySubsystem.emplace(conn->arena, *this);
       appLog("Joined arena!", LogOrigin::Client);
 
       logClientEvent(ClientEvent::Connect(
@@ -131,6 +140,7 @@ MultiplayerCore::MultiplayerCore(
     server(nullptr),
 
     disconnecting(false), disconnected(false) {
+  ;
   host.connect(serverHostname, serverPort);
 }
 
