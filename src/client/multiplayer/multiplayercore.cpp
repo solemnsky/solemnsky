@@ -35,6 +35,18 @@ MultiplayerLogger::MultiplayerLogger(sky::Arena &arena,
  * MultiplayerSubsystem.
  */
 
+void MultiplayerSubsystem::onMode(const sky::ArenaMode newMode) {
+  core.listener.onLoadMode(newMode);
+}
+
+void MultiplayerSubsystem::onStartGame() {
+  core.listener.onStartGame();
+}
+
+void MultiplayerSubsystem::onEndGame() {
+  core.listener.onEndGame();
+}
+
 MultiplayerSubsystem::MultiplayerSubsystem(sky::Arena &arena,
                                            class MultiplayerCore &core) :
     sky::Subsystem<Nothing>(arena),

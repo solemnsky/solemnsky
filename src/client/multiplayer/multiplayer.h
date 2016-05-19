@@ -41,6 +41,8 @@ class Multiplayer: public Game, public ConnectionListener {
 
   // MultiplayerListener impl.
   void onLoadMode(const sky::ArenaMode mode) override final;
+  void onStartGame() override final;
+  void onEndGame() override final;
 
   // Game impl.
   void onChangeSettings(const SettingsDelta &settings) override final;

@@ -28,7 +28,8 @@
 #include "client/elements/elements.h"
 
 /**
- * ArenaLogger proxy for MultiplayerCore, to intercept arena events.
+ * ArenaLogger proxy for MultiplayerCore, to intercept arena events for
+ * the MultiplayerCore event log.
  */
 class MultiplayerLogger: public sky::ArenaLogger {
  private:
@@ -42,11 +43,17 @@ class MultiplayerLogger: public sky::ArenaLogger {
 };
 
 /**
- * Subsystem proxy for MultiplayerCore, to intercept subsystem callbacks.
+ * Subsystem proxy for MultiplayerCore, to intercept subsystem callbacks to
+ * relay to ConnectionListener.
  */
 class MultiplayerSubsystem: public sky::Subsystem<Nothing> {
  private:
   class MultiplayerCore &core;
+
+ protected:
+  void onMode(const sky::ArenaMode newMode) override final;
+  void onStartGame() override final;
+  void onEndGame() override final;
 
  public:
   MultiplayerSubsystem(sky::Arena &arena, class MultiplayerCore &core);
@@ -80,6 +87,8 @@ struct ArenaConnection {
 class ConnectionListener {
  public:
   virtual void onLoadMode(const sky::ArenaMode newMode) { }
+  virtual void onStartGame() { }
+  virtual void onEndGame() { }
 
 };
 
@@ -89,6 +98,7 @@ class ConnectionListener {
  */
 class MultiplayerCore: public ClientComponent {
   friend class MultiplayerLogger;
+  friend class MultiplayerSubsystem;
  private:
   // Associated listener.
   ConnectionListener &listener;
