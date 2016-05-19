@@ -15,4 +15,4 @@
 	url = https://github.com/jseward/enetpp
 [submodule "maps"]
 	path = maps
-	url = http://github.com/solemnsky/solemnsky_maps
+	url = http://github.com/solemnsky/solemnsky-maps
