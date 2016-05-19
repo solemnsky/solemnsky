@@ -186,7 +186,6 @@ target_link_libraries(solemnsky_client
         solemnsky
         sfml-graphics
         sfml-window
-        thor
         )
 
 ###### unit tests
