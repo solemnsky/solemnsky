@@ -4,13 +4,16 @@ project(solemnsky)
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic -g")
 
-# set sfml root so thor can find SFML includes
-set(SFML_ROOT "${CMAKE_SOURCE_DIR}/thirdparty/SFML")
 
 # we depend on Box2D, SFML, Thor, and enet, from submodules in thirdparty/
 add_subdirectory("thirdparty/Box2D/Box2D")
 add_subdirectory("thirdparty/enet")
 add_subdirectory("thirdparty/SFML")
+
+# set sfml root so thor can find SFML includes
+install(EXPORT sfml DESTINATION lib/sfml/)
+set(SFML_ROOT "lib/SFML")
+
 add_subdirectory("thirdparty/Thor")
 
 # we also depend on boost and gthread from the host system
