@@ -40,7 +40,7 @@ MultiplayerLogger::MultiplayerLogger(sky::Arena &arena,
 
 MultiplayerSubsystem::MultiplayerSubsystem(sky::Arena &arena,
                                            class MultiplayerCore &core) :
-    sky::Subsystem(arena),
+    sky::Subsystem<Nothing>(arena),
     core(core) { }
 
 /**
