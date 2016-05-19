@@ -158,6 +158,22 @@ void MultiplayerCore::drawEventLog(ui::Frame &f, const float cutoff) {
       }, style.multi.messageLogText);
 }
 
+bool MultipalyerCore::getHost() const {
+  return host;
+}
+
+bool MultiplayerCore::connected() const {
+  return bool(server);
+}
+
+bool MultiplayerCore::isDisconnecting() const {
+  return disconnecting;
+}
+
+bool MultiplayerCore::isDisconnected() const {
+  return disconnected;
+}
+
 void MultiplayerCore::transmit(const sky::ClientPacket &packet) {
   if (server) telegraph.transmit(host, server, packet);
 }
