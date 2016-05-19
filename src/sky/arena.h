@@ -155,7 +155,7 @@ class Subsystem: public SubsystemListener {
 };
 
 /**
- * The arena logger abstraction: callbacks on ArenaEvents.
+ * The arena proxyLogger abstraction: callbacks on ArenaEvents.
  */
 class ArenaLogger {
  protected:
