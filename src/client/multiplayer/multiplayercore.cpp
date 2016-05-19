@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "multiplayershared.h"
+#include "multiplayercore.h"
 #include "client/elements/style.h"
 #include "sky/event.h"
 #include "util/printer.h"
@@ -24,27 +24,28 @@
  * MultiplayerLogger.
  */
 
+
 void MultiplayerLogger::onEvent(const sky::ArenaEvent &event) {
-  connection.logArenaEvent(event);
+  core.logEvent(event);
 }
 
 MultiplayerLogger::MultiplayerLogger(sky::Arena &arena,
-                                     MultiplayerCore &connection) :
-    sky::ArenaLogger(arena), connection(connection) { }
+                                     class MultiplayerCore &core) :
+    sky::ArenaLogger(arena),
+    core(core) { }
+
 
 /**
  * ArenaConnection.
  */
 
 ArenaConnection::ArenaConnection(
-    MultiplayerCore &shared,
     const PID pid,
     const sky::ArenaInit &arenaInit,
     const sky::SkyHandleInitializer &skyInit) :
     arena(arenaInit),
     skyHandle(arena, skyInit),
-    player(*arena.getPlayer(pid)),
-    logger(arena, shared) { }
+    player(*arena.getPlayer(pid)) { }
 
 const optional<sky::Sky> &ArenaConnection::getSky() const {
   return skyHandle.getSky();
@@ -68,7 +69,7 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
           packet.skyInit.get());
       appLog("Joined arena!", LogOrigin::Client);
 
-      logEvent(ClientEvent::Connect(
+      logClientEvent(ClientEvent::Connect(
           conn->arena.getName(),
           tg::printAddress(host.getPeers()[0]->address)));
     }
@@ -94,19 +95,19 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
     case ServerPacket::Type::Chat: {
       if (sky::Player *chattyPlayer = conn->arena.getPlayer(
           packet.pid.get())) {
-        logEvent(ClientEvent::Chat(
+        logClientEvent(ClientEvent::Chat(
             chattyPlayer->getNickname(), packet.stringData.get()));
       }
       break;
     }
 
     case ServerPacket::Type::Broadcast: {
-      logEvent(ClientEvent::Broadcast(packet.stringData.get()));
+      logClientEvent(ClientEvent::Broadcast(packet.stringData.get()));
       break;
     }
 
     case ServerPacket::Type::RCon: {
-      logEvent(ClientEvent::RConResponse(packet.stringData.get()));
+      logClientEvent(ClientEvent::RConResponse(packet.stringData.get()));
       break;
     }
 
@@ -120,7 +121,8 @@ MultiplayerCore::MultiplayerCore(
     ConnectionListener &listener,
     const std::string &serverHostname,
     const unsigned short serverPort) :
-    shared(shared),
+    ClientComponent(shared),
+
     listener(listener),
     askedConnection(false),
     disconnectTimeout(1),
@@ -132,14 +134,14 @@ MultiplayerCore::MultiplayerCore(
   host.connect(serverHostname, serverPort);
 }
 
-void MultiplayerCore::logEvent(const ClientEvent &event) {
+void MultiplayerCore::logClientEvent(const ClientEvent &event) {
   StringPrinter p;
   event.print(p);
   appLog(p.getString(), LogOrigin::Client);
   eventLog.push_back(event);
 }
 
-void MultiplayerCore::logArenaEvent(const sky::ArenaEvent &event) {
+void MultiplayerCore::logEvent(const sky::ArenaEvent &event) {
   StringPrinter p;
   event.print(p);
   appLog(p.getString(), LogOrigin::Engine);
@@ -158,11 +160,11 @@ void MultiplayerCore::drawEventLog(ui::Frame &f, const float cutoff) {
       }, style.multi.messageLogText);
 }
 
-bool MultipalyerCore::getHost() const {
+const tg::Host &MultiplayerCore::getHost() const {
   return host;
 }
 
-bool MultiplayerCore::connected() const {
+bool MultiplayerCore::isConnected() const {
   return bool(server);
 }
 
@@ -172,6 +174,17 @@ bool MultiplayerCore::isDisconnecting() const {
 
 bool MultiplayerCore::isDisconnected() const {
   return disconnected;
+}
+
+void MultiplayerCore::onChangeSettings(const SettingsDelta &settings) {
+  if (conn) {
+    if (settings.nickname) {
+      sky::PlayerDelta delta = conn->player.zeroDelta();
+      delta.nickname = *settings.nickname;
+      transmit(sky::ClientPacket::ReqPlayerDelta(delta));
+      // request a nickname change
+    }
+  }
 }
 
 void MultiplayerCore::transmit(const sky::ClientPacket &packet) {
@@ -235,7 +248,7 @@ void MultiplayerCore::chat(const std::string &message) {
 }
 
 void MultiplayerCore::rcon(const std::string &command) {
-  logEvent(ClientEvent::RConCommand(command));
+  logClientEvent(ClientEvent::RConCommand(command));
   transmit(sky::ClientPacket::RCon(command));
 }
 

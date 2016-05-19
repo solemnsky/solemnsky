@@ -28,6 +28,20 @@
 #include "client/elements/elements.h"
 
 /**
+ * ArenaLogger proxy for MultiplayerCore.
+ */
+class MultiplayerLogger: public sky::ArenaLogger {
+ private:
+  class MultiplayerCore &core;
+
+ protected:
+  void onEvent(const sky::ArenaEvent &event) override final;
+
+ public:
+  MultiplayerLogger(sky::Arena &arena, class MultiplayerCore &core);
+};
+
+/**
  * State associated with a participation in an remote arena.
  * Instantiated by MultiplayerCore when the connection is active.
  */
@@ -61,18 +75,19 @@ class ConnectionListener {
  * The state of the multiplayer client, allocated for Multiplayer for use by
  * MultiplayerView.
  */
-class MultiplayerCore : public sky::ArenaLogger {
+class MultiplayerCore: public ClientComponent {
   friend class MultiplayerLogger;
  private:
+  // Associated listener.
   ConnectionListener &listener;
 
-  ClientShared &shared;
-  ENetEvent event;
-
   // Connection state.
-  tg::Telegraph<sky::ServerPacket> telegraph;
+  optional<MultiplayerLogger> logger;
   bool askedConnection;
   Cooldown disconnectTimeout;
+
+  tg::Telegraph<sky::ServerPacket> telegraph;
+  ENetEvent event;
 
   tg::Host host;
   ENetPeer *server;
@@ -81,10 +96,6 @@ class MultiplayerCore : public sky::ArenaLogger {
 
   // Packet processing submethod.
   void processPacket(const sky::ServerPacket &packet);
-
- protected:
-  // sky::ArenaLogger impl.
-  void onEvent(const sky::ArenaEvent &event);
 
  public:
   MultiplayerCore(
@@ -95,8 +106,8 @@ class MultiplayerCore : public sky::ArenaLogger {
 
   // Event logging.
   std::vector<ClientEvent> eventLog;
-  void logEvent(const ClientEvent &event);
-  void logArenaEvent(const sky::ArenaEvent &event);
+  void logClientEvent(const ClientEvent &event);
+  void logEvent(const sky::ArenaEvent &event);
   void drawEventLog(ui::Frame &f, const float cutoff);
 
   // Connection state.
@@ -105,6 +116,9 @@ class MultiplayerCore : public sky::ArenaLogger {
   bool isConnected() const; 
   bool isDisconnecting() const;
   bool isDisconnected() const;
+
+  // ClientComponent impl.
+  void onChangeSettings(const SettingsDelta &settings);
 
   // User API.
   void transmit(const sky::ClientPacket &packet);
