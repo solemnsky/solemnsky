@@ -84,8 +84,8 @@ class Control {
   bool quitting;
 
   // Callbacks.
-  virtual void poll(float delta);
-  virtual void tick(float delta);
+  virtual void poll(const float delta);
+  virtual void tick(const float delta);
   virtual void render(Frame &f);
   virtual bool handle(const sf::Event &event);
   virtual void reset();
