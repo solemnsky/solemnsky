@@ -57,7 +57,7 @@ void load(Archive &ar, optional<T> &x) {
 namespace sf {
   template<typename Archive>
   void serialize(Archive &ar, sf::Vector2f &x) {
-    ar(CEREAL_NVP(x.x), CEREAL_NVP(x.y));
+    ar(cereal::make_nvp("x",x.x), cereal::make_nvp("y",x.y));
   }
 }
 
