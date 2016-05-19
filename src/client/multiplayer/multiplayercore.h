@@ -101,6 +101,7 @@ class MultiplayerCore : public sky::ArenaLogger {
 
   // Connection state.
   optional<ArenaConnection> conn;
+  const tg::Host &getHost() const;
   bool isConnected() const; 
   bool isDisconnecting() const;
   bool isDisconnected() const;

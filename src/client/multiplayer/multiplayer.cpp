@@ -95,9 +95,9 @@ void Multiplayer::printDebug(Printer &p) {
 
     p.breakLine();
     p.printLn("inbound bandwidth: " +
-        std::to_string(mShared.host.incomingBandwidth()));
+        std::to_string(mShared.getHost().incomingBandwidth()));
     p.printLn("outbound bandwidth: " +
-        std::to_string(mShared.host.outgoingBandwidth()));
+        std::to_string(mShared.getHost().outgoingBandwidth()));
   } else {
     p.printLn("not connected...");
   }
@@ -105,8 +105,8 @@ void Multiplayer::printDebug(Printer &p) {
 
 void Multiplayer::tick(float delta) {
   mShared.poll(delta);
-  if (mShared.disconnected) quitting = true;
-  if (mShared.disconnecting) return;
+  if (mShared.isDisconnected()) quitting = true;
+  if (mShared.isDisconnecting()) return;
 
   if (mShared.conn) {
     mShared.conn->arena.tick(delta);
@@ -124,7 +124,7 @@ void Multiplayer::tick(float delta) {
 
 void Multiplayer::render(ui::Frame &f) {
   if (!mShared.isConnected()) {
-    if (mShared.disconnecting) {
+    if (mShared.isDisconnecting()) {
       f.drawText({400, 400}, "Disconnecting...",
                  sf::Color::White, style.base.normalText);
     } else {
