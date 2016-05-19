@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "map.h"
+#include "util/methods.h"
 #include <fstream>
 #include <cereal/archives/json.hpp>
 
@@ -50,8 +51,6 @@ void Map::loadTest1() {
   for (float x = 0; x < 1600.0f; x += 200) {
     obstacles.emplace_back(sf::Vector2f(x, 450), square, 1);
   }
-  auto file = std::ofstream("map_test.json");
-  save(file);
 }
 
 void Map::loadTest2() {
@@ -65,6 +64,11 @@ Map::Map(const MapName &name) :
     loadTest1();
   } else if (name == "test2") {
     loadTest2();
+  } else {
+    auto file = std::ifstream(rootPath() + "maps/" + name + ".json");
+    cereal::JSONInputArchive archive(file);
+    archive( cereal::make_nvp("dimensions",dimensions),
+             cereal::make_nvp("obstacles",obstacles) );
   }
 }
 
