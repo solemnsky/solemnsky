@@ -40,6 +40,7 @@ class Multiplayer: public Game, public ConnectionListener {
               const unsigned short serverPort);
 
   // MultiplayerListener impl.
+  void onConnect() override final;
   void onLoadMode(const sky::ArenaMode mode) override final;
   void onStartGame() override final;
   void onEndGame() override final;

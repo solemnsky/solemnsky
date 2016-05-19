@@ -35,7 +35,7 @@ void VanillaServer::onPacket(ENetPeer *const client,
     } else {
       // TODO: uniform command parsing
       if (packet.stringData.get() == "start") {
-        skyHandle.start("test1");
+        skyHandle.start();
         shared.registerArenaDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
         return;
       }
@@ -47,18 +47,19 @@ void VanillaServer::onPacket(ENetPeer *const client,
       }
 
       if (packet.stringData.get() == "restart") {
-        skyHandle.stop();
-        skyHandle.start(arena.getNextMap());
+        skyHandle.start();
         return;
       }
 
       if (packet.stringData.get() == "map1") {
         shared.registerArenaDelta(sky::ArenaDelta::MapChange("test1"));
+        skyHandle.start();
         return;
       }
 
       if (packet.stringData.get() == "map2") {
         shared.registerArenaDelta(sky::ArenaDelta::MapChange("test2"));
+        skyHandle.start();
         return;
       }
     }
