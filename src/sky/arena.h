@@ -152,10 +152,11 @@ class Subsystem: public SubsystemListener {
   Subsystem() = delete;
   Subsystem(Arena &arena);
   virtual ~Subsystem();
+
 };
 
 /**
- * The arena proxyLogger abstraction: callbacks on ArenaEvents.
+ * The arena logger abstraction: callbacks on ArenaEvents.
  */
 class ArenaLogger {
  protected:
@@ -165,6 +166,7 @@ class ArenaLogger {
  public:
   class Arena &arena;
 
+  ArenaLogger() = delete;
   ArenaLogger(Arena &arena);
 
 };
