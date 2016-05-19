@@ -19,7 +19,7 @@
  * Component of the multiplayer client corresponding to ArenaMode::Lobby.
  */
 #pragma once
-#include "multiplayershared.h"
+#include "multiplayercore.h"
 #include "ui/widgets/widgets.h"
 
 /**

@@ -36,6 +36,7 @@ class KeySelector: public ui::Control {
   KeySelector(AppState &appState,
               const Style &style, const sf::Vector2f &pos);
 
+  // Control impl.
   void render(Frame &f) override;
   bool handle(const sf::Event &event) override;
   void reset() override;

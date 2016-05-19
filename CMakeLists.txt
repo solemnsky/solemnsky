@@ -106,6 +106,9 @@ add_executable(solemnsky_client
         src/client/multiplayer/multiplayer.cpp
         src/client/multiplayer/multiplayer.h
 
+        src/client/multiplayer/multiplayercore.cpp
+        src/client/multiplayer/multiplayercore.h
+
         src/client/multiplayer/multiplayergame.cpp
         src/client/multiplayer/multiplayergame.h
 
@@ -114,9 +117,6 @@ add_executable(solemnsky_client
 
         src/client/multiplayer/multiplayerscoring.cpp
         src/client/multiplayer/multiplayerscoring.h
-
-        src/client/multiplayer/multiplayershared.cpp
-        src/client/multiplayer/multiplayershared.h
 
         src/client/tutorial/tutorial.cpp
         src/client/tutorial/tutorial.h
