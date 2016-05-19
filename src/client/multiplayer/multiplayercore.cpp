@@ -86,6 +86,7 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
       proxyLogger.emplace(conn->arena, *this);
       proxySubsystem.emplace(conn->arena, *this);
       appLog("Joined arena!", LogOrigin::Client);
+      listener.onConnect();
 
       logClientEvent(ClientEvent::Connect(
           conn->arena.getName(),

@@ -86,6 +86,7 @@ struct ArenaConnection {
  */
 class ConnectionListener {
  public:
+  virtual void onConnect() { }
   virtual void onLoadMode(const sky::ArenaMode newMode) { }
   virtual void onStartGame() { }
   virtual void onEndGame() { }
