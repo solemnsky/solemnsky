@@ -19,14 +19,14 @@
 
 Tutorial::Tutorial(ClientShared &state) :
     Game(state, "tutorial"),
-    arena(sky::ArenaInit("tutorial", "map_test")),
-    sky(arena, sky::SkyInitializer("map_test")),
+    arena(sky::ArenaInit("tutorial", "roids")),
+    sky(arena, sky::SkyInitializer("roids")),
     skyRender(shared, arena, sky) {
   areChildComponents({&skyRender});
   arena.connectPlayer("offline player");
 
   player = arena.getPlayer(0);
-  player->spawn({}, {30, 30}, 0);
+  player->spawn({}, {800, 250}, 0);
   participation = &sky.getParticipation(*player);
 
   status = "learning to play";
