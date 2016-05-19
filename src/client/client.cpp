@@ -72,7 +72,14 @@ Page &Client::referencePage(const PageType type) {
   return homePage;
 }
 
-void Client::tick(float delta) {
+void Client::poll(const float delta) {
+  if (shared.game) {
+    shared.game->poll(delta);
+  }
+  ui::Control::poll(delta);
+}
+
+void Client::tick(const float delta) {
   ui::Control::tick(delta);
 
   if (profilerCooldown.cool(delta)) {
