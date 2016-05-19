@@ -31,7 +31,7 @@ namespace sky {
 using MapName = std::string;
 
 /**
- * A convex shape that things can collide with.
+ * A shape that things can collide with.
  */
 struct MapObstacle {
   MapObstacle();
