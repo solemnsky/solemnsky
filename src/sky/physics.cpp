@@ -164,7 +164,7 @@ b2PolygonShape Physics::polygonShape(const std::vector<sf::Vector2f> &verticies)
   size_t i = 0;
   for (const auto &vertex : verticies) {
     points[i] = toPhysVec(vertex);
-    i++;
+    ++i;
   }
   shape.Set(points, (int32) verticies.size());
   delete[] points;
@@ -178,9 +178,10 @@ b2ChainShape Physics::chainLoopShape(const std::vector<sf::Vector2f> &verticies)
   size_t i = 1;
   for (const auto &vertex : verticies) {
     points[i] = toPhysVec(vertex);
-    i++;
+    ++i;
   }
   shape.CreateChain(points, (int32) verticies.size());
+  delete[] points;
   return shape;
 }
 
