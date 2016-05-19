@@ -51,6 +51,20 @@ Multiplayer::Multiplayer(ClientShared &shared,
   areChildComponents({&core});
 }
 
+void Multiplayer::onConnect() {
+  const auto mode = core.conn->arena.getMode();
+  if (mode == sky::ArenaMode::Game) {
+    if (core.conn->skyHandle.isActive()) {
+      loadView(mode);
+    } else {
+      loadView(sky::ArenaMode::Lobby);
+    }
+  } else {
+    loadView(mode);
+  }
+
+}
+
 void Multiplayer::onLoadMode(const sky::ArenaMode mode) {
   if (mode != sky::ArenaMode::Game) loadView(mode);
 }
@@ -63,7 +77,7 @@ void Multiplayer::onStartGame() {
 
 void Multiplayer::onEndGame() {
   if (core.conn->arena.getMode() == sky::ArenaMode::Game)
-    loadView(sky::ArenaMode::Scoring);
+    loadView(sky::ArenaMode::Lobby);
 }
 
 void Multiplayer::onChangeSettings(const SettingsDelta &settings) {
@@ -116,7 +130,7 @@ void Multiplayer::tick(const float delta) {
 
   if (core.conn) {
     core.conn->arena.tick(delta);
-    view->tick(delta);
+    if (view) view->tick(delta);
   }
 }
 

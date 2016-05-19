@@ -171,7 +171,7 @@ class SkyHandle
   void applyDelta(const SkyHandleDelta &delta) override final;
 
   // User API.
-  void start(const MapName &mapName);
+  void start();
   void stop();
 
   const optional<Sky> &getSky() const;

@@ -212,9 +212,9 @@ SkyHandleDelta SkyHandle::collectDelta() {
   return delta;
 }
 
-void SkyHandle::start(const MapName &mapName) {
+void SkyHandle::start() {
   stop();
-  sky.emplace(arena, SkyInitializer(mapName));
+  sky.emplace(arena, SkyInitializer(arena.getNextMap()));
   skyIsNew = true;
   caller.doStartGame();
 }

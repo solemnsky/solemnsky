@@ -23,7 +23,7 @@ TEST_F(SkyTest, AllocTest) {
 
   {
     // Starting the sky with a map.
-    skyHandle.start("test1");
+    skyHandle.start();
     ASSERT_EQ(bool(skyHandle.isActive()), true);
     const sky::Sky &sky = *skyHandle.getSky();
     ASSERT_EQ(sky.getMap().name, "test1");
@@ -51,7 +51,7 @@ TEST_F(SkyTest, InitializerTest) {
 
   {
     sky::Player &player = *arena.getPlayer(0);
-    skyHandle.start("test1");
+    skyHandle.start();
     player.spawn({}, {300, 300}, 0);
     player.doAction(sky::Action::Left, true);
   }
@@ -83,7 +83,7 @@ TEST_F(SkyTest, InitializerTest) {
 TEST_F(SkyTest, DeltaTest) {
   // Initialize: body Skies are instantiated and a player joined.
   arena.connectPlayer("nameless plane");
-  skyHandle.start("test1");
+  skyHandle.start();
   sky::Arena remoteArena(arena.captureInitializer());
   sky::SkyHandle remoteSkyHandle(remoteArena, skyHandle.captureInitializer());
 
@@ -114,7 +114,7 @@ TEST_F(SkyTest, DeltaAllocTest) {
   ASSERT_EQ(remoteSkyHandle.isActive(), false);
 
   // Starting.
-  skyHandle.start("test1");
+  skyHandle.start();
   remoteSkyHandle.applyDelta(skyHandle.collectDelta());
   ASSERT_EQ(remoteSkyHandle.isActive(), true);
 
@@ -124,16 +124,16 @@ TEST_F(SkyTest, DeltaAllocTest) {
   ASSERT_EQ(remoteSkyHandle.isActive(), false);
 
   // Starting followed by stopping.
-  skyHandle.start("test1");
+  skyHandle.start();
   skyHandle.stop();
   remoteSkyHandle.applyDelta(skyHandle.collectDelta());
   ASSERT_EQ(remoteSkyHandle.isActive(), false);
 
   // Restarting.
-  skyHandle.start("test1");
+  skyHandle.start();
   remoteSkyHandle.applyDelta(skyHandle.collectDelta());
-  skyHandle.stop();
-  skyHandle.start("test2");
+  arena.applyDelta(sky::ArenaDelta::MapChange("test2"));
+  skyHandle.start();
   remoteSkyHandle.applyDelta(skyHandle.collectDelta());
   ASSERT_EQ(remoteSkyHandle.getSky()->getMap().name, "test2");
 
