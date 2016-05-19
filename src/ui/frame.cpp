@@ -151,6 +151,23 @@ void Frame::drawPoly(const std::vector<sf::Vector2f> &vertices,
   window.draw(shape, transformStack.top());
 }
 
+void Frame::drawPolyOutline(const std::vector<sf::Vector2f> &vertices,
+                            const sf::Color &color) {
+  primCount++;
+  std::vector<sf::Vertex> shape(vertices.size()+1);
+  sf::Color col = alphaScaleColor(color);
+  size_t i = 0;
+  for (const auto &vertex : vertices) {
+    shape[i] = sf::Vertex(vertex, col);
+    ++i;
+  }
+  shape[vertices.size()] = sf::Vertex(vertices[0], col);
+  window.draw(shape.data(),
+              shape.size(),
+              sf::PrimitiveType::LinesStrip,
+              transformStack.top());
+}
+
 sf::Vector2f Frame::drawText(const sf::Vector2f &pos,
                              std::function<void(TextFrame &)> process,
                              const TextFormat &format) {

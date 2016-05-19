@@ -22,6 +22,9 @@
 #include <SFML/System.hpp>
 #include "util/types.h"
 #include <string>
+#include <ostream>
+#include <istream>
+#include <cereal/cereal.hpp>
 
 namespace sky {
 
@@ -31,7 +34,7 @@ namespace sky {
 using MapName = std::string;
 
 /**
- * A convex shape that things can collide with.
+ * A shape that things can collide with.
  */
 struct MapObstacle {
   MapObstacle();
@@ -42,7 +45,16 @@ struct MapObstacle {
   sf::Vector2f pos;
   std::vector<sf::Vector2f> localVerticies;
   float damage;
+
 };
+
+template<class Archive>
+void serialize(Archive & archive, MapObstacle& o){
+  archive(
+          cereal::make_nvp("pos",o.pos),
+          cereal::make_nvp("localVerticies",o.localVerticies),
+          cereal::make_nvp("damage",o.damage));
+}
 
 struct MapItem {
   enum class Type {
@@ -73,6 +85,8 @@ struct Map {
   const std::vector<MapObstacle> &getObstacles() const;
   const std::vector<MapItem> &getItems() const;
 
+  //void load(std::basic_istream& s);
+  void save(std::ostream& s);
 };
 
 }

@@ -90,7 +90,9 @@ Physics::Physics(const Map &map, PhysicsListener &listener) :
 
   // obstacles
   for (const auto &obstacle : map.getObstacles()) {
-    body = createBody(polygonShape(obstacle.localVerticies),
+    //body = createBody(polygonShape(obstacle.localVerticies),
+    //                  BodyTag::ObstacleTag(obstacle), true);
+    body = createBody(chainLoopShape(obstacle.localVerticies),
                       BodyTag::ObstacleTag(obstacle), true);
     body->SetTransform(toPhysVec(obstacle.pos), 0);
   }
@@ -130,7 +132,7 @@ float Physics::toPhysDistance(float x) const {
   return x / settings.distanceScale;
 }
 
-b2Body *Physics::createBody(const b2PolygonShape &shape,
+b2Body *Physics::createBody(const b2Shape &shape,
                             const BodyTag &tag, bool isStatic) {
   b2BodyDef def;
   def.fixedRotation = false;
@@ -166,6 +168,19 @@ b2PolygonShape Physics::polygonShape(const std::vector<sf::Vector2f> &verticies)
   }
   shape.Set(points, (int32) verticies.size());
   delete[] points;
+  return shape;
+}
+
+b2ChainShape Physics::chainLoopShape(const std::vector<sf::Vector2f> &verticies) {
+  b2ChainShape shape;
+  b2Vec2 *points = new b2Vec2[verticies.size() + 1];
+  points[0] = toPhysVec(verticies[verticies.size()-1]);
+  size_t i = 1;
+  for (const auto &vertex : verticies) {
+    points[i] = toPhysVec(vertex);
+    i++;
+  }
+  shape.CreateChain(points, (int32) verticies.size());
   return shape;
 }
 

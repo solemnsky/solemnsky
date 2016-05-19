@@ -52,9 +52,13 @@ void load(Archive &ar, optional<T> &x) {
   } else x.reset();
 }
 
-template<typename Archive>
-void serialize(Archive &ar, sf::Vector2f &x) {
-  ar(x.x, x.y);
+#include <cereal/cereal.hpp>
+
+namespace sf {
+  template<typename Archive>
+  void serialize(Archive &ar, sf::Vector2f &x) {
+    ar(CEREAL_NVP(x.x), CEREAL_NVP(x.y));
+  }
 }
 
 #include <cereal/types/string.hpp>
