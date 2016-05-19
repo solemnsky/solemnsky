@@ -59,11 +59,11 @@ Control::Control(AppState &appState) :
     appState(appState),
     quitting(false) { }
 
-void Control::poll(float delta) {
+void Control::poll(const float delta) {
   for (auto child : children) child->poll(delta);
 }
 
-void Control::tick(float delta) {
+void Control::tick(const float delta) {
   for (auto child : children) child->tick(delta);
 }
 
