@@ -124,6 +124,8 @@ class SubsystemListener {
   virtual void onQuit(Player &player) { }
   virtual void onMode(const ArenaMode newMode) { }
   virtual void onMapChange() { }
+  virtual void onDelta(Player &player,
+                       const PlayerDelta &delta) { }
   virtual void onAction(Player &player,
                         const Action action, const bool state) { }
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,

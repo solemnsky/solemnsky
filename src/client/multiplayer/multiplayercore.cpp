@@ -59,9 +59,11 @@ MultiplayerSubsystem::MultiplayerSubsystem(sky::Arena &arena,
 ArenaConnection::ArenaConnection(
     const PID pid,
     const sky::ArenaInit &arenaInit,
-    const sky::SkyHandleInit &skyInit) :
+    const sky::SkyHandleInit &skyInit,
+    const sky::ScoreboardInit &scoreboardInit) :
     arena(arenaInit),
     skyHandle(arena, skyInit),
+    scoreboard(arena, scoreboardInit),
     player(*arena.getPlayer(pid)) { }
 
 const optional<sky::Sky> &ArenaConnection::getSky() const {
@@ -82,7 +84,8 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
       conn.emplace(
           packet.pid.get(),
           packet.arenaInit.get(),
-          packet.skyInit.get());
+          packet.skyInit.get(),
+          packet.scoreInit.get());
       proxyLogger.emplace(conn->arena, *this);
       proxySubsystem.emplace(conn->arena, *this);
       appLog("Joined arena!", LogOrigin::Client);
@@ -108,6 +111,11 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
 
     case ServerPacket::Type::DeltaSky: {
       conn->skyHandle.applyDelta(packet.skyDelta.get());
+      break;
+    }
+
+    case ServerPacket::Type::DeltaScore: {
+      conn->scoreboard.applyDelta(packet.scoreDelta.get());
       break;
     }
 

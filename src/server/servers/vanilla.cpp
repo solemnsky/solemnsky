@@ -70,6 +70,6 @@ void VanillaServer::onPacket(ENetPeer *const client,
   }
 }
 
-VanillaServer::VanillaServer(ServerShared &shared)
-    : Server(shared) { }
+VanillaServer::VanillaServer(ServerShared &shared) :
+    Server(shared) { }
 
