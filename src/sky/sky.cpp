@@ -64,8 +64,7 @@ void Sky::registerPlayer(Player &player) {
 }
 
 void Sky::unregisterPlayer(Player &player) {
-  const auto plane = participations.find(player.pid);
-  if (plane != participations.end()) participations.erase(plane);
+  participations.erase(participations.find(player.pid));
 }
 
 void Sky::onAction(Player &player, const Action action, const bool state) {

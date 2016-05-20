@@ -55,6 +55,9 @@ add_library(solemnsky STATIC
         src/sky/protocol.cpp
         src/sky/protocol.h
 
+        src/sky/scoreboard.cpp
+        src/sky/scoreboard.h
+
         src/sky/sky.cpp
         src/sky/sky.h
 
