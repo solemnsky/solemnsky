@@ -43,7 +43,7 @@ struct MapObstacle {
               const float damage);
 
   template<typename Archive>
-  void archive(Archive &ar){
+  void serialize(Archive &ar){
     ar(cereal::make_nvp("pos", pos),
        cereal::make_nvp("localVerticies", localVerticies),
        cereal::make_nvp("damage", damage));
