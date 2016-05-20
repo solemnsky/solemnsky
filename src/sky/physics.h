@@ -74,7 +74,7 @@ class PhysicsDispatcher: public b2ContactListener {
   // b2ContactListener
   virtual void BeginContact(b2Contact *contact) override;
   virtual void EndContact(b2Contact *contact) override;
-
+1
 };
 
 /**
@@ -96,6 +96,7 @@ class Physics {
 
  public:
   Physics() = delete;
+  Physics(Map &&, PhysicsListener &) = delete; // Map must not be temp!
   Physics(const Map &map, PhysicsListener &listener);
   ~Physics();
 
