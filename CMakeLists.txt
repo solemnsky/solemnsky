@@ -4,10 +4,18 @@ project(solemnsky)
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic -g")
 
-# we depend on Box2D, SFML, and enet, from submodules in thirdparty/
+# we depend on Box2D, SFML, Thor, and enet, from submodules in thirdparty/
 add_subdirectory("thirdparty/Box2D/Box2D")
 add_subdirectory("thirdparty/enet")
 add_subdirectory("thirdparty/SFML")
+add_subdirectory("thirdparty/Thor")
+
+file(COPY "${CMAKE_SOURCE_DIR}/thirdparty/SFML/include" DESTINATION "thirdparty/SFML/")
+set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SFML")
+set(SFML_ROOT "${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SFML")
+set(SFML_INCLUDE_DIR "${SFML_ROOT}/include")
+
+add_subdirectory("thirdparty/Thor")
 
 # we also depend on boost and gthread from the host system
 find_package(Boost REQUIRED)
@@ -19,6 +27,7 @@ include_directories(
         thirdparty/enet/include/
         thirdparty/cereal/
         thirdparty/SFML/include/
+        thirdparty/Thor/include/
         "${Boost_INCLUDE_DIRS}"
 )
 
@@ -72,6 +81,7 @@ target_link_libraries(solemnsky
         sfml-system
         sfml-network
         Box2D
+        thor
         ${Boost_LIBRARIES}
         )
 
@@ -186,7 +196,7 @@ target_link_libraries(solemnsky_client
 add_subdirectory(tests/)
 
 ###### installation
-install(TARGETS solemnsky_client solemnsky_server 
+install(TARGETS solemnsky_client solemnsky_server
         RUNTIME DESTINATION bin)
 install(DIRECTORY media DESTINATION share/solemnsky)
 set(CPACK_GENERATOR "ZIP")
