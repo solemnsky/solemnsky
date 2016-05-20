@@ -58,7 +58,7 @@ struct ScoreRecord
  */
 struct ScoreboardInit {
   ScoreboardInit() = default;
-  ScoreboardInit(const std::vector<bool> &fields);
+  ScoreboardInit(const std::vector<std::string> &fields);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -97,6 +97,8 @@ class Scoreboard
   std::vector<std::string> fields;
   std::map<PID, ScoreRecord> records;
 
+  std::vector<std::string> lastFields;
+
  protected:
   void registerPlayerWith(Player &player, const ScoreRecordInit &initializer);
   // Subsystem impl.
@@ -109,10 +111,11 @@ class Scoreboard
   // Networked impl.
   void applyDelta(const ScoreboardDelta &delta) override final;
   ScoreboardInit captureInitializer() const override final;
+  ScoreboardDelta collectDelta();
 
   // User API.
   const std::vector<std::string> &getFields();
-  ScoreRecord &getScoreRecord(const Player &player);
+  ScoreRecord &getScore(const Player &player);
   const ScoreRecord &getScoreRecord(const Player &player) const;
 
 };

@@ -20,17 +20,8 @@
 namespace sky {
 
 /**
- * ScoreRecordInit.
- */
-
-ScoreboardInit::ScoreboardInit(
-    const std::vector<bool> &fields) :
-    fields(fields) { }
-
-/**
  * ScoreRecord.
  */
-
 
 ScoreRecord::ScoreRecord(const ScoreRecordInit &init) :
     Networked(init),
@@ -60,14 +51,25 @@ int ScoreRecord::getValueAt(const size_t index) {
 }
 
 void ScoreRecord::setValueAt(const size_t index, const int value) {
-  values[index] = value;
+  if (values.size() <= index) values.resize(index + 1);
+  values.at(index) = value;
 }
 
+/**
+ * ScoreboardInit.
+ */
+
+ScoreboardInit::ScoreboardInit(
+    const std::vector<std::string> &fields) :
+    fields(fields) { }
+
+/**
+ * ScoreboardDelta.
+ */
 
 /**
  * Scoreboard.
  */
-
 
 void Scoreboard::registerPlayerWith(Player &player,
                                     const ScoreRecordInit &initializer) {
@@ -86,27 +88,53 @@ void Scoreboard::unregisterPlayer(Player &player) {
 
 Scoreboard::Scoreboard(Arena &arena,
                        const ScoreboardInit &initializer) :
-    Networked(initializer),
     Subsystem(arena),
+    Networked(initializer),
     fields(initializer.fields) {
   arena.forPlayers([&](Player &player) {
-    registerPlayer(player);
+    const auto iter = initializer.initializers.find(player.pid);
+    if (iter != initializer.initializers.end())
+      registerPlayerWith(player, iter->second);
+    else registerPlayerWith(player, {});
   });
 }
 
 void Scoreboard::applyDelta(const ScoreboardDelta &delta) {
-
+  if (delta.fields) {
+    fields = delta.fields.get();
+  }
+  for (const auto &pair : delta.deltas) {
+    const auto iter = records.find(pair.first);
+    if (iter != records.end())
+      iter->second.applyDelta(pair.second);
+  }
 }
 
 ScoreboardInit Scoreboard::captureInitializer() const {
-  return sky::ScoreboardInit();
+  ScoreboardInit init;
+  init.fields = fields;
+  for (const auto &pair : records) {
+    init.initializers.emplace(pair.first, pair.second.captureInitializer());
+  }
+  return init;
+}
+
+ScoreboardDelta Scoreboard::collectDelta() {
+  ScoreboardDelta delta;
+  if (fields != lastFields) {
+    delta.fields = fields;
+    lastFields = fields;
+  }
+  for (auto &pair : records)
+    delta.deltas.emplace(pair.first, pair.second.collectDelta());
+  return delta;
 }
 
 const std::vector<std::string> &Scoreboard::getFields() {
   return fields;
 }
 
-ScoreRecord &Scoreboard::getScoreRecord(const Player &player) {
+ScoreRecord &Scoreboard::getScore(const Player &player) {
   return getPlayerData(player);
 }
 
