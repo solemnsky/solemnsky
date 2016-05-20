@@ -94,16 +94,6 @@ See also: `tests/subsystemtest.cpp` for a concise example, and `src/sky/arena.h`
  the full definition. The set of subsystem callbacks and subsystem callables will
  evolve as the game offers develops new mechanics and modding hooks.
 
-### Physics
-
-`sky::Physics` wraps box2d, representing a physical world where bodies can be created,
- physics callbacks intercepted (through an attached PhysicsListener), 
-
-### Maps
-
-`sky::Map` is the static 
-
-
 ### Sky
 
 `sky::Sky` is the juicy bit of the game engine. It's instantiated when the Arena is in
@@ -118,6 +108,34 @@ See also: `tests/subsystemtest.cpp` for a concise example, and `src/sky/arena.h`
 
 A single instantiation of Sky only corresponds to one map; in order to change the map,
  SkyHandle must reinstantiate its child. 
+
+### Physics
+
+`sky::Physics` wraps box2d, representing a physical world where bodies can be created, 
+ physical callbacks intercepted, and physical information synced with the rest of our 
+ engine, through conversion utilities.  
+
+Every body is associated a `BodyTag`; this describes what the body is, and what potential
+ game entities it is associated with. Physical callbacks are handled by the `PhysicsListener`
+ reference passed to a `sky::Physics` ctor`, and reference bodies through their respective
+ `BodyTag`s.
+
+`sky::Physics`, constructed with a `sky::Map`, is constructed and held by `sky::Sky`.
+
+### Maps
+
+`sky::Map` is the static environment of a `sky::Sky`; it can be loaded from a file,
+ and holds graphics information along with obstacles, spawn points, and the like.
+ `sky::Map` is *static*: it does not change! 
+ 
+After being used to construct a Physics, it remains alive to serve as a reference for
+ `BodyTag`s corresponding to Physical bodies derived from the Map.
+
+### Participation
+
+`sky::Participation`, the player data used by `sky::Subsystem`, holds a small hierarchy of 
+ game data; in brief, each player can hold a set of `sky::Props`, and potentially a
+ `sky::Plane`.
 
 ### Scoreboard
 
