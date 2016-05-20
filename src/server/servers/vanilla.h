@@ -33,8 +33,6 @@ class VanillaServer: public Server<Nothing> {
                         const sky::ClientPacket &packet);
 
  public:
-
-  VanillaServer
-      (ServerShared &telegraphy, sky::Arena &arena, sky::SkyHandle &sky);
+  VanillaServer(ServerShared &shared);
 
 };

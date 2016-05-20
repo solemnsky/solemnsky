@@ -70,7 +70,6 @@ void VanillaServer::onPacket(ENetPeer *const client,
   }
 }
 
-VanillaServer::VanillaServer(ServerShared &telegraphy,
-                             sky::Arena &arena, sky::SkyHandle &sky)
-    : Server(telegraphy, arena, sky) { }
+VanillaServer::VanillaServer(ServerShared &shared)
+    : Server(shared) { }
 

@@ -120,9 +120,9 @@ class Sky
  * Initializer for SkyHandle.
  */
 
-struct SkyHandleInitializer {
-  SkyHandleInitializer() = default;
-  explicit SkyHandleInitializer(const SkyInitializer &initializer);
+struct SkyHandleInit {
+  SkyHandleInit() = default;
+  explicit SkyHandleInit(const SkyInitializer &initializer);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -158,17 +158,17 @@ struct SkyHandleDelta {
  */
 class SkyHandle
     : public Subsystem<Nothing>,
-      public Networked<SkyHandleInitializer, SkyHandleDelta> {
+      public Networked<SkyHandleInit, SkyHandleDelta> {
  private:
   // State.
   optional<Sky> sky;
   bool skyIsNew;
 
  public:
-  SkyHandle(class Arena &parent, const SkyHandleInitializer &initializer);
+  SkyHandle(class Arena &parent, const SkyHandleInit &initializer);
 
   // Networking.
-  SkyHandleInitializer captureInitializer() const override final;
+  SkyHandleInit captureInitializer() const override final;
   SkyHandleDelta collectDelta();
   void applyDelta(const SkyHandleDelta &delta) override final;
 

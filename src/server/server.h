@@ -29,22 +29,24 @@
 #include <iostream>
 
 /**
- * Methods that the ServerExec exposes / shares with Server.
+ * Core
  */
 struct ServerShared {
- private:
-  class ServerExec &exec;
-
  public:
   ServerShared(tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph,
-               class ServerExec &exec);
+               const sky::ArenaInit &arenaInit);
 
+  // Game state.
+  sky::Arena arena;
+  sky::SkyHandle skyHandle;
+  sky::Scoreboard scoreboard;
+
+  // Network state.
   tg::Host &host;
   tg::Telegraph<sky::ClientPacket> &telegraph;
-
   sky::Player *playerFromPeer(ENetPeer *peer) const;
 
-  // registerArenaDelta
+  // Registering arena deltas.
   void registerArenaDelta(const sky::ArenaDelta &arenaDelta);
 
   // Transmission.
@@ -81,13 +83,14 @@ class Server: public ServerListener, public sky::Subsystem<PlayerData> {
  protected:
   ServerShared &shared;
   sky::SkyHandle &skyHandle;
+  sky::Scoreboard &scoreboard;
 
  public:
-  Server(ServerShared &shared,
-         sky::Arena &arena, sky::SkyHandle &sky) :
-      sky::Subsystem<PlayerData>(arena),
+  Server(ServerShared &shared) :
+      sky::Subsystem<PlayerData>(shared.arena),
       shared(shared),
-      skyHandle(sky) { }
+      skyHandle(shared.skyHandle),
+      scoreboard(shared.scoreboard) { }
 
 };
 
@@ -121,8 +124,6 @@ class ServerExec {
   tg::Telegraph<sky::ClientPacket> telegraph;
   ServerShared shared;
 
-  sky::Arena arena;
-  sky::SkyHandle skyHandle;
   std::unique_ptr<ServerListener> server;
   Cooldown packetBroadcastTimer;
 
@@ -136,7 +137,7 @@ class ServerExec {
   ServerExec(const Port port,
              const sky::ArenaInit &arenaInit,
              std::function<std::unique_ptr<ServerListener>(
-                 ServerShared &, sky::Arena &, sky::SkyHandle &)> server);
+                 ServerShared &)> mkServer);
 
   void run();
 

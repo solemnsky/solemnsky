@@ -9,7 +9,7 @@ class SkyTest: public testing::Test {
  public:
   SkyTest() :
       arena(sky::ArenaInit("arena", "test1")),
-      skyHandle(arena, sky::SkyHandleInitializer()) { }
+      skyHandle(arena, sky::SkyHandleInit()) { }
 
   sky::Arena arena;
   sky::SkyHandle skyHandle;

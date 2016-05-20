@@ -26,10 +26,8 @@ int main() {
 
   // and He said,
   ServerExec(4242, sky::ArenaInit("my special server", "test1"),
-             [](ServerShared &telegraphy,
-                sky::Arena &arena,
-                sky::SkyHandle &sky) {
-        return std::make_unique<VanillaServer>(telegraphy, arena, sky);
+             [](ServerShared &shared) {
+               return std::make_unique<VanillaServer>(shared);
       }).run();
   // and lo, there appeared a server
 }

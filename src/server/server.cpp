@@ -24,8 +24,9 @@
 
 ServerShared::ServerShared(
     tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph,
-    ServerExec &exec) :
-    exec(exec), host(host), telegraph(telegraph) { }
+    const sky::ArenaInit &arenaInit) :
+    arena(arenaInit), skyHandle(arena, {}), scoreboard(arena, {}),
+    host(host), telegraph(telegraph) { }
 
 sky::Player *ServerShared::playerFromPeer(ENetPeer *peer) const {
   if (peer->data) return (sky::Player *) peer->data;
@@ -33,7 +34,7 @@ sky::Player *ServerShared::playerFromPeer(ENetPeer *peer) const {
 }
 
 void ServerShared::registerArenaDelta(const sky::ArenaDelta &arenaDelta) {
-  exec.arena.applyDelta(arenaDelta);
+  arena.applyDelta(arenaDelta);
   sendToClients(sky::ServerPacket::DeltaArena(arenaDelta));
 }
 
@@ -144,15 +145,18 @@ void ServerExec::processPacket(ENetPeer *client,
     // client hasn't joined the arena yet
 
     if (packet.type == ClientPacket::Type::ReqJoin) {
-      const ArenaDelta delta = arena.connectPlayer(packet.stringData.get());
-      Player *newPlayer = arena.getPlayer(delta.join->pid);
+      const ArenaDelta delta =
+          shared.arena.connectPlayer(packet.stringData.get());
+      Player *newPlayer = shared.arena.getPlayer(delta.join->pid);
       client->data = newPlayer;
 
       shared.logEvent(ServerEvent::Connect(newPlayer->getNickname()));
       shared.sendToClient(
           client, ServerPacket::Init(
-              newPlayer->pid, arena.captureInitializer(),
-              skyHandle.captureInitializer()));
+              newPlayer->pid,
+              shared.arena.captureInitializer(),
+              shared.skyHandle.captureInitializer(),
+              shared.scoreboard.captureInitializer()));
       shared.sendToClientsExcept(
           newPlayer->pid, ServerPacket::DeltaArena(delta));
     }
@@ -161,10 +165,11 @@ void ServerExec::processPacket(ENetPeer *client,
 
 void ServerExec::tick(float delta) {
   uptime += delta;
-  arena.tick(delta);
+  shared.arena.tick(delta);
 
   if (packetBroadcastTimer.cool(delta)) {
-    shared.sendToClients(sky::ServerPacket::DeltaSky(skyHandle.collectDelta()));
+    shared.sendToClients(sky::ServerPacket::DeltaSky(
+        shared.skyHandle.collectDelta()));
     packetBroadcastTimer.reset();
   }
 
@@ -198,19 +203,16 @@ ServerExec::ServerExec(
     const Port port,
     const sky::ArenaInit &arenaInit,
     std::function<std::unique_ptr<ServerListener>(
-        ServerShared &, sky::Arena &, sky::SkyHandle &)> server) :
+        ServerShared &)> mkServer) :
     uptime(0),
 
     host(tg::HostType::Server, port),
-    shared(host, telegraph, *this),
+    shared(host, telegraph, arenaInit),
 
-    arena(arenaInit),
-    skyHandle(arena, {}),
-
-    server(server(shared, arena, skyHandle)),
+    server(mkServer(shared)),
     packetBroadcastTimer(0.03),
 
-    logger(shared, arena),
+    logger(shared, shared.arena),
 
     running(true) {
   shared.logEvent(ServerEvent::Start(port, arenaInit.name));

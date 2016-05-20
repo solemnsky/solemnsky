@@ -59,7 +59,7 @@ MultiplayerSubsystem::MultiplayerSubsystem(sky::Arena &arena,
 ArenaConnection::ArenaConnection(
     const PID pid,
     const sky::ArenaInit &arenaInit,
-    const sky::SkyHandleInitializer &skyInit) :
+    const sky::SkyHandleInit &skyInit) :
     arena(arenaInit),
     skyHandle(arena, skyInit),
     player(*arena.getPlayer(pid)) { }
