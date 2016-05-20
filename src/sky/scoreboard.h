@@ -23,78 +23,95 @@
 
 namespace sky {
 
-/**
- * Initializer for ScoreRecord.
- */
-struct ScoreRecordInit {
-  ScoreRecordInit() = default;
-
-  template<typename Archive>
-  void serialize(Archive &ar) { }
-
-};
-
-/**
- * Delta for ScoreRecord.
- */
-struct ScoreRecordDelta {
-  ScoreRecordDelta() = default;
-
-  template<typename Archive>
-  void serialize(Archive &ar) { }
-
-};
+using ScoreRecordInit = std::vector<int>;
+using ScoreRecordDelta = optional<std::vector<int>>;
 
 /**
  * Score record, describing the score of a single player.
  * This is meant to be very flexible; the meanings and nature of the scores
  * is configurable at runtime.
  */
-struct ScoreRecord :
-    public Networked<ScoreRecordInit, ScoreRecordDelta> {
-  ScoreRecord() = default;
+struct ScoreRecord
+    : public Networked<ScoreRecordInit, ScoreRecordDelta> {
+ private:
+  std::vector<int> lastValues;
+
+ public:
   ScoreRecord(const ScoreRecordInit &init);
+
+  // State.
+  std::vector<int> values;
 
   // Networked impl.
   void applyDelta(const ScoreRecordDelta &delta) override final;
   ScoreRecordInit captureInitializer() const override final;
+  ScoreRecordDelta collectDelta();
+
+  // User API.
+  int getValueAt(const size_t index);
+  void setValueAt(const size_t index, const int value);
 
 };
 
 /**
  * Initializer for Scoreboard.
  */
-struct ScoreboardInitializer {
-  ScoreboardInitializer() = default;
+struct ScoreboardInit {
+  ScoreboardInit() = default;
+  ScoreboardInit(const std::vector<bool> &fields);
 
   template<typename Archive>
-  void serialize(Archive &ar) { }
+  void serialize(Archive &ar) {
+    ar(fields, initializers);
+  }
+
+  std::vector<std::string> fields;
+  std::map<PID, ScoreRecordInit> initializers;
 
 };
 
 /**
  * Delta for Scoreboard.
  */
+struct ScoreboardDelta {
+  ScoreboardDelta() = default;
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(fields, deltas);
+  }
+
+  optional<std::vector<std::string>> fields;
+  std::map<PID, ScoreRecordDelta> deltas;
+
+};
 
 /**
  * The scoreboard subsystem.
  */
-class Scoreboard: public Subsystem<ScoreRecord> {
+class Scoreboard
+    : public Subsystem<ScoreRecord>,
+      public Networked<ScoreboardInit, ScoreboardDelta> {
  private:
   // State.
+  std::vector<std::string> fields;
   std::map<PID, ScoreRecord> records;
 
  protected:
+  void registerPlayerWith(Player &player, const ScoreRecordInit &initializer);
   // Subsystem impl.
   void registerPlayer(Player &player) override final;
   void unregisterPlayer(Player &player) override final;
 
  public:
-  Scoreboard(Arena &arena);
+  Scoreboard(Arena &arena, const ScoreboardInit &initializer);
 
   // Networked impl.
+  void applyDelta(const ScoreboardDelta &delta) override final;
+  ScoreboardInit captureInitializer() const override final;
 
   // User API.
+  const std::vector<std::string> &getFields();
   ScoreRecord &getScoreRecord(const Player &player);
   const ScoreRecord &getScoreRecord(const Player &player) const;
 
