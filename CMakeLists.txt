@@ -10,9 +10,10 @@ add_subdirectory("thirdparty/Box2D/Box2D")
 add_subdirectory("thirdparty/enet")
 add_subdirectory("thirdparty/SFML")
 
-# set sfml root so thor can find SFML includes
-install(EXPORT sfml DESTINATION lib/sfml/)
-set(SFML_ROOT "lib/SFML")
+file(COPY "${CMAKE_SOURCE_DIR}/thirdparty/SFML/include" DESTINATION "thirdparty/SFML/")
+set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SFML")
+set(SFML_ROOT "${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SFML")
+set(SFML_INCLUDE_DIR "${SFML_ROOT}/include")
 
 add_subdirectory("thirdparty/Thor")
 
