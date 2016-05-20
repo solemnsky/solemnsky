@@ -4,11 +4,11 @@ project(solemnsky)
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic -g")
 
-
 # we depend on Box2D, SFML, Thor, and enet, from submodules in thirdparty/
 add_subdirectory("thirdparty/Box2D/Box2D")
 add_subdirectory("thirdparty/enet")
 add_subdirectory("thirdparty/SFML")
+add_subdirectory("thirdparty/Thor")
 
 file(COPY "${CMAKE_SOURCE_DIR}/thirdparty/SFML/include" DESTINATION "thirdparty/SFML/")
 set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}/thirdparty/SFML")
