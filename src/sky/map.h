@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * The *static* aspect of the environment of a Sky.
+ * The *static* environment of a Sky.
  */
 #pragma once
 #include <SFML/System.hpp>
@@ -42,19 +42,18 @@ struct MapObstacle {
               const std::vector<sf::Vector2f> &localVerticies,
               const float damage);
 
+  template<typename Archive>
+  void archive(Archive &ar){
+    ar(cereal::make_nvp("pos", pos),
+       cereal::make_nvp("localVerticies", localVerticies),
+       cereal::make_nvp("damage", damage));
+  }
+
   sf::Vector2f pos;
   std::vector<sf::Vector2f> localVerticies;
   float damage;
 
 };
-
-template<class Archive>
-void serialize(Archive & archive, MapObstacle& o){
-  archive(
-          cereal::make_nvp("pos",o.pos),
-          cereal::make_nvp("localVerticies",o.localVerticies),
-          cereal::make_nvp("damage",o.damage));
-}
 
 struct MapItem {
   enum class Type {

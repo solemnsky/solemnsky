@@ -10,6 +10,9 @@ The heart of solemnsky is the engine. It's comprised of a small set of utilities
 
 ## Utils (`src/util`)
 
+The engine depends on a handful of light utilities defined outside of the sky namespace.
+ They are briefly documented in this section.
+
 ### Networking and Packets
 
 A Networkable entity is described with the templated `Networked<Init, Delta>` interface.
@@ -28,10 +31,10 @@ The particular way in which Deltas are formed is variable; `sky::Arena`'s deltas
  explicitly formed (constructed by the user), while other entities such as `sky::Sky`
  form deltas automatically with `Delta captureDelta()`. This decision is made per-case.
 
-{Des,S}erialization is accomplished through cereal. 
+{Des,S}erialization of the Init and Delta types is accomplished through cereal. 
 
 `src/util/telegraph.h` is a small wrapper around enet, defined in the `tg` namespace; 
- all networking happens through it.
+ all networking happens through its `Host` / `Telegraph` abstraction.
 
 ### Invariant Protection in Packets
 
@@ -41,11 +44,27 @@ The `VerifyStructure` interface is used to protect against invariant violations 
  when available, printing an error message and refusing to catch the responsible packet when 
  invariant are not respected.
 
+To facilitate the definition of `VerifyStructure` implementations for objects with children
+ who may also implement VerifyStructure, `util/methods.h` defines `verifyValue`, a template
+ method that checks invariants of its parameter if its type is a subclass of `VerifyStructure`.
+ Also defined are `verifyOptionals`, useful for our protocol sum types, `verifyMap`, etc.
+
+### Value Types
+
+`src/util/types.h` also defines a collection of meaningful value types, for use in the engine.
+ They are documented at their respective definitions, and include:
+
+ * Cooldown
+ * Clamped
+ * Cyclic
+ * Angle
+ * Movement (enum representing a movement of unit or null rate)
+
 ## Sky Namespace (`src/sky`)
 
 ### Arena 
 
- The engine is held together by `sky::Arena`, a representation of the backbone of a 
+The engine is held together by `sky::Arena`, a representation of the backbone of a 
  multiplayer game. An Arena manages players along with some basic associated data, 
  controls their join / quits, and stores some basic game / server state (name, motd, 
  etc.). Both the client and server hold an Arena to model the game being played.
@@ -56,7 +75,11 @@ The arena itself does not manage the more complex state / logic associated
  with a game, such as physical game state or client-side graphical state. Instead,
  these additional layers are abstracted as "Subsystems". A Subsystem, derived from the
  base template class `sky::Subsystem<PlayerData>` can store data (of type PlayerData) in
- each player, and can listen to callbacks from the Arena. 
+ each player.
+ 
+They are constructed with an Arena to attach to, and, while alive, listen to
+ callbacks from this Arena. They can also trigger callbacks to be passed through the
+ Arena to other subsystems.
 
 To exemplify the operation of a subsystem:
 
@@ -67,23 +90,49 @@ To exemplify the operation of a subsystem:
     arena.getPlayer(0)->spawn(...); // sky gets an onSpawn() callback, and changes the state
                                     // of the player to reflect that it is now spawned
 
-See also: `tests/subsystemtest.cpp`.
+See also: `tests/subsystemtest.cpp` for a concise example, and `src/sky/arena.h` for
+ the full definition. The set of subsystem callbacks and subsystem callables will
+ evolve as the game offers develops new mechanics and modding hooks.
+
+### Physics
+
+`sky::Physics` wraps box2d, representing a physical world where bodies can be created,
+ physics callbacks intercepted (through an attached PhysicsListener), 
+
+### Maps
+
+`sky::Map` is the static 
+
 
 ### Sky
 
 `sky::Sky` is the juicy bit of the game engine. It's instantiated when the Arena is in
  game mode, and represents the coherent definition of a physical world, in which each
- `sky::Player` holds a `sky::Participation`, which embodies a potential plane, and a set of
- additional toys with which they can do a whole manner of things.
+ `sky::Player` holds a `sky::Participation`, respectively embodying a potential plane, 
+ and a set of additional toys with which they can do a whole manner of things.
 
 `sky::Sky` is defined as a Subsystem, specifically `sky::Subsystem<Participation>`.
+
+`SkyHandle` exists to hold an `optional<Sky>`; this child sky is {de}instantiated through
+ the handle's user API, and through its Network implementation. 
+
+A single instantiation of Sky only corresponds to one map; in order to change the map,
+ SkyHandle must reinstantiate its child. 
+
+### Scoreboard
+
+`sky::Scoreboard` holds score information for every player. It is handled separately from
+ both Arena and Sky because, unlike Arena, its deltas should be calculated automatically
+ instead of created explicitly at every score change, and unlike Sky, it can exist
+ persistently, whether a game is in session or not.
 
 ### Multiplayer Protocol
 
 Game protocol packet types for use by the server and the client respectively are also defined
  in the engine, along with their serialization rules. They implement `VerifyStructure`, 
  for basic protection against malformed packets, as described in "Invariant Protection in 
- Packets"
+ Packets". The core logic of initializing / syncing game structures is handled by the many
+ `Networked` implementations
 
 ### Events
 
@@ -95,7 +144,4 @@ To provide an overview of events that occured in an Arena to a user, an `ArenaLo
 `ClientEvent` and `ServerEvent`, defined outside of the `sky` namespace, are dependant
  on ArenaEvent. They encode, in addition to ArenaEvent, events specific to the client
  or the server, respectively.
-
-#### TODO: complete
-
 
