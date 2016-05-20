@@ -100,7 +100,7 @@ bool ServerPacket::verifyStructure() const {
     case Type::Pong:
       return true;
     case Type::Init:
-      return verifyOptionals(pid, arenaInit, skyInit);
+      return verifyOptionals(pid, arenaInit, skyInit, scoreInit);
     case Type::DeltaArena:
       return verifyOptionals(arenaDelta);
     case Type::DeltaSky:
@@ -121,11 +121,13 @@ ServerPacket ServerPacket::Pong() {
 
 ServerPacket ServerPacket::Init(const PID pid,
                                 const ArenaInit &arenaInit,
-                                const SkyHandleInitializer &skyInit) {
+                                const SkyHandleInit &skyInit,
+                                const ScoreboardInit &scoreInit) {
   ServerPacket packet(Type::Init);
   packet.pid = pid;
   packet.arenaInit = arenaInit;
   packet.skyInit = skyInit;
+  packet.scoreInit = scoreInit;
   return packet;
 }
 

@@ -143,14 +143,14 @@ const Participation &Sky::getParticipation(const Player &player) const {
 }
 
 /**
- * SkyHandleInitializer.
+ * SkyHandleInit.
  */
 
-SkyHandleInitializer::SkyHandleInitializer(
+SkyHandleInit::SkyHandleInit(
     const SkyInitializer &initializer) :
     initializer(initializer) { }
 
-bool SkyHandleInitializer::verifyStructure() const {
+bool SkyHandleInit::verifyStructure() const {
   return verifyValue(initializer);
 }
 
@@ -170,7 +170,7 @@ bool SkyHandleDelta::verifyStructure() const {
  * SkyHandle.
  */
 
-SkyHandle::SkyHandle(Arena &arena, const SkyHandleInitializer &initializer) :
+SkyHandle::SkyHandle(Arena &arena, const SkyHandleInit &initializer) :
     Subsystem(arena),
     Networked(initializer),
     skyIsNew(false) {
@@ -179,8 +179,8 @@ SkyHandle::SkyHandle(Arena &arena, const SkyHandleInitializer &initializer) :
   }
 }
 
-SkyHandleInitializer SkyHandle::captureInitializer() const {
-  SkyHandleInitializer initializer;
+SkyHandleInit SkyHandle::captureInitializer() const {
+  SkyHandleInit initializer;
   if (sky) {
     initializer.initializer = sky->captureInitializer();
   }

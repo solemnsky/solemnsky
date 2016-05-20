@@ -68,7 +68,7 @@ struct ArenaConnection {
   ArenaConnection(
       const PID pid,
       const sky::ArenaInit &arenaInit,
-      const sky::SkyHandleInitializer &skyInit);
+      const sky::SkyHandleInit &skyInit);
 
   // State.
   sky::Arena arena;

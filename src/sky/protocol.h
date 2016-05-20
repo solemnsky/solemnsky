@@ -20,6 +20,7 @@
  */
 #pragma once
 #include "util/types.h"
+#include "scoreboard.h"
 #include "participation.h"
 #include "sky.h"
 #include "arena.h"
@@ -150,15 +151,18 @@ struct ServerPacket: public VerifyStructure {
   optional<PID> pid;
   optional<ArenaInit> arenaInit;
   optional<ArenaDelta> arenaDelta;
-  optional<SkyHandleInitializer> skyInit;
+  optional<SkyHandleInit> skyInit;
+  optional<ScoreboardInit> scoreInit;
   optional<SkyHandleDelta> skyDelta;
   optional<std::string> stringData;
 
   bool verifyStructure() const override;
 
   static ServerPacket Pong();
-  static ServerPacket Init(const PID pid, const ArenaInit &arenaInit,
-                           const SkyHandleInitializer &init);
+  static ServerPacket Init(const PID pid,
+                           const ArenaInit &arenaInit,
+                           const SkyHandleInit &skyInit,
+                           const ScoreboardInit &scoreInit);
   static ServerPacket DeltaArena(const ArenaDelta &arenaDelta);
   static ServerPacket DeltaSky(const SkyHandleDelta &skyDelta);
   static ServerPacket Chat(const PID pid, const std::string &chat);
