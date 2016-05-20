@@ -105,6 +105,8 @@ bool ServerPacket::verifyStructure() const {
       return verifyOptionals(arenaDelta);
     case Type::DeltaSky:
       return verifyOptionals(skyDelta);
+    case Type::DeltaScore:
+      return verifyOptionals(scoreDelta);
     case Type::Chat:
       return verifyOptionals(pid, stringData);
     case Type::Broadcast:
@@ -140,6 +142,12 @@ ServerPacket ServerPacket::DeltaArena(const ArenaDelta &arenaDelta) {
 ServerPacket ServerPacket::DeltaSky(const SkyHandleDelta &skyDelta) {
   ServerPacket packet(Type::DeltaSky);
   packet.skyDelta = skyDelta;
+  return packet;
+}
+
+ServerPacket ServerPacket::DeltaScore(const ScoreboardDelta &scoreDelta) {
+  ServerPacket packet(Type::DeltaScore);
+  packet.scoreDelta = scoreDelta;
   return packet;
 }
 

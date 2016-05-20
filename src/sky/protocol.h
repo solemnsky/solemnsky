@@ -104,9 +104,10 @@ struct ServerPacket: public VerifyStructure {
     Pong,
     Init, // acknowledge a ReqJoin, send ArenaInit
     DeltaArena, // broadcast a change in the Arena
-    DeltaSky, // broadcast a change in the Arena's sky
+    DeltaSky, // broadcast a change in the SkyHandle
+    DeltaScore, // broadcast a change in the Scoreboard
 
-    Chat, // chat relay, to all clients
+    Chat, // chat relay to all clients
     Broadcast, // broadcast message, to any subset of clients
     RCon // rcon message, to one client
   };
@@ -121,7 +122,7 @@ struct ServerPacket: public VerifyStructure {
       case Type::Pong:
         break;
       case Type::Init: {
-        ar(pid, arenaInit, skyInit);
+        ar(pid, arenaInit, skyInit, scoreInit);
         break;
       }
       case Type::DeltaArena: {
@@ -130,6 +131,10 @@ struct ServerPacket: public VerifyStructure {
       }
       case Type::DeltaSky: {
         ar(skyDelta);
+        break;
+      }
+      case Type::DeltaScore: {
+        ar(scoreDelta);
         break;
       }
       case Type::Chat: {
@@ -151,6 +156,7 @@ struct ServerPacket: public VerifyStructure {
   optional<PID> pid;
   optional<ArenaInit> arenaInit;
   optional<ArenaDelta> arenaDelta;
+  optional<ScoreboardDelta> scoreDelta;
   optional<SkyHandleInit> skyInit;
   optional<ScoreboardInit> scoreInit;
   optional<SkyHandleDelta> skyDelta;
@@ -165,6 +171,7 @@ struct ServerPacket: public VerifyStructure {
                            const ScoreboardInit &scoreInit);
   static ServerPacket DeltaArena(const ArenaDelta &arenaDelta);
   static ServerPacket DeltaSky(const SkyHandleDelta &skyDelta);
+  static ServerPacket DeltaScore(const ScoreboardDelta &scoreDelta);
   static ServerPacket Chat(const PID pid, const std::string &chat);
   static ServerPacket Broadcast(const std::string &broadcast);
   static ServerPacket RCon(const std::string &message);

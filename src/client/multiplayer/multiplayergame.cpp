@@ -67,7 +67,7 @@ void MultiplayerGame::render(ui::Frame &f) {
 
   if (scoreboardFocused) {
     // TODO: scoreboard
-    f.drawText({20, 20}, "<scoreboard goes here>",
+    f.drawText({20, 20}, "<scoreboard goes here, very soon>",
                sf::Color::Black, style.base.normalText);
   }
 }

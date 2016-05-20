@@ -264,6 +264,10 @@ void Arena::applyDelta(const ArenaDelta &delta) {
           logEvent(ArenaEvent::NickChange(oldNick, newNick));
         if (newTeam != oldTeam)
           logEvent(ArenaEvent::TeamChange(newNick, oldTeam, newTeam));
+
+        for (auto &pair : subsystems) {
+          pair.second->onDelta(*player, playerDelta);
+        }
       }
       break;
     }

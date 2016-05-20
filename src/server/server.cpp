@@ -167,10 +167,16 @@ void ServerExec::tick(float delta) {
   uptime += delta;
   shared.arena.tick(delta);
 
-  if (packetBroadcastTimer.cool(delta)) {
+  if (skyDeltaTimer.cool(delta)) {
     shared.sendToClients(sky::ServerPacket::DeltaSky(
         shared.skyHandle.collectDelta()));
-    packetBroadcastTimer.reset();
+    skyDeltaTimer.reset();
+  }
+
+  if (scoreDeltaTimer.cool(delta)) {
+    shared.sendToClients(sky::ServerPacket::DeltaScore(
+        shared.scoreboard.collectDelta()));
+    scoreDeltaTimer.reset();
   }
 
   static ENetEvent event;
@@ -210,7 +216,8 @@ ServerExec::ServerExec(
     shared(host, telegraph, arenaInit),
 
     server(mkServer(shared)),
-    packetBroadcastTimer(0.03),
+    skyDeltaTimer(0.03),
+    scoreDeltaTimer(1),
 
     logger(shared, shared.arena),
 

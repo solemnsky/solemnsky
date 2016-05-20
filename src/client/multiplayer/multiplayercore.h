@@ -68,11 +68,13 @@ struct ArenaConnection {
   ArenaConnection(
       const PID pid,
       const sky::ArenaInit &arenaInit,
-      const sky::SkyHandleInit &skyInit);
+      const sky::SkyHandleInit &skyInit,
+      const sky::ScoreboardInit &scoreboardInit);
 
   // State.
   sky::Arena arena;
   sky::SkyHandle skyHandle;
+  sky::Scoreboard scoreboard;
   sky::Player &player;
 
   // Handy accessors.
@@ -138,7 +140,7 @@ class MultiplayerCore: public ClientComponent {
   // Connection state.
   optional<ArenaConnection> conn;
   const tg::Host &getHost() const;
-  bool isConnected() const; 
+  bool isConnected() const;
   bool isDisconnecting() const;
   bool isDisconnected() const;
 
@@ -168,7 +170,7 @@ class MultiplayerView: public ClientComponent, public ui::Control {
  public:
   // Shared state.
   MultiplayerCore &mShared;
-  ArenaConnection &conn; 
+  ArenaConnection &conn;
 
   MultiplayerView(
       sky::ArenaMode target,

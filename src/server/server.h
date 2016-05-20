@@ -125,7 +125,8 @@ class ServerExec {
   ServerShared shared;
 
   std::unique_ptr<ServerListener> server;
-  Cooldown packetBroadcastTimer;
+  Cooldown skyDeltaTimer;
+  Cooldown scoreDeltaTimer;
 
   ServerLogger logger;
 
