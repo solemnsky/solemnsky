@@ -2,7 +2,11 @@ project(solemnsky)
 
 # tool / compiler versions
 cmake_minimum_required(VERSION 3.2)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic -g -fsanitize=leak -fsanitize=address")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic -g")
+
+if(SANITIZE) 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -fsanitize=address")
+endif()
 
 # we depend on Box2D, SFML, and enet, from submodules in thirdparty/
 add_subdirectory("thirdparty/Box2D/Box2D")
