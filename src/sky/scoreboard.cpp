@@ -20,31 +20,91 @@
 namespace sky {
 
 /**
+ * ScoreRecordInit.
+ */
+
+ScoreboardInit::ScoreboardInit(
+    const std::vector<bool> &fields) :
+    fields(fields) { }
+
+/**
  * ScoreRecord.
  */
 
+
+ScoreRecord::ScoreRecord(const ScoreRecordInit &init) :
+    Networked(init),
+    values(init) { }
+
+void ScoreRecord::applyDelta(const ScoreRecordDelta &delta) {
+  if (delta) {
+    values = delta.get();
+  }
+}
+
+ScoreRecordInit ScoreRecord::captureInitializer() const {
+  return values;
+}
+
+ScoreRecordDelta ScoreRecord::collectDelta() {
+  if (lastValues == values) return {};
+  else {
+    lastValues = values;
+    return values;
+  }
+}
+
+int ScoreRecord::getValueAt(const size_t index) {
+  if (index < values.size()) return values.at(index);
+  else return 0;
+}
+
+void ScoreRecord::setValueAt(const size_t index, const int value) {
+  values[index] = value;
+}
 
 
 /**
  * Scoreboard.
  */
 
+
+void Scoreboard::registerPlayerWith(Player &player,
+                                    const ScoreRecordInit &initializer) {
+  records.emplace(player.pid, initializer);
+  setPlayerData(player, records.at(player.pid));
+}
+
+
 void Scoreboard::registerPlayer(Player &player) {
-  records.emplace(player.pid, {});
-  setPlayerData(player, records[player.pid]);
+  registerPlayerWith(player, {});
 }
 
 void Scoreboard::unregisterPlayer(Player &player) {
   records.erase(records.find(player.pid));
 }
 
-Scoreboard::Scoreboard(Arena &arena) :
-  Subsystem(arena) {
+Scoreboard::Scoreboard(Arena &arena,
+                       const ScoreboardInit &initializer) :
+    Networked(initializer),
+    Subsystem(arena),
+    fields(initializer.fields) {
   arena.forPlayers([&](Player &player) {
     registerPlayer(player);
   });
 }
 
+void Scoreboard::applyDelta(const ScoreboardDelta &delta) {
+
+}
+
+ScoreboardInit Scoreboard::captureInitializer() const {
+  return sky::ScoreboardInit();
+}
+
+const std::vector<std::string> &Scoreboard::getFields() {
+  return fields;
+}
 
 ScoreRecord &Scoreboard::getScoreRecord(const Player &player) {
   return getPlayerData(player);

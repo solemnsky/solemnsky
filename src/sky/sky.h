@@ -43,6 +43,7 @@ struct SkyInitializer: public VerifyStructure {
 
   MapName mapName;
   std::map<PID, ParticipationInit> participations;
+
 };
 
 /**
@@ -59,6 +60,7 @@ struct SkyDelta: public VerifyStructure {
   bool verifyStructure() const;
 
   std::map<PID, ParticipationDelta> participations;
+
 };
 
 /**
