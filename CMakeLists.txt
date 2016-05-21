@@ -23,7 +23,7 @@ include_directories(
         thirdparty/enet/include/
         thirdparty/cereal/
         thirdparty/SFML/include/
-        thirdparty/polypartition/src/
+        thirdparty/polypartition/
         "${Boost_INCLUDE_DIRS}"
 )
 
@@ -74,8 +74,8 @@ add_library(solemnsky STATIC
         src/util/types.cpp
         src/util/types.h
 
-        thirdparty/polypartition/src/polypartition.cpp
-        thirdparty/polypartition/src/polypartition.h
+        thirdparty/polypartition/polypartition.cpp
+        thirdparty/polypartition/polypartition.h
         )
 
 target_link_libraries(solemnsky

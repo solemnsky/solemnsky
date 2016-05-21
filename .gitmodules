@@ -13,9 +13,6 @@
 [submodule "thirdparty/enetpp"]
 	path = thirdparty/enetpp
     url = https://github.com/jseward/enetpp
-[submodule "thirdparty/polypartition"]
-	path = thirdparty/polypartition
-    url = https://github.com/ivanfratric/polypartition.git
 [submodule "maps"]
 	path = maps
 	url = http://github.com/solemnsky/solemnsky-maps

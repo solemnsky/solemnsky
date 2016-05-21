@@ -42,18 +42,19 @@ struct MapObstacle {
               const std::vector<sf::Vector2f> &localVerticies,
               const float damage);
 
-  template<typename Archive>
-  void serialize(Archive &ar){
-    ar(cereal::make_nvp("pos", pos),
-       cereal::make_nvp("localVerticies", localVerticies),
-       cereal::make_nvp("damage", damage));
-  }
-
   sf::Vector2f pos;
-  std::vector<sf::Vector2f> localVerticies;
+  std::vector<sf::Vector2f> localVertices;
+  std::vector<sf::Vector2f> triangulated;
   float damage;
 
 };
+
+template<typename Archive>
+void serialize(Archive &ar, MapObstacle& o){
+  ar(cereal::make_nvp("pos", o.pos),
+     cereal::make_nvp("localVerticies", o.localVertices),
+     cereal::make_nvp("damage", o.damage));
+}
 
 struct MapItem {
   enum class Type {
