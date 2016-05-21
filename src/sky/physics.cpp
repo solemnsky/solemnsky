@@ -180,7 +180,7 @@ b2ChainShape Physics::chainLoopShape(const std::vector<sf::Vector2f> &verticies)
     points[i] = toPhysVec(vertex);
     ++i;
   }
-  shape.CreateChain(points, (int32) verticies.size());
+  shape.CreateChain(points, (int32)(verticies.size() + 1));
   delete[] points;
   return shape;
 }
