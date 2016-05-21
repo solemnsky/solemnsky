@@ -25,16 +25,18 @@
 #include <math.h>
 #include <list>
 #include <algorithm>
+#include <vector>
 #include <set>
 
 using namespace std;
+
 #include "polypartition.h"
 
 sf::Vector2f operator/( const sf::Vector2f& v, const double& d ){
   sf::Vector2f ans;
   ans.x = (float) (v.x / d);
   ans.y = (float) (v.y / d);
-  return ans ;
+  return ans;
 }
 
 #define TPPL_VERTEXTYPE_REGULAR 0
@@ -47,31 +49,22 @@ namespace pp {
 
 	Poly::Poly() {
 		hole = false;
-		numpoints = 0;
-		points = NULL;
+		points = std::vector<Point>();
 	}
 
-  Poly::Poly(Point* points, long size) {
-    hole = false;
-    numpoints = size;
+  Poly::Poly(std::vector<sf::Vector2f> points){
+    this->hole = false;
     this->points = points;
   }
 
-	Poly::~Poly() {
-		if (points) delete[] points;
-	}
-
 	void Poly::Clear() {
-		if (points) delete[] points;
 		hole = false;
-		numpoints = 0;
-		points = NULL;
+		points.clear();
 	}
 
 	void Poly::Init(long numpoints) {
 		Clear();
-		this->numpoints = numpoints;
-		points = new Point[numpoints];
+    points.resize((unsigned long) numpoints);
 	}
 
 	void Poly::Triangle(Point &p1, Point &p2, Point &p3) {
@@ -81,28 +74,12 @@ namespace pp {
 		points[2] = p3;
 	}
 
-	Poly::Poly(const Poly &src) {
-		hole = src.hole;
-		numpoints = src.numpoints;
-		points = new Point[numpoints];
-		memcpy(points, src.points, numpoints * sizeof(Point));
-	}
-
-	Poly &Poly::operator=(const Poly &src) {
-		Clear();
-		hole = src.hole;
-		numpoints = src.numpoints;
-		points = new Point[numpoints];
-		memcpy(points, src.points, numpoints * sizeof(Point));
-		return *this;
-	}
-
 	int Poly::GetOrientation() {
 		long i1, i2;
 		double area = 0;
-		for (i1 = 0; i1 < numpoints; i1++) {
+		for (i1 = 0; i1 < points.size(); i1++) {
 			i2 = i1 + 1;
-			if (i2 == numpoints) i2 = 0;
+			if (i2 == points.size()) i2 = 0;
 			area += points[i1].x * points[i2].y - points[i1].y * points[i2].x;
 		}
 		if (area > 0) return TPPL_CCW;
@@ -118,15 +95,10 @@ namespace pp {
 	}
 
 	void Poly::Invert() {
-		long i;
-		Point *invpoints;
-
-		invpoints = new Point[numpoints];
-		for (i = 0; i < numpoints; i++) {
-			invpoints[i] = points[numpoints - i - 1];
+    auto invpoints = vector<Point>(points.size());
+		for (auto i = 0; i < points.size(); i++) {
+			invpoints[i] = points[points.size() - i - 1];
 		}
-
-		delete[] points;
 		points = invpoints;
 	}
 
@@ -146,7 +118,7 @@ namespace pp {
 		double dx, dy;
 		dx = p2.x - p1.x;
 		dy = p2.y - p1.y;
-		return (sqrt(dx * dx + dy * dy));
+		return (double) (sqrt(dx * dx + dy * dy));
 	}
 
 //checks if two lines intersect
@@ -1411,7 +1383,7 @@ namespace pp {
 //O(n) time, O(n) space complexity
 	int Partition::TriangulateMonotone(Poly *inPoly, list <Poly> *triangles) {
 		long i, i2, j, topindex, bottomindex, leftindex, rightindex, vindex;
-		Point *points;
+    vector<Point> points;
 		long numpoints;
 		Poly triangle;
 
