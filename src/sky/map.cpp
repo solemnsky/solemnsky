@@ -18,6 +18,8 @@
 #include "map.h"
 #include "util/methods.h"
 #include <fstream>
+#include <list>
+#include <polypartition.h>
 
 namespace sky {
 
@@ -30,8 +32,18 @@ MapObstacle::MapObstacle() { }
 MapObstacle::MapObstacle(const sf::Vector2f &pos,
                          const std::vector<sf::Vector2f> &localVerticies,
                          const float damage) :
-    pos(pos), localVertices(localVerticies), damage(damage), triangulated() {
+    pos(pos), localVertices(localVerticies), decomposed(), damage(damage) {
 
+  std::vector<sf::Vector2f> verts(localVerticies);
+  pp::Poly poly(verts.data(), verts.size());
+  std::list<pp::Poly> tmp;
+  pp::Partition part;
+  part.ConvexPartition_HM(&poly, &tmp);
+
+  for(auto p : tmp){
+    decomposed.push_back(
+            std::vector<sf::Vector2f>(p.GetPoints(), p.GetPoints() + p.GetNumPoints()));
+  }
 
 }
 

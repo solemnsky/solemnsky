@@ -44,7 +44,7 @@ struct MapObstacle {
 
   sf::Vector2f pos;
   std::vector<sf::Vector2f> localVertices;
-  std::vector<sf::Vector2f> triangulated;
+  std::vector<std::vector<sf::Vector2f>> decomposed;
   float damage;
 
 };
