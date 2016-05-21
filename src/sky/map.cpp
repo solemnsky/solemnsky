@@ -32,19 +32,23 @@ MapObstacle::MapObstacle() { }
 MapObstacle::MapObstacle(const sf::Vector2f &pos,
                          const std::vector<sf::Vector2f> &localVerticies,
                          const float damage) :
-    pos(pos), localVertices(localVerticies), decomposed(), damage(damage) {
+    pos(pos), localVertices(localVerticies), decomposed(), damage(damage) { }
 
-  std::vector<sf::Vector2f> verts(localVerticies);
-  pp::Poly poly(verts.data(), verts.size());
+void MapObstacle::decompose(){
+  decomposed.clear();
+
+  std::vector<sf::Vector2f> verts(localVertices);
+  pp::Poly poly(verts);
+  poly.SetOrientation(TPPL_CCW);
   std::list<pp::Poly> tmp;
+
   pp::Partition part;
   part.ConvexPartition_HM(&poly, &tmp);
+  std::cout << "tmp.size() = " << tmp.size() << std::endl;
 
   for(auto p : tmp){
-    decomposed.push_back(
-            std::vector<sf::Vector2f>(p.GetPoints(), p.GetPoints() + p.GetNumPoints()));
+    decomposed.push_back(p.GetPoints());
   }
-
 }
 
 /**
@@ -83,6 +87,10 @@ Map::Map(const MapName &name) :
     cereal::JSONInputArchive archive(file);
     archive( cereal::make_nvp("dimensions",dimensions),
              cereal::make_nvp("obstacles",obstacles) );
+  }
+  for(auto &o : obstacles){
+    o.decompose();
+    std::cout << o.decomposed.size() << ", ";
   }
 }
 

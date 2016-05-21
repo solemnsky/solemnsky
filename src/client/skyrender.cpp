@@ -178,6 +178,9 @@ void SkyRender::renderMap(ui::Frame &f) {
   for (const auto &obstacle : map.getObstacles()) {
     f.withTransform(sf::Transform().translate(obstacle.pos), [&]() {
       f.drawPolyOutline(obstacle.localVertices, sf::Color::White);
+      for (auto poly : obstacle.decomposed){
+            f.drawPolyOutline(poly, sf::Color(200,200,200));
+      }
     });
   }
 }

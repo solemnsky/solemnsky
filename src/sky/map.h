@@ -41,6 +41,7 @@ struct MapObstacle {
   MapObstacle(const sf::Vector2f &pos,
               const std::vector<sf::Vector2f> &localVerticies,
               const float damage);
+  void decompose();
 
   sf::Vector2f pos;
   std::vector<sf::Vector2f> localVertices;
