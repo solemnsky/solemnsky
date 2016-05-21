@@ -24,6 +24,7 @@
 
 #include <list>
 #include <set>
+#include <vector>
 #include <SFML/System/Vector2.hpp>
 
 #define TPPL_CCW 1
@@ -38,26 +39,18 @@ namespace pp {
   //Polygon implemented as an array of points with a 'hole' flag
   class Poly {
   protected:
-
-    Point *points;
-    long numpoints;
     bool hole;
+    std::vector<Point> points;
 
   public:
 
     //constructors/destructors
     Poly();
-    Poly(Point* points, long size);
-
-    ~Poly();
-
-    Poly(const Poly &src);
-
-    Poly &operator=(const Poly &src);
+    Poly(std::vector<sf::Vector2f> points);
 
     //getters and setters
     long GetNumPoints() {
-        return numpoints;
+      return points.size();
     }
 
     bool IsHole() {
@@ -72,7 +65,7 @@ namespace pp {
         return points[i];
     }
 
-    Point *GetPoints() {
+    std::vector<Point> GetPoints() {
         return points;
     }
 
