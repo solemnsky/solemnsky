@@ -69,7 +69,7 @@ const sf::Font &fontOf(const ResID res) {
 namespace detail {
 ResMan::ResMan() :
     resRecords{ // edit this side-by-side with resources.h
-        {"fonts/Atarian/SF Atarian System.ttf", ResType::Font, false},
+        {"fonts/Roboto-Light.ttf", ResType::Font, false},
 
         {"render-2d/title.png", ResType::Texture, false},
         {"render-2d/menubackground.png", ResType::Texture, false},

@@ -26,7 +26,7 @@ Tutorial::Tutorial(ClientShared &state) :
   arena.connectPlayer("offline player");
 
   player = arena.getPlayer(0);
-  player->spawn({}, {800, 250}, 0);
+  player->spawn({}, {200, 250}, 0);
   participation = &sky.getParticipation(*player);
 
   status = "learning to play";
