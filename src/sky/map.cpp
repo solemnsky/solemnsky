@@ -123,12 +123,18 @@ const std::vector<MapItem> &Map::getItems() const {
   return items;
 }
 
+const std::vector<SpawnPoint> &Map::getSpawnPoints() const {
+  return spawnPoints;
+}
+
 void Map::save(std::ostream& s) {
   cereal::JSONOutputArchive archive(s);
   archive( cereal::make_nvp("dimensions",dimensions),
            cereal::make_nvp("obstacles",obstacles),
            cereal::make_nvp("spawnPoints",spawnPoints) );
 }
+
+
 
 }
 

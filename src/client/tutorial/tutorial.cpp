@@ -19,14 +19,19 @@
 
 Tutorial::Tutorial(ClientShared &state) :
     Game(state, "tutorial"),
-    arena(sky::ArenaInit("tutorial", "ball_cloud_pb")),
-    sky(arena, sky::SkyInitializer("ball_cloud_pb")),
+    arena(sky::ArenaInit("tutorial", "ball_funnelpark")),
+    sky(arena, sky::SkyInitializer("ball_funnelpark")),
     skyRender(shared, arena, sky) {
   areChildComponents({&skyRender});
   arena.connectPlayer("offline player");
 
   player = arena.getPlayer(0);
-  player->spawn({}, {200, 250}, 0);
+  if(sky.getMap().getSpawnPoints().size() > 0){
+    auto sp = sky.getMap().getSpawnPoints()[0];
+    player->spawn({}, sp.pos, sp.angle);
+  } else {
+    player->spawn({}, {200, 250}, 0);
+  }
   participation = &sky.getParticipation(*player);
 
   status = "learning to play";
