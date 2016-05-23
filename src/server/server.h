@@ -132,7 +132,7 @@ class ServerExec {
 
   // Server loop subroutines.
   void processPacket(ENetPeer *client, const sky::ClientPacket &packet);
-  void tick(float delta);
+  void poll(float delta);
 
  public:
   ServerExec(const Port port,
