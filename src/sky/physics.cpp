@@ -90,9 +90,7 @@ Physics::Physics(const Map &map, PhysicsListener &listener) :
 
   // obstacles
   for (const auto &obstacle : map.getObstacles()) {
-    //body = createBody(polygonShape(obstacle.localVerticies),
-    //                  BodyTag::ObstacleTag(obstacle), true);
-    body = createBody(chainLoopShape(obstacle.localVerticies),
+    body = createBody(chainLoopShape(obstacle.localVertices),
                       BodyTag::ObstacleTag(obstacle), true);
     body->SetTransform(toPhysVec(obstacle.pos), 0);
   }
@@ -180,7 +178,7 @@ b2ChainShape Physics::chainLoopShape(const std::vector<sf::Vector2f> &verticies)
     points[i] = toPhysVec(vertex);
     ++i;
   }
-  shape.CreateChain(points, (int32) verticies.size());
+  shape.CreateChain(points, (int32)(verticies.size() + 1));
   delete[] points;
   return shape;
 }

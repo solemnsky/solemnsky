@@ -19,8 +19,8 @@
 
 Tutorial::Tutorial(ClientShared &state) :
     Game(state, "tutorial"),
-    arena(sky::ArenaInit("tutorial", "roids")),
-    sky(arena, sky::SkyInitializer("roids")),
+    arena(sky::ArenaInit("tutorial", "cloud")),
+    sky(arena, sky::SkyInitializer("cloud")),
     skyRender(shared, arena, sky) {
   areChildComponents({&skyRender});
   arena.connectPlayer("offline player");
@@ -72,8 +72,8 @@ void Tutorial::render(ui::Frame &f) {
 
 bool Tutorial::handle(const sf::Event &event) {
   if (auto action = shared.triggerClientAction(event)) {
-    if (action->first == ClientAction::Spawn 
-        and action->second 
+    if (action->first == ClientAction::Spawn
+        and action->second
         and !participation->isSpawned()) {
       player->spawn({}, {300, 300}, 0);
       return true;
