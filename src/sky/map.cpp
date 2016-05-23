@@ -44,7 +44,6 @@ void MapObstacle::decompose(){
 
   pp::Partition part;
   part.ConvexPartition_HM(&poly, &tmp);
-  std::cout << "tmp.size() = " << tmp.size() << std::endl;
 
   for(auto p : tmp){
     decomposed.push_back(p.GetPoints());
@@ -90,7 +89,6 @@ Map::Map(const MapName &name) :
   }
   for(auto &o : obstacles){
     o.decompose();
-    std::cout << o.decomposed.size() << ", ";
   }
 }
 
