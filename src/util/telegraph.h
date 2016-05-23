@@ -46,9 +46,15 @@ enum class HostType { Client, Server };
 
 class Host {
  private:
+  // Underlying state.
   ENetHost *host;
   ENetEvent event;
   std::vector<ENetPeer *> peers;
+
+  // Bandwidth recording.
+  float lastIncomingBandwidth, lastOutgoingBandwidth;
+  Cooldown bandwidthSampler;
+  void sampleBandwidth();
 
   // Manging peers.
   void registerPeer(ENetPeer *peer);
@@ -68,7 +74,7 @@ class Host {
   void transmit(ENetPeer *const peer,
                 unsigned char *data, size_t size,
                 const ENetPacketFlag flag);
-  ENetEvent poll();
+  ENetEvent poll(const float delta);
 
   // Expressed in average kB per second.
   float incomingBandwidth() const;

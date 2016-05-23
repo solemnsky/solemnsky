@@ -110,9 +110,9 @@ void Multiplayer::printDebug(Printer &p) {
         std::to_string(core.conn->arena.getPlayers().size()));
 
     p.breakLine();
-    p.printLn("inbound bandwidth: " +
+    p.printLn("inbound bandwidth (kB/s): " +
         std::to_string(core.getHost().incomingBandwidth()));
-    p.printLn("outbound bandwidth: " +
+    p.printLn("outbound bandwidth (kB/s): " +
         std::to_string(core.getHost().outgoingBandwidth()));
   } else {
     p.printLn("not connected...");

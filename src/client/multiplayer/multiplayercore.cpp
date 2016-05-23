@@ -236,7 +236,7 @@ void MultiplayerCore::disconnect() {
 void MultiplayerCore::poll(const float delta) {
   if (disconnected) return;
 
-  event = host.poll();
+  event = host.poll(delta);
   if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
     server = nullptr;
     appLog("Disconnected from server!", LogOrigin::Client);

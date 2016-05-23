@@ -163,7 +163,7 @@ void ServerExec::processPacket(ENetPeer *client,
   }
 }
 
-void ServerExec::tick(float delta) {
+void ServerExec::poll(float delta) {
   uptime += delta;
   shared.arena.tick(delta);
 
@@ -180,7 +180,7 @@ void ServerExec::tick(float delta) {
   }
 
   static ENetEvent event;
-  event = host.poll();
+  event = host.poll(delta);
   switch (event.type) {
     case ENET_EVENT_TYPE_NONE:
       break;
@@ -228,7 +228,7 @@ ServerExec::ServerExec(
 void ServerExec::run() {
   sf::Clock clock;
   while (running) {
-    tick(clock.restart().asSeconds());
+    poll(clock.restart().asSeconds());
     sf::sleep(sf::milliseconds(16));
   }
 }

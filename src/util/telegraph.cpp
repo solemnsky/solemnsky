@@ -45,8 +45,33 @@ UsageFlag::~UsageFlag() {
 /**
  * Host.
  */
+
+void Host::registerPeer(ENetPeer *peer) {
+  auto found = std::find(peers.begin(), peers.end(), peer);
+  if (found != peers.end()) {
+    *found = peer;
+  } else {
+    peers.push_back(peer);
+  }
+}
+
+void Host::unregisterPeer(ENetPeer *peer) {
+  auto found = std::find(peers.begin(), peers.end(), peer);
+  if (found != peers.end()) {
+    peers.erase(found);
+  }
+}
+
+void Host::sampleBandwidth() {
+  lastIncomingBandwidth = host->totalReceivedData / 1000.0f;
+  lastOutgoingBandwidth = host->totalSentData / 1000.0f;
+  host->totalReceivedData = 0;
+  host->totalSentData = 0;
+}
+
 Host::Host(const HostType type, const Port port) :
-    host(nullptr) {
+    host(nullptr),
+    bandwidthSampler(1) {
   switch (type) {
     case HostType::Server: {
       ENetAddress address;
@@ -70,27 +95,14 @@ Host::Host(const HostType type, const Port port) :
     }
     throw std::runtime_error("Failed to create ENet host!");
   }
+
+  sampleBandwidth();
 }
 
 Host::~Host() {
   enet_host_destroy(host);
 }
 
-void Host::registerPeer(ENetPeer *peer) {
-  auto found = std::find(peers.begin(), peers.end(), peer);
-  if (found != peers.end()) {
-    *found = peer;
-  } else {
-    peers.push_back(peer);
-  }
-}
-
-void Host::unregisterPeer(ENetPeer *peer) {
-  auto found = std::find(peers.begin(), peers.end(), peer);
-  if (found != peers.end()) {
-    peers.erase(found);
-  }
-}
 
 const std::vector<ENetPeer *> &Host::getPeers() const {
   return peers;
@@ -116,7 +128,12 @@ void Host::transmit(ENetPeer *const peer,
   enet_peer_send(peer, 0, packet);
 }
 
-ENetEvent Host::poll() {
+ENetEvent Host::poll(const float delta) {
+  if (bandwidthSampler.cool(delta)) {
+    sampleBandwidth();
+    bandwidthSampler.reset();
+  }
+
   enet_host_service(host, &event, 0);
 
   if (event.type == ENET_EVENT_TYPE_CONNECT)
@@ -128,12 +145,11 @@ ENetEvent Host::poll() {
 }
 
 float Host::incomingBandwidth() const {
-  // TODO
-  return 0;
+  return lastIncomingBandwidth;
 }
 
 float Host::outgoingBandwidth() const {
-  return 0;
+  return lastOutgoingBandwidth;
 }
 
 std::string printAddress(const ENetAddress &addr) {
