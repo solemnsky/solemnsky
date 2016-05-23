@@ -18,7 +18,8 @@
 #include "map.h"
 #include "util/methods.h"
 #include <fstream>
-#include <cereal/archives/json.hpp>
+#include <list>
+#include <polypartition.h>
 
 namespace sky {
 
@@ -31,7 +32,23 @@ MapObstacle::MapObstacle() { }
 MapObstacle::MapObstacle(const sf::Vector2f &pos,
                          const std::vector<sf::Vector2f> &localVerticies,
                          const float damage) :
-    pos(pos), localVerticies(localVerticies), damage(damage) { }
+    pos(pos), localVertices(localVerticies), decomposed(), damage(damage) { }
+
+void MapObstacle::decompose(){
+  decomposed.clear();
+
+  std::vector<sf::Vector2f> verts(localVertices);
+  pp::Poly poly(verts);
+  poly.SetOrientation(TPPL_CCW);
+  std::list<pp::Poly> tmp;
+
+  pp::Partition part;
+  part.ConvexPartition_HM(&poly, &tmp);
+
+  for(auto p : tmp){
+    decomposed.push_back(p.GetPoints());
+  }
+}
 
 /**
  * MapItem.
@@ -51,8 +68,6 @@ void Map::loadTest1() {
   for (float x = 0; x < 1600.0f; x += 200) {
     obstacles.emplace_back(sf::Vector2f(x, 450), square, 1);
   }
-  //auto file = std::ofstream("map_test.json");
-  //save(file);
 }
 
 void Map::loadTest2() {
@@ -71,6 +86,9 @@ Map::Map(const MapName &name) :
     cereal::JSONInputArchive archive(file);
     archive( cereal::make_nvp("dimensions",dimensions),
              cereal::make_nvp("obstacles",obstacles) );
+  }
+  for(auto &o : obstacles){
+    o.decompose();
   }
 }
 

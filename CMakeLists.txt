@@ -4,7 +4,7 @@ project(solemnsky)
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic -g")
 
-if(SANITIZE) 
+if(SANITIZE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -fsanitize=address")
 endif()
 
@@ -23,6 +23,7 @@ include_directories(
         thirdparty/enet/include/
         thirdparty/cereal/
         thirdparty/SFML/include/
+        thirdparty/polypartition/
         "${Boost_INCLUDE_DIRS}"
 )
 
@@ -72,6 +73,9 @@ add_library(solemnsky STATIC
 
         src/util/types.cpp
         src/util/types.h
+
+        thirdparty/polypartition/polypartition.cpp
+        thirdparty/polypartition/polypartition.h
         )
 
 target_link_libraries(solemnsky
@@ -193,7 +197,7 @@ target_link_libraries(solemnsky_client
 add_subdirectory(tests/)
 
 ###### installation
-install(TARGETS solemnsky_client solemnsky_server 
+install(TARGETS solemnsky_client solemnsky_server
         RUNTIME DESTINATION bin)
 install(DIRECTORY media DESTINATION share/solemnsky)
 set(CPACK_GENERATOR "ZIP")
