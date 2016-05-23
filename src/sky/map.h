@@ -105,6 +105,7 @@ struct Map {
   const sf::Vector2f &getDimensions() const;
   const std::vector<MapObstacle> &getObstacles() const;
   const std::vector<MapItem> &getItems() const;
+  const std::vector<SpawnPoint> &getSpawnPoints() const;
 
   //void load(std::basic_istream& s);
   void save(std::ostream& s);
