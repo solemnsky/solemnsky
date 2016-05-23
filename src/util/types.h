@@ -238,7 +238,7 @@ struct Angle {
   Angle(const sf::Vector2f &);
 
   template<typename Archive>
-  void serialize(Archive &ar) { ar(value.value); }
+  void serialize(Archive &ar) { ar(cereal::make_nvp("angle",value.value)); }
 
   Angle &operator=(const float x);
   Angle &operator+=(const float x);
