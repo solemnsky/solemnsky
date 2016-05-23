@@ -76,6 +76,7 @@ enum class LogOrigin {
 };
 
 void appLog(const std::string &contents, const LogOrigin = LogOrigin::None);
+void appErrorRuntime(const std::string &contents);
 
 /**
  * A printer wrapping appLog.

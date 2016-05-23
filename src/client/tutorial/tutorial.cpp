@@ -19,8 +19,8 @@
 
 Tutorial::Tutorial(ClientShared &state) :
     Game(state, "tutorial"),
-    arena(sky::ArenaInit("tutorial", "cloud")),
-    sky(arena, sky::SkyInitializer("cloud")),
+    arena(sky::ArenaInit("tutorial", "ball_cloud_pb")),
+    sky(arena, sky::SkyInitializer("ball_cloud_pb")),
     skyRender(shared, arena, sky) {
   areChildComponents({&skyRender});
   arena.connectPlayer("offline player");
