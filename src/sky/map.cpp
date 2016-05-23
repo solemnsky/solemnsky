@@ -134,7 +134,5 @@ void Map::save(std::ostream& s) {
            cereal::make_nvp("spawnPoints",spawnPoints) );
 }
 
-
-
 }
 
