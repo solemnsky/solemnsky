@@ -71,7 +71,30 @@ const optional<sky::Sky> &ArenaConnection::getSky() const {
 }
 
 /**
- * MultiplayerConnection.
+ * ConnectionStats.
+ */
+
+ConnectionStats::ConnectionStats() :
+    latencySampler(20),
+    offsetSampler(20) { }
+
+float ConnectionStats::getLatency() const {
+  return latencySampler.mean();
+}
+
+float ConnectionStats::getOffset() const {
+  return offsetSampler.mean();
+}
+
+void ConnectionStats::registerPong(const double now,
+                                   const double pingTime,
+                                   const double pongTime) {
+  latencySampler.push(float(now - pingTime));
+  offsetSampler.push(float(pingTime + (getLatency() / 2) - pongTime));
+}
+
+/**
+ * MultiplayerCore.
  */
 
 void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
@@ -101,7 +124,9 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
   // we're in the arena
   switch (packet.type) {
     case ServerPacket::Type::Pong: {
-      break;
+      stats.registerPong(shared.uptime,
+                         packet.pingTime.get(),
+                         packet.pongTime.get());
     }
 
     case ServerPacket::Type::DeltaArena: {
@@ -208,6 +233,10 @@ bool MultiplayerCore::isDisconnected() const {
   return disconnected;
 }
 
+const ConnectionStats &MultiplayerCore::getStats() const {
+  return stats;
+}
+
 void MultiplayerCore::onChangeSettings(const SettingsDelta &settings) {
   if (conn) {
     if (settings.nickname) {
@@ -236,6 +265,7 @@ void MultiplayerCore::disconnect() {
 void MultiplayerCore::poll(const float delta) {
   if (disconnected) return;
 
+  static ENetEvent event;
   event = host.poll(delta);
   if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
     server = nullptr;

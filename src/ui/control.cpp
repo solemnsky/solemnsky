@@ -41,10 +41,10 @@ ProfilerSnapshot::ProfilerSnapshot(const Profiler &profiler) :
 AppState::AppState(const sf::RenderWindow &window,
                    const Profiler &profiler,
                    const double &time) :
-    time(time), window(window), profiler(profiler) { }
+    uptime(time), window(window), profiler(profiler) { }
 
 double AppState::timeSince(const double event) const {
-  return time - event;
+  return uptime - event;
 }
 
 /**

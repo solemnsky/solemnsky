@@ -126,7 +126,9 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::Ping: {
-        shared.sendToClient(client, ServerPacket::Pong());
+        shared.sendToClient(client, ServerPacket::Pong(
+            packet.pingTime.get(),
+            shared.uptime));
         break;
       }
 
