@@ -29,7 +29,7 @@ ExecWrapper::ExecWrapper(
 
     Control(appState),
 
-    animBegin(appState.time),
+    animBegin(appState.uptime),
     drewScreen(false), loadingDone(false),
     loadingText(80, {},
                 ui::HorizontalAlign::Center, ui::VerticalAlign::Middle,
@@ -63,7 +63,7 @@ void ExecWrapper::render(ui::Frame &f) {
                  sf::Color::White, loadingText);
     } else {
       f.withAlpha(
-          linearTween(0.3, 1, sineAnim(float(appState.time), 0.2)),
+          linearTween(0.3, 1, sineAnim(float(appState.uptime), 0.2)),
           [&]() {
             f.drawText({800, 450}, "press any key to begin",
                        sf::Color::White, loadingText);
@@ -87,7 +87,7 @@ bool ExecWrapper::handle(const sf::Event &event) {
     if (event.type == sf::Event::KeyReleased
         or event.type == sf::Event::MouseButtonReleased) {
       mainCtrl = std::move(mainCtrlCtor(appState));
-      animBegin = appState.time;
+      animBegin = appState.uptime;
       areChildren({mainCtrl.get()});
       return true;
     }

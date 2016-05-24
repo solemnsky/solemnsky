@@ -96,8 +96,30 @@ class ConnectionListener {
 };
 
 /**
- * The state of the multiplayer client, allocated for Multiplayer for use by
- * MultiplayerView.
+ * Constantly updated statistics associated with a connection, used for
+ * packet reconciliation.
+ */
+struct ConnectionStats {
+ private:
+  // Samplers.
+  RollingSampler latencySampler;
+  RollingSampler offsetSampler;
+
+ public:
+  ConnectionStats();
+
+  // User API.
+  float getLatency() const;
+  float getOffset() const;
+
+  void registerPong(const double now,
+                    const double pingTime,
+                    const double pongTime);
+};
+
+/**
+ * The core state of the multiplayer client, allocated for Multiplayer for
+ * use by MultiplayerView.
  */
 class MultiplayerCore: public ClientComponent {
   friend class MultiplayerLogger;
@@ -113,12 +135,12 @@ class MultiplayerCore: public ClientComponent {
   Cooldown disconnectTimeout;
 
   tg::Telegraph<sky::ServerPacket> telegraph;
-  ENetEvent event;
-
   tg::Host host;
   ENetPeer *server;
   bool disconnecting, // trying to disconnect
       disconnected; // it's over, close the multiplayer client
+
+  ConnectionStats stats;
 
   // Packet processing submethod.
   void processPacket(const sky::ServerPacket &packet);
@@ -143,6 +165,7 @@ class MultiplayerCore: public ClientComponent {
   bool isConnected() const;
   bool isDisconnecting() const;
   bool isDisconnected() const;
+  const ConnectionStats &getStats() const;
 
   // ClientComponent impl.
   void onChangeSettings(const SettingsDelta &settings);

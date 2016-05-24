@@ -37,6 +37,7 @@ struct ServerShared {
                const sky::ArenaInit &arenaInit);
 
   // Game state.
+  double uptime;
   sky::Arena arena;
   sky::SkyHandle skyHandle;
   sky::Scoreboard scoreboard;

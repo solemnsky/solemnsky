@@ -59,7 +59,7 @@ struct AppState {
            const Profiler &profiler,
            const double &time);
 
-  const double &time;
+  const double &uptime;
   const sf::RenderWindow &window;
   const Profiler &profiler;
 
