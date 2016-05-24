@@ -17,6 +17,7 @@
  */
 #include "map.h"
 #include "util/methods.h"
+#include "util/printer.h"
 #include <fstream>
 #include <list>
 #include <polypartition.h>
@@ -24,15 +25,24 @@
 namespace sky {
 
 /**
+ * SpawnPoint.
+ */
+
+sky::SpawnPoint::SpawnPoint(const sf::Vector2f &pos, const Angle &angle):
+  pos(pos), angle(angle){}
+
+  SpawnPoint::SpawnPoint() { }
+
+  /**
  * MapObstacle.
  */
 
 MapObstacle::MapObstacle() { }
 
 MapObstacle::MapObstacle(const sf::Vector2f &pos,
-                         const std::vector<sf::Vector2f> &localVerticies,
+                         const std::vector<sf::Vector2f> &localVertices,
                          const float damage) :
-    pos(pos), localVertices(localVerticies), decomposed(), damage(damage) { }
+    pos(pos), localVertices(localVertices), decomposed(), damage(damage) { }
 
 void MapObstacle::decompose(){
   decomposed.clear();
@@ -83,9 +93,18 @@ Map::Map(const MapName &name) :
     loadTest2();
   } else if (name != ""){
     auto file = std::ifstream(rootPath() + "maps/" + name + ".json");
-    cereal::JSONInputArchive archive(file);
-    archive( cereal::make_nvp("dimensions",dimensions),
-             cereal::make_nvp("obstacles",obstacles) );
+    if(file.good()) {
+      try {
+        cereal::JSONInputArchive archive(file);
+        archive(cereal::make_nvp("dimensions", dimensions),
+                cereal::make_nvp("obstacles", obstacles),
+                cereal::make_nvp("spawnPoints", spawnPoints));
+      } catch(cereal::RapidJSONException e){
+        appErrorRuntime("Failed to parse map '"+name+"', "+e.what());
+      }
+    } else {
+      appErrorRuntime("Map '"+name+"' was not found.");
+    }
   }
   for(auto &o : obstacles){
     o.decompose();
@@ -104,10 +123,16 @@ const std::vector<MapItem> &Map::getItems() const {
   return items;
 }
 
+const std::vector<SpawnPoint> &Map::getSpawnPoints() const {
+  return spawnPoints;
+}
+
 void Map::save(std::ostream& s) {
   cereal::JSONOutputArchive archive(s);
   archive( cereal::make_nvp("dimensions",dimensions),
-           cereal::make_nvp("obstacles",obstacles) );
+           cereal::make_nvp("obstacles",obstacles),
+           cereal::make_nvp("spawnPoints",spawnPoints) );
 }
 
 }
+

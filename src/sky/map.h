@@ -34,12 +34,31 @@ namespace sky {
 using MapName = std::string;
 
 /**
+ * A position and angle in a map where a plane can spawn.
+ */
+struct SpawnPoint{
+  SpawnPoint();
+  SpawnPoint(const sf::Vector2f &pos,
+             const Angle &angle);
+  sf::Vector2f pos;
+  Angle angle;
+  Team team;
+};
+
+template<typename Archive>
+void serialize(Archive &ar, SpawnPoint& p){
+  ar(cereal::make_nvp("pos", p.pos),
+     cereal::make_nvp("angle", p.angle),
+     cereal::make_nvp("team", p.team));
+}
+
+/**
  * A shape that things can collide with.
  */
 struct MapObstacle {
   MapObstacle();
   MapObstacle(const sf::Vector2f &pos,
-              const std::vector<sf::Vector2f> &localVerticies,
+              const std::vector<sf::Vector2f> &localVertices,
               const float damage);
   void decompose();
 
@@ -53,7 +72,7 @@ struct MapObstacle {
 template<typename Archive>
 void serialize(Archive &ar, MapObstacle& o){
   ar(cereal::make_nvp("pos", o.pos),
-     cereal::make_nvp("localVerticies", o.localVertices),
+     cereal::make_nvp("localVertices", o.localVertices),
      cereal::make_nvp("damage", o.damage));
 }
 
@@ -76,6 +95,7 @@ struct Map {
   // State, all constant after loading.
   sf::Vector2f dimensions;
   std::vector<MapObstacle> obstacles;
+  std::vector<SpawnPoint> spawnPoints;
   std::vector<MapItem> items;
 
  public:
@@ -85,6 +105,7 @@ struct Map {
   const sf::Vector2f &getDimensions() const;
   const std::vector<MapObstacle> &getObstacles() const;
   const std::vector<MapItem> &getItems() const;
+  const std::vector<SpawnPoint> &getSpawnPoints() const;
 
   //void load(std::basic_istream& s);
   void save(std::ostream& s);
