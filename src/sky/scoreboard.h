@@ -24,7 +24,7 @@
 namespace sky {
 
 using ScoreRecordInit = std::vector<int>;
-using ScoreRecordDelta = optional<std::vector<int>>;
+using ScoreRecordDelta = std::vector<int>;
 
 /**
  * Score record, describing the score of a single player.
@@ -45,7 +45,7 @@ struct ScoreRecord
   // Networked impl.
   void applyDelta(const ScoreRecordDelta &delta) override final;
   ScoreRecordInit captureInitializer() const override final;
-  ScoreRecordDelta collectDelta();
+  optional<ScoreRecordDelta> collectDelta();
 
   // User API.
   int getValueAt(const size_t index);
@@ -111,7 +111,7 @@ class Scoreboard
   // Networked impl.
   void applyDelta(const ScoreboardDelta &delta) override final;
   ScoreboardInit captureInitializer() const override final;
-  ScoreboardDelta collectDelta();
+  optional<ScoreboardDelta> collectDelta();
 
   // User API.
   const std::vector<std::string> &getFields();

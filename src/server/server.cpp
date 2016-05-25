@@ -23,7 +23,7 @@
  */
 
 ServerShared::ServerShared(
-    tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph,
+    tg::Host &host, tg::Telegraph <sky::ClientPacket> &telegraph,
     const sky::ArenaInit &arenaInit) :
     arena(arenaInit), skyHandle(arena, {}), scoreboard(arena, {}),
     host(host), telegraph(telegraph) { }
@@ -41,23 +41,23 @@ void ServerShared::registerArenaDelta(const sky::ArenaDelta &arenaDelta) {
 void ServerShared::sendToClients(const sky::ServerPacket &packet) {
   telegraph.transmit(
       host,
-      [&](std::function<void(ENetPeer *const)> transmit) {
+      [&]( std::function < void(ENetPeer *const)> transmit) {
         for (auto const peer : host.getPeers()) { transmit(peer); }
       }, packet);
-}
+      }
 
 void ServerShared::sendToClientsExcept(const PID pid,
                                        const sky::ServerPacket &packet) {
   telegraph.transmit(
       host,
-      [&](std::function<void(ENetPeer *const)> transmit) {
+      [&]( std::function < void(ENetPeer *const)> transmit) {
         for (auto const peer : host.getPeers()) {
-          if (sky::Player *player = playerFromPeer(peer)) {
+          if (sky::Player * player = playerFromPeer(peer)) {
             if (player->pid != pid) transmit(peer);
           }
         }
       }, packet);
-}
+      }
 
 void ServerShared::sendToClient(ENetPeer *const client,
                                 const sky::ServerPacket &packet) {
@@ -126,6 +126,7 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::Pong: {
+        latencyTracker.registerPong(*player, packet.pingTime, packet.pongTime);
         break;
       }
 
@@ -173,9 +174,16 @@ void ServerExec::poll(float delta) {
   }
 
   if (scoreDeltaTimer.cool(delta)) {
-    shared.sendToClients(sky::ServerPacket::DeltaScore(
-        shared.scoreboard.collectDelta()));
+    if (const auto scoreDelta = shared.scoreboard.collectDelta()) {
+      shared.sendToClients(
+          sky::ServerPacket::DeltaScore(scoreDelta.get()));
+    }
     scoreDeltaTimer.reset();
+  }
+
+  if (pingTimer.cool(delta)) {
+    shared.sendToClients(sky::ServerPacket::Ping(
+        shared.arena.getUptime()));
   }
 
   static ENetEvent event;
@@ -189,7 +197,7 @@ void ServerExec::poll(float delta) {
       break;
     }
     case ENET_EVENT_TYPE_DISCONNECT: {
-      if (sky::Player *player = shared.playerFromPeer(event.peer)) {
+      if (sky::Player * player = shared.playerFromPeer(event.peer)) {
         shared.logEvent(ServerEvent::Disconnect(player->getNickname()));
         shared.registerArenaDelta(sky::ArenaDelta::Quit(player->pid));
         event.peer->data = nullptr;
@@ -208,20 +216,24 @@ ServerExec::ServerExec(
     const Port port,
     const sky::ArenaInit &arenaInit,
     std::function<std::unique_ptr<ServerListener>(
-        ServerShared &)> mkServer) :
+        ServerShared & )> mkServer) :
     uptime(0),
 
     host(tg::HostType::Server, port),
     shared(host, telegraph, arenaInit),
 
-    server(mkServer(shared)),
     skyDeltaTimer(0.03),
     scoreDeltaTimer(1),
+    pingTimer(1),
+
+    server(mkServer(shared)),
 
     logger(shared, shared.arena),
+    latencyTracker(shared.arena),
 
     running(true) {
   shared.logEvent(ServerEvent::Start(port, arenaInit.name));
+  scoreDeltaTimer.cool(0.5); // shift so it's out of sync with pings
 }
 
 void ServerExec::run() {
@@ -231,4 +243,3 @@ void ServerExec::run() {
     sf::sleep(sf::milliseconds(16));
   }
 }
-

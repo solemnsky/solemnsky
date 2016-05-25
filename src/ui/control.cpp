@@ -211,11 +211,12 @@ ControlExec::ControlExec(
            sf::Style::Default, makeSettings()),
     frame(window),
     resizeCooldown(0.5),
-    uptime(0),
 
-    profiler(100),
+    uptime(0),
     tickStep(1.0f / 60.0f),
     rollingTickTime(0),
+
+    profiler(100),
 
     appState(window, profiler, uptime),
     ctrl(std::make_unique<detail::ExecWrapper>(appState, initCtrl)) {

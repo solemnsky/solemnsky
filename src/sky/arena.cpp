@@ -379,6 +379,10 @@ ArenaMode Arena::getMode() const {
   return mode;
 }
 
+Time Arena::getUptime() const {
+  return uptime;
+}
+
 ArenaDelta Arena::connectPlayer(const std::string &requestedNick) {
   Player &player = joinPlayer(
       PlayerInitializer(allocPid(), allocNickname(requestedNick)));
@@ -386,6 +390,7 @@ ArenaDelta Arena::connectPlayer(const std::string &requestedNick) {
 }
 
 void Arena::tick(const TimeDiff delta) {
+  uptime += Time(delta);
   for (auto s : subsystems) s.second->onTick(delta);
 }
 

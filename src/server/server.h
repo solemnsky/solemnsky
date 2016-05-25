@@ -27,6 +27,7 @@
 #include "sky/arena.h"
 #include "sky/event.h"
 #include <iostream>
+#include "latencytracker.h"
 
 /**
  * Shared state for the Server to access.
@@ -37,7 +38,6 @@ struct ServerShared {
                const sky::ArenaInit &arenaInit);
 
   // Game state.
-  double uptime;
   sky::Arena arena;
   sky::SkyHandle skyHandle;
   sky::Scoreboard scoreboard;
@@ -122,15 +122,20 @@ class ServerExec {
   tg::UsageFlag flag; // for enet global state
   double uptime;
 
+  // Networking state.
   tg::Host host;
   tg::Telegraph<sky::ClientPacket> telegraph;
   ServerShared shared;
 
+  // Attached server.
   std::unique_ptr<ServerListener> server;
-  Cooldown skyDeltaTimer;
-  Cooldown scoreDeltaTimer;
 
+  // Packet scheduling.
+  Cooldown skyDeltaTimer, scoreDeltaTimer, pingTimer;
+
+  // Subsystems.
   ServerLogger logger;
+  LatencyTracker latencyTracker;
 
   // Server loop subroutines.
   void processPacket(ENetPeer *client, const sky::ClientPacket &packet);

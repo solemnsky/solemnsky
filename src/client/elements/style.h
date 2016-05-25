@@ -39,7 +39,7 @@ struct Style {
         textAreaForeground,
         textAreaBackground;
     // TODO: organise color usage
-    float heatRate; // inverse of uptime it takes for a UI element to 'heat up'
+    float heatRate; // inverse of time it takes for a UI element to 'heat up'
 
     int smallFontSize, normalFontSize, largeFontSize;
 
