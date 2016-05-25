@@ -52,7 +52,7 @@ class Host {
   std::vector<ENetPeer *> peers;
 
   // Bandwidth recording.
-  float lastIncomingBandwidth, lastOutgoingBandwidth;
+  Kbps lastIncomingBandwidth, lastOutgoingBandwidth;
   Cooldown bandwidthSampler;
   void sampleBandwidth();
 
@@ -77,8 +77,8 @@ class Host {
   ENetEvent poll(const float delta);
 
   // Expressed in average kB per second.
-  float incomingBandwidth() const;
-  float outgoingBandwidth() const;
+  Kbps incomingBandwidth() const;
+  Kbps outgoingBandwidth() const;
 
 };
 

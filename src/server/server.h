@@ -27,9 +27,10 @@
 #include "sky/arena.h"
 #include "sky/event.h"
 #include <iostream>
+#include "latencytracker.h"
 
 /**
- * Core
+ * Shared state for the Server to access.
  */
 struct ServerShared {
  public:
@@ -60,6 +61,7 @@ struct ServerShared {
   // Logging.
   void logEvent(const ServerEvent &event);
   void logArenaEvent(const sky::ArenaEvent &event);
+
 };
 
 /**
@@ -118,21 +120,30 @@ class ServerExec {
 
  private:
   tg::UsageFlag flag; // for enet global state
-  double uptime;
 
+  // Networking state.
   tg::Host host;
   tg::Telegraph<sky::ClientPacket> telegraph;
   ServerShared shared;
 
-  std::unique_ptr<ServerListener> server;
-  Cooldown skyDeltaTimer;
-  Cooldown scoreDeltaTimer;
+  // Packet scheduling.
+  Cooldown skyDeltaTimer,
+      scoreDeltaTimer,
+      pingTimer,
+      latencyUpdateTimer;
 
+  // Attached server.
+  std::unique_ptr<ServerListener> server;
+
+  // Subsystems.
   ServerLogger logger;
+  LatencyTracker latencyTracker;
 
   // Server loop subroutines.
   void processPacket(ENetPeer *client, const sky::ClientPacket &packet);
-  void poll(float delta);
+  // (returns true when the queue has been exhausted)
+  bool pollNetwork(const TimeDiff delta);
+  void tick(const TimeDiff delta);
 
  public:
   ServerExec(const Port port,

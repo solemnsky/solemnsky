@@ -28,16 +28,14 @@ ScoreRecord::ScoreRecord(const ScoreRecordInit &init) :
     values(init) { }
 
 void ScoreRecord::applyDelta(const ScoreRecordDelta &delta) {
-  if (delta) {
-    values = delta.get();
-  }
+  values = delta;
 }
 
 ScoreRecordInit ScoreRecord::captureInitializer() const {
   return values;
 }
 
-ScoreRecordDelta ScoreRecord::collectDelta() {
+optional<ScoreRecordDelta> ScoreRecord::collectDelta() {
   if (lastValues == values) return {};
   else {
     lastValues = values;
@@ -90,7 +88,8 @@ Scoreboard::Scoreboard(Arena &arena,
                        const ScoreboardInit &initializer) :
     Subsystem(arena),
     Networked(initializer),
-    fields(initializer.fields) {
+    fields(initializer.fields),
+    lastFields(fields) {
   arena.forPlayers([&](Player &player) {
     const auto iter = initializer.initializers.find(player.pid);
     if (iter != initializer.initializers.end())
@@ -119,15 +118,24 @@ ScoreboardInit Scoreboard::captureInitializer() const {
   return init;
 }
 
-ScoreboardDelta Scoreboard::collectDelta() {
+optional<ScoreboardDelta> Scoreboard::collectDelta() {
+  bool isUseful{false};
   ScoreboardDelta delta;
+
   if (fields != lastFields) {
     delta.fields = fields;
     lastFields = fields;
+    isUseful = true;
   }
-  for (auto &pair : records)
-    delta.deltas.emplace(pair.first, pair.second.collectDelta());
-  return delta;
+  for (auto &pair : records) {
+    if (const auto recordDelta = pair.second.collectDelta()) {
+      isUseful = true;
+      delta.deltas.emplace(pair.first, recordDelta.get());
+    }
+  }
+
+  if (isUseful) return delta;
+  else return {};
 }
 
 const std::vector<std::string> &Scoreboard::getFields() {

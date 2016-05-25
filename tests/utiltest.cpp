@@ -12,13 +12,16 @@ class UtilTest: public testing::Test {
 };
 
 TEST_F(UtilTest, RollingSamplerTest) {
-  RollingSampler sampler(3);
+  RollingSampler<int> sampler(3);
+  EXPECT_EQ(sampler.min(), 0);
+  EXPECT_EQ(sampler.max(), 0);
+  EXPECT_EQ(sampler.mean<float>(), 0.0f);
   sampler.push(5);
   sampler.push(6);
   sampler.push(7);
   EXPECT_EQ(sampler.min(), 5);
   EXPECT_EQ(sampler.max(), 7);
-  EXPECT_EQ(sampler.mean(), 6);
+  EXPECT_EQ(sampler.mean<float>(), 6.0f);
   sampler.push(8);
   EXPECT_EQ(sampler.min(), 6);
 }

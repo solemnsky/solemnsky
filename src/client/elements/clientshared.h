@@ -74,10 +74,10 @@ private:
 
   // AppState.
   ui::AppState &appState;
+  const Time &uptime;
 
   // State.
   Settings settings;
-  double uptime;
   std::unique_ptr<class Game> game;
   ClientUiState ui;
 

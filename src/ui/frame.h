@@ -39,9 +39,9 @@ class Frame {
 
   const sf::Color alphaScaleColor(const sf::Color);
 
-  // used by runSFML
+  // Used by runSFML.
   sf::Transform windowToFrame;
-  int primCount;
+  size_t primCount;
   void beginDraw();
   void endDraw();
   void resize();
@@ -51,9 +51,7 @@ class Frame {
 
   sf::RenderWindow &window; // might be useful for some settings sometimes
 
-  /**
-   * Managing the render state stacks. It's like a scene graph but quick.
-   */
+  // Managing transform / alpha stack.
   void pushTransform(const sf::Transform &transform);
   void popTransform();
   void withTransform(const sf::Transform &transform, std::function<void()> fn);
@@ -63,11 +61,7 @@ class Frame {
   void withAlphaTransform(const float alpha, const sf::Transform &transform,
                           std::function<void()> fn);
 
-  /**
-   * Drawing API.
-   */
-
-  // Inline synonyms.
+  // Drawing API: inline synonyms.
   inline void drawRect(const sf::FloatRect &rect, const sf::Color &color = {}) {
     drawRect(sf::Vector2f(rect.left, rect.top),
              sf::Vector2f(rect.left + rect.width, rect.top + rect.height),
@@ -84,7 +78,7 @@ class Frame {
     }, format);
   }
 
-  // Basic calls.
+  // Drawing API: basic methods.
   void drawCircle(const sf::Vector2f &pos, const float radius,
                   const sf::Color &color = {});
   void drawRect(const sf::Vector2f &topLeft, const sf::Vector2f &bottomRight,

@@ -25,17 +25,12 @@
 #include "types.h"
 #include <cereal/archives/json.hpp>
 
-// log and throw
-// log and throw
-
 /**
- * Logging for memory leaks.
+ * Displaying our float units.
  */
-
-//#define CTOR_LOG(str) appLog("CTOR --> " + (std::string) str)
-//#define DTOR_LOG(str) appLog("DTOR <- " + (std::string) str)
-#define DTOR_LOG(str) {}while(0)
-#define CTOR_LOG(str) {}while(0)
+std::string showTime(const Time delta);
+std::string showTimeDiff(const TimeDiff delta);
+std::string showKbps(const Kbps rate);
 
 /****
  * For some reason sf::Vector has no math utilities, here are some.

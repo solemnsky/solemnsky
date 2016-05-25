@@ -37,17 +37,17 @@ namespace ui {
 struct Profiler {
   Profiler(const unsigned int size);
 
-  RollingSampler cycleTime;
-  RollingSampler logicTime;
-  RollingSampler renderTime;
-  RollingSampler primCount;
+  RollingSampler<TimeDiff> cycleTime, logicTime, renderTime;
+  RollingSampler<size_t> primCount;
+
 };
 
 struct ProfilerSnapshot {
   ProfilerSnapshot() = default; // 'null' defaults, all zeroes
   ProfilerSnapshot(const Profiler &profiler);
 
-  SamplerSnapshot cycleTime, logicTime, renderTime;
+  TimeStats cycleTime, logicTime, renderTime;
+
 };
 
 /**
@@ -57,13 +57,14 @@ struct ProfilerSnapshot {
 struct AppState {
   AppState(const sf::RenderWindow &window,
            const Profiler &profiler,
-           const double &time);
+           const Time &time);
 
-  const double &time;
+  const Time &uptime;
   const sf::RenderWindow &window;
   const Profiler &profiler;
 
-  double timeSince(const double event) const;
+  double timeSince(const Time event) const;
+
 };
 
 /**
@@ -84,8 +85,8 @@ class Control {
   bool quitting;
 
   // Callbacks.
-  virtual void poll(const float delta);
-  virtual void tick(const float delta);
+  virtual void poll(const TimeDiff delta);
+  virtual void tick(const TimeDiff delta);
   virtual void render(Frame &f);
   virtual bool handle(const sf::Event &event);
   virtual void reset();
@@ -103,17 +104,23 @@ class ControlExec {
  private:
   tg::UsageFlag flag;
 
+  // SFML / graphics state.
   static sf::ContextSettings makeSettings();
   sf::RenderWindow window;
   Frame frame;
   Cooldown resizeCooldown;
-  double time;
 
+  // Timing.
+  sf::Clock cycleClock;
+  Time uptime;
+  const TimeDiff tickStep;
+  TimeDiff rollingTickTime;
+
+  // Profiling.
+  sf::Clock profileClock;
   ui::Profiler profiler;
-  const float tickStep;
-  float rollingTickTime;
-  sf::Clock cycleClock, profileClock;
 
+  // AppState and Control.
   AppState appState;
   std::unique_ptr<Control> ctrl;
 

@@ -40,11 +40,11 @@ ProfilerSnapshot::ProfilerSnapshot(const Profiler &profiler) :
 
 AppState::AppState(const sf::RenderWindow &window,
                    const Profiler &profiler,
-                   const double &time) :
-    time(time), window(window), profiler(profiler) { }
+                   const Time &time) :
+    uptime(time), window(window), profiler(profiler) { }
 
-double AppState::timeSince(const double event) const {
-  return time - event;
+double AppState::timeSince(const Time event) const {
+  return uptime - event;
 }
 
 /**
@@ -59,11 +59,11 @@ Control::Control(AppState &appState) :
     appState(appState),
     quitting(false) { }
 
-void Control::poll(const float delta) {
+void Control::poll(const TimeDiff delta) {
   for (auto child : children) child->poll(delta);
 }
 
-void Control::tick(const float delta) {
+void Control::tick(const TimeDiff delta) {
   for (auto child : children) child->tick(delta);
 }
 
@@ -140,15 +140,15 @@ sf::Event transformEvent(const sf::Transform trans,
  */
 
 void ControlExec::tick() {
-  const float cycleDelta = cycleClock.restart().asSeconds();
+  const TimeDiff cycleDelta = cycleClock.restart().asSeconds();
   profiler.cycleTime.push(cycleDelta);
+  uptime += Time(cycleDelta);
 
   profileClock.restart();
   rollingTickTime += cycleDelta;
   ctrl->poll(cycleDelta);
   while (rollingTickTime > tickStep) {
     ctrl->tick(tickStep);
-    time += tickStep;
     rollingTickTime -= tickStep;
   }
 
@@ -211,13 +211,14 @@ ControlExec::ControlExec(
            sf::Style::Default, makeSettings()),
     frame(window),
     resizeCooldown(0.5),
-    time(0),
 
-    profiler(100),
+    uptime(0),
     tickStep(1.0f / 60.0f),
     rollingTickTime(0),
 
-    appState(window, profiler, time),
+    profiler(100),
+
+    appState(window, profiler, uptime),
     ctrl(std::make_unique<detail::ExecWrapper>(appState, initCtrl)) {
   window.setVerticalSyncEnabled(true);
   window.setKeyRepeatEnabled(false);

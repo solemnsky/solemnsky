@@ -44,12 +44,6 @@ bool SkyDelta::verifyStructure() const {
  * Sky.
  */
 
-void Sky::onTick(const float delta) {
-  for (auto &p: participations) p.second.prePhysics();
-  physics.tick(delta);
-  for (auto &p: participations) p.second.postPhysics(delta);
-}
-
 void Sky::registerPlayerWith(Player &player,
                              const ParticipationInit &initializer) {
   participations.emplace(
@@ -65,6 +59,12 @@ void Sky::registerPlayer(Player &player) {
 
 void Sky::unregisterPlayer(Player &player) {
   participations.erase(participations.find(player.pid));
+}
+
+void Sky::onTick(const TimeDiff delta) {
+  for (auto &p: participations) p.second.prePhysics();
+  physics.tick(delta);
+  for (auto &p: participations) p.second.postPhysics(delta);
 }
 
 void Sky::onAction(Player &player, const Action action, const bool state) {
