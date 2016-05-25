@@ -142,7 +142,9 @@ class ServerExec {
 
   // Server loop subroutines.
   void processPacket(ENetPeer *client, const sky::ClientPacket &packet);
-  void poll(TimeDiff delta);
+  // (returns true when the queue has been exhausted)
+  bool pollNetwork(const TimeDiff delta);
+  void tick(const TimeDiff delta);
 
  public:
   ServerExec(const Port port,

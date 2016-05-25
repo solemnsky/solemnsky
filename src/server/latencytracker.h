@@ -19,8 +19,8 @@ struct PlayerLatency {
                     const Time pingTime,
                     const Time pongTime);
 
-  Time getLatency();
-  Time getOffset();
+  TimeDiff getLatency();
+  TimeDiff getOffset();
 
 };
 

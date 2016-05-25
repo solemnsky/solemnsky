@@ -26,12 +26,10 @@
 #include <cereal/archives/json.hpp>
 
 /**
- * Methods for time!
+ * Displaying our float units.
  */
-
-float toSeconds(const Time time);
-
-Time fromSeconds(const float seconds);
+std::string showTimeDiff(const TimeDiff delta);
+std::string showKbps(const Kbps rate);
 
 /****
  * For some reason sf::Vector has no math utilities, here are some.

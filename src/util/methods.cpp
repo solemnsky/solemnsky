@@ -26,6 +26,17 @@
 #include "methods.h"
 
 /**
+ * Displaying our float units.
+ */
+std::string showTimeDiff(const TimeDiff delta) {
+  return std::to_string(delta);
+}
+
+std::string showKbps(const Kbps rate) {
+  return std::to_string(rate);
+}
+
+/**
  * VecMath.
  */
 float VecMath::length(const sf::Vector2f &vec) {
