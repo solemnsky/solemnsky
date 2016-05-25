@@ -31,6 +31,7 @@ void LatencyTracker::registerPlayer(sky::Player &player) {
   latencies.emplace(std::piecewise_construct,
                     std::forward_as_tuple(player.pid),
                     std::forward_as_tuple());
+  setPlayerData(player, latencies.find(player.pid)->second);
 }
 
 void LatencyTracker::unregisterPlayer(sky::Player &player) {
