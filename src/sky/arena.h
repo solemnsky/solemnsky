@@ -127,7 +127,7 @@ class SubsystemListener {
   virtual void unregisterPlayer(Player &player) { }
 
   // Callbacks.
-  virtual void onTick(const float delta) { }
+  virtual void onTick(const TimeDiff delta) { }
   virtual void onJoin(Player &player) { }
   virtual void onQuit(Player &player) { }
   virtual void onMode(const ArenaMode newMode) { }
@@ -333,7 +333,7 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   MapName getNextMap() const;
   ArenaMode getMode() const;
 
-  void tick(const float delta);
+  void tick(const TimeDiff delta);
 
   // Server-specific API.
   ArenaDelta connectPlayer(const std::string &requestedNick);

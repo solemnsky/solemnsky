@@ -37,10 +37,9 @@ namespace ui {
 struct Profiler {
   Profiler(const unsigned int size);
 
-  RollingSampler cycleTime;
-  RollingSampler logicTime;
-  RollingSampler renderTime;
-  RollingSampler primCount;
+  RollingSampler<Time> cycleTime, logicTime, renderTime;
+  RollingSampler<size_t> primCount;
+
 };
 
 struct ProfilerSnapshot {
@@ -57,13 +56,13 @@ struct ProfilerSnapshot {
 struct AppState {
   AppState(const sf::RenderWindow &window,
            const Profiler &profiler,
-           const sf::Time &time);
+           const Time &time);
 
-  const sf::Time &uptime;
+  const Time &uptime;
   const sf::RenderWindow &window;
   const Profiler &profiler;
 
-  double timeSince(const double event) const;
+  double timeSince(const Time event) const;
 };
 
 /**

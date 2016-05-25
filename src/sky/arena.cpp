@@ -385,7 +385,7 @@ ArenaDelta Arena::connectPlayer(const std::string &requestedNick) {
   return ArenaDelta::Join(player.captureInitializer());
 }
 
-void Arena::tick(const float delta) {
+void Arena::tick(const TimeDiff delta) {
   for (auto s : subsystems) s.second->onTick(delta);
 }
 

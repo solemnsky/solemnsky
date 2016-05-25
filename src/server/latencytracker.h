@@ -12,8 +12,9 @@
 struct PlayerLatency {
  private:
   RollingSampler<Time> latencySampler, offsetSampler;
+
  public:
-  PlayerLatency() = default;
+  PlayerLatency();
 
   void registerPong(const Time now,
                     const Time pingTime,
@@ -29,11 +30,13 @@ class LatencyTracker: public sky::Subsystem<PlayerLatency> {
   std::map<PID, PlayerLatency> latencies;
 
  protected:
+  void registerPlayer(sky::Player &player) override final;
+  void unregisterPlayer(sky::Player &player) override final;
 
  public:
   LatencyTracker(sky::Arena &arena);
 
-  void registerPong(const Player &player,
+  void registerPong(const sky::Player &player,
                     const Time now,
                     const Time pingTime,
                     const Time pongTime);

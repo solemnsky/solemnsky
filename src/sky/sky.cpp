@@ -44,12 +44,6 @@ bool SkyDelta::verifyStructure() const {
  * Sky.
  */
 
-void Sky::onTick(const float delta) {
-  for (auto &p: participations) p.second.prePhysics();
-  physics.tick(delta);
-  for (auto &p: participations) p.second.postPhysics(delta);
-}
-
 void Sky::registerPlayerWith(Player &player,
                              const ParticipationInit &initializer) {
   participations.emplace(
@@ -76,6 +70,12 @@ void Sky::onSpawn(Player &player,
                   const sf::Vector2f &pos,
                   const float rot) {
   getPlayerData(player).spawn(tuning, pos, rot);
+}
+
+void Sky::onTick(const Time delta) {
+  for (auto &p: participations) p.second.prePhysics();
+  physics.tick(delta);
+  for (auto &p: participations) p.second.postPhysics(delta);
 }
 
 void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {

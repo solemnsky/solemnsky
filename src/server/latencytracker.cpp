@@ -4,6 +4,10 @@
  * PlayerLatency.
  */
 
+PlayerLatency::PlayerLatency() :
+    latencySampler(30),
+    offsetSampler(30) { }
+
 void PlayerLatency::registerPong(const Time now,
                                  const Time pingTime,
                                  const Time pongTime) {
@@ -23,9 +27,19 @@ Time PlayerLatency::getOffset() {
 /**
  * LatencyTracker.
  */
+void LatencyTracker::registerPlayer(sky::Player &player) {
+  latencies.emplace(std::piecewise_construct,
+                    std::forward_as_tuple(player.pid),
+                    std::forward_as_tuple());
+}
+
+void LatencyTracker::unregisterPlayer(sky::Player &player) {
+  latencies.erase(latencies.find(player.pid));
+}
+
 LatencyTracker::LatencyTracker(sky::Arena &arena) :
-    sky::Subsystem(arena) {
-  arena.forPlayers([&](Player &player) {
+    sky::Subsystem<PlayerLatency>(arena) {
+  arena.forPlayers([&](sky::Player &player) {
     registerPlayer(player);
   });
 }
@@ -39,7 +53,7 @@ void LatencyTracker::registerPong(const sky::Player &player,
 
 sky::ArenaDelta LatencyTracker::makeUpdate() {
   std::map<PID, sky::PlayerDelta> deltas;
-  arena.forPlayers([&](Player &player) {
+  arena.forPlayers([&](sky::Player &player) {
     sky::PlayerDelta delta(player.zeroDelta());
     auto latency = getPlayerData(player);
     delta.latency = latency.getLatency();
