@@ -285,6 +285,7 @@ Arena::Arena(const ArenaInit &initializer) :
     motd(initializer.motd),
     nextMap(initializer.map),
     mode(initializer.mode),
+    uptime(0),
     subsystemCaller(*this) {
   for (auto const &player : initializer.players) {
     players.emplace(std::piecewise_construct,
