@@ -91,6 +91,9 @@ add_executable(solemnsky_server
         src/server/servers/vanilla.cpp
         src/server/servers/vanilla.h
 
+        src/server/latencytracker.cpp
+        src/server/latencytracker.h
+
         src/server/main.cpp
 
         src/server/server.cpp

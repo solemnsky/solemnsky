@@ -29,7 +29,7 @@
 #include <iostream>
 
 /**
- * Core
+ * Shared state for the Server to access.
  */
 struct ServerShared {
  public:
@@ -61,6 +61,7 @@ struct ServerShared {
   // Logging.
   void logEvent(const ServerEvent &event);
   void logArenaEvent(const sky::ArenaEvent &event);
+
 };
 
 /**
