@@ -165,7 +165,7 @@ void ServerExec::processPacket(ENetPeer *client,
   }
 }
 
-void ServerExec::poll(float delta) {
+void ServerExec::poll(TimeDiff delta) {
   uptime += delta;
   shared.arena.tick(delta);
 
@@ -186,10 +186,12 @@ void ServerExec::poll(float delta) {
   if (pingTimer.cool(delta)) {
     shared.sendToClients(sky::ServerPacket::Ping(
         shared.arena.getUptime()));
+    pingTimer.reset();
   }
 
   if (latencyUpdateTimer.cool(delta)) {
     shared.registerArenaDelta(latencyTracker.makeUpdate());
+    latencyUpdateTimer.reset();
   }
 
   static ENetEvent event;

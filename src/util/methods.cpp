@@ -26,18 +26,6 @@
 #include "methods.h"
 
 /**
- * Time.
- */
-
-float toSeconds(const Time time) {
-  return time / 1000000.0f;
-}
-
-Time fromSeconds(const float seconds) {
-  return Time(std::round(seconds * 1000000.f));
-}
-
-/**
  * VecMath.
  */
 float VecMath::length(const sf::Vector2f &vec) {
