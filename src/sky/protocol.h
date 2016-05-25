@@ -81,7 +81,7 @@ struct ClientPacket: public VerifyStructure {
   ClientPacket(const Type type);
 
   Type type;
-  optional<sf::Time> pingTime, pongTime;
+  optional<Time> pingTime, pongTime;
   optional<std::string> stringData;
   optional<PlayerDelta> playerDelta;
   optional<Action> action;
@@ -89,7 +89,7 @@ struct ClientPacket: public VerifyStructure {
 
   bool verifyStructure() const override;
 
-  static ClientPacket Pong(const sf::Time pingTime, const sf::Time pongTime);
+  static ClientPacket Pong(const Time pingTime, const Time pongTime);
   static ClientPacket ReqJoin(const std::string &nickname);
   static ClientPacket ReqPlayerDelta(const PlayerDelta &playerDelta);
   static ClientPacket ReqAction(const Action &action, const bool state);
@@ -157,7 +157,7 @@ struct ServerPacket: public VerifyStructure {
   }
 
   Type type;
-  optional<sf::Time> pingTime;
+  optional<Time> pingTime;
   optional<PID> pid;
   optional<ArenaInit> arenaInit;
   optional<ArenaDelta> arenaDelta;
@@ -169,7 +169,7 @@ struct ServerPacket: public VerifyStructure {
 
   bool verifyStructure() const override;
 
-  static ServerPacket Ping(const double pingTime);
+  static ServerPacket Ping(const Time pingTime);
   static ServerPacket Init(const PID pid,
                            const ArenaInit &arenaInit,
                            const SkyHandleInit &skyInit,

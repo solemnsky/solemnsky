@@ -32,6 +32,11 @@ struct Nothing { };
 using boost::optional;
 
 /**
+ * Time: we're using 64 signed ints for all time values in the game.
+ */
+using Time = signed long long;
+
+/**
  * Cereal rules, in both meanings of the word.
  */
 template<typename Archive, typename T>
@@ -137,7 +142,7 @@ class RollingSampler {
   template<typename Result>
   Result mean() const {
     if (data.size() == 0) return 0;
-    return std::accumulate(data.begin(), data.end(), 0.0f, std::plus<float>())
+    return std::accumulate(data.begin(), data.end(), 0.0f, std::plus<Data>())
         / Result(data.size());
   }
 
@@ -154,9 +159,9 @@ class RollingSampler {
 
 struct TimeStats {
   TimeStats() = default;
-  TimeStats(const RollingSampler<sf::Time> &sampler);
+  TimeStats(const RollingSampler<Time> &sampler);
 
-  sf::Time min, mean, max;
+  Time min, mean, max;
   std::string print() const;
 };
 

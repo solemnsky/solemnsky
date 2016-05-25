@@ -47,8 +47,8 @@ bool ClientPacket::verifyStructure() const {
   return false;
 }
 
-ClientPacket ClientPacket::Pong(const sf::Time pingTime,
-                                const sf::Time pongTime) {
+ClientPacket ClientPacket::Pong(const Time pingTime,
+                                const Time pongTime) {
   ClientPacket packet(ClientPacket::Type::Pong);
   packet.pingTime = pingTime;
   packet.pongTime = pongTime;
@@ -121,7 +121,7 @@ bool ServerPacket::verifyStructure() const {
   return false;
 }
 
-ServerPacket ServerPacket::Ping(const sf::Time pingTime) {
+ServerPacket ServerPacket::Ping(const Time pingTime) {
   ServerPacket packet(ServerPacket::Type::Ping);
   packet.pingTime = pingTime;
   return packet;
