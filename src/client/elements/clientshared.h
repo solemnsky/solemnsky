@@ -74,7 +74,7 @@ private:
 
   // AppState.
   ui::AppState &appState;
-  sf::Time &uptime;
+  const Time &uptime;
 
   // State.
   Settings settings;

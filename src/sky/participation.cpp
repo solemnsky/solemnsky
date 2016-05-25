@@ -77,10 +77,8 @@ void Plane::switchStall() {
   }
 }
 
-void Plane::tickFlight(const Time delta) {
+void Plane::tickFlight(const TimeDiff delta) {
   switchStall();
-
-  const float fdelta = float(delta);
   const float velocity = state.velocity();
 
   Movement throtCtrl =
@@ -101,7 +99,7 @@ void Plane::tickFlight(const Time delta) {
     // Afterburner.
     if (throtCtrl == Movement::Up) {
       const float thrustEfficacy =
-          state.requestEnergy(tuning.energy.thrustDrain * fdelta);
+          state.requestEnergy(tuning.energy.thrustDrain * delta);
 
       state.physical.vel +=
           VecMath::fromAngle(state.physical.rot) *
@@ -122,7 +120,7 @@ void Plane::tickFlight(const Time delta) {
         (throtCtrl == Movement::Up) && state.throttle == 1;
 
     // Pick away at leftover velocity.
-    state.leftoverVel *= std::pow(tuning.flight.leftoverDamping, fdelta);
+    state.leftoverVel *= std::pow(tuning.flight.leftoverDamping, delta);
 
     // Modify airspeed.
     float speedMod = 0;
@@ -130,7 +128,7 @@ void Plane::tickFlight(const Time delta) {
         sin(toRad(state.physical.rot)) * tuning.flight.gravityEffect * delta;
     if (afterburning) {
       const float thrustEfficacity =
-          state.requestEnergy(tuning.energy.thrustDrain * fdelta);
+          state.requestEnergy(tuning.energy.thrustDrain * delta);
       state.afterburner = thrustEfficacity;
       speedMod += tuning.flight.afterburnDrive * delta * thrustEfficacity;
     }
@@ -138,7 +136,7 @@ void Plane::tickFlight(const Time delta) {
 
     approach(state.airspeed,
              (float) state.throttle * tuning.flight.throttleInfluence,
-             tuning.flight.throttleEffect * fdelta);
+             tuning.flight.throttleEffect * delta);
 
     float targetSpeed = state.airspeed * tuning.flight.airspeedFactor;
 
@@ -148,9 +146,8 @@ void Plane::tickFlight(const Time delta) {
   }
 }
 
-void Plane::tickWeapons(const Time delta) {
-  const float fdelta = float(delta);
-  state.primaryCooldown.cool(fdelta);
+void Plane::tickWeapons(const TimeDiff delta) {
+  state.primaryCooldown.cool(delta);
   if (state.primaryCooldown
       && this->controls.getState<Action::Primary>()) {
     if (state.requestDiscreteEnergy(
@@ -182,7 +179,7 @@ void Plane::prePhysics() {
   writeToBody();
 }
 
-void Plane::postPhysics(const Time delta) {
+void Plane::postPhysics(const TimeDiff delta) {
   readFromBody();
   tickFlight(delta);
   tickWeapons(delta);

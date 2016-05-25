@@ -61,6 +61,12 @@ void Sky::unregisterPlayer(Player &player) {
   participations.erase(participations.find(player.pid));
 }
 
+void Sky::onTick(const TimeDiff delta) {
+  for (auto &p: participations) p.second.prePhysics();
+  physics.tick(delta);
+  for (auto &p: participations) p.second.postPhysics(delta);
+}
+
 void Sky::onAction(Player &player, const Action action, const bool state) {
   getPlayerData(player).doAction(action, state);
 }
@@ -70,12 +76,6 @@ void Sky::onSpawn(Player &player,
                   const sf::Vector2f &pos,
                   const float rot) {
   getPlayerData(player).spawn(tuning, pos, rot);
-}
-
-void Sky::onTick(const Time delta) {
-  for (auto &p: participations) p.second.prePhysics();
-  physics.tick(delta);
-  for (auto &p: participations) p.second.postPhysics(delta);
 }
 
 void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {

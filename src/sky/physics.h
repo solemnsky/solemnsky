@@ -102,7 +102,7 @@ class Physics {
 
   const sf::Vector2f dims;
 
-  void tick(const Time delta);
+  void tick(const TimeDiff delta);
 
   // Unit conversion.
   sf::Vector2f toGameVec(b2Vec2 vec) const;
