@@ -71,7 +71,7 @@ const optional<sky::Sky> &ArenaConnection::getSky() const {
 }
 
 /**
- * MultiplayerConnection.
+ * MultiplayerCore.
  */
 
 void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
@@ -98,9 +98,11 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
     return;
   }
 
-  // we're in the arena
+  // we're in the arena, conn is instantiated
   switch (packet.type) {
-    case ServerPacket::Type::Pong: {
+    case ServerPacket::Type::Ping: {
+      transmit(sky::ClientPacket::Pong(
+          packet.pingTime.get(), conn->arena.getUptime()));
       break;
     }
 
@@ -141,6 +143,41 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
     default:
       break;
   }
+}
+
+bool MultiplayerCore::pollNetwork(const TimeDiff delta) {
+  static ENetEvent event;
+  event = host.poll(delta);
+
+  if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
+    server = nullptr;
+    appLog("Disconnected from server!", LogOrigin::Client);
+    disconnected = true;
+    return true;
+  }
+
+  if (disconnecting) {
+    if (disconnectTimeout.cool(delta)) {
+      appLog("Disconnected from unresponsive server!", LogOrigin::Client);
+      disconnected = true;
+    }
+    return true;
+  }
+
+  if (!server) {
+    if (event.type == ENET_EVENT_TYPE_CONNECT) {
+      server = event.peer;
+      appLog("Allocated connection!", LogOrigin::Client);
+      return false;
+    }
+  } else {
+    if (event.type == ENET_EVENT_TYPE_RECEIVE) {
+      if (const auto reception = telegraph.receive(event.packet))
+        processPacket(*reception);
+    }
+  }
+
+  return event.type == ENET_EVENT_TYPE_NONE;
 }
 
 MultiplayerCore::MultiplayerCore(
@@ -236,43 +273,15 @@ void MultiplayerCore::disconnect() {
 void MultiplayerCore::poll(const float delta) {
   if (disconnected) return;
 
-  event = host.poll(delta);
-  if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
-    server = nullptr;
-    appLog("Disconnected from server!", LogOrigin::Client);
-    disconnected = true;
-    return;
+  if (server && !askedConnection) {
+    // we have a link but haven't sent an arena connection request
+    appLog("Asking to join arena...", LogOrigin::Client);
+    transmit(sky::ClientPacket::ReqJoin(shared.settings.nickname));
+    askedConnection = true;
   }
 
-  if (disconnecting) {
-    if (disconnectTimeout.cool(delta)) {
-      appLog("Disconnected from unresponsive server!", LogOrigin::Client);
-      disconnected = true;
-    }
-    return;
-  }
-
-  if (!server) {
-    // still trying to connect to the server...
-    if (event.type == ENET_EVENT_TYPE_CONNECT) {
-      server = event.peer;
-      appLog("Allocated connection!", LogOrigin::Client);
-    }
-  } else {
-    // connected
-    if (!askedConnection) {
-      // we have a link but haven't sent an arena connection request
-      appLog("Asking to join arena...", LogOrigin::Client);
-      transmit(sky::ClientPacket::ReqJoin(shared.settings.nickname));
-      askedConnection = true;
-      return;
-    }
-
-    if (event.type == ENET_EVENT_TYPE_RECEIVE) {
-      if (const auto reception = telegraph.receive(event.packet))
-        processPacket(*reception);
-    }
-  }
+  if (pollNetwork(delta)) return;
+  while (!pollNetwork(0)) { }
 }
 
 void MultiplayerCore::tick(const float delta) {

@@ -77,9 +77,8 @@ void Plane::switchStall() {
   }
 }
 
-void Plane::tickFlight(const float delta) {
+void Plane::tickFlight(const TimeDiff delta) {
   switchStall();
-
   const float velocity = state.velocity();
 
   Movement throtCtrl =
@@ -104,7 +103,7 @@ void Plane::tickFlight(const float delta) {
 
       state.physical.vel +=
           VecMath::fromAngle(state.physical.rot) *
-              (delta * tuning.stall.thrust * thrustEfficacy);
+              float(delta * tuning.stall.thrust * thrustEfficacy);
       state.afterburner = thrustEfficacy;
     }
 
@@ -112,8 +111,8 @@ void Plane::tickFlight(const float delta) {
     float excessVel = velocity - tuning.stall.maxVel;
     float dampingFactor = tuning.stall.maxVel / velocity;
     if (excessVel > 0)
-      state.physical.vel = state.physical.vel * dampingFactor *
-          std::pow(tuning.stall.damping, delta);
+      state.physical.vel = state.physical.vel *
+          float(dampingFactor * std::pow(tuning.stall.damping, delta));
   } else {
     // Modify throttle and afterburner according to controls.
     state.throttle += movementValue(throtCtrl) * delta;
@@ -147,7 +146,7 @@ void Plane::tickFlight(const float delta) {
   }
 }
 
-void Plane::tickWeapons(const float delta) {
+void Plane::tickWeapons(const TimeDiff delta) {
   state.primaryCooldown.cool(delta);
   if (state.primaryCooldown
       && this->controls.getState<Action::Primary>()) {
@@ -180,7 +179,7 @@ void Plane::prePhysics() {
   writeToBody();
 }
 
-void Plane::postPhysics(const float delta) {
+void Plane::postPhysics(const TimeDiff delta) {
   readFromBody();
   tickFlight(delta);
   tickWeapons(delta);

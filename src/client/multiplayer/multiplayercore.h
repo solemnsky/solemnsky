@@ -96,8 +96,8 @@ class ConnectionListener {
 };
 
 /**
- * The state of the multiplayer client, allocated for Multiplayer for use by
- * MultiplayerView.
+ * The core state of the multiplayer client, allocated for Multiplayer for
+ * use by MultiplayerView.
  */
 class MultiplayerCore: public ClientComponent {
   friend class MultiplayerLogger;
@@ -113,8 +113,6 @@ class MultiplayerCore: public ClientComponent {
   Cooldown disconnectTimeout;
 
   tg::Telegraph<sky::ServerPacket> telegraph;
-  ENetEvent event;
-
   tg::Host host;
   ENetPeer *server;
   bool disconnecting, // trying to disconnect
@@ -122,6 +120,8 @@ class MultiplayerCore: public ClientComponent {
 
   // Packet processing submethod.
   void processPacket(const sky::ServerPacket &packet);
+  // (returns true when the queue has been exhausted)
+  bool pollNetwork(const TimeDiff delta);
 
  public:
   MultiplayerCore(

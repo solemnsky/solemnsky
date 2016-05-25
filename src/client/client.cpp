@@ -87,7 +87,6 @@ void Client::tick(const float delta) {
     profilerCooldown.reset();
   }
 
-  shared.uptime += delta;
   shared.ui.tick(delta);
 
   if (shared.game) {

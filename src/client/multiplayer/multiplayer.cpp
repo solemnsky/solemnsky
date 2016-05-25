@@ -100,20 +100,31 @@ void Multiplayer::doExit() {
 void Multiplayer::printDebug(Printer &p) {
   if (core.conn) {
     const bool active = core.conn->skyHandle.isActive();
-    p.printLn(std::string("game active: ") + (active ? "yes" : "no"));
-    if (active)
-      p.printLn("current map: " + core.conn->getSky()->getMap().name);
-    p.printLn("next map: " + core.conn->arena.getNextMap());
-    p.printLn("player ID: " +
-        std::to_string(core.conn->player.pid));
-    p.printLn("player count: " +
-        std::to_string(core.conn->arena.getPlayers().size()));
+    p.printLn(std::string("game active: ")
+                  + (active ? "yes" : "no"));
+
+    if (active) {
+      p.printLn("current map: "
+                    + core.conn->getSky()->getMap().name);
+    }
+    p.printLn("next map: "
+                  + core.conn->arena.getNextMap());
+    p.printLn("player ID: "
+                  + std::to_string(core.conn->player.pid));
+    p.printLn("player count: "
+                  + std::to_string(core.conn->arena.getPlayers().size()));
+    p.printLn("arena uptime: "
+                  + showTime(core.conn->arena.getUptime()));
 
     p.breakLine();
-    p.printLn("inbound bandwidth (kB/s): " +
-        std::to_string(core.getHost().incomingBandwidth()));
-    p.printLn("outbound bandwidth (kB/s): " +
-        std::to_string(core.getHost().outgoingBandwidth()));
+    p.printLn("inbound bandwidth (kB/s): "
+                  + showKbps(core.getHost().incomingBandwidth()));
+    p.printLn("outbound bandwidth (kB/s): "
+                  + showKbps(core.getHost().outgoingBandwidth()));
+    p.printLn("latency: "
+                  + showTimeDiff(core.conn->player.getLatency()));
+    p.printLn("clock offset: "
+                  + showTimeDiff(core.conn->player.getClockOffset()));
   } else {
     p.printLn("not connected...");
   }

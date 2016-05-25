@@ -25,6 +25,24 @@
 #include <cmath>
 #include "methods.h"
 
+/**
+ * Displaying our float units.
+ */
+std::string showTime(const Time delta) {
+  return std::to_string(delta);
+}
+
+std::string showTimeDiff(const TimeDiff delta) {
+  return std::to_string(delta);
+}
+
+std::string showKbps(const Kbps rate) {
+  return std::to_string(rate);
+}
+
+/**
+ * VecMath.
+ */
 float VecMath::length(const sf::Vector2f &vec) {
   return (float) sqrt(vec.x * vec.x + vec.y * vec.y);
 }

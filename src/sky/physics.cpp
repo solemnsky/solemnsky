@@ -107,9 +107,10 @@ Physics::~Physics() {
   }
 }
 
-void Physics::tick(const float delta) {
+void Physics::tick(const TimeDiff delta) {
   world.ClearForces();
-  world.Step(delta, settings.velocityIterations, settings.positionIterations);
+  world.Step(delta,
+             settings.velocityIterations, settings.positionIterations);
 }
 
 sf::Vector2f Physics::toGameVec(b2Vec2 vec) const {
@@ -172,13 +173,13 @@ b2PolygonShape Physics::polygonShape(const std::vector<sf::Vector2f> &verticies)
 b2ChainShape Physics::chainLoopShape(const std::vector<sf::Vector2f> &verticies) {
   b2ChainShape shape;
   b2Vec2 *points = new b2Vec2[verticies.size() + 1];
-  points[0] = toPhysVec(verticies[verticies.size()-1]);
+  points[0] = toPhysVec(verticies[verticies.size() - 1]);
   size_t i = 1;
   for (const auto &vertex : verticies) {
     points[i] = toPhysVec(vertex);
     ++i;
   }
-  shape.CreateChain(points, (int32)(verticies.size() + 1));
+  shape.CreateChain(points, (int32) (verticies.size() + 1));
   delete[] points;
   return shape;
 }

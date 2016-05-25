@@ -144,11 +144,11 @@ ENetEvent Host::poll(const float delta) {
   return event;
 }
 
-float Host::incomingBandwidth() const {
+Kbps Host::incomingBandwidth() const {
   return lastIncomingBandwidth;
 }
 
-float Host::outgoingBandwidth() const {
+Kbps Host::outgoingBandwidth() const {
   return lastOutgoingBandwidth;
 }
 

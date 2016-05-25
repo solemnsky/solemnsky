@@ -75,7 +75,7 @@ namespace pp {
 	}
 
 	int Poly::GetOrientation() {
-		long i1, i2;
+		size_t i1, i2;
 		double area = 0;
 		for (i1 = 0; i1 < points.size(); i1++) {
 			i2 = i1 + 1;
@@ -96,7 +96,7 @@ namespace pp {
 
 	void Poly::Invert() {
     auto invpoints = vector<Point>(points.size());
-		for (auto i = 0; i < points.size(); i++) {
+		for (size_t i = 0; i < points.size(); i++) {
 			invpoints[i] = points[points.size() - i - 1];
 		}
 		points = invpoints;

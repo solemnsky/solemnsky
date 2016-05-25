@@ -50,7 +50,7 @@ class LifeSubsystem: public sky::Subsystem<bool> {
 
 class CounterSubsystem: public sky::Subsystem<float> {
  private:
-  std::map<PID, float> myData;
+  std::map<PID, TimeDiff> myData;
   LifeSubsystem &lifeSubsystem;
 
  protected:
@@ -64,7 +64,7 @@ class CounterSubsystem: public sky::Subsystem<float> {
     myData.erase(player.pid);
   }
 
-  void onTick(const float delta) override {
+  void onTick(const TimeDiff delta) override {
     arena.forPlayers([&](sky::Player &player) {
       if (lifeSubsystem.getLifeData(player))
         getPlayerData(player) += delta;
