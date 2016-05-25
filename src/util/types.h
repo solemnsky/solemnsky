@@ -144,7 +144,8 @@ class RollingSampler {
   template<typename Result>
   Result mean() const {
     if (data.size() == 0) return 0;
-    return std::accumulate(data.begin(), data.end(), 0.0f, std::plus<Data>())
+    return std::accumulate(data.begin(), data.end(),
+                           Data(0), std::plus<Data>())
         / Result(data.size());
   }
 

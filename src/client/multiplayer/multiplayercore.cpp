@@ -101,7 +101,8 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
   // we're in the arena, conn is instantiated
   switch (packet.type) {
     case ServerPacket::Type::Ping: {
-      transmit(sky::ClientPacket::Pong(packet.pingTime.get(), shared.uptime));
+      transmit(sky::ClientPacket::Pong(
+          packet.pingTime.get(), conn->arena.getUptime()));
       break;
     }
 

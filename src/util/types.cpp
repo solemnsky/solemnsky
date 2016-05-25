@@ -31,8 +31,8 @@ TimeStats::TimeStats(const RollingSampler<TimeDiff> &sampler) :
     max(sampler.max()) { }
 
 std::string TimeStats::print() const {
-  return showTimeDiff(min) + ";"
-      + showTimeDiff(mean) + ";"
+  return showTimeDiff(mean) + ":"
+      + showTimeDiff(min) + "->"
       + showTimeDiff(max);
 }
 
