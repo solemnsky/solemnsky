@@ -29,8 +29,8 @@ ClientPacket::ClientPacket(const Type type) : type(type) { }
 
 bool ClientPacket::verifyStructure() const {
   switch (type) {
-    case Type::Ping:
-      return verifyOptionals(pingTime);
+    case Type::Pong:
+      return verifyOptionals(pingTime, pongTime);
     case Type::ReqJoin:
       return verifyOptionals(stringData);
     case Type::ReqPlayerDelta:
@@ -47,9 +47,11 @@ bool ClientPacket::verifyStructure() const {
   return false;
 }
 
-ClientPacket ClientPacket::Ping(const double pingTime) {
-  ClientPacket packet(ClientPacket::Type::Ping);
+ClientPacket ClientPacket::Pong(const sf::Time pingTime,
+                                const sf::Time pongTime) {
+  ClientPacket packet(ClientPacket::Type::Pong);
   packet.pingTime = pingTime;
+  packet.pongTime = pongTime;
   return packet;
 }
 
@@ -99,8 +101,8 @@ ServerPacket::ServerPacket(const Type type) : type(type) { }
 
 bool ServerPacket::verifyStructure() const {
   switch (type) {
-    case Type::Pong:
-      return verifyOptionals(pingTime, pongTime);
+    case Type::Ping:
+      return verifyOptionals(pingTime);
     case Type::Init:
       return verifyOptionals(pid, arenaInit, skyInit, scoreInit);
     case Type::DeltaArena:
@@ -119,10 +121,9 @@ bool ServerPacket::verifyStructure() const {
   return false;
 }
 
-ServerPacket ServerPacket::Pong(const double pingTime, const double pongTime) {
-  ServerPacket packet(ServerPacket::Type::Pong);
+ServerPacket ServerPacket::Ping(const sf::Time pingTime) {
+  ServerPacket packet(ServerPacket::Type::Ping);
   packet.pingTime = pingTime;
-  packet.pongTime = pongTime;
   return packet;
 }
 

@@ -56,12 +56,14 @@ struct PlayerDelta {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(nickname, admin, team);
+    ar(nickname, admin, team, latency, clockOffset);
   }
 
   optional<std::string> nickname;
   bool admin;
   optional<Team> team;
+  optional<sf::Time> latency, clockOffset;
+
 };
 
 /**
@@ -71,12 +73,16 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
   template<typename T>
   friend
   class Subsystem;
+  friend class Arena;
  private:
   // State.
   std::string nickname;
   bool admin;
   Team team;
   std::map<PID, void *> data; // this is a good and not a bad idea
+
+  // Timing stats.
+  sf::Time latency, clockOffset;
 
  public:
   Player() = delete;
@@ -95,6 +101,8 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
   std::string getNickname() const;
   bool isAdmin() const;
   Team getTeam() const;
+  sf::Time getLatency() const;
+  sf::Time getClockOffset() const;
 
   void doAction(const Action action, const bool state);
   void spawn(const PlaneTuning &tuning,
@@ -236,7 +244,7 @@ struct ArenaDelta: public VerifyStructure {
         break;
       }
       case Type::Delta: {
-        ar(delta);
+        ar(playerDeltas);
         break;
       }
       case Type::Motd: {
@@ -257,16 +265,18 @@ struct ArenaDelta: public VerifyStructure {
   Type type;
   optional<PID> quit;
   optional<PlayerInitializer> join;
-  optional<std::pair<PID, PlayerDelta>> delta;
+  optional<std::map<PID, PlayerDelta>> playerDeltas;
   optional<std::string> motd;
   optional<ArenaMode> mode;
   optional<MapName> map;
+  optional<std::map<PID, std::pair<sf::Time, sf::Time>>> latencyData;
 
   bool verifyStructure() const override;
 
   static ArenaDelta Quit(const PID pid);
   static ArenaDelta Join(const PlayerInitializer &initializer);
-  static ArenaDelta Delta(const PID, const PlayerDelta &delta);
+  static ArenaDelta Delta(const PID, const PlayerDelta &playerDelta);
+  static ArenaDelta Delta(const std::map<PID, PlayerDelta> &playerDeltas);
   static ArenaDelta Motd(const std::string &motd);
   static ArenaDelta Mode(const ArenaMode mode);
   static ArenaDelta MapChange(const MapName &name);
@@ -297,6 +307,7 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   // Managing players.
   Player &joinPlayer(const PlayerInitializer &initializer);
   void quitPlayer(Player &player);
+  void applyPlayerDelta(const PID pid, const PlayerDelta &playerDelta);
 
  public:
   Arena() = delete;

@@ -40,6 +40,8 @@ void Player::applyDelta(const PlayerDelta &delta) {
   if (delta.nickname) nickname = *delta.nickname;
   admin = delta.admin;
   if (delta.team) team = *delta.team;
+  if (delta.latency) latency = *delta.latency;
+  if (delta.clockOffset) latency = *delta.clockOffset;
 }
 
 PlayerInitializer Player::captureInitializer() const {
@@ -69,6 +71,13 @@ Team Player::getTeam() const {
   return team;
 }
 
+sf::Time Player::getLatency() const {
+  return latency;
+}
+
+sf::Time Player::getClockOffset() const {
+  return clockOffset;
+}
 
 void Player::doAction(const Action action, const bool state) {
   for (auto s : arena.subsystems) s.second->onAction(*this, action, state);
@@ -93,7 +102,7 @@ bool ArenaDelta::verifyStructure() const {
     case Type::Join:
       return verifyOptionals(join);
     case Type::Delta:
-      return verifyOptionals(delta);
+      return verifyOptionals(playerDeltas);
     case Type::Motd:
       return verifyOptionals(motd);
     case Type::Mode:
@@ -116,10 +125,17 @@ ArenaDelta ArenaDelta::Join(const PlayerInitializer &initializer) {
   return delta;
 }
 
-ArenaDelta ArenaDelta::Delta(const PID pid, const PlayerDelta &delta) {
-  ArenaDelta adelta(Type::Delta);
-  adelta.delta = std::pair<PID, PlayerDelta>(pid, delta);
-  return adelta;
+ArenaDelta ArenaDelta::Delta(const PID pid, const PlayerDelta &playerDelta) {
+  ArenaDelta delta(Type::Delta);
+  delta.playerDeltas.emplace();
+  delta.playerDeltas->emplace(pid, playerDelta);
+  return delta;
+}
+
+ArenaDelta ArenaDelta::Delta(const std::map<PID, PlayerDelta> &playerDeltas) {
+  ArenaDelta delta(Type::Delta);
+  delta.playerDeltas = playerDeltas;
+  return delta;
 }
 
 ArenaDelta ArenaDelta::Motd(const std::string &motd) {
@@ -217,6 +233,48 @@ void Arena::logEvent(const ArenaEvent &event) const {
   for (auto l : loggers) l->onEvent(event);
 }
 
+Player &Arena::joinPlayer(const PlayerInitializer &initializer) {
+  if (Player *oldPlayer = getPlayer(initializer.pid)) quitPlayer(*oldPlayer);
+  players.emplace(initializer.pid, Player(*this, initializer));
+  Player &newPlayer = players.at(initializer.pid);
+  for (auto s : subsystems) {
+    s.second->registerPlayer(newPlayer);
+    s.second->onJoin(newPlayer);
+  }
+  logEvent(ArenaEvent::Join(newPlayer.getNickname()));
+  return newPlayer;
+}
+
+void Arena::quitPlayer(Player &player) {
+  for (auto s : subsystems) {
+    s.second->onQuit(player);
+    s.second->unregisterPlayer(player);
+  }
+  logEvent(ArenaEvent::Quit(player.getNickname()));
+  players.erase(player.pid);
+}
+
+void Arena::applyPlayerDelta(const PID pid, const PlayerDelta &playerDelta) {
+  if (Player *player = getPlayer(pid)) {
+    const auto oldNick = player->getNickname();
+    const auto oldTeam = player->getTeam();
+
+    player->applyDelta(playerDelta);
+
+    const auto newNick = player->getNickname();
+    const auto newTeam = player->getTeam();
+
+    if (newNick != oldNick)
+      logEvent(ArenaEvent::NickChange(oldNick, newNick));
+    if (newTeam != oldTeam)
+      logEvent(ArenaEvent::TeamChange(newNick, oldTeam, newTeam));
+
+    for (auto &pair : subsystems) {
+      pair.second->onDelta(*player, playerDelta);
+    }
+  }
+}
+
 Arena::Arena(const ArenaInit &initializer) :
     Networked(initializer),
     name(initializer.name),
@@ -248,27 +306,8 @@ void Arena::applyDelta(const ArenaDelta &delta) {
     }
 
     case ArenaDelta::Type::Delta: {
-      const PID &pid = delta.delta->first;
-      const PlayerDelta &playerDelta = delta.delta->second;
-
-      if (Player *player = getPlayer(pid)) {
-        const auto oldNick = player->getNickname();
-        const auto oldTeam = player->getTeam();
-
-        player->applyDelta(playerDelta);
-
-        const auto newNick = player->getNickname();
-        const auto newTeam = player->getTeam();
-
-        if (newNick != oldNick)
-          logEvent(ArenaEvent::NickChange(oldNick, newNick));
-        if (newTeam != oldTeam)
-          logEvent(ArenaEvent::TeamChange(newNick, oldTeam, newTeam));
-
-        for (auto &pair : subsystems) {
-          pair.second->onDelta(*player, playerDelta);
-        }
-      }
+      for (const auto &pair : delta.playerDeltas.get())
+        applyPlayerDelta(pair.first, pair.second);
       break;
     }
 
@@ -291,6 +330,7 @@ void Arena::applyDelta(const ArenaDelta &delta) {
       logEvent(ArenaEvent::MapChange(nextMap));
       for (auto s : subsystems) s.second->onMapChange();
     }
+
   }
 }
 
@@ -303,27 +343,6 @@ ArenaInit Arena::captureInitializer() const {
   initializer.motd = motd;
   initializer.mode = mode;
   return initializer;
-}
-
-Player &Arena::joinPlayer(const PlayerInitializer &initializer) {
-  if (Player *oldPlayer = getPlayer(initializer.pid)) quitPlayer(*oldPlayer);
-  players.emplace(initializer.pid, Player(*this, initializer));
-  Player &newPlayer = players.at(initializer.pid);
-  for (auto s : subsystems) {
-    s.second->registerPlayer(newPlayer);
-    s.second->onJoin(newPlayer);
-  }
-  logEvent(ArenaEvent::Join(newPlayer.getNickname()));
-  return newPlayer;
-}
-
-void Arena::quitPlayer(Player &player) {
-  for (auto s : subsystems) {
-    s.second->onQuit(player);
-    s.second->unregisterPlayer(player);
-  }
-  logEvent(ArenaEvent::Quit(player.getNickname()));
-  players.erase(player.pid);
 }
 
 Player *Arena::getPlayer(const PID pid) {

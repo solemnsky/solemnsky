@@ -55,10 +55,10 @@ void load(Archive &ar, optional<T> &x) {
 #include <cereal/cereal.hpp>
 
 namespace sf {
-  template<typename Archive>
-  void serialize(Archive &ar, sf::Vector2f &x) {
-    ar(cereal::make_nvp("x",x.x), cereal::make_nvp("y",x.y));
-  }
+template<typename Archive>
+void serialize(Archive &ar, sf::Vector2f &x) {
+  ar(cereal::make_nvp("x", x.x), cereal::make_nvp("y", x.y));
+}
 }
 
 #include <cereal/types/string.hpp>
@@ -115,30 +115,48 @@ bool approach(T &x, const T target, const T amount) {
 }
 
 /**
- * RollingSampler.
+ * Maintains a rolling sampling window, which can be queried for statistics.
  * TODO: optimize this if necessary
  */
+template<typename Data>
 class RollingSampler {
  private:
-  std::vector<float> data;
+  std::vector<Data> data;
   const unsigned int maxMemory;
 
  public:
   RollingSampler() = delete;
-  RollingSampler(const unsigned int maxMemory);
+  RollingSampler(const unsigned int maxMemory) :
+      maxMemory(maxMemory) { }
 
-  void push(const float value);
+  void push(const Data value) {
+    if (data.size() >= maxMemory) data.erase(data.begin());
+    data.push_back(value);
+  }
 
-  float mean() const;
-  float max() const;
-  float min() const;
+  template<typename Result>
+  Result mean() const {
+    if (data.size() == 0) return 0;
+    return std::accumulate(data.begin(), data.end(), 0.0f, std::plus<float>())
+        / Result(data.size());
+  }
+
+  Data max() const {
+    if (data.size() == 0) return 0;
+    return *std::max_element(data.begin(), data.end());
+  }
+
+  Data min() const {
+    if (data.size() == 0) return 0;
+    return *std::min_element(data.begin(), data.end());
+  }
 };
 
-struct SamplerSnapshot {
-  SamplerSnapshot();
-  SamplerSnapshot(const RollingSampler &sampler);
+struct TimeStats {
+  TimeStats() = default;
+  TimeStats(const RollingSampler<sf::Time> &sampler);
 
-  float min, mean, max;
+  sf::Time min, mean, max;
   std::string print() const;
 };
 
@@ -238,7 +256,7 @@ struct Angle {
   Angle(const sf::Vector2f &);
 
   template<typename Archive>
-  void serialize(Archive &ar) { ar(cereal::make_nvp("angle",value.value)); }
+  void serialize(Archive &ar) { ar(cereal::make_nvp("angle", value.value)); }
 
   Angle &operator=(const float x);
   Angle &operator+=(const float x);
