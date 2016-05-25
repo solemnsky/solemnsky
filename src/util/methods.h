@@ -28,6 +28,7 @@
 /**
  * Displaying our float units.
  */
+std::string showTime(const Time delta);
 std::string showTimeDiff(const TimeDiff delta);
 std::string showKbps(const Kbps rate);
 

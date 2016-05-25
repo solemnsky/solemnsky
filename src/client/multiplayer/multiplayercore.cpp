@@ -77,7 +77,28 @@ const optional<sky::Sky> &ArenaConnection::getSky() const {
 void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
   using namespace sky;
 
-  // we're in the arena
+  if (!conn) {
+    // waiting for the arena connection request to be accepted
+    if (packet.type == ServerPacket::Type::Init) {
+      appLog("Loading arena...", LogOrigin::Client);
+      conn.emplace(
+          packet.pid.get(),
+          packet.arenaInit.get(),
+          packet.skyInit.get(),
+          packet.scoreInit.get());
+      proxyLogger.emplace(conn->arena, *this);
+      proxySubsystem.emplace(conn->arena, *this);
+      appLog("Joined arena!", LogOrigin::Client);
+      listener.onConnect();
+
+      logClientEvent(ClientEvent::Connect(
+          conn->arena.getName(),
+          tg::printAddress(host.getPeers()[0]->address)));
+    }
+    return;
+  }
+
+  // we're in the arena, conn is instantiated
   switch (packet.type) {
     case ServerPacket::Type::Ping: {
       transmit(sky::ClientPacket::Pong(packet.pingTime.get(), shared.uptime));

@@ -120,7 +120,6 @@ class ServerExec {
 
  private:
   tg::UsageFlag flag; // for enet global state
-  double uptime;
 
   // Networking state.
   tg::Host host;

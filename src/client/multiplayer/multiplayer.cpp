@@ -107,13 +107,14 @@ void Multiplayer::printDebug(Printer &p) {
       p.printLn("current map: "
                     + core.conn->getSky()->getMap().name);
     }
-
     p.printLn("next map: "
                   + core.conn->arena.getNextMap());
     p.printLn("player ID: "
                   + std::to_string(core.conn->player.pid));
     p.printLn("player count: "
                   + std::to_string(core.conn->arena.getPlayers().size()));
+    p.printLn("arena uptime: "
+                  + showTime(core.conn->arena.getUptime()));
 
     p.breakLine();
     p.printLn("inbound bandwidth (kB/s): "

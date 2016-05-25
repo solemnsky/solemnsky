@@ -22,24 +22,18 @@
 #include "methods.h"
 
 /**
- * RollingSampler.
- */
-
-/**
  * TimeStats.
  */
 
-TimeStats::TimeStats(const RollingSampler<Time> &sampler) :
+TimeStats::TimeStats(const RollingSampler<TimeDiff> &sampler) :
     min(sampler.min()),
-    mean(std::round(sampler.mean<double>())),
+    mean(std::round(sampler.mean<TimeDiff>())),
     max(sampler.max()) { }
 
-std::string printMs(const Time ms) {
-  return std::to_string(int(ms / 1000000.0f));
-}
-
 std::string TimeStats::print() const {
-  return printMs(min) + ";" + printMs(mean) + ";" + printMs(max);
+  return showTimeDiff(min) + ";"
+      + showTimeDiff(mean) + ";"
+      + showTimeDiff(max);
 }
 
 /**

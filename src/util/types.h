@@ -161,9 +161,9 @@ class RollingSampler {
 
 struct TimeStats {
   TimeStats() = default;
-  TimeStats(const RollingSampler<Time> &sampler);
+  TimeStats(const RollingSampler<TimeDiff> &sampler);
 
-  Time min, mean, max;
+  TimeDiff min, mean, max;
   std::string print() const;
 };
 
