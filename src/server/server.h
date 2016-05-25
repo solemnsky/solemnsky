@@ -127,11 +127,14 @@ class ServerExec {
   tg::Telegraph<sky::ClientPacket> telegraph;
   ServerShared shared;
 
+  // Packet scheduling.
+  Cooldown skyDeltaTimer,
+      scoreDeltaTimer,
+      pingTimer,
+      latencyUpdateTimer;
+
   // Attached server.
   std::unique_ptr<ServerListener> server;
-
-  // Packet scheduling.
-  Cooldown skyDeltaTimer, scoreDeltaTimer, pingTimer;
 
   // Subsystems.
   ServerLogger logger;

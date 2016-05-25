@@ -114,6 +114,7 @@ void Multiplayer::printDebug(Printer &p) {
         std::to_string(core.getHost().incomingBandwidth()));
     p.printLn("outbound bandwidth (kB/s): " +
         std::to_string(core.getHost().outgoingBandwidth()));
+    p.printLn("latency: " + std::to_string(core.conn->player.getLatency()));
   } else {
     p.printLn("not connected...");
   }
