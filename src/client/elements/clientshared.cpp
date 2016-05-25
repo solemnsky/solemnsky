@@ -75,7 +75,9 @@ bool ClientUiState::menuFocused() const {
  */
 
 ClientShared::ClientShared(ui::AppState &appState, Client &client) :
-    client(client), appState(appState) { }
+    client(client),
+    appState(appState),
+    uptime(appState.uptime) { }
 
 template<typename T>
 optional<std::pair<T, bool>>

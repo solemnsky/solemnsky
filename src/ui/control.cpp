@@ -59,11 +59,11 @@ Control::Control(AppState &appState) :
     appState(appState),
     quitting(false) { }
 
-void Control::poll(const float delta) {
+void Control::poll(const TimeDiff delta) {
   for (auto child : children) child->poll(delta);
 }
 
-void Control::tick(const float delta) {
+void Control::tick(const TimeDiff delta) {
   for (auto child : children) child->tick(delta);
 }
 
@@ -140,15 +140,15 @@ sf::Event transformEvent(const sf::Transform trans,
  */
 
 void ControlExec::tick() {
-  const sf::Time cycleDelta = cycleClock.restart();
+  const TimeDiff cycleDelta = cycleClock.restart().asSeconds();
   profiler.cycleTime.push(cycleDelta);
+  uptime += Time(cycleDelta);
 
   profileClock.restart();
   rollingTickTime += cycleDelta;
   ctrl->poll(cycleDelta);
   while (rollingTickTime > tickStep) {
     ctrl->tick(tickStep);
-    uptime += tickStep;
     rollingTickTime -= tickStep;
   }
 

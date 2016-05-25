@@ -62,7 +62,7 @@ struct PlayerDelta {
   optional<std::string> nickname;
   bool admin;
   optional<Team> team;
-  optional<Time> latency, clockOffset;
+  optional<TimeDiff> latency, clockOffset;
 
 };
 
@@ -82,7 +82,7 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
   std::map<PID, void *> data; // this is a good and not a bad idea
 
   // Timing stats.
-  Time latency, clockOffset;
+  TimeDiff latency, clockOffset;
 
  public:
   Player() = delete;

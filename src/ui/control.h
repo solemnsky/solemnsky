@@ -83,8 +83,8 @@ class Control {
   bool quitting;
 
   // Callbacks.
-  virtual void poll(const float delta);
-  virtual void tick(const float delta);
+  virtual void poll(const TimeDiff delta);
+  virtual void tick(const TimeDiff delta);
   virtual void render(Frame &f);
   virtual bool handle(const sf::Event &event);
   virtual void reset();
@@ -106,11 +106,11 @@ class ControlExec {
   sf::RenderWindow window;
   Frame frame;
   Cooldown resizeCooldown;
-  sf::Time uptime;
+  Time uptime;
 
   ui::Profiler profiler;
-  const float tickStep;
-  float rollingTickTime;
+  const TimeDiff tickStep;
+  TimeDiff rollingTickTime;
   sf::Clock cycleClock, profileClock;
 
   AppState appState;
