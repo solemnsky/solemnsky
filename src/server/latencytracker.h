@@ -2,7 +2,6 @@
  * Latency recording subsystem for use by ServerExec.
  */
 #pragma once
-
 #include "sky/arena.h"
 #include "util/types.h"
 
@@ -37,7 +36,6 @@ class LatencyTracker: public sky::Subsystem<PlayerLatency> {
   LatencyTracker(sky::Arena &arena);
 
   void registerPong(const sky::Player &player,
-                    const Time now,
                     const Time pingTime,
                     const Time pongTime);
 

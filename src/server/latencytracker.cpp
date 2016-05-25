@@ -45,10 +45,9 @@ LatencyTracker::LatencyTracker(sky::Arena &arena) :
 }
 
 void LatencyTracker::registerPong(const sky::Player &player,
-                                  const Time now,
                                   const Time pingTime,
                                   const Time pongTime) {
-  getPlayerData(player).registerPong(now, pingTime, pongTime);
+  getPlayerData(player).registerPong(arena.getUptime(), pingTime, pongTime);
 }
 
 sky::ArenaDelta LatencyTracker::makeUpdate() {

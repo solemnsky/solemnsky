@@ -102,17 +102,23 @@ class ControlExec {
  private:
   tg::UsageFlag flag;
 
+  // SFML / graphics state.
   static sf::ContextSettings makeSettings();
   sf::RenderWindow window;
   Frame frame;
   Cooldown resizeCooldown;
-  Time uptime;
 
-  ui::Profiler profiler;
+  // Timing.
+  sf::Clock cycleClock;
+  Time uptime;
   const TimeDiff tickStep;
   TimeDiff rollingTickTime;
-  sf::Clock cycleClock, profileClock;
 
+  // Profiling.
+  sf::Clock profileClock;
+  ui::Profiler profiler;
+
+  // AppState and Control.
   AppState appState;
   std::unique_ptr<Control> ctrl;
 

@@ -303,6 +303,7 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   std::string motd;
   MapName nextMap;
   ArenaMode mode;
+  Time uptime;
 
   // Managing players.
   Player &joinPlayer(const PlayerInitializer &initializer);
@@ -332,6 +333,7 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   std::string getMotd() const;
   MapName getNextMap() const;
   ArenaMode getMode() const;
+  Time getUptime() const;
 
   void tick(const TimeDiff delta);
 
