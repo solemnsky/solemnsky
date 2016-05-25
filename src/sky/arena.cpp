@@ -33,6 +33,10 @@ Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     nickname(initializer.nickname),
     admin(initializer.admin),
     team(initializer.team),
+
+    latency(0),
+    clockOffset(0),
+
     arena(arena),
     pid(initializer.pid) { }
 
@@ -41,7 +45,7 @@ void Player::applyDelta(const PlayerDelta &delta) {
   admin = delta.admin;
   if (delta.team) team = *delta.team;
   if (delta.latency) latency = *delta.latency;
-  if (delta.clockOffset) latency = *delta.clockOffset;
+  if (delta.clockOffset) clockOffset = *delta.clockOffset;
 }
 
 PlayerInitializer Player::captureInitializer() const {
@@ -71,11 +75,11 @@ Team Player::getTeam() const {
   return team;
 }
 
-Time Player::getLatency() const {
+TimeDiff Player::getLatency() const {
   return latency;
 }
 
-Time Player::getClockOffset() const {
+TimeDiff Player::getClockOffset() const {
   return clockOffset;
 }
 

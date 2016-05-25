@@ -37,6 +37,7 @@ TEST_F(ArenaTest, ConnectionTest) {
   // Nickname qualification.
   arena.connectPlayer("nameless plane");
   EXPECT_EQ(arena.getPlayer(2)->getNickname(), "nameless plane(2)");
+
 }
 
 /**

@@ -101,8 +101,8 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
   std::string getNickname() const;
   bool isAdmin() const;
   Team getTeam() const;
-  Time getLatency() const;
-  Time getClockOffset() const;
+  TimeDiff getLatency() const;
+  TimeDiff getClockOffset() const;
 
   void doAction(const Action action, const bool state);
   void spawn(const PlaneTuning &tuning,

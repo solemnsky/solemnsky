@@ -32,10 +32,11 @@ struct Nothing { };
 using boost::optional;
 
 /**
- * Time: double for timestamps, float for time diffs.
+ * Some helpful units.
  */
 using Time = double;
 using TimeDiff = float;
+using Kbps = float;
 
 /**
  * Cereal rules, in both meanings of the word.

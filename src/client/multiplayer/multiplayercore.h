@@ -120,6 +120,8 @@ class MultiplayerCore: public ClientComponent {
 
   // Packet processing submethod.
   void processPacket(const sky::ServerPacket &packet);
+  // (returns true when the queue has been exhausted)
+  bool pollNetwork(const TimeDiff delta);
 
  public:
   MultiplayerCore(

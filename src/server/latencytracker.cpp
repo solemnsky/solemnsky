@@ -5,23 +5,22 @@
  */
 
 PlayerLatency::PlayerLatency() :
-    latencySampler(30),
-    offsetSampler(30) { }
+    latencySampler(5),
+    offsetSampler(5) { }
 
 void PlayerLatency::registerPong(const Time now,
                                  const Time pingTime,
                                  const Time pongTime) {
   latencySampler.push(now - pingTime);
-  offsetSampler.push(Time(
-      double(pongTime) - pingTime + (double(getLatency()) / 2.0f)));
+  offsetSampler.push(pongTime - (pingTime + (getLatency() / 2.0f)));
 }
 
-Time PlayerLatency::getLatency() {
-  return Time(latencySampler.mean<double>());
+TimeDiff PlayerLatency::getLatency() {
+  return latencySampler.mean<TimeDiff>();
 }
 
-Time PlayerLatency::getOffset() {
-  return Time(offsetSampler.mean<double>());
+TimeDiff PlayerLatency::getOffset() {
+  return offsetSampler.mean<TimeDiff>();
 }
 
 /**
@@ -58,6 +57,7 @@ sky::ArenaDelta LatencyTracker::makeUpdate() {
     auto latency = getPlayerData(player);
     delta.latency = latency.getLatency();
     delta.clockOffset = latency.getOffset();
+    deltas.emplace(player.pid, delta);
   });
   return sky::ArenaDelta::Delta(deltas);
 }
