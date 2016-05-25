@@ -196,9 +196,10 @@ bool ServerExec::pollNetwork(const TimeDiff delta) {
 }
 
 void ServerExec::tick(const TimeDiff delta) {
-  uptime += delta;
+  // Tick game state.
   shared.arena.tick(delta);
 
+  // Check transmission scheduling.
   if (skyDeltaTimer.cool(delta)) {
     shared.sendToClients(sky::ServerPacket::DeltaSky(
         shared.skyHandle.collectDelta()));
@@ -224,6 +225,7 @@ void ServerExec::tick(const TimeDiff delta) {
     latencyUpdateTimer.reset();
   }
 
+  // Poll network.
   if (pollNetwork(delta)) return;
   while (!pollNetwork(0)) { }
 }
@@ -233,7 +235,6 @@ ServerExec::ServerExec(
     const sky::ArenaInit &arenaInit,
     std::function<std::unique_ptr<ServerListener>(
         ServerShared &)> mkServer) :
-    uptime(0),
 
     host(tg::HostType::Server, port),
     shared(host, telegraph, arenaInit),

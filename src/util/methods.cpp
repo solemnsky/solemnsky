@@ -28,6 +28,10 @@
 /**
  * Displaying our float units.
  */
+std::string showTime(const Time delta) {
+  return std::to_string(delta);
+}
+
 std::string showTimeDiff(const TimeDiff delta) {
   return std::to_string(delta);
 }
