@@ -47,7 +47,7 @@ struct ProfilerSnapshot {
   ProfilerSnapshot() = default; // 'null' defaults, all zeroes
   ProfilerSnapshot(const Profiler &profiler);
 
-  SamplerSnapshot cycleTime, logicTime, renderTime;
+  TimeStats cycleTime, logicTime, renderTime;
 };
 
 /**
@@ -57,9 +57,9 @@ struct ProfilerSnapshot {
 struct AppState {
   AppState(const sf::RenderWindow &window,
            const Profiler &profiler,
-           const double &time);
+           const sf::Time &time);
 
-  const double &uptime;
+  const sf::Time &uptime;
   const sf::RenderWindow &window;
   const Profiler &profiler;
 
@@ -107,7 +107,7 @@ class ControlExec {
   sf::RenderWindow window;
   Frame frame;
   Cooldown resizeCooldown;
-  double time;
+  sf::Time uptime;
 
   ui::Profiler profiler;
   const float tickStep;

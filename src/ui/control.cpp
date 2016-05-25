@@ -140,7 +140,7 @@ sf::Event transformEvent(const sf::Transform trans,
  */
 
 void ControlExec::tick() {
-  const float cycleDelta = cycleClock.restart().asSeconds();
+  const sf::Time cycleDelta = cycleClock.restart();
   profiler.cycleTime.push(cycleDelta);
 
   profileClock.restart();
@@ -148,7 +148,7 @@ void ControlExec::tick() {
   ctrl->poll(cycleDelta);
   while (rollingTickTime > tickStep) {
     ctrl->tick(tickStep);
-    time += tickStep;
+    uptime += tickStep;
     rollingTickTime -= tickStep;
   }
 
@@ -211,13 +211,13 @@ ControlExec::ControlExec(
            sf::Style::Default, makeSettings()),
     frame(window),
     resizeCooldown(0.5),
-    time(0),
+    uptime(0),
 
     profiler(100),
     tickStep(1.0f / 60.0f),
     rollingTickTime(0),
 
-    appState(window, profiler, time),
+    appState(window, profiler, uptime),
     ctrl(std::make_unique<detail::ExecWrapper>(appState, initCtrl)) {
   window.setVerticalSyncEnabled(true);
   window.setKeyRepeatEnabled(false);

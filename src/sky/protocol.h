@@ -33,7 +33,7 @@ namespace sky {
  */
 struct ClientPacket: public VerifyStructure {
   enum class Type {
-    Ping, // request a pong, always available
+    Pong, // respond to a server Ping
     ReqJoin, // request joining in the arena, part of the connection protocol
 
     ReqPlayerDelta, // request a change to your player data
@@ -49,7 +49,8 @@ struct ClientPacket: public VerifyStructure {
   void serialize(Archive &ar) {
     ar(type);
     switch (type) {
-      case Type::Ping: {
+      case Type::Pong: {
+        ar(pingTime, pongTime);
         break;
       }
       case Type::ReqJoin: {
@@ -80,7 +81,7 @@ struct ClientPacket: public VerifyStructure {
   ClientPacket(const Type type);
 
   Type type;
-  optional<double> pingTime;
+  optional<sf::Time> pingTime, pongTime;
   optional<std::string> stringData;
   optional<PlayerDelta> playerDelta;
   optional<Action> action;
@@ -88,7 +89,7 @@ struct ClientPacket: public VerifyStructure {
 
   bool verifyStructure() const override;
 
-  static ClientPacket Ping(const double pingTime);
+  static ClientPacket Pong(const sf::Time pingTime, const sf::Time pongTime);
   static ClientPacket ReqJoin(const std::string &nickname);
   static ClientPacket ReqPlayerDelta(const PlayerDelta &playerDelta);
   static ClientPacket ReqAction(const Action &action, const bool state);
@@ -102,7 +103,7 @@ struct ClientPacket: public VerifyStructure {
  */
 struct ServerPacket: public VerifyStructure {
   enum class Type {
-    Pong,
+    Ping, // request a client Pong
     Init, // acknowledge a ReqJoin, send ArenaInit
     DeltaArena, // broadcast a change in the Arena
     DeltaSky, // broadcast a change in the SkyHandle
@@ -120,8 +121,9 @@ struct ServerPacket: public VerifyStructure {
   void serialize(Archive &ar) {
     ar(type);
     switch (type) {
-      case Type::Pong: {
-        ar(pingTime, pongTime);
+      case Type::Ping: {
+        ar(pingTime);
+        break;
       }
       case Type::Init: {
         ar(pid, arenaInit, skyInit, scoreInit);
@@ -155,8 +157,7 @@ struct ServerPacket: public VerifyStructure {
   }
 
   Type type;
-  optional<double> pingTime;
-  optional<double> pongTime;
+  optional<sf::Time> pingTime;
   optional<PID> pid;
   optional<ArenaInit> arenaInit;
   optional<ArenaDelta> arenaDelta;
@@ -168,7 +169,7 @@ struct ServerPacket: public VerifyStructure {
 
   bool verifyStructure() const override;
 
-  static ServerPacket Pong(const double pingTime, const double pongTime);
+  static ServerPacket Ping(const double pingTime);
   static ServerPacket Init(const PID pid,
                            const ArenaInit &arenaInit,
                            const SkyHandleInit &skyInit,

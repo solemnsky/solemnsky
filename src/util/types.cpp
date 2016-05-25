@@ -25,45 +25,21 @@
  * RollingSampler.
  */
 
-RollingSampler::RollingSampler(const unsigned int maxMemory) :
-    maxMemory(maxMemory) {
-  push(0);
-}
 
-void RollingSampler::push(const float value) {
-  if (data.size() >= maxMemory) {
-    data.erase(data.begin());
-  }
-  data.push_back(value);
-}
+/**
+ * TimeStats.
+ */
 
-float RollingSampler::mean() const {
-  if (data.size() == 0) return 0;
-  return std::accumulate(data.begin(), data.end(), 0.0f, std::plus<float>())
-      / float(data.size());
-}
+TimeStats::TimeStats(const RollingSampler<sf::Time> &sampler) :
+    min(sampler.min()),
+    mean(sampler.mean()),
+    max(sampler.max()) { }
 
-float RollingSampler::max() const {
-  if (data.size() == 0) return 0;
-  return *std::max_element(data.begin(), data.end());
-}
-
-float RollingSampler::min() const {
-  if (data.size() == 0) return 0;
-  return *std::min_element(data.begin(), data.end());
-}
-
-SamplerSnapshot::SamplerSnapshot() :
-    min(0), mean(0), max(0) { }
-
-SamplerSnapshot::SamplerSnapshot(const RollingSampler &sampler) :
-    min(sampler.min()), mean(sampler.mean()), max(sampler.max()) { }
-
-std::string printMs(float ms) {
+std::string printMs(const sf::Time ms) {
   return std::to_string(int(std::round(ms * 1000)));
 }
 
-std::string SamplerSnapshot::print() const {
+std::string TimeStats::print() const {
   return printMs(min) + ";" + printMs(mean) + ";" + printMs(max);
 }
 
