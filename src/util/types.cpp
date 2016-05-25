@@ -25,18 +25,17 @@
  * RollingSampler.
  */
 
-
 /**
  * TimeStats.
  */
 
-TimeStats::TimeStats(const RollingSampler<sf::Time> &sampler) :
+TimeStats::TimeStats(const RollingSampler<Time> &sampler) :
     min(sampler.min()),
-    mean(sampler.mean()),
+    mean(std::round(sampler.mean<double>())),
     max(sampler.max()) { }
 
-std::string printMs(const sf::Time ms) {
-  return std::to_string(int(std::round(ms * 1000)));
+std::string printMs(const Time ms) {
+  return std::to_string(int(ms / 1000000.0f));
 }
 
 std::string TimeStats::print() const {

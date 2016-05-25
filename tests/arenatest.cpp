@@ -64,6 +64,45 @@ TEST_F(ArenaTest, DeltaTest) {
 }
 
 /**
+ * PlayerDeltas can be used to change Player records.
+ */
+TEST_F(ArenaTest, PlayerDeltaTest) {
+  arena.connectPlayer("nameless plane");
+  sky::Player &player = *arena.getPlayer(0);
+
+  {
+    // Single deltas work.
+    sky::PlayerDelta delta = player.zeroDelta();
+    delta.latency.emplace(50);
+    delta.admin = true;
+    arena.applyDelta(sky::ArenaDelta::Delta(0, delta));
+    EXPECT_EQ(player.getLatency(), 50);
+    EXPECT_EQ(player.isAdmin(), true);
+
+    // Out-of-bounds deltas don't break anything.
+    EXPECT_NO_THROW(arena.applyDelta(sky::ArenaDelta::Delta(1, delta)));
+  }
+
+  // Multiple deltas have multiple effects.
+  arena.connectPlayer("nameless plane 2");
+  std::map<PID, sky::PlayerDelta> deltas;
+  {
+    sky::PlayerDelta delta = arena.getPlayer(0)->zeroDelta();
+    delta.team.emplace(1);
+    deltas.emplace(0, delta);
+  }
+  {
+    sky::PlayerDelta delta = arena.getPlayer(1)->zeroDelta();
+    delta.team.emplace(1);
+    deltas.emplace(1, delta);
+  }
+  arena.applyDelta(sky::ArenaDelta::Delta(deltas));
+  EXPECT_EQ(arena.getPlayer(0)->getTeam(), 1);
+  EXPECT_EQ(arena.getPlayer(1)->getTeam(), 1);
+
+}
+
+/**
  * A modified Arena can be copied to a new client with a SkyInitializer.
  */
 TEST_F(ArenaTest, InitializerTest) {

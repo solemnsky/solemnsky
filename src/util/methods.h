@@ -25,17 +25,13 @@
 #include "types.h"
 #include <cereal/archives/json.hpp>
 
-// log and throw
-// log and throw
-
 /**
- * Logging for memory leaks.
+ * Methods for time!
  */
 
-//#define CTOR_LOG(str) appLog("CTOR --> " + (std::string) str)
-//#define DTOR_LOG(str) appLog("DTOR <- " + (std::string) str)
-#define DTOR_LOG(str) {}while(0)
-#define CTOR_LOG(str) {}while(0)
+float toSeconds(const Time time);
+
+Time fromSeconds(const float seconds);
 
 /****
  * For some reason sf::Vector has no math utilities, here are some.

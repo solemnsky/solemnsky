@@ -71,11 +71,11 @@ Team Player::getTeam() const {
   return team;
 }
 
-sf::Time Player::getLatency() const {
+Time Player::getLatency() const {
   return latency;
 }
 
-sf::Time Player::getClockOffset() const {
+Time Player::getClockOffset() const {
   return clockOffset;
 }
 
