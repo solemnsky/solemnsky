@@ -102,6 +102,7 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
   switch (packet.type) {
     case ServerPacket::Type::Ping: {
       transmit(sky::ClientPacket::Pong(packet.pingTime.get(), shared.uptime));
+      break;
     }
 
     case ServerPacket::Type::DeltaArena: {

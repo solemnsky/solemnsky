@@ -109,7 +109,7 @@ Physics::~Physics() {
 
 void Physics::tick(const TimeDiff delta) {
   world.ClearForces();
-  world.Step(toSeconds(delta),
+  world.Step(delta,
              settings.velocityIterations, settings.positionIterations);
 }
 

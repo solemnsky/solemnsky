@@ -70,9 +70,11 @@ struct ClientPacket: public VerifyStructure {
       }
       case Type::Chat: {
         ar(stringData);
+        break;
       }
       case Type::RCon: {
         ar(stringData);
+        break;
       }
     }
   }
