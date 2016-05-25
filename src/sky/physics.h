@@ -102,19 +102,15 @@ class Physics {
 
   const sf::Vector2f dims;
 
-  void tick(const float delta);
+  void tick(const Time delta);
 
-  /**
-   * Conversion.
-   */
+  // Unit conversion.
   sf::Vector2f toGameVec(b2Vec2 vec) const;
   b2Vec2 toPhysVec(sf::Vector2f vec) const;
   float toGameDistance(float x) const;
   float toPhysDistance(float x) const;
 
-  /**
-   * Managing bodies.
-   */
+  // Managing bodies.
   b2Body *createBody(const b2Shape &shape,
                      const BodyTag &tag, bool isStatic = false);
   void deleteBody(b2Body *const body);

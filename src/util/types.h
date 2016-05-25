@@ -32,9 +32,10 @@ struct Nothing { };
 using boost::optional;
 
 /**
- * Time: we're using 64 signed ints for all time values in the game.
+ * Time: double for timestamps, float for time diffs.
  */
-using Time = signed long long;
+using Time = double;
+using TimeDiff = float;
 
 /**
  * Cereal rules, in both meanings of the word.

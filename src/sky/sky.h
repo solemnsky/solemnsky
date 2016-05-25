@@ -78,9 +78,6 @@ class Sky
   std::map<PID, Participation> participations;
 
  protected:
-  // Internal API.
-  void onTick(const float delta);
-
   // Subsystem impl.
   void registerPlayerWith(Player &player,
                           const ParticipationInit &initializer);
@@ -89,11 +86,11 @@ class Sky
   void onAction(Player &player,
                 const Action action,
                 const bool state) override final;
-  virtual void onSpawn(Player &player,
-                       const PlaneTuning &tuning,
-                       const sf::Vector2f &pos,
-                       const float rot) override final;
-
+  void onSpawn(Player &player,
+               const PlaneTuning &tuning,
+               const sf::Vector2f &pos,
+               const float rot) override final;
+  void onTick(const Time delta) override final;
 
   // PhysicsListener impl.
   virtual void onBeginContact(const BodyTag &body1,

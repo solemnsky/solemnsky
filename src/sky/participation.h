@@ -85,14 +85,14 @@ class Plane {
 
   // Subroutines.
   void switchStall();
-  void tickFlight(const float delta);
-  void tickWeapons(const float delta);
+  void tickFlight(const TimeDiff delta);
+  void tickWeapons(const TimeDiff delta);
   void writeToBody();
   void readFromBody();
 
   // Sky API.
   void prePhysics();
-  void postPhysics(const float delta);
+  void postPhysics(const TimeDiff delta);
   void onBeginContact(const BodyTag &body);
   void onEndContact(const BodyTag &body);
 
