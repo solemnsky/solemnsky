@@ -40,6 +40,7 @@ class MultiplayerGame: public MultiplayerView {
   // Helper subroutines.
   void doClientAction(const ClientAction action, const bool state);
   void printScores(ui::TextFrame &tf, const sky::Team team);
+  void printSpectators(ui::TextFrame &tf);
   void renderScoreboard(ui::Frame &f);
 
  public:

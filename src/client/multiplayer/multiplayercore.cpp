@@ -279,9 +279,9 @@ bool MultiplayerCore::poll() {
 }
 
 void MultiplayerCore::tick(const float delta) {
-  if (conn) {
-    conn->arena.tick(delta);
-  }
+  host.tick(delta);
+
+  if (conn) conn->arena.tick(delta);
 
   if (disconnecting) {
     if (disconnectTimeout.cool(delta)) {

@@ -24,10 +24,10 @@
 Style::Base::Base() :
     pageSize(1600, 900),
 
-    normalText(40, {},
+    normalText(30, {},
                ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
                ResID::Font),
-    debugText(30, {},
+    debugText(25, {},
               ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
               ResID::Font),
 
@@ -41,9 +41,7 @@ Style::Base::Base() :
 
     heatRate(10),
 
-    smallFontSize(20),
-    normalFontSize(40),
-    largeFontSize(60),
+    normalFontSize(30),
 
     pageMargins(50),
     pageBgColor{136, 156, 255},
