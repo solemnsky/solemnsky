@@ -11,16 +11,16 @@ PlayerLatency::PlayerLatency() :
 void PlayerLatency::registerPong(const Time now,
                                  const Time pingTime,
                                  const Time pongTime) {
-  latencySampler.push(now - pingTime);
-  offsetSampler.push(pongTime - (pingTime + (getLatency() / 2.0f)));
+  latencySampler.push(TimeDiff(now - pingTime));
+  offsetSampler.push(pongTime - (pingTime + (getLatency() / 2)));
 }
 
 TimeDiff PlayerLatency::getLatency() {
   return latencySampler.mean<TimeDiff>();
 }
 
-TimeDiff PlayerLatency::getOffset() {
-  return offsetSampler.mean<TimeDiff>();
+Time PlayerLatency::getOffset() {
+  return offsetSampler.mean<Time>();
 }
 
 /**

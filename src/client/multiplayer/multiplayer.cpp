@@ -124,7 +124,7 @@ void Multiplayer::printDebug(Printer &p) {
     p.printLn("latency: "
                   + showTimeDiff(core.conn->player.getLatency()));
     p.printLn("clock offset: "
-                  + showTimeDiff(core.conn->player.getClockOffset()));
+                  + showTime(core.conn->player.getClockOffset()));
   } else {
     p.printLn("not connected...");
   }
@@ -136,11 +136,11 @@ void Multiplayer::poll(const float delta) {
 
 void Multiplayer::tick(const float delta) {
   core.tick(delta);
+
   if (core.isDisconnected()) quitting = true;
   if (core.isDisconnecting()) return;
 
   if (core.conn) {
-    core.conn->arena.tick(delta);
     if (view) view->tick(delta);
   }
 }

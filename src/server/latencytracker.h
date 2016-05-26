@@ -10,7 +10,8 @@
  */
 struct PlayerLatency {
  private:
-  RollingSampler<Time> latencySampler, offsetSampler;
+  RollingSampler<TimeDiff> latencySampler;
+  RollingSampler<Time> offsetSampler;
 
  public:
   PlayerLatency();
@@ -20,7 +21,7 @@ struct PlayerLatency {
                     const Time pongTime);
 
   TimeDiff getLatency();
-  TimeDiff getOffset();
+  Time getOffset();
 
 };
 

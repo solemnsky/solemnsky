@@ -79,7 +79,7 @@ TimeDiff Player::getLatency() const {
   return latency;
 }
 
-TimeDiff Player::getClockOffset() const {
+Time Player::getClockOffset() const {
   return clockOffset;
 }
 
