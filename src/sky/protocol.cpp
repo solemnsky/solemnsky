@@ -108,7 +108,7 @@ bool ServerPacket::verifyStructure() const {
     case Type::DeltaArena:
       return verifyOptionals(arenaDelta);
     case Type::DeltaSky:
-      return verifyOptionals(skyDelta);
+      return verifyOptionals(pingTime, skyDelta);
     case Type::DeltaScore:
       return verifyOptionals(scoreDelta);
     case Type::Chat:
@@ -145,9 +145,11 @@ ServerPacket ServerPacket::DeltaArena(const ArenaDelta &arenaDelta) {
   return packet;
 }
 
-ServerPacket ServerPacket::DeltaSky(const SkyHandleDelta &skyDelta) {
+ServerPacket ServerPacket::DeltaSky(const SkyHandleDelta &skyDelta,
+                                    const Time pingTime) {
   ServerPacket packet(Type::DeltaSky);
   packet.skyDelta = skyDelta;
+  packet.pingTime = pingTime;
   return packet;
 }
 

@@ -103,7 +103,6 @@ Host::~Host() {
   enet_host_destroy(host);
 }
 
-
 const std::vector<ENetPeer *> &Host::getPeers() const {
   return peers;
 }
@@ -128,12 +127,7 @@ void Host::transmit(ENetPeer *const peer,
   enet_peer_send(peer, 0, packet);
 }
 
-ENetEvent Host::poll(const float delta) {
-  if (bandwidthSampler.cool(delta)) {
-    sampleBandwidth();
-    bandwidthSampler.reset();
-  }
-
+ENetEvent Host::poll() {
   enet_host_service(host, &event, 0);
 
   if (event.type == ENET_EVENT_TYPE_CONNECT)
@@ -142,6 +136,13 @@ ENetEvent Host::poll(const float delta) {
     unregisterPeer(event.peer);
 
   return event;
+}
+
+void Host::tick(const TimeDiff delta) {
+  if (bandwidthSampler.cool(delta)) {
+    sampleBandwidth();
+    bandwidthSampler.reset();
+  }
 }
 
 Kbps Host::incomingBandwidth() const {

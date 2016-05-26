@@ -38,7 +38,7 @@ struct Style {
         textColor,
         textAreaForeground,
         textAreaBackground;
-    // TODO: organise color usage
+    // TODO: organize color usage
     float heatRate; // inverse of time it takes for a UI element to 'heat up'
 
     int smallFontSize, normalFontSize, largeFontSize;
@@ -163,7 +163,10 @@ struct Style {
     sf::Vector2f chatPos,
         messageLogPos,
         playerListPos,
-        lobbyButtonPos, lobbyButtonSep;
+        lobbyButtonPos, lobbyButtonSep,
+        scoreboardOffset;
+    sf::IntRect scoreboardDisplay;
+    float scoreboardPaddingTop;
     float chatCutoff, chatIngameCutoff;
 
     sf::Color playerSpecColor, playerJoinedColor;

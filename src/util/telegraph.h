@@ -74,7 +74,9 @@ class Host {
   void transmit(ENetPeer *const peer,
                 unsigned char *data, size_t size,
                 const ENetPacketFlag flag);
-  ENetEvent poll(const float delta);
+
+  ENetEvent poll();
+  void tick(const TimeDiff delta);
 
   // Expressed in average kB per second.
   Kbps incomingBandwidth() const;
@@ -110,23 +112,25 @@ class Telegraph {
   void transmit(
       Host &host, ENetPeer *const peer,
       const TransmitType &value,
-      ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
-    std::string data = outputToString(value);
-    host.transmit(peer, (unsigned char *) data.c_str(), data.size(), flag);
+      const bool guaranteeOrder = true) {
+    transmit(host, [peer](auto f) { f(peer); },
+             value, guaranteeOrder);
   }
 
   /**
-   * Transmit same packet to an iterator range of peers.
+   * Transmit same packet to a range of peers.
    */
   template<typename TransmitType>
   void transmit(
       Host &host,
       std::function<void(std::function<void(ENetPeer *const)>)> callPeers,
       const TransmitType &value,
-      ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE) {
+      const bool guaranteeOrder = true) {
     std::string data = outputToString(value);
     callPeers([&](ENetPeer *const peer) {
-      host.transmit(peer, (unsigned char *) data.c_str(), data.size(), flag);
+      host.transmit(peer, (unsigned char *) data.c_str(), data.size(),
+                    (guaranteeOrder ? ENET_PACKET_FLAG_RELIABLE
+                                    : ENET_PACKET_FLAG_UNSEQUENCED));
     });
   }
 

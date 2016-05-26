@@ -145,22 +145,16 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
   }
 }
 
-bool MultiplayerCore::pollNetwork(const TimeDiff delta) {
+bool MultiplayerCore::pollNetwork() {
+  if (disconnected) return true;
+
   static ENetEvent event;
-  event = host.poll(delta);
+  event = host.poll();
 
   if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
     server = nullptr;
     appLog("Disconnected from server!", LogOrigin::Client);
     disconnected = true;
-    return true;
-  }
-
-  if (disconnecting) {
-    if (disconnectTimeout.cool(delta)) {
-      appLog("Disconnected from unresponsive server!", LogOrigin::Client);
-      disconnected = true;
-    }
     return true;
   }
 
@@ -270,8 +264,8 @@ void MultiplayerCore::disconnect() {
   }
 }
 
-void MultiplayerCore::poll(const float delta) {
-  if (disconnected) return;
+bool MultiplayerCore::poll() {
+  if (disconnected) return true;
 
   if (server && !askedConnection) {
     // we have a link but haven't sent an arena connection request
@@ -280,13 +274,20 @@ void MultiplayerCore::poll(const float delta) {
     askedConnection = true;
   }
 
-  if (pollNetwork(delta)) return;
-  while (!pollNetwork(0)) { }
+  while (!pollNetwork()) { }
+  return true;
 }
 
 void MultiplayerCore::tick(const float delta) {
-  if (conn) {
-    conn->arena.tick(delta);
+  host.tick(delta);
+
+  if (conn) conn->arena.tick(delta);
+
+  if (disconnecting) {
+    if (disconnectTimeout.cool(delta)) {
+      appLog("Disconnected from unresponsive server!", LogOrigin::Client);
+      disconnected = true;
+    }
   }
 }
 

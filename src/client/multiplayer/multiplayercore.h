@@ -121,7 +121,7 @@ class MultiplayerCore: public ClientComponent {
   // Packet processing submethod.
   void processPacket(const sky::ServerPacket &packet);
   // (returns true when the queue has been exhausted)
-  bool pollNetwork(const TimeDiff delta);
+  bool pollNetwork();
 
  public:
   MultiplayerCore(
@@ -150,8 +150,8 @@ class MultiplayerCore: public ClientComponent {
   // User API.
   void transmit(const sky::ClientPacket &packet);
   void disconnect();
-  void poll(const float delta);
-  void tick(const float delta);
+  bool poll();
+  void tick(const TimeDiff delta);
 
   void chat(const std::string &message);
   void rcon(const std::string &command);

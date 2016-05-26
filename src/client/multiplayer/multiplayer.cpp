@@ -121,20 +121,24 @@ void Multiplayer::printDebug(Printer &p) {
                   + showKbps(core.getHost().incomingBandwidth()));
     p.printLn("outbound bandwidth (kB/s): "
                   + showKbps(core.getHost().outgoingBandwidth()));
-    p.printLn("latency: "
-                  + showTimeDiff(core.conn->player.getLatency()));
-    p.printLn("clock offset: "
-                  + showTime(core.conn->player.getClockOffset()));
+    if (core.conn->player.latencyIsCalculated()) {
+      p.printLn("latency: "
+                    + showTimeDiff(core.conn->player.getLatency()));
+      p.printLn("clock offset: "
+                    + showTime(core.conn->player.getClockOffset()));
+    } else {
+      p.printLn("(latency not yet calculated)");
+    }
   } else {
     p.printLn("not connected...");
   }
 }
 
-void Multiplayer::poll(const float delta) {
-  core.poll(delta);
+bool Multiplayer::poll() {
+  return core.poll();
 }
 
-void Multiplayer::tick(const float delta) {
+void Multiplayer::tick(const TimeDiff delta) {
   core.tick(delta);
 
   if (core.isDisconnected()) quitting = true;

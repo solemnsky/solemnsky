@@ -53,8 +53,8 @@ class Multiplayer: public Game, public ConnectionListener {
   void printDebug(Printer &p) override final;
 
   // Control impl.
-  void poll(float delta) override;
-  void tick(float delta) override;
+  bool poll() override;
+  void tick(const TimeDiff delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
   void reset() override;
