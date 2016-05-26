@@ -150,6 +150,9 @@ Style::Multi::Multi(const Style::Base &base) :
     playerListPos(1250, 200),
     lobbyButtonPos(lobbyChatWidth + 100, lobbyTopMargin),
     lobbyButtonSep(0, 100),
+    scoreboardOffset(100, 100),
+    scoreboardDisplay(0, 0, 1400, 700),
+    scoreboardPaddingTop(100),
 
     chatCutoff(500),
     chatIngameCutoff(150),

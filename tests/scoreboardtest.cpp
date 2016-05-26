@@ -46,8 +46,8 @@ TEST_F(ScoreboardTest, DeltaTest) {
   const auto delta = arena.connectPlayer("nameless plane");
   remoteArena.applyDelta(delta);
 
-// scoreboard has no useful delta to transmit
-ASSERT_EQ(bool(scoreboard.collectDelta()), false);
+  // scoreboard has no useful delta to transmit
+  ASSERT_EQ(bool(scoreboard.collectDelta()), false);
 
   {
     sky::Player &player = *arena.getPlayer(0);
@@ -56,14 +56,8 @@ ASSERT_EQ(bool(scoreboard.collectDelta()), false);
   }
 
   {
-// scoreboard has delta to transmit, and it has the desired effect
-remoteScoreboard.
-applyDelta(scoreboard
-.
-collectDelta()
-.
-get()
-);
+    // scoreboard has delta to transmit, and it has the desired effect
+    remoteScoreboard.applyDelta(scoreboard.collectDelta().get());
     sky::Player &player = *remoteArena.getPlayer(0);
     ASSERT_EQ(remoteScoreboard.getScore(player).getValueAt(0), 10);
     ASSERT_EQ(remoteScoreboard.getScore(player).getValueAt(1), 5);
