@@ -51,11 +51,14 @@ struct ServerShared {
   void registerArenaDelta(const sky::ArenaDelta &arenaDelta);
 
   // Transmission.
-  void sendToClients(const sky::ServerPacket &packet);
+  void sendToClients(const sky::ServerPacket &packet,
+                     const bool guaranteeOrder = true);
   void sendToClientsExcept(const PID pid,
-                           const sky::ServerPacket &packet);
+                           const sky::ServerPacket &packet,
+                           const bool guaranteeOrder = true);
   void sendToClient(ENetPeer *const client,
-                    const sky::ServerPacket &packet);
+                    const sky::ServerPacket &packet,
+                    const bool guaranteeOrder = true);
   void rconResponse(ENetPeer *const client, const std::string &response);
 
   // Logging.

@@ -136,7 +136,7 @@ struct ServerPacket: public VerifyStructure {
         break;
       }
       case Type::DeltaSky: {
-        ar(skyDelta);
+        ar(pingTime, skyDelta);
         break;
       }
       case Type::DeltaScore: {
@@ -177,7 +177,8 @@ struct ServerPacket: public VerifyStructure {
                            const SkyHandleInit &skyInit,
                            const ScoreboardInit &scoreInit);
   static ServerPacket DeltaArena(const ArenaDelta &arenaDelta);
-  static ServerPacket DeltaSky(const SkyHandleDelta &skyDelta);
+  static ServerPacket DeltaSky(const SkyHandleDelta &skyDelta,
+                               const Time pingTime);
   static ServerPacket DeltaScore(const ScoreboardDelta &scoreDelta);
   static ServerPacket Chat(const PID pid, const std::string &chat);
   static ServerPacket Broadcast(const std::string &broadcast);

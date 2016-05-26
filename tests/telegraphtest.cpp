@@ -33,8 +33,8 @@ class TelegraphTest: public testing::Test {
   ENetEvent processHosts(tg::Host &host1, tg::Host &host2) {
     ENetEvent event;
     for (; ;) {
-      event = host1.poll(0);
-      host2.poll(0);
+      event = host1.poll();
+      host2.poll();
       if (event.type != 0) break;
     }
     return event;
