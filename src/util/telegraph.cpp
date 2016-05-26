@@ -103,7 +103,6 @@ Host::~Host() {
   enet_host_destroy(host);
 }
 
-
 const std::vector<ENetPeer *> &Host::getPeers() const {
   return peers;
 }

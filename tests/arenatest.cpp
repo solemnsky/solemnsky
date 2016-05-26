@@ -74,11 +74,38 @@ TEST_F(ArenaTest, PlayerDeltaTest) {
   {
     // Single deltas work.
     sky::PlayerDelta delta = player.zeroDelta();
-    delta.latency.emplace(50);
+delta.latencyStats.emplace(50, 60);
     delta.admin = true;
+
+EXPECT_EQ(player
+.
+getLatency(),
+0);
+EXPECT_EQ(player
+.
+getClockOffset(),
+0);
+EXPECT_EQ(player
+.
+isAdmin(),
+false);
+EXPECT_EQ(player
+.
+latencyIsCalculated(),
+false);
+
     arena.applyDelta(sky::ArenaDelta::Delta(0, delta));
+
     EXPECT_EQ(player.getLatency(), 50);
+EXPECT_EQ(player
+.
+getClockOffset(),
+60);
     EXPECT_EQ(player.isAdmin(), true);
+EXPECT_EQ(player
+.
+latencyIsCalculated(),
+true);
 
     // Out-of-bounds deltas don't break anything.
     EXPECT_NO_THROW(arena.applyDelta(sky::ArenaDelta::Delta(1, delta)));

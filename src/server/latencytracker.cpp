@@ -53,11 +53,11 @@ void LatencyTracker::registerPong(const sky::Player &player,
 sky::ArenaDelta LatencyTracker::makeUpdate() {
   std::map<PID, sky::PlayerDelta> deltas;
   arena.forPlayers([&](sky::Player &player) {
-    sky::PlayerDelta delta(player.zeroDelta());
+    sky::PlayerDelta playerDelta(player.zeroDelta());
     auto latency = getPlayerData(player);
-    delta.latency = latency.getLatency();
-    delta.clockOffset = latency.getOffset();
-    deltas.emplace(player.pid, delta);
+    playerDelta.latencyStats.emplace(latency.getLatency(),
+                                     latency.getOffset());
+    deltas.emplace(player.pid, playerDelta);
   });
   return sky::ArenaDelta::Delta(deltas);
 }

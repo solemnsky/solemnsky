@@ -67,6 +67,7 @@ TEST_F(TelegraphTest, Protocol) {
   using namespace sky;
 
   {
+    // Client packet with string data.
     clientTelegraph.transmit(
         client, serverPeer, ClientPacket::ReqJoin("nickname"));
     event = processHosts(server, client);
@@ -79,6 +80,7 @@ TEST_F(TelegraphTest, Protocol) {
   }
 
   {
+    // Server packet with string data.
     serverTelegraph.transmit(
         server, clientPeer,
         ServerPacket::Broadcast("some broadcast"));
@@ -93,6 +95,7 @@ TEST_F(TelegraphTest, Protocol) {
   }
 
   {
+    // Small client packet.
     clientTelegraph.transmit(
         client, serverPeer, ClientPacket::ReqSpawn());
     event = processHosts(server, client);
