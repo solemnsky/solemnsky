@@ -61,7 +61,7 @@ void MultiplayerGame::printSpectators(ui::TextFrame &tf) {
   tf.setColor(style.base.textColor);
   tf.print("spectators: ");
   conn.arena.forPlayers([&](const sky::Player &player) {
-    tf.print(player.getNickname() + " ");
+    if (player.getTeam() == 0) tf.print(player.getNickname() + " ");
   });
 }
 
