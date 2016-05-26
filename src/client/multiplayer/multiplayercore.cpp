@@ -113,6 +113,12 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
 
     case ServerPacket::Type::DeltaSky: {
       conn->skyHandle.applyDelta(packet.skyDelta.get());
+      if (conn->player.latencyIsCalculated()) {
+        const TimeDiff packetAge = TimeDiff(
+            conn->arena.getUptime()
+                - (packet.pingTime.get() + conn->player.getClockOffset()));
+        appLog("received packet with age " + showTimeDiff(packetAge));
+      }
       break;
     }
 

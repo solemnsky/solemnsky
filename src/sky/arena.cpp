@@ -46,7 +46,6 @@ void Player::applyDelta(const PlayerDelta &delta) {
   admin = delta.admin;
   if (delta.team) team = *delta.team;
   if (delta.latencyStats) {
-    appLog("initializing latencies");
     latency = delta.latencyStats->first;
     clockOffset = delta.latencyStats->second;
     latencyInitialized = true;
