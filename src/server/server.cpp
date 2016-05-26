@@ -165,9 +165,9 @@ void ServerExec::processPacket(ENetPeer *client,
   }
 }
 
-bool ServerExec::pollNetwork(const TimeDiff delta) {
+bool ServerExec::poll() {
   static ENetEvent event;
-  event = host.poll(delta);
+  event = host.poll();
 
   switch (event.type) {
     case ENET_EVENT_TYPE_NONE:
@@ -196,8 +196,9 @@ bool ServerExec::pollNetwork(const TimeDiff delta) {
 }
 
 void ServerExec::tick(const TimeDiff delta) {
-  // Tick game state.
+  // Tick game state and network host.
   shared.arena.tick(delta);
+  host.tick(delta);
 
   // Check transmission scheduling.
   if (skyDeltaTimer.cool(delta)) {
@@ -224,10 +225,6 @@ void ServerExec::tick(const TimeDiff delta) {
     shared.registerArenaDelta(latencyTracker.makeUpdate());
     latencyUpdateTimer.reset();
   }
-
-  // Poll network.
-  if (pollNetwork(delta)) return;
-  while (!pollNetwork(0)) { }
 }
 
 ServerExec::ServerExec(
@@ -257,6 +254,8 @@ void ServerExec::run() {
   sf::Clock clock;
   while (running) {
     tick(clock.restart().asSeconds());
+    while (!poll()) { }
+
     sf::sleep(sf::milliseconds(16));
   }
 }

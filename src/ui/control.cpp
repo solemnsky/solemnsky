@@ -59,8 +59,11 @@ Control::Control(AppState &appState) :
     appState(appState),
     quitting(false) { }
 
-void Control::poll(const TimeDiff delta) {
-  for (auto child : children) child->poll(delta);
+bool Control::poll() {
+  for (auto child : children) {
+    while (!child->poll()) { };
+  }
+  return true;
 }
 
 void Control::tick(const TimeDiff delta) {
@@ -146,7 +149,7 @@ void ControlExec::tick() {
 
   profileClock.restart();
   rollingTickTime += cycleDelta;
-  ctrl->poll(cycleDelta);
+  while (!ctrl->poll()) { }
   while (rollingTickTime > tickStep) {
     ctrl->tick(tickStep);
     rollingTickTime -= tickStep;

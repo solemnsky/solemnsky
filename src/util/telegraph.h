@@ -74,7 +74,9 @@ class Host {
   void transmit(ENetPeer *const peer,
                 unsigned char *data, size_t size,
                 const ENetPacketFlag flag);
-  ENetEvent poll(const float delta);
+
+  ENetEvent poll();
+  void tick(const TimeDiff delta);
 
   // Expressed in average kB per second.
   Kbps incomingBandwidth() const;

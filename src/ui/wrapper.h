@@ -46,10 +46,10 @@ class ExecWrapper: public Control {
               std::function<std::unique_ptr<Control>(AppState &)>
               mainCtrlCtor);
 
-  virtual void poll(float delta) override final;
-  virtual void tick(float delta) override final;
-  virtual void render(Frame &f) override final;
-  virtual bool handle(const sf::Event &event) override final;
+  bool poll() override final;
+  void tick(const TimeDiff delta) override final;
+  void render(Frame &f) override final;
+  bool handle(const sf::Event &event) override final;
 };
 }
 
