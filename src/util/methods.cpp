@@ -23,21 +23,28 @@
 #include <math.h>
 #include <iostream>
 #include <cmath>
+#include <boost/format.hpp>
 #include "methods.h"
 
 /**
  * Displaying our float units.
  */
 std::string showTime(const Time delta) {
-  return std::to_string(delta);
+  std::stringstream str;
+  str << boost::format("%.1f") % delta << "s";
+  return str.str();
 }
 
 std::string showTimeDiff(const TimeDiff delta) {
-  return std::to_string(delta);
+  std::stringstream str;
+  str << boost::format("%.2f") % (delta * 1000) << "ms";
+  return str.str();
 }
 
 std::string showKbps(const Kbps rate) {
-  return std::to_string(rate);
+  std::stringstream str;
+  str << boost::format("%.1f") % rate << "kBps";
+  return str.str();
 }
 
 /**
