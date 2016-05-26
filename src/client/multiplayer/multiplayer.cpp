@@ -134,11 +134,11 @@ void Multiplayer::printDebug(Printer &p) {
   }
 }
 
-void Multiplayer::poll(const float delta) {
-  core.poll(delta);
+bool Multiplayer::poll() {
+  return core.poll();
 }
 
-void Multiplayer::tick(const float delta) {
+void Multiplayer::tick(const TimeDiff delta) {
   core.tick(delta);
 
   if (core.isDisconnected()) quitting = true;

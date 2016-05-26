@@ -72,11 +72,11 @@ Page &Client::referencePage(const PageType type) {
   return homePage;
 }
 
-void Client::poll(const float delta) {
+bool Client::poll() {
   if (shared.game) {
-    shared.game->poll(delta);
+    while (!shared.game->poll()) { };
   }
-  ui::Control::poll(delta);
+  return ui::Control::poll();
 }
 
 void Client::tick(const float delta) {

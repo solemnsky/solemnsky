@@ -38,18 +38,20 @@ ExecWrapper::ExecWrapper(
   loadSplashResources();
 }
 
-void ExecWrapper::poll(float delta) {
+bool ExecWrapper::poll() {
   if (!mainCtrl && drewScreen && !loadingDone) {
     loadResources();
     loadingDone = true;
   }
-  ui::Control::poll(delta);
+
   if (mainCtrl) {
     quitting = mainCtrl->quitting;
   }
+
+  return ui::Control::poll();
 }
 
-void ExecWrapper::tick(float delta) {
+void ExecWrapper::tick(const TimeDiff delta) {
   ui::Control::tick(delta);
 }
 
