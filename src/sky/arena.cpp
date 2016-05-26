@@ -34,6 +34,7 @@ Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     admin(initializer.admin),
     team(initializer.team),
 
+    latencyInitialized(false),
     latency(0),
     clockOffset(0),
 
@@ -44,8 +45,12 @@ void Player::applyDelta(const PlayerDelta &delta) {
   if (delta.nickname) nickname = *delta.nickname;
   admin = delta.admin;
   if (delta.team) team = *delta.team;
-  if (delta.latency) latency = *delta.latency;
-  if (delta.clockOffset) clockOffset = *delta.clockOffset;
+  if (delta.latencyStats) {
+    appLog("initializing latencies");
+    latency = delta.latencyStats->first;
+    clockOffset = delta.latencyStats->second;
+    latencyInitialized = true;
+  }
 }
 
 PlayerInitializer Player::captureInitializer() const {
@@ -73,6 +78,10 @@ bool Player::isAdmin() const {
 
 Team Player::getTeam() const {
   return team;
+}
+
+bool Player::latencyIsCalculated() const {
+  return latencyInitialized;
 }
 
 TimeDiff Player::getLatency() const {
