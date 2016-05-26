@@ -37,7 +37,10 @@ class MultiplayerGame: public MultiplayerView {
   sky::SkyRender skyRender;
   const sky::Participation &participation;
 
+  // Helper subroutines.
   void doClientAction(const ClientAction action, const bool state);
+  void printScores(ui::TextFrame &tf, const sky::Team team);
+  void renderScoreboard(ui::Frame &f);
 
  public:
   MultiplayerGame(ClientShared &shared, MultiplayerCore &connection);
