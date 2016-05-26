@@ -56,14 +56,13 @@ struct PlayerDelta {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(nickname, admin, team, latency, clockOffset);
+    ar(nickname, admin, team, latencyStats);
   }
 
   optional<std::string> nickname;
   bool admin;
   optional<Team> team;
-  optional<TimeDiff> latency;
-  optional<Time> clockOffset;
+  optional<std::pair<TimeDiff, Time>> latencyStats;
 
 };
 
@@ -83,6 +82,7 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
   std::map<PID, void *> data; // this is a good and not a bad idea
 
   // Timing stats.
+  bool latencyInitialized;
   TimeDiff latency;
   Time clockOffset;
 
@@ -103,6 +103,8 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
   std::string getNickname() const;
   bool isAdmin() const;
   Team getTeam() const;
+
+  bool latencyIsCalculated() const;
   TimeDiff getLatency() const;
   Time getClockOffset() const;
 

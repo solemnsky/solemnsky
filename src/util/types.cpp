@@ -27,7 +27,7 @@
 
 TimeStats::TimeStats(const RollingSampler<TimeDiff> &sampler) :
     min(sampler.min()),
-    mean(std::round(sampler.mean<TimeDiff>())),
+    mean(sampler.mean<TimeDiff>()),
     max(sampler.max()) { }
 
 std::string TimeStats::print() const {

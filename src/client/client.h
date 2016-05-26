@@ -64,7 +64,7 @@ class Client: public ui::Control {
   Client(ui::AppState &appState);
 
   // Control impl.
-  void poll(float delta) override;
+  bool poll() override;
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;

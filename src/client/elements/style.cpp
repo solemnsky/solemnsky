@@ -24,10 +24,10 @@
 Style::Base::Base() :
     pageSize(1600, 900),
 
-    normalText(40, {},
+    normalText(30, {},
                ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
                ResID::Font),
-    debugText(30, {},
+    debugText(25, {},
               ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
               ResID::Font),
 
@@ -41,9 +41,7 @@ Style::Base::Base() :
 
     heatRate(10),
 
-    smallFontSize(20),
-    normalFontSize(40),
-    largeFontSize(60),
+    normalFontSize(30),
 
     pageMargins(50),
     pageBgColor{136, 156, 255},
@@ -150,6 +148,9 @@ Style::Multi::Multi(const Style::Base &base) :
     playerListPos(1250, 200),
     lobbyButtonPos(lobbyChatWidth + 100, lobbyTopMargin),
     lobbyButtonSep(0, 100),
+    scoreboardOffset(100, 100),
+    scoreboardDisplay(0, 0, 1400, 700),
+    scoreboardPaddingTop(100),
 
     chatCutoff(500),
     chatIngameCutoff(150),
