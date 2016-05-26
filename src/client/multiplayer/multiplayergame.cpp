@@ -39,6 +39,9 @@ void MultiplayerGame::doClientAction(const ClientAction action,
 void MultiplayerGame::printScores(ui::TextFrame &tf, const sky::Team team) {
   const sf::Color color = (team == 1) ? sf::Color::Red : sf::Color::Blue;
 
+  tf.setColor(color);
+  tf.printLn((team == 1) ? "red team" : "blue team");
+
   conn.arena.forPlayers([&](const sky::Player &player) {
     if (player.getTeam() == team) {
       tf.setColor(color);
@@ -54,6 +57,14 @@ void MultiplayerGame::printScores(ui::TextFrame &tf, const sky::Team team) {
   });
 }
 
+void MultiplayerGame::printSpectators(ui::TextFrame &tf) {
+  tf.setColor(style.base.textColor);
+  tf.print("spectators: ");
+  conn.arena.forPlayers([&](const sky::Player &player) {
+    tf.print(player.getNickname() + " ");
+  });
+}
+
 void MultiplayerGame::renderScoreboard(ui::Frame &f) {
   f.drawSprite(textureOf(ResID::ScoreOverlay),
                style.multi.scoreboardOffset,
@@ -63,11 +74,19 @@ void MultiplayerGame::renderScoreboard(ui::Frame &f) {
           + sf::Vector2f(0, style.multi.scoreboardPaddingTop),
       [&](ui::TextFrame &p) { printScores(p, 1); },
       style.base.normalText);
+
   f.drawText(
       style.multi.scoreboardOffset
           + sf::Vector2f(style.multi.scoreboardDisplay.width / 2,
                          style.multi.scoreboardPaddingTop),
       [&](ui::TextFrame &p) { printScores(p, 2); },
+      style.base.normalText);
+
+  f.drawText(
+      style.multi.scoreboardOffset +
+          sf::Vector2f(0, style.multi.scoreboardDisplay.height
+              - (2 * style.base.normalFontSize)),
+      [&](ui::TextFrame &tf) { printSpectators(tf); },
       style.base.normalText);
 }
 
