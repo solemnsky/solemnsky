@@ -22,7 +22,7 @@
 #include "util/types.h"
 #include "scoreboard.h"
 #include "participation.h"
-#include "sky.h"
+#include "skyhandle.h"
 #include "arena.h"
 #include <map>
 
