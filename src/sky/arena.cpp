@@ -206,13 +206,18 @@ PID Arena::allocPid() const {
   return smallestUnused(players);
 }
 
-std::string Arena::allocNickname(const std::string &requested) const {
+std::string Arena::allocNickname(const std::string &requested,
+                                 const optional<PID> ignorePid) const {
   std::stringstream readStream;
   PID nickNumber;
   const size_t rsize = requested.size();
   std::vector<PID> usedNumbers;
 
   for (const auto &player : players) {
+    if (ignorePid) {
+      if (player.first == *ignorePid) continue;
+    }
+
     const std::string &name = player.second.getNickname();
     if (name.size() < rsize) continue;
     if (name.substr(0, rsize) != requested) continue;
@@ -400,6 +405,11 @@ ArenaDelta Arena::connectPlayer(const std::string &requestedNick) {
   Player &player = joinPlayer(
       PlayerInitializer(allocPid(), allocNickname(requestedNick)));
   return ArenaDelta::Join(player.captureInitializer());
+}
+
+std::string Arena::allocNewNickname(const Player &player,
+                                    const std::string &requestedNick) {
+  return allocNickname(requestedNick, player.pid);
 }
 
 void Arena::tick(const TimeDiff delta) {

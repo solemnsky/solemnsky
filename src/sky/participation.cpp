@@ -199,8 +199,8 @@ void Plane::onEndContact(const BodyTag &body) {
 }
 
 void Plane::applyInput(const ParticipationInput &input) {
-  if (input.physical)
-    state.physical = input.physical.get();
+  if (input.planeState)
+    state.applyInput(input.planeState.get());
 }
 
 Plane::Plane(Physics &physics,
@@ -341,7 +341,7 @@ optional<ParticipationInput> Participation::collectInput() {
   }
   if (plane) {
     useful = true;
-    input.physical = plane->getState().physical;
+    input.planeState = plane->getState().collectInput();
   }
   if (useful) return input;
   else return {};

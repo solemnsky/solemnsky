@@ -123,6 +123,20 @@ float PlaneState::requestEnergy(const float reqEnergy) {
   return (initEnergy - energy) / reqEnergy;
 }
 
+struct PlaneStateInput PlaneState::collectInput() const {
+  PlaneStateInput input;
+  input.physical = physical;
+  input.throttle = throttle;
+  input.stalled = stalled;
+  return input;
+}
+
+void PlaneState::applyInput(const struct PlaneStateInput &input) {
+  physical = input.physical;
+  throttle = input.throttle;
+  stalled = input.stalled;
+}
+
 /**
  * PlaneControls.
  */
