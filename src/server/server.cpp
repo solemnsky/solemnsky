@@ -218,8 +218,7 @@ void ServerExec::tick(const TimeDiff delta) {
       if (sky::Player *player = shared.playerFromPeer(peer)) {
         shared.sendToClient(
             peer, sky::ServerPacket::DeltaSky(
-                // shared.skyHandle.respectAuthority(handleDelta, *player),
-                handleDelta,
+                shared.skyHandle.respectAuthority(handleDelta, *player),
                 shared.arena.getUptime()));
       } else {
         appLog("peer attached to no client");
