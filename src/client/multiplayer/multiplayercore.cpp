@@ -287,8 +287,11 @@ void MultiplayerCore::tick(const float delta) {
   if (conn) {
     if (auto &sky = conn->getSky()) {
       if (participationInputTimer.cool(delta)) {
-        transmit(sky::ClientPacket::ReqInput(
-            sky->getParticipation(conn->player).collectInput()));
+        const auto input = sky->getParticipation(conn->player).collectInput();
+        if (input) {
+          transmit(sky::ClientPacket::ReqInput(input.get()));
+          participationInputTimer.reset();
+        }
       }
     }
 
