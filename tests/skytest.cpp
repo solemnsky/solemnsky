@@ -41,6 +41,21 @@ TEST_F(SkyTest, InputTest) {
     ASSERT_EQ(participation.getControls().getState<sky::Action::Left>(), true);
   }
 
+  // We can collect inputs from Participations.
+  {
+    sky::Arena remoteArena(arena.captureInitializer());
+    sky::Sky remoteSky(remoteArena, sky.captureInitializer());
+    sky::Player &remotePlayer = *remoteArena.getPlayer(0);
+    remotePlayer.doAction(sky::Action::Right, true);
+
+    optional<sky::ParticipationInput> input =
+        remoteSky.getParticipation(remotePlayer).collectInput();
+    ASSERT_EQ(bool(input), true);
+    participation.applyInput(input.get());
+
+    ASSERT_EQ(participation.getControls().getState<sky::Action::Right>(), true);
+  }
+
 }
 
 /**
@@ -76,7 +91,7 @@ TEST_F(SkyTest, AuthorityTest) {
     participation.applyInput(input);
 
     auto delta = sky.collectDelta();
-//    remoteSky.applyDelta(sky.respectAuthority(delta, player));
+    remoteSky.applyDelta(sky.respectAuthority(delta, player));
 
     ASSERT_EQ(remoteParticip.getPlane()->getState().physical.pos.x, 200);
   }
