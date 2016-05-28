@@ -20,7 +20,7 @@
 Tutorial::Tutorial(ClientShared &state) :
     Game(state, "tutorial"),
     arena(sky::ArenaInit("tutorial", "ball_funnelpark")),
-    sky(arena, sky::SkyInitializer("ball_funnelpark")),
+    sky(arena, sky::SkyInit("ball_funnelpark")),
     skyRender(shared, arena, sky) {
   areChildComponents({&skyRender});
   arena.connectPlayer("offline player");

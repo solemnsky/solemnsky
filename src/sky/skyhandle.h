@@ -29,7 +29,7 @@ namespace sky {
 
 struct SkyHandleInit {
   SkyHandleInit() = default;
-  explicit SkyHandleInit(const SkyInitializer &initializer);
+  explicit SkyHandleInit(const SkyInit &initializer);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -38,7 +38,7 @@ struct SkyHandleInit {
 
   bool verifyStructure() const;
 
-  optional<SkyInitializer> initializer;
+  optional<SkyInit> initializer;
 };
 
 /**
@@ -55,7 +55,7 @@ struct SkyHandleDelta {
 
   bool verifyStructure() const;
 
-  optional<SkyInitializer> initializer;
+  optional<SkyInit> initializer;
   optional<SkyDelta> delta;
 };
 

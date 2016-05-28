@@ -72,7 +72,7 @@ struct ParticipationDelta: public VerifyStructure {
  * Changes a client can apply to a server's Participation record for that
  * client.
  */
-struct ParticipationInput: public VerifyStructure {
+struct ParticipationInput {
   ParticipationInput() = default;
 
   template<typename Archive>
@@ -166,18 +166,18 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   Participation() = delete;
   Participation(Physics &physics, const ParticipationInit &initializer);
 
-  // Networked impl.
+  // Networked impl (for Sky).
   void applyDelta(const ParticipationDelta &delta) override;
   ParticipationInit captureInitializer() const override;
   ParticipationDelta collectDelta();
-
-  void applyInput(const ParticipationInput &input);
 
   // User API.
   const optional<Plane> &getPlane() const;
   const std::forward_list<Prop> &getProps() const;
   const PlaneControls &getControls() const;
   bool isSpawned() const;
+
+  void applyInput(const ParticipationInput &input);
 
 };
 
