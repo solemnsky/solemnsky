@@ -15,20 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "arena.h"
 #include "sky.h"
 #include "util/printer.h"
 
 namespace sky {
 
 /**
- * SkyInitializer.
+ * SkyInit.
  */
 
-SkyInitializer::SkyInitializer(const MapName &mapName) :
+SkyInit::SkyInit(const MapName &mapName) :
     mapName(mapName) { }
 
-bool SkyInitializer::verifyStructure() const {
+bool SkyInit::verifyStructure() const {
   return verifyMap(participations);
 }
 
@@ -92,7 +91,7 @@ void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
     body2.plane->onEndContact(body1);
 }
 
-Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
+Sky::Sky(Arena &arena, const SkyInit &initializer) :
     Subsystem(arena),
     Networked(initializer),
     map(initializer.mapName),
@@ -116,8 +115,8 @@ void Sky::applyDelta(const SkyDelta &delta) {
   }
 }
 
-SkyInitializer Sky::captureInitializer() const {
-  SkyInitializer initializer;
+SkyInit Sky::captureInitializer() const {
+  SkyInit initializer;
   initializer.mapName = map.name;
   for (const auto &participation : participations)
     initializer.participations.emplace(
@@ -134,101 +133,29 @@ SkyDelta Sky::collectDelta() {
   return delta;
 }
 
+SkyDelta Sky::respectAuthority(const SkyDelta &delta,
+                               const Player &player) const {
+  SkyDelta newDelta;
+
+  for (auto pDelta : delta.participations) {
+    if (pDelta.first == player.pid) {
+      newDelta.participations.emplace(
+          pDelta.first,
+          pDelta.second.respectClientAuthority());
+    } else {
+      newDelta.participations.emplace(pDelta.first, pDelta.second);
+    }
+  }
+
+  return newDelta;
+}
+
 const Map &Sky::getMap() const {
   return map;
 }
 
-const Participation &Sky::getParticipation(const Player &player) const {
+Participation &Sky::getParticipation(const Player &player) const {
   return getPlayerData(player);
-}
-
-/**
- * SkyHandleInit.
- */
-
-SkyHandleInit::SkyHandleInit(
-    const SkyInitializer &initializer) :
-    initializer(initializer) { }
-
-bool SkyHandleInit::verifyStructure() const {
-  return verifyValue(initializer);
-}
-
-/**
- * SkyHandleDelta.
- */
-
-bool SkyHandleDelta::verifyStructure() const {
-  if (bool(initializer) and bool(delta)) return false;
-
-  if (initializer) return verifyValue(initializer.get());
-  if (delta) return verifyValue(delta.get());
-  return true;
-}
-
-/**
- * SkyHandle.
- */
-
-SkyHandle::SkyHandle(Arena &arena, const SkyHandleInit &initializer) :
-    Subsystem(arena),
-    Networked(initializer),
-    skyIsNew(false) {
-  if (const auto &skyInit = initializer.initializer) {
-    sky.emplace(arena, skyInit.get());
-  }
-}
-
-SkyHandleInit SkyHandle::captureInitializer() const {
-  SkyHandleInit initializer;
-  if (sky) {
-    initializer.initializer = sky->captureInitializer();
-  }
-  return initializer;
-}
-
-void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
-  if (delta.initializer) {
-    sky.emplace(arena, delta.initializer.get());
-    caller.doStartGame();
-  }
-  if (sky) {
-    if (delta.delta) sky->applyDelta(delta.delta.get());
-    else {
-      sky.reset();
-      caller.doEndGame();
-    }
-  }
-}
-
-SkyHandleDelta SkyHandle::collectDelta() {
-  SkyHandleDelta delta;
-  if (sky and skyIsNew) {
-    delta.initializer = sky->captureInitializer();
-    skyIsNew = false;
-  } 
-  if (sky) delta.delta = sky->collectDelta();
-  return delta;
-}
-
-void SkyHandle::start() {
-  stop();
-  sky.emplace(arena, SkyInitializer(arena.getNextMap()));
-  skyIsNew = true;
-  caller.doStartGame();
-}
-
-void SkyHandle::stop() {
-  if (sky) sky.reset();
-  caller.doEndGame();
-}
-
-const optional<Sky> &SkyHandle::getSky() const {
-  return sky;
-}
-
-bool SkyHandle::isActive() const {
-  return bool(sky);
 }
 
 }

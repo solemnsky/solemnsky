@@ -56,7 +56,7 @@ void MultiplayerLobby::tick(float delta) {
 void MultiplayerLobby::render(ui::Frame &f) {
   f.drawSprite(textureOf(ResID::Lobby), {0, 0}, {0, 0, 1600, 900});
 
-  mShared.drawEventLog(f, style.multi.chatCutoff);
+  core.drawEventLog(f, style.multi.chatCutoff);
   f.drawText(
       style.multi.playerListPos, [&](Printer &p) {
         conn.arena.forPlayers([&](const sky::Player &player) {
@@ -90,13 +90,13 @@ void MultiplayerLobby::signalRead() {
   ui::Control::signalRead();
 
   if (specButton.clickSignal)
-    mShared.requestTeamChange(0);
+    core.requestTeamChange(0);
   if (redButton.clickSignal)
-    mShared.requestTeamChange(1);
+    core.requestTeamChange(1);
   if (blueButton.clickSignal)
-    mShared.requestTeamChange(2);
+    core.requestTeamChange(2);
   if (chatInput.inputSignal) {
-    mShared.handleChatInput(chatInput.inputSignal.get());
+    core.handleChatInput(chatInput.inputSignal.get());
   }
 }
 

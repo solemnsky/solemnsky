@@ -142,5 +142,13 @@ Movement PlaneControls::rotMovement() const {
                      getState<Action::Right>());
 }
 
+bool operator==(const PlaneControls &x, const PlaneControls &y) {
+  return x.controls == y.controls;
+}
+
+bool operator!=(const PlaneControls &x, const PlaneControls &y) {
+  return !(x == y);
+}
+
 }
 

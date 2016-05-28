@@ -134,6 +134,7 @@ struct PlaneState {
  * rest of the Participation's state.
  */
 struct PlaneControls {
+  friend bool operator==(const PlaneControls &x, const PlaneControls &y);
  private:
   std::bitset<size_t(Action::MAX)> controls;
 
@@ -157,8 +158,13 @@ struct PlaneControls {
   template<Action action>
   bool getState() const { return controls[size_t(action)]; }
 
+
   Movement rotMovement() const;
 };
+
+bool operator==(const PlaneControls &x, const PlaneControls &y);
+bool operator!=(const PlaneControls &x, const PlaneControls &y);
+
 
 }
 

@@ -22,7 +22,7 @@ void MultiplayerGame::doClientAction(const ClientAction action,
                                      const bool state) {
   switch (action) {
     case ClientAction::Spawn: {
-      if (state) mShared.transmit(sky::ClientPacket::ReqSpawn());
+      if (state) core.transmit(sky::ClientPacket::ReqSpawn());
       break;
     }
     case ClientAction::Chat: {
@@ -114,8 +114,8 @@ void MultiplayerGame::render(ui::Frame &f) {
          participation.getPlane()->getState().physical.pos :
          sf::Vector2f(0, 0));
 
-  if (chatInput.isFocused) mShared.drawEventLog(f, style.multi.chatCutoff);
-  else mShared.drawEventLog(f, style.multi.chatIngameCutoff);
+  if (chatInput.isFocused) core.drawEventLog(f, style.multi.chatCutoff);
+  else core.drawEventLog(f, style.multi.chatIngameCutoff);
 
   ui::Control::render(f);
 
@@ -125,10 +125,9 @@ void MultiplayerGame::render(ui::Frame &f) {
 bool MultiplayerGame::handle(const sf::Event &event) {
   if (ui::Control::handle(event)) return true;
 
-  if (auto action = shared.triggerSkyAction(event)) {
-    if (participation.isSpawned()) {
-      mShared.transmit(
-          sky::ClientPacket::ReqAction(action->first, action->second));
+  if (participation.isSpawned()) {
+    if (auto action = shared.triggerSkyAction(event)) {
+      conn.player.doAction(action->first, action->second);
       return true;
     }
   }
@@ -144,7 +143,7 @@ bool MultiplayerGame::handle(const sf::Event &event) {
 void MultiplayerGame::signalRead() {
   ui::Control::signalRead();
   if (chatInput.inputSignal) {
-    mShared.handleChatInput(chatInput.inputSignal.get());
+    core.handleChatInput(chatInput.inputSignal.get());
   }
 }
 

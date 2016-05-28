@@ -2,8 +2,7 @@
 #include "sky/scoreboard.h"
 
 /**
- * Our multiplayer protocol verbs encode all network communication, and are
- * serialized through cereal.
+ * The scoreboard subsystem operates and networks properly.
  */
 class ScoreboardTest: public testing::Test {
  public:
