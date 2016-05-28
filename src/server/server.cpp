@@ -207,6 +207,16 @@ void ServerExec::tick(const TimeDiff delta) {
 
   // Check transmission scheduling.
   if (skyDeltaTimer.cool(delta)) {
+    auto handleDelta = shared.skyHandle.collectDelta();
+    for (auto peer : host.getPeers()) {
+      if (sky::Player *player = shared.playerFromPeer(peer)) {
+        shared.sendToClient(
+            peer, sky::ServerPacket::DeltaSky(
+                shared.skyHandle.respectAuthority(handleDelta, *player),
+                shared.arena.getUptime()));
+      }
+    }
+
     shared.sendToClients(sky::ServerPacket::DeltaSky(
         shared.skyHandle.collectDelta(), shared.arena.getUptime()));
     skyDeltaTimer.reset();

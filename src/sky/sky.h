@@ -105,7 +105,6 @@ class Sky
   // Networked impl.
   void applyDelta(const SkyDelta &delta) override final;
   SkyInit captureInitializer() const override final;
-
   SkyDelta collectDelta();
   SkyDelta respectAuthority(const SkyDelta &delta,
                             const Player &player) const;
