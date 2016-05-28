@@ -64,6 +64,16 @@ SkyHandleInit SkyHandle::captureInitializer() const {
   return initializer;
 }
 
+SkyHandleDelta SkyHandle::collectDelta() {
+  SkyHandleDelta delta;
+  if (sky and skyIsNew) {
+    delta.initializer = sky->captureInitializer();
+    skyIsNew = false;
+  }
+  if (sky) delta.delta = sky->collectDelta();
+  return delta;
+}
+
 void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
   if (delta.initializer) {
     sky.emplace(arena, delta.initializer.get());
@@ -78,14 +88,14 @@ void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
   }
 }
 
-SkyHandleDelta SkyHandle::collectDelta() {
-  SkyHandleDelta delta;
-  if (sky and skyIsNew) {
-    delta.initializer = sky->captureInitializer();
-    skyIsNew = false;
-  } 
-  if (sky) delta.delta = sky->collectDelta();
-  return delta;
+SkyHandleDelta SkyHandle::respectAuthority(const SkyHandleDelta &delta,
+                                           const Player &player) const {
+  SkyHandleDelta newDelta;
+  if (sky and delta.delta) {
+    newDelta.delta = sky->respectAuthority(delta.delta.get(), player);
+  }
+  newDelta.initializer = delta.initializer;
+  return newDelta;
 }
 
 void SkyHandle::start() {

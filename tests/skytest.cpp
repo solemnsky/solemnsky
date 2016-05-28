@@ -70,6 +70,15 @@ TEST_F(SkyTest, AuthorityTest) {
   // Position state is of the client's authority.
   {
     ASSERT_EQ(remoteParticip.getPlane()->getState().physical.pos.x, 200);
+
+    sky::ParticipationInput input;
+    input.physical.emplace(sky::PhysicalState({300, 300}, {}, 50, 0));
+    participation.applyInput(input);
+
+    auto delta = sky.collectDelta();
+    remoteSky.applyDelta(sky.respectAuthority(delta, player));
+
+    ASSERT_EQ(remoteParticip.getPlane()->getState().physical.pos.x, 200);
   }
 
 }

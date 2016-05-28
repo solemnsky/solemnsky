@@ -78,6 +78,9 @@ class SkyHandle
   SkyHandleInit captureInitializer() const override final;
   SkyHandleDelta collectDelta();
   void applyDelta(const SkyHandleDelta &delta) override final;
+  SkyHandleDelta respectAuthority(const SkyHandleDelta &delta,
+                                  const Player &player) const;
+
 
   // User API.
   void start();
