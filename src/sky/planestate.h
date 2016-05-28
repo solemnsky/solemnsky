@@ -94,6 +94,23 @@ struct PlaneTuning {
 };
 
 /**
+ * The subset of PlaneState's state taht a client has authority over.
+ */
+struct PlaneStateInput {
+  PlaneStateInput() = default; // for packing
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(physical, throttle, stalled);
+  }
+
+  PhysicalState physical;
+  Clamped throttle;
+  bool stalled;
+
+};
+
+/**
  * The POD variable game state of a GamePlane, that's necessary to sync over
  * the network.
  */
@@ -127,6 +144,11 @@ struct PlaneState {
   bool requestDiscreteEnergy(const float reqEnergy);
   // returns the fraction of the requested energy that was drawn
   float requestEnergy(const float reqEnergy);
+
+  // PlaneStateInput.
+  struct PlaneStateInput collectInput() const;
+  void applyInput(const struct PlaneStateInput &input);
+
 };
 
 /**
@@ -164,7 +186,6 @@ struct PlaneControls {
 
 bool operator==(const PlaneControls &x, const PlaneControls &y);
 bool operator!=(const PlaneControls &x, const PlaneControls &y);
-
 
 }
 

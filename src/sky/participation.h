@@ -80,10 +80,10 @@ struct ParticipationInput {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(physical, controls);
+    ar(planeState, controls);
   }
 
-  optional<PhysicalState> physical;
+  optional<PlaneStateInput> planeState;
   optional<PlaneControls> controls;
 
 };

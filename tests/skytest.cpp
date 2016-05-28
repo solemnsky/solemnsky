@@ -28,7 +28,9 @@ TEST_F(SkyTest, InputTest) {
   // We can modify position and control state.
   {
     sky::ParticipationInput input;
-    input.physical.emplace(sky::PhysicalState({300, 300}, {}, 50, 0));
+    sky::PlaneStateInput stateInput;
+    stateInput.physical = sky::PhysicalState({300, 300}, {}, 50, 0);
+    input.planeState.emplace(stateInput);
 
     sky::PlaneControls controls(participation.getControls());
     controls.doAction(sky::Action::Left, true);
@@ -64,7 +66,6 @@ TEST_F(SkyTest, InputTest) {
 TEST_F(SkyTest, AuthorityTest) {
   arena.connectPlayer("nameless plane");
   auto &player = *arena.getPlayer(0);
-  auto &participation = sky.getParticipation(player);
 
   sky::Arena remoteArena{arena.captureInitializer()};
   sky::Sky remoteSky{remoteArena, sky.captureInitializer()};
@@ -87,8 +88,9 @@ TEST_F(SkyTest, AuthorityTest) {
     ASSERT_EQ(remoteParticip.getPlane()->getState().physical.pos.x, 200);
 
     sky::ParticipationInput input;
-    input.physical.emplace(sky::PhysicalState({300, 300}, {}, 50, 0));
-    participation.applyInput(input);
+    sky::PlaneStateInput stateInput;
+    stateInput.physical = sky::PhysicalState({300, 300}, {}, 50, 0);
+    input.planeState.emplace(stateInput);
 
     auto delta = sky.collectDelta();
     remoteSky.applyDelta(sky.respectAuthority(delta, player));
