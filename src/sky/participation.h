@@ -36,8 +36,8 @@ class SkyHandle;
 struct ParticipationInit {
   ParticipationInit();
   ParticipationInit(const PlaneControls &controls,
-                const PlaneTuning &tuning,
-                const PlaneState &state);
+                    const PlaneTuning &tuning,
+                    const PlaneState &state);
   ParticipationInit(const PlaneControls &controls);
 
   template<typename Archive>
@@ -53,7 +53,7 @@ struct ParticipationInit {
  * Delta for Participation's Networked impl.
  */
 struct ParticipationDelta: public VerifyStructure {
-  ParticipationDelta();
+  ParticipationDelta() = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -65,6 +65,24 @@ struct ParticipationDelta: public VerifyStructure {
   optional<PlaneTuning> tuning; // if the plane spawned
   optional<PlaneState> state; // if the plane is alive
   optional<PlaneControls> controls; // if the controls changed
+
+};
+
+/**
+ * Changes a client can apply to a server's Participation record for that
+ * client.
+ */
+struct ParticipationInput: public VerifyStructure {
+  ParticipationInput() = default;
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(physical, controls);
+  }
+
+  optional<PhysicalState> physical;
+  optional<PlaneControls> controls;
+
 };
 
 /**
@@ -95,6 +113,9 @@ class Plane {
   void postPhysics(const TimeDiff delta);
   void onBeginContact(const BodyTag &body);
   void onEndContact(const BodyTag &body);
+
+  // Applying an input.
+  void applyInput(const ParticipationInput &input);
 
  public:
   Plane() = delete;
@@ -149,6 +170,8 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   void applyDelta(const ParticipationDelta &delta) override;
   ParticipationInit captureInitializer() const override;
   ParticipationDelta collectDelta();
+
+  void applyInput(const ParticipationInput &input);
 
   // User API.
   const optional<Plane> &getPlane() const;

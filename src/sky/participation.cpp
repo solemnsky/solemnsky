@@ -45,8 +45,6 @@ ParticipationInit::ParticipationInit(
  * ParticipationDelta.
  */
 
-ParticipationDelta::ParticipationDelta() { }
-
 bool ParticipationDelta::verifyStructure() const {
   return imply(bool(tuning), bool(state));
 }
@@ -186,9 +184,16 @@ void Plane::postPhysics(const TimeDiff delta) {
 }
 
 void Plane::onBeginContact(const BodyTag &body) {
+
 }
 
 void Plane::onEndContact(const BodyTag &body) {
+
+}
+
+void Plane::applyInput(const ParticipationInput &input) {
+  if (input.physical)
+    state.physical = input.physical.get();
 }
 
 Plane::Plane(Physics &physics,
@@ -301,6 +306,16 @@ ParticipationDelta Participation::collectDelta() {
   }
   delta.controls = controls;
   return delta;
+}
+
+void Participation::applyInput(const ParticipationInput &input) {
+  if (input.controls) {
+    controls = input.controls.get();
+  }
+
+  if (plane) {
+    plane->applyInput(input);
+  }
 }
 
 const optional<Plane> &Participation::getPlane() const {

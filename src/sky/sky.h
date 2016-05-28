@@ -47,7 +47,7 @@ struct SkyInitializer: public VerifyStructure {
 };
 
 /**
- * Delta for Sky.
+ * Delta for Sky. Broadcast by server, applied by clients.
  */
 struct SkyDelta: public VerifyStructure {
   SkyDelta() = default;
@@ -93,10 +93,10 @@ class Sky
                const float rot) override final;
 
   // PhysicsListener impl.
-  virtual void onBeginContact(const BodyTag &body1,
-                              const BodyTag &body2) override final;
-  virtual void onEndContact(const BodyTag &body1,
-                            const BodyTag &body2) override final;
+  void onBeginContact(const BodyTag &body1,
+                      const BodyTag &body2) override final;
+  void onEndContact(const BodyTag &body1,
+                    const BodyTag &body2) override final;
 
  public:
   Sky(Arena &&arena, std::map<PID, optional<Participation>> &) = delete;
@@ -112,6 +112,5 @@ class Sky
   const Participation &getParticipation(const Player &player) const;
 
 };
-
 
 }
