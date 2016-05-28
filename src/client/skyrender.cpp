@@ -28,8 +28,9 @@ namespace sky {
  * PlayerGraphics.
  */
 
-PlaneGraphics::PlaneGraphics(const Participation &plane) :
+PlaneGraphics::PlaneGraphics(const Player &player, const Participation &plane) :
     participation(plane),
+    player(player),
     orientation(false),
     flipState(0),
     rollState(0) { }
@@ -136,7 +137,9 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                    sf::Color::Red);
                       });
 
-          planeSheet.drawIndexAtRoll(f, sf::Vector2f(200, 200), graphics.roll());
+          planeSheet.drawIndexAtRoll(f,
+                                     sf::Vector2f(200, 200),
+                                     graphics.roll());
 
           if (enableDebug) {
             const auto halfHitbox = 0.5f * tuning.hitbox;
@@ -147,6 +150,8 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
     f.withTransform(sf::Transform().translate(state.physical.pos), [&]() {
       const float airspeedStall = tuning.flight.threshold /
           tuning.flight.airspeedFactor;
+      f.drawText({0, -100}, graphics.player.getNickname(), style.base.textColor,
+                 style.base.centeredText);
       renderBars(
           f,
           {mkBar(state.throttle,
@@ -177,8 +182,8 @@ void SkyRender::renderMap(ui::Frame &f) {
 
   for (const auto &obstacle : map.getObstacles()) {
     f.withTransform(sf::Transform().translate(obstacle.pos), [&]() {
-      for (auto poly : obstacle.decomposed){
-            f.drawPolyOutline(poly, sf::Color(200,200,200));
+      for (auto poly : obstacle.decomposed) {
+        f.drawPolyOutline(poly, sf::Color(200, 200, 200));
       }
       f.drawPolyOutline(obstacle.localVertices, sf::Color::White);
     });
@@ -199,8 +204,11 @@ SkyRender::~SkyRender() { }
 void SkyRender::registerPlayer(Player &player) {
   setPlayerData(
       player,
-      graphics.emplace(
-          player.pid, sky.getParticipation(player)).first->second);
+      graphics.emplace(std::piecewise_construct,
+                       std::forward_as_tuple(player.pid),
+                       std::forward_as_tuple(player,
+                                             sky.getParticipation(player)))
+          .first->second);
 }
 
 void SkyRender::unregisterPlayer(Player &player) {
