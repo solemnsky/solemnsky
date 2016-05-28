@@ -117,10 +117,20 @@ void ServerExec::processPacket(ENetPeer *client,
 
       case ClientPacket::Type::ReqPlayerDelta: {
         const PlayerDelta &delta = packet.playerDelta.get();
-        if (delta.admin && not player->isAdmin()) return;
+        sky::PlayerDelta effectedDelta;
+        if (delta.admin) {
+          if (player->isAdmin()) effectedDelta.admin = delta.admin;
+        }
+        if (delta.nickname) {
+          effectedDelta.nickname =
+              shared.arena.allocNewNickname(*player, delta.nickname.get());
+        }
+        if (delta.team) {
+          effectedDelta.team = delta.team;
+        }
         shared.registerArenaDelta(
             sky::ArenaDelta::Delta(
-                player->pid, delta));
+                player->pid, effectedDelta));
         break;
       }
 
