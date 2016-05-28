@@ -135,7 +135,19 @@ SkyDelta Sky::collectDelta() {
 
 SkyDelta Sky::respectAuthority(const SkyDelta &delta,
                                const Player &player) const {
-  return delta;
+  SkyDelta newDelta;
+
+  for (auto pDelta : delta.participations) {
+    if (pDelta.first == player.pid) {
+      newDelta.participations.emplace(
+          pDelta.first,
+          pDelta.second.respectClientAuthority());
+    } else {
+      newDelta.participations.emplace(pDelta.first, pDelta.second);
+    }
+  }
+
+  return newDelta;
 }
 
 const Map &Sky::getMap() const {

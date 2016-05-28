@@ -76,7 +76,7 @@ TEST_F(SkyTest, AuthorityTest) {
     participation.applyInput(input);
 
     auto delta = sky.collectDelta();
-    remoteSky.applyDelta(sky.respectAuthority(delta, player));
+//    remoteSky.applyDelta(sky.respectAuthority(delta, player));
 
     ASSERT_EQ(remoteParticip.getPlane()->getState().physical.pos.x, 200);
   }
