@@ -113,7 +113,7 @@ TEST_F(ArenaTest, PlayerDeltaTest) {
 }
 
 /**
- * A modified Arena can be copied to a new client with a SkyInitializer.
+ * A modified Arena can be copied to a new client with a SkyInit.
  */
 TEST_F(ArenaTest, InitializerTest) {
   arena.applyDelta(sky::ArenaDelta::Motd("some motd"));

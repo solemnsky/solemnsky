@@ -62,6 +62,9 @@ add_library(solemnsky STATIC
         src/sky/sky.cpp
         src/sky/sky.h
 
+        src/sky/skyhandle.cpp
+        src/sky/skyhandle.h
+
         src/util/methods.cpp
         src/util/methods.h
 

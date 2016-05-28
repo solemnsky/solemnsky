@@ -118,6 +118,9 @@ class MultiplayerCore: public ClientComponent {
   bool disconnecting, // trying to disconnect
       disconnected; // it's over, close the multiplayer client
 
+  // Transmission timers.
+  Cooldown participationInputTimer;
+
   // Packet processing submethod.
   void processPacket(const sky::ServerPacket &packet);
   // (returns true when the queue has been exhausted)
@@ -169,7 +172,7 @@ class MultiplayerCore: public ClientComponent {
 class MultiplayerView: public ClientComponent, public ui::Control {
  public:
   // Shared state.
-  MultiplayerCore &mShared;
+  MultiplayerCore &core;
   ArenaConnection &conn;
 
   MultiplayerView(

@@ -20,6 +20,7 @@
  */
 #pragma once
 #include <vector>
+#include <numeric>
 #include <ratio>
 #include <cmath>
 #include <SFML/System.hpp>

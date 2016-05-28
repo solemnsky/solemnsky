@@ -188,7 +188,10 @@ MultiplayerCore::MultiplayerCore(
     host(tg::HostType::Client),
     server(nullptr),
 
-    disconnecting(false), disconnected(false) {
+    disconnecting(false),
+    disconnected(false),
+
+    participationInputTimer(0.04) {
   host.connect(serverHostname, serverPort);
 }
 
@@ -281,7 +284,19 @@ bool MultiplayerCore::poll() {
 void MultiplayerCore::tick(const float delta) {
   host.tick(delta);
 
-  if (conn) conn->arena.tick(delta);
+  if (conn) {
+    if (auto &sky = conn->getSky()) {
+      if (participationInputTimer.cool(delta)) {
+        const auto input = sky->getParticipation(conn->player).collectInput();
+        if (input) {
+          transmit(sky::ClientPacket::ReqInput(input.get()));
+          participationInputTimer.reset();
+        }
+      }
+    }
+
+    conn->arena.tick(delta);
+  }
 
   if (disconnecting) {
     if (disconnectTimeout.cool(delta)) {
@@ -328,7 +343,7 @@ MultiplayerView::MultiplayerView(
     MultiplayerCore &mShared) :
     ClientComponent(shared),
     ui::Control(shared.appState),
-    mShared(mShared),
+    core(mShared),
     conn(mShared.conn.get()),
     target(target) { }
 

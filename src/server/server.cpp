@@ -108,6 +108,13 @@ void ServerExec::processPacket(ENetPeer *client,
     // the player is in the arena
 
     switch (packet.type) {
+      case ClientPacket::Type::Pong: {
+        latencyTracker.registerPong(*player,
+                                    packet.pingTime.get(),
+                                    packet.pongTime.get());
+        break;
+      }
+
       case ClientPacket::Type::ReqPlayerDelta: {
         const PlayerDelta &delta = packet.playerDelta.get();
         if (delta.admin && not player->isAdmin()) return;
@@ -117,21 +124,23 @@ void ServerExec::processPacket(ENetPeer *client,
         break;
       }
 
-      case ClientPacket::Type::ReqAction: {
-        player->doAction(packet.action.get(), packet.state.get());
+      case ClientPacket::Type::ReqInput: {
+        if (auto &sky = shared.skyHandle.getSky()) {
+          sky->getParticipation(*player).applyInput(
+              packet.participationInput.get());
+        }
+        break;
+      }
+
+      case ClientPacket::Type::ReqSpawn: {
+        appLog("got spawn");
+        player->spawn({}, {200, 200}, 0);
         break;
       }
 
       case ClientPacket::Type::Chat: {
         shared.sendToClients(sky::ServerPacket::Chat(
             player->pid, packet.stringData.get()));
-        break;
-      }
-
-      case ClientPacket::Type::Pong: {
-        latencyTracker.registerPong(*player,
-                                    packet.pingTime.get(),
-                                    packet.pongTime.get());
         break;
       }
 
@@ -204,8 +213,17 @@ void ServerExec::tick(const TimeDiff delta) {
 
   // Check transmission scheduling.
   if (skyDeltaTimer.cool(delta)) {
-    shared.sendToClients(sky::ServerPacket::DeltaSky(
-        shared.skyHandle.collectDelta(), shared.arena.getUptime()));
+    auto handleDelta = shared.skyHandle.collectDelta();
+    for (auto peer : host.getPeers()) {
+      if (sky::Player *player = shared.playerFromPeer(peer)) {
+        shared.sendToClient(
+            peer, sky::ServerPacket::DeltaSky(
+                shared.skyHandle.respectAuthority(handleDelta, *player),
+                shared.arena.getUptime()));
+      } else {
+        appLog("peer attached to no client");
+      }
+    }
     skyDeltaTimer.reset();
   }
 
