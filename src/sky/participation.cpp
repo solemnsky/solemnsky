@@ -248,20 +248,20 @@ void Participation::doAction(const Action action, bool actionState) {
 
 void Participation::prePhysics() {
   if (plane) plane->prePhysics();
-  for (auto &prop : props) prop.writeToBody();
+  for (auto &prop : props) prop.second.writeToBody();
 }
 
 void Participation::postPhysics(const float delta) {
   if (plane) plane->postPhysics(delta);
 
   for (auto &prop : props) {
-    prop.readFromBody();
-    prop.tick(delta);
+    prop.second.readFromBody();
+    prop.second.tick(delta);
   }
 
-  props.remove_if([](Prop &prop) {
-    return prop.lifetime > 1;
-  });
+  // props.remove_if([](Prop &prop) {
+  // return prop.lifetime > 1;
+  // });
 }
 
 void Participation::spawn(const PlaneTuning &tuning,
@@ -321,6 +321,22 @@ ParticipationDelta Participation::collectDelta() {
   return delta;
 }
 
+const optional<Plane> &Participation::getPlane() const {
+  return plane;
+}
+
+const std::map<PID, Prop> &Participation::getProps() const {
+  return props;
+}
+
+const PlaneControls &Participation::getControls() const {
+  return controls;
+}
+
+bool Participation::isSpawned() const {
+  return bool(plane);
+}
+
 void Participation::applyInput(const ParticipationInput &input) {
   if (input.controls) {
     controls = input.controls.get();
@@ -347,21 +363,6 @@ optional<ParticipationInput> Participation::collectInput() {
   else return {};
 }
 
-const optional<Plane> &Participation::getPlane() const {
-  return plane;
-}
-
-const std::forward_list<Prop> &Participation::getProps() const {
-  return props;
-}
-
-const PlaneControls &Participation::getControls() const {
-  return controls;
-}
-
-bool Participation::isSpawned() const {
-  return bool(plane);
-}
 
 }
 

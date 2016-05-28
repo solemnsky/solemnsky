@@ -25,9 +25,31 @@
 namespace sky {
 
 /**
+ * Initializer for Prop.
+ */
+struct PropInit {
+  template<typename Archive>
+  void serialize(Archive &ar) {
+
+  }
+
+};
+
+/**
+ * Delta for Prop.
+ */
+struct PropDelta {
+  template<typename Archive>
+  void serialize(Archive &ar) {
+
+  }
+
+};
+
+/**
  * Currently just a bullet.
  */
-class Prop {
+class Prop: public Networked<PropInit, PropDelta> {
   friend class Participation;
  private:
   // State.
@@ -44,9 +66,13 @@ class Prop {
  public:
   Prop() = delete;
   Prop(Physics &physics,
-       const sf::Vector2f &pos,
-       const sf::Vector2f &vel);
+       const PropInit &initializer);
   ~Prop();
+
+  // Networked API.
+  PropInit captureInitializer() const override final;
+  void applyDelta(const PropDelta &delta) override final;
+  PropDelta collectDelta();
 
   // User API.
   const PhysicalState &getPhysical() const;
