@@ -33,8 +33,9 @@ namespace sky {
  * Graphics state associated with a Participation.
  */
 struct PlaneGraphics {
-  PlaneGraphics(const Participation &plane);
+  PlaneGraphics(const Player &player, const Participation &plane);
   const Participation &participation;
+  const Player &player;
 
   bool orientation;
   float flipState, rollState; // these two values contribute to the roll

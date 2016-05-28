@@ -24,6 +24,9 @@
 Style::Base::Base() :
     pageSize(1600, 900),
 
+    centeredText(30, {},
+                 ui::HorizontalAlign::Center, ui::VerticalAlign::Top,
+                 ResID::Font),
     normalText(30, {},
                ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
                ResID::Font),
