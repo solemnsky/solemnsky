@@ -125,9 +125,11 @@ void MultiplayerGame::render(ui::Frame &f) {
 bool MultiplayerGame::handle(const sf::Event &event) {
   if (ui::Control::handle(event)) return true;
 
-  if (auto action = shared.triggerSkyAction(event)) {
-    conn.player.doAction(action->first, action->second);
-    return true;
+  if (participation.isSpawned()) {
+    if (auto action = shared.triggerSkyAction(event)) {
+      conn.player.doAction(action->first, action->second);
+      return true;
+    }
   }
 
   if (auto clientAction = shared.triggerClientAction(event)) {

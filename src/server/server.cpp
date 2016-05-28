@@ -108,6 +108,13 @@ void ServerExec::processPacket(ENetPeer *client,
     // the player is in the arena
 
     switch (packet.type) {
+      case ClientPacket::Type::Pong: {
+        latencyTracker.registerPong(*player,
+                                    packet.pingTime.get(),
+                                    packet.pongTime.get());
+        break;
+      }
+
       case ClientPacket::Type::ReqPlayerDelta: {
         const PlayerDelta &delta = packet.playerDelta.get();
         if (delta.admin && not player->isAdmin()) return;
@@ -125,16 +132,15 @@ void ServerExec::processPacket(ENetPeer *client,
         break;
       }
 
-      case ClientPacket::Type::Chat: {
-        shared.sendToClients(sky::ServerPacket::Chat(
-            player->pid, packet.stringData.get()));
+      case ClientPacket::Type::ReqSpawn: {
+        appLog("got spawn");
+        player->spawn({}, {200, 200}, 0);
         break;
       }
 
-      case ClientPacket::Type::Pong: {
-        latencyTracker.registerPong(*player,
-                                    packet.pingTime.get(),
-                                    packet.pongTime.get());
+      case ClientPacket::Type::Chat: {
+        shared.sendToClients(sky::ServerPacket::Chat(
+            player->pid, packet.stringData.get()));
         break;
       }
 
