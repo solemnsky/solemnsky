@@ -21,13 +21,13 @@
 namespace sky {
 
 /**
- * SkyInitializer.
+ * SkyInit.
  */
 
-SkyInitializer::SkyInitializer(const MapName &mapName) :
+SkyInit::SkyInit(const MapName &mapName) :
     mapName(mapName) { }
 
-bool SkyInitializer::verifyStructure() const {
+bool SkyInit::verifyStructure() const {
   return verifyMap(participations);
 }
 
@@ -91,7 +91,7 @@ void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
     body2.plane->onEndContact(body1);
 }
 
-Sky::Sky(Arena &arena, const SkyInitializer &initializer) :
+Sky::Sky(Arena &arena, const SkyInit &initializer) :
     Subsystem(arena),
     Networked(initializer),
     map(initializer.mapName),
@@ -115,8 +115,8 @@ void Sky::applyDelta(const SkyDelta &delta) {
   }
 }
 
-SkyInitializer Sky::captureInitializer() const {
-  SkyInitializer initializer;
+SkyInit Sky::captureInitializer() const {
+  SkyInit initializer;
   initializer.mapName = map.name;
   for (const auto &participation : participations)
     initializer.participations.emplace(
@@ -137,7 +137,7 @@ const Map &Sky::getMap() const {
   return map;
 }
 
-const Participation &Sky::getParticipation(const Player &player) const {
+Participation &Sky::getParticipation(const Player &player) const {
   return getPlayerData(player);
 }
 

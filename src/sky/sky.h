@@ -30,9 +30,9 @@ namespace sky {
 /**
  * Initializer for Sky.
  */
-struct SkyInitializer: public VerifyStructure {
-  SkyInitializer() = default;
-  SkyInitializer(const MapName &mapName);
+struct SkyInit: public VerifyStructure {
+  SkyInit() = default;
+  SkyInit(const MapName &mapName);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -68,7 +68,7 @@ struct SkyDelta: public VerifyStructure {
  */
 class Sky
     : public PhysicsListener, public Subsystem<Participation>,
-      public Networked<SkyInitializer, SkyDelta> {
+      public Networked<SkyInit, SkyDelta> {
   friend class SkyHandle;
   friend class Participation;
  private:
@@ -100,16 +100,16 @@ class Sky
 
  public:
   Sky(Arena &&arena, std::map<PID, optional<Participation>> &) = delete;
-  Sky(Arena &arena, const SkyInitializer &initializer);
+  Sky(Arena &arena, const SkyInit &initializer);
 
   // Networked impl.
   void applyDelta(const SkyDelta &delta) override final;
-  SkyInitializer captureInitializer() const override final;
+  SkyInit captureInitializer() const override final;
   SkyDelta collectDelta();
 
   // User API.
   const Map &getMap() const;
-  const Participation &getParticipation(const Player &player) const;
+  Participation &getParticipation(const Player &player) const;
 
 };
 

@@ -117,8 +117,11 @@ void ServerExec::processPacket(ENetPeer *client,
         break;
       }
 
-      case ClientPacket::Type::ReqAction: {
-        player->doAction(packet.action.get(), packet.state.get());
+      case ClientPacket::Type::ReqInput: {
+        if (auto &sky = shared.skyHandle.getSky()) {
+          sky->getParticipation(*player).applyInput(
+              packet.participationInput.get());
+        }
         break;
       }
 

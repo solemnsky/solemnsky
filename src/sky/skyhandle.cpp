@@ -24,7 +24,7 @@ namespace sky {
  */
 
 SkyHandleInit::SkyHandleInit(
-    const SkyInitializer &initializer) :
+    const SkyInit &initializer) :
     initializer(initializer) { }
 
 bool SkyHandleInit::verifyStructure() const {
@@ -90,7 +90,7 @@ SkyHandleDelta SkyHandle::collectDelta() {
 
 void SkyHandle::start() {
   stop();
-  sky.emplace(arena, SkyInitializer(arena.getNextMap()));
+  sky.emplace(arena, SkyInit(arena.getNextMap()));
   skyIsNew = true;
   caller.doStartGame();
 }
