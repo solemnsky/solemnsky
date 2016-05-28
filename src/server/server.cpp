@@ -225,9 +225,6 @@ void ServerExec::tick(const TimeDiff delta) {
         appLog("peer attached to no client");
       }
     }
-
-    shared.sendToClients(sky::ServerPacket::DeltaSky(
-        shared.skyHandle.collectDelta(), shared.arena.getUptime()));
     skyDeltaTimer.reset();
   }
 
