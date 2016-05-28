@@ -150,7 +150,12 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   optional<Plane> plane;
   PlaneControls controls;
   std::forward_list<Prop> props;
+
+  // Delta collection state.
   bool newlyAlive;
+
+  // Input collection state.
+  PlaneControls lastControls;
 
   // Helpers.
   void spawnWithState(const PlaneTuning &tuning,
@@ -180,7 +185,10 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   const PlaneControls &getControls() const;
   bool isSpawned() const;
 
+  // ParticipationInput.
   void applyInput(const ParticipationInput &input);
+  optional<ParticipationInput> collectInput();
+
 
 };
 

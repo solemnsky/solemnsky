@@ -279,6 +279,7 @@ Participation::Participation(Physics &physics,
   if (initializer.spawn)
     spawnWithState(initializer.spawn->first, initializer.spawn->second);
   controls = initializer.controls;
+  lastControls = initializer.controls;
 }
 
 void Participation::applyDelta(const ParticipationDelta &delta) {
@@ -328,6 +329,22 @@ void Participation::applyInput(const ParticipationInput &input) {
   if (plane) {
     plane->applyInput(input);
   }
+}
+
+optional<ParticipationInput> Participation::collectInput() {
+  bool useful{false};
+  ParticipationInput input;
+  if (lastControls != controls) {
+    useful = true;
+    input.controls = controls;
+    lastControls = controls;
+  }
+  if (plane) {
+    useful = true;
+    input.physical = plane->getState().physical;
+  }
+  if (useful) return input;
+  else return {};
 }
 
 const optional<Plane> &Participation::getPlane() const {
