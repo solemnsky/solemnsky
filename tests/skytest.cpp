@@ -100,4 +100,11 @@ TEST_F(SkyTest, AuthorityTest) {
 
 }
 
+/**
+ * Props can be spawned by Participations, and are Networked correctly
+ */
+TEST_F(SkyTest, PropTest) {
+
+}
+
 

@@ -53,6 +53,8 @@ void MultiplayerGame::printScores(ui::TextFrame &tf, const sky::Team team) {
       } else {
         tf.print("ping{unknown}");
       }
+
+      tf.breakLine();
     }
   });
 }
