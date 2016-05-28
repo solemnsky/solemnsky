@@ -57,14 +57,17 @@ struct ParticipationDelta: public VerifyStructure {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(tuning, state, controls);
+    ar(spawn, planeAlive, state, controls);
   }
 
   bool verifyStructure() const;
 
-  optional<PlaneTuning> tuning; // if the plane spawned
-  optional<PlaneState> state; // if the plane is alive
-  optional<PlaneControls> controls; // if the controls changed
+  optional<std::pair<PlaneTuning, PlaneState>> spawn;
+  bool planeAlive;
+  optional<PlaneState> state; // client authority
+  optional<PlaneControls> controls; // client authority
+
+  ParticipationDelta respectClientAuthority() const;
 
 };
 

@@ -46,7 +46,14 @@ ParticipationInit::ParticipationInit(
  */
 
 bool ParticipationDelta::verifyStructure() const {
-  return imply(bool(tuning), bool(state));
+  return imply(bool(spawn), bool(state));
+}
+
+ParticipationDelta ParticipationDelta::respectClientAuthority() const {
+  ParticipationDelta delta;
+  delta.planeAlive = planeAlive;
+  delta.spawn = spawn;
+  return delta;
 }
 
 /**
@@ -264,10 +271,8 @@ void Participation::spawn(const PlaneTuning &tuning,
   newlyAlive = true;
 }
 
-
 Participation::Participation(Physics &physics,
-                             const ParticipationInit &initializer)
-    :
+                             const ParticipationInit &initializer) :
     Networked(initializer),
     physics(physics),
     newlyAlive(false) {
@@ -277,13 +282,14 @@ Participation::Participation(Physics &physics,
 }
 
 void Participation::applyDelta(const ParticipationDelta &delta) {
-  if (delta.tuning) {
-    spawnWithState(delta.tuning.get(), delta.state.get());
+  if (delta.spawn) {
+    spawnWithState(delta.spawn->first, delta.spawn->second);
   } else {
-    if (delta.state) {
-      if (plane) plane->state = *delta.state;
+    if (delta.planeAlive) {
+      if (plane and delta.state) plane->state = *delta.state;
     } else plane.reset();
   }
+
   if (delta.controls) {
     controls = *delta.controls;
   }
@@ -299,11 +305,17 @@ ParticipationInit Participation::captureInitializer() const {
 
 ParticipationDelta Participation::collectDelta() {
   ParticipationDelta delta;
+
+  delta.planeAlive = bool(plane);
   if (plane) {
-    delta.state = plane->state;
-    if (newlyAlive) delta.tuning = plane->tuning;
-    newlyAlive = false;
+    if (newlyAlive) {
+      delta.spawn.emplace(plane->tuning, plane->state);
+      newlyAlive = false;
+    } else {
+      delta.state.emplace(plane->state);
+    }
   }
+
   delta.controls = controls;
   return delta;
 }
