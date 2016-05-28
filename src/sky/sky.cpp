@@ -133,6 +133,11 @@ SkyDelta Sky::collectDelta() {
   return delta;
 }
 
+SkyDelta Sky::respectAuthority(const SkyDelta &delta,
+                               const Player &player) const {
+  return delta;
+}
+
 const Map &Sky::getMap() const {
   return map;
 }
@@ -140,6 +145,5 @@ const Map &Sky::getMap() const {
 Participation &Sky::getParticipation(const Player &player) const {
   return getPlayerData(player);
 }
-
 
 }
