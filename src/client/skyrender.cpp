@@ -150,7 +150,8 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
     f.withTransform(sf::Transform().translate(state.physical.pos), [&]() {
       const float airspeedStall = tuning.flight.threshold /
           tuning.flight.airspeedFactor;
-      f.drawText({0, -100}, graphics.player.getNickname(), style.base.textColor,
+      f.drawText({0, -style.skyRender.barArea.top - style.base.normalFontSize},
+                 graphics.player.getNickname(), style.base.textColor,
                  style.base.centeredText);
       renderBars(
           f,
