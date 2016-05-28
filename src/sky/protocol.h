@@ -37,7 +37,7 @@ struct ClientPacket: public VerifyStructure {
     ReqJoin, // request joining in the arena, part of the connection protocol
 
     ReqPlayerDelta, // request a change to your player data
-    ReqAction, // request to perform an action
+    ReqInput, // request an input into your sky Participation
 
     ReqSpawn, // request to spawn
 
@@ -61,10 +61,10 @@ struct ClientPacket: public VerifyStructure {
         ar(playerDelta);
         break;
       }
-      case Type::ReqAction: {
-        ar(action, state);
+      case Type::ReqInput: {
+        ar(participationInput);
         break;
-      }
+      };
       case Type::ReqSpawn: {
         break;
       }
@@ -86,7 +86,7 @@ struct ClientPacket: public VerifyStructure {
   optional<Time> pingTime, pongTime;
   optional<std::string> stringData;
   optional<PlayerDelta> playerDelta;
-  optional<Action> action;
+  optional<ParticipationInput> participationInput;
   optional<bool> state;
 
   bool verifyStructure() const override;
@@ -94,7 +94,7 @@ struct ClientPacket: public VerifyStructure {
   static ClientPacket Pong(const Time pingTime, const Time pongTime);
   static ClientPacket ReqJoin(const std::string &nickname);
   static ClientPacket ReqPlayerDelta(const PlayerDelta &playerDelta);
-  static ClientPacket ReqAction(const Action &action, const bool state);
+  static ClientPacket ReqInput(const ParticipationInput &input);
   static ClientPacket ReqSpawn();
   static ClientPacket Chat(const std::string &message);
   static ClientPacket RCon(const std::string &command);
@@ -183,6 +183,7 @@ struct ServerPacket: public VerifyStructure {
   static ServerPacket Chat(const PID pid, const std::string &chat);
   static ServerPacket Broadcast(const std::string &broadcast);
   static ServerPacket RCon(const std::string &message);
+
 };
 
 }
