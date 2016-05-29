@@ -60,7 +60,8 @@ PlaneTuning::PlaneTuning() :
 PlaneTuning::Energy::Energy() :
     thrustDrain(1),
     recharge(0.5),
-    laserGun(0.3) { }
+    laserGun(0.3),
+    primaryRecharge(4) { }
 
 PlaneTuning::Stall::Stall() :
     maxRotVel(200),

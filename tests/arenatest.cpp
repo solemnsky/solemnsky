@@ -7,7 +7,7 @@
 class ArenaTest: public testing::Test {
  public:
   ArenaTest() :
-      arena(sky::ArenaInit("home arena", "test1")) { }
+      arena(sky::ArenaInit("home arena", "test")) { }
 
   sky::Arena arena;
 };
@@ -126,7 +126,7 @@ TEST_F(ArenaTest, InitializerTest) {
   sky::Arena remoteArena(arena.captureInitializer());
 
   EXPECT_EQ(remoteArena.getName(), "home arena");
-  EXPECT_EQ(remoteArena.getNextMap(), "test1");
+  EXPECT_EQ(remoteArena.getNextMap(), "test");
   EXPECT_EQ(remoteArena.getMotd(), "some motd");
   EXPECT_EQ(remoteArena.getMode(), sky::ArenaMode::Game);
   EXPECT_EQ(remoteArena.getPlayer(0)->getNickname(), "nameless plane");

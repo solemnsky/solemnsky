@@ -21,9 +21,28 @@ void VanillaServer::tickGame(const TimeDiff delta, sky::Sky &sky) {
   arena.forPlayers([&](sky::Player &player) {
     auto &participation = sky.getParticipation(player);
     if (participation.isSpawned()) {
+      sky::Plane &plane = participation.plane.get();
+      for (auto &prop : participation.props) {
+        if (prop.second.getLifetime() > 1) {
+          prop.second.destroy();
+        }
+      }
+
+      if (plane.getState().health == 0) {
+        participation.suicide();
+      }
+
       if (participation.getControls().getState<sky::Action::Primary>()) {
-        if (participation.plane->requestDiscreteEnergy(0.5)) {
-          appLog("pewpew");
+        if (plane.getState().primaryCooldown) {
+          if (plane.requestDiscreteEnergy(0.3)) {
+            auto &physical = plane.getState().physical;
+            const auto dir = VecMath::fromAngle(physical.rot);
+            participation.spawnProp(
+                sky::PropInit(
+                    physical.pos + (plane.getTuning().hitbox.x / 2.0f) * dir,
+                    500.0f * dir));
+            plane.resetPrimary();
+          }
         }
       }
     }
@@ -48,32 +67,36 @@ void VanillaServer::onPacket(ENetPeer *const client,
         shared.rconResponse(client, "you're authenticated");
       }
     } else {
-      // TODO: uniform command parsing
-      if (packet.stringData.get() == "start") {
+      // TODO: uniform command parsing & validation
+
+      // Split the command by whitespace
+      std::stringstream tmp(packet.stringData.get());
+      std::vector<std::string> command{std::istream_iterator<std::string>{tmp},
+                                       std::istream_iterator<std::string>{}};
+
+      if (command[0] == "start") {
         skyHandle.start();
         shared.registerArenaDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
         return;
       }
 
-      if (packet.stringData.get() == "stop") {
+      if (command[0] == "stop") {
         skyHandle.stop();
         shared.registerArenaDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Lobby));
         return;
       }
 
-      if (packet.stringData.get() == "restart") {
+      if (command[0] == "restart") {
         skyHandle.start();
         return;
       }
 
-      if (packet.stringData.get() == "map1") {
-        shared.registerArenaDelta(sky::ArenaDelta::MapChange("test1"));
-        skyHandle.start();
-        return;
-      }
-
-      if (packet.stringData.get() == "map2") {
-        shared.registerArenaDelta(sky::ArenaDelta::MapChange("test2"));
+      if (command[0] == "map") {
+        if (command.size() < 2) {
+          shared.rconResponse(client, "Usage: /map <name>");
+          return;
+        }
+        shared.registerArenaDelta(sky::ArenaDelta::MapChange(command[1]));
         skyHandle.start();
         return;
       }
@@ -91,8 +114,9 @@ void VanillaServer::onPacket(ENetPeer *const client,
   }
 
   if (packet.type == sky::ClientPacket::Type::ReqSpawn) {
-    if (player.getTeam() != 0) {
-      player.spawn({}, {300, 300}, 0);
+    if (player.getTeam() != 0 and shared.skyHandle.isActive()) {
+      auto sp = shared.skyHandle.sky->getMap().pickSpawnPoint(player.getTeam());
+      player.spawn({}, sp.pos, sp.angle);
     }
   }
 }

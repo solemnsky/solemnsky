@@ -68,43 +68,21 @@ void MapObstacle::decompose(){
  * Map.
  */
 
-void Map::loadTest1() {
-  dimensions = {1600, 900};
-
-  const std::vector<sf::Vector2f> square = {
-      {-20, -20}, {-20, 20}, {20, 20}, {20, -20}
-  };
-
-  for (float x = 0; x < 1600.0f; x += 200) {
-    obstacles.emplace_back(sf::Vector2f(x, 450), square, 1);
-  }
-}
-
-void Map::loadTest2() {
-  dimensions = {3200, 900};
-}
-
 Map::Map(const MapName &name) :
     dimensions(3200, 900),
     name(name) {
-  if (name == "test1") {
-    loadTest1();
-  } else if (name == "test2") {
-    loadTest2();
-  } else if (name != ""){
-    auto file = std::ifstream(rootPath() + "maps/" + name + ".json");
-    if(file.good()) {
-      try {
-        cereal::JSONInputArchive archive(file);
-        archive(cereal::make_nvp("dimensions", dimensions),
-                cereal::make_nvp("obstacles", obstacles),
-                cereal::make_nvp("spawnPoints", spawnPoints));
-      } catch(cereal::RapidJSONException e){
-        appErrorRuntime("Failed to parse map '"+name+"', "+e.what());
-      }
-    } else {
-      appErrorRuntime("Map '"+name+"' was not found.");
+  auto file = std::ifstream(rootPath() + "maps/" + name + ".json");
+  if(file.good()) {
+    try {
+      cereal::JSONInputArchive archive(file);
+      archive(cereal::make_nvp("dimensions", dimensions),
+              cereal::make_nvp("obstacles", obstacles),
+              cereal::make_nvp("spawnPoints", spawnPoints));
+    } catch(cereal::RapidJSONException e){
+      appErrorRuntime("Failed to parse map '"+name+"', "+e.what());
     }
+  } else {
+    appErrorRuntime("Map '"+name+"' was not found.");
   }
   for(auto &o : obstacles){
     o.decompose();
@@ -125,6 +103,14 @@ const std::vector<MapItem> &Map::getItems() const {
 
 const std::vector<SpawnPoint> &Map::getSpawnPoints() const {
   return spawnPoints;
+}
+
+const SpawnPoint Map::pickSpawnPoint(const Team team) const {
+  if (spawnPoints.size() > 0) {
+    return spawnPoints[0];
+  } else {
+    return SpawnPoint({200, 200}, 0); // default
+  }
 }
 
 void Map::save(std::ostream& s) {
