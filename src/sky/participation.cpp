@@ -150,11 +150,6 @@ void Plane::onEndContact(const BodyTag &body) {
 
 }
 
-void Plane::applyInput(const ParticipationInput &input) {
-  if (input.planeState)
-    state.applyClient(input.planeState.get());
-}
-
 Plane::Plane(Physics &physics,
              const PlaneControls &controls,
              const PlaneTuning &tuning,
@@ -183,15 +178,15 @@ const PlaneState &Plane::getState() const {
 }
 
 bool Plane::requestDiscreteEnergy(const float reqEnergy) {
-  if (energy < reqEnergy) return false;
-  energy -= reqEnergy;
+  if (state.energy < reqEnergy) return false;
+  state.energy -= reqEnergy;
   return true;
 }
 
 float Plane::requestEnergy(const float reqEnergy) {
-  const float initEnergy = energy;
-  energy -= reqEnergy;
-  return (initEnergy - energy) / reqEnergy;
+  const float initEnergy = state.energy;
+  state.energy -= reqEnergy;
+  return (initEnergy - state.energy) / reqEnergy;
 }
 
 /**
@@ -220,8 +215,10 @@ bool ParticipationDelta::verifyStructure() const {
 
 ParticipationDelta ParticipationDelta::respectClientAuthority() const {
   ParticipationDelta delta{*this};
-  delta.serverState.emplace(PlaneStateServer(delta.state.get()));
-  delta.state.reset();
+  if (state) {
+    delta.serverState.emplace(state.get());
+    delta.state.reset();
+  }
   delta.controls.reset();
   return delta;
 }
@@ -371,7 +368,8 @@ void Participation::applyInput(const ParticipationInput &input) {
   }
 
   if (plane) {
-    plane->applyInput(input);
+    if (input.planeState)
+      plane->state.applyClient(input.planeState.get());
   }
 }
 
@@ -385,7 +383,7 @@ optional<ParticipationInput> Participation::collectInput() {
   }
   if (plane) {
     useful = true;
-    input.planeState = plane->getState().collectClient();
+    input.planeState.emplace(plane->getState());
   }
   if (useful) return input;
   else return {};

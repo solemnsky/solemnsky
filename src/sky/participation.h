@@ -29,7 +29,8 @@
 namespace sky {
 
 /**
- * The plane element that can be associated with a participation.
+ * The plane element that can be associated with a Participation.
+ * This is essentially a piece of Participations's implementation.
  */
 class Plane {
   friend class Sky;
@@ -56,9 +57,6 @@ class Plane {
   void postPhysics(const TimeDiff delta);
   void onBeginContact(const BodyTag &body);
   void onEndContact(const BodyTag &body);
-
-  // Applying an input.
-  void applyInput(const ParticipationInput &input);
 
  public:
   Plane() = delete;
@@ -159,8 +157,6 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
 
   // Delta collection state.
   bool newlyAlive;
-
-  // Input collection state.
   PlaneControls lastControls;
 
   // Helpers.
