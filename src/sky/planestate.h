@@ -52,7 +52,8 @@ struct PlaneTuning {
 
   template<class Archive>
   void serialize(Archive &ar) {
-    ar(energy.thrustDrain, energy.recharge, energy.laserGun);
+    ar(energy.thrustDrain, energy.recharge, energy.laserGun,
+       energy.primaryRecharge);
     ar(stall.maxRotVel, stall.maxVel, stall.thrust, stall.damping);
     ar(flight.maxRotVel, flight.airspeedFactor, flight.throttleInfluence,
        flight.throttleEffect, flight.gravityEffect, flight.afterburnDrive,
@@ -66,6 +67,8 @@ struct PlaneTuning {
     Energy();
     // energy mechanics
     float thrustDrain, recharge, laserGun;
+    // weapon mechanics
+    float primaryRecharge;
   } energy;
 
   struct Stall {
@@ -159,7 +162,6 @@ struct PlaneState {
   // Applying state subsets.
   void applyClient(const PlaneStateClient &client);
   void applyServer(const PlaneStateServer &server);
-
 
 };
 

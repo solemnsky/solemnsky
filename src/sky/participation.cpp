@@ -121,7 +121,7 @@ void Plane::tickFlight(const TimeDiff delta) {
 }
 
 void Plane::tickWeapons(const TimeDiff delta) {
-  state.primaryCooldown.cool(delta);
+  state.primaryCooldown.cool(tuning.energy.primaryRecharge * delta);
 }
 
 void Plane::writeToBody() {
