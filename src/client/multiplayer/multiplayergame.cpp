@@ -112,8 +112,8 @@ void MultiplayerGame::tick(float delta) {
 
 void MultiplayerGame::render(ui::Frame &f) {
   skyRender.render(
-      f, participation.getPlane() ?
-         participation.getPlane()->getState().physical.pos :
+      f, participation.plane ?
+         participation.plane->getState().physical.pos :
          sf::Vector2f(0, 0));
 
   if (chatInput.isFocused) core.drawEventLog(f, style.multi.chatCutoff);

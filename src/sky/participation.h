@@ -28,7 +28,56 @@
 
 namespace sky {
 
-class SkyHandle;
+/**
+ * The plane element that can be associated with a participation.
+ */
+class Plane {
+  friend class Sky;
+  friend class Participation;
+ private:
+  // Parameters.
+  Physics &physics;
+  const PlaneControls &controls;
+
+  // State.
+  PlaneTuning tuning;
+  PlaneState state;
+  b2Body *const body;
+
+  // Subroutines.
+  void switchStall();
+  void tickFlight(const TimeDiff delta);
+  void tickWeapons(const TimeDiff delta);
+  void writeToBody();
+  void readFromBody();
+
+  // Sky API.
+  void prePhysics();
+  void postPhysics(const TimeDiff delta);
+  void onBeginContact(const BodyTag &body);
+  void onEndContact(const BodyTag &body);
+
+  // Applying an input.
+  void applyInput(const ParticipationInput &input);
+
+ public:
+  Plane() = delete;
+  Plane(Physics &, PlaneControls &&, const PlaneTuning &,
+        const PlaneState &) = delete; // `controls` must not be a temp
+  Plane(Physics &physics,
+        const PlaneControls &controls,
+        const PlaneTuning &tuning,
+        const PlaneState &state);
+  ~Plane();
+
+  // User API.
+  const PlaneTuning &getTuning() const;
+  const PlaneState &getState() const;
+
+  bool requestDiscreteEnergy(const float reqEnergy);
+  float requestEnergy(const float reqEnergy);
+
+};
 
 /**
  * Initializer for Participation's Networked impl.
@@ -90,56 +139,6 @@ struct ParticipationInput {
 
   optional<PlaneStateInput> planeState;
   optional<PlaneControls> controls;
-
-};
-
-/**
- * The plane element that can be associated with a participation.
- */
-class Plane {
-  friend class Sky;
-  friend class Participation;
- private:
-  // Parameters.
-  Physics &physics;
-  const PlaneControls &controls;
-
-  // State.
-  PlaneTuning tuning;
-  PlaneState state;
-  b2Body *const body;
-
-  // Subroutines.
-  void switchStall();
-  void tickFlight(const TimeDiff delta);
-  void tickWeapons(const TimeDiff delta);
-  void writeToBody();
-  void readFromBody();
-
-  // Sky API.
-  void prePhysics();
-  void postPhysics(const TimeDiff delta);
-  void onBeginContact(const BodyTag &body);
-  void onEndContact(const BodyTag &body);
-
-  // Applying an input.
-  void applyInput(const ParticipationInput &input);
-
- public:
-  Plane() = delete;
-  Plane(Physics &, PlaneControls &&, const PlaneTuning &,
-        const PlaneState &) = delete; // `controls` must not be a temp
-  Plane(Physics &physics,
-        const PlaneControls &controls,
-        const PlaneTuning &tuning,
-        const PlaneState &state);
-  ~Plane();
-
-  // User API.
-  const PlaneTuning &getTuning() const;
-  const PlaneState &getState() const;
-
-  // TODO: mutation
 
 };
 
