@@ -57,6 +57,10 @@ struct SkyHandleDelta {
 
   optional<SkyInit> initializer;
   optional<SkyDelta> delta;
+
+  // Respecting client authority.
+  SkyHandleDelta respectAuthority(const Player &player) const;
+
 };
 
 /**
@@ -78,9 +82,6 @@ class SkyHandle
   SkyHandleInit captureInitializer() const override final;
   SkyHandleDelta collectDelta();
   void applyDelta(const SkyHandleDelta &delta) override final;
-  SkyHandleDelta respectAuthority(const SkyHandleDelta &delta,
-                                  const Player &player) const;
-
 
   // User API.
   void start();
