@@ -71,12 +71,14 @@ class SkyHandle
     : public Subsystem<Nothing>,
       public Networked<SkyHandleInit, SkyHandleDelta> {
  private:
-  // State.
-  optional<Sky> sky;
+  // Delta collection state.
   bool skyIsNew;
 
  public:
   SkyHandle(class Arena &parent, const SkyHandleInit &initializer);
+  
+  // State.
+  optional<Sky> sky;
 
   // Networking.
   SkyHandleInit captureInitializer() const override final;
@@ -87,8 +89,6 @@ class SkyHandle
   void start();
   void stop();
 
-  optional<Sky> &getSky();
-  const optional<Sky> &getSky() const;
   bool isActive() const;
 
 };

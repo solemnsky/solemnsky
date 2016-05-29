@@ -67,7 +67,7 @@ ArenaConnection::ArenaConnection(
     player(*arena.getPlayer(pid)) { }
 
 const optional<sky::Sky> &ArenaConnection::getSky() const {
-  return skyHandle.getSky();
+  return skyHandle.sky;
 }
 
 /**
@@ -285,7 +285,7 @@ void MultiplayerCore::tick(const float delta) {
   host.tick(delta);
 
   if (conn) {
-    if (auto &sky = conn->getSky()) {
+    if (auto &sky = conn->skyHandle.sky) {
       if (participationInputTimer.cool(delta)) {
         const auto input = sky->getParticipation(conn->player).collectInput();
         if (input) {
