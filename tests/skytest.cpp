@@ -10,8 +10,8 @@ class SkyTest: public testing::Test {
   sky::Sky sky;
 
   SkyTest() :
-      arena(sky::ArenaInit("special arena", "test1", sky::ArenaMode::Lobby)),
-      sky(arena, sky::SkyInit("test1")) { }
+      arena(sky::ArenaInit("special arena", "test", sky::ArenaMode::Lobby)),
+      sky(arena, sky::SkyInit("test")) { }
 
 };
 

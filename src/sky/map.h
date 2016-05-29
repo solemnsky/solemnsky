@@ -88,9 +88,6 @@ struct MapItem {
  */
 struct Map {
  private:
-  // Hard-coded maps for now.
-  void loadTest1();
-  void loadTest2();
 
   // State, all constant after loading.
   sf::Vector2f dimensions;
