@@ -273,6 +273,11 @@ Participation::Participation(Physics &physics,
     spawnWithState(initializer.spawn->first, initializer.spawn->second);
   controls = initializer.controls;
   lastControls = initializer.controls;
+  for (const auto &prop : initializer.props) {
+    props.emplace(std::piecewise_construct,
+                  std::forward_as_tuple(prop.first),
+                  std::forward_as_tuple(physics, prop.second));
+  }
 }
 
 void Participation::applyDelta(const ParticipationDelta &delta) {
@@ -292,9 +297,10 @@ void Participation::applyDelta(const ParticipationDelta &delta) {
   // Apply prop deltas / erasure.
   auto iter = props.begin();
   while (iter != props.end()) {
-    auto propDelta = delta.propDeltas.find(iter->first);
-    if (propDelta == delta.propDeltas.end()) {
-      props.erase(iter);
+    if (delta.propDeltas.find(iter->first) == delta.propDeltas.end()) {
+      const auto toErase = iter;
+      ++iter;
+      props.erase(toErase);
     } else ++iter;
   }
 

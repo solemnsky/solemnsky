@@ -265,8 +265,8 @@ ServerExec::ServerExec(
     host(tg::HostType::Server, port),
     shared(host, telegraph, arenaInit),
 
-    skyDeltaTimer(0.04),
-    scoreDeltaTimer(0.6),
+    skyDeltaTimer(0.03),
+    scoreDeltaTimer(0.5),
     pingTimer(1),
     latencyUpdateTimer(2),
 
