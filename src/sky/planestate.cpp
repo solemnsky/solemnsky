@@ -80,6 +80,25 @@ PlaneTuning::Flight::Flight() :
     threshold(110) { }
 
 /**
+ * PlaneStateClient.
+ */
+
+PlaneStateClient::PlaneStateClient(const PlaneState &state) :
+    physical(state.physical),
+    airspeed(state.airspeed),
+    throttle(state.throttle),
+    stalled(state.stalled) { }
+
+/**
+ * PlaneStateServer.
+ */
+
+PlaneStateServer::PlaneStateServer(const PlaneState &state) :
+    energy(state.energy),
+    health(state.health),
+    primaryCooldown(state.primaryCooldown.cooldown) { }
+
+/**
  * PlaneState.
  */
 
@@ -92,10 +111,11 @@ PlaneState::PlaneState(const PlaneTuning &tuning,
              tuning.flight.airspeedFactor * VecMath::fromAngle(rot),
              rot, 0),
 
-    stalled(false), afterburner(0),
-    leftoverVel(0, 0),
+    stalled(false),
     airspeed(tuning.flight.throttleInfluence),
+    afterburner(0),
     throttle(1),
+    leftoverVel(0, 0),
 
     energy(1),
     health(1),
@@ -111,30 +131,17 @@ float PlaneState::velocity() const {
   return VecMath::length(physical.vel);
 }
 
-bool PlaneState::requestDiscreteEnergy(const float reqEnergy) {
-  if (energy < reqEnergy) return false;
-  energy -= reqEnergy;
-  return true;
+void PlaneState::applyClient(const PlaneStateClient &client) {
+  physical = client.physical;
+  airspeed = client.airspeed;
+  throttle = client.throttle;
+  stalled = client.stalled;
 }
 
-float PlaneState::requestEnergy(const float reqEnergy) {
-  const float initEnergy = energy;
-  energy -= reqEnergy;
-  return (initEnergy - energy) / reqEnergy;
-}
-
-struct PlaneStateInput PlaneState::collectInput() const {
-  PlaneStateInput input;
-  input.physical = physical;
-  input.throttle = throttle;
-  input.stalled = stalled;
-  return input;
-}
-
-void PlaneState::applyInput(const struct PlaneStateInput &input) {
-  physical = input.physical;
-  throttle = input.throttle;
-  stalled = input.stalled;
+void PlaneState::applyServer(const PlaneStateServer &server) {
+  energy = server.energy;
+  health = server.health;
+  primaryCooldown.cooldown = server.primaryCooldown;
 }
 
 /**

@@ -20,19 +20,17 @@
 
 namespace sky {
 
-Prop::Prop(Physics &physics, const sf::Vector2f &pos,
-           const sf::Vector2f &vel) :
-    physics(physics),
-    body(physics.createBody(physics.rectShape({10, 10}),
-                            BodyTag::PropTag(*this))),
-    physical(pos, vel, 0, 0),
-    lifetime(0) {
-  physical.hardWriteToBody(physics, body);
-}
+/**
+ * PropInit.
+ */
 
-Prop::~Prop() {
-  physics.deleteBody(body);
-}
+/**
+ * PropDelta.
+ */
+
+/**
+ * Prop.
+ */
 
 void Prop::writeToBody() {
   physical.writeToBody(physics, body);
@@ -45,6 +43,36 @@ void Prop::readFromBody() {
 void Prop::tick(const float delta) {
   lifetime += delta;
 }
+
+Prop::Prop(Physics &physics,
+           const PropInit &initializer) :
+    Networked(initializer),
+    physics(physics),
+    body(physics.createBody(physics.rectShape({10, 10}),
+                            BodyTag::PropTag(*this))),
+    physical({}, {}, 0, 0),
+    lifetime(0),
+    newlyAlive(true) {
+  physical.hardWriteToBody(physics, body);
+}
+
+Prop::~Prop() {
+  physics.deleteBody(body);
+}
+
+
+PropInit Prop::captureInitializer() const {
+  return PropInit();
+}
+
+void Prop::applyDelta(const PropDelta &delta) {
+
+}
+
+PropDelta Prop::collectDelta() {
+  return PropDelta();
+}
+
 
 const PhysicalState &Prop::getPhysical() const {
   return physical;

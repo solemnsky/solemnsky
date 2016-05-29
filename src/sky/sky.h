@@ -61,6 +61,9 @@ struct SkyDelta: public VerifyStructure {
 
   std::map<PID, ParticipationDelta> participations;
 
+  // Respecting client authority.
+  SkyDelta respectAuthority(const Player &player) const;
+
 };
 
 /**
@@ -106,8 +109,6 @@ class Sky
   void applyDelta(const SkyDelta &delta) override final;
   SkyInit captureInitializer() const override final;
   SkyDelta collectDelta();
-  SkyDelta respectAuthority(const SkyDelta &delta,
-                            const Player &player) const;
 
   // User API.
   const Map &getMap() const;
