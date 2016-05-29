@@ -8,7 +8,7 @@
  */
 class SubsystemTest: public testing::Test {
  public:
-  SubsystemTest() : arena(sky::ArenaInit("my arena", "test1")) { }
+  SubsystemTest() : arena(sky::ArenaInit("my arena", "test")) { }
   sky::Arena arena;
 };
 

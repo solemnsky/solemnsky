@@ -48,32 +48,36 @@ void VanillaServer::onPacket(ENetPeer *const client,
         shared.rconResponse(client, "you're authenticated");
       }
     } else {
-      // TODO: uniform command parsing
-      if (packet.stringData.get() == "start") {
+      // TODO: uniform command parsing & validation
+
+      // Split the command by whitespace
+      std::stringstream tmp(packet.stringData.get());
+      std::vector<std::string> command{std::istream_iterator<std::string>{tmp},
+                                       std::istream_iterator<std::string>{}};
+
+      if (command[0] == "start") {
         skyHandle.start();
         shared.registerArenaDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
         return;
       }
 
-      if (packet.stringData.get() == "stop") {
+      if (command[0] == "stop") {
         skyHandle.stop();
         shared.registerArenaDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Lobby));
         return;
       }
 
-      if (packet.stringData.get() == "restart") {
+      if (command[0] == "restart") {
         skyHandle.start();
         return;
       }
 
-      if (packet.stringData.get() == "map1") {
-        shared.registerArenaDelta(sky::ArenaDelta::MapChange("test1"));
-        skyHandle.start();
-        return;
-      }
-
-      if (packet.stringData.get() == "map2") {
-        shared.registerArenaDelta(sky::ArenaDelta::MapChange("test2"));
+      if (command[0] == "map") {
+        if (command.size() < 2){
+          shared.rconResponse(client, "Usage: /map <name>");
+          return;
+        }
+        shared.registerArenaDelta(sky::ArenaDelta::MapChange(command[1]));
         skyHandle.start();
         return;
       }
