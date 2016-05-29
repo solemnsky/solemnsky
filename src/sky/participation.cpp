@@ -18,7 +18,6 @@
 #include <cmath>
 #include "arena.h"
 #include <SFML/Graphics/Rect.hpp>
-#include "arena.h"
 #include "participation.h"
 #include "sky.h"
 #include "util/printer.h"
