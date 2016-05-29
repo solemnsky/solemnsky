@@ -94,24 +94,42 @@ struct PlaneTuning {
 };
 
 /**
- * The subset of PlaneState's state taht a client has authority over.
+ * Subset of the PlaneState a client can transmit to the server.
  */
-struct PlaneStateInput {
-  PlaneStateInput() = default; // for packing
+struct PlaneStateClient {
+  PlaneStateClient() = default;
+  PlaneStateClient(const struct PlaneState &state);
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(physical, throttle, stalled);
+    ar(physical, airspeed, throttle, stalled);
   }
 
   PhysicalState physical;
-  Clamped throttle;
+  Clamped airspeed, throttle;
   bool stalled;
 
 };
 
 /**
- * The POD variable game state of a Plane.
+ * Subset of the PlaneState a server can transmit to a client in authority.
+ */
+struct PlaneStateServer {
+  PlaneStateServer() = default;
+  PlaneStateServer(const struct PlaneState &state);
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(energy, health, primaryCooldown);
+  }
+
+  Clamped energy, health;
+  Clamped primaryCooldown;
+
+};
+
+/**
+ * The volatile state of a plane.
  */
 struct PlaneState {
   PlaneState(); // for packing
@@ -121,28 +139,27 @@ struct PlaneState {
 
   template<class Archive>
   void serialize(Archive &ar) {
-    ar(physical);
-    ar(stalled, afterburner, leftoverVel, airspeed, throttle);
+    ar(physical, stalled, airspeed, afterburner, throttle, leftoverVel);
     ar(energy, health, primaryCooldown);
   }
 
   // State.
   PhysicalState physical;
   bool stalled;
-  Clamped afterburner;
+  Clamped airspeed, afterburner, throttle;
   sf::Vector2f leftoverVel;
-  Clamped airspeed, throttle;
 
   Clamped energy, health;
   Cooldown primaryCooldown;
 
-  // Utility accessors / methods.
+  // Utility accessors.
   float forwardVelocity() const;
   float velocity() const;
 
-  // PlaneStateInput.
-  struct PlaneStateInput collectInput() const;
-  void applyInput(const struct PlaneStateInput &input);
+  // Applying state subsets.
+  void applyClient(const PlaneStateClient &client);
+  void applyServer(const PlaneStateServer &server);
+
 
 };
 

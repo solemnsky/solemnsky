@@ -28,7 +28,7 @@ TEST_F(SkyTest, InputTest) {
   // We can modify position and control state.
   {
     sky::ParticipationInput input;
-    sky::PlaneStateInput stateInput;
+    sky::PlaneStateClient stateInput;
     stateInput.physical = sky::PhysicalState({300, 300}, {}, 50, 0);
     input.planeState.emplace(stateInput);
 
@@ -88,7 +88,7 @@ TEST_F(SkyTest, AuthorityTest) {
     ASSERT_EQ(remoteParticip.plane->getState().physical.pos.x, 200);
 
     sky::ParticipationInput input;
-    sky::PlaneStateInput stateInput;
+    sky::PlaneStateClient stateInput;
     stateInput.physical = sky::PhysicalState({300, 300}, {}, 50, 0);
     input.planeState.emplace(stateInput);
 
