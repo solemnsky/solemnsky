@@ -57,6 +57,10 @@ struct SkyHandleDelta {
 
   optional<SkyInit> initializer;
   optional<SkyDelta> delta;
+
+  // Respecting client authority.
+  SkyHandleDelta respectAuthority(const Player &player) const;
+
 };
 
 /**
@@ -67,26 +71,24 @@ class SkyHandle
     : public Subsystem<Nothing>,
       public Networked<SkyHandleInit, SkyHandleDelta> {
  private:
-  // State.
-  optional<Sky> sky;
+  // Delta collection state.
   bool skyIsNew;
 
  public:
   SkyHandle(class Arena &parent, const SkyHandleInit &initializer);
+  
+  // State.
+  optional<Sky> sky;
 
   // Networking.
   SkyHandleInit captureInitializer() const override final;
   SkyHandleDelta collectDelta();
   void applyDelta(const SkyHandleDelta &delta) override final;
-  SkyHandleDelta respectAuthority(const SkyHandleDelta &delta,
-                                  const Player &player) const;
-
 
   // User API.
   void start();
   void stop();
 
-  const optional<Sky> &getSky() const;
   bool isActive() const;
 
 };

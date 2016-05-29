@@ -135,7 +135,7 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::ReqInput: {
-        if (auto &sky = shared.skyHandle.getSky()) {
+        if (auto &sky = shared.skyHandle.sky) {
           sky->getParticipation(*player).applyInput(
               packet.participationInput.get());
         }
@@ -143,7 +143,6 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::ReqSpawn: {
-        appLog("got spawn");
         player->spawn({}, {200, 200}, 0);
         break;
       }
@@ -228,7 +227,7 @@ void ServerExec::tick(const TimeDiff delta) {
       if (sky::Player *player = shared.playerFromPeer(peer)) {
         shared.sendToClient(
             peer, sky::ServerPacket::DeltaSky(
-                shared.skyHandle.respectAuthority(handleDelta, *player),
+                handleDelta.respectAuthority(*player),
                 shared.arena.getUptime()));
       } else {
         appLog("peer attached to no client");
@@ -266,8 +265,8 @@ ServerExec::ServerExec(
     host(tg::HostType::Server, port),
     shared(host, telegraph, arenaInit),
 
-    skyDeltaTimer(0.04),
-    scoreDeltaTimer(0.6),
+    skyDeltaTimer(0.03),
+    scoreDeltaTimer(0.5),
     pingTimer(1),
     latencyUpdateTimer(2),
 

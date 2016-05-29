@@ -23,14 +23,18 @@
 #include "util/types.h"
 
 class VanillaServer: public Server<Nothing> {
- protected:
-  // subsystem callbacks
-  void onTick(const float delta) override;
+ private:
+  // Subroutines.
+  void tickGame(const TimeDiff delta, sky::Sky &sky);
 
-  // server callbacks
-  virtual void onPacket(ENetPeer *const client,
-                        sky::Player &player,
-                        const sky::ClientPacket &packet);
+ protected:
+  // Subsystem callbacks.
+  void onTick(const TimeDiff delta) override final;
+
+  // Server callbacks.
+  void onPacket(ENetPeer *const client,
+                sky::Player &player,
+                const sky::ClientPacket &packet) override final;
 
  public:
   VanillaServer(ServerShared &shared);

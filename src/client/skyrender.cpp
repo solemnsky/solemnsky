@@ -36,7 +36,7 @@ PlaneGraphics::PlaneGraphics(const Player &player, const Participation &plane) :
     rollState(0) { }
 
 void PlaneGraphics::tick(const float delta) {
-  if (auto &plane = participation.getPlane()) {
+  if (auto &plane = participation.plane) {
     // potentially switch orientation
     bool newOrientation = Angle(plane->getState().physical.rot + 90) > 180;
     const Movement rotMovement = participation.getControls().rotMovement();
@@ -63,7 +63,7 @@ void PlaneGraphics::kill() { }
 
 void PlaneGraphics::spawn() {
   orientation =
-      Angle(participation.getPlane()->getState().physical.rot + 90) > 180;
+      Angle(participation.plane->getState().physical.rot + 90) > 180;
   flipState = 0;
   rollState = 0;
 }
@@ -107,11 +107,11 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
 
 void SkyRender::renderProps(ui::Frame &f,
                             const Participation &participation) {
-  for (const sky::Prop &prop : participation.getProps()) {
+  for (const auto &prop : participation.props) {
     f.withTransform(
         sf::Transform()
-            .translate(prop.getPhysical().pos)
-            .rotate(prop.getPhysical().rot), [&]() {
+            .translate(prop.second.getPhysical().pos)
+            .rotate(prop.second.getPhysical().rot), [&]() {
           f.drawRect(sf::Vector2f(-5, -5),
                      sf::Vector2f(5, 5),
                      sf::Color::White);
@@ -121,7 +121,7 @@ void SkyRender::renderProps(ui::Frame &f,
 
 void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                     const PlaneGraphics &graphics) {
-  if (auto &plane = graphics.participation.getPlane()) {
+  if (auto &plane = graphics.participation.plane) {
     auto &state = plane->getState();
     auto &tuning = plane->getTuning();
 
