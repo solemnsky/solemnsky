@@ -125,9 +125,6 @@ void ServerExec::processPacket(ENetPeer *client,
           effectedDelta.nickname =
               shared.arena.allocNewNickname(*player, delta.nickname.get());
         }
-        if (delta.team) {
-          effectedDelta.team = delta.team;
-        }
         shared.registerArenaDelta(
             sky::ArenaDelta::Delta(
                 player->pid, effectedDelta));

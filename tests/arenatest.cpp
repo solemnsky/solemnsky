@@ -75,7 +75,7 @@ TEST_F(ArenaTest, PlayerDeltaTest) {
 
   {
     // Single deltas work.
-    sky::PlayerDelta delta = player.zeroDelta();
+    sky::PlayerDelta delta{player};
     delta.latencyStats.emplace(50, 60);
     delta.admin = true;
 
@@ -99,12 +99,12 @@ TEST_F(ArenaTest, PlayerDeltaTest) {
   arena.connectPlayer("nameless plane 2");
   std::map<PID, sky::PlayerDelta> deltas;
   {
-    sky::PlayerDelta delta = arena.getPlayer(0)->zeroDelta();
+    sky::PlayerDelta delta{arena.getPlayer(0)};
     delta.team.emplace(1);
     deltas.emplace(0, delta);
   }
   {
-    sky::PlayerDelta delta = arena.getPlayer(1)->zeroDelta();
+    sky::PlayerDelta delta{arena.getPlayer(1)};
     delta.team.emplace(1);
     deltas.emplace(1, delta);
   }
