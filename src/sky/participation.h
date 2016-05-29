@@ -191,6 +191,7 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
 
   // User API, serverside.
   void spawnProp(const PropInit &init);
+  void suicide();
 
   // ParticipationInput.
   void applyInput(const ParticipationInput &input);

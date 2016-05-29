@@ -105,6 +105,14 @@ const std::vector<SpawnPoint> &Map::getSpawnPoints() const {
   return spawnPoints;
 }
 
+const SpawnPoint Map::pickSpawnPoint(const Team team) const {
+  if (spawnPoints.size() > 0) {
+    return spawnPoints[0];
+  } else {
+    return SpawnPoint({200, 200}, 0); // default
+  }
+}
+
 void Map::save(std::ostream& s) {
   cereal::JSONOutputArchive archive(s);
   archive( cereal::make_nvp("dimensions",dimensions),

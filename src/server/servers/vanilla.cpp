@@ -22,8 +22,15 @@ void VanillaServer::tickGame(const TimeDiff delta, sky::Sky &sky) {
     auto &participation = sky.getParticipation(player);
     if (participation.isSpawned()) {
       if (participation.getControls().getState<sky::Action::Primary>()) {
-        if (participation.plane->requestDiscreteEnergy(0.5)) {
-          participation.spawnProp(sky::PropInit({200, 200}));
+        sky::Plane &plane = participation.plane.get();
+        if (plane.getState().health == 0) {
+          participation.suicide();
+        }
+        if (plane.requestDiscreteEnergy(0.5)) {
+          auto &physical = plane.getState().physical;
+          participation.spawnProp(
+              sky::PropInit(physical.pos +
+                  100.0f * VecMath::fromAngle(physical.rot)));
         }
       }
     }
@@ -73,7 +80,7 @@ void VanillaServer::onPacket(ENetPeer *const client,
       }
 
       if (command[0] == "map") {
-        if (command.size() < 2){
+        if (command.size() < 2) {
           shared.rconResponse(client, "Usage: /map <name>");
           return;
         }
@@ -95,8 +102,9 @@ void VanillaServer::onPacket(ENetPeer *const client,
   }
 
   if (packet.type == sky::ClientPacket::Type::ReqSpawn) {
-    if (player.getTeam() != 0) {
-      player.spawn({}, {300, 300}, 0);
+    if (player.getTeam() != 0 and shared.skyHandle.isActive()) {
+      auto sp = shared.skyHandle.sky->getMap().pickSpawnPoint(player.getTeam());
+      player.spawn({}, sp.pos, sp.angle);
     }
   }
 }

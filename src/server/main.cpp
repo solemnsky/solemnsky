@@ -25,7 +25,7 @@ int main() {
   // TODO: commandline arguments
 
   // and He said,
-  ServerExec(4242, sky::ArenaInit("my special server", "test"),
+  ServerExec(4242, sky::ArenaInit("my special server", "ball_asteroids"),
              [](ServerShared &shared) {
                return std::make_unique<VanillaServer>(shared);
       }).run();
