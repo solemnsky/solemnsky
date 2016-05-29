@@ -21,7 +21,10 @@ void VanillaServer::tickGame(const TimeDiff delta, sky::Sky &sky) {
   arena.forPlayers([&](sky::Player &player) {
     auto &participation = sky.getParticipation(player);
     if (participation.isSpawned()) {
-      // do something
+      if (participation.getControls().getState<sky::Action::Primary>()) { }
+      if (participation.plane->requestDiscreteEnergy(0.5)) {
+        appLog("pewpew");
+      }
     }
   });
 }
@@ -37,7 +40,7 @@ void VanillaServer::onPacket(ENetPeer *const client,
                              const sky::ClientPacket &packet) {
   if (packet.type == sky::ClientPacket::Type::RCon) {
     if (!player.isAdmin()) {
-      if (packet.stringData.get() == "auth password") {
+      if (packet.stringData.get() == "auth") {
         sky::PlayerDelta delta = player.zeroDelta();
         delta.admin = true;
         shared.registerArenaDelta(sky::ArenaDelta::Delta(player.pid, delta));
@@ -73,6 +76,14 @@ void VanillaServer::onPacket(ENetPeer *const client,
         skyHandle.start();
         return;
       }
+    }
+  }
+
+  if (packet.type == sky::ClientPacket::Type::ReqTeam) {
+    if (arena.getMode() == sky::ArenaMode::Lobby) {
+      sky::PlayerDelta delta{player};
+      delta.team = packet.team.get();
+      shared.registerArenaDelta(sky::ArenaDelta::Delta(player.pid, delta));
     }
   }
 

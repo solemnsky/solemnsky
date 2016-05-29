@@ -52,7 +52,8 @@ struct PlayerInitializer {
  * Delta type for Player's Networked implementation.
  */
 struct PlayerDelta {
-  PlayerDelta() = default; // packing
+  PlayerDelta() = default; // packing, do not use
+  PlayerDelta(const class Player &player);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -97,7 +98,6 @@ struct Player: public Networked<PlayerInitializer, PlayerDelta> {
   // Networked impl.
   void applyDelta(const PlayerDelta &delta) override;
   PlayerInitializer captureInitializer() const override;
-  PlayerDelta zeroDelta() const;
 
   // User API.
   std::string getNickname() const;

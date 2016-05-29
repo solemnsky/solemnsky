@@ -37,6 +37,8 @@ bool ClientPacket::verifyStructure() const {
       return verifyOptionals(playerDelta);
     case Type::ReqInput:
       return verifyOptionals(participationInput);
+    case Type::ReqTeam:
+      return verifyOptionals(team);
     case Type::ReqSpawn:
       return true;
     case Type::Chat:
@@ -70,6 +72,12 @@ ClientPacket ClientPacket::ReqPlayerDelta(const PlayerDelta &playerDelta) {
 ClientPacket ClientPacket::ReqInput(const ParticipationInput &input) {
   ClientPacket packet(Type::ReqInput);
   packet.participationInput = input;
+  return packet;
+}
+
+ClientPacket ClientPacket::ReqTeam(const Team team) {
+  ClientPacket packet(Type::ReqTeam);
+  packet.team = team;
   return packet;
 }
 

@@ -245,7 +245,7 @@ bool MultiplayerCore::isDisconnected() const {
 void MultiplayerCore::onChangeSettings(const SettingsDelta &settings) {
   if (conn) {
     if (settings.nickname) {
-      sky::PlayerDelta delta = conn->player.zeroDelta();
+      sky::PlayerDelta delta{conn->player};
       delta.nickname = *settings.nickname;
       transmit(sky::ClientPacket::ReqPlayerDelta(delta));
       // request a nickname change
@@ -326,11 +326,7 @@ void MultiplayerCore::handleChatInput(const std::string &input) {
 }
 
 void MultiplayerCore::requestTeamChange(const sky::Team team) {
-  if (conn) {
-    sky::PlayerDelta delta = conn->player.zeroDelta();
-    delta.team = team;
-    transmit(sky::ClientPacket::ReqPlayerDelta(delta));
-  }
+  if (conn) transmit(sky::ClientPacket::ReqTeam(team));
 }
 
 /**
