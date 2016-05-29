@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "prop.h"
-#include "sky.h"
+#include "participation.h"
 
 namespace sky {
 
@@ -47,7 +47,8 @@ void Prop::tick(const float delta) {
   lifetime += delta;
 }
 
-Prop::Prop(Physics &physics,
+Prop::Prop(const PID associatedPlayer,
+           Physics &physics,
            const PropInit &initializer) :
     Networked(initializer),
     physics(physics),
@@ -55,7 +56,8 @@ Prop::Prop(Physics &physics,
                             BodyTag::PropTag(*this))),
     physical(initializer.physical),
     lifetime(0),
-    newlyAlive(true) {
+    newlyAlive(true),
+    associatedPlayer(associatedPlayer) {
   physical.hardWriteToBody(physics, body);
 }
 
