@@ -139,6 +139,8 @@ class Plane {
   const PlaneTuning &getTuning() const;
   const PlaneState &getState() const;
 
+  // TODO: mutation
+
 };
 
 /**
@@ -152,9 +154,7 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   Physics &physics;
 
   // State.
-  optional<Plane> plane;
   PlaneControls controls;
-  std::map<PID, Prop> props;
 
   // Delta collection state.
   bool newlyAlive;
@@ -179,18 +179,20 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   Participation() = delete;
   Participation(Physics &physics, const ParticipationInit &initializer);
 
+  // State.
+  optional<Plane> plane;
+  std::map<PID, Prop> props;
+  
   // Networked impl (for Sky).
   void applyDelta(const ParticipationDelta &delta) override;
   ParticipationInit captureInitializer() const override;
   ParticipationDelta collectDelta();
 
   // User API.
-  const optional<Plane> &getPlane() const;
-  const std::map<PID, Prop> &getProps() const;
   const PlaneControls &getControls() const;
   bool isSpawned() const;
 
-  // User API -- server authority.
+  // User API, serverside.
   void spawnProp(const PropInit &init);
 
   // ParticipationInput.

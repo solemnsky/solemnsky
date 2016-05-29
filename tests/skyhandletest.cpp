@@ -34,8 +34,7 @@ TEST_F(SkyHandleTest, AllocTest) {
     ASSERT_EQ(bool(sky.getParticipation(player).isSpawned()), false);
     player.spawn({}, {300, 300}, 0);
     ASSERT_EQ(bool(sky.getParticipation(player).isSpawned()), true);
-    ASSERT_EQ(sky.getParticipation(player).getPlane()
-                  ->getState().physical.pos.x, 300);
+    ASSERT_EQ(sky.getParticipation(player).plane->getState().physical.pos.x, 300);
   }
 
   skyHandle.stop();
@@ -71,7 +70,7 @@ TEST_F(SkyHandleTest, InitializerTest) {
     sky::Player player2 = *remoteArena.getPlayer(1);
     ASSERT_EQ(remoteSky.getParticipation(player1).isSpawned(), true);
     ASSERT_EQ(remoteSky.getParticipation(player2).isSpawned(), false);
-    ASSERT_EQ(remoteSky.getParticipation(player1).getPlane()->
+    ASSERT_EQ(remoteSky.getParticipation(player1).plane->
         getState().physical.pos.x, 300);
     ASSERT_EQ(remoteSky.getParticipation(player1).getControls()
                   .getState<sky::Action::Left>(), true);
@@ -102,7 +101,7 @@ TEST_F(SkyHandleTest, DeltaTest) {
     ASSERT_EQ(participation.getControls().getState<sky::Action::Reverse>(),
               true);
     ASSERT_EQ(participation.isSpawned(), true);
-    ASSERT_EQ(participation.getPlane()->getState().physical.pos.x, 300);
+    ASSERT_EQ(participation.plane->getState().physical.pos.x, 300);
   }
 }
 

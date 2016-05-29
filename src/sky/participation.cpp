@@ -335,14 +335,6 @@ ParticipationDelta Participation::collectDelta() {
   return delta;
 }
 
-const optional<Plane> &Participation::getPlane() const {
-  return plane;
-}
-
-const std::map<PID, Prop> &Participation::getProps() const {
-  return props;
-}
-
 const PlaneControls &Participation::getControls() const {
   return controls;
 }
