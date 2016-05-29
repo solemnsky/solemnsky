@@ -51,6 +51,7 @@ Player::Player(Arena &arena, const PlayerInitializer &initializer) :
 void Player::applyDelta(const PlayerDelta &delta) {
   if (delta.nickname) nickname = *delta.nickname;
   admin = delta.admin;
+  if (delta.team) team = delta.team.get();
   if (delta.latencyStats) {
     latency = delta.latencyStats->first;
     clockOffset = delta.latencyStats->second;
