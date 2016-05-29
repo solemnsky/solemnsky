@@ -145,9 +145,9 @@ void Plane::postPhysics(const TimeDiff delta) {
 
 void Plane::onBeginContact(const BodyTag &body) {
   if (body.type == BodyTag::Type::PropTag) {
-    if (body.prop->associatedPlayer == associatedPlayer)
-      appLog("hit prop");
-    state.health = 0;
+    if (body.prop->associatedPlayer != associatedPlayer) {
+      state.health = 0;
+    }
   }
 }
 
@@ -251,6 +251,15 @@ void Participation::doAction(const Action action, bool actionState) {
 }
 
 void Participation::prePhysics() {
+  auto iter = props.begin();
+  while (iter != props.end()) {
+    if (iter->second.destroyable) {
+      const auto toErase = iter;
+      ++iter;
+      props.erase(toErase);
+    } else ++iter;
+  }
+
   if (plane) plane->prePhysics();
   for (auto &prop : props) prop.second.writeToBody();
 }
@@ -262,10 +271,6 @@ void Participation::postPhysics(const float delta) {
     prop.second.readFromBody();
     prop.second.tick(delta);
   }
-
-  // props.remove_if([](Prop &prop) {
-  // return prop.lifetime > 1;
-  // });
 }
 
 void Participation::spawn(const PlaneTuning &tuning,
@@ -359,6 +364,7 @@ ParticipationDelta Participation::collectDelta() {
   for (auto &prop : props) {
     if (prop.second.newlyAlive) {
       delta.propInits.emplace(prop.first, prop.second.captureInitializer());
+      prop.second.newlyAlive = false;
     } else {
       delta.propDeltas.emplace(prop.first, prop.second.collectDelta());
     }
