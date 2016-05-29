@@ -152,7 +152,7 @@ void Plane::onEndContact(const BodyTag &body) {
 
 void Plane::applyInput(const ParticipationInput &input) {
   if (input.planeState)
-    state.applyInput(input.planeState.get());
+    state.applyClient(input.planeState.get());
 }
 
 Plane::Plane(Physics &physics,
@@ -220,6 +220,7 @@ bool ParticipationDelta::verifyStructure() const {
 
 ParticipationDelta ParticipationDelta::respectClientAuthority() const {
   ParticipationDelta delta{*this};
+  delta.serverState.emplace(PlaneStateServer(delta.state.get()));
   delta.state.reset();
   delta.controls.reset();
   return delta;
@@ -283,7 +284,11 @@ void Participation::applyDelta(const ParticipationDelta &delta) {
     spawnWithState(delta.spawn->first, delta.spawn->second);
   } else {
     if (delta.planeAlive) {
-      if (plane and delta.state) plane->state = *delta.state;
+      if (plane) {
+        if (delta.state) plane->state = delta.state.get();
+        else if (delta.serverState)
+          plane->state.applyServer(delta.serverState.get());
+      }
     } else plane.reset();
   }
 
@@ -380,7 +385,7 @@ optional<ParticipationInput> Participation::collectInput() {
   }
   if (plane) {
     useful = true;
-    input.planeState = plane->getState().collectInput();
+    input.planeState = plane->getState().collectClient();
   }
   if (useful) return input;
   else return {};
