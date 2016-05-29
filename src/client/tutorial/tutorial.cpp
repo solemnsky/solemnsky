@@ -68,7 +68,7 @@ void Tutorial::tick(float delta) {
 }
 
 void Tutorial::render(ui::Frame &f) {
-  auto &plane = participation->getPlane();
+  auto &plane = participation->plane;
   skyRender.render(
       f, plane ?
          plane->getState().physical.pos :

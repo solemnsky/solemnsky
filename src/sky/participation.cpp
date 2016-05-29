@@ -24,38 +24,6 @@
 
 namespace sky {
 
-
-/**
- * ParticipationInit.
- */
-
-ParticipationInit::ParticipationInit() { }
-
-ParticipationInit::ParticipationInit(
-    const PlaneControls &controls,
-    const PlaneTuning &tuning,
-    const PlaneState &state) :
-    spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)),
-    controls(controls) { }
-
-ParticipationInit::ParticipationInit(
-    const PlaneControls &controls) : controls(controls) { }
-
-/**
- * ParticipationDelta.
- */
-
-bool ParticipationDelta::verifyStructure() const {
-  return imply(bool(spawn), bool(state));
-}
-
-ParticipationDelta ParticipationDelta::respectClientAuthority() const {
-  ParticipationDelta delta;
-  delta.planeAlive = planeAlive;
-  delta.spawn = spawn;
-  return delta;
-}
-
 /**
  * Plane.
  */
@@ -104,7 +72,7 @@ void Plane::tickFlight(const TimeDiff delta) {
     // Afterburner.
     if (throtCtrl == Movement::Up) {
       const float thrustEfficacy =
-          state.requestEnergy(tuning.energy.thrustDrain * delta);
+          requestEnergy(tuning.energy.thrustDrain * delta);
 
       state.physical.vel +=
           VecMath::fromAngle(state.physical.rot) *
@@ -133,7 +101,7 @@ void Plane::tickFlight(const TimeDiff delta) {
         sin(toRad(state.physical.rot)) * tuning.flight.gravityEffect * delta;
     if (afterburning) {
       const float thrustEfficacity =
-          state.requestEnergy(tuning.energy.thrustDrain * delta);
+          requestEnergy(tuning.energy.thrustDrain * delta);
       state.afterburner = thrustEfficacity;
       speedMod += tuning.flight.afterburnDrive * delta * thrustEfficacity;
     }
@@ -153,22 +121,6 @@ void Plane::tickFlight(const TimeDiff delta) {
 
 void Plane::tickWeapons(const TimeDiff delta) {
   state.primaryCooldown.cool(delta);
-  if (state.primaryCooldown
-      && this->controls.getState<Action::Primary>()) {
-    if (state.requestDiscreteEnergy(
-        tuning.energy.laserGun)) {
-      state.primaryCooldown.reset();
-      appLog("implement pewpew plz");
-// TODO: better props
-//      props.emplace_front(
-//          parent,
-//          participation->state.physical.pos + 100.0f * VecMath::fromAngle(
-//              participation->state.physical.rot),
-//          participation->state.physical.vel + 300.0f * VecMath::fromAngle
-//              (participation->state.physical.rot));
-//      primaryCooldown.reset();
-    }
-  }
 }
 
 void Plane::writeToBody() {
@@ -198,11 +150,6 @@ void Plane::onEndContact(const BodyTag &body) {
 
 }
 
-void Plane::applyInput(const ParticipationInput &input) {
-  if (input.physical)
-    state.physical = input.physical.get();
-}
-
 Plane::Plane(Physics &physics,
              const PlaneControls &controls,
              const PlaneTuning &tuning,
@@ -230,6 +177,52 @@ const PlaneState &Plane::getState() const {
   return state;
 }
 
+bool Plane::requestDiscreteEnergy(const float reqEnergy) {
+  if (state.energy < reqEnergy) return false;
+  state.energy -= reqEnergy;
+  return true;
+}
+
+float Plane::requestEnergy(const float reqEnergy) {
+  const float initEnergy = state.energy;
+  state.energy -= reqEnergy;
+  return (initEnergy - state.energy) / reqEnergy;
+}
+
+/**
+ * ParticipationInit.
+ */
+
+ParticipationInit::ParticipationInit() { }
+
+ParticipationInit::ParticipationInit(
+    const PlaneControls &controls,
+    const PlaneTuning &tuning,
+    const PlaneState &state) :
+    spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)),
+    controls(controls) { }
+
+ParticipationInit::ParticipationInit(
+    const PlaneControls &controls) : controls(controls) { }
+
+/**
+ * ParticipationDelta.
+ */
+
+bool ParticipationDelta::verifyStructure() const {
+  return imply(bool(spawn), bool(state));
+}
+
+ParticipationDelta ParticipationDelta::respectClientAuthority() const {
+  ParticipationDelta delta{*this};
+  if (state) {
+    delta.serverState.emplace(state.get());
+    delta.state.reset();
+  }
+  delta.controls.reset();
+  return delta;
+}
+
 /**
  * Participation.
  */
@@ -248,20 +241,20 @@ void Participation::doAction(const Action action, bool actionState) {
 
 void Participation::prePhysics() {
   if (plane) plane->prePhysics();
-  for (auto &prop : props) prop.writeToBody();
+  for (auto &prop : props) prop.second.writeToBody();
 }
 
 void Participation::postPhysics(const float delta) {
   if (plane) plane->postPhysics(delta);
 
   for (auto &prop : props) {
-    prop.readFromBody();
-    prop.tick(delta);
+    prop.second.readFromBody();
+    prop.second.tick(delta);
   }
 
-  props.remove_if([](Prop &prop) {
-    return prop.lifetime > 1;
-  });
+  // props.remove_if([](Prop &prop) {
+  // return prop.lifetime > 1;
+  // });
 }
 
 void Participation::spawn(const PlaneTuning &tuning,
@@ -280,28 +273,59 @@ Participation::Participation(Physics &physics,
     spawnWithState(initializer.spawn->first, initializer.spawn->second);
   controls = initializer.controls;
   lastControls = initializer.controls;
+  for (const auto &prop : initializer.props) {
+    props.emplace(std::piecewise_construct,
+                  std::forward_as_tuple(prop.first),
+                  std::forward_as_tuple(physics, prop.second));
+  }
 }
 
 void Participation::applyDelta(const ParticipationDelta &delta) {
+  // Apply plane spawn / state.
   if (delta.spawn) {
     spawnWithState(delta.spawn->first, delta.spawn->second);
   } else {
     if (delta.planeAlive) {
-      if (plane and delta.state) plane->state = *delta.state;
+      if (plane) {
+        if (delta.state) plane->state = delta.state.get();
+        else if (delta.serverState)
+          plane->state.applyServer(delta.serverState.get());
+      }
     } else plane.reset();
   }
 
+  // Apply prop deltas / erasure.
+  auto iter = props.begin();
+  while (iter != props.end()) {
+    if (delta.propDeltas.find(iter->first) == delta.propDeltas.end()) {
+      const auto toErase = iter;
+      ++iter;
+      props.erase(toErase);
+    } else ++iter;
+  }
+
+  // Create new props.
+  for (const auto &init : delta.propInits) {
+    props.emplace(std::piecewise_construct,
+                  std::forward_as_tuple(init.first),
+                  std::forward_as_tuple(physics, init.second));
+  }
+
+  // Modify controls.
   if (delta.controls) {
     controls = *delta.controls;
   }
 }
 
 ParticipationInit Participation::captureInitializer() const {
+  ParticipationInit init{controls};
   if (plane) {
-    return ParticipationInit(controls, plane->tuning, plane->state);
-  } else {
-    return ParticipationInit(controls);
+    init.spawn.emplace(plane->tuning, plane->state);
   }
+  for (const auto &prop : props) {
+    init.props.emplace(prop.first, prop.second.captureInitializer());
+  }
+  return init;
 }
 
 ParticipationDelta Participation::collectDelta() {
@@ -317,8 +341,31 @@ ParticipationDelta Participation::collectDelta() {
     }
   }
 
+  for (auto &prop : props) {
+    if (prop.second.newlyAlive) {
+      delta.propInits.emplace(prop.first, prop.second.captureInitializer());
+    } else {
+      delta.propDeltas.emplace(prop.first, prop.second.collectDelta());
+    }
+  }
+
   delta.controls = controls;
+
   return delta;
+}
+
+const PlaneControls &Participation::getControls() const {
+  return controls;
+}
+
+bool Participation::isSpawned() const {
+  return bool(plane);
+}
+
+void Participation::spawnProp(const PropInit &init) {
+  props.emplace(std::piecewise_construct,
+                std::forward_as_tuple(smallestUnused(props)),
+                std::forward_as_tuple(physics, init));
 }
 
 void Participation::applyInput(const ParticipationInput &input) {
@@ -327,7 +374,8 @@ void Participation::applyInput(const ParticipationInput &input) {
   }
 
   if (plane) {
-    plane->applyInput(input);
+    if (input.planeState)
+      plane->state.applyClient(input.planeState.get());
   }
 }
 
@@ -341,26 +389,10 @@ optional<ParticipationInput> Participation::collectInput() {
   }
   if (plane) {
     useful = true;
-    input.physical = plane->getState().physical;
+    input.planeState.emplace(plane->getState());
   }
   if (useful) return input;
   else return {};
-}
-
-const optional<Plane> &Participation::getPlane() const {
-  return plane;
-}
-
-const std::forward_list<Prop> &Participation::getProps() const {
-  return props;
-}
-
-const PlaneControls &Participation::getControls() const {
-  return controls;
-}
-
-bool Participation::isSpawned() const {
-  return bool(plane);
 }
 
 }

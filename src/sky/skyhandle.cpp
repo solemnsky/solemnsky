@@ -43,6 +43,13 @@ bool SkyHandleDelta::verifyStructure() const {
   return true;
 }
 
+SkyHandleDelta SkyHandleDelta::respectAuthority(const Player &player) const {
+  SkyHandleDelta newDelta;
+  if (delta) newDelta.delta = delta->respectAuthority(player);
+  newDelta.initializer = initializer;
+  return newDelta;
+}
+
 /**
  * SkyHandle.
  */
@@ -88,16 +95,6 @@ void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
   }
 }
 
-SkyHandleDelta SkyHandle::respectAuthority(const SkyHandleDelta &delta,
-                                           const Player &player) const {
-  SkyHandleDelta newDelta;
-  if (sky and delta.delta) {
-    newDelta.delta = sky->respectAuthority(delta.delta.get(), player);
-  }
-  newDelta.initializer = delta.initializer;
-  return newDelta;
-}
-
 void SkyHandle::start() {
   stop();
   sky.emplace(arena, SkyInit(arena.getNextMap()));
@@ -108,10 +105,6 @@ void SkyHandle::start() {
 void SkyHandle::stop() {
   if (sky) sky.reset();
   caller.doEndGame();
-}
-
-const optional<Sky> &SkyHandle::getSky() const {
-  return sky;
 }
 
 bool SkyHandle::isActive() const {

@@ -53,6 +53,8 @@ void MultiplayerGame::printScores(ui::TextFrame &tf, const sky::Team team) {
       } else {
         tf.print("ping{unknown}");
       }
+
+      tf.breakLine();
     }
   });
 }
@@ -98,7 +100,7 @@ MultiplayerGame::MultiplayerGame(
               style.multi.chatPos,
               "[ENTER TO CHAT]"),
     scoreboardFocused(false),
-    skyRender(shared, conn.arena, conn.skyHandle.getSky().get()),
+    skyRender(shared, conn.arena, conn.getSky().get()),
     participation(conn.getSky()->getParticipation(conn.player)) {
   areChildren({&chatInput});
   areChildComponents({&skyRender});
@@ -110,8 +112,8 @@ void MultiplayerGame::tick(float delta) {
 
 void MultiplayerGame::render(ui::Frame &f) {
   skyRender.render(
-      f, participation.getPlane() ?
-         participation.getPlane()->getState().physical.pos :
+      f, participation.plane ?
+         participation.plane->getState().physical.pos :
          sf::Vector2f(0, 0));
 
   if (chatInput.isFocused) core.drawEventLog(f, style.multi.chatCutoff);

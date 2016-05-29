@@ -28,14 +28,15 @@ namespace sky {
  * PlayerGraphics.
  */
 
-PlaneGraphics::PlaneGraphics(const Participation &plane) :
+PlaneGraphics::PlaneGraphics(const Player &player, const Participation &plane) :
     participation(plane),
+    player(player),
     orientation(false),
     flipState(0),
     rollState(0) { }
 
 void PlaneGraphics::tick(const float delta) {
-  if (auto &plane = participation.getPlane()) {
+  if (auto &plane = participation.plane) {
     // potentially switch orientation
     bool newOrientation = Angle(plane->getState().physical.rot + 90) > 180;
     const Movement rotMovement = participation.getControls().rotMovement();
@@ -62,7 +63,7 @@ void PlaneGraphics::kill() { }
 
 void PlaneGraphics::spawn() {
   orientation =
-      Angle(participation.getPlane()->getState().physical.rot + 90) > 180;
+      Angle(participation.plane->getState().physical.rot + 90) > 180;
   flipState = 0;
   rollState = 0;
 }
@@ -106,11 +107,11 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
 
 void SkyRender::renderProps(ui::Frame &f,
                             const Participation &participation) {
-  for (const sky::Prop &prop : participation.getProps()) {
+  for (const auto &prop : participation.props) {
     f.withTransform(
         sf::Transform()
-            .translate(prop.getPhysical().pos)
-            .rotate(prop.getPhysical().rot), [&]() {
+            .translate(prop.second.getPhysical().pos)
+            .rotate(prop.second.getPhysical().rot), [&]() {
           f.drawRect(sf::Vector2f(-5, -5),
                      sf::Vector2f(5, 5),
                      sf::Color::White);
@@ -120,7 +121,7 @@ void SkyRender::renderProps(ui::Frame &f,
 
 void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                     const PlaneGraphics &graphics) {
-  if (auto &plane = graphics.participation.getPlane()) {
+  if (auto &plane = graphics.participation.plane) {
     auto &state = plane->getState();
     auto &tuning = plane->getTuning();
 
@@ -136,7 +137,9 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                    sf::Color::Red);
                       });
 
-          planeSheet.drawIndexAtRoll(f, sf::Vector2f(200, 200), graphics.roll());
+          planeSheet.drawIndexAtRoll(f,
+                                     sf::Vector2f(200, 200),
+                                     graphics.roll());
 
           if (enableDebug) {
             const auto halfHitbox = 0.5f * tuning.hitbox;
@@ -147,6 +150,9 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
     f.withTransform(sf::Transform().translate(state.physical.pos), [&]() {
       const float airspeedStall = tuning.flight.threshold /
           tuning.flight.airspeedFactor;
+      f.drawText({0, -style.skyRender.barArea.top - style.base.normalFontSize},
+                 graphics.player.getNickname(), style.base.textColor,
+                 style.base.centeredText);
       renderBars(
           f,
           {mkBar(state.throttle,
@@ -177,8 +183,8 @@ void SkyRender::renderMap(ui::Frame &f) {
 
   for (const auto &obstacle : map.getObstacles()) {
     f.withTransform(sf::Transform().translate(obstacle.pos), [&]() {
-      for (auto poly : obstacle.decomposed){
-            f.drawPolyOutline(poly, sf::Color(200,200,200));
+      for (auto poly : obstacle.decomposed) {
+        f.drawPolyOutline(poly, sf::Color(200, 200, 200));
       }
       f.drawPolyOutline(obstacle.localVertices, sf::Color::White);
     });
@@ -199,8 +205,11 @@ SkyRender::~SkyRender() { }
 void SkyRender::registerPlayer(Player &player) {
   setPlayerData(
       player,
-      graphics.emplace(
-          player.pid, sky.getParticipation(player)).first->second);
+      graphics.emplace(std::piecewise_construct,
+                       std::forward_as_tuple(player.pid),
+                       std::forward_as_tuple(player,
+                                             sky.getParticipation(player)))
+          .first->second);
 }
 
 void SkyRender::unregisterPlayer(Player &player) {

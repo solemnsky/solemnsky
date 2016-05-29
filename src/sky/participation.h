@@ -28,68 +28,9 @@
 
 namespace sky {
 
-class SkyHandle;
-
 /**
- * Initializer for Participation's Networked impl.
- */
-struct ParticipationInit {
-  ParticipationInit();
-  ParticipationInit(const PlaneControls &controls,
-                    const PlaneTuning &tuning,
-                    const PlaneState &state);
-  ParticipationInit(const PlaneControls &controls);
-
-  template<typename Archive>
-  void serialize(Archive &ar) {
-    ar(spawn, controls);
-  }
-
-  optional<std::pair<PlaneTuning, PlaneState>> spawn;
-  PlaneControls controls;
-};
-
-/**
- * Delta for Participation's Networked impl.
- */
-struct ParticipationDelta: public VerifyStructure {
-  ParticipationDelta() = default;
-
-  template<typename Archive>
-  void serialize(Archive &ar) {
-    ar(spawn, planeAlive, state, controls);
-  }
-
-  bool verifyStructure() const;
-
-  optional<std::pair<PlaneTuning, PlaneState>> spawn;
-  bool planeAlive;
-  optional<PlaneState> state; // client authority
-  optional<PlaneControls> controls; // client authority
-
-  ParticipationDelta respectClientAuthority() const;
-
-};
-
-/**
- * Changes a client can apply to a server's Participation record for that
- * client.
- */
-struct ParticipationInput {
-  ParticipationInput() = default;
-
-  template<typename Archive>
-  void serialize(Archive &ar) {
-    ar(physical, controls);
-  }
-
-  optional<PhysicalState> physical;
-  optional<PlaneControls> controls;
-
-};
-
-/**
- * The plane element that can be associated with a participation.
+ * The plane element that can be associated with a Participation.
+ * This is essentially a piece of Participations's implementation.
  */
 class Plane {
   friend class Sky;
@@ -117,9 +58,6 @@ class Plane {
   void onBeginContact(const BodyTag &body);
   void onEndContact(const BodyTag &body);
 
-  // Applying an input.
-  void applyInput(const ParticipationInput &input);
-
  public:
   Plane() = delete;
   Plane(Physics &, PlaneControls &&, const PlaneTuning &,
@@ -134,6 +72,74 @@ class Plane {
   const PlaneTuning &getTuning() const;
   const PlaneState &getState() const;
 
+  bool requestDiscreteEnergy(const float reqEnergy);
+  float requestEnergy(const float reqEnergy);
+
+};
+
+/**
+ * Initializer for Participation's Networked impl.
+ */
+struct ParticipationInit {
+  ParticipationInit();
+  ParticipationInit(const PlaneControls &controls,
+                    const PlaneTuning &tuning,
+                    const PlaneState &state);
+  ParticipationInit(const PlaneControls &controls);
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(spawn, controls, props);
+  }
+
+  optional<std::pair<PlaneTuning, PlaneState>> spawn;
+  PlaneControls controls;
+  std::map<PID, PropInit> props;
+
+};
+
+/**
+ * Delta for Participation's Networked impl.
+ */
+struct ParticipationDelta: public VerifyStructure {
+  ParticipationDelta() = default;
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(spawn, planeAlive, state, serverState, controls);
+    ar(propInits, propDeltas);
+  }
+
+  bool verifyStructure() const;
+
+  optional<std::pair<PlaneTuning, PlaneState>> spawn;
+  bool planeAlive;
+  optional<PlaneState> state; // if client doesn't have authority
+  optional<PlaneStateServer> serverState; // if client has authority
+  optional<PlaneControls> controls; // client authority
+
+  std::map<PID, PropInit> propInits;
+  std::map<PID, PropDelta> propDeltas;
+
+  ParticipationDelta respectClientAuthority() const;
+
+};
+
+/**
+ * Changes a client can apply to a server's Participation record for that
+ * client.
+ */
+struct ParticipationInput {
+  ParticipationInput() = default;
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(planeState, controls);
+  }
+
+  optional<PlaneStateClient> planeState;
+  optional<PlaneControls> controls;
+
 };
 
 /**
@@ -147,14 +153,10 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   Physics &physics;
 
   // State.
-  optional<Plane> plane;
   PlaneControls controls;
-  std::forward_list<Prop> props;
 
   // Delta collection state.
   bool newlyAlive;
-
-  // Input collection state.
   PlaneControls lastControls;
 
   // Helpers.
@@ -174,16 +176,21 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   Participation() = delete;
   Participation(Physics &physics, const ParticipationInit &initializer);
 
+  // State.
+  optional<Plane> plane;
+  std::map<PID, Prop> props;
+  
   // Networked impl (for Sky).
   void applyDelta(const ParticipationDelta &delta) override;
   ParticipationInit captureInitializer() const override;
   ParticipationDelta collectDelta();
 
   // User API.
-  const optional<Plane> &getPlane() const;
-  const std::forward_list<Prop> &getProps() const;
   const PlaneControls &getControls() const;
   bool isSpawned() const;
+
+  // User API, serverside.
+  void spawnProp(const PropInit &init);
 
   // ParticipationInput.
   void applyInput(const ParticipationInput &input);
