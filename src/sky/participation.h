@@ -59,7 +59,7 @@ struct ParticipationDelta: public VerifyStructure {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(spawn, planeAlive, state, controls, props);
+    ar(spawn, planeAlive, state, controls, propDeltas);
   }
 
   bool verifyStructure() const;
@@ -68,7 +68,7 @@ struct ParticipationDelta: public VerifyStructure {
   bool planeAlive;
   optional<PlaneState> state; // client authority
   optional<PlaneControls> controls; // client authority
-  std::map<PID, PropDelta> props;
+  std::map<PID, PropDelta> propDeltas;
 
   ParticipationDelta respectClientAuthority() const;
 

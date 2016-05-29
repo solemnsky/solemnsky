@@ -39,6 +39,22 @@ bool SkyDelta::verifyStructure() const {
   return verifyMap(participations);
 }
 
+SkyDelta SkyDelta::respectAuthority(const Player &player) const {
+  SkyDelta newDelta;
+
+  for (auto pDelta : participations) {
+    if (pDelta.first == player.pid) {
+      newDelta.participations.emplace(
+          pDelta.first,
+          pDelta.second.respectClientAuthority());
+    } else {
+      newDelta.participations.emplace(pDelta.first, pDelta.second);
+    }
+  }
+
+  return newDelta;
+}
+
 /**
  * Sky.
  */
@@ -131,23 +147,6 @@ SkyDelta Sky::collectDelta() {
         participation.first, participation.second.collectDelta());
   }
   return delta;
-}
-
-SkyDelta Sky::respectAuthority(const SkyDelta &delta,
-                               const Player &player) const {
-  SkyDelta newDelta;
-
-  for (auto pDelta : delta.participations) {
-    if (pDelta.first == player.pid) {
-      newDelta.participations.emplace(
-          pDelta.first,
-          pDelta.second.respectClientAuthority());
-    } else {
-      newDelta.participations.emplace(pDelta.first, pDelta.second);
-    }
-  }
-
-  return newDelta;
 }
 
 const Map &Sky::getMap() const {
