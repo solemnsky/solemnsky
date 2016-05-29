@@ -192,7 +192,7 @@ struct Cooldown {
   void reset();
   void prime();
 
-  inline operator bool() { return cooldown == 0; }
+  inline operator bool() const { return cooldown == 0; }
 
   template<typename Archive>
   void serialize(Archive ar) {
