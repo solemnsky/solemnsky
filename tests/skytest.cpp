@@ -78,7 +78,7 @@ TEST_F(SkyTest, AuthorityTest) {
 
     player.spawn({}, {200, 200}, 0);
     auto delta = sky.collectDelta();
-    remoteSky.applyDelta(sky.respectAuthority(delta, player));
+    remoteSky.applyDelta(delta.respectAuthority(player));
 
     ASSERT_EQ(remoteParticip.isSpawned(), true);
   }
@@ -93,7 +93,7 @@ TEST_F(SkyTest, AuthorityTest) {
     input.planeState.emplace(stateInput);
 
     auto delta = sky.collectDelta();
-    remoteSky.applyDelta(sky.respectAuthority(delta, player));
+    remoteSky.applyDelta(delta.respectAuthority(player));
 
     ASSERT_EQ(remoteParticip.getPlane()->getState().physical.pos.x, 200);
   }

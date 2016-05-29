@@ -17,7 +17,18 @@
  */
 #include "vanilla.h"
 
-void VanillaServer::onTick(const float delta) {
+void VanillaServer::tickGame(const TimeDiff delta, sky::Sky &sky) {
+  arena.forPlayers([&](Player &player) {
+    auto &participation = sky.getParticipation(player);
+    if (participation.isSpawned()) {
+      // do something
+    }
+  });
+}
+
+void VanillaServer::onTick(const TimeDiff delta) {
+  if (shared.skyHandle.isActive())
+    tickGame(delta, shared.skyHandle.getSky().get());
 
 }
 

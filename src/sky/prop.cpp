@@ -51,7 +51,8 @@ Prop::Prop(Physics &physics,
     body(physics.createBody(physics.rectShape({10, 10}),
                             BodyTag::PropTag(*this))),
     physical({}, {}, 0, 0),
-    lifetime(0) {
+    lifetime(0),
+    newlyAlive(true) {
   physical.hardWriteToBody(physics, body);
 }
 

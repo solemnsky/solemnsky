@@ -87,6 +87,7 @@ class SkyHandle
   void start();
   void stop();
 
+  optional<Sky> &getSky();
   const optional<Sky> &getSky() const;
   bool isActive() const;
 

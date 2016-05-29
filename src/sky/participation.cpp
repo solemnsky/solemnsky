@@ -50,9 +50,9 @@ bool ParticipationDelta::verifyStructure() const {
 }
 
 ParticipationDelta ParticipationDelta::respectClientAuthority() const {
-  ParticipationDelta delta;
-  delta.planeAlive = planeAlive;
-  delta.spawn = spawn;
+  ParticipationDelta delta{*this};
+  delta.state.reset();
+  delta.controls.reset();
   return delta;
 }
 
@@ -153,22 +153,6 @@ void Plane::tickFlight(const TimeDiff delta) {
 
 void Plane::tickWeapons(const TimeDiff delta) {
   state.primaryCooldown.cool(delta);
-  if (state.primaryCooldown
-      && this->controls.getState<Action::Primary>()) {
-    if (state.requestDiscreteEnergy(
-        tuning.energy.laserGun)) {
-      state.primaryCooldown.reset();
-      appLog("implement pewpew plz");
-// TODO: better props
-//      props.emplace_front(
-//          parent,
-//          participation->state.physical.pos + 100.0f * VecMath::fromAngle(
-//              participation->state.physical.rot),
-//          participation->state.physical.vel + 300.0f * VecMath::fromAngle
-//              (participation->state.physical.rot));
-//      primaryCooldown.reset();
-    }
-  }
 }
 
 void Plane::writeToBody() {
@@ -283,6 +267,7 @@ Participation::Participation(Physics &physics,
 }
 
 void Participation::applyDelta(const ParticipationDelta &delta) {
+  // Apply plane spawn / state.
   if (delta.spawn) {
     spawnWithState(delta.spawn->first, delta.spawn->second);
   } else {
@@ -291,17 +276,37 @@ void Participation::applyDelta(const ParticipationDelta &delta) {
     } else plane.reset();
   }
 
+  // Apply prop deltas / erasure.
+  auto iter = props.begin();
+  while (iter != props.end()) {
+    auto propDelta = delta.propDeltas.find(iter->first);
+    if (propDelta == delta.propDeltas.end()) {
+      props.erase(iter);
+    } else ++iter;
+  }
+
+  // Create new props.
+  for (const auto &init : delta.propInits) {
+    props.emplace(std::piecewise_construct,
+                  std::forward_as_tuple(init.first),
+                  std::forward_as_tuple(physics, init.second));
+  }
+
+  // Modify controls.
   if (delta.controls) {
     controls = *delta.controls;
   }
 }
 
 ParticipationInit Participation::captureInitializer() const {
+  ParticipationInit init{controls};
   if (plane) {
-    return ParticipationInit(controls, plane->tuning, plane->state);
-  } else {
-    return ParticipationInit(controls);
+    init.spawn.emplace(plane->tuning, plane->state);
   }
+  for (const auto &prop : props) {
+    init.props.emplace(prop.first, prop.second.captureInitializer());
+  }
+  return init;
 }
 
 ParticipationDelta Participation::collectDelta() {
@@ -317,7 +322,16 @@ ParticipationDelta Participation::collectDelta() {
     }
   }
 
+  for (auto &prop : props) {
+    if (prop.second.newlyAlive) {
+      delta.propInits.emplace(prop.first, prop.second.captureInitializer());
+    } else {
+      delta.propDeltas.emplace(prop.first, prop.second.collectDelta());
+    }
+  }
+
   delta.controls = controls;
+
   return delta;
 }
 
@@ -335,6 +349,12 @@ const PlaneControls &Participation::getControls() const {
 
 bool Participation::isSpawned() const {
   return bool(plane);
+}
+
+void Participation::spawnProp(const PropInit &init) {
+  props.emplace(std::piecewise_construct,
+                std::forward_as_tuple(smallestUnused(props)),
+                std::forward_as_tuple(physics, init));
 }
 
 void Participation::applyInput(const ParticipationInput &input) {
@@ -362,7 +382,6 @@ optional<ParticipationInput> Participation::collectInput() {
   if (useful) return input;
   else return {};
 }
-
 
 }
 
