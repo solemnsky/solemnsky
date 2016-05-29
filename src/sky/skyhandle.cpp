@@ -95,10 +95,6 @@ void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
   }
 }
 
-SkyHandleDelta SkyHandle::respectAuthority(const SkyHandleDelta &delta,
-                                           const Player &player) const {
-}
-
 void SkyHandle::start() {
   stop();
   sky.emplace(arena, SkyInit(arena.getNextMap()));
@@ -109,6 +105,10 @@ void SkyHandle::start() {
 void SkyHandle::stop() {
   if (sky) sky.reset();
   caller.doEndGame();
+}
+
+optional<Sky> &SkyHandle::getSky() {
+  return sky;
 }
 
 const optional<Sky> &SkyHandle::getSky() const {

@@ -58,6 +58,9 @@ class Prop: public Networked<PropInit, PropDelta> {
   PhysicalState physical;
   float lifetime;
 
+  // Delta collection state, for Participation.
+  bool newlyAlive;
+
   // Sky API.
   void writeToBody();
   void readFromBody();

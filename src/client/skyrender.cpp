@@ -107,11 +107,11 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
 
 void SkyRender::renderProps(ui::Frame &f,
                             const Participation &participation) {
-  for (const sky::Prop &prop : participation.getProps()) {
+  for (const auto &prop : participation.getProps()) {
     f.withTransform(
         sf::Transform()
-            .translate(prop.getPhysical().pos)
-            .rotate(prop.getPhysical().rot), [&]() {
+            .translate(prop.second.getPhysical().pos)
+            .rotate(prop.second.getPhysical().rot), [&]() {
           f.drawRect(sf::Vector2f(-5, -5),
                      sf::Vector2f(5, 5),
                      sf::Color::White);
