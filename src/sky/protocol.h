@@ -68,6 +68,7 @@ struct ClientPacket: public VerifyStructure {
       };
       case Type::ReqTeam: {
         ar(team);
+        break;
       }
       case Type::ReqSpawn: {
         break;
