@@ -380,7 +380,7 @@ bool Participation::isSpawned() const {
 void Participation::spawnProp(const PropInit &init) {
   props.emplace(std::piecewise_construct,
                 std::forward_as_tuple(smallestUnused(props)),
-                std::forward_as_tuple(physics, init));
+                std::forward_as_tuple(associatedPlayer, physics, init));
 }
 
 void Participation::suicide() {
