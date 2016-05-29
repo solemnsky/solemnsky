@@ -24,8 +24,8 @@ namespace sky {
  * PropInit.
  */
 
-PropInit::PropInit(const sf::Vector2f &pos) :
-    physical(pos, {}, Angle(0), 0) { }
+PropInit::PropInit(const sf::Vector2f &pos, const sf::Vector2f &vel) :
+    physical(pos, vel, Angle(0), 0) { }
 
 /**
  * PropDelta.
@@ -60,6 +60,7 @@ Prop::Prop(const PID associatedPlayer,
     newlyAlive(true),
     associatedPlayer(associatedPlayer) {
   physical.hardWriteToBody(physics, body);
+  body->SetGravityScale(0);
 }
 
 Prop::~Prop() {

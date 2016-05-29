@@ -29,7 +29,7 @@ namespace sky {
  */
 struct PropInit {
   PropInit() = default;
-  PropInit(const sf::Vector2f &pos);
+  PropInit(const sf::Vector2f &pos, const sf::Vector2f &vel);
 
   template<typename Archive>
   void serialize(Archive &ar) {
