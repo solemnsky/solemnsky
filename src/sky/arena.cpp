@@ -21,6 +21,13 @@
 namespace sky {
 
 /**
+ * PlayerDelta.
+ */
+
+PlayerDelta::PlayerDelta(const Player &player) :
+    admin(player.isAdmin()) { }
+
+/**
  * Player.
  */
 
@@ -44,7 +51,7 @@ Player::Player(Arena &arena, const PlayerInitializer &initializer) :
 void Player::applyDelta(const PlayerDelta &delta) {
   if (delta.nickname) nickname = *delta.nickname;
   admin = delta.admin;
-  if (delta.team) team = *delta.team;
+  if (delta.team) team = delta.team.get();
   if (delta.latencyStats) {
     latency = delta.latencyStats->first;
     clockOffset = delta.latencyStats->second;
@@ -59,12 +66,6 @@ PlayerInitializer Player::captureInitializer() const {
   initializer.admin = admin;
   initializer.team = team;
   return initializer;
-}
-
-PlayerDelta Player::zeroDelta() const {
-  PlayerDelta delta;
-  delta.admin = admin;
-  return delta;
 }
 
 std::string Player::getNickname() const {
