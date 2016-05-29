@@ -23,6 +23,7 @@
 #include <numeric>
 #include <ratio>
 #include <cmath>
+#include <numeric>
 #include <SFML/System.hpp>
 #include <boost/optional.hpp>
 
@@ -292,7 +293,7 @@ class VerifyStructure {
 template<typename Init, typename Delta>
 class Networked {
  public:
-  // you are required to construct a Networked object with its 
+  // you are required to construct a Networked object with its
   // initializer type; this supports an orthogonal interface
   Networked() = delete;
   Networked(const Init &) { }
