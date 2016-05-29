@@ -110,19 +110,19 @@ TEST_F(SkyTest, PropTest) {
   auto &participation = sky.getParticipation(player);
 
   sky.getParticipation(player).spawnProp(sky::PropInit());
-  ASSERT_EQ(participation.props.size(), 1);
+  ASSERT_EQ(participation.props.size(), size_t(1));
 
   sky::Arena remoteArena{arena.captureInitializer()};
   sky::Sky remoteSky{remoteArena, sky.captureInitializer()};
   auto &remotePlayer = *remoteArena.getPlayer(0);
   auto &remoteParticipation = remoteSky.getParticipation(remotePlayer);
 
-  ASSERT_EQ(remoteParticipation.props.size(), 1);
+  ASSERT_EQ(remoteParticipation.props.size(), size_t(1));
 
   participation.spawnProp(sky::PropInit());
   remoteSky.applyDelta(sky.collectDelta());
 
-  ASSERT_EQ(remoteParticipation.props.size(), 2);
+  ASSERT_EQ(remoteParticipation.props.size(), size_t(2));
 
 }
 
