@@ -96,7 +96,7 @@ PlaneStateClient::PlaneStateClient(const PlaneState &state) :
 PlaneStateServer::PlaneStateServer(const PlaneState &state) :
     energy(state.energy),
     health(state.health),
-    primaryCooldown(state.primaryCooldown) { }
+    primaryCooldown(state.primaryCooldown.cooldown) { }
 
 /**
  * PlaneState.
@@ -111,10 +111,11 @@ PlaneState::PlaneState(const PlaneTuning &tuning,
              tuning.flight.airspeedFactor * VecMath::fromAngle(rot),
              rot, 0),
 
-    stalled(false), afterburner(0),
-    leftoverVel(0, 0),
+    stalled(false),
     airspeed(tuning.flight.throttleInfluence),
+    afterburner(0),
     throttle(1),
+    leftoverVel(0, 0),
 
     energy(1),
     health(1),

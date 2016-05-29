@@ -66,6 +66,7 @@ TEST_F(SkyTest, InputTest) {
 TEST_F(SkyTest, AuthorityTest) {
   arena.connectPlayer("nameless plane");
   auto &player = *arena.getPlayer(0);
+  auto &participation = sky.getParticipation(player);
 
   sky::Arena remoteArena{arena.captureInitializer()};
   sky::Sky remoteSky{remoteArena, sky.captureInitializer()};
@@ -88,7 +89,7 @@ TEST_F(SkyTest, AuthorityTest) {
     ASSERT_EQ(remoteParticip.plane->getState().physical.pos.x, 200);
 
     sky::ParticipationInput input;
-    sky::PlaneStateClient stateInput;
+    sky::PlaneStateClient stateInput(participation.plane->getState());
     stateInput.physical = sky::PhysicalState({300, 300}, {}, 50, 0);
     input.planeState.emplace(stateInput);
 
