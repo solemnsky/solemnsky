@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <cmath>
+#include "arena.h"
 #include <SFML/Graphics/Rect.hpp>
 #include "arena.h"
 #include "participation.h"
@@ -144,7 +145,8 @@ void Plane::postPhysics(const TimeDiff delta) {
 
 void Plane::onBeginContact(const BodyTag &body) {
   if (body.type == BodyTag::Type::PropTag) {
-    appLog("hit prop");
+    if (body.prop->associatedPlayer == associatedPlayer)
+      appLog("hit prop");
     state.health = 0;
   }
 }
@@ -153,7 +155,8 @@ void Plane::onEndContact(const BodyTag &body) {
 
 }
 
-Plane::Plane(Physics &physics,
+Plane::Plane(const PID player,
+             Physics &physics,
              const PlaneControls &controls,
              const PlaneTuning &tuning,
              const PlaneState &state) :
@@ -163,7 +166,8 @@ Plane::Plane(Physics &physics,
     tuning(tuning),
     state(state),
     body(physics.createBody(physics.rectShape(tuning.hitbox),
-                            BodyTag::PlaneTag(*this))) {
+                            BodyTag::PlaneTag(*this))),
+    associatedPlayer(player) {
   state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(state.stalled ? 1 : 0);
 }
@@ -190,6 +194,10 @@ float Plane::requestEnergy(const float reqEnergy) {
   const float initEnergy = state.energy;
   state.energy -= reqEnergy;
   return (initEnergy - state.energy) / reqEnergy;
+}
+
+void Plane::resetPrimary() {
+  state.primaryCooldown.reset();
 }
 
 /**
@@ -232,7 +240,7 @@ ParticipationDelta ParticipationDelta::respectClientAuthority() const {
 
 void Participation::spawnWithState(const PlaneTuning &tuning,
                                    const PlaneState &state) {
-  plane.emplace(physics, controls, tuning, state);
+  plane.emplace(associatedPlayer, physics, controls, tuning, state);
 }
 
 void Participation::doAction(const Action action, bool actionState) {
@@ -267,11 +275,13 @@ void Participation::spawn(const PlaneTuning &tuning,
   newlyAlive = true;
 }
 
-Participation::Participation(Physics &physics,
+Participation::Participation(const PID associatedPlayer,
+                             Physics &physics,
                              const ParticipationInit &initializer) :
     Networked(initializer),
     physics(physics),
-    newlyAlive(false) {
+    newlyAlive(false),
+    associatedPlayer(associatedPlayer) {
   if (initializer.spawn)
     spawnWithState(initializer.spawn->first, initializer.spawn->second);
   controls = initializer.controls;
@@ -279,7 +289,8 @@ Participation::Participation(Physics &physics,
   for (const auto &prop : initializer.props) {
     props.emplace(std::piecewise_construct,
                   std::forward_as_tuple(prop.first),
-                  std::forward_as_tuple(physics, prop.second));
+                  std::forward_as_tuple(associatedPlayer,
+                                        physics, prop.second));
   }
 }
 
@@ -311,7 +322,8 @@ void Participation::applyDelta(const ParticipationDelta &delta) {
   for (const auto &init : delta.propInits) {
     props.emplace(std::piecewise_construct,
                   std::forward_as_tuple(init.first),
-                  std::forward_as_tuple(physics, init.second));
+                  std::forward_as_tuple(associatedPlayer, physics,
+                                        init.second));
   }
 
   // Modify controls.
