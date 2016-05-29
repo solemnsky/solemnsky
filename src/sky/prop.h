@@ -28,10 +28,15 @@ namespace sky {
  * Initializer for Prop.
  */
 struct PropInit {
+  PropInit() = default;
+  PropInit(const sf::Vector2f &pos);
+
   template<typename Archive>
   void serialize(Archive &ar) {
-
+    ar(physical);
   }
+
+  PhysicalState physical;
 
 };
 
@@ -39,10 +44,14 @@ struct PropInit {
  * Delta for Prop.
  */
 struct PropDelta {
+  PropDelta() = default;
+
   template<typename Archive>
   void serialize(Archive &ar) {
-
+    ar(physical);
   }
+
+  PhysicalState physical;
 
 };
 

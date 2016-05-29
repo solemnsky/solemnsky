@@ -23,7 +23,7 @@ void VanillaServer::tickGame(const TimeDiff delta, sky::Sky &sky) {
     if (participation.isSpawned()) {
       if (participation.getControls().getState<sky::Action::Primary>()) {
         if (participation.plane->requestDiscreteEnergy(0.5)) {
-          appLog("pewpew");
+          participation.spawnProp(sky::PropInit({200, 200}));
         }
       }
     }

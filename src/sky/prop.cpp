@@ -24,6 +24,9 @@ namespace sky {
  * PropInit.
  */
 
+PropInit::PropInit(const sf::Vector2f &pos) :
+    physical(pos, {}, Angle(0), 0) { }
+
 /**
  * PropDelta.
  */
@@ -50,7 +53,7 @@ Prop::Prop(Physics &physics,
     physics(physics),
     body(physics.createBody(physics.rectShape({10, 10}),
                             BodyTag::PropTag(*this))),
-    physical({}, {}, 0, 0),
+    physical(initializer.physical),
     lifetime(0),
     newlyAlive(true) {
   physical.hardWriteToBody(physics, body);
@@ -60,17 +63,20 @@ Prop::~Prop() {
   physics.deleteBody(body);
 }
 
-
 PropInit Prop::captureInitializer() const {
-  return PropInit();
+  PropInit init;
+  init.physical = physical;
+  return init;
 }
 
 void Prop::applyDelta(const PropDelta &delta) {
-
+  physical = delta.physical;
 }
 
 PropDelta Prop::collectDelta() {
-  return PropDelta();
+  PropDelta delta;
+  delta.physical = physical;
+  return delta;
 }
 
 
