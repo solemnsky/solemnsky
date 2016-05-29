@@ -107,14 +107,6 @@ void SkyHandle::stop() {
   caller.doEndGame();
 }
 
-optional<Sky> &SkyHandle::getSky() {
-  return sky;
-}
-
-const optional<Sky> &SkyHandle::getSky() const {
-  return sky;
-}
-
 bool SkyHandle::isActive() const {
   return bool(sky);
 }

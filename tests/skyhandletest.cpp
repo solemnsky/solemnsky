@@ -25,7 +25,7 @@ TEST_F(SkyHandleTest, AllocTest) {
     // Starting the sky with a map.
     skyHandle.start();
     ASSERT_EQ(bool(skyHandle.isActive()), true);
-    const sky::Sky &sky = *skyHandle.getSky();
+    const sky::Sky &sky = *skyHandle.sky;
     ASSERT_EQ(sky.getMap().name, "test1");
 
     // Spawning is managed correctly.
@@ -63,8 +63,8 @@ TEST_F(SkyHandleTest, InitializerTest) {
   {
     // The sky instantiation copied through.
     ASSERT_EQ(remoteSkyHandle.isActive(), true);
-    ASSERT_EQ(remoteSkyHandle.getSky()->getMap().name, "test1");
-    const sky::Sky &remoteSky = remoteSkyHandle.getSky().get();
+    ASSERT_EQ(remoteSkyHandle.sky->getMap().name, "test1");
+    const sky::Sky &remoteSky = *remoteSkyHandle.sky;
 
     // The participations copied.
     sky::Player player1 = *remoteArena.getPlayer(0);
@@ -89,7 +89,7 @@ TEST_F(SkyHandleTest, DeltaTest) {
   sky::SkyHandle remoteSkyHandle(remoteArena, skyHandle.captureInitializer());
 
   {
-    const sky::Sky &remoteSky = remoteSkyHandle.getSky().get();
+    const sky::Sky &remoteSky = *remoteSkyHandle.sky;
 
     // Spawning and controls can be transmitted over deltas.
     sky::Player &player = *arena.getPlayer(0);
@@ -136,7 +136,7 @@ TEST_F(SkyHandleTest, DeltaAllocTest) {
   arena.applyDelta(sky::ArenaDelta::MapChange("test2"));
   skyHandle.start();
   remoteSkyHandle.applyDelta(skyHandle.collectDelta());
-  ASSERT_EQ(remoteSkyHandle.getSky()->getMap().name, "test2");
+  ASSERT_EQ(remoteSkyHandle.sky->getMap().name, "test2");
 
 }
 

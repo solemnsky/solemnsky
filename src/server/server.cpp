@@ -135,7 +135,7 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::ReqInput: {
-        if (auto &sky = shared.skyHandle.getSky()) {
+        if (auto &sky = shared.skyHandle.sky) {
           sky->getParticipation(*player).applyInput(
               packet.participationInput.get());
         }
@@ -143,7 +143,6 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::ReqSpawn: {
-        appLog("got spawn");
         player->spawn({}, {200, 200}, 0);
         break;
       }
