@@ -39,6 +39,7 @@ struct ClientPacket: public VerifyStructure {
     ReqPlayerDelta, // request a change to your player data
     ReqInput, // request an input into your sky Participation
 
+    ReqTeam, // request a team change
     ReqSpawn, // request to spawn
 
     Chat, // send a chat message
@@ -65,6 +66,9 @@ struct ClientPacket: public VerifyStructure {
         ar(participationInput);
         break;
       };
+      case Type::ReqTeam: {
+        ar(team);
+      }
       case Type::ReqSpawn: {
         break;
       }
@@ -86,6 +90,7 @@ struct ClientPacket: public VerifyStructure {
   optional<Time> pingTime, pongTime;
   optional<std::string> stringData;
   optional<PlayerDelta> playerDelta;
+  optional<Team> team;
   optional<ParticipationInput> participationInput;
   optional<bool> state;
 
@@ -95,6 +100,7 @@ struct ClientPacket: public VerifyStructure {
   static ClientPacket ReqJoin(const std::string &nickname);
   static ClientPacket ReqPlayerDelta(const PlayerDelta &playerDelta);
   static ClientPacket ReqInput(const ParticipationInput &input);
+  static ClientPacket ReqTeam(const Team team);
   static ClientPacket ReqSpawn();
   static ClientPacket Chat(const std::string &message);
   static ClientPacket RCon(const std::string &command);
