@@ -28,10 +28,15 @@ namespace sky {
  * Initializer for Prop.
  */
 struct PropInit {
+  PropInit() = default;
+  PropInit(const sf::Vector2f &pos, const sf::Vector2f &vel);
+
   template<typename Archive>
   void serialize(Archive &ar) {
-
+    ar(physical);
   }
+
+  PhysicalState physical;
 
 };
 
@@ -39,10 +44,14 @@ struct PropInit {
  * Delta for Prop.
  */
 struct PropDelta {
+  PropDelta() = default;
+
   template<typename Archive>
   void serialize(Archive &ar) {
-
+    ar(physical);
   }
+
+  PhysicalState physical;
 
 };
 
@@ -57,6 +66,7 @@ class Prop: public Networked<PropInit, PropDelta> {
   b2Body *const body;
   PhysicalState physical;
   float lifetime;
+  bool destroyable;
 
   // Delta collection state, for Participation.
   bool newlyAlive;
@@ -68,9 +78,12 @@ class Prop: public Networked<PropInit, PropDelta> {
 
  public:
   Prop() = delete;
-  Prop(Physics &physics,
+  Prop(const PID associatedPlayer,
+       Physics &physics,
        const PropInit &initializer);
   ~Prop();
+
+  const PID associatedPlayer;
 
   // Networked API.
   PropInit captureInitializer() const override final;
@@ -80,6 +93,7 @@ class Prop: public Networked<PropInit, PropDelta> {
   // User API.
   const PhysicalState &getPhysical() const;
   float getLifetime() const;
+  void destroy();
 
 };
 

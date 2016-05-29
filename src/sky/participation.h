@@ -60,13 +60,16 @@ class Plane {
 
  public:
   Plane() = delete;
-  Plane(Physics &, PlaneControls &&, const PlaneTuning &,
+  Plane(const PID player, Physics &, PlaneControls &&, const PlaneTuning &,
         const PlaneState &) = delete; // `controls` must not be a temp
-  Plane(Physics &physics,
+  Plane(const PID player,
+        Physics &physics,
         const PlaneControls &controls,
         const PlaneTuning &tuning,
         const PlaneState &state);
   ~Plane();
+
+  const PID associatedPlayer;
 
   // User API.
   const PlaneTuning &getTuning() const;
@@ -74,6 +77,7 @@ class Plane {
 
   bool requestDiscreteEnergy(const float reqEnergy);
   float requestEnergy(const float reqEnergy);
+  void resetPrimary();
 
 };
 
@@ -174,12 +178,15 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
 
  public:
   Participation() = delete;
-  Participation(Physics &physics, const ParticipationInit &initializer);
+  Participation(const PID associatedPlayer,
+                Physics &physics,
+                const ParticipationInit &initializer);
 
   // State.
+  const PID associatedPlayer;
   optional<Plane> plane;
   std::map<PID, Prop> props;
-  
+
   // Networked impl (for Sky).
   void applyDelta(const ParticipationDelta &delta) override;
   ParticipationInit captureInitializer() const override;
@@ -191,11 +198,11 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
 
   // User API, serverside.
   void spawnProp(const PropInit &init);
+  void suicide();
 
   // ParticipationInput.
   void applyInput(const ParticipationInput &input);
   optional<ParticipationInput> collectInput();
-
 
 };
 
