@@ -25,7 +25,7 @@ TEST_F(SkyHandleTest, AllocTest) {
     // Starting the sky with a map.
     skyHandle.start();
     ASSERT_EQ(bool(skyHandle.isActive()), true);
-    const sky::Sky &sky = *skyHandle.getSky();
+    const sky::Sky &sky = *skyHandle.sky;
     ASSERT_EQ(sky.getMap().name, "test1");
 
     // Spawning is managed correctly.
@@ -34,8 +34,7 @@ TEST_F(SkyHandleTest, AllocTest) {
     ASSERT_EQ(bool(sky.getParticipation(player).isSpawned()), false);
     player.spawn({}, {300, 300}, 0);
     ASSERT_EQ(bool(sky.getParticipation(player).isSpawned()), true);
-    ASSERT_EQ(sky.getParticipation(player).getPlane()
-                  ->getState().physical.pos.x, 300);
+    ASSERT_EQ(sky.getParticipation(player).plane->getState().physical.pos.x, 300);
   }
 
   skyHandle.stop();
@@ -63,15 +62,15 @@ TEST_F(SkyHandleTest, InitializerTest) {
   {
     // The sky instantiation copied through.
     ASSERT_EQ(remoteSkyHandle.isActive(), true);
-    ASSERT_EQ(remoteSkyHandle.getSky()->getMap().name, "test1");
-    const sky::Sky &remoteSky = remoteSkyHandle.getSky().get();
+    ASSERT_EQ(remoteSkyHandle.sky->getMap().name, "test1");
+    const sky::Sky &remoteSky = *remoteSkyHandle.sky;
 
     // The participations copied.
     sky::Player player1 = *remoteArena.getPlayer(0);
     sky::Player player2 = *remoteArena.getPlayer(1);
     ASSERT_EQ(remoteSky.getParticipation(player1).isSpawned(), true);
     ASSERT_EQ(remoteSky.getParticipation(player2).isSpawned(), false);
-    ASSERT_EQ(remoteSky.getParticipation(player1).getPlane()->
+    ASSERT_EQ(remoteSky.getParticipation(player1).plane->
         getState().physical.pos.x, 300);
     ASSERT_EQ(remoteSky.getParticipation(player1).getControls()
                   .getState<sky::Action::Left>(), true);
@@ -89,7 +88,7 @@ TEST_F(SkyHandleTest, DeltaTest) {
   sky::SkyHandle remoteSkyHandle(remoteArena, skyHandle.captureInitializer());
 
   {
-    const sky::Sky &remoteSky = remoteSkyHandle.getSky().get();
+    const sky::Sky &remoteSky = *remoteSkyHandle.sky;
 
     // Spawning and controls can be transmitted over deltas.
     sky::Player &player = *arena.getPlayer(0);
@@ -102,7 +101,7 @@ TEST_F(SkyHandleTest, DeltaTest) {
     ASSERT_EQ(participation.getControls().getState<sky::Action::Reverse>(),
               true);
     ASSERT_EQ(participation.isSpawned(), true);
-    ASSERT_EQ(participation.getPlane()->getState().physical.pos.x, 300);
+    ASSERT_EQ(participation.plane->getState().physical.pos.x, 300);
   }
 }
 
@@ -136,7 +135,7 @@ TEST_F(SkyHandleTest, DeltaAllocTest) {
   arena.applyDelta(sky::ArenaDelta::MapChange("test2"));
   skyHandle.start();
   remoteSkyHandle.applyDelta(skyHandle.collectDelta());
-  ASSERT_EQ(remoteSkyHandle.getSky()->getMap().name, "test2");
+  ASSERT_EQ(remoteSkyHandle.sky->getMap().name, "test2");
 
 }
 

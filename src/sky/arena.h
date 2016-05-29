@@ -296,7 +296,8 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
  private:
   // Utilities.
   PID allocPid() const;
-  std::string allocNickname(const std::string &requested) const;
+  std::string allocNickname(const std::string &requested,
+                            const optional<PID> ignorePid = {}) const;
 
   // Event logging.
   void logEvent(const ArenaEvent &event) const;
@@ -343,6 +344,8 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
 
   // Server-specific API.
   ArenaDelta connectPlayer(const std::string &requestedNick);
+  std::string allocNewNickname(const Player &player,
+                               const std::string &requestedNick);
 
 };
 

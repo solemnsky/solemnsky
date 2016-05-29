@@ -94,8 +94,42 @@ struct PlaneTuning {
 };
 
 /**
- * The POD variable game state of a GamePlane, that's necessary to sync over
- * the network.
+ * Subset of the PlaneState a client can transmit to the server.
+ */
+struct PlaneStateClient {
+  PlaneStateClient() = default;
+  PlaneStateClient(const struct PlaneState &state);
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(physical, airspeed, throttle, stalled);
+  }
+
+  PhysicalState physical;
+  Clamped airspeed, throttle;
+  bool stalled;
+
+};
+
+/**
+ * Subset of the PlaneState a server can transmit to a client in authority.
+ */
+struct PlaneStateServer {
+  PlaneStateServer() = default;
+  PlaneStateServer(const struct PlaneState &state);
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(energy, health, primaryCooldown);
+  }
+
+  Clamped energy, health;
+  Clamped primaryCooldown;
+
+};
+
+/**
+ * The volatile state of a plane.
  */
 struct PlaneState {
   PlaneState(); // for packing
@@ -105,28 +139,28 @@ struct PlaneState {
 
   template<class Archive>
   void serialize(Archive &ar) {
-    ar(physical);
-    ar(stalled, afterburner, leftoverVel, airspeed, throttle);
+    ar(physical, stalled, airspeed, afterburner, throttle, leftoverVel);
     ar(energy, health, primaryCooldown);
   }
 
   // State.
   PhysicalState physical;
   bool stalled;
-  Clamped afterburner;
+  Clamped airspeed, afterburner, throttle;
   sf::Vector2f leftoverVel;
-  Clamped airspeed, throttle;
 
   Clamped energy, health;
   Cooldown primaryCooldown;
 
-  // Utility accessors / methods.
+  // Utility accessors.
   float forwardVelocity() const;
   float velocity() const;
-  // returns true if energy was drawn
-  bool requestDiscreteEnergy(const float reqEnergy);
-  // returns the fraction of the requested energy that was drawn
-  float requestEnergy(const float reqEnergy);
+
+  // Applying state subsets.
+  void applyClient(const PlaneStateClient &client);
+  void applyServer(const PlaneStateServer &server);
+
+
 };
 
 /**
@@ -164,7 +198,6 @@ struct PlaneControls {
 
 bool operator==(const PlaneControls &x, const PlaneControls &y);
 bool operator!=(const PlaneControls &x, const PlaneControls &y);
-
 
 }
 
