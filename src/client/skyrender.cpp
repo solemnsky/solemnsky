@@ -121,11 +121,11 @@ void SkyRender::renderProps(ui::Frame &f,
 
 void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                     const PlaneGraphics &graphics) {
+  renderProps(f, graphics.participation);
+
   if (auto &plane = graphics.participation.plane) {
     auto &state = plane->getState();
     auto &tuning = plane->getTuning();
-
-    renderProps(f, graphics.participation);
 
     f.withTransform(
         sf::Transform()

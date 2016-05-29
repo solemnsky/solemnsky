@@ -143,7 +143,10 @@ void Plane::postPhysics(const TimeDiff delta) {
 }
 
 void Plane::onBeginContact(const BodyTag &body) {
-
+  if (body.type == BodyTag::Type::PropTag) {
+    appLog("hit prop");
+    state.health = 0;
+  }
 }
 
 void Plane::onEndContact(const BodyTag &body) {
@@ -366,6 +369,10 @@ void Participation::spawnProp(const PropInit &init) {
   props.emplace(std::piecewise_construct,
                 std::forward_as_tuple(smallestUnused(props)),
                 std::forward_as_tuple(physics, init));
+}
+
+void Participation::suicide() {
+  plane.reset();
 }
 
 void Participation::applyInput(const ParticipationInput &input) {

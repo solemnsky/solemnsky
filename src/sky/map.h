@@ -43,6 +43,7 @@ struct SpawnPoint{
   sf::Vector2f pos;
   Angle angle;
   Team team;
+
 };
 
 template<typename Archive>
@@ -103,6 +104,7 @@ struct Map {
   const std::vector<MapObstacle> &getObstacles() const;
   const std::vector<MapItem> &getItems() const;
   const std::vector<SpawnPoint> &getSpawnPoints() const;
+  const SpawnPoint pickSpawnPoint(const Team team) const;
 
   //void load(std::basic_istream& s);
   void save(std::ostream& s);

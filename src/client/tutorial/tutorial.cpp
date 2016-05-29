@@ -26,12 +26,8 @@ Tutorial::Tutorial(ClientShared &state) :
   arena.connectPlayer("offline player");
 
   player = arena.getPlayer(0);
-  if(sky.getMap().getSpawnPoints().size() > 0){
-    auto sp = sky.getMap().getSpawnPoints()[0];
-    player->spawn({}, sp.pos, sp.angle);
-  } else {
-    player->spawn({}, {200, 250}, 0);
-  }
+  auto sp = sky.getMap().pickSpawnPoint(1);
+  player->spawn({}, sp.pos, sp.angle);
   participation = &sky.getParticipation(*player);
 
   status = "learning to play";
