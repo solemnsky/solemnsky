@@ -191,7 +191,7 @@ MultiplayerCore::MultiplayerCore(
     disconnecting(false),
     disconnected(false),
 
-    participationInputTimer(0.04) {
+    participationInputTimer(0.03) {
   host.connect(serverHostname, serverPort);
 }
 
