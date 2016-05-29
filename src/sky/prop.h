@@ -66,6 +66,7 @@ class Prop: public Networked<PropInit, PropDelta> {
   b2Body *const body;
   PhysicalState physical;
   float lifetime;
+  bool destroyable;
 
   // Delta collection state, for Participation.
   bool newlyAlive;
@@ -92,6 +93,7 @@ class Prop: public Networked<PropInit, PropDelta> {
   // User API.
   const PhysicalState &getPhysical() const;
   float getLifetime() const;
+  void destroy();
 
 };
 

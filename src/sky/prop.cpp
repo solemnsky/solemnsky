@@ -56,6 +56,7 @@ Prop::Prop(const PID associatedPlayer,
                             BodyTag::PropTag(*this))),
     physical(initializer.physical),
     lifetime(0),
+    destroyable(false),
     newlyAlive(true),
     associatedPlayer(associatedPlayer) {
   physical.hardWriteToBody(physics, body);
@@ -81,13 +82,16 @@ PropDelta Prop::collectDelta() {
   return delta;
 }
 
-
 const PhysicalState &Prop::getPhysical() const {
   return physical;
 }
 
 float Prop::getLifetime() const {
   return lifetime;
+}
+
+void Prop::destroy() {
+  destroyable = true;
 }
 
 }
