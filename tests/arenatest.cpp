@@ -99,12 +99,12 @@ TEST_F(ArenaTest, PlayerDeltaTest) {
   arena.connectPlayer("nameless plane 2");
   std::map<PID, sky::PlayerDelta> deltas;
   {
-    sky::PlayerDelta delta{arena.getPlayer(0)};
+    sky::PlayerDelta delta{*arena.getPlayer(0)};
     delta.team.emplace(1);
     deltas.emplace(0, delta);
   }
   {
-    sky::PlayerDelta delta{arena.getPlayer(1)};
+    sky::PlayerDelta delta{*arena.getPlayer(1)};
     delta.team.emplace(1);
     deltas.emplace(1, delta);
   }
