@@ -89,7 +89,6 @@ struct MapItem {
  */
 struct Map {
  private:
-
   // State, all constant after loading.
   sf::Vector2f dimensions;
   std::vector<MapObstacle> obstacles;

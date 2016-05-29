@@ -151,7 +151,9 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
       const float airspeedStall = tuning.flight.threshold /
           tuning.flight.airspeedFactor;
       f.drawText({0, -style.skyRender.barArea.top - style.base.normalFontSize},
-                 graphics.player.getNickname(), style.base.textColor,
+                 graphics.player.getNickname(),
+                 (graphics.player.getTeam() == 1) ? sf::Color::Red
+                                                  : sf::Color::Blue,
                  style.base.centeredText);
       renderBars(
           f,
@@ -159,8 +161,8 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
                  state.stalled ? style.skyRender.throttleStall
                                : style.skyRender.throttle),
            mkBar(state.stalled
-                 ? clamp<float>(0, 1, ((state.forwardVelocity()) / tuning.stall
-                         .threshold))
+                 ? clamp<float>(0, 1, ((state.forwardVelocity()) /
+                         tuning.stall.threshold))
                  : (state.airspeed - airspeedStall) / (1 - airspeedStall),
                  style.skyRender.health),
            mkBar(state.energy, style.skyRender.energy)},
