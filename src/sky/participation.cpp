@@ -24,38 +24,6 @@
 
 namespace sky {
 
-
-/**
- * ParticipationInit.
- */
-
-ParticipationInit::ParticipationInit() { }
-
-ParticipationInit::ParticipationInit(
-    const PlaneControls &controls,
-    const PlaneTuning &tuning,
-    const PlaneState &state) :
-    spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)),
-    controls(controls) { }
-
-ParticipationInit::ParticipationInit(
-    const PlaneControls &controls) : controls(controls) { }
-
-/**
- * ParticipationDelta.
- */
-
-bool ParticipationDelta::verifyStructure() const {
-  return imply(bool(spawn), bool(state));
-}
-
-ParticipationDelta ParticipationDelta::respectClientAuthority() const {
-  ParticipationDelta delta{*this};
-  delta.state.reset();
-  delta.controls.reset();
-  return delta;
-}
-
 /**
  * Plane.
  */
@@ -104,7 +72,7 @@ void Plane::tickFlight(const TimeDiff delta) {
     // Afterburner.
     if (throtCtrl == Movement::Up) {
       const float thrustEfficacy =
-          state.requestEnergy(tuning.energy.thrustDrain * delta);
+          requestEnergy(tuning.energy.thrustDrain * delta);
 
       state.physical.vel +=
           VecMath::fromAngle(state.physical.rot) *
@@ -133,7 +101,7 @@ void Plane::tickFlight(const TimeDiff delta) {
         sin(toRad(state.physical.rot)) * tuning.flight.gravityEffect * delta;
     if (afterburning) {
       const float thrustEfficacity =
-          state.requestEnergy(tuning.energy.thrustDrain * delta);
+          requestEnergy(tuning.energy.thrustDrain * delta);
       state.afterburner = thrustEfficacity;
       speedMod += tuning.flight.afterburnDrive * delta * thrustEfficacity;
     }
@@ -212,6 +180,49 @@ const PlaneTuning &Plane::getTuning() const {
 
 const PlaneState &Plane::getState() const {
   return state;
+}
+
+bool Plane::requestDiscreteEnergy(const float reqEnergy) {
+  if (energy < reqEnergy) return false;
+  energy -= reqEnergy;
+  return true;
+}
+
+float Plane::requestEnergy(const float reqEnergy) {
+  const float initEnergy = energy;
+  energy -= reqEnergy;
+  return (initEnergy - energy) / reqEnergy;
+}
+
+/**
+ * ParticipationInit.
+ */
+
+ParticipationInit::ParticipationInit() { }
+
+ParticipationInit::ParticipationInit(
+    const PlaneControls &controls,
+    const PlaneTuning &tuning,
+    const PlaneState &state) :
+    spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)),
+    controls(controls) { }
+
+ParticipationInit::ParticipationInit(
+    const PlaneControls &controls) : controls(controls) { }
+
+/**
+ * ParticipationDelta.
+ */
+
+bool ParticipationDelta::verifyStructure() const {
+  return imply(bool(spawn), bool(state));
+}
+
+ParticipationDelta ParticipationDelta::respectClientAuthority() const {
+  ParticipationDelta delta{*this};
+  delta.state.reset();
+  delta.controls.reset();
+  return delta;
 }
 
 /**

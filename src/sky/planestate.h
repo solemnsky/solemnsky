@@ -111,8 +111,7 @@ struct PlaneStateInput {
 };
 
 /**
- * The POD variable game state of a GamePlane, that's necessary to sync over
- * the network.
+ * The POD variable game state of a Plane.
  */
 struct PlaneState {
   PlaneState(); // for packing
@@ -140,10 +139,6 @@ struct PlaneState {
   // Utility accessors / methods.
   float forwardVelocity() const;
   float velocity() const;
-  // returns true if energy was drawn
-  bool requestDiscreteEnergy(const float reqEnergy);
-  // returns the fraction of the requested energy that was drawn
-  float requestEnergy(const float reqEnergy);
 
   // PlaneStateInput.
   struct PlaneStateInput collectInput() const;

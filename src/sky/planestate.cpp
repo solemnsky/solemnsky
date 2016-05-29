@@ -111,18 +111,6 @@ float PlaneState::velocity() const {
   return VecMath::length(physical.vel);
 }
 
-bool PlaneState::requestDiscreteEnergy(const float reqEnergy) {
-  if (energy < reqEnergy) return false;
-  energy -= reqEnergy;
-  return true;
-}
-
-float PlaneState::requestEnergy(const float reqEnergy) {
-  const float initEnergy = energy;
-  energy -= reqEnergy;
-  return (initEnergy - energy) / reqEnergy;
-}
-
 struct PlaneStateInput PlaneState::collectInput() const {
   PlaneStateInput input;
   input.physical = physical;
