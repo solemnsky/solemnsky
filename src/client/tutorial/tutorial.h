@@ -26,6 +26,7 @@
 class Tutorial : public Game {
 private:
   sky::Arena arena;
+  sky::Map map;
   sky::Sky sky;
   sky::SkyRender skyRender;
 

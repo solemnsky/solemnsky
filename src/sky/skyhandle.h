@@ -29,7 +29,7 @@ namespace sky {
 
 struct SkyHandleInit {
   SkyHandleInit() = default;
-  explicit SkyHandleInit(const SkyInit &initializer);
+  SkyHandleInit(const MapName &name, const SkyInit &initializer);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -76,7 +76,9 @@ class SkyHandle
   bool skyIsNew;
 
   // Map, instantiated separately from Sky.
+  bool loadError;
   optional<Map> map;
+  void startWith(const MapName &mapName, const SkyInit &skyInit);
 
  public:
   SkyHandle(class Arena &parent, const SkyHandleInit &initializer);
@@ -94,6 +96,7 @@ class SkyHandle
   void stop();
 
   bool isActive() const;
+  bool loadingErrored() const;
 
 };
 

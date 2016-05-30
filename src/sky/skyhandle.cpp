@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "skyhandle.h"
-#include "printer.h"
+#include "util/printer.h"
 
 namespace sky {
 
@@ -25,8 +25,9 @@ namespace sky {
  */
 
 SkyHandleInit::SkyHandleInit(
+    const MapName &mapName,
     const SkyInit &initializer) :
-    initializer(initializer) { }
+    initializer({mapName, initializer}) { }
 
 bool SkyHandleInit::verifyStructure() const {
   if (initializer) {
@@ -41,7 +42,7 @@ bool SkyHandleInit::verifyStructure() const {
 bool SkyHandleDelta::verifyStructure() const {
   if (bool(initializer) and bool(delta)) return false;
 
-  if (initializer) return verifyValue(initializer.get());
+  if (initializer) return verifyValue(initializer->second);
   if (delta) return verifyValue(delta.get());
   return true;
 }
@@ -57,19 +58,22 @@ SkyHandleDelta SkyHandleDelta::respectAuthority(const Player &player) const {
  * SkyHandle.
  */
 
+void SkyHandle::startWith(const MapName &mapName, const SkyInit &skyInit) {
+  if (const auto loaded = Map::load(mapName)) {
+    map.emplace(loaded.get());
+    sky.emplace(arena, map.get(), skyInit);
+    skyIsNew = true;
+    caller.doStartGame();
+  } else loadError = true;
+}
+
 SkyHandle::SkyHandle(Arena &arena, const SkyHandleInit &initializer) :
     Subsystem(arena),
     Networked(initializer),
-    skyIsNew(false) {
+    skyIsNew(false),
+    loadError(false) {
   if (const auto &init = initializer.initializer) {
-    auto loaded = Map::load(init->first);
-    if (loaded) {
-      map.emplace(loaded);
-      sky.emplace(arena, map.get(), init->second);
-    } else {
-      appLog("could not initialize map or sky, something should happen",
-             LogOrigin::Engine);
-    }
+    startWith(init->first, init->second);
   }
 }
 
@@ -97,35 +101,33 @@ SkyHandleDelta SkyHandle::collectDelta() {
 
 void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
   if (const auto init = delta.initializer) {
-    map.emplace(init->first);
-    sky.emplace(arena, map, init->second);
-    caller.doStartGame();
+    startWith(init->first, init->second);
+    return;
   }
   if (sky) {
     if (delta.delta) sky->applyDelta(delta.delta.get());
-    else {
-      sky.reset();
-      map.reset();
-      caller.doEndGame();
-    }
+    else stop();
   }
 }
 
 void SkyHandle::start() {
   stop();
-  map.emplace(arena.getNextMap());
-  sky.emplace(arena, sky, SkyInit());
-  skyIsNew = true;
-  caller.doStartGame();
+  startWith(arena.getNextMap(), SkyInit());
 }
 
 void SkyHandle::stop() {
-  if (sky) sky.reset();
+  sky.reset();
+  map.reset();
+  loadError = false;
   caller.doEndGame();
 }
 
 bool SkyHandle::isActive() const {
   return bool(sky);
+}
+
+bool SkyHandle::loadingErrored() const {
+  return loadError;
 }
 
 }
