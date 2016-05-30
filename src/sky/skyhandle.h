@@ -38,7 +38,8 @@ struct SkyHandleInit {
 
   bool verifyStructure() const;
 
-  optional<SkyInit> initializer;
+  optional<std::pair<MapName, SkyInit>> initializer;
+
 };
 
 /**
@@ -55,7 +56,7 @@ struct SkyHandleDelta {
 
   bool verifyStructure() const;
 
-  optional<SkyInit> initializer;
+  optional<std::pair<MapName, SkyInit>> initializer;
   optional<SkyDelta> delta;
 
   // Respecting client authority.
@@ -73,6 +74,9 @@ class SkyHandle
  private:
   // Delta collection state.
   bool skyIsNew;
+
+  // Map, instantiated separately from Sky.
+  optional<Map> map;
 
  public:
   SkyHandle(class Arena &parent, const SkyHandleInit &initializer);

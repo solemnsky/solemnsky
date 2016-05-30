@@ -24,9 +24,6 @@ namespace sky {
  * SkyInit.
  */
 
-SkyInit::SkyInit(const MapName &mapName) :
-    mapName(mapName) { }
-
 bool SkyInit::verifyStructure() const {
   return verifyMap(participations);
 }
@@ -107,10 +104,10 @@ void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
     body2.plane->onEndContact(body1);
 }
 
-Sky::Sky(Arena &arena, const SkyInit &initializer) :
+Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer) :
     Subsystem(arena),
     Networked(initializer),
-    map(initializer.mapName),
+    map(map),
     physics(map, *this) {
   arena.forPlayers([&](Player &player) {
     const auto iter = initializer.participations.find(player.pid);
@@ -133,7 +130,6 @@ void Sky::applyDelta(const SkyDelta &delta) {
 
 SkyInit Sky::captureInitializer() const {
   SkyInit initializer;
-  initializer.mapName = map.name;
   for (const auto &participation : participations)
     initializer.participations.emplace(
         participation.first, participation.second.captureInitializer());
