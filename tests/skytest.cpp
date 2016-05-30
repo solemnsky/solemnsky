@@ -7,11 +7,13 @@
 class SkyTest: public testing::Test {
  public:
   sky::Arena arena;
+  sky::Map nullMap;
   sky::Sky sky;
 
   SkyTest() :
-      arena(sky::ArenaInit("special arena", "test", sky::ArenaMode::Lobby)),
-      sky(arena, sky::SkyInit("test")) { }
+      arena(sky::ArenaInit("special arena", "NULL_MAP", sky::ArenaMode::Lobby)),
+      nullMap(sky::Map::load("NULL_MAP").get()),
+      sky(arena, nullMap, sky::SkyInit()) { }
 
 };
 
@@ -46,7 +48,7 @@ TEST_F(SkyTest, InputTest) {
   // We can collect inputs from Participations.
   {
     sky::Arena remoteArena(arena.captureInitializer());
-    sky::Sky remoteSky(remoteArena, sky.captureInitializer());
+    sky::Sky remoteSky(remoteArena, nullMap, sky.captureInitializer());
     sky::Player &remotePlayer = *remoteArena.getPlayer(0);
     remotePlayer.doAction(sky::Action::Right, true);
 
@@ -69,7 +71,7 @@ TEST_F(SkyTest, AuthorityTest) {
   auto &participation = sky.getParticipation(player);
 
   sky::Arena remoteArena{arena.captureInitializer()};
-  sky::Sky remoteSky{remoteArena, sky.captureInitializer()};
+  sky::Sky remoteSky{remoteArena, nullMap, sky.captureInitializer()};
   auto &remotePlayer = *remoteArena.getPlayer(0);
   auto &remoteParticip = remoteSky.getParticipation(remotePlayer);
 
@@ -113,7 +115,7 @@ TEST_F(SkyTest, PropTest) {
   ASSERT_EQ(participation.props.size(), size_t(1));
 
   sky::Arena remoteArena{arena.captureInitializer()};
-  sky::Sky remoteSky{remoteArena, sky.captureInitializer()};
+  sky::Sky remoteSky{remoteArena, nullMap, sky.captureInitializer()};
   auto &remotePlayer = *remoteArena.getPlayer(0);
   auto &remoteParticipation = remoteSky.getParticipation(remotePlayer);
 

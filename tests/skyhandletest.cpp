@@ -7,16 +7,17 @@
  */
 class SkyHandleTest: public testing::Test {
  public:
-  SkyHandleTest() :
-      arena(sky::ArenaInit("arena", "test")),
-      skyHandle(arena, sky::SkyHandleInit()) { }
-
   sky::Arena arena;
   sky::SkyHandle skyHandle;
+
+  SkyHandleTest() :
+      arena(sky::ArenaInit("arena", "NULL_MAP")),
+      skyHandle(arena, sky::SkyHandleInit()) { }
+
 };
 
 /**
- * The allocation of the underlying sky is managed correctly.
+ * The allocation of the underlying sky and map is managed correctly.
  */
 TEST_F(SkyHandleTest, AllocTest) {
   ASSERT_EQ(bool(skyHandle.isActive()), false);
@@ -24,17 +25,30 @@ TEST_F(SkyHandleTest, AllocTest) {
   {
     // Starting the sky with a map.
     skyHandle.start();
-    ASSERT_EQ(bool(skyHandle.isActive()), true);
+    ASSERT_EQ(skyHandle.isActive(), true);
     const sky::Sky &sky = *skyHandle.sky;
-    ASSERT_EQ(sky.getMap().name, "test");
+    ASSERT_EQ(sky.getMap().name, "NULL_MAP");
 
-    // Spawning is managed correctly.
+    // Signals pass correctly.
     arena.connectPlayer("nameless plane");
     sky::Player &player = *arena.getPlayer(0);
-    ASSERT_EQ(bool(sky.getParticipation(player).isSpawned()), false);
+    ASSERT_EQ(sky.getParticipation(player).isSpawned(), false);
     player.spawn({}, {300, 300}, 0);
-    ASSERT_EQ(bool(sky.getParticipation(player).isSpawned()), true);
+    ASSERT_EQ(sky.getParticipation(player).isSpawned(), true);
     ASSERT_EQ(sky.getParticipation(player).plane->getState().physical.pos.x, 300);
+  }
+
+  {
+    // When the map can't load, the state still makes sense.
+    arena.applyDelta(sky::ArenaDelta::MapChange("map_that_cant_exist"));
+    skyHandle.start();
+    ASSERT_EQ(skyHandle.isActive(), false);
+    ASSERT_EQ(skyHandle.loadingErrored(), true);
+
+    arena.applyDelta(sky::ArenaDelta::MapChange("NULL_MAP"));
+    skyHandle.start();
+    ASSERT_EQ(skyHandle.isActive(), true);
+    ASSERT_EQ(skyHandle.loadingErrored(), false);
   }
 
   skyHandle.stop();
@@ -62,7 +76,7 @@ TEST_F(SkyHandleTest, InitializerTest) {
   {
     // The sky instantiation copied through.
     ASSERT_EQ(remoteSkyHandle.isActive(), true);
-    ASSERT_EQ(remoteSkyHandle.sky->getMap().name, "test");
+    ASSERT_EQ(remoteSkyHandle.sky->getMap().name, "NULL_MAP");
     const sky::Sky &remoteSky = *remoteSkyHandle.sky;
 
     // The participations copied.
@@ -129,13 +143,14 @@ TEST_F(SkyHandleTest, DeltaAllocTest) {
   remoteSkyHandle.applyDelta(skyHandle.collectDelta());
   ASSERT_EQ(remoteSkyHandle.isActive(), false);
 
-  // Restarting.
+  // Correct start followed by failed restart.
   skyHandle.start();
   remoteSkyHandle.applyDelta(skyHandle.collectDelta());
-  arena.applyDelta(sky::ArenaDelta::MapChange("test"));
+  arena.applyDelta(sky::ArenaDelta::MapChange("map_that_doesnt_exist"));
   skyHandle.start();
   remoteSkyHandle.applyDelta(skyHandle.collectDelta());
-  ASSERT_EQ(remoteSkyHandle.sky->getMap().name, "test");
+  ASSERT_EQ(remoteSkyHandle.isActive(), false);
+  ASSERT_EQ(remoteSkyHandle.loadingErrored(), false);
 
 }
 
