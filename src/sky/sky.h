@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Physical game state of an Arena.
+ * Physical game state of an Arena. Attaches to a Map.
  */
 #pragma once
 #include <map>
@@ -32,16 +32,14 @@ namespace sky {
  */
 struct SkyInit: public VerifyStructure {
   SkyInit() = default;
-  SkyInit(const MapName &mapName);
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(mapName, participations);
+    ar(participations);
   }
 
   bool verifyStructure() const;
 
-  MapName mapName;
   std::map<PID, ParticipationInit> participations;
 
 };
@@ -76,7 +74,7 @@ class Sky
   friend class Participation;
  private:
   // State.
-  Map map;
+  const Map &map;
   Physics physics;
   std::map<PID, Participation> participations;
 
@@ -102,8 +100,9 @@ class Sky
                     const BodyTag &body2) override final;
 
  public:
-  Sky(Arena &&arena, std::map<PID, optional<Participation>> &) = delete;
-  Sky(Arena &arena, const SkyInit &initializer);
+  Sky(Arena &arena, Map &&map,
+      std::map<PID, optional<Participation>> &) = delete; // Map can't be temp
+  Sky(Arena &arena, const Map &map, const SkyInit &initializer);
 
   // Networked impl.
   void applyDelta(const SkyDelta &delta) override final;

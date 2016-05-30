@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "skyhandle.h"
+#include "printer.h"
 
 namespace sky {
 
@@ -28,7 +29,9 @@ SkyHandleInit::SkyHandleInit(
     initializer(initializer) { }
 
 bool SkyHandleInit::verifyStructure() const {
-  return verifyValue(initializer);
+  if (initializer) {
+    return verifyValue(initializer->second);
+  } else return false;
 }
 
 /**
@@ -58,15 +61,24 @@ SkyHandle::SkyHandle(Arena &arena, const SkyHandleInit &initializer) :
     Subsystem(arena),
     Networked(initializer),
     skyIsNew(false) {
-  if (const auto &skyInit = initializer.initializer) {
-    sky.emplace(arena, skyInit.get());
+  if (const auto &init = initializer.initializer) {
+    auto loaded = Map::load(init->first);
+    if (loaded) {
+      map.emplace(loaded);
+      sky.emplace(arena, map.get(), init->second);
+    } else {
+      appLog("could not initialize map or sky, something should happen",
+             LogOrigin::Engine);
+    }
   }
 }
 
 SkyHandleInit SkyHandle::captureInitializer() const {
   SkyHandleInit initializer;
   if (sky) {
-    initializer.initializer = sky->captureInitializer();
+    initializer.initializer.emplace(
+        map->name,
+        sky->captureInitializer());
   }
   return initializer;
 }
@@ -74,7 +86,9 @@ SkyHandleInit SkyHandle::captureInitializer() const {
 SkyHandleDelta SkyHandle::collectDelta() {
   SkyHandleDelta delta;
   if (sky and skyIsNew) {
-    delta.initializer = sky->captureInitializer();
+    delta.initializer.emplace(
+        map->name,
+        sky->captureInitializer());
     skyIsNew = false;
   }
   if (sky) delta.delta = sky->collectDelta();
@@ -82,14 +96,16 @@ SkyHandleDelta SkyHandle::collectDelta() {
 }
 
 void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
-  if (delta.initializer) {
-    sky.emplace(arena, delta.initializer.get());
+  if (const auto init = delta.initializer) {
+    map.emplace(init->first);
+    sky.emplace(arena, map, init->second);
     caller.doStartGame();
   }
   if (sky) {
     if (delta.delta) sky->applyDelta(delta.delta.get());
     else {
       sky.reset();
+      map.reset();
       caller.doEndGame();
     }
   }
@@ -97,7 +113,8 @@ void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
 
 void SkyHandle::start() {
   stop();
-  sky.emplace(arena, SkyInit(arena.getNextMap()));
+  map.emplace(arena.getNextMap());
+  sky.emplace(arena, sky, SkyInit());
   skyIsNew = true;
   caller.doStartGame();
 }

@@ -36,7 +36,7 @@ using MapName = std::string;
 /**
  * A position and angle in a map where a plane can spawn.
  */
-struct SpawnPoint{
+struct SpawnPoint {
   SpawnPoint();
   SpawnPoint(const sf::Vector2f &pos,
              const Angle &angle);
@@ -44,14 +44,14 @@ struct SpawnPoint{
   Angle angle;
   Team team;
 
-};
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(cereal::make_nvp("pos", pos),
+       cereal::make_nvp("angle", angle),
+       cereal::make_nvp("team", team));
+  }
 
-template<typename Archive>
-void serialize(Archive &ar, SpawnPoint& p){
-  ar(cereal::make_nvp("pos", p.pos),
-     cereal::make_nvp("angle", p.angle),
-     cereal::make_nvp("team", p.team));
-}
+};
 
 /**
  * A shape that things can collide with.
@@ -61,27 +61,37 @@ struct MapObstacle {
   MapObstacle(const sf::Vector2f &pos,
               const std::vector<sf::Vector2f> &localVertices,
               const float damage);
-  void decompose();
 
   sf::Vector2f pos;
   std::vector<sf::Vector2f> localVertices;
   std::vector<std::vector<sf::Vector2f>> decomposed;
   float damage;
 
+  void decompose();
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(cereal::make_nvp("pos", pos),
+       cereal::make_nvp("localVertices", localVertices),
+       cereal::make_nvp("damage", damage));
+  }
+
 };
 
-template<typename Archive>
-void serialize(Archive &ar, MapObstacle& o){
-  ar(cereal::make_nvp("pos", o.pos),
-     cereal::make_nvp("localVertices", o.localVertices),
-     cereal::make_nvp("damage", o.damage));
-}
 
 struct MapItem {
   enum class Type {
     RedThingy, BlueThingy
   } type;
+
   sf::Vector2f pos;
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(cereal::make_nvp("type", type),
+       cereal::make_nvp("pos", pos));
+  }
+
 };
 
 /**
@@ -94,19 +104,25 @@ struct Map {
   std::vector<MapObstacle> obstacles;
   std::vector<SpawnPoint> spawnPoints;
   std::vector<MapItem> items;
+  bool loadSuccess;
 
- public:
   Map(const MapName &name);
 
+ public:
+  Map(const Map &map) = default;
+
   const MapName name;
+
+  // User API.
   const sf::Vector2f &getDimensions() const;
   const std::vector<MapObstacle> &getObstacles() const;
   const std::vector<MapItem> &getItems() const;
   const std::vector<SpawnPoint> &getSpawnPoints() const;
   const SpawnPoint pickSpawnPoint(const Team team) const;
 
-  //void load(std::basic_istream& s);
-  void save(std::ostream& s);
+  void save(std::ostream &s);
+  static optional<Map> load(const MapName &name);
+
 };
 
 }

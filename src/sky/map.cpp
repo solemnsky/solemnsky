@@ -28,23 +28,25 @@ namespace sky {
  * SpawnPoint.
  */
 
-sky::SpawnPoint::SpawnPoint(const sf::Vector2f &pos, const Angle &angle):
-  pos(pos), angle(angle){}
+sky::SpawnPoint::SpawnPoint(const sf::Vector2f &pos, const Angle &angle) :
+    pos(pos), angle(angle) { }
 
-  SpawnPoint::SpawnPoint() { }
+SpawnPoint::SpawnPoint() { }
 
-  /**
- * MapObstacle.
- */
+/**
+* MapObstacle.
+*/
 
 MapObstacle::MapObstacle() { }
 
 MapObstacle::MapObstacle(const sf::Vector2f &pos,
                          const std::vector<sf::Vector2f> &localVertices,
                          const float damage) :
-    pos(pos), localVertices(localVertices), decomposed(), damage(damage) { }
+    pos(pos), localVertices(localVertices), decomposed(), damage(damage) {
+  decompose();
+}
 
-void MapObstacle::decompose(){
+void MapObstacle::decompose() {
   decomposed.clear();
 
   std::vector<sf::Vector2f> verts(localVertices);
@@ -55,7 +57,7 @@ void MapObstacle::decompose(){
   pp::Partition part;
   part.ConvexPartition_HM(&poly, &tmp);
 
-  for(auto p : tmp){
+  for (auto p : tmp) {
     decomposed.push_back(p.GetPoints());
   }
 }
@@ -70,21 +72,31 @@ void MapObstacle::decompose(){
 
 Map::Map(const MapName &name) :
     dimensions(3200, 900),
+    loadSuccess(true),
     name(name) {
+  if (name == "NULL_MAP") {
+    return;
+  }
+
   auto file = std::ifstream(rootPath() + "maps/" + name + ".json");
-  if(file.good()) {
+  if (file.good()) {
     try {
       cereal::JSONInputArchive archive(file);
       archive(cereal::make_nvp("dimensions", dimensions),
               cereal::make_nvp("obstacles", obstacles),
               cereal::make_nvp("spawnPoints", spawnPoints));
-    } catch(cereal::RapidJSONException e){
-      appErrorRuntime("Failed to parse map '"+name+"', "+e.what());
+    } catch (cereal::RapidJSONException e) {
+      appLog("Failed to parse map '" + name + "', " + e.what(),
+             LogOrigin::Engine);
+      loadSuccess = false;
+      return;
     }
   } else {
-    appErrorRuntime("Map '"+name+"' was not found.");
+    appLog("Map '" + name + "' was not found.", LogOrigin::Engine);
+    loadSuccess = false;
+    return;
   }
-  for(auto &o : obstacles){
+  for (auto &o : obstacles) {
     o.decompose();
   }
 }
@@ -113,11 +125,17 @@ const SpawnPoint Map::pickSpawnPoint(const Team team) const {
   }
 }
 
-void Map::save(std::ostream& s) {
+void Map::save(std::ostream &s) {
   cereal::JSONOutputArchive archive(s);
-  archive( cereal::make_nvp("dimensions",dimensions),
-           cereal::make_nvp("obstacles",obstacles),
-           cereal::make_nvp("spawnPoints",spawnPoints) );
+  archive(cereal::make_nvp("dimensions", dimensions),
+          cereal::make_nvp("obstacles", obstacles),
+          cereal::make_nvp("spawnPoints", spawnPoints));
+}
+
+optional<Map> Map::load(const MapName &name) {
+  Map map{name};
+  if (map.loadSuccess) return map;
+  else return {};
 }
 
 }
