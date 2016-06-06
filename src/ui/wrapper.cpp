@@ -31,9 +31,9 @@ ExecWrapper::ExecWrapper(
 
     animBegin(appState.uptime),
     drewScreen(false), loadingDone(false),
-    loadingText(80, {},
-                ui::HorizontalAlign::Center, ui::VerticalAlign::Middle,
-                ResID::Font),
+    readyText(80, {},
+              ui::HorizontalAlign::Center, ui::VerticalAlign::Middle,
+              ResID::Font),
     mainCtrlCtor(mainCtrlCtor) {
   loadSplashResources();
 }
@@ -62,13 +62,13 @@ void ExecWrapper::render(ui::Frame &f) {
     f.drawSprite(textureOf(ResID::MenuBackground), {}, {0, 0, 1600, 900});
     if (!loadingDone) {
       f.drawText({800, 450}, "loading resources...",
-                 sf::Color::White, loadingText);
+                 sf::Color::White, readyText);
     } else {
       f.withAlpha(
           linearTween(0.3, 1, sineAnim(float(appState.uptime), 0.2)),
           [&]() {
             f.drawText({800, 450}, "press any key to begin",
-                       sf::Color::White, loadingText);
+                       sf::Color::White, readyText);
           });
     }
   } else {

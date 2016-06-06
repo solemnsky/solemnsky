@@ -51,17 +51,18 @@ struct ProfilerSnapshot {
 };
 
 /**
- * Various lower level settings and SFML-provided state for us to access
- * occasionally.
+ * State / handles for Control to access.
  */
 struct AppState {
   AppState(const sf::RenderWindow &window,
            const Profiler &profiler,
-           const Time &time);
+           const Time &time,
+           const ResourceHolder *const resources = nullptr);
 
   const Time &uptime;
   const sf::RenderWindow &window;
   const Profiler &profiler;
+  const ResourceHolder &resources;
 
   double timeSince(const Time event) const;
 
@@ -76,8 +77,8 @@ class Control {
   std::vector<Control *> children;
 
   void areChildren(std::initializer_list<Control *> controls);
-  
- public: 
+
+ public:
   Control(AppState &appState);
   virtual ~Control() { }
 
@@ -123,6 +124,9 @@ class ControlExec {
   // AppState and Control.
   AppState appState;
   std::unique_ptr<Control> ctrl;
+
+  // Resource loading.
+  ResourceLoader resourceLoader;
 
   // App loop submethods.
   void tick();

@@ -56,13 +56,13 @@ struct TextFormat {
   TextFormat(const int size,
              const float maxWidth,
              const HorizontalAlign horizontal, const VerticalAlign vertical,
-             const ResID &font);
+             const FontID &font);
 
   int size;
   float maxWidth; // values of 0 mean there is no limit
   HorizontalAlign horizontal;
   VerticalAlign vertical;
-  ResID font; // resource ID
+  FontID font; // resource ID
 };
 
 /**
