@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "util/threads.h"
 #include <SFML/System.hpp>
+#include "util/printer.h"
 
 /**
  * Whatever std::thread implementation we're using works properly.
@@ -13,22 +14,44 @@ class ThreadTest: public testing::Test {
 
 class AsyncClass {
  public:
-  AsyncClass() :
-      done(false) { }
+  AsyncClass() { }
 
-  void doThing() {
+  void operationA() {
     sf::sleep(sf::milliseconds(20));
-    done = true;
+
+    resultLock.lock();
+    result += "testing ";
+    resultLock.unlock();
   }
 
-  bool done;
+  void operationB() {
+    sf::sleep(sf::milliseconds(20));
+
+    resultLock.lock();
+    result += "threads";
+    resultLock.unlock();
+  }
+
+  std::mutex resultLock;
+  std::string result;
+
 };
 
 TEST_F(ThreadTest, BasicTest) {
   AsyncClass x;
-  std::thread myThread(x.doThing);
-  ASSERT_EQ(x.done, false);
-  myThread.join();
-  ASSERT_EQ(x.done, true);
+
+  std::thread threadA([&]() { x.operationA(); });
+  std::thread threadB([&]() { x.operationB(); });
+
+  ASSERT_EQ(x.result, "");
+
+  threadA.join();
+  threadB.join();
+
+  appLog(x.result);
+  ASSERT_EQ(
+      (x.result == "testing threads")
+          or (x.result == "threadstesting "), true);
+
 }
 
