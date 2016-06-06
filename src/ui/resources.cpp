@@ -23,23 +23,15 @@
 
 namespace ui {
 
-/**
- * SheetLayout.
- */
-SheetLayout::SheetLayout(const sf::Vector2i &spriteDimensions,
-                         const sf::Vector2i &sheetTiling) :
-    spriteDimensions(spriteDimensions),
-    sheetTiling(sheetTiling) { }
 
 /**
  * TextureMetadata.
  */
+
 TextureMetadata::TextureMetadata(
-    const Type type,
     const std::string &url,
     const std::string &name,
     const optional<SheetLayout> &spriteSheetForm) :
-    type(type),
     url(url),
     name(name),
     spritesheetForm(spritesheetForm) { }
@@ -48,7 +40,7 @@ TextureMetadata::TextureMetadata(
 TextureMetadata TextureMetadata::TextureResource(
     const std::string &url,
     const std::string &name) {
-  return TextureMetadata(Type::Texture, url, name);
+  return TextureMetadata(url, name);
 }
 
 TextureMetadata TextureMetadata::SpritesheetResource(
@@ -56,64 +48,45 @@ TextureMetadata TextureMetadata::SpritesheetResource(
     const std::string &name,
     const sf::Vector2i &spriteDimensions,
     const sf::Vector2i &sheetTiling) {
-  return TextureMetadata(
-      Type::Texture, url, name,
-      SheetLayout(spriteDimensions, sheetTiling));
+  return TextureMetadata(url, name, SheetLayout(spriteDimensions, sheetTiling));
 }
 
-TextureMetadata TextureMetadata::FontResource(const std::string &url,
-                                              const std::string &name) {
-  return TextureMetadata(Type::Font, url, name);
-}
+/**
+ * FontMetadata.
+ */
+
+FontMetadata::FontMetadata(const std::string &url, const std::string &name) :
+    url(url), name(name) { }
 
 namespace detail {
 /**
  * ResourceSet
  */
 
-optional<std::string> ResourceSet::loadResource(
+optional<std::string> ResourceSet::loadTexture(
     const size_t id,
-    const TextureMetadata &metadata,
-    Printer &printer) {
-  switch (metadata.type) {
-    case TextureMetadata::Texture: {
-      sf::Texture texture;
-      if (texture.loadFromFile(pathFromResourceUrl(metadata.url))) {
-        loadedTextures.emplace(id, std::move(texture));
-        return {};
-      } else {
-        return {"Texture did not load correctly."};
-      }
-    }
-    case TextureMetadata::Font: {
-      sf::Font font;
-      if (font.loadFromFile(pathFromResourceUrl(metadata.url))) {
-        loadedFonts.emplace(id, std::move(font));
-        return {};
-      } else {
-        return {"Font did not load correctly."};
-      }
-    }
-    default: {
-      return {"Resource type was unspecified."};
-    }
+    const TextureMetadata &metadata) {
+  sf::Texture texture;
+  if (texture.loadFromFile(pathFromResourceUrl(metadata.url))) {
+    textures.emplace(id, std::move(texture));
+    return {};
+  } else {
+    return {"Texture did not load correctly."};
   }
 }
 
+optional<std::string> ResourceSet::loadFont(
+    const size_t id,
+    const FontMetadata &metadata) {
+  sf::Font font;
+  if (font.loadFromFile(pathFromResourceUrl(metadata.url))) {
+    fonts.emplace(id, std::move(font));
+    return {};
+  } else {
+    return {"Font did not load correctly."};
+  }
+
 }
-
-/**
- * ResourceHolder.
- */
-
-
-
-
-/**
- * ResourceLoader.
- */
-
-ResourceLoader::ResourceLoader(const std::map<ResID, TextureMetadata>) {
 
 }
 

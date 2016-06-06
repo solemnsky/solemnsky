@@ -16,42 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * A spritesheet.
+ * Give us std::thread and std::mutex. If we're on MinGW, use the thirdparty
+ * mingw-std-threads library.
  */
-#pragma once
-#include "frame.h"
-#include "util/types.h"
 
-namespace ui {
-
-/**
- * Description of the way sprites are distributed on a regular orthogonal
- * spritesheet.
- */
-struct SheetLayout {
-  SheetLayout(const sf::Vector2i &spriteDimensions,
-              const sf::Vector2i &sheetTiling);
-
-  const sf::Vector2i spriteDims, tiling;
-
-};
-
-class SpriteSheet {
- private:
-  const SheetLayout &layout;
-  const sf::Texture &texture;
-
- public:
-  const int size;
-
-  SpriteSheet() = delete;
-  SpriteSheet(const SheetLayout &layout, const sf::Texture &texture);
-
-  void drawIndex(
-      ui::Frame &f, const sf::Vector2f &dims, const int index) const;
-  void drawIndexAtRoll(
-      ui::Frame &f, const sf::Vector2f &dims, const Angle deg) const;
-
-};
-
-}
+#include <mingw.thread.h>
+#include <mingw.mutex.h>

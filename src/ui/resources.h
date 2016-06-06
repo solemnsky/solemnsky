@@ -21,13 +21,27 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "util/methods.h"
 #include "util/printer.h"
 #include "sheet.h"
+#include "util/threads.h"
 
 namespace ui {
 
 /**
- * Metadata for a particular resource entity.
+ * Metadata for a font.
+ */
+struct FontMetadata {
+  // Constructors.
+  FontMetadata(const std::string &url, const std::string &name);
+
+  // Data.
+  const std::string url, name;
+
+};
+
+/**
+ * Metadata for a texture / spritesheet.
  */
 struct TextureMetadata {
  private:
@@ -37,9 +51,6 @@ struct TextureMetadata {
       const optional<SheetLayout> &spritesheetForm = {});
 
  public:
-  const std::string url, name;
-  optional<SheetLayout> spritesheetForm;
-
   // Constructors.
   static TextureMetadata TextureResource(
       const std::string &url,
@@ -49,9 +60,10 @@ struct TextureMetadata {
       const std::string &name,
       const sf::Vector2i &spriteDimensions,
       const sf::Vector2i &sheetTiling);
-  static TextureMetadata FontResource(
-      const std::string &url,
-      const std::string &name);
+
+  // Data.
+  const std::string url, name;
+  optional<SheetLayout> spritesheetForm;
 
 };
 
@@ -61,12 +73,13 @@ namespace detail {
  * Non-templated delegate of ResourceLoader.
  */
 struct ResourceSet {
-  optional<std::string> loadResource(
-      const size_t id, const TextureMetadata &metadata,
-      Printer &printer);
+  optional<std::string> loadTexture(
+      const size_t id, const TextureMetadata &metadata);
+  optional<std::string> loadFont(
+      const size_t id, const FontMetadata &metadata);
 
-  std::map<size_t, sf::Texture> loadedTextures;
-  std::map<size_t, sf::Font> loadedFonts;
+  std::map<size_t, sf::Texture> textures;
+  std::map<size_t, sf::Font> fonts;
 
 };
 
@@ -79,24 +92,31 @@ template<typename FontID, typename TextureID>
 class ResourceHolder {
   friend class ResourceLoder;
  private:
+  const std::map<FontID, FontMetadata> &fontData;
+  const std::map<TextureID, TextureMetadata> &textureData;
   const detail::ResourceSet &resourceSet;
-  const std::map<ResID, TextureMetadata> &resourceData;
 
   ResourceHolder(const detail::ResourceSet &resourceSet,
-                 const std::map<ResID, TextureMetadata> &resourceData) :
-      resourceSet(resourceSet), resourceData(resourceData) { }
+                 const std::map<FontID, FontMetadata> &fontData,
+                 const std::map<TextureID, TextureMetadata> &textureData) :
+      resourceSet(resourceSet), fontData(fontData),
+      textureData(textureData) { }
 
  public:
-  const TextureMetadata &getMetadata(const ResID id) const {
-    return resourceData.at(id);
+  const FontMetadata &getFontData(const FontID id) const {
+    return fontData.at(id);
   }
 
-  const sf::Font &getFont(const ResID id) const {
-    return resourceSet.loadedFonts.at(id);
+  const TextureMetadata &getTextureData(const TextureID id) const {
+    return textureData.at(id);
   }
 
-  const sf::Texture &getTexture(const ResID id) const {
-    return resourceSet.loadedTextures.at(id);
+  const sf::Font &getFont(const FontID id) const {
+    return resourceSet.fonts.at(id);
+  }
+
+  const sf::Texture &getTexture(const TextureID id) const {
+    return resourceSet.textures.at(id);
   }
 
 };
@@ -104,13 +124,55 @@ class ResourceHolder {
 /**
  * Manages the loading of a set of resources, resulting in a ResourceHolder.
  */
-template<typename FontID, typename TextureId>
+template<typename FontID, typename TextureID>
 class ResourceLoader {
- public:
-  ResourceLoader(const std::map<ResID, TextureMetadata>);
+ private:
+  const std::map<FontID, FontMetadata> fontMetadata;
+  const std::map<TextureID, TextureMetadata> textureMetadata;
 
-  void load();
-  ResourceHolder const *getHolder() const;
+  detail::ResourceSet resourceSet;
+  float loadingProgress;
+  optional<ResourceHolder> holder;
+
+ public:
+  ResourceLoader(const std::map<FontID, FontMetadata> fontMetadata,
+                 const std::map<TextureID, TextureMetadata>) :
+      fontMetadata(fontMetadata), textureMetadata(textureMetadata),
+      loadingProgress(0) { }
+
+  // Execute loading in a new thread.
+  bool load() {
+    const std::string fontCount = std::to_string(fontMetadata.size());
+    for (const auto font : fontMetadata) {
+      if (auto error = resourceSet.loadFont(
+          size_t(font.first), font.second)) {
+        return false;
+      }
+    }
+
+    const std::string textureCount = std::to_string(fontMetadata.size());
+    for (const auto texture : textureMetadata) {
+      if (auto error = resourceSet.loadTexture(
+          size_t(texture.first), texture.second)) {
+      }
+    }
+
+    holder.emplace(resourceSet, fontMetadata, textureMetadata);
+    return true;
+  }
+
+  float getProgress() const {
+    return 0;
+  }
+
+  void printNewLogs(Printer &p) {
+
+  }
+
+  ResourceHolder const *getHolder() const {
+    if (holder) return holder.get_ptr();
+    else return nullptr;
+  }
 
 };
 

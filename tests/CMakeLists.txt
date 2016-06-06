@@ -9,6 +9,7 @@ add_executable(solemnsky_tests
         skytest.cpp
         subsystemtest.cpp
         telegraphtest.cpp
+        threadtest.cpp
         utiltest.cpp
         )
 target_link_libraries(solemnsky_tests
