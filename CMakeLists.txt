@@ -178,6 +178,9 @@ add_executable(solemnsky_client
         src/ui/frame.cpp
         src/ui/frame.h
 
+        src/ui/resources.cpp
+        src/ui/resources.h
+
         src/ui/sheet.cpp
         src/ui/sheet.h
 
@@ -187,11 +190,8 @@ add_executable(solemnsky_client
         src/ui/wrapper.cpp
         src/ui/wrapper.h
 
-        src/util/client/resources.cpp
-        src/util/client/resources.h
-
-        src/util/client/sfmlutil.cpp
-        src/util/client/sfmlutil.h
+        src/util/clientutil.cpp
+        src/util/clientutil.h
         )
 target_link_libraries(solemnsky_client
         solemnsky

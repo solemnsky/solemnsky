@@ -20,7 +20,7 @@
  */
 #pragma once
 #include "elements/elements.h"
-#include "util/client/resources.h"
+#include "ui/resources.h"
 #include <list>
 #include "ui/control.h"
 #include "ui/sheet.h"

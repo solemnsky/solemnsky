@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "textentry.h"
-#include "util/client/sfmlutil.h"
+#include "util/clientutil.h"
 #include "util/methods.h"
 
 namespace ui {
