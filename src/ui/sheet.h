@@ -48,9 +48,9 @@ class SpriteSheet {
   SpriteSheet(const SheetLayout &layout, const sf::Texture &texture);
 
   void drawIndex(
-      ui::Frame &f, const sf::Vector2f &dims, const int index) const;
+      Frame &f, const sf::Vector2f &dims, const int index) const;
   void drawIndexAtRoll(
-      ui::Frame &f, const sf::Vector2f &dims, const Angle deg) const;
+      Frame &f, const sf::Vector2f &dims, const Angle deg) const;
 
 };
 

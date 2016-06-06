@@ -26,13 +26,13 @@ Style::Base::Base() :
 
     centeredText(30, {},
                  ui::HorizontalAlign::Center, ui::VerticalAlign::Top,
-                 ResID::Font),
+                 ui::FontID::Default),
     normalText(30, {},
                ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
-               ResID::Font),
+               ui::FontID::Default),
     debugText(25, {},
               ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
-              ResID::Font),
+              ui::FontID::Default),
 
     buttonColor(132, 173, 181), // blue
     buttonHotColor(92, 189, 206), // hot blue

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Resource management for global assets.
+ * Hard-coded resource management for global assets.
  */
 #pragma once
 
@@ -67,112 +67,85 @@ struct TextureMetadata {
 
 };
 
+/**
+ * Resource IDs.
+ */
+enum class FontID {
+  Default // Font used for all text and titles
+};
+
+enum class TextureID {
+  Title,
+  MenuBackground,
+  Credits,
+  Lobby,
+  Scoring,
+  ScoreOverlay,
+  PlayerSheet
+};
+
 namespace detail {
 
 /**
- * Non-templated delegate of ResourceLoader.
+ * Hard-coded metadata for resources.
  */
-struct ResourceSet {
-  optional<std::string> loadTexture(
-      const size_t id, const TextureMetadata &metadata);
-  optional<std::string> loadFont(
-      const size_t id, const FontMetadata &metadata);
-
-  std::map<size_t, sf::Texture> textures;
-  std::map<size_t, sf::Font> fonts;
-
-};
+static const std::map<FontID, FontMetadata> fontMetadata;
+static const std::map<TextureID, TextureMetadata> textureMetadata;
 
 }
 
 /**
  * An access to the data associated with a set of resources.
  */
-template<typename FontID, typename TextureID>
 class ResourceHolder {
   friend class ResourceLoder;
  private:
-  const std::map<FontID, FontMetadata> &fontData;
-  const std::map<TextureID, TextureMetadata> &textureData;
-  const detail::ResourceSet &resourceSet;
+  const std::map<FontID, sf::Font> &fonts;
+  const std::map<TextureID, sf::Texture> &textures;
 
-  ResourceHolder(const detail::ResourceSet &resourceSet,
-                 const std::map<FontID, FontMetadata> &fontData,
-                 const std::map<TextureID, TextureMetadata> &textureData) :
-      resourceSet(resourceSet), fontData(fontData),
-      textureData(textureData) { }
+  ResourceHolder(const std::map<FontID, sf::Font> &fonts,
+                 const std::map<TextureID, sf::Texture> &textures);
 
  public:
-  const FontMetadata &getFontData(const FontID id) const {
-    return fontData.at(id);
-  }
-
-  const TextureMetadata &getTextureData(const TextureID id) const {
-    return textureData.at(id);
-  }
-
-  const sf::Font &getFont(const FontID id) const {
-    return resourceSet.fonts.at(id);
-  }
-
-  const sf::Texture &getTexture(const TextureID id) const {
-    return resourceSet.textures.at(id);
-  }
+  const FontMetadata &getFontData(const FontID id) const;
+  const TextureMetadata &getTextureData(const TextureID id) const;
+  const sf::Font &getFont(const FontID id) const;
+  const sf::Texture &getTexture(const TextureID id) const;
 
 };
 
 /**
  * Manages the loading of a set of resources, resulting in a ResourceHolder.
  */
-template<typename FontID, typename TextureID>
 class ResourceLoader {
  private:
-  const std::map<FontID, FontMetadata> fontMetadata;
-  const std::map<TextureID, TextureMetadata> textureMetadata;
+  std::map<FontID, sf::Font> fonts;
+  std::map<TextureID, sf::Texture> textures;
 
-  detail::ResourceSet resourceSet;
+  std::thread workingThread;
+  std::vector<std::string> workerLog;
+  std::mutex logMutex;
+
   float loadingProgress;
+  bool loadingErrored;
   optional<ResourceHolder> holder;
 
+  // Loading subroutines.
+  void writeLog(const std::string &str);
+  optional<std::string> loadFont(
+      const FontID id, const FontMetadata &data);
+  optional<std::string> loadTexture(
+      const TextureID id, const TextureMetadata &data);
+
  public:
-  ResourceLoader(const std::map<FontID, FontMetadata> fontMetadata,
-                 const std::map<TextureID, TextureMetadata>) :
-      fontMetadata(fontMetadata), textureMetadata(textureMetadata),
-      loadingProgress(0) { }
+  ResourceLoader();
 
-  // Execute loading in a new thread.
-  bool load() {
-    const std::string fontCount = std::to_string(fontMetadata.size());
-    for (const auto font : fontMetadata) {
-      if (auto error = resourceSet.loadFont(
-          size_t(font.first), font.second)) {
-        return false;
-      }
-    }
+  void load(); // non-blocking
+  float getProgress() const;
+  void printNewLogs(Printer &p);
+  bool getErrorStatus() const;
 
-    const std::string textureCount = std::to_string(fontMetadata.size());
-    for (const auto texture : textureMetadata) {
-      if (auto error = resourceSet.loadTexture(
-          size_t(texture.first), texture.second)) {
-      }
-    }
-
-    holder.emplace(resourceSet, fontMetadata, textureMetadata);
-    return true;
-  }
-
-  float getProgress() const {
-    return 0;
-  }
-
-  void printNewLogs(Printer &p) {
-
-  }
-
-  ResourceHolder const *getHolder() const {
-    if (holder) return holder.get_ptr();
-    else return nullptr;
-  }
+  ResourceHolder const *getHolder() const;
 
 };
 

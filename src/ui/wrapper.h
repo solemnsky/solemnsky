@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Wrapper control that makes the base Control's life easier.
+ *
  */
 #pragma once
 #include <memory>
@@ -31,13 +31,11 @@ namespace detail {
  * displaying a splash screen and fades into the main Control when resources
  * are ready. It also relays the wrapped control's `quitting` flag.
  */
-// TODO: Make this threaded, currently the game loop locks up while resources
-// are being loaded! You fool!
 class ExecWrapper: public Control {
  private:
   double animBegin;
   bool drewScreen, loadingDone;
-  TextFormat loadingText;
+  TextFormat readyText;
   std::function<std::unique_ptr<Control>(AppState &)> mainCtrlCtor;
   std::unique_ptr<Control> mainCtrl;
 
