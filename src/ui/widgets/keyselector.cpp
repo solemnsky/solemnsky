@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "keyselector.h"
-#include "util/client/sfmlutil.h"
+#include "util/clientutil.h"
 
 namespace ui {
 

@@ -78,7 +78,6 @@ struct MapObstacle {
 
 };
 
-
 struct MapItem {
   enum class Type {
     RedThingy, BlueThingy

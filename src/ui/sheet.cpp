@@ -23,9 +23,9 @@ namespace ui {
 SpriteSheet::SpriteSheet(ResID resource) :
     record(recordOf(resource)),
     tileDim{(float) record.tileX, (float) record.tileY},
-    sheet(textureOf(resource)),
+    texture(textureOf(resource)),
     res(resource),
-    count(record.countX * record.countY) { }
+    size(record.countX * record.countY) { }
 
 void SpriteSheet::drawIndex(ui::Frame &f, const sf::Vector2f &dims,
                             const int index) const {
@@ -35,7 +35,7 @@ void SpriteSheet::drawIndex(ui::Frame &f, const sf::Vector2f &dims,
 
   f.pushTransform(
       sf::Transform().scale(dims.x / spriteWidth, dims.y / spriteHeight));
-  f.drawSprite(sheet, {-spriteWidth / 2, -spriteHeight / 2},
+  f.drawSprite(texture, {-spriteWidth / 2, -spriteHeight / 2},
                sf::IntRect(left, top, record.tileX, record.tileY));
   f.popTransform();
 }
@@ -44,18 +44,18 @@ void SpriteSheet::drawIndexAtRoll(ui::Frame &f, const sf::Vector2f &dims,
                                   const Angle deg) const {
   const int fullIndex =
       (deg > 180)
-      ? std::floor(Cyclic(0, count * 2, deg * count / 180))
-      : std::floor(Cyclic(0, count * 2, (deg * count / 180) - 0.5f));
+      ? std::floor(Cyclic(0, size * 2, deg * size / 180))
+      : std::floor(Cyclic(0, size * 2, (deg * size / 180) - 0.5f));
 
   bool flipped;
   int realIndex;
 
-  if (fullIndex < count) {
+  if (fullIndex < size) {
     flipped = false;
     realIndex = fullIndex;
   } else {
     flipped = true;
-    realIndex = (count * 2) - fullIndex - 1;
+    realIndex = (size * 2) - fullIndex - 1;
   }
 
   f.withTransform(sf::Transform().scale(-1, flipped ? -1 : 1), [&]() {

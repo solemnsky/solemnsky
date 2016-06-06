@@ -17,7 +17,7 @@
  */
 #include "button.h"
 #include "util/methods.h"
-#include "util/client/sfmlutil.h"
+#include "util/clientutil.h"
 
 namespace ui {
 

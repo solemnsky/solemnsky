@@ -23,22 +23,35 @@
 #include "util/types.h"
 
 namespace ui {
-class SpriteSheet {
-private:
-  const ResRecord record;
-  const sf::Vector2f tileDim;
-  const sf::Texture &sheet;
-  const ResID res;
 
-public:
-  const int count;
+/**
+ * Description of the way sprites are distributed on a regular orthogonal
+ * spritesheet.
+ */
+struct SheetLayout {
+  SheetLayout(const sf::Vector2i &spriteDimensions,
+              const sf::Vector2i &sheetTiling) { }
+
+  const sf::Vector2i spriteDimensions, sheetTiling;
+
+};
+
+class SpriteSheet {
+ private:
+  const SheetLayout &layout;
+  const sf::Texture &texture;
+
+ public:
+  const int size;
 
   SpriteSheet() = delete;
-  SpriteSheet(ResID resource);
+  SpriteSheet(const SheetLayout &layout, const sf::Texture &texture);
 
   void drawIndex(
       ui::Frame &f, const sf::Vector2f &dims, const int index) const;
   void drawIndexAtRoll(
       ui::Frame &f, const sf::Vector2f &dims, const Angle deg) const;
+
 };
+
 }

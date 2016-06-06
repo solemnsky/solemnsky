@@ -21,7 +21,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "util/printer.h"
-#include "util/client/resources.h"
+#include "resources.h"
 
 namespace ui {
 
