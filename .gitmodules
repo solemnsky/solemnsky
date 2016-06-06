@@ -16,3 +16,6 @@
 [submodule "maps"]
 	path = maps
 	url = http://github.com/solemnsky/solemnsky-maps
+[submodule "thirdparty/mingw-std-threads"]
+	path = thirdparty/mingw-std-threads
+	url = https://github.com/meganz/mingw-std-threads

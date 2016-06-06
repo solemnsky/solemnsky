@@ -20,24 +20,38 @@
 
 namespace ui {
 
-SpriteSheet::SpriteSheet(ResID resource) :
-    record(recordOf(resource)),
-    tileDim{(float) record.tileX, (float) record.tileY},
-    texture(textureOf(resource)),
-    res(resource),
-    size(record.countX * record.countY) { }
+/**
+ * SheetLayout.
+ */
+
+SheetLayout::SheetLayout(const sf::Vector2i &spriteDimensions,
+                         const sf::Vector2i &sheetTiling) :
+    spriteDims(spriteDimensions),
+    tiling(sheetTiling) { }
+
+/**
+ * SpriteSheet.
+ */
+
+SpriteSheet::SpriteSheet(const SheetLayout &layout,
+                         const sf::Texture &texture) :
+    layout(layout),
+    texture(texture),
+    size(layout.tiling.x * layout.tiling.y) { }
 
 void SpriteSheet::drawIndex(ui::Frame &f, const sf::Vector2f &dims,
                             const int index) const {
-  const int yShift(index % record.countY), xShift(index / record.countY);
-  const float spriteWidth(record.tileX), spriteHeight(record.tileY);
-  const int left(xShift * record.tileX), top(yShift * record.tileY);
+  const int
+      yShift{index % layout.tiling.y}, xShift{index / layout.tiling.y},
+      spriteWidth{layout.spriteDims.x}, spriteHeight{layout.spriteDims.y},
+      left{xShift * spriteWidth}, top{yShift * spriteHeight};
 
-  f.pushTransform(
-      sf::Transform().scale(dims.x / spriteWidth, dims.y / spriteHeight));
-  f.drawSprite(texture, {-spriteWidth / 2, -spriteHeight / 2},
-               sf::IntRect(left, top, record.tileX, record.tileY));
-  f.popTransform();
+  f.withTransform(
+      sf::Transform().scale(dims.x / spriteWidth, dims.y / spriteHeight),
+      [&] {
+        f.drawSprite(texture, {-spriteWidth / 2, -spriteHeight / 2},
+                     sf::IntRect(left, top, spriteWidth, spriteHeight));
+      });
 }
 
 void SpriteSheet::drawIndexAtRoll(ui::Frame &f, const sf::Vector2f &dims,
