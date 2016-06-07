@@ -106,27 +106,30 @@ extern const std::map<TextureID, TextureMetadata> textureMetadata;
 }
 
 /**
- * An access to the data associated with a set of resources.
+ * An access to the data associated with our set of resources.
  */
-class ResourceHolder {
-  friend class ResourceLoder;
+class AppResources {
  private:
   const std::map<FontID, sf::Font> &fonts;
   const std::map<TextureID, sf::Texture> &textures;
 
-  ResourceHolder(const std::map<FontID, sf::Font> &fonts,
+ public:
+  AppResources(const std::map<FontID, sf::Font> &fonts,
                  const std::map<TextureID, sf::Texture> &textures);
 
- public:
+  // Accessing data.
   const FontMetadata &getFontData(const FontID id) const;
   const TextureMetadata &getTextureData(const TextureID id) const;
   const sf::Font &getFont(const FontID id) const;
   const sf::Texture &getTexture(const TextureID id) const;
 
+  // Resource handles.
+  const sf::Font &defaultFont;
+
 };
 
 /**
- * Manages the loading of a set of resources, resulting in a ResourceHolder.
+ * Manages the loading of a set of resources, resulting in a AppResources.
  */
 class ResourceLoader {
  private:
@@ -139,7 +142,7 @@ class ResourceLoader {
 
   float loadingProgress;
   bool loadingErrored;
-  optional<ResourceHolder> holder;
+  optional<AppResources> holder;
 
   // Loading subroutines.
   void writeLog(const std::string &str);
@@ -158,7 +161,7 @@ class ResourceLoader {
   void printNewLogs(Printer &p);
   bool getErrorStatus() const;
 
-  ResourceHolder const *getHolder() const;
+  AppResources const *getHolder() const;
 
 };
 

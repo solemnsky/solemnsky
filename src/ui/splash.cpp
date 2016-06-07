@@ -23,14 +23,10 @@ namespace ui {
 namespace detail {
 
 SplashScreen::SplashScreen(
-    AppState &appState,
-    std::function<Control(AppState &)>
-    mkApp) :
+    AppState &appState, std::function<Control(AppState &)> mkApp) :
     Control(appState),
     animBegin(appState.uptime),
-    readyText(80, {},
-              ui::HorizontalAlign::Center, ui::VerticalAlign::Middle,
-              ui::FontID::Default),
+    readyText(80, {}, ui::HorizontalAlign::Center, ui::VerticalAlign::Middle),
     mkApp(mkApp) {
   loader.loadBoostrap(
       {FontID::Default},

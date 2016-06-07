@@ -152,7 +152,7 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
                  graphics.player.getNickname(),
                  (graphics.player.getTeam() == 1) ? sf::Color::Red
                                                   : sf::Color::Blue,
-                 style.base.centeredText);
+                 style.base.centeredText, defaultFont);
       renderBars(
           f,
           {mkBar(state.throttle,
@@ -177,7 +177,7 @@ void SkyRender::renderMap(ui::Frame &f) {
   const auto &dims = map.getDimensions();
 
   f.drawRect({0, 0}, dims, style.base.pageBgColor);
-  f.drawSprite(shared.appState.resources->getTexture(ui::TextureID::Title),
+  f.drawSprite(resources.getTexture(ui::TextureID::Title),
                {(dims.x / 2) - 800, 0},
                {0, 0, 1600, 900});
 
@@ -191,14 +191,14 @@ void SkyRender::renderMap(ui::Frame &f) {
   }
 }
 
-SkyRender::SkyRender(ClientShared &shared, Arena &arena, const Sky &sky) :
+SkyRender::SkyRender(const ui::AppResources &resources,
+                     Arena &arena, const Sky &sky) :
     ClientComponent(shared),
     Subsystem(arena),
     sky(sky),
     sheet(ui::TextureID::PlayerSheet),
-    planeSheet(shared.appState.resources->getTextureData(sheet)
-                   .spritesheetForm.get(),
-               shared.appState.resources->getTexture(sheet)),
+    planeSheet(resources.getTextureData(sheet).spritesheetForm.get(),
+               resources.getTexture(sheet)),
     enableDebug(shared.settings.enableDebug) {
   arena.forPlayers([&](Player &player) { registerPlayer(player); });
 }

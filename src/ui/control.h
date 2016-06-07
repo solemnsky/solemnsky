@@ -48,17 +48,23 @@ struct ProfilerSnapshot {
 };
 
 /**
- * State / handles for Control to access.
+ * All the references passed to a Control; some accessible directly, some
+ * through protected Control aliases.
  */
 struct AppState {
-  AppState(const sf::RenderWindow &window,
+  friend class Control;
+ private:
+  const AppResources &resources;
+
+ public:
+  AppState(const AppResources &resources,
+           const sf::RenderWindow &window,
            const Profiler &profiler,
            const Time &time);
 
   const Time &uptime;
   const sf::RenderWindow &window;
   const Profiler &profiler;
-  ResourceHolder const *resources;
 
   double timeSince(const Time event) const;
 
@@ -69,22 +75,16 @@ struct AppState {
  */
 class Control {
  protected:
-  AppState &appState;
-  std::vector<Control *> children;
+  // AppState and aliases.
+  AppState appState;
+  const AppResources &resources;
 
-  // Defining children.
+  // Children
+  std::vector<Control *> children;
   void areChildren(std::initializer_list<Control *> controls);
 
-  // Helpers for accessing appState->resources.
-  const sf::Texture &textureOf(const TextureID id);
-  const TextureMetadata &textureDataOf(const TextureID id);
-  const sf::Font &fontOf(const FontID id);
-  const FontMetadata &fontDataOf(const FontID id);
-
-  const sf::Font &defaultFont;
-
  public:
-  Control(AppState &appState);
+  Control(const AppState &appState);
   virtual ~Control() { }
 
   // Quitting flag.

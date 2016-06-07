@@ -56,10 +56,14 @@ class SkyRender: public ClientComponent, public Subsystem<PlaneGraphics> {
  private:
   // Parameters.
   const Sky &sky;
+  const ui::AppResources &resources;
   const ui::TextureID sheet;
 
   // State.
   std::map<PID, PlaneGraphics> graphics;
+
+  // Resources.
+  const sf::Font &defaultFont;
   const ui::SpriteSheet planeSheet;
 
   // Render submethods.
@@ -80,7 +84,7 @@ class SkyRender: public ClientComponent, public Subsystem<PlaneGraphics> {
   void onTick(const float delta) override;
 
  public:
-  SkyRender(ClientShared &shared, Arena &arena, const Sky &sky);
+  SkyRender(const ui::AppResources &resources, Arena &arena, const Sky &sky);
   ~SkyRender();
 
   // ClientComponent impl.

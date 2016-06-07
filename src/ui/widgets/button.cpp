@@ -72,7 +72,7 @@ void Button::render(Frame &f) {
   if (description)
     f.drawText(pos + sf::Vector2f(-20, style.dimensions.y / 2),
                description.get(), style.textColor,
-               descriptionFormat, defaultFont);
+               descriptionFormat, resources.defaultFont);
 
   const auto body = getBody();
   if (!active) {
@@ -85,7 +85,7 @@ void Button::render(Frame &f) {
 
   f.drawText(
       pos + 0.5f * style.dimensions,
-      text, style.textColor, textFormat, defaultFont);
+      text, style.textColor, textFormat, resources.defaultFont);
 }
 
 bool Button::handle(const sf::Event &event) {
