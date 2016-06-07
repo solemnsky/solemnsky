@@ -242,7 +242,7 @@ std::string printKey(const sf::Keyboard::Key key) {
   }
 }
 std::string pathFromResourceUrl(const std::string &url) {
-  return "../../" + url;
+  return "../../media/" + url;
 }
 
 

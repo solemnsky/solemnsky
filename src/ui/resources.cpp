@@ -67,7 +67,21 @@ const std::map<FontID, FontMetadata> fontMetadata{
      FontMetadata("fonts/Roboto-Light.ttf", "Roboto")}};
 const std::map<TextureID, TextureMetadata> textureMetadata{
     {TextureID::Title,
-     TextureMetadata::TextureResource("render-2d/title.png", "title screen")}};
+     TextureMetadata::TextureResource("render-2d/title.png",
+                                      "title screen")},
+    {TextureID::MenuBackground,
+     TextureMetadata::TextureResource("render-2d/menubackground.png",
+                                      "menu background")},
+    {TextureID::Credits,
+     TextureMetadata::TextureResource("render-2d/credits.png",
+                                      "credits")},
+    {TextureID::Lobby,
+     TextureMetadata::TextureResource("render-2d/lobby.png",
+                                      "lobby")},
+    {TextureID::Scoring,
+     TextureMetadata::TextureResource("render-2d/scoring.png",
+                                      "scoring")},
+};
 
 }
 
@@ -105,15 +119,25 @@ ResourceLoader::ResourceLoader(
     std::initializer_list<FontID> bootstrapFonts,
     std::initializer_list<TextureID> bootstrapTextures) :
     loadingProgress(0) {
+  // TODO: move resource metadata checks to compile-time?
   for (const auto font : bootstrapFonts) {
+    assert(detail::fontMetadata.find(font)
+               != detail::fontMetadata.end());
     if (auto error = loadFont(font, detail::fontMetadata.at(font)))
       appLog("Error loading bootstrap font: " + error.get(), LogOrigin::App);
   }
 
   for (const auto texture : bootstrapTextures) {
+    assert(detail::textureMetadata.find(texture)
+               != detail::textureMetadata.end());
     if (auto error = loadTexture(texture, detail::textureMetadata.at(texture)))
       appLog("Error loading bootstrap texture: " + error.get(), LogOrigin::App);
   }
+  appLog("Loaded bootstrap resources.", LogOrigin::App);
+}
+
+ResourceLoader::~ResourceLoader() {
+  workingThread.join();
 }
 
 const sf::Font &ResourceLoader::accessFont(const FontID id) {
@@ -163,6 +187,8 @@ void ResourceLoader::loadAllThreaded() {
     size_t progress{0};
 
     for (const auto font : detail::fontMetadata) {
+      writeLog("Loading font: " + font.second.url
+                   + "(" + font.second.name + ")");
       if (auto error = loadFont(font.first, font.second)) {
         writeLog("Error loading font: " + error.get());
         return;
@@ -172,6 +198,8 @@ void ResourceLoader::loadAllThreaded() {
     }
 
     for (const auto texture : detail::textureMetadata) {
+      writeLog("Loading texture: " + texture.second.url
+                   + "(" + texture.second.name + ")");
       if (auto error = loadTexture(texture.first, texture.second)) {
         writeLog("Error loading texture: " + error.get());
         return;
