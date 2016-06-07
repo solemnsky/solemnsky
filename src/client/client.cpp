@@ -39,6 +39,8 @@ Page &Client::referencePage(const PageType type) {
       return settingsPage;
     case PageType::Listing:
       return listingPage;
+    default:
+      return homePage;
   }
 }
 

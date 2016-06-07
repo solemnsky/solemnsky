@@ -50,6 +50,9 @@ struct ProfilerSnapshot {
 /**
  * All the references passed to a Control; some accessible directly, some
  * through protected Control aliases.
+ *
+ * The `resources` reference is undefined in SplashScreen; everywhere else
+ * it is defined.
  */
 struct AppState {
   friend class Control;
@@ -76,7 +79,7 @@ struct AppState {
 class Control {
  protected:
   // AppState and aliases.
-  const AppState appState; // TODO: does it make sense to make this a reference?
+  const AppState appState;
   const AppResources &resources;
 
   // Children
@@ -131,9 +134,6 @@ class ControlExec {
   AppState appState;
   optional<Control> ctrl;
 
-  // Resource loading.
-  ResourceLoader resourceLoader;
-
   // App loop submethods.
   void tick();
   void handle();
@@ -141,7 +141,7 @@ class ControlExec {
 
  public:
   ControlExec();
-  void run(std::function<Control(AppState &)> mkApp);
+  void run(std::function<Control(const AppState &)> mkApp);
 
 };
 

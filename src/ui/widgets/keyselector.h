@@ -33,7 +33,7 @@ class KeySelector: public ui::Control {
  public:
   typedef Button::Style Style;
 
-  KeySelector(AppState &appState,
+  KeySelector(const AppState &appState,
               const Style &style, const sf::Vector2f &pos);
 
   // Control impl.

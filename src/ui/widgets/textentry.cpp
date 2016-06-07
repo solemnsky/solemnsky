@@ -123,7 +123,7 @@ void TextEntry::tick(float delta) {
   if (pressedKeyboardEvent) {
     if (repeatActivate.cool(delta)) {
       if (repeatCooldown.cool(delta)) {
-        handleKeyboardEvent(*pressedKeyboardEvent);
+        handleKeyboardEvent(pressedKeyboardEvent.get());
         repeatCooldown.reset();
       }
     }
@@ -134,7 +134,8 @@ void TextEntry::render(Frame &f) {
   f.pushTransform(sf::Transform().translate(pos));
   if (persistent) {
     f.drawText({-20, style.dimensions.y / 2.0f},
-               description, sf::Color::White, descriptionFormat, defaultFont);
+               description, sf::Color::White, descriptionFormat,
+               resources.defaultFont);
   }
 
   if (isFocused) {
@@ -152,13 +153,13 @@ void TextEntry::render(Frame &f) {
                   cursorWidth, style.dimensions.y},
               style.textColor);
           tf.print(contents.substr(size_t(cursor)));
-        }, textFormat, defaultFont);
+        }, textFormat, resources.defaultFont);
   } else {
     f.drawRect({}, style.dimensions,
                mixColors(style.inactiveColor, style.hotColor, heat));
     f.drawText({sidePadding, 0},
                {persistent ? contents : description},
-               style.textColor, textFormat, defaultFont);
+               style.textColor, textFormat, resources.defaultFont);
   }
   f.popTransform();
 }

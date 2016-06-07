@@ -23,12 +23,12 @@ namespace ui {
 namespace detail {
 
 SplashScreen::SplashScreen(
-    AppState &appState, std::function< Control(const AppState &)
-> mkApp) :
+    AppState &appState, std::function<Control(const AppState &)> mkApp) :
     Control(appState),
     loader(
         {FontID::Default},
         {TextureID::MenuBackground}),
+    defaultFont(loader.accessFont(FontID::Default)),
     animBegin(appState.uptime),
     readyText(80, {}, ui::HorizontalAlign::Center, ui::VerticalAlign::Middle),
     mkApp(mkApp) {
@@ -56,19 +56,21 @@ void SplashScreen::render(ui::Frame &f) {
                  {}, {0, 0, 1600, 900});
     if (!loader.getHolder()) {
       f.drawText({800, 450}, "loading resources...",
-                 style.base.normalText, sf::Color::White,);
+                 sf::Color::White, style.base.centeredText,
+                 resources.defaultFont);
     } else {
       f.withAlpha(
           linearTween(0.3, 1, sineAnim(float(appState.uptime), 0.2)),
           [&]() {
             f.drawText({800, 450}, "press any key to begin",
-                       sf::Color::White, readyText);
+                       sf::Color::White, style.base.centeredText,
+                       resources.defaultFont);
           });
     }
   } else {
     const float animTime = float(appState.timeSince(animBegin));
     if (animTime < 0.5) {
-      f.drawSprite(textureOf(ui::TextureID::MenuBackground),
+      f.drawSprite(resources.getTexture(ui::TextureID::MenuBackground),
                    {}, {0, 0, 1600, 900});
       f.withAlpha(linearTween(0, 1, animTime * 2), [&]() {
         ui::Control::render(f);
@@ -83,8 +85,9 @@ bool SplashScreen::handle(const sf::Event &event) {
   if (loader.getHolder() && !control) {
     if (event.type == sf::Event::KeyReleased
         or event.type == sf::Event::MouseButtonReleased) {
-      appState.resources = loader.getHolder();
-      control.emplace(mkApp(appState));
+      control.emplace(mkApp(
+          AppState(*loader.getHolder(), appState.window,
+                   appState.profiler, appState.uptime)));
       animBegin = appState.uptime;
       areChildren({control.get_ptr()});
       return true;

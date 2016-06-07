@@ -56,14 +56,13 @@ class SkyRender: public ClientComponent, public Subsystem<PlaneGraphics> {
  private:
   // Parameters.
   const Sky &sky;
-  const ui::AppResources &resources;
-  const ui::TextureID sheet;
 
   // State.
   std::map<PID, PlaneGraphics> graphics;
 
   // Resources.
-  const sf::Font &defaultFont;
+  const ui::AppResources &resources;
+  const ui::TextureID sheet;
   const ui::SpriteSheet planeSheet;
 
   // Render submethods.

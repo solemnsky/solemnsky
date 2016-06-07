@@ -35,6 +35,7 @@ class SplashScreen: public Control {
  private:
   ResourceLoader loader;
   optional<AppResources> loadedResources;
+  const sf::Font &defaultFont;
 
   double animBegin;
   TextFormat readyText;
