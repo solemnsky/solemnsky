@@ -72,26 +72,28 @@ const std::map<TextureID, TextureMetadata> textureMetadata{
 }
 
 /**
- * ResourceHolder.
+ * AppResources.
  */
 
-ResourceHolder::ResourceHolder(
+AppResources::AppResources(
     const std::map<FontID, sf::Font> &fonts,
     const std::map<TextureID, sf::Texture> &textures) :
-    fonts(fonts), textures(textures) { }
+    fonts(fonts),
+    textures(textures),
+    defaultFont(getFont(FontID::Default)) { }
 
-const FontMetadata &ResourceHolder::getFontData(const FontID id) const {
+const FontMetadata &AppResources::getFontData(const FontID id) const {
   return detail::fontMetadata.at(id);
 }
 
-const TextureMetadata &ResourceHolder::getTextureData(const TextureID id) const {
+const TextureMetadata &AppResources::getTextureData(const TextureID id) const {
   return detail::textureMetadata.at(id);
 }
 
-const sf::Font &ResourceHolder::getFont(const FontID id) const {
+const sf::Font &AppResources::getFont(const FontID id) const {
   return fonts.at(id);
 }
-const sf::Texture &ResourceHolder::getTexture(const TextureID id) const {
+const sf::Texture &AppResources::getTexture(const TextureID id) const {
   return textures.at(id);
 }
 
@@ -105,7 +107,7 @@ ResourceLoader::ResourceLoader() :
 void ResourceLoader::writeLog(const std::string &str) {
   logMutex.lock();
   workerLog.push_back(str);
-  logMutex.unlock;
+  logMutex.unlock();
 }
 
 optional<std::string> ResourceLoader::loadTexture(
@@ -116,7 +118,7 @@ optional<std::string> ResourceLoader::loadTexture(
     textures.emplace(id, std::move(texture));
     return {};
   } else {
-    return {"Texture did not load correctly."};
+    return std::string("Texture did not load correctly.");
   }
 }
 
@@ -128,7 +130,7 @@ optional<std::string> ResourceLoader::loadFont(
     fonts.emplace(id, std::move(font));
     return {};
   } else {
-    return {"Font did not load correctly."};
+    return std::string("Font did not load correctly.");
   }
 }
 
@@ -190,8 +192,9 @@ bool ResourceLoader::getErrorStatus() const {
   return loadingErrored;
 }
 
-ResourceHolder const *ResourceLoader::getHolder() const {
+AppResources const *ResourceLoader::getHolder() const {
   if (holder) return holder.get_ptr();
   else return nullptr;
 }
 
+}

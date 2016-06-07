@@ -134,7 +134,7 @@ void TextEntry::render(Frame &f) {
   f.pushTransform(sf::Transform().translate(pos));
   if (persistent) {
     f.drawText({-20, style.dimensions.y / 2.0f},
-               description, sf::Color::White, descriptionFormat);
+               description, sf::Color::White, descriptionFormat, defaultFont);
   }
 
   if (isFocused) {
@@ -152,13 +152,13 @@ void TextEntry::render(Frame &f) {
                   cursorWidth, style.dimensions.y},
               style.textColor);
           tf.print(contents.substr(size_t(cursor)));
-        }, textFormat);
+        }, textFormat, defaultFont);
   } else {
     f.drawRect({}, style.dimensions,
                mixColors(style.inactiveColor, style.hotColor, heat));
     f.drawText({sidePadding, 0},
                {persistent ? contents : description},
-               style.textColor, textFormat);
+               style.textColor, textFormat, defaultFont);
   }
   f.popTransform();
 }

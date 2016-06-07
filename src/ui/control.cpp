@@ -38,9 +38,12 @@ ProfilerSnapshot::ProfilerSnapshot(const Profiler &profiler) :
  * AppState.
  */
 
-AppState::AppState(const sf::RenderWindow &window,
-                   const Profiler &profiler,
-                   const Time &time) :
+AppState::AppState(
+    const AppResources &resources,
+    const sf::RenderWindow &window,
+    const Profiler &profiler,
+    const Time &time) :
+    resources(resources),
     uptime(time), window(window), profiler(profiler),
     resources(nullptr) { }
 
@@ -56,26 +59,10 @@ void Control::areChildren(std::initializer_list<Control *> controls) {
   for (auto control : controls) children.push_back(control);
 }
 
-const sf::Texture &Control::textureOf(const TextureID id) {
-  return appState.resources->getTexture(id);
-}
-
-const TextureMetadata &Control::textureDataOf(const TextureID id) {
-  return appState.resources->getTextureData(id);
-}
-
-const sf::Font &Control::fontOf(const FontID id) {
-  return appState.resources->getFont(id);
-}
-
-const FontMetadata &Control::fontDataOf(const FontID id) {
-  return appState.resources->getFontData(id);
-}
-
-Control::Control(AppState &appState) :
+Control::Control(const AppState &appState) :
     appState(appState),
-    quitting(false),
-    defaultFont(fontOf(FontID::Default)) { }
+    resources(appState.resources),
+    quitting(false) { }
 
 bool Control::poll() {
   for (auto child : children) {

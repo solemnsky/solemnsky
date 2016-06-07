@@ -68,8 +68,8 @@ TextFrame::TextFrame(Frame &parent,
                      const TextFormat &format,
                      const sf::Font &font) :
     parent(parent),
-    format(format),
     anchor(anchor),
+    format(format),
     font(font) { }
 
 sf::Vector2f TextFrame::endRender() {

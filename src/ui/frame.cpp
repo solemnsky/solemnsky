@@ -172,7 +172,7 @@ sf::Vector2f Frame::drawText(const sf::Vector2f &pos,
                              std::function<void(TextFrame &)> process,
                              const TextFormat &format,
                              const sf::Font &font) {
-  TextFrame frame(this, pos, format, font);
+  TextFrame frame(*this, pos, format, font);
   process(frame);
   return frame.endRender();
 }

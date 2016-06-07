@@ -72,10 +72,6 @@ private:
  public:
   ClientShared(ui::AppState &appState, Client &client);
 
-  // AppState.
-  ui::AppState &appState;
-  const Time &uptime; // alias
-
   // State.
   Settings settings;
   std::unique_ptr<class Game> game;
@@ -97,4 +93,5 @@ private:
   void blurPage();
 
   void changeSettings(const SettingsDelta &settings);
+
 };
