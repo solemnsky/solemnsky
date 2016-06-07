@@ -106,7 +106,7 @@ extern const std::map<TextureID, TextureMetadata> textureMetadata;
 }
 
 /**
- * An access to the data associated with our set of resources.
+ * Access to the results of a successful resource loading.
  */
 class AppResources {
  private:
@@ -152,10 +152,15 @@ class ResourceLoader {
       const TextureID id, const TextureMetadata &data);
 
  public:
-  ResourceLoader();
+  ResourceLoader(
+      std::initializer_list<FontID> bootstrapFonts,
+      std::initializer_list<TextureID> boostrapTextures);
 
-  void loadBoostrap(std::initializer_list<FontID> fonts,
-                    std::initializer_list<TextureID> textures); // blocking
+  // Accessing boostrapped resources.
+  const sf::Font &accessFont(const FontID id);
+  const sf::Texture &accessTexture(const TextureID id);
+
+  // Loading resources.
   void loadAllThreaded(); // non-blocking
   float getProgress() const;
   void printNewLogs(Printer &p);

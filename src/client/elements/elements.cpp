@@ -41,7 +41,7 @@ void ClientComponent::onChangeSettings(const SettingsDelta &settings) {
 
 Page::Page(ClientShared &shared) :
     ClientComponent(shared),
-    ui::Control(shared.appState) { }
+    ui::Control(appState) { }
 
 void Page::drawBackground(ui::Frame &f) {
   const float margins = style.base.pageMargins;

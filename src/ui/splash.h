@@ -34,16 +34,17 @@ namespace detail {
 class SplashScreen: public Control {
  private:
   ResourceLoader loader;
+  optional<AppResources> loadedResources;
 
   double animBegin;
   TextFormat readyText;
 
-  std::function<Control(AppState &)> mkApp;
+  std::function<Control(const AppState &)> mkApp;
   optional<Control> control;
 
  public:
   SplashScreen(AppState &appState,
-               std::function<Control(AppState &)> mkApp);
+               std::function<Control(const AppState &)> mkApp);
 
   bool poll() override final;
   void tick(const TimeDiff delta) override final;

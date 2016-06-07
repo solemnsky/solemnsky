@@ -48,7 +48,7 @@ Multiplayer::Multiplayer(ClientShared &shared,
     Game(shared, "multiplayer"),
     core(shared, *this, serverHostname, serverPort),
     view(nullptr),
-    hudFont(fontOf(ui::FontID::Default)) {
+    hudFont(resources.getFont(ui::FontID::Default)) {
   areChildComponents({&core});
 }
 

@@ -68,28 +68,28 @@ void MultiplayerGame::printSpectators(ui::TextFrame &tf) {
 }
 
 void MultiplayerGame::renderScoreboard(ui::Frame &f) {
-  f.drawSprite(textureOf(ui::TextureID::ScoreOverlay),
+  f.drawSprite(resources.getTexture(ui::TextureID::ScoreOverlay),
                style.multi.scoreboardOffset,
                style.multi.scoreboardDisplay);
   f.drawText(
       style.multi.scoreboardOffset
           + sf::Vector2f(0, style.multi.scoreboardPaddingTop),
       [&](ui::TextFrame &p) { printScores(p, 1); },
-      style.base.normalText, defaultFont);
+      style.base.normalText, resources.defaultFont);
 
   f.drawText(
       style.multi.scoreboardOffset
           + sf::Vector2f(style.multi.scoreboardDisplay.width / 2,
                          style.multi.scoreboardPaddingTop),
       [&](ui::TextFrame &p) { printScores(p, 2); },
-      style.base.normalText, defaultFont);
+      style.base.normalText, resources.defaultFont);
 
   f.drawText(
       style.multi.scoreboardOffset +
           sf::Vector2f(0, style.multi.scoreboardDisplay.height
               - (2 * style.base.normalFontSize)),
       [&](ui::TextFrame &tf) { printSpectators(tf); },
-      style.base.normalText, defaultFont);
+      style.base.normalText, resources.defaultFont);
 }
 
 MultiplayerGame::MultiplayerGame(
