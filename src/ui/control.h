@@ -81,6 +81,8 @@ class Control {
   const sf::Font &fontOf(const FontID id);
   const FontMetadata &fontDataOf(const FontID id);
 
+  const sf::Font &defaultFont;
+
  public:
   Control(AppState &appState);
   virtual ~Control() { }

@@ -26,13 +26,15 @@
  */
 class Multiplayer: public Game, public ConnectionListener {
  private:
-  /**
-   * Arena connection state / protocol implementation and the current
-   * (mode-specific) interface that we show the user.
-   */
+
+  // Arena connection state / protocol implementation and the current
+  // (mode-specific) interface that we show the user.
   MultiplayerCore core;
   std::unique_ptr<MultiplayerView> view;
   void loadView(const sky::ArenaMode arenaMode);
+
+  // Font.
+  const sf::Font &hudFont;
 
  public:
   Multiplayer(ClientShared &shared,

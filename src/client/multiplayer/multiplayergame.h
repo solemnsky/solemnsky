@@ -27,8 +27,6 @@
  * In the game, the rendered representation of the game is the central
  * point of the screen; peripheries include a chat / message interface, and a
  * score screen you can call up with tab.
- *
- * Invariant: conn->skyHandle
  */
 class MultiplayerGame: public MultiplayerView {
  private:

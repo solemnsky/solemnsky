@@ -53,8 +53,7 @@ Button::Button(AppState &appState,
     active(true),
 
     textFormat(style.fontSize, style.dimensions.x,
-               HorizontalAlign::Center, VerticalAlign::Middle,
-               FontID::Default),
+               HorizontalAlign::Center, VerticalAlign::Middle),
     descriptionFormat(textFormat),
 
     pos(pos),
@@ -62,8 +61,7 @@ Button::Button(AppState &appState,
 
     isHot(false),
     clickSignal(false) {
-  descriptionFormat.
-      horizontal = HorizontalAlign::Right;
+  descriptionFormat.horizontal = HorizontalAlign::Right;
 }
 
 void Button::tick(float delta) {
@@ -74,7 +72,7 @@ void Button::render(Frame &f) {
   if (description)
     f.drawText(pos + sf::Vector2f(-20, style.dimensions.y / 2),
                description.get(), style.textColor,
-               descriptionFormat);
+               descriptionFormat, defaultFont);
 
   const auto body = getBody();
   if (!active) {
@@ -87,7 +85,7 @@ void Button::render(Frame &f) {
 
   f.drawText(
       pos + 0.5f * style.dimensions,
-      text, style.textColor, textFormat);
+      text, style.textColor, textFormat, defaultFont);
 }
 
 bool Button::handle(const sf::Event &event) {

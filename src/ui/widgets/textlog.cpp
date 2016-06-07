@@ -84,7 +84,7 @@ TextLog::TextLog(AppState &appState, const Style &style,
     style(style), pos(pos),
     startingNewLine(true),
     textFormat(style.fontSize, 0, ui::HorizontalAlign::Left,
-               ui::VerticalAlign::Bottom, FontID::Default) {
+               ui::VerticalAlign::Bottom) {
 
 }
 
@@ -110,7 +110,7 @@ void TextLog::render(Frame &f) {
 
       if (tf.drawOffset.y > maxHeight && maxHeight != 0) return;
     }
-  }, textFormat);
+  }, textFormat, defaultFont);
 }
 
 bool TextLog::handle(const sf::Event &event) {

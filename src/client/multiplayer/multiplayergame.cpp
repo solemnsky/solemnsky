@@ -75,21 +75,21 @@ void MultiplayerGame::renderScoreboard(ui::Frame &f) {
       style.multi.scoreboardOffset
           + sf::Vector2f(0, style.multi.scoreboardPaddingTop),
       [&](ui::TextFrame &p) { printScores(p, 1); },
-      style.base.normalText);
+      style.base.normalText, defaultFont);
 
   f.drawText(
       style.multi.scoreboardOffset
           + sf::Vector2f(style.multi.scoreboardDisplay.width / 2,
                          style.multi.scoreboardPaddingTop),
       [&](ui::TextFrame &p) { printScores(p, 2); },
-      style.base.normalText);
+      style.base.normalText, defaultFont);
 
   f.drawText(
       style.multi.scoreboardOffset +
           sf::Vector2f(0, style.multi.scoreboardDisplay.height
               - (2 * style.base.normalFontSize)),
       [&](ui::TextFrame &tf) { printSpectators(tf); },
-      style.base.normalText);
+      style.base.normalText, defaultFont);
 }
 
 MultiplayerGame::MultiplayerGame(
@@ -102,6 +102,7 @@ MultiplayerGame::MultiplayerGame(
     scoreboardFocused(false),
     skyRender(shared, conn.arena, conn.getSky().get()),
     participation(conn.getSky()->getParticipation(conn.player)) {
+  assert(conn.skyHandle.isActive());
   areChildren({&chatInput});
   areChildComponents({&skyRender});
 }
@@ -116,8 +117,10 @@ void MultiplayerGame::render(ui::Frame &f) {
          participation.plane->getState().physical.pos :
          sf::Vector2f(0, 0));
 
-  if (chatInput.isFocused) core.drawEventLog(f, style.multi.chatCutoff);
-  else core.drawEventLog(f, style.multi.chatIngameCutoff);
+  f.drawText(style.multi.chatPos, [&](ui::TextFrame &tf) {
+    if (chatInput.isFocused) core.drawEventLog(tf, style.multi.chatCutoff);
+    else core.drawEventLog(tf, style.multi.chatIngameCutoff);
+  }, style.multi.messageLogText, defaultFont);
 
   ui::Control::render(f);
 

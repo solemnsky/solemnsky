@@ -109,5 +109,5 @@ enum_error::enum_error() :
     std::logic_error("An enum is outside its identified value space. Maybe "
                          "you're connection to a corrupted server? Report this "
                          "issue to the solemnsky team along with all the "
-                         "relevant logs you can find, it's a bug.") { }
-
+                         "relevant logs you can find, it should have been "
+                         "caught by the packet sanitizer.") { }
