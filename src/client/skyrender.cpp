@@ -179,7 +179,7 @@ void SkyRender::renderMap(ui::Frame &f) {
   const auto &dims = map.getDimensions();
 
   f.drawRect({0, 0}, dims, style.base.pageBgColor);
-  f.drawSprite(textureOf(ResID::Title),
+  f.drawSprite(shared.appState.resources->getTexture(ui::TextureID::Title),
                {(dims.x / 2) - 800, 0},
                {0, 0, 1600, 900});
 
@@ -197,7 +197,7 @@ SkyRender::SkyRender(ClientShared &shared, Arena &arena, const Sky &sky) :
     ClientComponent(shared),
     Subsystem(arena),
     sky(sky),
-    planeSheet(ResID::PlayerSheet),
+    planeSheet(),
     enableDebug(shared.settings.enableDebug) {
   arena.forPlayers([&](Player &player) { registerPlayer(player); });
 }

@@ -122,7 +122,7 @@ Style::Settings::Settings(const Style::Base &base) :
     entryOffset(150, -0.5f * base.normalTextEntry.dimensions.y),
     descText(40, {},
              ui::HorizontalAlign::Left, ui::VerticalAlign::Middle,
-             ResID::Font),
+             ui::FontID::Default),
 
     column1Pos(300, 80),
     column2Pos(800, 80),

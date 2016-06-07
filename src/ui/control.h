@@ -20,14 +20,11 @@
  */
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "util/telegraph.h"
 #include <vector>
-#include <stack>
 #include <functional>
 #include <memory>
+#include "util/telegraph.h"
 #include "frame.h"
-#include "util/types.h"
-#include "signal.h"
 
 namespace ui {
 
@@ -56,13 +53,12 @@ struct ProfilerSnapshot {
 struct AppState {
   AppState(const sf::RenderWindow &window,
            const Profiler &profiler,
-           const Time &time,
-           const ResourceHolder *const resources = nullptr);
+           const Time &time);
 
   const Time &uptime;
   const sf::RenderWindow &window;
   const Profiler &profiler;
-  const ResourceHolder &resources;
+  ResourceHolder const *resources;
 
   double timeSince(const Time event) const;
 
@@ -76,7 +72,14 @@ class Control {
   AppState &appState;
   std::vector<Control *> children;
 
+  // Defining children.
   void areChildren(std::initializer_list<Control *> controls);
+
+  // Helpers for accessing appState->resources.
+  const sf::Texture &textureOf(const TextureID id);
+  const TextureMetadata &textureDataOf(const TextureID id);
+  const sf::Font &fontOf(const FontID id);
+  const FontMetadata &fontDataOf(const FontID id);
 
  public:
   Control(AppState &appState);
@@ -123,7 +126,7 @@ class ControlExec {
 
   // AppState and Control.
   AppState appState;
-  std::unique_ptr<Control> ctrl;
+  optional<Control> ctrl;
 
   // Resource loading.
   ResourceLoader resourceLoader;
@@ -134,9 +137,8 @@ class ControlExec {
   void renderAndSleep();
 
  public:
-  ControlExec(std::function<std::unique_ptr<Control>(AppState &)> initCtrl);
-
-  void run();
+  ControlExec();
+  void run(std::function<Control(AppState &)> mkApp);
 
 };
 

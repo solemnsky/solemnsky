@@ -54,7 +54,7 @@ void MultiplayerLobby::tick(float delta) {
 }
 
 void MultiplayerLobby::render(ui::Frame &f) {
-  f.drawSprite(textureOf(ResID::Lobby), {0, 0}, {0, 0, 1600, 900});
+  f.drawSprite(textureOf(ui::TextureID::Lobby), {0, 0}, {0, 0, 1600, 900});
 
   core.drawEventLog(f, style.multi.chatCutoff);
   f.drawText(
