@@ -145,7 +145,7 @@ class ControlExec {
 
 };
 
-void runSFML(std::function<Control(AppState &)> mkApp);
+void runSFML(std::function<Control(const AppState &)> mkApp);
 
 }
 
