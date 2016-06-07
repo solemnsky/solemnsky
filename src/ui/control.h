@@ -76,7 +76,7 @@ struct AppState {
 class Control {
  protected:
   // AppState and aliases.
-  AppState appState;
+  const AppState appState; // TODO: does it make sense to make this a reference?
   const AppResources &resources;
 
   // Children
@@ -84,6 +84,7 @@ class Control {
   void areChildren(std::initializer_list<Control *> controls);
 
  public:
+  Control(AppState &&) = delete;
   Control(const AppState &appState);
   virtual ~Control() { }
 

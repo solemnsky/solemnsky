@@ -67,7 +67,7 @@ class TextEntry: public Control {
 
  public:
   TextEntry() = delete;
-  TextEntry(AppState &appState,
+  TextEntry(const AppState &appState,
             const Style &style,
             const sf::Vector2f &pos,
             const std::string &description = "",

@@ -101,8 +101,28 @@ const sf::Texture &AppResources::getTexture(const TextureID id) const {
  * ResourceLoader.
  */
 
-ResourceLoader::ResourceLoader() :
-    loadingProgress(0) { }
+ResourceLoader::ResourceLoader(
+    std::initializer_list<FontID> bootstrapFonts,
+    std::initializer_list<TextureID> bootstrapTextures) :
+    loadingProgress(0) {
+  for (const auto font : bootstrapFonts) {
+    if (auto error = loadFont(font, detail::fontMetadata.at(font)))
+      appLog("Error loading bootstrap font: " + error.get(), LogOrigin::App);
+  }
+
+  for (const auto texture : bootstrapTextures) {
+    if (auto error = loadTexture(texture, detail::textureMetadata.at(texture)))
+      appLog("Error loading bootstrap texture: " + error.get(), LogOrigin::App);
+  }
+}
+
+const sf::Font &ResourceLoader::accessFont(const FontID id) {
+  return fonts.at(id);
+}
+
+const sf::Texture &ResourceLoader::accessTexture(const TextureID id) {
+  return textures.at(id);
+}
 
 void ResourceLoader::writeLog(const std::string &str) {
   logMutex.lock();
@@ -119,6 +139,7 @@ optional<std::string> ResourceLoader::loadTexture(
     return {};
   } else {
     return std::string("Texture did not load correctly.");
+    // TODO: get more information about failure to load
   }
 }
 
@@ -131,19 +152,7 @@ optional<std::string> ResourceLoader::loadFont(
     return {};
   } else {
     return std::string("Font did not load correctly.");
-  }
-}
-
-void ResourceLoader::loadBoostrap(std::initializer_list<FontID> fonts,
-                                  std::initializer_list<TextureID> textures) {
-  for (const auto font : fonts) {
-    if (auto error = loadFont(font, detail::fontMetadata.at(font)))
-      appLog("Error loading bootstrap font: " + error.get(), LogOrigin::App);
-  }
-
-  for (const auto texture : textures) {
-    if (auto error = loadTexture(texture, detail::textureMetadata.at(texture)))
-      appLog("Error loading bootstrap texture: " + error.get(), LogOrigin::App);
+    // TODO: get more information about failure to load
   }
 }
 

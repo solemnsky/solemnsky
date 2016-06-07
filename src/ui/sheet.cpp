@@ -50,7 +50,7 @@ void SpriteSheet::drawIndex(ui::Frame &f, const sf::Vector2f &dims,
       sf::Transform().scale(dims.x / spriteWidth, dims.y / spriteHeight),
       [&] {
         f.drawSprite(texture,
-                     {-float(spriteWidth) / 2, -float(spriteHeight) / 2},
+                     {-float(spriteWidth) / 2.f, -float(spriteHeight) / 2.f},
                      sf::IntRect(left, top, spriteWidth, spriteHeight));
       });
 }

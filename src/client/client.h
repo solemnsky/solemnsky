@@ -61,7 +61,7 @@ class Client: public ui::Control {
   void drawGame(ui::Frame &f);
 
  public:
-  Client(ui::AppState &appState);
+  Client(const ui::AppState &appState);
 
   // Control impl.
   bool poll() override;
