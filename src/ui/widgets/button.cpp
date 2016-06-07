@@ -54,7 +54,7 @@ Button::Button(AppState &appState,
 
     textFormat(style.fontSize, style.dimensions.x,
                HorizontalAlign::Center, VerticalAlign::Middle,
-               ResID::Font),
+               FontID::Default),
     descriptionFormat(textFormat),
 
     pos(pos),

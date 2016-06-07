@@ -211,7 +211,8 @@ void Client::render(ui::Frame &f) {
     drawGame(f);
   } else {
     if (!shared.game) {
-      f.drawSprite(textureOf(ResID::MenuBackground), {0, 0}, {0, 0, 1600, 900});
+      f.drawSprite(textureOf(ui::TextureID::MenuBackground),
+                   {0, 0}, {0, 0, 1600, 900});
     } else {
       drawGame(f);
       f.drawRect(

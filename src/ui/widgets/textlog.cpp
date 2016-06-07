@@ -84,7 +84,7 @@ TextLog::TextLog(AppState &appState, const Style &style,
     style(style), pos(pos),
     startingNewLine(true),
     textFormat(style.fontSize, 0, ui::HorizontalAlign::Left,
-               ui::VerticalAlign::Bottom, ResID::Font) {
+               ui::VerticalAlign::Bottom, FontID::Default) {
 
 }
 

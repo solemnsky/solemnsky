@@ -56,6 +56,7 @@ class SkyRender: public ClientComponent, public Subsystem<PlaneGraphics> {
  private:
   // Parameters.
   const Sky &sky;
+  const ui::TextureID sheet;
 
   // State.
   std::map<PID, PlaneGraphics> graphics;

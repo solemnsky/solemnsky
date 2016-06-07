@@ -142,7 +142,7 @@ class ControlExec {
 
 };
 
-void runSFML(std::function<std::unique_ptr<Control>(AppState &)> initCtrl);
+void runSFML(std::function<Control(AppState &)> mkApp);
 
 }
 
