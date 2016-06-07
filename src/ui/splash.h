@@ -30,6 +30,8 @@ namespace detail {
  * Supplied with a constructor for a main Control, this loads resources while
  * displaying a splash screen and fades into the main Control when resources
  * are ready. It also relays the wrapped control's `quitting` flag.
+ *
+ * We can't use `resources` here! Our job is to create them for the child app.
  */
 class SplashScreen: public Control {
  private:

@@ -82,7 +82,8 @@ struct TextureMetadata {
  * Resource IDs.
  */
 enum class FontID {
-  Default // Font used for all text and titles
+  Default, // Font used for all text and titles
+  LAST
 };
 
 enum class TextureID {
@@ -92,7 +93,8 @@ enum class TextureID {
   Lobby,
   Scoring,
   ScoreOverlay,
-  PlayerSheet
+  PlayerSheet,
+  LAST
 };
 
 namespace detail {
@@ -155,6 +157,7 @@ class ResourceLoader {
   ResourceLoader(
       std::initializer_list<FontID> bootstrapFonts,
       std::initializer_list<TextureID> boostrapTextures);
+  ~ResourceLoader();
 
   // Accessing boostrapped resources.
   const sf::Font &accessFont(const FontID id);

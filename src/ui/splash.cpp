@@ -57,20 +57,20 @@ void SplashScreen::render(ui::Frame &f) {
     if (!loader.getHolder()) {
       f.drawText({800, 450}, "loading resources...",
                  sf::Color::White, style.base.centeredText,
-                 resources.defaultFont);
+                 defaultFont);
     } else {
       f.withAlpha(
           linearTween(0.3, 1, sineAnim(float(appState.uptime), 0.2)),
           [&]() {
             f.drawText({800, 450}, "press any key to begin",
                        sf::Color::White, style.base.centeredText,
-                       resources.defaultFont);
+                       defaultFont);
           });
     }
   } else {
     const float animTime = float(appState.timeSince(animBegin));
     if (animTime < 0.5) {
-      f.drawSprite(resources.getTexture(ui::TextureID::MenuBackground),
+      f.drawSprite(loader.accessTexture(ui::TextureID::MenuBackground),
                    {}, {0, 0, 1600, 900});
       f.withAlpha(linearTween(0, 1, animTime * 2), [&]() {
         ui::Control::render(f);
