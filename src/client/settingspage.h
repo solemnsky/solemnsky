@@ -28,8 +28,7 @@
  */
 class SettingsTab: public ui::Control {
  public:
-  SettingsTab(ui::AppState &appState, const Settings &settings) :
-      ui::Control(appState) { }
+  SettingsTab(const ui::AppState &appState, const Settings &settings);
 
   virtual void readSettings(const Settings &settings) = 0;
   virtual void writeSettings(Settings &settings) = 0;
@@ -40,7 +39,7 @@ class GeneralTab: public SettingsTab {
   ui::Checkbox debugOption;
 
  public:
-  GeneralTab(ui::AppState &appState, const Settings &settings);
+  GeneralTab(const ui::AppState &appState, const Settings &settings);
 
   void readSettings(const Settings &settings) override final;
   void writeSettings(Settings &buffer) override final;
@@ -51,7 +50,7 @@ class PlayerTab: public SettingsTab {
   ui::TextEntry nicknameOption;
 
  public:
-  PlayerTab(ui::AppState &appState, const Settings &settings);
+  PlayerTab(const ui::AppState &appState, const Settings &settings);
 
   void readSettings(const Settings &settings) override final;
   void writeSettings(Settings &settings) override final;
@@ -61,11 +60,11 @@ class ControlsTab: public SettingsTab {
  private:
   std::vector<sky::Action> skyActions;
   std::vector<ClientAction> clientActions;
-  std::map<sky::Action, ui::KeySelector> skyChoosers;
-  std::map<ClientAction, ui::KeySelector> clientChoosers;
+  std::map<sky::Action, ui::KeySelector> skyBindingChoosers;
+  std::map<ClientAction, ui::KeySelector> clientBindingChoosers;
 
  public:
-  ControlsTab(ui::AppState &appState, const Settings &settings);
+  ControlsTab(const ui::AppState &appState, const Settings &settings);
 
   void readSettings(const Settings &settings) override final;
   void writeSettings(Settings &buffer) override final;

@@ -44,8 +44,7 @@ AppState::AppState(
     const Profiler &profiler,
     const Time &time) :
     resources(resources),
-    uptime(time), window(window), profiler(profiler),
-    resources(nullptr) { }
+    uptime(time), window(window), profiler(profiler) { }
 
 double AppState::timeSince(const Time event) const {
   return uptime - event;
@@ -225,13 +224,13 @@ ControlExec::ControlExec() :
 
     profiler(100),
 
-    appState(window, profiler, uptime) {
+    appState(*((AppResources *) nullptr), window, profiler, uptime) {
   window.setVerticalSyncEnabled(true);
   window.setKeyRepeatEnabled(false);
   appLog("Initialized SFML.", LogOrigin::App);
 }
 
-void ControlExec::run(std::function<Control(AppState &)> mkApp) {
+void ControlExec::run(std::function<Control(const AppState &)> mkApp) {
   ctrl.emplace(detail::SplashScreen(appState, mkApp));
   appLog("Starting game loop.", LogOrigin::App);
 
@@ -246,7 +245,7 @@ void ControlExec::run(std::function<Control(AppState &)> mkApp) {
   appLog("Exiting solemnsky, see you later.", LogOrigin::App);
 }
 
-void runSFML(std::function<Control(AppState &)> mkApp) {
+void runSFML(std::function<Control(const AppState &)> mkApp) {
   ControlExec().run(mkApp);
 }
 

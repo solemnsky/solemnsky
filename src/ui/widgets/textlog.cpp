@@ -78,7 +78,7 @@ void TextLog::startNewLine() {
   startingNewLine = false;
 }
 
-TextLog::TextLog(AppState &appState, const Style &style,
+TextLog::TextLog(const AppState &appState, const Style &style,
                  const sf::Vector2f &pos) :
     Control(appState),
     style(style), pos(pos),
@@ -110,7 +110,7 @@ void TextLog::render(Frame &f) {
 
       if (tf.drawOffset.y > maxHeight && maxHeight != 0) return;
     }
-  }, textFormat, defaultFont);
+  }, textFormat, resources.defaultFont);
 }
 
 bool TextLog::handle(const sf::Event &event) {

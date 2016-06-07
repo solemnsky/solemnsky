@@ -152,7 +152,7 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
                  graphics.player.getNickname(),
                  (graphics.player.getTeam() == 1) ? sf::Color::Red
                                                   : sf::Color::Blue,
-                 style.base.centeredText, defaultFont);
+                 style.base.centeredText, resources.defaultFont);
       renderBars(
           f,
           {mkBar(state.throttle,
@@ -196,6 +196,7 @@ SkyRender::SkyRender(const ui::AppResources &resources,
     ClientComponent(shared),
     Subsystem(arena),
     sky(sky),
+    resources(resources),
     sheet(ui::TextureID::PlayerSheet),
     planeSheet(resources.getTextureData(sheet).spritesheetForm.get(),
                resources.getTexture(sheet)),

@@ -100,7 +100,7 @@ MultiplayerGame::MultiplayerGame(
               style.multi.chatPos,
               "[ENTER TO CHAT]"),
     scoreboardFocused(false),
-    skyRender(shared, conn.arena, conn.getSky().get()),
+    skyRender(resources, conn.arena, conn.getSky().get()),
     participation(conn.getSky()->getParticipation(conn.player)) {
   assert(conn.skyHandle.isActive());
   areChildren({&chatInput});
@@ -120,7 +120,7 @@ void MultiplayerGame::render(ui::Frame &f) {
   f.drawText(style.multi.chatPos, [&](ui::TextFrame &tf) {
     if (chatInput.isFocused) core.drawEventLog(tf, style.multi.chatCutoff);
     else core.drawEventLog(tf, style.multi.chatIngameCutoff);
-  }, style.multi.messageLogText, defaultFont);
+  }, style.multi.messageLogText, resources.defaultFont);
 
   ui::Control::render(f);
 
