@@ -225,7 +225,7 @@ struct Clamped {
  */
 struct Cyclic {
  private:
-  friend class Angle;
+  friend struct Angle;
 
   float value;
  public:
