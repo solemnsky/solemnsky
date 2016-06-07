@@ -24,15 +24,9 @@
 Style::Base::Base() :
     pageSize(1600, 900),
 
-    centeredText(30, {},
-                 ui::HorizontalAlign::Center, ui::VerticalAlign::Top,
-                 ui::FontID::Default),
-    normalText(30, {},
-               ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
-               ui::FontID::Default),
-    debugText(25, {},
-              ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
-              ui::FontID::Default),
+    centeredText(30, {}, ui::HorizontalAlign::Center, ui::VerticalAlign::Top),
+    normalText(30, {}, ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
+    debugText(25, {}, ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
 
     buttonColor(132, 173, 181), // blue
     buttonHotColor(92, 189, 206), // hot blue
