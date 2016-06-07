@@ -23,7 +23,6 @@
 #include <stack>
 #include <SFML/Graphics.hpp>
 #include <functional>
-#include "resources.h"
 #include "text.h"
 
 namespace ui {

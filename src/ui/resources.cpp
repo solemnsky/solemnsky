@@ -58,6 +58,19 @@ TextureMetadata TextureMetadata::SpritesheetResource(
 FontMetadata::FontMetadata(const std::string &url, const std::string &name) :
     url(url), name(name) { }
 
+namespace detail {
+
+/**
+ * Hard-coded meatdata for resources.
+ */
+const std::map<FontID, FontMetadata> fontMetadata{
+    {FontID::Default,
+     FontMetadata("fonts/Roboto-Light.ttf", "Roboto")}};
+const std::map<TextureID, TextureMetadata> textureMetadata{
+    {TextureID::Title,
+     TextureMetadata::TextureResource("render-2d/title.png", "title screen")}};
+
+}
 
 /**
  * ResourceHolder.
@@ -120,7 +133,20 @@ optional<std::string> ResourceLoader::loadFont(
   }
 }
 
-void ResourceLoader::load() {
+void ResourceLoader::loadBoostrap(std::initializer_list<FontID> fonts,
+                                  std::initializer_list<TextureID> textures) {
+  for (const auto font : fonts) {
+    if (auto error = loadFont(font, detail::fontMetadata.at(font)))
+      appLog("Error loading bootstrap font: " + error.get(), LogOrigin::App);
+  }
+
+  for (const auto texture : textures) {
+    if (auto error = loadTexture(texture, detail::textureMetadata.at(texture)))
+      appLog("Error loading bootstrap texture: " + error.get(), LogOrigin::App);
+  }
+}
+
+void ResourceLoader::loadAllThreaded() {
   workingThread = std::thread([&]() {
     const size_t totalWork{
         detail::fontMetadata.size() + detail::textureMetadata.size()};

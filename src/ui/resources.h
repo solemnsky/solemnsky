@@ -23,10 +23,21 @@
 #include <SFML/Graphics.hpp>
 #include "util/methods.h"
 #include "util/printer.h"
-#include "sheet.h"
 #include "util/threads.h"
 
 namespace ui {
+
+/**
+ * Description of the way sprites are distributed on a regular orthogonal
+ * spritesheet.
+ */
+struct SheetLayout {
+  SheetLayout(const sf::Vector2i &spriteDimensions,
+              const sf::Vector2i &sheetTiling);
+
+  const sf::Vector2i spriteDims, tiling;
+
+};
 
 /**
  * Metadata for a font.
@@ -89,8 +100,8 @@ namespace detail {
 /**
  * Hard-coded metadata for resources.
  */
-static const std::map<FontID, FontMetadata> fontMetadata;
-static const std::map<TextureID, TextureMetadata> textureMetadata;
+extern const std::map<FontID, FontMetadata> fontMetadata;
+extern const std::map<TextureID, TextureMetadata> textureMetadata;
 
 }
 
@@ -140,7 +151,9 @@ class ResourceLoader {
  public:
   ResourceLoader();
 
-  void load(); // non-blocking
+  void loadBoostrap(std::initializer_list<FontID> fonts,
+                    std::initializer_list<TextureID> textures); // blocking
+  void loadAllThreaded(); // non-blocking
   float getProgress() const;
   void printNewLogs(Printer &p);
   bool getErrorStatus() const;

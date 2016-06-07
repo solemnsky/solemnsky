@@ -74,7 +74,7 @@ private:
 
   // AppState.
   ui::AppState &appState;
-  const Time &uptime;
+  const Time &uptime; // alias
 
   // State.
   Settings settings;

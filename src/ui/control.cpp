@@ -17,7 +17,7 @@
  */
 #include <cmath>
 
-#include "wrapper.h"
+#include "splash.h"
 #include "util/printer.h"
 
 namespace ui {
@@ -40,10 +40,9 @@ ProfilerSnapshot::ProfilerSnapshot(const Profiler &profiler) :
 
 AppState::AppState(const sf::RenderWindow &window,
                    const Profiler &profiler,
-                   const Time &time,
-                   const ResourceHolder const *resources) :
+                   const Time &time) :
     uptime(time), window(window), profiler(profiler),
-    resources(*resources) { }
+    resources(nullptr) { }
 
 double AppState::timeSince(const Time event) const {
   return uptime - event;
@@ -55,6 +54,22 @@ double AppState::timeSince(const Time event) const {
 
 void Control::areChildren(std::initializer_list<Control *> controls) {
   for (auto control : controls) children.push_back(control);
+}
+
+const sf::Texture &Control::textureOf(const TextureID id) {
+  return appState.resources->getTexture(id);
+}
+
+const TextureMetadata &Control::textureDataOf(const TextureID id) {
+  return appState.resources->getTextureData(id);
+}
+
+const sf::Font &Control::fontOf(const FontID id) {
+  return appState.resources->getFont(id);
+}
+
+const FontMetadata &Control::fontDataOf(const FontID id) {
+  return appState.resources->getFontData(id);
 }
 
 Control::Control(AppState &appState) :
@@ -223,14 +238,14 @@ ControlExec::ControlExec(
 
     profiler(100),
 
-    appState(window, profiler, uptime),
-    ctrl(std::make_unique<detail::ExecWrapper>(appState, initCtrl)) {
+    appState(window, profiler, uptime) {
   window.setVerticalSyncEnabled(true);
   window.setKeyRepeatEnabled(false);
   appLog("Initialized SFML.", LogOrigin::App);
 }
 
-void ControlExec::run() {
+void ControlExec::run(std::function<Control(AppState &)> mkApp) {
+  ctrl.emplace(detail::SplashScreen(appState, mkApp));
   appLog("Starting game loop.", LogOrigin::App);
 
   while (window.isOpen()) {

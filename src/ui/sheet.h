@@ -24,18 +24,6 @@
 
 namespace ui {
 
-/**
- * Description of the way sprites are distributed on a regular orthogonal
- * spritesheet.
- */
-struct SheetLayout {
-  SheetLayout(const sf::Vector2i &spriteDimensions,
-              const sf::Vector2i &sheetTiling);
-
-  const sf::Vector2i spriteDims, tiling;
-
-};
-
 class SpriteSheet {
  private:
   const SheetLayout &layout;

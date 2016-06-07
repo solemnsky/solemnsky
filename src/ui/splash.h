@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- *
+ * Splash screen; loads resources and enters the main menu on user input.
  */
 #pragma once
 #include <memory>
@@ -31,18 +31,20 @@ namespace detail {
  * displaying a splash screen and fades into the main Control when resources
  * are ready. It also relays the wrapped control's `quitting` flag.
  */
-class ExecWrapper: public Control {
+class SplashScreen: public Control {
  private:
+  ResourceLoader loader;
+
   double animBegin;
   bool drewScreen, loadingDone;
   TextFormat readyText;
-  std::function<std::unique_ptr<Control>(AppState &)> mainCtrlCtor;
-  std::unique_ptr<Control> mainCtrl;
+
+  std::function<Control(AppState &)> mkApp;
+  optional<Control> control;
 
  public:
-  ExecWrapper(AppState &appState,
-              std::function<std::unique_ptr<Control>(AppState &)>
-              mainCtrlCtor);
+  SplashScreen(AppState &appState,
+               std::function<Control(AppState &)> mkApp);
 
   bool poll() override final;
   void tick(const TimeDiff delta) override final;

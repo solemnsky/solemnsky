@@ -15,50 +15,51 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "wrapper.h"
+#include "splash.h"
 #include "client/elements/style.h"
 
 namespace ui {
 
 namespace detail {
 
-ExecWrapper::ExecWrapper(
+SplashScreen::SplashScreen(
     AppState &appState,
-    std::function<std::unique_ptr<Control>(AppState &)>
-    mainCtrlCtor) :
-
+    std::function<Control(AppState &)>
+    mkApp) :
     Control(appState),
-
     animBegin(appState.uptime),
     drewScreen(false), loadingDone(false),
     readyText(80, {},
               ui::HorizontalAlign::Center, ui::VerticalAlign::Middle,
-              ResID::Font),
-    mainCtrlCtor(mainCtrlCtor) {
-  loadSplashResources();
+              ui::FontID::Default),
+    mkApp(mkApp) {
+  loader.loadBoostrap(
+      {FontID::Default},
+      {TextureID::MenuBackground});
+  loader.loadAllThreaded();
 }
 
-bool ExecWrapper::poll() {
-  if (!mainCtrl && drewScreen && !loadingDone) {
+bool SplashScreen::poll() {
+  if (!control && drewScreen && !loadingDone) {
     loadResources();
     loadingDone = true;
   }
 
-  if (mainCtrl) {
-    quitting = mainCtrl->quitting;
+  if (control) {
+    quitting = control->quitting;
   }
 
   return ui::Control::poll();
 }
 
-void ExecWrapper::tick(const TimeDiff delta) {
+void SplashScreen::tick(const TimeDiff delta) {
   ui::Control::tick(delta);
 }
 
-void ExecWrapper::render(ui::Frame &f) {
+void SplashScreen::render(ui::Frame &f) {
   drewScreen = true;
 
-  if (!mainCtrl) {
+  if (!control) {
     f.drawSprite(textureOf(ResID::MenuBackground), {}, {0, 0, 1600, 900});
     if (!loadingDone) {
       f.drawText({800, 450}, "loading resources...",
@@ -84,13 +85,13 @@ void ExecWrapper::render(ui::Frame &f) {
   }
 }
 
-bool ExecWrapper::handle(const sf::Event &event) {
-  if (loadingDone && !mainCtrl) {
+bool SplashScreen::handle(const sf::Event &event) {
+  if (loadingDone && !control) {
     if (event.type == sf::Event::KeyReleased
         or event.type == sf::Event::MouseButtonReleased) {
-      mainCtrl = std::move(mainCtrlCtor(appState));
+      control = std::move(mkApp(appState));
       animBegin = appState.uptime;
-      areChildren({mainCtrl.get()});
+      areChildren({control.get()});
       return true;
     }
   }

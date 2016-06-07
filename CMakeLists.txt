@@ -190,8 +190,8 @@ add_executable(solemnsky_client
         src/ui/text.cpp
         src/ui/text.h
 
-        src/ui/wrapper.cpp
-        src/ui/wrapper.h
+        src/ui/splash.cpp
+        src/ui/splash.h
 
         src/util/clientutil.cpp
         src/util/clientutil.h

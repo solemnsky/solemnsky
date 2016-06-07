@@ -68,7 +68,7 @@ void MultiplayerGame::printSpectators(ui::TextFrame &tf) {
 }
 
 void MultiplayerGame::renderScoreboard(ui::Frame &f) {
-  f.drawSprite(textureOf(ResID::ScoreOverlay),
+  f.drawSprite(textureOf(ui::TextureID::ScoreOverlay),
                style.multi.scoreboardOffset,
                style.multi.scoreboardDisplay);
   f.drawText(
