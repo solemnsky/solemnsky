@@ -18,8 +18,6 @@
 #include "sky/participation.h"
 #include "client/elements/style.h"
 #include "skyrender.h"
-#include "sky/sky.h"
-#include "util/methods.h"
 #include "util/methods.h"
 
 namespace sky {
@@ -197,7 +195,10 @@ SkyRender::SkyRender(ClientShared &shared, Arena &arena, const Sky &sky) :
     ClientComponent(shared),
     Subsystem(arena),
     sky(sky),
-    planeSheet(),
+    sheet(ui::TextureID::PlayerSheet),
+    planeSheet(shared.appState.resources->getTextureData(sheet)
+                   .spritesheetForm.get(),
+               shared.appState.resources->getTexture(sheet)),
     enableDebug(shared.settings.enableDebug) {
   arena.forPlayers([&](Player &player) { registerPlayer(player); });
 }

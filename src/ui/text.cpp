@@ -54,7 +54,7 @@ TextFormat::TextFormat(
     const float maxWidth,
     const HorizontalAlign horizontal,
     const VerticalAlign vertical,
-    const ResID &font) :
+    const FontID &font) :
     size(size),
     maxWidth(maxWidth),
     horizontal(horizontal),

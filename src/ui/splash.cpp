@@ -28,7 +28,6 @@ SplashScreen::SplashScreen(
     mkApp) :
     Control(appState),
     animBegin(appState.uptime),
-    drewScreen(false), loadingDone(false),
     readyText(80, {},
               ui::HorizontalAlign::Center, ui::VerticalAlign::Middle,
               ui::FontID::Default),
@@ -40,28 +39,25 @@ SplashScreen::SplashScreen(
 }
 
 bool SplashScreen::poll() {
-  if (!control && drewScreen && !loadingDone) {
-    loadResources();
-    loadingDone = true;
-  }
-
   if (control) {
     quitting = control->quitting;
+  } else {
+    ConsolePrinter printer{LogOrigin::App};
+    loader.printNewLogs(printer);
   }
 
-  return ui::Control::poll();
+  return Control::poll();
 }
 
 void SplashScreen::tick(const TimeDiff delta) {
-  ui::Control::tick(delta);
+  Control::tick(delta);
 }
 
 void SplashScreen::render(ui::Frame &f) {
-  drewScreen = true;
-
   if (!control) {
-    f.drawSprite(textureOf(ResID::MenuBackground), {}, {0, 0, 1600, 900});
-    if (!loadingDone) {
+    f.drawSprite(textureOf(ui::TextureID::MenuBackground),
+                 {}, {0, 0, 1600, 900});
+    if (!loader.getHolder()) {
       f.drawText({800, 450}, "loading resources...",
                  sf::Color::White, readyText);
     } else {
@@ -75,23 +71,25 @@ void SplashScreen::render(ui::Frame &f) {
   } else {
     const float animTime = float(appState.timeSince(animBegin));
     if (animTime < 0.5) {
-      f.drawSprite(textureOf(ResID::MenuBackground), {}, {0, 0, 1600, 900});
+      f.drawSprite(textureOf(ui::TextureID::MenuBackground),
+                   {}, {0, 0, 1600, 900});
       f.withAlpha(linearTween(0, 1, animTime * 2), [&]() {
         ui::Control::render(f);
       });
     } else {
-      ui::Control::render(f);
+      Control::render(f);
     }
   }
 }
 
 bool SplashScreen::handle(const sf::Event &event) {
-  if (loadingDone && !control) {
+  if (loader.getHolder() && !control) {
     if (event.type == sf::Event::KeyReleased
         or event.type == sf::Event::MouseButtonReleased) {
-      control = std::move(mkApp(appState));
+      appState.resources = loader.getHolder();
+      control.emplace(mkApp(appState));
       animBegin = appState.uptime;
-      areChildren({control.get()});
+      areChildren({control.get_ptr()});
       return true;
     }
   }

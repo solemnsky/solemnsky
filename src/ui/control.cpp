@@ -225,8 +225,7 @@ sf::ContextSettings ControlExec::makeSettings() {
   return settings;
 }
 
-ControlExec::ControlExec(
-    std::function<std::unique_ptr<Control>(AppState &)> initCtrl) :
+ControlExec::ControlExec() :
     window(sf::VideoMode(800, 600), "solemnsky",
            sf::Style::Default, makeSettings()),
     frame(window),
@@ -259,8 +258,8 @@ void ControlExec::run(std::function<Control(AppState &)> mkApp) {
   appLog("Exiting solemnsky, see you later.", LogOrigin::App);
 }
 
-void runSFML(std::function<std::unique_ptr<Control>(AppState &)> initCtrl) {
-  ControlExec(initCtrl).run();
+void runSFML(std::function<Control(AppState &)> mkApp) {
+  ControlExec().run(mkApp);
 }
 
 }

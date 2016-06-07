@@ -58,7 +58,7 @@ TextEntry::TextEntry(AppState &appState,
 
     textFormat(style.fontSize, 0,
                ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
-               ResID::Font),
+               ui::FontID::Default),
     descriptionFormat(textFormat),
 
     persistent(persistent),

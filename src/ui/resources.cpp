@@ -31,11 +31,10 @@ namespace ui {
 TextureMetadata::TextureMetadata(
     const std::string &url,
     const std::string &name,
-    const optional<SheetLayout> &spriteSheetForm) :
+    const optional<SheetLayout> &sheetForm) :
     url(url),
     name(name),
-    spritesheetForm(spritesheetForm) { }
-
+    spritesheetForm(sheetForm) { }
 
 TextureMetadata TextureMetadata::TextureResource(
     const std::string &url,

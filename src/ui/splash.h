@@ -36,7 +36,6 @@ class SplashScreen: public Control {
   ResourceLoader loader;
 
   double animBegin;
-  bool drewScreen, loadingDone;
   TextFormat readyText;
 
   std::function<Control(AppState &)> mkApp;
