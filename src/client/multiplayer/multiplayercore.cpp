@@ -214,16 +214,13 @@ void MultiplayerCore::logEvent(const sky::ArenaEvent &event) {
   eventLog.push_back(ClientEvent::Event(event));
 }
 
-void MultiplayerCore::drawEventLog(ui::Frame &f, const float cutoff) {
-  f.drawText(
-      style.multi.messageLogPos, [&](ui::TextFrame &tf) {
-        for (auto iter = eventLog.rbegin();
-             iter < eventLog.rend(); iter++) {
-          ClientEvent(*iter).print(tf);
-          tf.breakLine();
-          if (tf.drawOffset.y < -cutoff) break;
-        }
-      }, style.multi.messageLogText);
+void MultiplayerCore::drawEventLog(ui::TextFrame &tf, const float cutoff) {
+  for (auto iter = eventLog.rbegin();
+       iter < eventLog.rend(); iter++) {
+    ClientEvent(*iter).print(tf);
+    tf.breakLine();
+    if (tf.drawOffset.y < -cutoff) break;
+  }
 }
 
 const tg::Host &MultiplayerCore::getHost() const {

@@ -55,10 +55,10 @@ TextEntry::TextEntry(AppState &appState,
     repeatCooldown(0.06), // TODO: Cooldowns don't compensate for
     // wrap-around, making their behaviour erratic when the tick interval
     // approaches the cooldown interval
+    // FIXME: do this next time things are stable
 
     textFormat(style.fontSize, 0,
-               ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
-               ui::FontID::Default),
+               ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
     descriptionFormat(textFormat),
 
     persistent(persistent),

@@ -56,7 +56,10 @@ void MultiplayerLobby::tick(float delta) {
 void MultiplayerLobby::render(ui::Frame &f) {
   f.drawSprite(textureOf(ui::TextureID::Lobby), {0, 0}, {0, 0, 1600, 900});
 
-  core.drawEventLog(f, style.multi.chatCutoff);
+  f.drawText(style.multi.chatPos, [&](ui::TextFrame &tf) {
+    core.drawEventLog(tf, style.multi.chatCutoff);
+  }, style.multi.messageLogText, defaultFont);
+
   f.drawText(
       style.multi.playerListPos, [&](Printer &p) {
         conn.arena.forPlayers([&](const sky::Player &player) {
@@ -66,7 +69,7 @@ void MultiplayerLobby::render(ui::Frame &f) {
           p.print(player.getNickname());
           p.breakLine();
         });
-      }, style.multi.playerListText);
+      }, style.multi.playerListText, defaultFont);
 
   ui::Control::render(f);
 }

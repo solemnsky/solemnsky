@@ -74,7 +74,8 @@ const FontMetadata &Control::fontDataOf(const FontID id) {
 
 Control::Control(AppState &appState) :
     appState(appState),
-    quitting(false) { }
+    quitting(false),
+    defaultFont(fontOf(FontID::Default)) { }
 
 bool Control::poll() {
   for (auto child : children) {

@@ -128,9 +128,8 @@ void Client::drawPage(ui::Frame &f, const PageType type,
   f.withAlpha(alpha, [&]() {
     f.withAlpha(titleAlpha, [&]() {
       f.drawText(
-          sf::Vector2f(
-              0, style.menu.pageDescMargin) + offsetAmnt * offset,
-          name, sf::Color::White, style.menu.menuDescText);
+          sf::Vector2f(0, style.menu.pageDescMargin) + offsetAmnt * offset,
+          name, sf::Color::White, style.menu.menuDescText, defaultFont);
     });
     f.withTransform(transform, [&]() {
       f.drawRect({0, 0, 1600, 900}, style.menu.pageUnderlayColor);
@@ -161,7 +160,7 @@ void Client::drawUI(ui::Frame &f) {
           tf.print(shared.game->name);
           tf.setColor(style.menu.statusFontColor);
           tf.print("(" + shared.game->status + ")");
-        }, style.menu.gameDescText);
+        }, style.menu.gameDescText, defaultFont);
     closeButton.render(f);
   }
   f.withAlpha(
@@ -198,7 +197,7 @@ void Client::drawGame(ui::Frame &f) {
             tf.printLn("GAME STATS:");
             tf.setColor(sf::Color::White);
             shared.game->printDebug(tf);
-          }, style.base.debugText);
+          }, style.base.debugText, defaultFont);
     });
   }
 }
