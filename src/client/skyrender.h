@@ -78,9 +78,9 @@ class SkyRender: public ClientComponent, public Subsystem<PlaneGraphics> {
 
  protected:
   // Subsystem impl.
-  void registerPlayer(Player &player);
-  void unregisterPlayer(Player &player);
-  void onTick(const float delta) override;
+  void registerPlayer(Player &player) override final;
+  void unregisterPlayer(Player &player) override final;
+  void onTick(const float delta) override final;
 
  public:
   SkyRender(const ui::AppResources &resources, Arena &arena, const Sky &sky);

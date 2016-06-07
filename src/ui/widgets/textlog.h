@@ -86,8 +86,8 @@ class TextLog: public Control, public Printer {
   void print(const std::string &str) override final;
   void setColor(const unsigned char r,
                 const unsigned char g,
-                const unsigned char b);
-  void breakLine();
+                const unsigned char b) override final;
+  void breakLine() override final;
 
   void clear();
 

@@ -81,6 +81,13 @@ const std::map<TextureID, TextureMetadata> textureMetadata{
     {TextureID::Scoring,
      TextureMetadata::TextureResource("render-2d/scoring.png",
                                       "scoring")},
+    {TextureID::ScoreOverlay,
+     TextureMetadata::TextureResource("render-2d/scoreoverlay.png",
+                                      "scoreboard overlay")},
+    {TextureID::PlayerSheet,
+     TextureMetadata::SpritesheetResource(
+         "render-3d/test_1/player_200.png", "scoreboard overlay",
+         {200, 200}, {2, 15})}
 };
 
 }
