@@ -100,7 +100,7 @@ sf::Vector2f TextFrame::drawBlock(const sf::Vector2f &pos,
   }
   text.setPosition(drawPos);
 
-  text.setColor(parent.alphaScaleColor(color));
+  text.setFillColor(parent.alphaScaleColor(color));
   parent.window.draw(text, parent.transformStack.top());
   return {bounds.width, float(format.size)};
 }
