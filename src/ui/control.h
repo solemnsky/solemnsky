@@ -132,7 +132,7 @@ class ControlExec {
 
   // AppState and Control.
   AppState appState;
-  optional<Control> ctrl;
+  std::unique_ptr<Control> ctrl;
 
   // App loop submethods.
   void tick();
@@ -141,11 +141,11 @@ class ControlExec {
 
  public:
   ControlExec();
-  void run(std::function<Control(const AppState &)> mkApp);
+  void run(std::function<std::unique_ptr<Control>(const AppState &)> mkApp);
 
 };
 
-void runSFML(std::function<Control(const AppState &)> mkApp);
+void runSFML(std::function<std::unique_ptr<Control>(const AppState &)> mkApp);
 
 }
 

@@ -95,6 +95,7 @@ class TextEntry: public Control {
   bool isHot;
   bool isFocused;
   optional<std::string> inputSignal;
+
 };
 
 }

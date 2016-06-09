@@ -23,7 +23,8 @@ namespace ui {
 namespace detail {
 
 SplashScreen::SplashScreen(
-    AppState &appState, std::function<Control(const AppState &)> mkApp) :
+    AppState &appState, 
+    std::function<std::unique_ptr<Control>(const AppState &)> mkApp) :
     Control(appState),
     loader(
         {FontID::Default},
@@ -36,12 +37,10 @@ SplashScreen::SplashScreen(
 }
 
 bool SplashScreen::poll() {
-  if (control) {
-    quitting = control->quitting;
-  } else {
-    ConsolePrinter printer{LogOrigin::App};
-    loader.printNewLogs(printer);
-  }
+  ConsolePrinter printer{LogOrigin::App};
+  loader.printNewLogs(printer);
+
+  if (control) quitting = control->quitting;
 
   return Control::poll();
 }
@@ -85,11 +84,11 @@ bool SplashScreen::handle(const sf::Event &event) {
   if (loader.getHolder() && !control) {
     if (event.type == sf::Event::KeyReleased
         or event.type == sf::Event::MouseButtonReleased) {
-      control.emplace(mkApp(
+      control = std::move(mkApp(
           AppState(*loader.getHolder(), appState.window,
                    appState.profiler, appState.uptime)));
       animBegin = appState.uptime;
-      areChildren({control.get_ptr()});
+      areChildren({control.get()});
       return true;
     }
   }
@@ -100,3 +99,4 @@ bool SplashScreen::handle(const sf::Event &event) {
 }
 
 }
+

@@ -230,8 +230,8 @@ ControlExec::ControlExec() :
   appLog("Initialized SFML.", LogOrigin::App);
 }
 
-void ControlExec::run(std::function<Control(const AppState &)> mkApp) {
-  ctrl.emplace(detail::SplashScreen(appState, mkApp));
+void ControlExec::run(std::function<std::unique_ptr<Control>(const AppState &)> mkApp) {
+  ctrl = std::make_unique<detail::SplashScreen>(appState, mkApp);
   appLog("Starting game loop.", LogOrigin::App);
 
   while (window.isOpen()) {
@@ -245,7 +245,7 @@ void ControlExec::run(std::function<Control(const AppState &)> mkApp) {
   appLog("Exiting solemnsky, see you later.", LogOrigin::App);
 }
 
-void runSFML(std::function<Control(const AppState &)> mkApp) {
+void runSFML(std::function<std::unique_ptr<Control>(const AppState &)> mkApp) {
   ControlExec().run(mkApp);
 }
 
