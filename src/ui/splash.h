@@ -42,18 +42,22 @@ class SplashScreen: public Control {
   double animBegin;
   TextFormat readyText;
 
-  std::function<Control(const AppState &)> mkApp;
-  optional<Control> control;
+  std::function<std::unique_ptr<Control>(const AppState &)> mkApp;
+  std::unique_ptr<Control> control;
 
  public:
   SplashScreen(AppState &appState,
-               std::function<Control(const AppState &)> mkApp);
+               std::function<std::unique_ptr<Control>(const AppState &)> mkApp);
 
+  // Control impl.
   bool poll() override final;
   void tick(const TimeDiff delta) override final;
   void render(Frame &f) override final;
   bool handle(const sf::Event &event) override final;
+
 };
+
 }
 
 }
+
