@@ -117,7 +117,7 @@ class AppResources {
 
  public:
   AppResources(const std::map<FontID, sf::Font> &fonts,
-                 const std::map<TextureID, sf::Texture> &textures);
+               const std::map<TextureID, sf::Texture> &textures);
 
   // Accessing data.
   const FontMetadata &getFontData(const FontID id) const;
