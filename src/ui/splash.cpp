@@ -50,7 +50,7 @@ void SplashScreen::tick(const TimeDiff delta) {
 }
 
 void SplashScreen::render(ui::Frame &f) {
-  if (!control) {
+  if (!loader.getHolder()) {
     f.drawSprite(loader.accessTexture(ui::TextureID::MenuBackground),
                  {}, {0, 0, 1600, 900});
     if (!loader.getHolder()) {

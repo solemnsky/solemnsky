@@ -195,7 +195,7 @@ void ResourceLoader::loadAllThreaded() {
 
     for (const auto font : detail::fontMetadata) {
       writeLog("Loading font: " + font.second.url
-                   + "(" + font.second.name + ")");
+                   + " (" + font.second.name + ")");
       if (auto error = loadFont(font.first, font.second)) {
         writeLog("Error loading font: " + error.get());
         return;
@@ -206,7 +206,7 @@ void ResourceLoader::loadAllThreaded() {
 
     for (const auto texture : detail::textureMetadata) {
       writeLog("Loading texture: " + texture.second.url
-                   + "(" + texture.second.name + ")");
+                   + " (" + texture.second.name + ")");
       if (auto error = loadTexture(texture.first, texture.second)) {
         writeLog("Error loading texture: " + error.get());
         return;
@@ -237,8 +237,7 @@ bool ResourceLoader::getErrorStatus() const {
 }
 
 AppResources const *ResourceLoader::getHolder() const {
-  if (holder) return holder.get_ptr();
-  else return nullptr;
+  return holder.get_ptr();
 }
 
 }
