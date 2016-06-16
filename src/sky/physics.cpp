@@ -198,6 +198,10 @@ void Physics::approachVel(b2Body *body, sf::Vector2f vel) const {
       data.center + body->GetWorldCenter(), true);
 }
 
+void Physics::setGravity(const float gravity) {
+  world.SetGravity(b2Vec2(0, settings.gravity * gravity));
+}
+
 /**
  * PhysicalState.
  */

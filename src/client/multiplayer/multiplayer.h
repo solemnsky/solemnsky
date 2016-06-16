@@ -52,7 +52,7 @@ class Multiplayer: public Game, public ConnectionListener {
   void onBlur() override final;
   void onFocus() override final;
   void doExit() override final;
-  void printDebug(Printer &p) override final;
+  void printDebugLeft(Printer &p) override final;
 
   // Control impl.
   bool poll() override;

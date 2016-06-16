@@ -33,7 +33,7 @@ bool SkyInit::verifyStructure() const {
  */
 
 bool SkyDelta::verifyStructure() const {
-  return verifyMap(participations) and verifyRequiredOptionals()
+  return verifyMap(participations) and verifyRequiredOptionals();
 }
 
 SkyDelta SkyDelta::respectAuthority(const Player &player) const {
@@ -104,11 +104,16 @@ void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
     body2.plane->onEndContact(body1);
 }
 
+void Sky::syncSettings() {
+  physics.setGravity(settings.gravity);
+}
+
 Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer) :
     Subsystem(arena),
     Networked(initializer),
     map(map),
-    physics(map, *this) {
+    physics(map, *this),
+    settings(initializer.settings) {
   arena.forPlayers([&](Player &player) {
     const auto iter = initializer.participations.find(player.pid);
     registerPlayerWith(
@@ -117,6 +122,7 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer) :
         ParticipationInit{} : iter->second);
   });
 
+  syncSettings();
   appLog("Started game on " + map.name, LogOrigin::Engine);
 }
 
@@ -126,6 +132,7 @@ void Sky::applyDelta(const SkyDelta &delta) {
       getPlayerData(*player).applyDelta(participation.second);
     }
   }
+  settings.applyDelta(delta.settings.get());
 }
 
 SkyInit Sky::captureInitializer() const {
@@ -133,6 +140,7 @@ SkyInit Sky::captureInitializer() const {
   for (const auto &participation : participations)
     initializer.participations.emplace(
         participation.first, participation.second.captureInitializer());
+  initializer.settings = settings.captureInitializer();
   return initializer;
 }
 
@@ -142,6 +150,7 @@ SkyDelta Sky::collectDelta() {
     delta.participations.emplace(
         participation.first, participation.second.collectDelta());
   }
+  delta.settings = settings.collectDelta();
   return delta;
 }
 
@@ -151,6 +160,15 @@ const Map &Sky::getMap() const {
 
 Participation &Sky::getParticipation(const Player &player) const {
   return getPlayerData(player);
+}
+
+const SkySettings &Sky::getSettings() {
+  return settings;
+}
+
+void Sky::changeSettings(const SkySettingsDelta &delta) {
+  settings.applyDelta(delta);
+  syncSettings();
 }
 
 }

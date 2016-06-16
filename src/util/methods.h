@@ -96,7 +96,7 @@ bool verifyOptionals(const Field &field, Fields... fields) {
     if (!verifyValue(*field)) return false;
   }
   return verifyRequiredOptionals(fields...);
-};
+}
 
 /**
  * Verify that the values of a map respect any potential invariants.

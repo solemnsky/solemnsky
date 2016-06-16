@@ -111,10 +111,6 @@ const std::vector<MapItem> &Map::getItems() const {
   return items;
 }
 
-const SkySettingsInit &Map::getSettingsSuggestion() const {
-  return settings;
-}
-
 const std::vector<SpawnPoint> &Map::getSpawnPoints() const {
   return spawnPoints;
 }

@@ -121,9 +121,13 @@ class Physics {
   b2ChainShape chainLoopShape(const std::vector<sf::Vector2f>
                                      &verticies);
 
-  // approach rotational / linear velocities by applying impulses
+  // Impulses.
   void approachRotVel(b2Body *body, float rotvel) const;
   void approachVel(b2Body *body, sf::Vector2f vel) const;
+
+  // Changing properties.
+  void setGravity(const float gravity);
+
 };
 
 /**

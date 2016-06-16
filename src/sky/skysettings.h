@@ -53,17 +53,27 @@ struct SkySettingsDelta : public VerifyStructure {
   // VerifyStructure impl.
   bool verifyStructure() const override final;
 
+  // Custom ctors.
+  static SkySettingsDelta ChangeGravity(const float gravity);
+  static SkySettingsDelta ChangeView(const float view);
+
 };
 
 struct SkySettings : Networked<SkySettingsInit, SkySettingsDelta> {
+ private:
+  SkySettingsInit lastSettings;
+
+ public:
   SkySettings(const SkySettingsInit &settings);
 
-  // State.
+  // Values.
   float viewScale, // 1 for normal.
       gravity; // 1 for normal, -1 for inverse.
 
   // Networked impl.
-
+  void applyDelta(const SkySettingsDelta &delta) override;
+  SkySettingsInit captureInitializer() const override;
+  SkySettingsDelta collectDelta();
 
 };
 
