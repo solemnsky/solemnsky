@@ -42,8 +42,8 @@ SplashScreen::SplashScreen(
         {FontID::Default},
         {TextureID::MenuBackground}),
     defaultFont(loader.accessFont(FontID::Default)),
-    animBegin(references.uptime),
-    readyText(80, {}, ui::HorizontalAlign::Center, ui::VerticalAlign::Middle) {
+    background(loader.accessTexture(ui::TextureID::MenuBackground)),
+    animBegin(references.uptime) {
   loader.loadAllThreaded();
 }
 
@@ -61,22 +61,22 @@ void SplashScreen::tick(const TimeDiff delta) {
 
 void SplashScreen::render(ui::Frame &f) {
   if (!control) {
+    f.drawSprite(background, {}, {0, 0, 1600, 900});
     if (!loader.getHolder()) {
-      f.drawSprite(
-          loader.accessTexture(ui::TextureID::MenuBackground),
-          {}, {0, 0, 1600, 900});
       f.drawText({800, 450}, "loading resources...",
-                 sf::Color::White, style.base.centeredText,
+                 sf::Color::White, style.splash.titleFormat,
                  defaultFont);
+      f.drawRect({800.0f - (style.splash.barWidth / 2.0f),
+                  (450.0f + style.splash.barPaddingTop),
+                  (loader.getProgress() * style.splash.barWidth),
+                  style.splash.barHeight},
+                 style.splash.barColor);
     } else {
-      f.drawSprite(
-          loader.getHolder()->getTexture(ui::TextureID::MenuBackground),
-          {}, {0, 0, 1600, 900});
       f.withAlpha(
           linearTween(0.3, 1, sineAnim(float(references.uptime), 0.2)),
           [&]() {
             f.drawText({800, 450}, "press any key to begin",
-                       sf::Color::White, style.base.centeredText,
+                       sf::Color::White, style.splash.titleFormat,
                        defaultFont);
           });
     }

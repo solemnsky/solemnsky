@@ -151,7 +151,7 @@ optional<std::string> ResourceLoader::loadFont(
 void ResourceLoader::loadAllBlocking() {
   const size_t totalWork{
       detail::fontMetadata.size() + detail::textureMetadata.size()};
-  size_t progress{0};
+  size_t finishedWork{0};
 
   appLog("** Loading fonts. **", LogOrigin::App);
 
@@ -164,8 +164,7 @@ void ResourceLoader::loadAllBlocking() {
              LogOrigin::App);
       return;
     }
-    ++progress;
-    loadingProgress = float(progress) / float(totalWork);
+    loadingProgress = float(++finishedWork) / float(totalWork);
   }
 
   appLog("** Loading textures. **", LogOrigin::App);
@@ -179,8 +178,7 @@ void ResourceLoader::loadAllBlocking() {
              LogOrigin::App);
       return;
     }
-    ++progress;
-    loadingProgress = float(progress) / float(totalWork);
+    loadingProgress = float(++finishedWork) / float(totalWork);
   }
 
   holder.emplace(fonts, textures);
@@ -226,7 +224,7 @@ void ResourceLoader::loadAllThreaded() {
 }
 
 float ResourceLoader::getProgress() const {
-  return 0;
+  return loadingProgress;
 }
 
 void ResourceLoader::printNewLogs(Printer &p) {

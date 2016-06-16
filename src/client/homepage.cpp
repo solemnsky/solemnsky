@@ -32,8 +32,6 @@ HomePage::HomePage(ClientShared &clientState) :
     remoteButton(references, style.base.normalButton,
                  style.home.remoteButtonPos,
                  "REMOTE GAME") {
-  appLog(resources.defaultFont.getInfo().family);
-
   areChildren({&tutorialButton, &localhostButton, &remoteButton});
 }
 
