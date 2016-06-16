@@ -171,6 +171,7 @@ Client::Client(const ui::AppState &appState) :
     tryingToQuit(false),
 
     profilerCooldown(1) {
+  assert(&resources != nullptr);
   areChildren({&quitButton, &aboutButton, &closeButton, &backButton,
                &homePage, &listingPage, &settingsPage});
 }
