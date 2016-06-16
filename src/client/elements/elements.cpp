@@ -60,15 +60,9 @@ Game::Game(ClientShared &shared,
     name(name) { }
 
 void Game::printDebugLeft(Printer &p) {
-  p.setColor(255, 0, 0);
-  p.printLn("(left debug display)");
-  p.setColor(255, 255, 255);
   p.printLn("undefined!");
 }
 
 void Game::printDebugRight(Printer &p) {
-  p.printLn(255, 0, 0);
-  p.printLn("(right debug display)");
-  p.setColor(255, 255, 255);
   p.printLn("undefined!");
 }
