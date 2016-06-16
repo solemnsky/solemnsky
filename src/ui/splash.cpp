@@ -22,23 +22,33 @@ namespace ui {
 
 namespace detail {
 
+void SplashScreen::constructApp(const AppResources &resources) {
+  initializedReferences.emplace(
+      resources,
+      references.uptime,
+      references.window,
+      references.profiler);
+  animBegin = references.uptime;
+  control = std::move(mkApp(initializedReferences.get()));
+  areChildren({control.get()});
+}
+
 SplashScreen::SplashScreen(
-    AppState &appState,
-    std::function<std::unique_ptr<Control>(const AppState &)> mkApp) :
-    Control(appState),
+    const AppRefs &references,
+    std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp) :
+    Control(references),
+    mkApp(mkApp),
     loader(
         {FontID::Default},
         {TextureID::MenuBackground}),
     defaultFont(loader.accessFont(FontID::Default)),
-    animBegin(appState.uptime),
-    readyText(80, {}, ui::HorizontalAlign::Center, ui::VerticalAlign::Middle),
-    mkApp(mkApp) {
+    animBegin(references.uptime),
+    readyText(80, {}, ui::HorizontalAlign::Center, ui::VerticalAlign::Middle) {
   loader.loadAllThreaded();
 }
 
 bool SplashScreen::poll() {
   ConsolePrinter printer{LogOrigin::App};
-  loader.printNewLogs(printer);
 
   if (control) quitting = control->quitting;
 
@@ -63,7 +73,7 @@ void SplashScreen::render(ui::Frame &f) {
           loader.getHolder()->getTexture(ui::TextureID::MenuBackground),
           {}, {0, 0, 1600, 900});
       f.withAlpha(
-          linearTween(0.3, 1, sineAnim(float(appState.uptime), 0.2)),
+          linearTween(0.3, 1, sineAnim(float(references.uptime), 0.2)),
           [&]() {
             f.drawText({800, 450}, "press any key to begin",
                        sf::Color::White, style.base.centeredText,
@@ -71,7 +81,7 @@ void SplashScreen::render(ui::Frame &f) {
           });
     }
   } else {
-    const float animTime = float(appState.timeSince(animBegin));
+    const float animTime = float(references.timeSince(animBegin));
     if (animTime < 0.5) {
       f.drawSprite(loader.accessTexture(ui::TextureID::MenuBackground),
                    {}, {0, 0, 1600, 900});
@@ -88,11 +98,7 @@ bool SplashScreen::handle(const sf::Event &event) {
   if (loader.getHolder() && !control) {
     if (event.type == sf::Event::KeyReleased
         or event.type == sf::Event::MouseButtonReleased) {
-      control = std::move(mkApp(
-          AppState(*loader.getHolder(), appState.window,
-                   appState.profiler, appState.uptime)));
-      animBegin = appState.uptime;
-      areChildren({control.get()});
+      constructApp(*loader.getHolder());
       return true;
     }
   }

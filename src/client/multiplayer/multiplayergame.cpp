@@ -33,6 +33,7 @@ void MultiplayerGame::doClientAction(const ClientAction action,
       scoreboardFocused = state;
       break;
     }
+    default: throw enum_error();
   }
 }
 
@@ -95,12 +96,12 @@ void MultiplayerGame::renderScoreboard(ui::Frame &f) {
 MultiplayerGame::MultiplayerGame(
     ClientShared &shared, MultiplayerCore &connection) :
     MultiplayerView(sky::ArenaMode::Game, shared, connection),
-    chatInput(appState,
+    chatInput(references,
               style.base.normalTextEntry,
               style.multi.chatPos,
               "[ENTER TO CHAT]"),
     scoreboardFocused(false),
-    skyRender(resources, conn.arena, conn.getSky().get()),
+    skyRender(shared, conn.arena, conn.getSky().get()),
     participation(conn.getSky()->getParticipation(conn.player)) {
   assert(conn.skyHandle.isActive());
   areChildren({&chatInput});

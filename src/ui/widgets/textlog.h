@@ -75,7 +75,7 @@ class TextLog: public Control, public Printer {
 
  public:
   TextLog
-      (const AppState &appState, const Style &style, const sf::Vector2f &pos);
+      (const AppRefs &appState, const Style &style, const sf::Vector2f &pos);
 
   // Control implementation
   void tick(float delta) override final;

@@ -39,7 +39,7 @@ TextEntry::Style::Style(
     fontSize(fontSize),
     heatRate(heatRate) { }
 
-TextEntry::TextEntry(const AppState &appState,
+TextEntry::TextEntry(const AppRefs &appState,
                      const Style &style,
                      const sf::Vector2f &pos,
                      const std::string &description,

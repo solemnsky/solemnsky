@@ -33,7 +33,7 @@ class Checkbox: public ui::Control {
   typedef Button::Style Style;
 
   Checkbox() = delete;
-  Checkbox(const AppState &appState,
+  Checkbox(const AppRefs &appState,
            const Style &style,
            const sf::Vector2f &pos);
 

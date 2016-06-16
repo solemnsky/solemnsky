@@ -83,7 +83,7 @@ class SkyRender: public ClientComponent, public Subsystem<PlaneGraphics> {
   void onTick(const float delta) override final;
 
  public:
-  SkyRender(const ui::AppResources &resources, Arena &arena, const Sky &sky);
+  SkyRender(ClientShared &shared, Arena &arena, const Sky &sky);
   ~SkyRender();
 
   // ClientComponent impl.

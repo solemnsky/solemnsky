@@ -335,7 +335,7 @@ MultiplayerView::MultiplayerView(
     ClientShared &shared,
     MultiplayerCore &mShared) :
     ClientComponent(shared),
-    ui::Control(shared.appState),
+    ui::Control(shared.references),
     core(mShared),
     conn(mShared.conn.get()),
     target(target) { }

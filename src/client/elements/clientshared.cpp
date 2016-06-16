@@ -73,8 +73,8 @@ bool ClientUiState::menuFocused() const {
  * ClientShared.
  */
 
-ClientShared::ClientShared(Client &client, const ui::AppState &appState) :
-    client(client), appState(appState) { }
+ClientShared::ClientShared(Client &client, const ui::AppRefs &references) :
+    client(client), references(references) {}
 
 template<typename T>
 optional<std::pair<T, bool>>

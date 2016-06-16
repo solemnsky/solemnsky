@@ -63,7 +63,7 @@ class ClientUiState {
  * has globally useful factors such as global settings, a unique_ptr to the Game
  * currently active, and UI methods that influence the whole Client.
  *
- * This is also used to propagate a ui::AppState.
+ * This is also used to propagate a `const ui::AppRefs &`.
  */
 struct ClientShared {
   friend class Client;
@@ -71,10 +71,10 @@ struct ClientShared {
   Client &client;
 
   // Constructed by client.
-  ClientShared(Client &client, const ui::AppState &appState);
+  ClientShared(Client &client, const ui::AppRefs &references);
 
  public:
-  const ui::AppState &appState;
+  const ui::AppRefs &references;
 
   // State.
   Settings settings;

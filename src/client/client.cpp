@@ -39,9 +39,8 @@ Page &Client::referencePage(const PageType type) {
       return settingsPage;
     case PageType::Listing:
       return listingPage;
-    default:
-      return homePage;
   }
+  throw enum_error();
 }
 
 void Client::drawPage(ui::Frame &f, const PageType type,
@@ -80,7 +79,6 @@ void Client::drawPage(ui::Frame &f, const PageType type,
     });
   });
 }
-
 
 void Client::drawUI(ui::Frame &f) {
   const Clamped &pageFocusFactor = shared.ui.pageFocusFactor;
@@ -145,40 +143,39 @@ void Client::drawGame(ui::Frame &f) {
   }
 }
 
-Client::Client(const ui::AppState &appState) :
-    ui::Control(appState),
-    backButton(appState,
+Client::Client(const ui::AppRefs &references) :
+    ui::Control(references),
+    backButton(references,
                style.menu.lowButtonStyle,
                style.menu.backButtonOffset,
                style.menu.backButtonText),
-    closeButton(appState,
+    closeButton(references,
                 style.menu.lowButtonStyle,
                 style.menu.closeButtonOffset,
                 style.menu.closeButtonText),
-    quitButton(appState,
+    quitButton(references,
                style.menu.highButtonStyle,
                style.menu.quitButtonOffset,
                style.menu.quitButtonText),
-    aboutButton(appState,
+    aboutButton(references,
                 style.menu.highButtonStyle,
                 style.menu.aboutButtonOffset,
                 style.menu.aboutButtonText),
 
-    shared(*this, appState),
+    shared(*this, references),
     homePage(shared),
     listingPage(shared),
     settingsPage(shared),
     tryingToQuit(false),
 
     profilerCooldown(1) {
-  assert(&resources != nullptr);
   areChildren({&quitButton, &aboutButton, &closeButton, &backButton,
                &homePage, &listingPage, &settingsPage});
 }
 
 bool Client::poll() {
   if (shared.game) {
-    while (!shared.game->poll()) { };
+    while (!shared.game->poll()) {};
   }
   return ui::Control::poll();
 }
@@ -187,7 +184,7 @@ void Client::tick(const float delta) {
   ui::Control::tick(delta);
 
   if (profilerCooldown.cool(delta)) {
-    profilerSnap = ui::ProfilerSnapshot(appState.profiler);
+    profilerSnap = ui::ProfilerSnapshot(references.profiler);
     profilerCooldown.reset();
   }
 
