@@ -45,7 +45,7 @@ std::string showAction(const Action action);
 optional<Action> readAction(const std::string &string);
 
 /**
- * The POD static state of a GamePlane.
+ * The POD static state of a Plane.
  */
 struct PlaneTuning {
   PlaneTuning(); // constructs with sensible defaults

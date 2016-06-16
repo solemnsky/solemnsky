@@ -81,10 +81,8 @@ Map::Map(const MapName &name) :
   auto file = std::ifstream(rootPath() + "maps/" + name + ".json");
   if (file.good()) {
     try {
-      cereal::JSONInputArchive archive(file);
-      archive(cereal::make_nvp("dimensions", dimensions),
-              cereal::make_nvp("obstacles", obstacles),
-              cereal::make_nvp("spawnPoints", spawnPoints));
+      cereal::JSONInputArchive ar(file);
+      ar(*this);
     } catch (cereal::RapidJSONException e) {
       appLog("Failed to parse map '" + name + "', " + e.what(),
              LogOrigin::Engine);
@@ -113,6 +111,10 @@ const std::vector<MapItem> &Map::getItems() const {
   return items;
 }
 
+const SkySettingsInit &Map::getSettingsSuggestion() const {
+  return settings;
+}
+
 const std::vector<SpawnPoint> &Map::getSpawnPoints() const {
   return spawnPoints;
 }
@@ -126,10 +128,8 @@ const SpawnPoint Map::pickSpawnPoint(const Team team) const {
 }
 
 void Map::save(std::ostream &s) {
-  cereal::JSONOutputArchive archive(s);
-  archive(cereal::make_nvp("dimensions", dimensions),
-          cereal::make_nvp("obstacles", obstacles),
-          cereal::make_nvp("spawnPoints", spawnPoints));
+  cereal::JSONOutputArchive ar(s);
+  ar(*this);
 }
 
 optional<Map> Map::load(const MapName &name) {

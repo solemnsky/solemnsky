@@ -21,6 +21,7 @@
 #pragma once
 #include <SFML/System.hpp>
 #include "util/types.h"
+#include "skysettings.h"
 #include <string>
 #include <ostream>
 #include <istream>
@@ -105,6 +106,9 @@ struct Map {
   std::vector<MapItem> items;
   bool loadSuccess;
 
+  // Settings initialization suggestion.
+  SkySettingsInit settings;
+
   Map(const MapName &name);
 
  public:
@@ -112,10 +116,19 @@ struct Map {
 
   const MapName name;
 
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(cereal::make_nvp("default_settings", settings),
+       cereal::make_nvp("dimensions", dimensions),
+       cereal::make_nvp("obstacles", obstacles),
+       cereal::make_nvp("spawnPoints", spawnPoints));
+  }
+
   // User API.
   const sf::Vector2f &getDimensions() const;
   const std::vector<MapObstacle> &getObstacles() const;
   const std::vector<MapItem> &getItems() const;
+  const SkySettingsInit &getSettingsSuggestion() const;
   const std::vector<SpawnPoint> &getSpawnPoints() const;
   const SpawnPoint pickSpawnPoint(const Team team) const;
 
