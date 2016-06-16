@@ -23,7 +23,7 @@ namespace ui {
 namespace detail {
 
 SplashScreen::SplashScreen(
-    AppState &appState, 
+    AppState &appState,
     std::function<std::unique_ptr<Control>(const AppState &)> mkApp) :
     Control(appState),
     loader(
@@ -51,13 +51,17 @@ void SplashScreen::tick(const TimeDiff delta) {
 
 void SplashScreen::render(ui::Frame &f) {
   if (!control) {
-    f.drawSprite(loader.accessTexture(ui::TextureID::MenuBackground),
-                 {}, {0, 0, 1600, 900});
     if (!loader.getHolder()) {
+      f.drawSprite(
+          loader.accessTexture(ui::TextureID::MenuBackground),
+          {}, {0, 0, 1600, 900});
       f.drawText({800, 450}, "loading resources...",
                  sf::Color::White, style.base.centeredText,
                  defaultFont);
     } else {
+      f.drawSprite(
+          loader.getHolder()->getTexture(ui::TextureID::MenuBackground),
+          {}, {0, 0, 1600, 900});
       f.withAlpha(
           linearTween(0.3, 1, sineAnim(float(appState.uptime), 0.2)),
           [&]() {

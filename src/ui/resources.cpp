@@ -34,7 +34,7 @@ TextureMetadata::TextureMetadata(
     const optional<SheetLayout> &sheetForm) :
     url(url),
     name(name),
-    spritesheetForm(sheetForm) { }
+    spritesheetForm(sheetForm) {}
 
 TextureMetadata TextureMetadata::TextureResource(
     const std::string &url,
@@ -55,7 +55,7 @@ TextureMetadata TextureMetadata::SpritesheetResource(
  */
 
 FontMetadata::FontMetadata(const std::string &url, const std::string &name) :
-    url(url), name(name) { }
+    url(url), name(name) {}
 
 namespace detail {
 
@@ -101,7 +101,7 @@ AppResources::AppResources(
     const std::map<TextureID, sf::Texture> &textures) :
     fonts(fonts),
     textures(textures),
-    defaultFont(getFont(FontID::Default)) { }
+    defaultFont(getFont(FontID::Default)) {}
 
 const FontMetadata &AppResources::getFontData(const FontID id) const {
   return detail::fontMetadata.at(id);
@@ -121,6 +121,72 @@ const sf::Texture &AppResources::getTexture(const TextureID id) const {
 /**
  * ResourceLoader.
  */
+
+optional<std::string> ResourceLoader::loadTexture(
+    const TextureID id,
+    const TextureMetadata &metadata) {
+  sf::Texture texture;
+  if (texture.loadFromFile(pathFromResourceUrl(metadata.url))) {
+    textures.emplace(id, std::move(texture));
+    return {};
+  } else {
+    return std::string("Texture did not load correctly.");
+    // TODO: get more information about failure to load
+  }
+}
+
+optional<std::string> ResourceLoader::loadFont(
+    const FontID id,
+    const FontMetadata &metadata) {
+  sf::Font font;
+  if (font.loadFromFile(pathFromResourceUrl(metadata.url))) {
+    fonts.emplace(id, std::move(font));
+    return {};
+  } else {
+    return std::string("Font did not load correctly.");
+    // TODO: get more information about failure to load
+  }
+}
+
+void ResourceLoader::loadAllBlocking() {
+  const size_t totalWork{
+      detail::fontMetadata.size() + detail::textureMetadata.size()};
+  size_t progress{0};
+
+  appLog("** Loading fonts. **", LogOrigin::App);
+
+  for (const auto font : detail::fontMetadata) {
+    appLog("Loading font: " + font.second.url
+               + " (" + font.second.name + ").",
+           LogOrigin::App);
+    if (auto error = loadFont(font.first, font.second)) {
+      appLog("Error loading font: " + error.get(),
+             LogOrigin::App);
+      return;
+    }
+    ++progress;
+    loadingProgress = float(progress) / float(totalWork);
+  }
+
+  appLog("** Loading textures. **", LogOrigin::App);
+
+  for (const auto texture : detail::textureMetadata) {
+    appLog("Loading texture: " + texture.second.url
+               + " (" + texture.second.name + ")",
+           LogOrigin::App);
+    if (auto error = loadTexture(texture.first, texture.second)) {
+      appLog("Error loading texture: " + error.get(),
+             LogOrigin::App);
+      return;
+    }
+    ++progress;
+    loadingProgress = float(progress) / float(totalWork);
+  }
+
+  holder.emplace(fonts, textures);
+
+  appLog("** Finished resource loading. **", LogOrigin::App);
+}
 
 ResourceLoader::ResourceLoader(
     std::initializer_list<FontID> bootstrapFonts,
@@ -155,68 +221,8 @@ const sf::Texture &ResourceLoader::accessTexture(const TextureID id) {
   return textures.at(id);
 }
 
-void ResourceLoader::writeLog(const std::string &str) {
-  logMutex.lock();
-  workerLog.push_back(str);
-  logMutex.unlock();
-}
-
-optional<std::string> ResourceLoader::loadTexture(
-    const TextureID id,
-    const TextureMetadata &metadata) {
-  sf::Texture texture;
-  if (texture.loadFromFile(pathFromResourceUrl(metadata.url))) {
-    textures.emplace(id, std::move(texture));
-    return {};
-  } else {
-    return std::string("Texture did not load correctly.");
-    // TODO: get more information about failure to load
-  }
-}
-
-optional<std::string> ResourceLoader::loadFont(
-    const FontID id,
-    const FontMetadata &metadata) {
-  sf::Font font;
-  if (font.loadFromFile(pathFromResourceUrl(metadata.url))) {
-    fonts.emplace(id, std::move(font));
-    return {};
-  } else {
-    return std::string("Font did not load correctly.");
-    // TODO: get more information about failure to load
-  }
-}
-
 void ResourceLoader::loadAllThreaded() {
-  workingThread = std::thread([&]() {
-    const size_t totalWork{
-        detail::fontMetadata.size() + detail::textureMetadata.size()};
-    size_t progress{0};
-
-    for (const auto font : detail::fontMetadata) {
-      writeLog("Loading font: " + font.second.url
-                   + "(" + font.second.name + ")");
-      if (auto error = loadFont(font.first, font.second)) {
-        writeLog("Error loading font: " + error.get());
-        return;
-      }
-      ++progress;
-      loadingProgress = float(progress) / float(totalWork);
-    }
-
-    for (const auto texture : detail::textureMetadata) {
-      writeLog("Loading texture: " + texture.second.url
-                   + "(" + texture.second.name + ")");
-      if (auto error = loadTexture(texture.first, texture.second)) {
-        writeLog("Error loading texture: " + error.get());
-        return;
-      }
-      ++progress;
-      loadingProgress = float(progress) / float(totalWork);
-    }
-
-    holder.emplace(fonts, textures);
-  });
+  workingThread = std::thread([this]() { loadAllBlocking(); });
 }
 
 float ResourceLoader::getProgress() const {

@@ -87,7 +87,6 @@ class Control {
   void areChildren(std::initializer_list<Control *> controls);
 
  public:
-  Control(AppState &&) = delete;
   Control(const AppState &appState);
   virtual ~Control() { }
 

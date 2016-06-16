@@ -27,18 +27,18 @@ static int enetUsageCount = 0;
 
 UsageFlag::UsageFlag() {
   enetUsageCount++;
-  appLog("Initializing ENet...", LogOrigin::Network);
   if (enetUsageCount == 1) {
     if (enet_initialize() != 0)
       throw std::runtime_error("Failure on ENet initialization!");
+    appLog("Initialized ENet!", LogOrigin::Network);
   }
 }
 
 UsageFlag::~UsageFlag() {
   enetUsageCount--;
-  appLog("Deinitializing ENet...", LogOrigin::Network);
   if (enetUsageCount == 0) {
     enet_deinitialize();
+    appLog("Deinitialized ENet.", LogOrigin::Network);
   }
 }
 

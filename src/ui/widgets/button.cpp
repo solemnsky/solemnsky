@@ -85,7 +85,7 @@ void Button::render(Frame &f) {
 
   f.drawText(
       pos + 0.5f * style.dimensions,
-      text, style.textColor, textFormat, resources.getFont(ui::FontID::Default));
+      text, style.textColor, textFormat, resources.defaultFont);
 }
 
 bool Button::handle(const sf::Event &event) {
