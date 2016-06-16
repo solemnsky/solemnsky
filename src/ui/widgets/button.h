@@ -56,7 +56,7 @@ class Button: public Control {
   TextFormat textFormat, descriptionFormat; // deduced from the style
 
  public:
-  Button(const AppState &appState,
+  Button(const AppRefs &references,
          const Style &style,
          const sf::Vector2f &pos,
          const std::string &text);

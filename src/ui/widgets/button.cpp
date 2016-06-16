@@ -42,11 +42,11 @@ sf::FloatRect Button::getBody() {
   return sf::FloatRect(pos, style.dimensions);
 }
 
-Button::Button(const AppState &appState,
+Button::Button(const AppRefs &references,
                const Style &style,
                const sf::Vector2f &pos,
                const std::string &text) :
-    Control(appState),
+    Control(references),
     style(style),
     heat(0),
     inPreClick(false),

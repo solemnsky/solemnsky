@@ -23,16 +23,20 @@
  * SettingsTab.
  */
 
-SettingsTab::SettingsTab(const ui::AppState &appState, const Settings &settings)
-    : ui::Control(appState) { }
+SettingsTab::SettingsTab(const ui::AppRefs &references,
+                         const Settings &settings)
+    : ui::Control(references) {}
 
 /**
  * GeneralTab.
  */
 
-GeneralTab::GeneralTab(const ui::AppState &appState, const Settings &settings) :
-    SettingsTab(appState, settings),
-    debugOption(appState, style.settings.checkbox, style.settings.column1Pos) {
+GeneralTab::GeneralTab(
+    const ui::AppRefs &references, const Settings &settings) :
+    SettingsTab(references, settings),
+    debugOption(references,
+                style.settings.checkbox,
+                style.settings.column1Pos) {
   debugOption.setDescription(optional<std::string>("debug mode"));
   areChildren({&debugOption});
   readSettings(settings);
@@ -50,9 +54,10 @@ void GeneralTab::writeSettings(Settings &buffer) {
  * PlayerTab.
  */
 
-PlayerTab::PlayerTab(const ui::AppState &appState, const Settings &settings) :
-    SettingsTab(appState, settings),
-    nicknameOption(appState, style.base.normalTextEntry,
+PlayerTab::PlayerTab(
+    const ui::AppRefs &references, const Settings &settings) :
+    SettingsTab(references, settings),
+    nicknameOption(references, style.base.normalTextEntry,
                    style.settings.column1Pos) {
   nicknameOption.persistent = true;
   nicknameOption.description = "nickname";
@@ -72,30 +77,18 @@ void PlayerTab::writeSettings(Settings &settings) {
  * ControlsTab.
  */
 
-ControlsTab::ControlsTab(const ui::AppState &appState, const Settings &settings)
-    :
-    SettingsTab(appState, settings),
-    skyActions{sky::Action::Left,
-               sky::Action::Right,
-               sky::Action::Thrust,
-               sky::Action::Reverse,
-               sky::Action::Primary,
-               sky::Action::Secondary,
-               sky::Action::Special,
-               sky::Action::Suicide},
-    clientActions{
-        ClientAction::Spawn,
-        ClientAction::Chat,
-        ClientAction::Scoreboard
-    } {
-
+ControlsTab::ControlsTab(
+    const ui::AppRefs &references, const Settings &settings) :
+    SettingsTab(references, settings) {
   sf::Vector2f pos = style.settings.column1Pos;
 
-  for (sky::Action action : skyActions) {
+  for (sky::Action action = sky::Action(0);
+       action < sky::Action::MAX;
+       action = sky::Action(size_t(action) + 1)) {
     skyBindingChoosers.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(action),
-        std::forward_as_tuple(appState, style.base.normalButton, pos));
+        std::forward_as_tuple(references, style.base.normalButton, pos));
 
     auto &selector = skyBindingChoosers.at(action);
     selector.setDescription(sky::showAction(action));
@@ -106,11 +99,13 @@ ControlsTab::ControlsTab(const ui::AppState &appState, const Settings &settings)
 
   pos = style.settings.column2Pos;
 
-  for (ClientAction action : clientActions) {
+  for (ClientAction action = ClientAction(0);
+       action < ClientAction::MAX;
+       action = ClientAction(size_t(action) + 1)) {
     clientBindingChoosers.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(action),
-        std::forward_as_tuple(appState, style.base.normalButton, pos));
+        std::forward_as_tuple(references, style.base.normalButton, pos));
 
     auto &selector = clientBindingChoosers.at(action);
     selector.setDescription(showClientAction(action));
@@ -168,23 +163,25 @@ SettingsPage::SettingsPage(ClientShared &shared) :
 
     newSettings(shared.settings),
 
-    generalButton(appState, style.base.normalButton,
+    generalButton(references, style.base.normalButton,
                   {style.settings.generalButtonOffset,
                    style.settings.pageButtonHeight},
                   "GENERAL"),
-    playerButton(appState, style.base.normalButton,
+    playerButton(references, style.base.normalButton,
                  {style.settings.playerButtonOffset,
                   style.settings.pageButtonHeight},
                  "PLAYER"),
-    controlsButton(appState, style.base.normalButton,
+    controlsButton(references, style.base.normalButton,
                    {style.settings.controlsButtonOffset,
                     style.settings.pageButtonHeight},
                    "CONTROLS"),
 
-    generalTab(appState, shared.settings),
-    playerTab(appState, shared.settings),
-    controlsTab(appState, shared.settings),
+    generalTab(references, shared.settings),
+    playerTab(references, shared.settings),
+    controlsTab(references, shared.settings),
     currentTab(&generalButton, &generalTab) {
+  appLog(resources.defaultFont.getInfo().family);
+
   areChildren(
       {&generalButton, &playerButton, &controlsButton});
   currentTab.first->setActive(false);

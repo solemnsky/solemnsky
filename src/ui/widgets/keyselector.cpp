@@ -20,7 +20,7 @@
 
 namespace ui {
 
-KeySelector::KeySelector(const AppState &appState,
+KeySelector::KeySelector(const AppRefs &appState,
                          const ui::KeySelector::Style &style,
                          const sf::Vector2f &pos) :
     Control(appState),

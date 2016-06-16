@@ -33,21 +33,26 @@ namespace detail {
  *
  * We can't use `resources` here! Our job is to create them for the child app.
  */
-class SplashScreen: public Control {
+class SplashScreen : public Control {
  private:
-  ResourceLoader loader;
-  optional<AppResources> loadedResources;
-  const sf::Font &defaultFont;
+  // App constructor.
+  std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp;
 
+  // Loader and splash screen.
+  ResourceLoader loader;
+  const sf::Font &defaultFont;
   double animBegin;
   TextFormat readyText;
 
-  std::function<std::unique_ptr<Control>(const AppState &)> mkApp;
+  // App construction.
+  void constructApp(const AppResources &resources);
+  optional<AppResources> loadedResources;
+  optional<AppRefs> initializedReferences;
   std::unique_ptr<Control> control;
 
  public:
-  SplashScreen(AppState &appState,
-               std::function<std::unique_ptr<Control>(const AppState &)> mkApp);
+  SplashScreen(const AppRefs &appState,
+               std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp);
 
   // Control impl.
   bool poll() override final;

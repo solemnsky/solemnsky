@@ -28,7 +28,7 @@
  */
 class SettingsTab: public ui::Control {
  public:
-  SettingsTab(const ui::AppState &appState, const Settings &settings);
+  SettingsTab(const ui::AppRefs &references, const Settings &settings);
 
   virtual void readSettings(const Settings &settings) = 0;
   virtual void writeSettings(Settings &settings) = 0;
@@ -39,7 +39,7 @@ class GeneralTab: public SettingsTab {
   ui::Checkbox debugOption;
 
  public:
-  GeneralTab(const ui::AppState &appState, const Settings &settings);
+  GeneralTab(const ui::AppRefs &references, const Settings &settings);
 
   void readSettings(const Settings &settings) override final;
   void writeSettings(Settings &buffer) override final;
@@ -50,7 +50,7 @@ class PlayerTab: public SettingsTab {
   ui::TextEntry nicknameOption;
 
  public:
-  PlayerTab(const ui::AppState &appState, const Settings &settings);
+  PlayerTab(const ui::AppRefs &references, const Settings &settings);
 
   void readSettings(const Settings &settings) override final;
   void writeSettings(Settings &settings) override final;
@@ -64,7 +64,7 @@ class ControlsTab: public SettingsTab {
   std::map<ClientAction, ui::KeySelector> clientBindingChoosers;
 
  public:
-  ControlsTab(const ui::AppState &appState, const Settings &settings);
+  ControlsTab(const ui::AppRefs &references, const Settings &settings);
 
   void readSettings(const Settings &settings) override final;
   void writeSettings(Settings &buffer) override final;

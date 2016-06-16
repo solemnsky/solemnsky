@@ -191,7 +191,7 @@ void SkyRender::renderMap(ui::Frame &f) {
   }
 }
 
-SkyRender::SkyRender(const ui::AppResources &resources,
+SkyRender::SkyRender(ClientShared &shared,
                      Arena &arena, const Sky &sky) :
     ClientComponent(shared),
     Subsystem(arena),

@@ -74,11 +74,11 @@ TextLog::Style::Style(
     fontSize(fontSize) { }
 
 void TextLog::startNewLine() {
-  lines.emplace_back(appState.uptime, std::vector<detail::PrintAction>());
+  lines.emplace_back(references.uptime, std::vector<detail::PrintAction>());
   startingNewLine = false;
 }
 
-TextLog::TextLog(const AppState &appState, const Style &style,
+TextLog::TextLog(const AppRefs &appState, const Style &style,
                  const sf::Vector2f &pos) :
     Control(appState),
     style(style), pos(pos),
@@ -97,7 +97,7 @@ void TextLog::render(Frame &f) {
 
   f.drawText(pos, [&](TextFrame &tf) {
     for (const auto &pair : lines) {
-      const double age = appState.timeSince(pair.first);
+      const double age = references.timeSince(pair.first);
       if (age < maxLifetime || maxLifetime == 0) {
         const double alpha =
             (style.fadeStart == 0) ? 1 :

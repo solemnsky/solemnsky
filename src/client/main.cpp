@@ -24,7 +24,7 @@
 int main() {
   // TODO: commandline arguments?
   // and He said,
-  ui::runSFML([](const ui::AppState &appState) { 
+  ui::runSFML([](const ui::AppRefs &appState) {
     return std::make_unique<Client>(appState); 
   });
   // and lo, there appeared a client
