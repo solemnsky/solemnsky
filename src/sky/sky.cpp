@@ -33,11 +33,12 @@ bool SkyInit::verifyStructure() const {
  */
 
 bool SkyDelta::verifyStructure() const {
-  return verifyMap(participations) and verifyRequiredOptionals();
+  return verifyMap(participations) and verifyOptionals(settings);
 }
 
 SkyDelta SkyDelta::respectAuthority(const Player &player) const {
   SkyDelta newDelta;
+  newDelta.settings = settings;
 
   for (auto pDelta : participations) {
     if (pDelta.first == player.pid) {

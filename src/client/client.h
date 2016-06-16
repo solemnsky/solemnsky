@@ -19,7 +19,7 @@
  * The client top-level; connects the user to the game.
  */
 #pragma once
-#include "tutorial/tutorial.h"
+#include "client/sandbox/sandbox.h"
 #include "multiplayer/multiplayer.h"
 #include "homepage.h"
 #include "settingspage.h"
@@ -35,7 +35,7 @@ class Client: public ui::Control {
  private:
   // Buttons.
   ui::Button backButton, // for exiting menus, lower right
-      closeButton, // for closing the current tutorial, lower left
+      closeButton, // for closing the current sandbox, lower left
       quitButton, // quitting solemnsky
       aboutButton; // for seeing the about screen
 
@@ -64,15 +64,15 @@ class Client: public ui::Control {
   Client(const ui::AppRefs &references);
 
   // Control impl.
-  bool poll() override;
-  void tick(float delta) override;
-  void render(ui::Frame &f) override;
-  bool handle(const sf::Event &event) override;
-  void reset() override;
-  void signalRead() override;
-  void signalClear() override;
+  bool poll() override final;
+  void tick(float delta) override final;
+  void render(ui::Frame &f) override final;
+  bool handle(const sf::Event &event) override final;
+  void reset() override final;
+  void signalRead() override final;
+  void signalClear() override final;
 
-  // UI API.
+  // UI methods.
   void beginGame(std::unique_ptr<Game> &&game);
   void focusGame();
   void blurGame();

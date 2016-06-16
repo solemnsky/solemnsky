@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "tutorial.h"
+#include "sandbox.h"
 
 Sandbox::Sandbox(ClientShared &state) :
-    Game(state, "tutorial"),
-    arena(sky::ArenaInit("tutorial", "ball_funnelpark")),
+    Game(state, "sandbox"),
+    arena(sky::ArenaInit("sandbox", "ball_funnelpark")),
     map(sky::Map::load(arena.getNextMap()).get()),
     sky(arena, map, sky::SkyInit()),
     skyRender(shared, resources, arena, sky) {

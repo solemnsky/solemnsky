@@ -83,9 +83,6 @@ Map::Map(const MapName &name) :
     try {
       cereal::JSONInputArchive ar(file);
       serialize(ar);
-//      ar(cereal::make_nvp("dimensions", dimensions),
-//              cereal::make_nvp("obstacles", obstacles),
-//              cereal::make_nvp("spawnPoints", spawnPoints));
     } catch (cereal::Exception e) {
       appLog("Failed to parse map '" + name + "', " + e.what(),
              LogOrigin::Engine);
