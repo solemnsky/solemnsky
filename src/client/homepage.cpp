@@ -19,20 +19,20 @@
 #include "util/methods.h"
 #include "elements/style.h"
 #include "client/multiplayer/multiplayer.h"
-#include "client/tutorial/tutorial.h"
+#include "client/sandbox/sandbox.h"
 
 HomePage::HomePage(ClientShared &clientState) :
     Page(clientState),
-    tutorialButton(references, style.base.normalButton,
-                   style.home.tutorialButtonPos,
-                   "TUTORIAL"),
+    sandboxButton(references, style.base.normalButton,
+                  style.home.tutorialButtonPos,
+                  "SANDBOX"),
     localhostButton(references, style.base.normalButton,
                     style.home.localhostButtonPos,
                     "LOCAL GAME"),
     remoteButton(references, style.base.normalButton,
                  style.home.remoteButtonPos,
                  "REMOTE GAME") {
-  areChildren({&tutorialButton, &localhostButton, &remoteButton});
+  areChildren({&sandboxButton, &localhostButton, &remoteButton});
 }
 
 void HomePage::tick(float delta) {
@@ -63,7 +63,7 @@ void HomePage::reset() {
 void HomePage::signalRead() {
   ui::Control::signalRead();
 
-  if (tutorialButton.clickSignal)
+  if (sandboxButton.clickSignal)
     shared.beginGame(std::make_unique<Sandbox>(shared));
 
   if (localhostButton.clickSignal)
