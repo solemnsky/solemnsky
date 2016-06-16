@@ -111,17 +111,17 @@ ArenaDelta::ArenaDelta(const ArenaDelta::Type type) : type(type) { }
 bool ArenaDelta::verifyStructure() const {
   switch (type) {
     case Type::Quit:
-      return verifyOptionals(quit);
+      return verifyRequiredOptionals(quit);
     case Type::Join:
-      return verifyOptionals(join);
+      return verifyRequiredOptionals(join);
     case Type::Delta:
-      return verifyOptionals(playerDeltas);
+      return verifyRequiredOptionals(playerDeltas);
     case Type::Motd:
-      return verifyOptionals(motd);
+      return verifyRequiredOptionals(motd);
     case Type::Mode:
-      return verifyOptionals(mode);
+      return verifyRequiredOptionals(mode);
     case Type::MapChange:
-      return verifyOptionals(map);
+      return verifyRequiredOptionals(map);
   }
   return false; // enum out of bounds
 }

@@ -33,7 +33,7 @@ bool SkyInit::verifyStructure() const {
  */
 
 bool SkyDelta::verifyStructure() const {
-  return verifyMap(participations);
+  return verifyMap(participations) and verifyRequiredOptionals()
 }
 
 SkyDelta SkyDelta::respectAuthority(const Player &player) const {

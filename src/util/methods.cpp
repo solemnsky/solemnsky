@@ -86,6 +86,10 @@ float sineAnim(const float time, const float period) {
   return (1.0f + float(sin((time * M_2_PI) / period))) / 2.0f;
 }
 
+bool verifyRequiredOptionals() {
+  return true;
+}
+
 bool verifyOptionals() {
   return true;
 }
