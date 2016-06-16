@@ -82,8 +82,11 @@ Map::Map(const MapName &name) :
   if (file.good()) {
     try {
       cereal::JSONInputArchive ar(file);
-      ar(*this);
-    } catch (cereal::RapidJSONException e) {
+      serialize(ar);
+//      ar(cereal::make_nvp("dimensions", dimensions),
+//              cereal::make_nvp("obstacles", obstacles),
+//              cereal::make_nvp("spawnPoints", spawnPoints));
+    } catch (cereal::Exception e) {
       appLog("Failed to parse map '" + name + "', " + e.what(),
              LogOrigin::Engine);
       loadSuccess = false;
@@ -125,7 +128,7 @@ const SpawnPoint Map::pickSpawnPoint(const Team team) const {
 
 void Map::save(std::ostream &s) {
   cereal::JSONOutputArchive ar(s);
-  ar(*this);
+  serialize(ar);
 }
 
 optional<Map> Map::load(const MapName &name) {

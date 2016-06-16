@@ -100,12 +100,11 @@ void Multiplayer::doExit() {
 
 void Multiplayer::printDebugLeft(Printer &p) {
   if (core.conn) {
-    const auto &skyHandle = core.conn->skyHandle;
     const auto &arena = core.conn->arena;
     const auto &player = core.conn->player;
 
     p.setColor(0, 0, 255);
-    p.printLn("** arena state **")
+    p.printLn("** arena state **");
     p.setColor(255, 255, 255);
     p.printLn("name: " + arena.getName());
     p.printLn("next map: " + arena.getNextMap());
@@ -115,7 +114,7 @@ void Multiplayer::printDebugLeft(Printer &p) {
 
     p.breakLine();
     p.setColor(0, 0, 255);
-    p.printLn("** network state **")
+    p.printLn("** network state **");
     p.setColor(255, 255, 255);
     p.printLn("inbound bandwidth (kB/s): "
                   + showKbps(core.getHost().incomingBandwidth()));
@@ -135,13 +134,12 @@ void Multiplayer::printDebugLeft(Printer &p) {
 void Multiplayer::printDebugRight(Printer &p) {
   if (core.conn) {
     const auto &skyHandle = core.conn->skyHandle;
-    const auto &arena = core.conn->arena;
     const auto &player = core.conn->player;
 
     if (skyHandle.isActive()) {
       const auto &sky = skyHandle.sky.get();
       p.setColor(0, 0, 255);
-      p.printLn("** sky state **")
+      p.printLn("** sky state **");
       p.setColor(255, 255, 255);
       p.printLn("current map: " + core.conn->getSky()->getMap().name);
       p.printLn("view scale: " + std::to_string(sky.getSettings().viewScale));
@@ -151,8 +149,9 @@ void Multiplayer::printDebugRight(Printer &p) {
       p.setColor(0, 0, 255);
       p.printLn("** participation state **");
       p.setColor(255, 255, 255);
-      p.printLn("spawned: " + (sky.getParticipation(player).isSpawned() ?
-                               "yes" : "no"));
+      p.printLn(std::string("spawned: ")
+                    + (sky.getParticipation(player).isSpawned() ?
+                       "yes" : "no"));
     } else {
       p.printLn("(Sky is not instantiated.)");
     }
