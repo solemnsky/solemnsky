@@ -70,8 +70,8 @@ enum class LogOrigin {
   Engine, // something deep in the engine
   Network, // network / enet stuff
   App, // multimedia management for clients
-  Client, // misc. things for clients
-  Server, // misc. things for servers
+  Client, // client multiplayer
+  Server, // server multiplayer
   Error // is a fatal error
 };
 

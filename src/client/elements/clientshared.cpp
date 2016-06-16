@@ -17,7 +17,6 @@
  */
 #include "client/client.h"
 #include "style.h"
-#include "util/printer.h"
 
 /**
  * ClientUiState.
@@ -74,10 +73,8 @@ bool ClientUiState::menuFocused() const {
  * ClientShared.
  */
 
-ClientShared::ClientShared(ui::AppState &appState, Client &client) :
-    client(client),
-    appState(appState),
-    uptime(appState.uptime) { }
+ClientShared::ClientShared(Client &client, const ui::AppRefs &references) :
+    client(client), references(references) {}
 
 template<typename T>
 optional<std::pair<T, bool>>

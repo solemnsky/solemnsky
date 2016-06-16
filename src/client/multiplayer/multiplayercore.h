@@ -138,7 +138,7 @@ class MultiplayerCore: public ClientComponent {
   std::vector<ClientEvent> eventLog;
   void logClientEvent(const ClientEvent &event);
   void logEvent(const sky::ArenaEvent &event);
-  void drawEventLog(ui::Frame &f, const float cutoff);
+  void drawEventLog(ui::TextFrame &tf, const float cutoff);
 
   // Connection state.
   optional<ArenaConnection> conn;

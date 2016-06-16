@@ -24,35 +24,6 @@
  * Client.
  */
 
-Client::Client(ui::AppState &appState) :
-    ui::Control(appState),
-    backButton(appState,
-               style.menu.lowButtonStyle,
-               style.menu.backButtonOffset,
-               style.menu.backButtonText),
-    closeButton(appState,
-                style.menu.lowButtonStyle,
-                style.menu.closeButtonOffset,
-                style.menu.closeButtonText),
-    quitButton(appState,
-               style.menu.highButtonStyle,
-               style.menu.quitButtonOffset,
-               style.menu.quitButtonText),
-    aboutButton(appState,
-                style.menu.highButtonStyle,
-                style.menu.aboutButtonOffset,
-                style.menu.aboutButtonText),
-
-    shared(appState, *this),
-    homePage(shared),
-    listingPage(shared),
-    settingsPage(shared),
-    tryingToQuit(false),
-
-    profilerCooldown(1) {
-  areChildren({&quitButton, &aboutButton, &closeButton, &backButton,
-               &homePage, &listingPage, &settingsPage});
-}
 
 void Client::forAllPages(std::function<void(Page &)> f) {
   f(homePage);
@@ -69,37 +40,7 @@ Page &Client::referencePage(const PageType type) {
     case PageType::Listing:
       return listingPage;
   }
-  return homePage;
-}
-
-bool Client::poll() {
-  if (shared.game) {
-    while (!shared.game->poll()) { };
-  }
-  return ui::Control::poll();
-}
-
-void Client::tick(const float delta) {
-  ui::Control::tick(delta);
-
-  if (profilerCooldown.cool(delta)) {
-    profilerSnap = ui::ProfilerSnapshot(appState.profiler);
-    profilerCooldown.reset();
-  }
-
-  shared.ui.tick(delta);
-
-  if (shared.game) {
-    shared.game->tick(delta);
-    if (shared.game->quitting) {
-      if (tryingToQuit) {
-        quitting = true;
-        return;
-      }
-      shared.game.reset();
-      shared.ui.blurGame();
-    }
-  }
+  throw enum_error();
 }
 
 void Client::drawPage(ui::Frame &f, const PageType type,
@@ -128,9 +69,9 @@ void Client::drawPage(ui::Frame &f, const PageType type,
   f.withAlpha(alpha, [&]() {
     f.withAlpha(titleAlpha, [&]() {
       f.drawText(
-          sf::Vector2f(
-              0, style.menu.pageDescMargin) + offsetAmnt * offset,
-          name, sf::Color::White, style.menu.menuDescText);
+          sf::Vector2f(0, style.menu.pageDescMargin) + offsetAmnt * offset,
+          name, sf::Color::White, style.menu.menuDescText,
+          resources.defaultFont);
     });
     f.withTransform(transform, [&]() {
       f.drawRect({0, 0, 1600, 900}, style.menu.pageUnderlayColor);
@@ -138,7 +79,6 @@ void Client::drawPage(ui::Frame &f, const PageType type,
     });
   });
 }
-
 
 void Client::drawUI(ui::Frame &f) {
   const Clamped &pageFocusFactor = shared.ui.pageFocusFactor;
@@ -161,7 +101,7 @@ void Client::drawUI(ui::Frame &f) {
           tf.print(shared.game->name);
           tf.setColor(style.menu.statusFontColor);
           tf.print("(" + shared.game->status + ")");
-        }, style.menu.gameDescText);
+        }, style.menu.gameDescText, resources.defaultFont);
     closeButton.render(f);
   }
   f.withAlpha(
@@ -198,8 +138,68 @@ void Client::drawGame(ui::Frame &f) {
             tf.printLn("GAME STATS:");
             tf.setColor(sf::Color::White);
             shared.game->printDebug(tf);
-          }, style.base.debugText);
+          }, style.base.debugText, resources.defaultFont);
     });
+  }
+}
+
+Client::Client(const ui::AppRefs &references) :
+    ui::Control(references),
+    backButton(references,
+               style.menu.lowButtonStyle,
+               style.menu.backButtonOffset,
+               style.menu.backButtonText),
+    closeButton(references,
+                style.menu.lowButtonStyle,
+                style.menu.closeButtonOffset,
+                style.menu.closeButtonText),
+    quitButton(references,
+               style.menu.highButtonStyle,
+               style.menu.quitButtonOffset,
+               style.menu.quitButtonText),
+    aboutButton(references,
+                style.menu.highButtonStyle,
+                style.menu.aboutButtonOffset,
+                style.menu.aboutButtonText),
+
+    shared(*this, references),
+    homePage(shared),
+    listingPage(shared),
+    settingsPage(shared),
+    tryingToQuit(false),
+
+    profilerCooldown(1) {
+  areChildren({&quitButton, &aboutButton, &closeButton, &backButton,
+               &homePage, &listingPage, &settingsPage});
+}
+
+bool Client::poll() {
+  if (shared.game) {
+    while (!shared.game->poll()) {};
+  }
+  return ui::Control::poll();
+}
+
+void Client::tick(const float delta) {
+  ui::Control::tick(delta);
+
+  if (profilerCooldown.cool(delta)) {
+    profilerSnap = ui::ProfilerSnapshot(references.profiler);
+    profilerCooldown.reset();
+  }
+
+  shared.ui.tick(delta);
+
+  if (shared.game) {
+    shared.game->tick(delta);
+    if (shared.game->quitting) {
+      if (tryingToQuit) {
+        quitting = true;
+        return;
+      }
+      shared.game.reset();
+      shared.ui.blurGame();
+    }
   }
 }
 
@@ -211,7 +211,8 @@ void Client::render(ui::Frame &f) {
     drawGame(f);
   } else {
     if (!shared.game) {
-      f.drawSprite(textureOf(ResID::MenuBackground), {0, 0}, {0, 0, 1600, 900});
+      f.drawSprite(resources.getTexture(ui::TextureID::MenuBackground),
+                   {0, 0}, {0, 0, 1600, 900});
     } else {
       drawGame(f);
       f.drawRect(

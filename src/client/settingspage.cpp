@@ -20,12 +20,23 @@
 #include "util/methods.h"
 
 /**
+ * SettingsTab.
+ */
+
+SettingsTab::SettingsTab(const ui::AppRefs &references,
+                         const Settings &settings)
+    : ui::Control(references) {}
+
+/**
  * GeneralTab.
  */
 
-GeneralTab::GeneralTab(ui::AppState &appState, const Settings &settings) :
-    SettingsTab(appState, settings),
-    debugOption(appState, style.settings.checkbox, style.settings.column1Pos) {
+GeneralTab::GeneralTab(
+    const ui::AppRefs &references, const Settings &settings) :
+    SettingsTab(references, settings),
+    debugOption(references,
+                style.settings.checkbox,
+                style.settings.column1Pos) {
   debugOption.setDescription(optional<std::string>("debug mode"));
   areChildren({&debugOption});
   readSettings(settings);
@@ -43,9 +54,10 @@ void GeneralTab::writeSettings(Settings &buffer) {
  * PlayerTab.
  */
 
-PlayerTab::PlayerTab(ui::AppState &appState, const Settings &settings) :
-    SettingsTab(appState, settings),
-    nicknameOption(appState, style.base.normalTextEntry,
+PlayerTab::PlayerTab(
+    const ui::AppRefs &references, const Settings &settings) :
+    SettingsTab(references, settings),
+    nicknameOption(references, style.base.normalTextEntry,
                    style.settings.column1Pos) {
   nicknameOption.persistent = true;
   nicknameOption.description = "nickname";
@@ -65,31 +77,20 @@ void PlayerTab::writeSettings(Settings &settings) {
  * ControlsTab.
  */
 
-ControlsTab::ControlsTab(ui::AppState &appState, const Settings &settings) :
-    SettingsTab(appState, settings),
-    skyActions{sky::Action::Left,
-               sky::Action::Right,
-               sky::Action::Thrust,
-               sky::Action::Reverse,
-               sky::Action::Primary,
-               sky::Action::Secondary,
-               sky::Action::Special,
-               sky::Action::Suicide},
-    clientActions{
-        ClientAction::Spawn,
-        ClientAction::Chat,
-        ClientAction::Scoreboard
-    } {
-
+ControlsTab::ControlsTab(
+    const ui::AppRefs &references, const Settings &settings) :
+    SettingsTab(references, settings) {
   sf::Vector2f pos = style.settings.column1Pos;
 
-  for (sky::Action action : skyActions) {
-    skyChoosers.emplace(
+  for (sky::Action action = sky::Action(0);
+       action < sky::Action::MAX;
+       action = sky::Action(size_t(action) + 1)) {
+    skyBindingChoosers.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(action),
-        std::forward_as_tuple(appState, style.base.normalButton, pos));
+        std::forward_as_tuple(references, style.base.normalButton, pos));
 
-    auto &selector = skyChoosers.at(action);
+    auto &selector = skyBindingChoosers.at(action);
     selector.setDescription(sky::showAction(action));
     areChildren({&selector});
 
@@ -98,13 +99,15 @@ ControlsTab::ControlsTab(ui::AppState &appState, const Settings &settings) :
 
   pos = style.settings.column2Pos;
 
-  for (ClientAction action : clientActions) {
-    clientChoosers.emplace(
+  for (ClientAction action = ClientAction(0);
+       action < ClientAction::MAX;
+       action = ClientAction(size_t(action) + 1)) {
+    clientBindingChoosers.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(action),
-        std::forward_as_tuple(appState, style.base.normalButton, pos));
+        std::forward_as_tuple(references, style.base.normalButton, pos));
 
-    auto &selector = clientChoosers.at(action);
+    auto &selector = clientBindingChoosers.at(action);
     selector.setDescription(showClientAction(action));
     areChildren({&selector});
 
@@ -116,12 +119,12 @@ ControlsTab::ControlsTab(ui::AppState &appState, const Settings &settings) :
 
 void ControlsTab::readSettings(const Settings &settings) {
   for (const sky::Action action : skyActions) {
-    skyChoosers.at(action).setValue(
+    skyBindingChoosers.at(action).setValue(
         settings.bindings.lookupBinding(action));
   }
 
   for (const ClientAction action : clientActions) {
-    clientChoosers.at(action).setValue(
+    clientBindingChoosers.at(action).setValue(
         settings.bindings.lookupClientBinding(action));
   }
 }
@@ -129,13 +132,13 @@ void ControlsTab::readSettings(const Settings &settings) {
 void ControlsTab::writeSettings(Settings &settings) {
   settings.bindings.skyBindings.clear();
   for (const sky::Action action : skyActions) {
-    if (const auto binding = skyChoosers.at(action).getValue()) {
+    if (const auto binding = skyBindingChoosers.at(action).getValue()) {
       settings.bindings.skyBindings.emplace(binding.get(), action);
     }
   }
   settings.bindings.clientBindings.clear();
   for (const ClientAction action : clientActions) {
-    if (const auto binding = clientChoosers.at(action).getValue()) {
+    if (const auto binding = clientBindingChoosers.at(action).getValue()) {
       settings.bindings.clientBindings.emplace(binding.get(), action);
     }
   }
@@ -160,22 +163,22 @@ SettingsPage::SettingsPage(ClientShared &shared) :
 
     newSettings(shared.settings),
 
-    generalButton(appState, style.base.normalButton,
+    generalButton(references, style.base.normalButton,
                   {style.settings.generalButtonOffset,
                    style.settings.pageButtonHeight},
                   "GENERAL"),
-    playerButton(appState, style.base.normalButton,
+    playerButton(references, style.base.normalButton,
                  {style.settings.playerButtonOffset,
                   style.settings.pageButtonHeight},
                  "PLAYER"),
-    controlsButton(appState, style.base.normalButton,
+    controlsButton(references, style.base.normalButton,
                    {style.settings.controlsButtonOffset,
                     style.settings.pageButtonHeight},
                    "CONTROLS"),
 
-    generalTab(appState, shared.settings),
-    playerTab(appState, shared.settings),
-    controlsTab(appState, shared.settings),
+    generalTab(references, shared.settings),
+    playerTab(references, shared.settings),
+    controlsTab(references, shared.settings),
     currentTab(&generalButton, &generalTab) {
   areChildren(
       {&generalButton, &playerButton, &controlsButton});
@@ -225,4 +228,3 @@ void SettingsPage::onChangeSettings(const SettingsDelta &delta) {
   newSettings = shared.settings;
   currentTab.second->readSettings(shared.settings);
 }
-

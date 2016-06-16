@@ -23,13 +23,13 @@
 
 HomePage::HomePage(ClientShared &clientState) :
     Page(clientState),
-    tutorialButton(appState, style.base.normalButton,
+    tutorialButton(references, style.base.normalButton,
                    style.home.tutorialButtonPos,
                    "TUTORIAL"),
-    localhostButton(appState, style.base.normalButton,
+    localhostButton(references, style.base.normalButton,
                     style.home.localhostButtonPos,
                     "LOCAL GAME"),
-    remoteButton(appState, style.base.normalButton,
+    remoteButton(references, style.base.normalButton,
                  style.home.remoteButtonPos,
                  "REMOTE GAME") {
   areChildren({&tutorialButton, &localhostButton, &remoteButton});

@@ -23,22 +23,23 @@
 #include "util/types.h"
 
 namespace ui {
-class SpriteSheet {
-private:
-  const ResRecord record;
-  const sf::Vector2f tileDim;
-  const sf::Texture &sheet;
-  const ResID res;
 
-public:
-  const int count;
+class SpriteSheet {
+ private:
+  const SheetLayout &layout;
+  const sf::Texture &texture;
+
+ public:
+  const int size;
 
   SpriteSheet() = delete;
-  SpriteSheet(ResID resource);
+  SpriteSheet(const SheetLayout &layout, const sf::Texture &texture);
 
   void drawIndex(
-      ui::Frame &f, const sf::Vector2f &dims, const int index) const;
+      Frame &f, const sf::Vector2f &dims, const int index) const;
   void drawIndexAtRoll(
-      ui::Frame &f, const sf::Vector2f &dims, const Angle deg) const;
+      Frame &f, const sf::Vector2f &dims, const Angle deg) const;
+
 };
+
 }

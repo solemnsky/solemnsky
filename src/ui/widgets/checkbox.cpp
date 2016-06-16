@@ -20,7 +20,7 @@
 
 namespace ui {
 
-Checkbox::Checkbox(AppState &appState,
+Checkbox::Checkbox(const AppRefs &appState,
                    const ui::Button::Style &style,
                    const sf::Vector2f &pos) :
     Control(appState),

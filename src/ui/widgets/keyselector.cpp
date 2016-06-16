@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "keyselector.h"
-#include "util/client/sfmlutil.h"
+#include "util/clientutil.h"
 
 namespace ui {
 
-KeySelector::KeySelector(AppState &appState,
+KeySelector::KeySelector(const AppRefs &appState,
                          const ui::KeySelector::Style &style,
                          const sf::Vector2f &pos) :
     Control(appState),

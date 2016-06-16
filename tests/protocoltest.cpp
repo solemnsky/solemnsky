@@ -83,3 +83,4 @@ TEST_F(ProtocolTest, Invariant) {
   sPacket.type = (sky::ServerPacket::Type) 50;
   EXPECT_EQ(sPacket.verifyStructure(), false);
 }
+

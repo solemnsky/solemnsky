@@ -4,9 +4,9 @@ project(solemnsky)
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic -g")
 
-if(SANITIZE)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -fsanitize=address")
-endif()
+if (SANITIZE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -fsanitize=address")
+endif ()
 
 # we depend on Box2D, SFML, and enet, from submodules in thirdparty/
 add_subdirectory("thirdparty/Box2D/Box2D")
@@ -24,6 +24,7 @@ include_directories(
         thirdparty/cereal/
         thirdparty/SFML/include/
         thirdparty/polypartition/
+        thirdparty/mingw-std-threads/
         "${Boost_INCLUDE_DIRS}"
 )
 
@@ -73,6 +74,8 @@ add_library(solemnsky STATIC
 
         src/util/telegraph.cpp
         src/util/telegraph.h
+
+        src/util/threads.h
 
         src/util/types.cpp
         src/util/types.h
@@ -178,20 +181,20 @@ add_executable(solemnsky_client
         src/ui/frame.cpp
         src/ui/frame.h
 
+        src/ui/resources.cpp
+        src/ui/resources.h
+
         src/ui/sheet.cpp
         src/ui/sheet.h
 
         src/ui/text.cpp
         src/ui/text.h
 
-        src/ui/wrapper.cpp
-        src/ui/wrapper.h
+        src/ui/splash.cpp
+        src/ui/splash.h
 
-        src/util/client/resources.cpp
-        src/util/client/resources.h
-
-        src/util/client/sfmlutil.cpp
-        src/util/client/sfmlutil.h
+        src/util/clientutil.cpp
+        src/util/clientutil.h
         )
 target_link_libraries(solemnsky_client
         solemnsky

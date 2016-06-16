@@ -29,6 +29,8 @@ void MultiplayerLobby::doClientAction(const ClientAction action,
     }
     case ClientAction::Scoreboard:
       break;
+    default:
+      throw enum_error();
   }
 }
 
@@ -36,15 +38,15 @@ MultiplayerLobby::MultiplayerLobby(
     ClientShared &shared, MultiplayerCore &connection) :
     MultiplayerView(sky::ArenaMode::Lobby, shared, connection),
 
-    specButton(appState, style.base.normalButton, style.multi.lobbyButtonPos,
+    specButton(references, style.base.normalButton, style.multi.lobbyButtonPos,
                "SPECTATE"),
-    redButton(appState, style.base.normalButton,
+    redButton(references, style.base.normalButton,
               style.multi.lobbyButtonPos + style.multi.lobbyButtonSep,
               "JOIN RED"),
-    blueButton(appState, style.base.normalButton,
+    blueButton(references, style.base.normalButton,
                style.multi.lobbyButtonPos + 2.0f * style.multi.lobbyButtonSep,
                "JOIN BLUE"),
-    chatInput(appState, style.base.normalTextEntry,
+    chatInput(references, style.base.normalTextEntry,
               style.multi.chatPos, "[ENTER TO CHAT]") {
   areChildren({&specButton, &redButton, &blueButton, &chatInput});
 }
@@ -54,9 +56,13 @@ void MultiplayerLobby::tick(float delta) {
 }
 
 void MultiplayerLobby::render(ui::Frame &f) {
-  f.drawSprite(textureOf(ResID::Lobby), {0, 0}, {0, 0, 1600, 900});
+  f.drawSprite(resources.getTexture(ui::TextureID::Lobby),
+               {0, 0}, {0, 0, 1600, 900});
 
-  core.drawEventLog(f, style.multi.chatCutoff);
+  f.drawText(style.multi.chatPos, [&](ui::TextFrame &tf) {
+    core.drawEventLog(tf, style.multi.chatCutoff);
+  }, style.multi.messageLogText, resources.defaultFont);
+
   f.drawText(
       style.multi.playerListPos, [&](Printer &p) {
         conn.arena.forPlayers([&](const sky::Player &player) {
@@ -66,7 +72,7 @@ void MultiplayerLobby::render(ui::Frame &f) {
           p.print(player.getNickname());
           p.breakLine();
         });
-      }, style.multi.playerListText);
+      }, style.multi.playerListText, resources.defaultFont);
 
   ui::Control::render(f);
 }

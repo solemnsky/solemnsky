@@ -67,7 +67,7 @@ class TextEntry: public Control {
 
  public:
   TextEntry() = delete;
-  TextEntry(AppState &appState,
+  TextEntry(const AppRefs &appState,
             const Style &style,
             const sf::Vector2f &pos,
             const std::string &description = "",
@@ -95,6 +95,7 @@ class TextEntry: public Control {
   bool isHot;
   bool isFocused;
   optional<std::string> inputSignal;
+
 };
 
 }

@@ -41,7 +41,7 @@ void ClientComponent::onChangeSettings(const SettingsDelta &settings) {
 
 Page::Page(ClientShared &shared) :
     ClientComponent(shared),
-    ui::Control(shared.appState) { }
+    ui::Control(shared.references) {}
 
 void Page::drawBackground(ui::Frame &f) {
   const float margins = style.base.pageMargins;
@@ -56,7 +56,7 @@ void Page::drawBackground(ui::Frame &f) {
 Game::Game(ClientShared &shared,
            const std::string &name) :
     ClientComponent(shared),
-    ui::Control(shared.appState),
+    ui::Control(shared.references),
     name(name) { }
 
 void Game::printDebug(Printer &p) {

@@ -20,7 +20,7 @@
  */
 #pragma once
 #include "elements/elements.h"
-#include "util/client/resources.h"
+#include "ui/resources.h"
 #include <list>
 #include "ui/control.h"
 #include "ui/sheet.h"
@@ -52,13 +52,17 @@ struct PlaneGraphics {
  *
  * Invariant: `sky` remains alive.
  */
-class SkyRender: public ClientComponent, public Subsystem<PlaneGraphics> {
+class SkyRender : public ClientComponent, public Subsystem<PlaneGraphics> {
  private:
   // Parameters.
   const Sky &sky;
 
   // State.
   std::map<PID, PlaneGraphics> graphics;
+
+  // Resources.
+  const ui::AppResources &resources;
+  const ui::TextureID sheet;
   const ui::SpriteSheet planeSheet;
 
   // Render submethods.
@@ -74,12 +78,13 @@ class SkyRender: public ClientComponent, public Subsystem<PlaneGraphics> {
 
  protected:
   // Subsystem impl.
-  void registerPlayer(Player &player);
-  void unregisterPlayer(Player &player);
-  void onTick(const float delta) override;
+  void registerPlayer(Player &player) override final;
+  void unregisterPlayer(Player &player) override final;
+  void onTick(const float delta) override final;
 
  public:
-  SkyRender(ClientShared &shared, Arena &arena, const Sky &sky);
+  SkyRender(ClientShared &shared, const ui::AppResources &resources,
+            Arena &arena, const Sky &sky);
   ~SkyRender();
 
   // ClientComponent impl.
