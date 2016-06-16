@@ -17,7 +17,7 @@
  */
 #include "button.h"
 #include "util/methods.h"
-#include "util/client/sfmlutil.h"
+#include "util/clientutil.h"
 
 namespace ui {
 
@@ -42,19 +42,18 @@ sf::FloatRect Button::getBody() {
   return sf::FloatRect(pos, style.dimensions);
 }
 
-Button::Button(AppState &appState,
+Button::Button(const AppRefs &references,
                const Style &style,
                const sf::Vector2f &pos,
                const std::string &text) :
-    Control(appState),
+    Control(references),
     style(style),
     heat(0),
     inPreClick(false),
     active(true),
 
     textFormat(style.fontSize, style.dimensions.x,
-               HorizontalAlign::Center, VerticalAlign::Middle,
-               ResID::Font),
+               HorizontalAlign::Center, VerticalAlign::Middle),
     descriptionFormat(textFormat),
 
     pos(pos),
@@ -62,8 +61,7 @@ Button::Button(AppState &appState,
 
     isHot(false),
     clickSignal(false) {
-  descriptionFormat.
-      horizontal = HorizontalAlign::Right;
+  descriptionFormat.horizontal = HorizontalAlign::Right;
 }
 
 void Button::tick(float delta) {
@@ -74,7 +72,7 @@ void Button::render(Frame &f) {
   if (description)
     f.drawText(pos + sf::Vector2f(-20, style.dimensions.y / 2),
                description.get(), style.textColor,
-               descriptionFormat);
+               descriptionFormat, resources.defaultFont);
 
   const auto body = getBody();
   if (!active) {
@@ -87,7 +85,7 @@ void Button::render(Frame &f) {
 
   f.drawText(
       pos + 0.5f * style.dimensions,
-      text, style.textColor, textFormat);
+      text, style.textColor, textFormat, resources.defaultFont);
 }
 
 bool Button::handle(const sf::Event &event) {

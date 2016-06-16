@@ -2,5 +2,6 @@
 /.idea/
 /result
 *.swp
+.#*
 build
 tags

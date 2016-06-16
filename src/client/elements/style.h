@@ -57,6 +57,10 @@ struct Style {
    * Splash screen.
    */
   struct Splash {
+    float barWidth, barHeight, barPaddingTop;
+    sf::Color barColor;
+    ui::TextFormat titleFormat;
+
     Splash();
   } splash;
 

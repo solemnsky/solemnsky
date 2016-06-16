@@ -17,7 +17,7 @@
  */
 #include <cmath>
 
-#include "wrapper.h"
+#include "splash.h"
 #include "util/printer.h"
 
 namespace ui {
@@ -28,22 +28,26 @@ namespace ui {
 
 Profiler::Profiler(const unsigned int size) :
     cycleTime(size), logicTime(size),
-    renderTime(size), primCount(size) { }
+    renderTime(size), primCount(size) {}
 
 ProfilerSnapshot::ProfilerSnapshot(const Profiler &profiler) :
     cycleTime(profiler.cycleTime), logicTime(profiler.logicTime),
-    renderTime(profiler.renderTime) { }
+    renderTime(profiler.renderTime) {}
 
 /**
  * AppState.
  */
 
-AppState::AppState(const sf::RenderWindow &window,
-                   const Profiler &profiler,
-                   const Time &time) :
-    uptime(time), window(window), profiler(profiler) { }
+AppRefs::AppRefs(const AppResources &resources,
+                 const Time &time,
+                 const sf::RenderWindow &window,
+                 const Profiler &profiler) :
+    resources(resources),
+    uptime(time),
+    window(window),
+    profiler(profiler) {}
 
-double AppState::timeSince(const Time event) const {
+double AppRefs::timeSince(const Time event) const {
   return uptime - event;
 }
 
@@ -55,13 +59,14 @@ void Control::areChildren(std::initializer_list<Control *> controls) {
   for (auto control : controls) children.push_back(control);
 }
 
-Control::Control(AppState &appState) :
-    appState(appState),
-    quitting(false) { }
+Control::Control(const AppRefs &references) :
+    references(references),
+    resources(references.resources),
+    quitting(false) {}
 
 bool Control::poll() {
   for (auto child : children) {
-    while (!child->poll()) { };
+    while (!child->poll()) {};
   }
   return true;
 }
@@ -149,7 +154,7 @@ void ControlExec::tick() {
 
   profileClock.restart();
   rollingTickTime += cycleDelta;
-  while (!ctrl->poll()) { }
+  while (!ctrl->poll()) {}
   while (rollingTickTime > tickStep) {
     ctrl->tick(tickStep);
     rollingTickTime -= tickStep;
@@ -208,8 +213,7 @@ sf::ContextSettings ControlExec::makeSettings() {
   return settings;
 }
 
-ControlExec::ControlExec(
-    std::function<std::unique_ptr<Control>(AppState &)> initCtrl) :
+ControlExec::ControlExec() :
     window(sf::VideoMode(800, 600), "solemnsky",
            sf::Style::Default, makeSettings()),
     frame(window),
@@ -221,15 +225,16 @@ ControlExec::ControlExec(
 
     profiler(100),
 
-    appState(window, profiler, uptime),
-    ctrl(std::make_unique<detail::ExecWrapper>(appState, initCtrl)) {
+    appState(*((AppResources *) nullptr), uptime, window, profiler) {
   window.setVerticalSyncEnabled(true);
   window.setKeyRepeatEnabled(false);
-  appLog("Initialized SFML.", LogOrigin::App);
+  appLog("Initialized SFML!", LogOrigin::App);
 }
 
-void ControlExec::run() {
-  appLog("Starting game loop.", LogOrigin::App);
+void
+ControlExec::run(std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp) {
+  ctrl = std::make_unique<detail::SplashScreen>(appState, mkApp);
+  appLog("Starting application loop...", LogOrigin::App);
 
   while (window.isOpen()) {
     tick();
@@ -239,11 +244,11 @@ void ControlExec::run() {
     if (ctrl->quitting) window.close();
   }
 
-  appLog("Exiting solemnsky, see you later.", LogOrigin::App);
+  appLog("Exiting cleanly.", LogOrigin::App);
 }
 
-void runSFML(std::function<std::unique_ptr<Control>(AppState &)> initCtrl) {
-  ControlExec(initCtrl).run();
+void runSFML(std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp) {
+  ControlExec().run(mkApp);
 }
 
 }

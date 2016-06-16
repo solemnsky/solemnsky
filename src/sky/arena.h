@@ -70,7 +70,7 @@ struct PlayerDelta {
 /**
  * Represents a player in the arena, with some minimal metadata.
  */
-struct Player: public Networked<PlayerInitializer, PlayerDelta> {
+class Player: public Networked<PlayerInitializer, PlayerDelta> {
   template<typename T>
   friend
   class Subsystem;

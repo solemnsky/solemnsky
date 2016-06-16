@@ -47,7 +47,8 @@ Multiplayer::Multiplayer(ClientShared &shared,
                          const unsigned short serverPort) :
     Game(shared, "multiplayer"),
     core(shared, *this, serverHostname, serverPort),
-    view(nullptr) {
+    view(nullptr),
+    hudFont(resources.getFont(ui::FontID::Default)) {
   areChildComponents({&core});
 }
 
@@ -153,10 +154,10 @@ void Multiplayer::render(ui::Frame &f) {
   if (!core.isConnected()) {
     if (core.isDisconnecting()) {
       f.drawText({400, 400}, "Disconnecting...",
-                 sf::Color::White, style.base.normalText);
+                 sf::Color::White, style.base.normalText, hudFont);
     } else {
       f.drawText({400, 400}, "Connecting...", sf::Color::White,
-                 style.base.normalText);
+                 style.base.normalText, hudFont);
     }
     return;
   }

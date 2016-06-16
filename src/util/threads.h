@@ -16,40 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Widget used to select a keyboard key.
+ * Give us std::thread and std::mutex. If we're on MinGW, use the thirdparty
+ * mingw-std-threads library.
  */
-#pragma once
-#include "ui/control.h"
-#include "button.h"
 
-namespace ui {
+#ifdef __linux
 
-class KeySelector: public ui::Control {
- private:
-  Button button;
-  optional<sf::Keyboard::Key> value;
-  bool capturing;
+#include <thread>
+#include <mutex>
 
- public:
-  typedef Button::Style Style;
+#endif
 
-  KeySelector(const AppRefs &appState,
-              const Style &style, const sf::Vector2f &pos);
+#ifdef _WIN32
 
-  // Control impl.
-  void render(Frame &f) override;
-  bool handle(const sf::Event &event) override;
-  void reset() override;
-  void signalRead() override;
-  void signalClear() override;
+#include <mingw.thread.h>
+#include <mingw.mutex.h>
 
-  // Custom API.
-  void setValue(const optional<sf::Keyboard::Key> key);
-  optional<sf::Keyboard::Key> getValue() const;
+#endif
 
-  void setDescription(const optional<std::string> &description);
-
-  bool &clickSignal;
-};
-
-}

@@ -28,7 +28,7 @@
  * client instead of the sky.
  */
 enum class ClientAction {
-  Spawn, Chat, Scoreboard
+  Spawn, Chat, Scoreboard, MAX
 };
 
 std::string showClientAction(const ClientAction action);

@@ -53,25 +53,24 @@ TextFormat::TextFormat(
     const int size,
     const float maxWidth,
     const HorizontalAlign horizontal,
-    const VerticalAlign vertical,
-    const ResID &font) :
+    const VerticalAlign vertical) :
     size(size),
     maxWidth(maxWidth),
     horizontal(horizontal),
-    vertical(vertical),
-    font(font) { }
+    vertical(vertical) { }
 
 /**
  * TextFrame.
  */
 
-TextFrame::TextFrame(Frame *parent,
+TextFrame::TextFrame(Frame &parent,
                      const sf::Vector2f &anchor,
-                     const TextFormat &format) :
+                     const TextFormat &format,
+                     const sf::Font &font) :
     parent(parent),
-    format(format),
     anchor(anchor),
-    font(fontOf(format.font)) { }
+    format(format),
+    font(font) { }
 
 sf::Vector2f TextFrame::endRender() {
   return drawnDimensions;
@@ -101,17 +100,17 @@ sf::Vector2f TextFrame::drawBlock(const sf::Vector2f &pos,
   }
   text.setPosition(drawPos);
 
-  text.setColor(parent->alphaScaleColor(color));
-  parent->window.draw(text, parent->transformStack.top());
+  text.setFillColor(parent.alphaScaleColor(color));
+  parent.window.draw(text, parent.transformStack.top());
   return {bounds.width, float(format.size)};
 }
 
 void TextFrame::print(const std::string &string) {
   assert(colorSet);
-  parent->primCount++;
+  parent.primCount++;
 
   sf::Text text;
-  text.setFont(fontOf(format.font));
+  text.setFont(font);
   text.setCharacterSize((unsigned int) format.size);
   text.setString(string);
 
@@ -172,6 +171,5 @@ void TextFrame::breakLine() {
     }
   }
 }
-
 
 }

@@ -33,7 +33,7 @@ enum class PageType {
  * Some UI state of our client; the various transitions and menu modes.
  */
 class ClientUiState {
-private:
+ private:
   friend class Client;
 
   void focusGame();
@@ -43,7 +43,7 @@ private:
 
   void tick(float delta);
 
-public:
+ public:
   ClientUiState();
 
   PageType focusedPage;
@@ -63,31 +63,31 @@ public:
  * has globally useful factors such as global settings, a unique_ptr to the Game
  * currently active, and UI methods that influence the whole Client.
  *
- * This should stay as small as possible.
+ * This is also used to propagate a `const ui::AppRefs &`.
  */
 struct ClientShared {
-private:
+  friend class Client;
+ private:
   Client &client;
 
- public:
-  ClientShared(ui::AppState &appState, Client &client);
+  // Constructed by client.
+  ClientShared(Client &client, const ui::AppRefs &references);
 
-  // AppState.
-  ui::AppState &appState;
-  const Time &uptime;
+ public:
+  const ui::AppRefs &references;
 
   // State.
   Settings settings;
   std::unique_ptr<class Game> game;
   ClientUiState ui;
 
-  // query key bindings
+  // Access key bindings.
   optional<std::pair<sky::Action, bool>> triggerSkyAction(
       const sf::Event &event) const;
   optional<std::pair<ClientAction, bool>> triggerClientAction(
       const sf::Event &event) const;
 
-  // Relays to client. This seems to be useful enough to justify violating DRY.
+  // Relays to top-level.
   void beginGame(std::unique_ptr<Game> &&game);
   void blurGame();
   void focusGame();
@@ -97,4 +97,6 @@ private:
   void blurPage();
 
   void changeSettings(const SettingsDelta &settings);
+
 };
+

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Wrapper control that makes the base Control's life easier.
+ * Splash screen; loads resources and enters the main menu on user input.
  */
 #pragma once
 #include <memory>
@@ -30,27 +30,39 @@ namespace detail {
  * Supplied with a constructor for a main Control, this loads resources while
  * displaying a splash screen and fades into the main Control when resources
  * are ready. It also relays the wrapped control's `quitting` flag.
+ *
+ * We can't use `resources` here! Our job is to create them for the child app.
  */
-// TODO: Make this threaded, currently the game loop locks up while resources
-// are being loaded! You fool!
-class ExecWrapper: public Control {
+class SplashScreen : public Control {
  private:
+  // App constructor.
+  std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp;
+
+  // Loader and splash screen.
+  ResourceLoader loader;
+  const sf::Font &defaultFont;
+  const sf::Texture &background;
   double animBegin;
-  bool drewScreen, loadingDone;
-  TextFormat loadingText;
-  std::function<std::unique_ptr<Control>(AppState &)> mainCtrlCtor;
-  std::unique_ptr<Control> mainCtrl;
+
+  // App construction.
+  void constructApp(const AppResources &resources);
+  optional<AppResources> loadedResources;
+  optional<AppRefs> initializedReferences;
+  std::unique_ptr<Control> control;
 
  public:
-  ExecWrapper(AppState &appState,
-              std::function<std::unique_ptr<Control>(AppState &)>
-              mainCtrlCtor);
+  SplashScreen(const AppRefs &appState,
+               std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp);
 
+  // Control impl.
   bool poll() override final;
   void tick(const TimeDiff delta) override final;
   void render(Frame &f) override final;
   bool handle(const sf::Event &event) override final;
+
 };
+
 }
 
 }
+

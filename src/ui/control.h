@@ -20,14 +20,11 @@
  */
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "util/telegraph.h"
 #include <vector>
-#include <stack>
 #include <functional>
 #include <memory>
+#include "util/telegraph.h"
 #include "frame.h"
-#include "util/types.h"
-#include "signal.h"
 
 namespace ui {
 
@@ -51,13 +48,22 @@ struct ProfilerSnapshot {
 };
 
 /**
- * Various lower level settings and SFML-provided state for us to access
- * occasionally.
+ * All the references passed to a Control; some accessible directly, some
+ * through protected Control aliases.
+ *
+ * The `resources` reference is undefined in SplashScreen; everywhere else
+ * it is defined.
  */
-struct AppState {
-  AppState(const sf::RenderWindow &window,
-           const Profiler &profiler,
-           const Time &time);
+struct AppRefs {
+  friend class Control;
+ private:
+  const AppResources &resources;
+
+ public:
+  AppRefs(const AppResources &resources,
+          const Time &time,
+          const sf::RenderWindow &window,
+          const Profiler &profiler);
 
   const Time &uptime;
   const sf::RenderWindow &window;
@@ -72,14 +78,17 @@ struct AppState {
  */
 class Control {
  protected:
-  AppState &appState;
-  std::vector<Control *> children;
+  // Ref to reference struct, and aliases.
+  const AppRefs &references;
+  const AppResources &resources;
 
+  // Children
+  std::vector<Control *> children;
   void areChildren(std::initializer_list<Control *> controls);
-  
- public: 
-  Control(AppState &appState);
-  virtual ~Control() { }
+
+ public:
+  Control(const AppRefs &references);
+  virtual ~Control() {}
 
   // Quitting flag.
   bool quitting;
@@ -120,8 +129,8 @@ class ControlExec {
   sf::Clock profileClock;
   ui::Profiler profiler;
 
-  // AppState and Control.
-  AppState appState;
+  // AppRefs and Control.
+  AppRefs appState;
   std::unique_ptr<Control> ctrl;
 
   // App loop submethods.
@@ -130,13 +139,12 @@ class ControlExec {
   void renderAndSleep();
 
  public:
-  ControlExec(std::function<std::unique_ptr<Control>(AppState &)> initCtrl);
-
-  void run();
+  ControlExec();
+  void run(std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp);
 
 };
 
-void runSFML(std::function<std::unique_ptr<Control>(AppState &)> initCtrl);
+void runSFML(std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp);
 
 }
 

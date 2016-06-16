@@ -74,7 +74,8 @@ class TextLog: public Control, public Printer {
   TextFormat textFormat; // derived from style
 
  public:
-  TextLog(AppState &appState, const Style &style, const sf::Vector2f &pos);
+  TextLog
+      (const AppRefs &appState, const Style &style, const sf::Vector2f &pos);
 
   // Control implementation
   void tick(float delta) override final;
@@ -85,8 +86,8 @@ class TextLog: public Control, public Printer {
   void print(const std::string &str) override final;
   void setColor(const unsigned char r,
                 const unsigned char g,
-                const unsigned char b);
-  void breakLine();
+                const unsigned char b) override final;
+  void breakLine() override final;
 
   void clear();
 

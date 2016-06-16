@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "textentry.h"
-#include "util/client/sfmlutil.h"
+#include "util/clientutil.h"
 #include "util/methods.h"
 
 namespace ui {
@@ -39,7 +39,7 @@ TextEntry::Style::Style(
     fontSize(fontSize),
     heatRate(heatRate) { }
 
-TextEntry::TextEntry(AppState &appState,
+TextEntry::TextEntry(const AppRefs &appState,
                      const Style &style,
                      const sf::Vector2f &pos,
                      const std::string &description,
@@ -55,10 +55,10 @@ TextEntry::TextEntry(AppState &appState,
     repeatCooldown(0.06), // TODO: Cooldowns don't compensate for
     // wrap-around, making their behaviour erratic when the tick interval
     // approaches the cooldown interval
+    // FIXME: do this next time things are stable
 
     textFormat(style.fontSize, 0,
-               ui::HorizontalAlign::Left, ui::VerticalAlign::Top,
-               ResID::Font),
+               ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
     descriptionFormat(textFormat),
 
     persistent(persistent),
@@ -123,7 +123,7 @@ void TextEntry::tick(float delta) {
   if (pressedKeyboardEvent) {
     if (repeatActivate.cool(delta)) {
       if (repeatCooldown.cool(delta)) {
-        handleKeyboardEvent(*pressedKeyboardEvent);
+        handleKeyboardEvent(pressedKeyboardEvent.get());
         repeatCooldown.reset();
       }
     }
@@ -134,7 +134,8 @@ void TextEntry::render(Frame &f) {
   f.pushTransform(sf::Transform().translate(pos));
   if (persistent) {
     f.drawText({-20, style.dimensions.y / 2.0f},
-               description, sf::Color::White, descriptionFormat);
+               description, sf::Color::White, descriptionFormat,
+               resources.defaultFont);
   }
 
   if (isFocused) {
@@ -152,13 +153,13 @@ void TextEntry::render(Frame &f) {
                   cursorWidth, style.dimensions.y},
               style.textColor);
           tf.print(contents.substr(size_t(cursor)));
-        }, textFormat);
+        }, textFormat, resources.defaultFont);
   } else {
     f.drawRect({}, style.dimensions,
                mixColors(style.inactiveColor, style.hotColor, heat));
     f.drawText({sidePadding, 0},
                {persistent ? contents : description},
-               style.textColor, textFormat);
+               style.textColor, textFormat, resources.defaultFont);
   }
   f.popTransform();
 }

@@ -23,7 +23,6 @@
 #include <stack>
 #include <SFML/Graphics.hpp>
 #include <functional>
-#include "util/client/resources.h"
 #include "text.h"
 
 namespace ui {
@@ -49,7 +48,7 @@ class Frame {
  public:
   Frame(sf::RenderWindow &window);
 
-  sf::RenderWindow &window; // might be useful for some settings sometimes
+  sf::RenderWindow &window; // might be useful for settings
 
   // Managing transform / alpha stack.
   void pushTransform(const sf::Transform &transform);
@@ -71,11 +70,13 @@ class Frame {
   inline sf::Vector2f drawText(
       const sf::Vector2f pos,
       const std::string &string,
-      const sf::Color &color, const TextFormat &format) {
+      const sf::Color &color,
+      const TextFormat &format,
+      const sf::Font &font) {
     return drawText(pos, [&](ui::TextFrame &p) {
       p.setColor(color);
       p.print(string);
-    }, format);
+    }, format, font);
   }
 
   // Drawing API: basic methods.
@@ -89,7 +90,8 @@ class Frame {
                        const sf::Color &color = {});
   sf::Vector2f drawText(const sf::Vector2f &pos,
                         std::function<void(TextFrame &)> process,
-                        const TextFormat &format);
+                        const TextFormat &format,
+                        const sf::Font &font);
   void drawSprite(const sf::Texture &texture, const sf::Vector2f &pos,
                   const sf::IntRect &portion);
 };

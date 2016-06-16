@@ -21,7 +21,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "util/printer.h"
-#include "util/client/resources.h"
+#include "resources.h"
 
 namespace ui {
 
@@ -55,14 +55,13 @@ struct TextFormat {
   TextFormat() = delete;
   TextFormat(const int size,
              const float maxWidth,
-             const HorizontalAlign horizontal, const VerticalAlign vertical,
-             const ResID &font);
+             const HorizontalAlign horizontal, const VerticalAlign vertical);
 
   int size;
   float maxWidth; // values of 0 mean there is no limit
   HorizontalAlign horizontal;
   VerticalAlign vertical;
-  ResID font; // resource ID
+
 };
 
 /**
@@ -72,16 +71,16 @@ class TextFrame: public Printer {
  private:
   friend class Frame;
 
-  TextFrame(class Frame *parent,
+  TextFrame(class Frame &parent,
             const sf::Vector2f &anchor,
-            const TextFormat &format);
+            const TextFormat &format,
+            const sf::Font &font);
   TextFrame() = delete;
 
   // parameters and references
-  class Frame *parent;
-  const TextFormat &format;
+  class Frame &parent;
   const sf::Vector2f &anchor;
-
+  const TextFormat &format;
   const sf::Font &font;
 
   // state
