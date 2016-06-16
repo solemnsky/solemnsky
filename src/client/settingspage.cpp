@@ -180,8 +180,6 @@ SettingsPage::SettingsPage(ClientShared &shared) :
     playerTab(references, shared.settings),
     controlsTab(references, shared.settings),
     currentTab(&generalButton, &generalTab) {
-  appLog(resources.defaultFont.getInfo().family);
-
   areChildren(
       {&generalButton, &playerButton, &controlsButton});
   currentTab.first->setActive(false);

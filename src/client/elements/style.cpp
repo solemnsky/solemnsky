@@ -52,9 +52,15 @@ Style::Base::Base() :
                     normalFontSize, heatRate),
     normalCheckbox(buttonColor, buttonHotColor, buttonPressedColor,
                    buttonInactiveColor, textColor,
-                   {40, 40}, heatRate, normalFontSize) { }
+                   {40, 40}, heatRate, normalFontSize) {}
 
-Style::Splash::Splash() { }
+Style::Splash::Splash() :
+    barWidth(800),
+    barHeight(30),
+    barPaddingTop(50),
+    barColor(sf::Color::White),
+    titleFormat(50, {}, ui::HorizontalAlign::Center,
+                ui::VerticalAlign::Middle) {}
 
 Style::Menu::Menu(const Style::Base &base) :
     unfocusedPageScale(500.0f / 1600.0f),
@@ -108,7 +114,7 @@ Style::Menu::Menu(const Style::Base &base) :
 Style::Home::Home(const Style::Base &base) :
     tutorialButtonPos(500, 300),
     localhostButtonPos(1100, 300),
-    remoteButtonPos(800, 600) { }
+    remoteButtonPos(800, 600) {}
 
 Style::Settings::Settings(const Style::Base &base) :
     textEntry(base.normalTextEntry),
@@ -124,9 +130,9 @@ Style::Settings::Settings(const Style::Base &base) :
     playerButtonOffset(generalButtonOffset + 300 + 700 / 3),
     controlsButtonOffset(playerButtonOffset + 300 + 700 / 3),
     selectedTabButtonColor(100, 100, 100),
-    unselectedTabButtonColor(base.buttonColor) { }
+    unselectedTabButtonColor(base.buttonColor) {}
 
-Style::Listing::Listing() { }
+Style::Listing::Listing() {}
 
 Style::Multi::Multi(const Style::Base &base) :
     scoreOverlayDims{1330, 630},
@@ -150,7 +156,6 @@ Style::Multi::Multi(const Style::Base &base) :
     chatCutoff(500),
     chatIngameCutoff(150),
 
-
     playerSpecColor(255, 255, 255),
     playerJoinedColor(0, 255, 0),
     readyButtonActiveDesc("READY!"),
@@ -171,13 +176,13 @@ Style::SkyRender::SkyRender() :
     throttle(sf::Color::Black),
     health(sf::Color::Green),
     energy(sf::Color::Blue),
-    deathRate(0.5) { }
+    deathRate(0.5) {}
 
 Style::Style() :
     base(),
     menu(base),
     home(base),
     settings(base),
-    multi(base) { }
+    multi(base) {}
 
 

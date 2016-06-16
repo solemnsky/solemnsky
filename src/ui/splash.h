@@ -41,8 +41,8 @@ class SplashScreen : public Control {
   // Loader and splash screen.
   ResourceLoader loader;
   const sf::Font &defaultFont;
+  const sf::Texture &background;
   double animBegin;
-  TextFormat readyText;
 
   // App construction.
   void constructApp(const AppResources &resources);
