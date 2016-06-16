@@ -75,13 +75,27 @@ bool verifyValue(
  * Verify that a series of optionals are instantiated, and
  * that the values respect any potential invariants.
  */
+bool verifyRequiredOptionals();
+
+template<typename Field, typename... Fields>
+bool verifyRequiredOptionals(const Field &field, Fields... fields) {
+  if (!bool(field)) return false;
+  if (!verifyValue(*field)) return false;
+  return verifyRequiredOptionals(fields...);
+}
+
+/**
+ * Verify that a series of optionals, if instantiated,
+ * respect any potential invariants.
+ */
 bool verifyOptionals();
 
 template<typename Field, typename... Fields>
-bool verifyOptionals(Field &field, Fields... fields) {
-  if (!bool(field)) return false;
-  if (!verifyValue(*field)) return false;
-  return verifyOptionals(fields...);
+bool verifyOptionals(const Field &field, Fields... fields) {
+  if (bool(field)) {
+    if (!verifyValue(*field)) return false;
+  }
+  return verifyRequiredOptionals(fields...);
 }
 
 /**

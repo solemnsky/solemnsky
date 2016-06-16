@@ -85,10 +85,9 @@ class SkyRender : public ClientComponent, public Subsystem<PlaneGraphics> {
  public:
   SkyRender(ClientShared &shared, const ui::AppResources &resources,
             Arena &arena, const Sky &sky);
-  ~SkyRender();
 
   // ClientComponent impl.
-  virtual void onChangeSettings(const SettingsDelta &settings) override final;
+  void onChangeSettings(const SettingsDelta &settings) override final;
 
   // User API.
   void render(ui::Frame &f, const sf::Vector2f &pos);

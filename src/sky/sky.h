@@ -24,22 +24,24 @@
 #include "physics.h"
 #include "participation.h"
 #include "arena.h"
+#include "skysettings.h"
 
 namespace sky {
 
 /**
  * Initializer for Sky.
  */
-struct SkyInit: public VerifyStructure {
+struct SkyInit : public VerifyStructure {
   SkyInit() = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(participations);
+    ar(settings, participations);
   }
 
   bool verifyStructure() const;
 
+  SkySettingsInit settings;
   std::map<PID, ParticipationInit> participations;
 
 };
@@ -47,19 +49,20 @@ struct SkyInit: public VerifyStructure {
 /**
  * Delta for Sky. Broadcast by server, applied by clients.
  */
-struct SkyDelta: public VerifyStructure {
+struct SkyDelta : public VerifyStructure {
   SkyDelta() = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(participations);
+    ar(settings, participations);
   }
 
   bool verifyStructure() const;
 
+  optional<SkySettingsDelta> settings;
   std::map<PID, ParticipationDelta> participations;
 
-  // Respecting client authority.
+  // Transform to respect client authority.
   SkyDelta respectAuthority(const Player &player) const;
 
 };
@@ -67,9 +70,9 @@ struct SkyDelta: public VerifyStructure {
 /**
  * Game world when a game is in session.
  */
-class Sky
-    : public PhysicsListener, public Subsystem<Participation>,
-      public Networked<SkyInit, SkyDelta> {
+class Sky : public PhysicsListener,
+            public Subsystem<Participation>,
+            public Networked<SkyInit, SkyDelta> {
   friend class SkyHandle;
   friend class Participation;
  private:
@@ -77,6 +80,7 @@ class Sky
   const Map &map;
   Physics physics;
   std::map<PID, Participation> participations;
+  SkySettings settings;
 
  protected:
   void registerPlayerWith(Player &player,
@@ -99,6 +103,9 @@ class Sky
   void onEndContact(const BodyTag &body1,
                     const BodyTag &body2) override final;
 
+  // Syncing settings to potential state.
+  void syncSettings();
+
  public:
   Sky(Arena &arena, Map &&map,
       std::map<PID, optional<Participation>> &) = delete; // Map can't be temp
@@ -112,6 +119,8 @@ class Sky
   // User API.
   const Map &getMap() const;
   Participation &getParticipation(const Player &player) const;
+  const SkySettings &getSettings() const;
+  void changeSettings(const SkySettingsDelta &delta);
 
 };
 

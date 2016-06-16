@@ -64,7 +64,7 @@ class PhysicsListener {
 /**
  * Listens to the b2World and dispatches to PhysicsListener.
  */
-class PhysicsDispatcher: public b2ContactListener {
+class PhysicsDispatcher : public b2ContactListener {
  private:
   PhysicsListener &listener;
 
@@ -83,11 +83,11 @@ class PhysicsDispatcher: public b2ContactListener {
 class Physics {
  private:
   const struct Settings {
-    Settings() { }
+    Settings() {}
 
-    int velocityIterations = 8, positionIterations = 3;
-    float distanceScale = 100;
-    float gravity = 150;
+    int velocityIterations = 8, positionIterations = 3; // simulation parameters
+    float distanceScale = 100; // box2d uses meters, not px
+    float gravity = 150; // reasonable default for gravity
   } settings;
 
   b2World world;
@@ -105,25 +105,28 @@ class Physics {
   void tick(const TimeDiff delta);
 
   // Unit conversion.
-  sf::Vector2f toGameVec(b2Vec2 vec) const;
-  b2Vec2 toPhysVec(sf::Vector2f vec) const;
-  float toGameDistance(float x) const;
-  float toPhysDistance(float x) const;
+  sf::Vector2f toGameVec(const b2Vec2 &vec) const;
+  b2Vec2 toPhysVec(const sf::Vector2f &vec) const;
+  float toGameDistance(const float x) const;
+  float toPhysDistance(const float x) const;
 
   // Managing bodies.
   b2Body *createBody(const b2Shape &shape,
                      const BodyTag &tag, bool isStatic = false);
   void deleteBody(b2Body *const body);
 
+  // Constructing shapes.
   b2PolygonShape rectShape(const sf::Vector2f &dims);
-  b2PolygonShape polygonShape(const std::vector<sf::Vector2f>
-                                     &verticies);
-  b2ChainShape chainLoopShape(const std::vector<sf::Vector2f>
-                                     &verticies);
+  b2PolygonShape polygonShape(const std::vector<sf::Vector2f> &verticies);
+  b2ChainShape chainLoopShape(const std::vector<sf::Vector2f> &verticies);
 
-  // approach rotational / linear velocities by applying impulses
+  // Impulses.
   void approachRotVel(b2Body *body, float rotvel) const;
   void approachVel(b2Body *body, sf::Vector2f vel) const;
+
+  // Changing properties.
+  void setGravity(const float gravity);
+
 };
 
 /**

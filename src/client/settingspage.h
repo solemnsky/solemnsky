@@ -87,13 +87,15 @@ class SettingsPage: public Page {
  public:
   SettingsPage(ClientShared &shared);
 
-  void tick(float delta) override;
-  void render(ui::Frame &f) override;
-  bool handle(const sf::Event &event) override;
-  void reset() override;
-  void signalRead() override;
-  void signalClear() override;
-
+  // Page impl.
   void onChangeSettings(const SettingsDelta &) override;
   void onBlur() override;
+
+  // Control impl.
+  void tick(float delta) override final;
+  void render(ui::Frame &f) override final;
+  bool handle(const sf::Event &event) override final;
+  void reset() override final;
+  void signalRead() override final;
+  void signalClear() override final;
 };

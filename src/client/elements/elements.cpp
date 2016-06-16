@@ -59,6 +59,10 @@ Game::Game(ClientShared &shared,
     ui::Control(shared.references),
     name(name) { }
 
-void Game::printDebug(Printer &p) {
-  p.printLn("(nothing noteworthy)");
+void Game::printDebugLeft(Printer &p) {
+  p.printLn("undefined!");
+}
+
+void Game::printDebugRight(Printer &p) {
+  p.printLn("undefined!");
 }
