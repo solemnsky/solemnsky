@@ -131,7 +131,7 @@ class AppResources {
 };
 
 /**
- * Manages the loading of a set of resources, resulting in a AppResources.
+ * Manages the loading of a set of resources, resulting in an AppResources.
  */
 class ResourceLoader {
  private:
@@ -147,11 +147,11 @@ class ResourceLoader {
   optional<AppResources> holder;
 
   // Loading subroutines.
-  void writeLog(const std::string &str);
   optional<std::string> loadFont(
       const FontID id, const FontMetadata &data);
   optional<std::string> loadTexture(
       const TextureID id, const TextureMetadata &data);
+  void loadAllBlocking();
 
  public:
   ResourceLoader(

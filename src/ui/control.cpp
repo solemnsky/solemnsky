@@ -227,12 +227,12 @@ ControlExec::ControlExec() :
     appState(*((AppResources *) nullptr), window, profiler, uptime) {
   window.setVerticalSyncEnabled(true);
   window.setKeyRepeatEnabled(false);
-  appLog("Initialized SFML.", LogOrigin::App);
+  appLog("Initialized SFML!", LogOrigin::App);
 }
 
 void ControlExec::run(std::function<std::unique_ptr<Control>(const AppState &)> mkApp) {
   ctrl = std::make_unique<detail::SplashScreen>(appState, mkApp);
-  appLog("Starting game loop.", LogOrigin::App);
+  appLog("Starting application loop...", LogOrigin::App);
 
   while (window.isOpen()) {
     tick();
@@ -242,7 +242,7 @@ void ControlExec::run(std::function<std::unique_ptr<Control>(const AppState &)> 
     if (ctrl->quitting) window.close();
   }
 
-  appLog("Exiting solemnsky, see you later.", LogOrigin::App);
+  appLog("Exiting cleanly.", LogOrigin::App);
 }
 
 void runSFML(std::function<std::unique_ptr<Control>(const AppState &)> mkApp) {
