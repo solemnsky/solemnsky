@@ -243,8 +243,7 @@ bool ResourceLoader::getErrorStatus() const {
 }
 
 AppResources const *ResourceLoader::getHolder() const {
-  if (holder) return holder.get_ptr();
-  else return nullptr;
+  return holder.get_ptr();
 }
 
 }
