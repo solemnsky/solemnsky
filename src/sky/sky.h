@@ -119,7 +119,7 @@ class Sky : public PhysicsListener,
   // User API.
   const Map &getMap() const;
   Participation &getParticipation(const Player &player) const;
-  const SkySettings &getSettings();
+  const SkySettings &getSettings() const;
   void changeSettings(const SkySettingsDelta &delta);
 
 };

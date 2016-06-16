@@ -27,6 +27,7 @@ Style::Base::Base() :
     centeredText(30, {}, ui::HorizontalAlign::Center, ui::VerticalAlign::Top),
     normalText(30, {}, ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
     debugText(25, {}, ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
+    debugRightText(25, {}, ui::HorizontalAlign::Right, ui::VerticalAlign::Top),
 
     buttonColor(132, 173, 181), // blue
     buttonHotColor(92, 189, 206), // hot blue

@@ -64,7 +64,7 @@ void HomePage::signalRead() {
   ui::Control::signalRead();
 
   if (tutorialButton.clickSignal)
-    shared.beginGame(std::make_unique<Tutorial>(shared));
+    shared.beginGame(std::make_unique<Sandbox>(shared));
 
   if (localhostButton.clickSignal)
     shared.beginGame(

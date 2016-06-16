@@ -162,7 +162,7 @@ Participation &Sky::getParticipation(const Player &player) const {
   return getPlayerData(player);
 }
 
-const SkySettings &Sky::getSettings() {
+const SkySettings &Sky::getSettings() const {
   return settings;
 }
 
