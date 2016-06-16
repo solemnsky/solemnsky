@@ -185,6 +185,17 @@ SettingsPage::SettingsPage(ClientShared &shared) :
   currentTab.first->setActive(false);
 }
 
+void SettingsPage::onChangeSettings(const SettingsDelta &delta) {
+  newSettings = shared.settings;
+  currentTab.second->readSettings(shared.settings);
+}
+
+void SettingsPage::onBlur() {
+  currentTab.second->reset();
+  currentTab.second->writeSettings(newSettings);
+  shared.changeSettings(SettingsDelta(shared.settings, newSettings));
+}
+
 void SettingsPage::tick(float delta) {
   currentTab.second->tick(delta);
   ui::Control::tick(delta);
@@ -216,15 +227,4 @@ void SettingsPage::signalRead() {
 void SettingsPage::signalClear() {
   ui::Control::signalClear();
   currentTab.second->signalClear();
-}
-
-void SettingsPage::onBlur() {
-  currentTab.second->reset();
-  currentTab.second->writeSettings(newSettings);
-  shared.changeSettings(SettingsDelta(shared.settings, newSettings));
-}
-
-void SettingsPage::onChangeSettings(const SettingsDelta &delta) {
-  newSettings = shared.settings;
-  currentTab.second->readSettings(shared.settings);
 }

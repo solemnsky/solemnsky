@@ -28,8 +28,9 @@ std::string showClientAction(const ClientAction action) {
       return "chat";
     case ClientAction::Scoreboard:
       return "scoreboard";
+    default:
+      throw enum_error();
   }
-  throw enum_error();
 }
 
 /**

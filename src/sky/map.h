@@ -21,6 +21,7 @@
 #pragma once
 #include <SFML/System.hpp>
 #include "util/types.h"
+#include "skysettings.h"
 #include <string>
 #include <ostream>
 #include <istream>
@@ -111,6 +112,13 @@ struct Map {
   Map(const Map &map) = default;
 
   const MapName name;
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(cereal::make_nvp("dimensions", dimensions),
+       cereal::make_nvp("obstacles", obstacles),
+       cereal::make_nvp("spawnPoints", spawnPoints));
+  }
 
   // User API.
   const sf::Vector2f &getDimensions() const;

@@ -30,21 +30,21 @@ ClientPacket::ClientPacket(const Type type) : type(type) { }
 bool ClientPacket::verifyStructure() const {
   switch (type) {
     case Type::Pong:
-      return verifyOptionals(pingTime, pongTime);
+      return verifyRequiredOptionals(pingTime, pongTime);
     case Type::ReqJoin:
-      return verifyOptionals(stringData);
+      return verifyRequiredOptionals(stringData);
     case Type::ReqPlayerDelta:
-      return verifyOptionals(playerDelta);
+      return verifyRequiredOptionals(playerDelta);
     case Type::ReqInput:
-      return verifyOptionals(participationInput);
+      return verifyRequiredOptionals(participationInput);
     case Type::ReqTeam:
-      return verifyOptionals(team);
+      return verifyRequiredOptionals(team);
     case Type::ReqSpawn:
       return true;
     case Type::Chat:
-      return verifyOptionals(stringData);
+      return verifyRequiredOptionals(stringData);
     case Type::RCon:
-      return verifyOptionals(stringData);
+      return verifyRequiredOptionals(stringData);
   }
   return false;
 }
@@ -108,21 +108,21 @@ ServerPacket::ServerPacket(const Type type) : type(type) { }
 bool ServerPacket::verifyStructure() const {
   switch (type) {
     case Type::Ping:
-      return verifyOptionals(pingTime);
+      return verifyRequiredOptionals(pingTime);
     case Type::Init:
-      return verifyOptionals(pid, arenaInit, skyInit, scoreInit);
+      return verifyRequiredOptionals(pid, arenaInit, skyInit, scoreInit);
     case Type::DeltaArena:
-      return verifyOptionals(arenaDelta);
+      return verifyRequiredOptionals(arenaDelta);
     case Type::DeltaSky:
-      return verifyOptionals(pingTime, skyDelta);
+      return verifyRequiredOptionals(pingTime, skyDelta);
     case Type::DeltaScore:
-      return verifyOptionals(scoreDelta);
+      return verifyRequiredOptionals(scoreDelta);
     case Type::Chat:
-      return verifyOptionals(pid, stringData);
+      return verifyRequiredOptionals(pid, stringData);
     case Type::Broadcast:
-      return verifyOptionals(stringData);
+      return verifyRequiredOptionals(stringData);
     case Type::RCon:
-      return verifyOptionals(stringData);
+      return verifyRequiredOptionals(stringData);
   }
   return false;
 }

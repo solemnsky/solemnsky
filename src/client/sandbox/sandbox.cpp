@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "tutorial.h"
+#include "sandbox.h"
 
-Tutorial::Tutorial(ClientShared &state) :
-    Game(state, "tutorial"),
-    arena(sky::ArenaInit("tutorial", "ball_funnelpark")),
+Sandbox::Sandbox(ClientShared &state) :
+    Game(state, "sandbox"),
+    arena(sky::ArenaInit("sandbox", "ball_funnelpark")),
     map(sky::Map::load(arena.getNextMap()).get()),
     sky(arena, map, sky::SkyInit()),
     skyRender(shared, resources, arena, sky) {
@@ -38,20 +38,20 @@ Tutorial::Tutorial(ClientShared &state) :
  * Game interface.
  */
 
-void Tutorial::onChangeSettings(const SettingsDelta &settings) {
+void Sandbox::onChangeSettings(const SettingsDelta &settings) {
   ClientComponent::onChangeSettings(settings);
   if (settings.nickname) player->getNickname() = *settings.nickname;
 }
 
-void Tutorial::onBlur() {
+void Sandbox::onBlur() {
 
 }
 
-void Tutorial::onFocus() {
+void Sandbox::onFocus() {
 
 }
 
-void Tutorial::doExit() {
+void Sandbox::doExit() {
   quitting = true;
 }
 
@@ -59,12 +59,12 @@ void Tutorial::doExit() {
  * Control interface.
  */
 
-void Tutorial::tick(float delta) {
+void Sandbox::tick(float delta) {
   if (shared.ui.gameFocused()) arena.tick(delta);
   // if this were multiplayer of course we wouldn't have this liberty
 }
 
-void Tutorial::render(ui::Frame &f) {
+void Sandbox::render(ui::Frame &f) {
   auto &plane = participation->plane;
   skyRender.render(
       f, plane ?
@@ -72,7 +72,7 @@ void Tutorial::render(ui::Frame &f) {
          sf::Vector2f(0, 0));
 }
 
-bool Tutorial::handle(const sf::Event &event) {
+bool Sandbox::handle(const sf::Event &event) {
   if (auto action = shared.triggerClientAction(event)) {
     if (action->first == ClientAction::Spawn
         and action->second
@@ -89,14 +89,22 @@ bool Tutorial::handle(const sf::Event &event) {
   return false;
 }
 
-void Tutorial::reset() {
+void Sandbox::reset() {
   ui::Control::reset();
 }
 
-void Tutorial::signalRead() {
+void Sandbox::signalRead() {
   ui::Control::signalRead();
 }
 
-void Tutorial::signalClear() {
+void Sandbox::signalClear() {
   ui::Control::signalClear();
+}
+
+void Sandbox::printDebugLeft(Printer &p) {
+  p.printLn("something something something left");
+}
+
+void Sandbox::printDebugRight(Printer &p) {
+  p.printLn("something something something right");
 }

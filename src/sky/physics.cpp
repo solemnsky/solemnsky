@@ -25,7 +25,7 @@ namespace sky {
  */
 
 BodyTag::BodyTag(const BodyTag::Type type) :
-    type(type), plane(nullptr) { }
+    type(type), plane(nullptr) {}
 
 BodyTag BodyTag::BoundaryTag() {
   return BodyTag(Type::BoundaryTag);
@@ -54,7 +54,7 @@ BodyTag BodyTag::PropTag(class Prop &prop) {
  */
 
 PhysicsDispatcher::PhysicsDispatcher(PhysicsListener &listener) :
-    listener(listener) { }
+    listener(listener) {}
 
 void PhysicsDispatcher::BeginContact(b2Contact *contact) {
   listener.onBeginContact(
@@ -113,21 +113,21 @@ void Physics::tick(const TimeDiff delta) {
              settings.velocityIterations, settings.positionIterations);
 }
 
-sf::Vector2f Physics::toGameVec(b2Vec2 vec) const {
+sf::Vector2f Physics::toGameVec(const b2Vec2 &vec) const {
   return {vec.x * settings.distanceScale,
           vec.y * settings.distanceScale};
 }
 
-b2Vec2 Physics::toPhysVec(sf::Vector2f vec) const {
+b2Vec2 Physics::toPhysVec(const sf::Vector2f &vec) const {
   return {vec.x / settings.distanceScale,
           vec.y / settings.distanceScale};
 }
 
-float Physics::toGameDistance(float x) const {
+float Physics::toGameDistance(const float x) const {
   return x * settings.distanceScale;
 }
 
-float Physics::toPhysDistance(float x) const {
+float Physics::toPhysDistance(const float x) const {
   return x / settings.distanceScale;
 }
 
@@ -157,7 +157,8 @@ b2PolygonShape Physics::rectShape(const sf::Vector2f &dims) {
   return shape;
 }
 
-b2PolygonShape Physics::polygonShape(const std::vector<sf::Vector2f> &verticies) {
+b2PolygonShape Physics::polygonShape(
+    const std::vector<sf::Vector2f> &verticies) {
   b2PolygonShape shape;
   b2Vec2 *points = new b2Vec2[verticies.size()];
   size_t i = 0;
@@ -170,7 +171,8 @@ b2PolygonShape Physics::polygonShape(const std::vector<sf::Vector2f> &verticies)
   return shape;
 }
 
-b2ChainShape Physics::chainLoopShape(const std::vector<sf::Vector2f> &verticies) {
+b2ChainShape Physics::chainLoopShape(
+    const std::vector<sf::Vector2f> &verticies) {
   b2ChainShape shape;
   b2Vec2 *points = new b2Vec2[verticies.size() + 1];
   points[0] = toPhysVec(verticies[verticies.size() - 1]);
@@ -198,6 +200,11 @@ void Physics::approachVel(b2Body *body, sf::Vector2f vel) const {
       data.center + body->GetWorldCenter(), true);
 }
 
+void Physics::setGravity(const float gravity) {
+  world.SetGravity(
+      b2Vec2(0, (settings.gravity / settings.distanceScale) * gravity));
+}
+
 /**
  * PhysicalState.
  */
@@ -206,7 +213,7 @@ PhysicalState::PhysicalState(const sf::Vector2f &pos,
                              const sf::Vector2f &vel,
                              const Angle rot,
                              const float rotvel) :
-    pos(pos), vel(vel), rot(rot), rotvel(rotvel) { }
+    pos(pos), vel(vel), rot(rot), rotvel(rotvel) {}
 
 void PhysicalState::hardWriteToBody(const Physics &physics,
                                     b2Body *const body) const {

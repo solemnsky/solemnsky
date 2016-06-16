@@ -24,30 +24,24 @@
 #include "elements/elements.h"
 #include "ui/widgets/widgets.h"
 
-class HomePage: public Page {
+class HomePage : public Page {
  private:
-  ui::Button tutorialButton;
-  ui::Button localhostButton;
-  ui::Button remoteButton;
+  ui::Button sandboxButton, localhostButton, remoteButton;
 
  public:
   HomePage(ClientShared &state);
 
-  /**
-   * Page interface.
-   */
-  void onChangeSettings(const SettingsDelta &settings) override;
-  void onBlur() override;
+  // Page impl.
+  void onChangeSettings(const SettingsDelta &settings) override final;
+  void onBlur() override final;
 
-  /**
-   * Control interface.
-   */
-  void tick(float delta) override;
-  void render(ui::Frame &f) override;
-  bool handle(const sf::Event &event) override;
-  void reset() override;
-  void signalRead() override;
-  void signalClear() override;
+  // Control impl.
+  void tick(float delta) override final;
+  void render(ui::Frame &f) override final;
+  bool handle(const sf::Event &event) override final;
+  void reset() override final;
+  void signalRead() override final;
+  void signalClear() override final;
 };
 
 #endif //SOLEMNSKY_HOMEPAGE_H

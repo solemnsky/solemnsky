@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * A tutorial to introduce new players to the mechanics.
+ * A sandbox for testing the engine.
  */
 #pragma once
 #include "client/elements/elements.h"
 #include "sky/sky.h"
 #include "client/skyrender.h"
 
-class Tutorial : public Game {
+class Sandbox : public Game {
 private:
   sky::Arena arena;
   sky::Map map;
@@ -34,7 +34,7 @@ private:
   const sky::Participation *participation;
 
 public:
-  Tutorial(ClientShared &state);
+  Sandbox(ClientShared &state);
 
   /**
    * Game interface.
@@ -43,6 +43,8 @@ public:
   void onBlur() override;
   void onFocus() override;
   void doExit() override;
+  virtual void printDebugLeft(Printer &p) override;
+  virtual void printDebugRight(Printer &p) override;
 
   /**
    * Control interface.

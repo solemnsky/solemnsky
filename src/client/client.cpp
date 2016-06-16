@@ -135,10 +135,17 @@ void Client::drawGame(ui::Frame &f) {
             tf.printLn("render:" + profilerSnap.renderTime.print());
             tf.setColor(sf::Color::Red);
             tf.breakLine();
-            tf.printLn("GAME STATS:");
+            tf.printLn("GAME INFO:");
             tf.setColor(sf::Color::White);
-            shared.game->printDebug(tf);
+            shared.game->printDebugLeft(tf);
           }, style.base.debugText, resources.defaultFont);
+      f.drawText(
+          {1580, 20},
+          [&](ui::TextFrame &tf) {
+            tf.printLn("MORE GAME INFO:");
+            tf.setColor(sf::Color::White);
+            shared.game->printDebugRight(tf);
+          }, style.base.debugRightText, resources.defaultFont);
     });
   }
 }

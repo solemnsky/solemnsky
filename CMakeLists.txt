@@ -66,6 +66,9 @@ add_library(solemnsky STATIC
         src/sky/skyhandle.cpp
         src/sky/skyhandle.h
 
+        src/sky/skysettings.cpp
+        src/sky/skysettings.h
+
         src/util/methods.cpp
         src/util/methods.h
 
@@ -138,8 +141,8 @@ add_executable(solemnsky_client
         src/client/multiplayer/multiplayerscoring.cpp
         src/client/multiplayer/multiplayerscoring.h
 
-        src/client/tutorial/tutorial.cpp
-        src/client/tutorial/tutorial.h
+        src/client/sandbox/sandbox.cpp
+        src/client/sandbox/sandbox.h
 
         src/client/client.cpp
         src/client/client.h

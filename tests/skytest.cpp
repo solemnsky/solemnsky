@@ -4,7 +4,7 @@
 /**
  * The Sky subsystem operates and networks correctly.
  */
-class SkyTest: public testing::Test {
+class SkyTest : public testing::Test {
  public:
   sky::Arena arena;
   sky::Map nullMap;
@@ -13,9 +13,27 @@ class SkyTest: public testing::Test {
   SkyTest() :
       arena(sky::ArenaInit("special arena", "NULL_MAP", sky::ArenaMode::Lobby)),
       nullMap(sky::Map::load("NULL_MAP").get()),
-      sky(arena, nullMap, sky::SkyInit()) { }
+      sky(arena, nullMap, sky::SkyInit()) {}
 
 };
+
+/**
+ * SkySettings are correctly copied and transmitted over the network.
+ */
+TEST_F(SkyTest, SettingsTest) {
+  sky.changeSettings(sky::SkySettingsDelta::ChangeGravity(-1));
+
+  sky::Arena remoteArena(arena.captureInitializer());
+  sky::Sky remoteSky(remoteArena, nullMap, sky.captureInitializer());
+
+  ASSERT_EQ(remoteSky.getSettings().gravity, -1);
+
+  sky.changeSettings(sky::SkySettingsDelta::ChangeView(2));
+  remoteSky.applyDelta(sky.collectDelta());
+
+  ASSERT_EQ(remoteSky.getSettings().viewScale, 2);
+
+}
 
 /**
  * ParticipationInput allows players limited authority over a remote game state.

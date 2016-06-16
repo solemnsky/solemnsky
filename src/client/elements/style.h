@@ -29,7 +29,7 @@ struct Style {
   struct Base {
     sf::Vector2f pageSize;
 
-    ui::TextFormat centeredText, normalText, debugText;
+    ui::TextFormat centeredText, normalText, debugText, debugRightText;
 
     sf::Color buttonColor,
         buttonHotColor,

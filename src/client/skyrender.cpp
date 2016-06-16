@@ -31,7 +31,7 @@ PlaneGraphics::PlaneGraphics(const Player &player, const Participation &plane) :
     player(player),
     orientation(false),
     flipState(0),
-    rollState(0) { }
+    rollState(0) {}
 
 void PlaneGraphics::tick(const float delta) {
   if (auto &plane = participation.plane) {
@@ -57,7 +57,7 @@ Angle PlaneGraphics::roll() const {
   return flipComponent + style.skyRender.rollAmount * rollState;
 }
 
-void PlaneGraphics::kill() { }
+void PlaneGraphics::kill() {}
 
 void PlaneGraphics::spawn() {
   orientation =
@@ -204,16 +204,15 @@ SkyRender::SkyRender(ClientShared &shared, const ui::AppResources &resources,
   arena.forPlayers([&](Player &player) { registerPlayer(player); });
 }
 
-SkyRender::~SkyRender() { }
-
 void SkyRender::registerPlayer(Player &player) {
   setPlayerData(
       player,
-      graphics.emplace(std::piecewise_construct,
-                       std::forward_as_tuple(player.pid),
-                       std::forward_as_tuple(player,
-                                             sky.getParticipation(player)))
-          .first->second);
+      graphics.emplace(
+          std::piecewise_construct,
+          std::forward_as_tuple(player.pid),
+          std::forward_as_tuple(
+              player,
+              sky.getParticipation(player))).first->second);
 }
 
 void SkyRender::unregisterPlayer(Player &player) {
