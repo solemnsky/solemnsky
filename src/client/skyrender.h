@@ -52,7 +52,7 @@ struct PlaneGraphics {
  *
  * Invariant: `sky` remains alive.
  */
-class SkyRender: public ClientComponent, public Subsystem<PlaneGraphics> {
+class SkyRender : public ClientComponent, public Subsystem<PlaneGraphics> {
  private:
   // Parameters.
   const Sky &sky;
@@ -83,7 +83,8 @@ class SkyRender: public ClientComponent, public Subsystem<PlaneGraphics> {
   void onTick(const float delta) override final;
 
  public:
-  SkyRender(ClientShared &shared, Arena &arena, const Sky &sky);
+  SkyRender(ClientShared &shared, const ui::AppResources &resources,
+            Arena &arena, const Sky &sky);
   ~SkyRender();
 
   // ClientComponent impl.

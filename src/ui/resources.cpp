@@ -64,7 +64,7 @@ namespace detail {
  */
 const std::map<FontID, FontMetadata> fontMetadata{
     {FontID::Default,
-     FontMetadata("fonts/Roboto-Light.ttf", "Roboto")}};
+     FontMetadata("fonts/Roboto-Light.ttf", "UI font")}};
 const std::map<TextureID, TextureMetadata> textureMetadata{
     {TextureID::Title,
      TextureMetadata::TextureResource("render-2d/title.png",
@@ -86,7 +86,7 @@ const std::map<TextureID, TextureMetadata> textureMetadata{
                                       "scoreboard overlay")},
     {TextureID::PlayerSheet,
      TextureMetadata::SpritesheetResource(
-         "render-3d/test_1/player_200.png", "scoreboard overlay",
+         "render-3d/test_1/player_200.png", "plane spritesheet",
          {200, 200}, {2, 15})}
 };
 
