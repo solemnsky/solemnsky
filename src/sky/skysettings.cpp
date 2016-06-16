@@ -39,12 +39,46 @@ bool SkySettingsDelta::verifyStructure() const {
   return true;
 }
 
+SkySettingsDelta SkySettingsDelta::ChangeGravity(const float gravity) {
+  SkySettingsDelta delta;
+  delta.gravity = gravity;
+  return delta;
+}
+
+SkySettingsDelta SkySettingsDelta::ChangeView(const float view) {
+  SkySettingsDelta delta;
+  delta.viewScale = view;
+  return delta;
+}
+
 /**
  * SkySettings.
  */
 
 SkySettings::SkySettings(const SkySettingsInit &settings) :
+    Networked(settings),
+    lastSettings(settings),
     viewScale(settings.viewScale),
     gravity(settings.gravity) {}
+
+void SkySettings::applyDelta(const SkySettingsDelta &delta) {
+  if (delta.gravity) gravity = delta.gravity.get();
+  if (delta.viewScale) viewScale = delta.viewScale.get();
+}
+
+SkySettingsInit SkySettings::captureInitializer() const {
+  SkySettingsInit init;
+  init.viewScale = viewScale;
+  init.gravity = gravity;
+  return init;
+}
+
+SkySettingsDelta SkySettings::collectDelta() {
+  SkySettingsDelta delta;
+  if (lastSettings.viewScale != viewScale) delta.viewScale.emplace(viewScale);
+  if (lastSettings.gravity != gravity) delta.gravity.emplace(gravity);
+  lastSettings = captureInitializer();
+  return delta;
+}
 
 }

@@ -137,7 +137,7 @@ void Client::drawGame(ui::Frame &f) {
             tf.breakLine();
             tf.printLn("GAME STATS:");
             tf.setColor(sf::Color::White);
-            shared.game->printDebug(tf);
+            shared.game->printDebugLeft(tf);
           }, style.base.debugText, resources.defaultFont);
     });
   }

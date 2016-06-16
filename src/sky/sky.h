@@ -70,9 +70,9 @@ struct SkyDelta : public VerifyStructure {
 /**
  * Game world when a game is in session.
  */
-class Sky
-    : public PhysicsListener, public Subsystem<Participation>,
-      public Networked<SkyInit, SkyDelta> {
+class Sky : public PhysicsListener,
+            public Subsystem<Participation>,
+            public Networked<SkyInit, SkyDelta> {
   friend class SkyHandle;
   friend class Participation;
  private:
@@ -103,8 +103,11 @@ class Sky
   void onEndContact(const BodyTag &body1,
                     const BodyTag &body2) override final;
 
+  // Syncing settings to potential state.
+  void syncSettings();
+
  public:
-  Sky(const SkySettingsInit &, Arena &arena, Map &&map,
+  Sky(Arena &arena, Map &&map,
       std::map<PID, optional<Participation>> &) = delete; // Map can't be temp
   Sky(Arena &arena, const Map &map, const SkyInit &initializer);
 
@@ -116,6 +119,8 @@ class Sky
   // User API.
   const Map &getMap() const;
   Participation &getParticipation(const Player &player) const;
+  const SkySettings &getSettings();
+  void changeSettings(const SkySettingsDelta &delta);
 
 };
 

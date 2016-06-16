@@ -98,7 +98,7 @@ void Multiplayer::doExit() {
   core.disconnect();
 }
 
-void Multiplayer::printDebug(Printer &p) {
+void Multiplayer::printDebugLeft(Printer &p) {
   if (core.conn) {
     const bool active = core.conn->skyHandle.isActive();
     p.printLn(std::string("game active: ")

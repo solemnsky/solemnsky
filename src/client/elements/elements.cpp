@@ -59,6 +59,16 @@ Game::Game(ClientShared &shared,
     ui::Control(shared.references),
     name(name) { }
 
-void Game::printDebug(Printer &p) {
-  p.printLn("(nothing noteworthy)");
+void Game::printDebugLeft(Printer &p) {
+  p.setColor(255, 0, 0);
+  p.printLn("(left debug display)");
+  p.setColor(255, 255, 255);
+  p.printLn("undefined!");
+}
+
+void Game::printDebugRight(Printer &p) {
+  p.printLn(255, 0, 0);
+  p.printLn("(right debug display)");
+  p.setColor(255, 255, 255);
+  p.printLn("undefined!");
 }
