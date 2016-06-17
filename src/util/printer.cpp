@@ -84,7 +84,7 @@ void appErrorRuntime(const std::string &contents) {
  */
 
 ConsolePrinter::ConsolePrinter(const LogOrigin origin) :
-    origin(origin) { }
+    origin(origin) {}
 
 ConsolePrinter::~ConsolePrinter() {
   breakLine();
@@ -102,5 +102,13 @@ void ConsolePrinter::setColor(const unsigned char r,
 
 void ConsolePrinter::breakLine() {
   if (currentLine.size() != 0) appLog(std::move(currentLine));
+}
+
+/**
+ * Printing.
+ */
+
+std::string printBool(const bool x) {
+  return x ? "true" : "false";
 }
 

@@ -29,7 +29,7 @@ void MultiplayerLogger::onEvent(const sky::ArenaEvent &event) {
 MultiplayerLogger::MultiplayerLogger(sky::Arena &arena,
                                      class MultiplayerCore &core) :
     sky::ArenaLogger(arena),
-    core(core) { }
+    core(core) {}
 
 /**
  * MultiplayerSubsystem.
@@ -50,7 +50,7 @@ void MultiplayerSubsystem::onEndGame() {
 MultiplayerSubsystem::MultiplayerSubsystem(sky::Arena &arena,
                                            class MultiplayerCore &core) :
     sky::Subsystem<Nothing>(arena),
-    core(core) { }
+    core(core) {}
 
 /**
  * ArenaConnection.
@@ -64,7 +64,8 @@ ArenaConnection::ArenaConnection(
     arena(arenaInit),
     skyHandle(arena, skyInit),
     scoreboard(arena, scoreboardInit),
-    player(*arena.getPlayer(pid)) { }
+    player(*arena.getPlayer(pid)),
+    debugView(arena, skyHandle) {}
 
 const optional<sky::Sky> &ArenaConnection::getSky() const {
   return skyHandle.sky;
@@ -274,7 +275,7 @@ bool MultiplayerCore::poll() {
     askedConnection = true;
   }
 
-  while (!pollNetwork()) { }
+  while (!pollNetwork()) {}
   return true;
 }
 
@@ -338,5 +339,5 @@ MultiplayerView::MultiplayerView(
     ui::Control(shared.references),
     core(mShared),
     conn(mShared.conn.get()),
-    target(target) { }
+    target(target) {}
 

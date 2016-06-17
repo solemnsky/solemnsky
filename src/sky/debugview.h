@@ -15,33 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "debuginfo.h"
+/**
+ * Subsystem that provides debug information for an Arena / SkyHandle.
+ */
+#pragma once
+
+#include "arena.h"
+#include "skyhandle.h"
+#include "util/printer.h"
 
 namespace sky {
 
-/**
- * DebugInfo.
- */
+class DebugView : public Subsystem<Nothing> {
+ private:
+  const SkyHandle &skyHandle;
+  optional<PID> playerID;
 
-//void DebugInfo::registerPlayer(Player &player) {
-//
-//}
-//
-//void DebugInfo::unregisterPlayer(Player &player) {
-//
-//}
-//
-//void DebugInfo::onTick(const float delta) {
-//  Subsystem::onTick(delta);
-//}
-//
-//DebugInfo::DebugInfo(Arena &arena,
-//                     class Sky &sky,
-//                     const optional<PID> &player) :
-//    Subsystem(arena), sky(sky), player(player) { }
-//
-//void DebugInfo::printReport(Printer &p) const {
-//  p.print("things are probably okay?");
-//}
+ protected:
+  // Subsystem impl.
+  // TODO: use mutable state?
+
+ public:
+  DebugView() = delete;
+  DebugView(Arena &arena,
+            const SkyHandle &skyHandle,
+            const optional<PID> &player = {});
+
+  // User API.
+  void printArenaReport(Printer &p) const;
+  void printSkyReport(Printer &p) const;
+
+};
 
 }
