@@ -22,6 +22,7 @@
 #include "client/elements/elements.h"
 #include "sky/sky.h"
 #include "client/skyrender.h"
+#include "sky/debugview.h"
 
 class Sandbox : public Game {
 private:

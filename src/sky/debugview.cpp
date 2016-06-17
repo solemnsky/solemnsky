@@ -71,15 +71,17 @@ void DebugView::printSkyReport(Printer &p) const {
                   + std::to_string(sky.getSettings().viewScale));
 
     p.breakLine();
-    p.printTitle("Participation");
-    if (auto player = arena.getPlayer(playerID.get())) {
-      const auto &participation = sky.getParticipation(*player);
-      p.printLn("isSpawned(): " + printBool(participation.isSpawned()));
-      p.printLn("props.size()" + std::to_string(participation.props.size()));
-    } else {
-      p.setColor(255, 0, 0);
-      p.printLn("ERROR: PID not associated with Player in Arena!");
-      p.setColor(255, 255, 255);
+    if (playerID) {
+      p.printTitle("Participation");
+      if (auto player = arena.getPlayer(playerID.get())) {
+        const auto &participation = sky.getParticipation(*player);
+        p.printLn("isSpawned(): " + printBool(participation.isSpawned()));
+        p.printLn("props.size()" + std::to_string(participation.props.size()));
+      } else {
+        p.setColor(255, 0, 0);
+        p.printLn("ERROR: PID not associated with Player in Arena!");
+        p.setColor(255, 255, 255);
+      }
     }
   }
 

@@ -25,7 +25,6 @@
 #include "types.h"
 #include <cereal/archives/json.hpp>
 
-
 /****
  * For some reason sf::Vector has no math utilities, here are some.
  */

@@ -20,6 +20,7 @@
 #include <cmath>
 #include <numeric>
 #include "methods.h"
+#include "printer.h"
 
 /**
  * TimeStats.
@@ -31,9 +32,9 @@ TimeStats::TimeStats(const RollingSampler<TimeDiff> &sampler) :
     max(sampler.max()) { }
 
 std::string TimeStats::print() const {
-  return showTimeDiff(mean) + ":"
-      + showTimeDiff(min) + "->"
-      + showTimeDiff(max);
+  return printTimeDiff(mean) + ":"
+      + printTimeDiff(min) + "->"
+      + printTimeDiff(max);
 }
 
 /**

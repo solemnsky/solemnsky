@@ -17,6 +17,7 @@
  */
 #include "methods.h"
 #include "printer.h"
+#include <boost/format.hpp>
 
 /**
  * StringPrinter.
