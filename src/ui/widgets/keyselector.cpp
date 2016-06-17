@@ -20,11 +20,11 @@
 
 namespace ui {
 
-KeySelector::KeySelector(const AppRefs &appState,
+KeySelector::KeySelector(const AppRefs &references,
                          const ui::KeySelector::Style &style,
                          const sf::Vector2f &pos) :
-    Control(appState),
-    button(appState, style, pos, ""),
+    Control(references),
+    button(references, style, pos, ""),
     capturing(false),
     clickSignal(button.clickSignal) {
   areChildren({&button});

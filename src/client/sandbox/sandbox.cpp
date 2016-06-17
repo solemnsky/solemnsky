@@ -15,13 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "client/elements/style.hpp"
 #include "sandbox.hpp"
 
 void Sandbox::startGame() {
   skyHandle.start();
   if (!skyHandle.loadingErrored()) {
-    skyRender.emplace(skyHandle.sky.get());
-    status = "running Sky";
+    skyRender.emplace(shared, resources, arena, skyHandle.sky.get());
+    status = "running";
   }
 }
 
@@ -35,10 +36,12 @@ Sandbox::Sandbox(ClientShared &state) :
     Game(state, "sandbox"),
     arena(sky::ArenaInit("sandbox", "ball_funnelpark")),
     skyHandle(arena, sky::SkyHandleInit()),
-    debugView(arena, skyHandle) {
+    debugView(arena, skyHandle),
+    commandEntry(references, style.base.normalTextEntry, style.multi.chatPos) {
   arena.connectPlayer("offline player");
   player = arena.getPlayer(0);
   stopGame();
+  areChildren({&commandEntry});
 }
 
 /**
@@ -70,6 +73,7 @@ void Sandbox::doExit() {
 void Sandbox::tick(float delta) {
   if (shared.ui.gameFocused()) arena.tick(delta);
   // if this were multiplayer of course we wouldn't have this liberty
+  ui::Control::tick(delta);
 }
 
 void Sandbox::render(ui::Frame &f) {
@@ -80,6 +84,7 @@ void Sandbox::render(ui::Frame &f) {
            plane->getState().physical.pos :
            sf::Vector2f(0, 0));
   }
+  ui::Control::render(f);
 }
 
 bool Sandbox::handle(const sf::Event &event) {
@@ -100,7 +105,7 @@ bool Sandbox::handle(const sf::Event &event) {
     }
   }
 
-  return false;
+  return ui::Control::handle(event);
 }
 
 void Sandbox::reset() {

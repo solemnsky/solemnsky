@@ -20,7 +20,7 @@
  */
 #pragma once
 #include "multiplayercore.hpp"
-#include "ui/widgets/widgets.hpp"
+#include "ui/widgets.hpp"
 
 /**
  * At the scoring screen, we display the score and players talk about how
