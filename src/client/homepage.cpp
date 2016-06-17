@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "homepage.h"
-#include "util/methods.h"
 #include "elements/style.h"
 #include "client/multiplayer/multiplayer.h"
 #include "client/sandbox/sandbox.h"

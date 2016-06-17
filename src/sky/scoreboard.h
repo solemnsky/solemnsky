@@ -29,7 +29,7 @@ using ScoreRecordDelta = std::vector<int>;
 /**
  * Score record, describing the score of a single player.
  * This is meant to be very flexible; the meanings and nature of the scores
- * is configurable at runtime.
+ * are configurable at runtime.
  */
 struct ScoreRecord
     : public Networked<ScoreRecordInit, ScoreRecordDelta> {

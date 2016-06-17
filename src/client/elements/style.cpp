@@ -112,7 +112,7 @@ Style::Menu::Menu(const Style::Base &base) :
   gameDescText.horizontal = ui::HorizontalAlign::Right;
 }
 
-Style::Home::Home(const Style::Base &base) :
+Style::Home::Home(const Style::Base &) :
     tutorialButtonPos(500, 300),
     localhostButtonPos(1100, 300),
     remoteButtonPos(800, 600) {}

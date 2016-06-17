@@ -25,6 +25,7 @@
 #include "sky/event.h"
 #include "sky/arena.h"
 #include "sky/protocol.h"
+#include "sky/debugview.h"
 #include "client/elements/elements.h"
 
 /**
@@ -71,11 +72,13 @@ struct ArenaConnection {
       const sky::SkyHandleInit &skyInit,
       const sky::ScoreboardInit &scoreboardInit);
 
-  // State.
+  // Engine state.
   sky::Arena arena;
   sky::SkyHandle skyHandle;
   sky::Scoreboard scoreboard;
   sky::Player &player;
+
+  sky::DebugView debugView;
 
   // Handy accessors.
   const optional<sky::Sky> &getSky() const;

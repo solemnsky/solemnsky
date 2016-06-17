@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Give us std::thread and std::mutex. If we're on MinGW, use the thirdparty
+ * Gives us std::thread and std::mutex. If we're on MinGW, uses the thirdparty
  * mingw-std-threads library.
  */
 
