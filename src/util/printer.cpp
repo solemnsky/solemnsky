@@ -101,7 +101,7 @@ void ConsolePrinter::setColor(const unsigned char r,
 }
 
 void ConsolePrinter::breakLine() {
-  if (currentLine.size() != 0) appLog(std::move(currentLine));
+  if (currentLine.size() != 0) appLog(std::move(currentLine), origin);
 }
 
 /**
@@ -110,5 +110,27 @@ void ConsolePrinter::breakLine() {
 
 std::string printBool(const bool x) {
   return x ? "true" : "false";
+}
+
+std::string inQuotes(const std::string &str) {
+  return "\"" + str + "\"";
+}
+
+std::string printTime(const Time delta) {
+  std::stringstream str;
+  str << boost::format("%.1f") % delta << "s";
+  return str.str();
+}
+
+std::string printTimeDiff(const TimeDiff delta) {
+  std::stringstream str;
+  str << boost::format("%.2f") % (delta * 1000) << "ms";
+  return str.str();
+}
+
+std::string printKbps(const Kbps rate) {
+  std::stringstream str;
+  str << boost::format("%.1f") % rate << "kBps";
+  return str.str();
 }
 

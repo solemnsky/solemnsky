@@ -91,7 +91,6 @@ class Physics {
   } settings;
 
   b2World world;
-  PhysicsListener &listener;
   PhysicsDispatcher converter;
 
  public:

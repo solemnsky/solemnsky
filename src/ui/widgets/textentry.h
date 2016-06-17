@@ -83,11 +83,11 @@ class TextEntry: public Control {
   bool handle(const sf::Event &event) override final;
   void signalRead() override final;
   void signalClear() override final;
+  void reset() override final;
 
   // User API.
   std::string contents;
   std::string description;
-  void reset(); // reset animations
   void focus();
   void unfocus();
 
