@@ -37,6 +37,9 @@ add_library(solemnsky STATIC
         src/sky/debugview.cpp
         src/sky/debugview.hpp
 
+        src/sky/environment.cpp
+        src/sky/environment.hpp
+
         src/sky/event.cpp
         src/sky/event.hpp
 
@@ -92,6 +95,7 @@ target_link_libraries(solemnsky
         enet
         sfml-system
         sfml-network
+        sfml-graphics
         Box2D
         ${Boost_LIBRARIES}
         )
@@ -202,7 +206,6 @@ add_executable(solemnsky_client
         )
 target_link_libraries(solemnsky_client
         solemnsky
-        sfml-graphics
         sfml-window
         )
 
