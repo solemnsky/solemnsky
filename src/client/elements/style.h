@@ -50,6 +50,8 @@ struct Style {
     ui::TextEntry::Style normalTextEntry;
     ui::Checkbox::Style normalCheckbox;
 
+    float debugOpacity;
+
     Base();
   } base;
 
