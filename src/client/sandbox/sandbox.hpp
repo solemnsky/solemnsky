@@ -25,19 +25,27 @@
 #include "sky/debugview.hpp"
 #include "ui/widgets.hpp"
 
-
 /**
  * A command that can be executed in the sandbox.
  */
 struct SandboxCommand {
-  SandboxCommand() = default;
+  enum Type {
+    Start,
+    Stop
+  } type;
+
+  SandboxCommand() = delete;
+  SandboxCommand(const std::string &string); // parse user input
+
+  optional<std::string> mapName; // on Start command
+
 };
 
 /**
  * The sandbox -- a sort of boring Game.
  */
 class Sandbox : public Game {
-private:
+ private:
   // Engine state.
   sky::Arena arena;
   sky::SkyHandle skyHandle;
@@ -50,10 +58,13 @@ private:
   ui::TextEntry commandEntry;
 
   // Submethods.
-  void startGame();
-  void stopGame();
+  void startHandle();
+  void stopHandle();
 
-public:
+  // Commands
+  void runCommand(const SandboxCommand &command);
+
+ public:
   Sandbox(ClientShared &state);
 
   // Game impl.
