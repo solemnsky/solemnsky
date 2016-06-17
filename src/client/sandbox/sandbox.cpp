@@ -18,7 +18,20 @@
 #include "client/elements/style.hpp"
 #include "sandbox.hpp"
 
-void Sandbox::startGame() {
+/**
+ * SandboxCommand.
+ */
+
+SandboxCommand::SandboxCommand(const std::string &input) {
+  type = Type::Start;
+  mapName.emplace("ball_asteroids");
+}
+
+/**
+ * Sandbox.
+ */
+
+void Sandbox::startHandle() {
   skyHandle.start();
   if (!skyHandle.loadingErrored()) {
     skyRender.emplace(shared, resources, arena, skyHandle.sky.get());
@@ -26,10 +39,24 @@ void Sandbox::startGame() {
   }
 }
 
-void Sandbox::stopGame() {
+void Sandbox::stopHandle() {
   status = "stopped";
   skyRender.reset();
   skyHandle.stop();
+}
+
+void Sandbox::runCommand(const SandboxCommand &command) {
+  switch (command.type) {
+    case SandboxCommand::Type::Start: {
+      arena.applyDelta(sky::ArenaDelta::MapChange(
+          command.mapName.get()));
+      startHandle();
+    }
+    case SandboxCommand::Type::Stop: {
+      stopHandle();
+    }
+  }
+
 }
 
 Sandbox::Sandbox(ClientShared &state) :
@@ -40,7 +67,7 @@ Sandbox::Sandbox(ClientShared &state) :
     commandEntry(references, style.base.normalTextEntry, style.multi.chatPos) {
   arena.connectPlayer("offline player");
   player = arena.getPlayer(0);
-  stopGame();
+  stopHandle();
   areChildren({&commandEntry});
 }
 
@@ -98,6 +125,12 @@ bool Sandbox::handle(const sf::Event &event) {
         player->spawn({}, {300, 300}, 0);
         return true;
       }
+
+      if (action->first == ClientAction::Chat
+          and action->second
+          and !commandEntry.isFocused) {
+        commandEntry.focus();
+      }
     }
 
     if (auto action = shared.triggerSkyAction(event)) {
@@ -113,6 +146,9 @@ void Sandbox::reset() {
 }
 
 void Sandbox::signalRead() {
+  if (const auto signal = commandEntry.inputSignal) {
+    runCommand(signal.get());
+  }
   ui::Control::signalRead();
 }
 
