@@ -234,10 +234,10 @@ void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
 
   f.withTransform(
       sf::Transform()
+          .scale(viewScale, viewScale)
           .translate(
               {-findView(1600 / viewScale, dims.x, pos.x),
-               -findView(900 / viewScale, dims.y, pos.y)})
-          .scale(viewScale, viewScale),
+               -findView(900 / viewScale, dims.y, pos.y)}),
       [&]() {
         renderMap(f);
         for (auto &pair: graphics) renderPlaneGraphics(f, pair.second);

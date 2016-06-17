@@ -17,21 +17,28 @@
  */
 #include "sandbox.hpp"
 
+void Sandbox::startGame() {
+  skyHandle.start();
+  if (!skyHandle.loadingErrored()) {
+    skyRender.emplace(skyHandle.sky.get());
+    status = "running Sky";
+  }
+}
+
+void Sandbox::stopGame() {
+  status = "stopped";
+  skyRender.reset();
+  skyHandle.stop();
+}
+
 Sandbox::Sandbox(ClientShared &state) :
     Game(state, "sandbox"),
     arena(sky::ArenaInit("sandbox", "ball_funnelpark")),
-    map(sky::Map::load(arena.getNextMap()).get()),
-    sky(arena, map, sky::SkyInit()),
-    skyRender(shared, resources, arena, sky) {
-  areChildComponents({&skyRender});
+    skyHandle(arena, sky::SkyHandleInit()),
+    debugView(arena, skyHandle) {
   arena.connectPlayer("offline player");
-
   player = arena.getPlayer(0);
-  auto sp = sky.getMap().pickSpawnPoint(1);
-  player->spawn({}, sp.pos, sp.angle);
-  participation = &sky.getParticipation(*player);
-
-  status = "learning to play";
+  stopGame();
 }
 
 /**
@@ -40,6 +47,7 @@ Sandbox::Sandbox(ClientShared &state) :
 
 void Sandbox::onChangeSettings(const SettingsDelta &settings) {
   ClientComponent::onChangeSettings(settings);
+  if (skyRender) skyRender->onChangeSettings(settings);
   if (settings.nickname) player->getNickname() = *settings.nickname;
 }
 
@@ -65,25 +73,31 @@ void Sandbox::tick(float delta) {
 }
 
 void Sandbox::render(ui::Frame &f) {
-  auto &plane = participation->plane;
-  skyRender.render(
-      f, plane ?
-         plane->getState().physical.pos :
-         sf::Vector2f(0, 0));
+  if (skyHandle.isActive()) {
+    const auto &plane = skyHandle.sky.get().getParticipation(*player).plane;
+    skyRender->render(
+        f, plane ?
+           plane->getState().physical.pos :
+           sf::Vector2f(0, 0));
+  }
 }
 
 bool Sandbox::handle(const sf::Event &event) {
-  if (auto action = shared.triggerClientAction(event)) {
-    if (action->first == ClientAction::Spawn
-        and action->second
-        and !participation->isSpawned()) {
-      player->spawn({}, {300, 300}, 0);
-      return true;
-    }
-  }
+  if (skyHandle.isActive()) {
+    const auto &participation = skyHandle.sky.get().getParticipation(*player);
 
-  if (auto action = shared.triggerSkyAction(event)) {
-    player->doAction(action->first, action->second);
+    if (auto action = shared.triggerClientAction(event)) {
+      if (action->first == ClientAction::Spawn
+          and action->second
+          and !participation.isSpawned()) {
+        player->spawn({}, {300, 300}, 0);
+        return true;
+      }
+    }
+
+    if (auto action = shared.triggerSkyAction(event)) {
+      player->doAction(action->first, action->second);
+    }
   }
 
   return false;
@@ -102,9 +116,9 @@ void Sandbox::signalClear() {
 }
 
 void Sandbox::printDebugLeft(Printer &p) {
-  p.printLn("something something something left");
+  debugView.printArenaReport(p);
 }
 
 void Sandbox::printDebugRight(Printer &p) {
-  p.printLn("something something something right");
+  debugView.printSkyReport(p);
 }
