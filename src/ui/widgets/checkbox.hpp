@@ -19,8 +19,8 @@
  * The ubiquitous checkbox.
  */
 #pragma once
-#include "ui/control.h"
-#include "button.h"
+#include "ui/control.hpp"
+#include "button.hpp"
 
 namespace ui {
 

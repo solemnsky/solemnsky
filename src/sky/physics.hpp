@@ -20,8 +20,8 @@
  */
 #pragma once
 #include <Box2D/Box2D.h>
-#include "util/types.h"
-#include "map.h"
+#include "util/types.hpp"
+#include "map.hpp"
 
 namespace sky {
 

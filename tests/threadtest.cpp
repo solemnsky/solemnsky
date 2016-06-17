@@ -1,7 +1,7 @@
-#include <gtest/gtest.h>
-#include "util/threads.h"
 #include <SFML/System.hpp>
-#include "util/printer.h"
+#include <gtest/gtest.h>
+#include "util/threads.hpp"
+#include "util/printer.hpp"
 
 /**
  * Whatever std::thread implementation we're using works properly.

@@ -20,9 +20,9 @@
  */
 #pragma once
 
-#include "arena.h"
-#include "skyhandle.h"
-#include "util/printer.h"
+#include "arena.hpp"
+#include "skyhandle.hpp"
+#include "util/printer.hpp"
 
 namespace sky {
 

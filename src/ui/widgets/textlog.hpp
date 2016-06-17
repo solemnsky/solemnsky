@@ -19,8 +19,8 @@
  * Widget that displays a log created through the Printer interface.
  */
 #pragma once
-#include "ui/control.h"
-#include "util/printer.h"
+#include "ui/control.hpp"
+#include "util/printer.hpp"
 
 namespace ui {
 

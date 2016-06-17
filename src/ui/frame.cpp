@@ -17,8 +17,8 @@
  */
 #include <assert.h>
 #include <cmath>
-#include "util/methods.h"
-#include "frame.h"
+#include "util/methods.hpp"
+#include "frame.hpp"
 
 namespace ui {
 

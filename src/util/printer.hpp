@@ -22,7 +22,7 @@
 #include <SFML/System.hpp>
 #include <Box2D/Box2D.h>
 #include <cereal/archives/json.hpp>
-#include "types.h"
+#include "types.hpp"
 
 /**
  * Implemented by StringPrinter below and TextFrame in the Client UI.

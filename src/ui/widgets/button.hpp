@@ -19,8 +19,8 @@
  * The ubiquitous button.
  */
 #pragma once
-#include "ui/control.h"
-#include "util/types.h"
+#include "ui/control.hpp"
+#include "util/types.hpp"
 
 namespace ui {
 

@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "button.h"
-#include "util/methods.h"
-#include "util/clientutil.h"
+#include "button.hpp"
+#include "util/methods.hpp"
+#include "util/clientutil.hpp"
 
 namespace ui {
 

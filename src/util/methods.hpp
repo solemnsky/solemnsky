@@ -22,8 +22,8 @@
 #include <SFML/System.hpp>
 #include <Box2D/Box2D.h>
 #include <functional>
-#include "types.h"
 #include <cereal/archives/json.hpp>
+#include "types.hpp"
 
 /****
  * For some reason sf::Vector has no math utilities, here are some.

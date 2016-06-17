@@ -20,8 +20,8 @@
  */
 #pragma once
 #include <SFML/Window.hpp>
-#include "sky/participation.h"
-#include "util/types.h"
+#include "sky/participation.hpp"
+#include "util/types.hpp"
 
 /**
  * Actions a key-press can achieve in a client. Like sky::Action but for the

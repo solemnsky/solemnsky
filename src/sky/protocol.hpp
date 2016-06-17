@@ -19,12 +19,12 @@
  * Protocol verbs constituting the network protocol.
  */
 #pragma once
-#include "util/types.h"
-#include "scoreboard.h"
-#include "participation.h"
-#include "skyhandle.h"
-#include "arena.h"
 #include <map>
+#include "util/types.hpp"
+#include "scoreboard.hpp"
+#include "participation.hpp"
+#include "skyhandle.hpp"
+#include "arena.hpp"
 
 namespace sky {
 

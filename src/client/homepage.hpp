@@ -18,11 +18,9 @@
 /**
  * Home page.
  */
-#ifndef SOLEMNSKY_HOMEPAGE_H
-#define SOLEMNSKY_HOMEPAGE_H
-
-#include "elements/elements.h"
-#include "ui/widgets/widgets.h"
+#pragma once
+#include "elements/elements.hpp"
+#include "ui/widgets/widgets.hpp"
 
 class HomePage : public Page {
  private:
@@ -44,4 +42,3 @@ class HomePage : public Page {
   void signalClear() override final;
 };
 
-#endif //SOLEMNSKY_HOMEPAGE_H

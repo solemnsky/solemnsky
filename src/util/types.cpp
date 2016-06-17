@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "types.h"
 #define _USE_MATH_DEFINES // for M_PI
 #include <cmath>
 #include <numeric>
-#include "methods.h"
-#include "printer.h"
+#include "types.hpp"
+#include "methods.hpp"
+#include "printer.hpp"
 
 /**
  * TimeStats.

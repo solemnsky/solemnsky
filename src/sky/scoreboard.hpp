@@ -19,7 +19,7 @@
  * Scoreboard, carrying score data for each player.
  */
 #pragma once
-#include "arena.h"
+#include "arena.hpp"
 
 namespace sky {
 

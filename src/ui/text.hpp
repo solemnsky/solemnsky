@@ -20,8 +20,8 @@
  */
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "util/printer.h"
-#include "resources.h"
+#include "util/printer.hpp"
+#include "resources.hpp"
 
 namespace ui {
 

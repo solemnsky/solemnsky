@@ -18,9 +18,9 @@
 #define _USE_MATH_DEFINES // for M_PI
 
 #include <sstream>
-#include "printer.h"
 #include <cmath>
-#include "methods.h"
+#include "printer.hpp"
+#include "methods.hpp"
 
 /**
  * VecMath.

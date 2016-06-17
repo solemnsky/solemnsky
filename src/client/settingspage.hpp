@@ -19,8 +19,8 @@
  * Settings page.
  */
 #pragma once
-#include "elements/elements.h"
-#include "ui/widgets/widgets.h"
+#include "elements/elements.hpp"
+#include "ui/widgets/widgets.hpp"
 
 /**
  * One tab of the control page.

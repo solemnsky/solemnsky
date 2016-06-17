@@ -19,12 +19,12 @@
  * The backbone of a multiplayer game.
  */
 #pragma once
-#include "util/types.h"
-#include "util/methods.h"
-#include "participation.h"
 #include <map>
 #include <list>
 #include <vector>
+#include "util/types.hpp"
+#include "util/methods.hpp"
+#include "participation.hpp"
 
 namespace sky {
 

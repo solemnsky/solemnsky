@@ -19,8 +19,8 @@
  * A spritesheet.
  */
 #pragma once
-#include "frame.h"
-#include "util/types.h"
+#include "frame.hpp"
+#include "util/types.hpp"
 
 namespace ui {
 

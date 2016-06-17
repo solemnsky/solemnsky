@@ -19,13 +19,13 @@
  * Rendering the sky.
  */
 #pragma once
-#include "elements/elements.h"
-#include "ui/resources.h"
 #include <list>
-#include "ui/control.h"
-#include "ui/sheet.h"
-#include "sky/sky.h"
 #include <SFML/Graphics.hpp>
+#include "elements/elements.hpp"
+#include "ui/resources.hpp"
+#include "ui/control.hpp"
+#include "ui/sheet.hpp"
+#include "sky/sky.hpp"
 
 namespace sky {
 

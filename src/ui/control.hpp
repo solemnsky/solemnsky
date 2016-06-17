@@ -23,8 +23,8 @@
 #include <vector>
 #include <functional>
 #include <memory>
-#include "util/telegraph.h"
-#include "frame.h"
+#include "util/telegraph.hpp"
+#include "frame.hpp"
 
 namespace ui {
 

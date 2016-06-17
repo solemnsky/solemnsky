@@ -21,10 +21,10 @@
 #pragma once
 #include <Box2D/Box2D.h>
 #include <forward_list>
-#include "prop.h"
-#include "physics.h"
-#include "util/types.h"
-#include "planestate.h"
+#include "prop.hpp"
+#include "physics.hpp"
+#include "util/types.hpp"
+#include "planestate.hpp"
 
 namespace sky {
 

@@ -19,8 +19,8 @@
  * Default multiplayer server, with a cool rcon and a lazy tdm mode.
  */
 #pragma once
-#include "server/server.h"
-#include "util/types.h"
+#include "server/server.hpp"
+#include "util/types.hpp"
 
 class VanillaServer: public Server<Nothing> {
  private:

@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "map.h"
-#include "util/methods.h"
-#include "util/printer.h"
 #include <fstream>
 #include <list>
-#include <polypartition.h>
+#include <polypartition.hpp>
+#include "map.hpp"
+#include "util/methods.hpp"
+#include "util/printer.hpp"
 
 namespace sky {
 

@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <assert.h>
-#include "util/clientutil.h"
-#include "resources.h"
-#include "util/methods.h"
-#include "util/printer.h"
+#include "util/clientutil.hpp"
+#include "resources.hpp"
+#include "util/methods.hpp"
+#include "util/printer.hpp"
 
 namespace ui {
 

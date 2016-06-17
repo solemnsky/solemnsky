@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "client.h"
-#include "elements/style.h"
-#include "util/methods.h"
-#include "util/printer.h"
+#include "client.hpp"
+#include "elements/style.hpp"
+#include "util/methods.hpp"
+#include "util/printer.hpp"
 
 /**
  * Client.

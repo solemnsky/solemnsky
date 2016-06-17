@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "multiplayerscoring.h"
-#include "client/elements/style.h"
+#include "multiplayerscoring.hpp"
+#include "client/elements/style.hpp"
 
 MultiplayerScoring::MultiplayerScoring(
     ClientShared &shared, MultiplayerCore &connection) :

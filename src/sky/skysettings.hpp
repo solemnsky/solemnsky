@@ -19,7 +19,7 @@
  * Some mutable global settings for a `Sky`. Defaults suggested by a Map.
  */
 #pragma once
-#include "util/types.h"
+#include "util/types.hpp"
 
 namespace sky {
 

@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "planestate.h"
-#include "util/methods.h"
+#include "planestate.hpp"
+#include "util/methods.hpp"
 
 /**
  * Action.

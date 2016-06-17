@@ -19,7 +19,7 @@
  * Server listing page.
  */
 #pragma once
-#include "elements/elements.h"
+#include "elements/elements.hpp"
 
 class ListingPage : public Page {
 public:
