@@ -74,7 +74,7 @@ float SkyRender::findView(
     const float viewWidth,
     const float totalWidth,
     const float viewTarget) const {
-  if (totalWidth < viewWidth) return (totalWidth / 2) - viewWidth;
+  if (totalWidth < viewWidth) return ((totalWidth - viewWidth) / 2);
   if (viewTarget - (viewWidth / 2) < 0) return 0;
   if (viewTarget + (viewWidth / 2) > totalWidth)
     return totalWidth - viewWidth;
@@ -228,14 +228,16 @@ void SkyRender::onChangeSettings(const SettingsDelta &settings) {
 }
 
 void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
-  const auto map = sky.getMap();
+  const auto &map = sky.getMap();
   const auto &dims = map.getDimensions();
+  const auto &viewScale = sky.getSettings().viewScale;
 
   f.withTransform(
-      sf::Transform().translate(
-          {-findView(1600, dims.x, pos.x),
-           -findView(900, dims.y, pos.y)}
-      ),
+      sf::Transform()
+          .scale(viewScale, viewScale)
+          .translate(
+              {-findView(1600 / viewScale, dims.x, pos.x),
+               -findView(900 / viewScale, dims.y, pos.y)}),
       [&]() {
         renderMap(f);
         for (auto &pair: graphics) renderPlaneGraphics(f, pair.second);

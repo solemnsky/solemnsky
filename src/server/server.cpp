@@ -25,8 +25,12 @@
 ServerShared::ServerShared(
     tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph,
     const sky::ArenaInit &arenaInit) :
-    arena(arenaInit), skyHandle(arena, {}), scoreboard(arena, {}),
-    host(host), telegraph(telegraph) { }
+    arena(arenaInit), // initialize engine state
+    skyHandle(arena, {}),
+    scoreboard(arena, {}),
+
+    host(host),
+    telegraph(telegraph) {}
 
 sky::Player *ServerShared::playerFromPeer(ENetPeer *peer) const {
   if (peer->data) return (sky::Player *) peer->data;

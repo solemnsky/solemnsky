@@ -20,7 +20,7 @@
  */
 #pragma once
 #include "elements/elements.hpp"
-#include "ui/widgets/widgets.hpp"
+#include "ui/widgets.hpp"
 
 class HomePage : public Page {
  private:

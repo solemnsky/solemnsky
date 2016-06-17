@@ -16,30 +16,65 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * A sandbox for testing the engine.
+ * Sandbox for testing the engine and tuning parameters.
  */
 #pragma once
 #include "client/elements/elements.hpp"
 #include "sky/sky.hpp"
 #include "client/skyrender.hpp"
 #include "sky/debugview.hpp"
+#include "ui/widgets.hpp"
 
+/**
+ * A command that can be executed in the sandbox.
+ */
+struct SandboxCommand {
+ public:
+  enum Type {
+    Start,
+    Stop
+  };
+
+ private:
+  SandboxCommand(const Type type);
+
+ public:
+  SandboxCommand() = delete;
+
+  Type type;
+  optional<std::string> mapName; // on Start command
+
+  static optional<SandboxCommand> parseCommand(const std::string &input);
+
+};
+
+/**
+ * The sandbox -- a sort of boring Game.
+ */
 class Sandbox : public Game {
-private:
+ private:
+  // Engine state.
   sky::Arena arena;
-  sky::Map map;
-  sky::Sky sky;
-  sky::SkyRender skyRender;
+  sky::SkyHandle skyHandle;
+  sky::DebugView debugView;
+  optional<sky::SkyRender> skyRender;
 
   sky::Player *player;
-  const sky::Participation *participation;
 
-public:
+  // UI features.
+  ui::TextEntry commandEntry;
+
+  // Submethods.
+  void startHandle();
+  void stopHandle();
+
+  // Commands
+  void runCommand(const SandboxCommand &command);
+
+ public:
   Sandbox(ClientShared &state);
 
-  /**
-   * Game interface.
-   */
+  // Game impl.
   void onChangeSettings(const SettingsDelta &settings) override;
   void onBlur() override;
   void onFocus() override;
@@ -47,9 +82,7 @@ public:
   virtual void printDebugLeft(Printer &p) override;
   virtual void printDebugRight(Printer &p) override;
 
-  /**
-   * Control interface.
-   */
+  // Control impl.
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;

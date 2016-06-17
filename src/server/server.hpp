@@ -28,14 +28,15 @@
 #include "latencytracker.hpp"
 
 /**
- * Shared state for the Server to access.
+ * Shared object for the server, holding engine state and network
+ * / logging methods.
  */
 struct ServerShared {
  public:
   ServerShared(tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph,
                const sky::ArenaInit &arenaInit);
 
-  // Game state.
+  // Engine state.
   sky::Arena arena;
   sky::SkyHandle skyHandle;
   sky::Scoreboard scoreboard;

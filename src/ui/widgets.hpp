@@ -18,9 +18,9 @@
 /**
  * Inclusion of all widget headers.
  */
-#include "button.hpp"
-#include "checkbox.hpp"
-#include "keyselector.hpp"
-#include "textlog.hpp"
-#include "textentry.hpp"
+#include "ui/widgets/button.hpp"
+#include "ui/widgets/checkbox.hpp"
+#include "ui/widgets/keyselector.hpp"
+#include "ui/widgets/textlog.hpp"
+#include "ui/widgets/textentry.hpp"
 
