@@ -20,12 +20,13 @@
  */
 #pragma once
 #include <sstream>
-#include <cereal/archives/binary.hpp>
 #include <boost/range/iterator_range_core.hpp>
 #include <enet/enet.h>
 #include "util/types.hpp"
 #include "util/methods.hpp"
 #include "printer.hpp"
+
+#include <cereal/archives/binary.hpp>
 
 namespace tg {
 
