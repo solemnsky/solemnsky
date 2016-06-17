@@ -19,9 +19,9 @@
  * Basic state types for Plane.
  */
 #pragma once
-#include "util/types.h"
-#include "physics.h"
 #include <bitset>
+#include "util/types.hpp"
+#include "physics.hpp"
 
 namespace sky {
 

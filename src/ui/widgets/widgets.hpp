@@ -18,8 +18,9 @@
 /**
  * Inclusion of all widget headers.
  */
-#include "button.h"
-#include "checkbox.h"
-#include "keyselector.h"
-#include "textlog.h"
-#include "textentry.h"
+#include "button.hpp"
+#include "checkbox.hpp"
+#include "keyselector.hpp"
+#include "textlog.hpp"
+#include "textentry.hpp"
+

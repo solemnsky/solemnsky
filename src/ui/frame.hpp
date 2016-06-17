@@ -23,7 +23,7 @@
 #include <stack>
 #include <SFML/Graphics.hpp>
 #include <functional>
-#include "text.h"
+#include "text.hpp"
 
 namespace ui {
 class Control;

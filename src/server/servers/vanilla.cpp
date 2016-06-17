@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "vanilla.h"
+#include "vanilla.hpp"
 
 void VanillaServer::tickGame(const TimeDiff delta, sky::Sky &sky) {
   arena.forPlayers([&](sky::Player &player) {

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "clientutil.h"
+#include "clientutil.hpp"
 
 inline sf::Uint8 mix(const sf::Uint8 x1,
                      const sf::Uint8 x2,

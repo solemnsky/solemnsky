@@ -19,11 +19,11 @@
  * Things that can happen. Useful for [debug] logging and displays.
  */
 #pragma once
-#include "util/types.h"
-#include "util/printer.h"
-#include "arena.h"
-#include "protocol.h"
 #include <SFML/Network.hpp>
+#include "util/types.hpp"
+#include "util/printer.hpp"
+#include "arena.hpp"
+#include "protocol.hpp"
 
 namespace sky {
 

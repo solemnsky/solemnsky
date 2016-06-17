@@ -19,9 +19,9 @@
  * The place where the whole client converges.
  */
 #pragma once
-#include "sky/participation.h"
-#include "ui/control.h"
-#include "settings.h"
+#include "sky/participation.hpp"
+#include "ui/control.hpp"
+#include "settings.hpp"
 
 class Client;
 

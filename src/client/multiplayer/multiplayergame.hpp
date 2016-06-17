@@ -19,9 +19,9 @@
  * Component of the multiplayer client corresponding to ArenaMode::Game.
  */
 #pragma once
-#include "multiplayercore.h"
-#include "client/skyrender.h"
-#include "ui/widgets/widgets.h"
+#include "multiplayercore.hpp"
+#include "client/skyrender.hpp"
+#include "ui/widgets/widgets.hpp"
 
 /**
  * In the game, the rendered representation of the game is the central

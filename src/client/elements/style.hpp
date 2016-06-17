@@ -19,8 +19,8 @@
  * Style settings.
  */
 #pragma once
-#include "ui/control.h"
-#include "ui/widgets/widgets.h"
+#include "ui/control.hpp"
+#include "ui/widgets/widgets.hpp"
 
 struct Style {
   /**

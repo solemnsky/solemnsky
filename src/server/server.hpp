@@ -19,15 +19,13 @@
  * Common abstraction for our multiplayer servers.
  */
 #pragma once
-#include "sky/sky.h"
-#include "sky/arena.h"
-#include "util/telegraph.h"
-#include "sky/protocol.h"
-#include "sky/event.h"
-#include "sky/arena.h"
-#include "sky/event.h"
 #include <iostream>
-#include "latencytracker.h"
+#include "sky/sky.hpp"
+#include "sky/arena.hpp"
+#include "util/telegraph.hpp"
+#include "sky/protocol.hpp"
+#include "sky/event.hpp"
+#include "latencytracker.hpp"
 
 /**
  * Shared state for the Server to access.

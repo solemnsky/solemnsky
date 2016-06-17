@@ -19,8 +19,8 @@
  * The ubiquitous text entry.
  */
 #pragma once
-#include "util/types.h"
-#include "ui/control.h"
+#include "util/types.hpp"
+#include "ui/control.hpp"
 
 namespace ui {
 

@@ -20,8 +20,8 @@
  */
 #pragma once
 #include <memory>
-#include "widgets/textlog.h"
-#include "control.h"
+#include "widgets/textlog.hpp"
+#include "control.hpp"
 
 namespace ui {
 

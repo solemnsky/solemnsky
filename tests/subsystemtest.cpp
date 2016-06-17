@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "sky/arena.h"
-#include "util/methods.h"
+#include "sky/arena.hpp"
+#include "util/methods.hpp"
 
 /**
  * The Subsystem abstraction allows us to modularize state and functionality

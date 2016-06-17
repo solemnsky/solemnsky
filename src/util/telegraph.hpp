@@ -19,13 +19,13 @@
  * Network utilities.
  */
 #pragma once
-#include "enet/enet.h"
-#include "util/types.h"
 #include <sstream>
 #include <cereal/archives/binary.hpp>
-#include "util/methods.h"
-#include "printer.h"
 #include <boost/range/iterator_range_core.hpp>
+#include <enet/enet.h>
+#include "util/types.hpp"
+#include "util/methods.hpp"
+#include "printer.hpp"
 
 namespace tg {
 

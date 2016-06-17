@@ -19,10 +19,10 @@
  * A sandbox for testing the engine.
  */
 #pragma once
-#include "client/elements/elements.h"
-#include "sky/sky.h"
-#include "client/skyrender.h"
-#include "sky/debugview.h"
+#include "client/elements/elements.hpp"
+#include "sky/sky.hpp"
+#include "client/skyrender.hpp"
+#include "sky/debugview.hpp"
 
 class Sandbox : public Game {
 private:

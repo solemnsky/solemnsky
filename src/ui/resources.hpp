@@ -21,9 +21,9 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "util/methods.h"
-#include "util/printer.h"
-#include "util/threads.h"
+#include "util/methods.hpp"
+#include "util/printer.hpp"
+#include "util/threads.hpp"
 
 namespace ui {
 

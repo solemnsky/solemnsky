@@ -19,7 +19,7 @@
  * Game played on a remote server.
  */
 #pragma once
-#include "multiplayercore.h"
+#include "multiplayercore.hpp"
 
 /**
  * Top-level multiplayer client.

@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "client/client.h"
-#include "style.h"
+#include "client/client.hpp"
+#include "style.hpp"
 
 /**
  * ClientUiState.

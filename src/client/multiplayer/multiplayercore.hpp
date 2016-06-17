@@ -19,14 +19,14 @@
  * Connection management for the multiplayer client.
  */
 #pragma once
-#include "ui/control.h"
-#include "client/skyrender.h"
-#include "util/telegraph.h"
-#include "sky/event.h"
-#include "sky/arena.h"
-#include "sky/protocol.h"
-#include "sky/debugview.h"
-#include "client/elements/elements.h"
+#include "ui/control.hpp"
+#include "client/skyrender.hpp"
+#include "util/telegraph.hpp"
+#include "sky/event.hpp"
+#include "sky/arena.hpp"
+#include "sky/protocol.hpp"
+#include "sky/debugview.hpp"
+#include "client/elements/elements.hpp"
 
 /**
  * ArenaLogger proxy for MultiplayerCore, to intercept arena events for

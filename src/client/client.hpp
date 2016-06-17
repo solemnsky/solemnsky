@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * The client top-level; connects the user to the game.
+ * The client top-level; the meaningful application.
  */
 #pragma once
-#include "client/sandbox/sandbox.h"
-#include "multiplayer/multiplayer.h"
-#include "homepage.h"
-#include "settingspage.h"
-#include "listingpage.h"
+#include "client/sandbox/sandbox.hpp"
+#include "multiplayer/multiplayer.hpp"
+#include "homepage.hpp"
+#include "settingspage.hpp"
+#include "listingpage.hpp"
 
 /**
  * The main client app.
@@ -83,3 +83,4 @@ class Client: public ui::Control {
 
   void changeSettings(const SettingsDelta &settings);
 };
+

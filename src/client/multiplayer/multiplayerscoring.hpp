@@ -19,8 +19,8 @@
  * The various interfaces the multiplayer client can show.
  */
 #pragma once
-#include "multiplayercore.h"
-#include "ui/widgets/widgets.h"
+#include "multiplayercore.hpp"
+#include "ui/widgets/widgets.hpp"
 
 /**
  * At the scoring screen, we display the score and players talk about how

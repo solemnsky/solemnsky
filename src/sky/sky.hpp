@@ -21,10 +21,10 @@
 #pragma once
 #include <map>
 #include <memory>
-#include "physics.h"
-#include "participation.h"
-#include "arena.h"
-#include "skysettings.h"
+#include "physics.hpp"
+#include "participation.hpp"
+#include "arena.hpp"
+#include "skysettings.hpp"
 
 namespace sky {
 

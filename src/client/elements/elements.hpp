@@ -19,7 +19,7 @@
  * Clearly divided classes of GUI elements that make up the client.
  */
 #pragma once
-#include "clientshared.h"
+#include "clientshared.hpp"
 
 /**
  * There are various elements in our client that need to have access to the

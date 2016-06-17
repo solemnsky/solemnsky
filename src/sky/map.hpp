@@ -20,12 +20,12 @@
  */
 #pragma once
 #include <SFML/System.hpp>
-#include "util/types.h"
-#include "skysettings.h"
 #include <string>
 #include <ostream>
 #include <istream>
 #include <cereal/cereal.hpp>
+#include "util/types.hpp"
+#include "skysettings.hpp"
 
 namespace sky {
 

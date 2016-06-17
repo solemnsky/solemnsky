@@ -19,7 +19,7 @@
  * A potential Sky instantiation.
  */
 #pragma once
-#include "sky.h"
+#include "sky.hpp"
 
 namespace sky {
 

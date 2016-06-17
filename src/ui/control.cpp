@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <cmath>
-
-#include "splash.h"
-#include "util/printer.h"
+#include "splash.hpp"
+#include "util/printer.hpp"
 
 namespace ui {
 
