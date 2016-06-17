@@ -53,7 +53,9 @@ Style::Base::Base() :
                     normalFontSize, heatRate),
     normalCheckbox(buttonColor, buttonHotColor, buttonPressedColor,
                    buttonInactiveColor, textColor,
-                   {40, 40}, heatRate, normalFontSize) {}
+                   {40, 40}, heatRate, normalFontSize),
+
+    debugOpacity(0.7) {}
 
 Style::Splash::Splash() :
     barWidth(800),

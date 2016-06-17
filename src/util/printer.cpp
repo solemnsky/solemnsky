@@ -109,6 +109,15 @@ void ConsolePrinter::breakLine() {
  * Printing.
  */
 
+// TODO: is there a better way to implement this?
+
+std::string printFloat(const float x) {
+  std::stringstream str;
+  str.precision(2);
+  str << x;
+  return str.str();
+}
+
 std::string printBool(const bool x) {
   return x ? "true" : "false";
 }
