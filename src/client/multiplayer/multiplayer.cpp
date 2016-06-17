@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "multiplayer.h"
-#include "client/elements/style.h"
-#include "multiplayerlobby.h"
-#include "multiplayergame.h"
-#include "multiplayerscoring.h"
+#include "multiplayer.hpp"
+#include "client/elements/style.hpp"
+#include "multiplayerlobby.hpp"
+#include "multiplayergame.hpp"
+#include "multiplayerscoring.hpp"
 
 /**
  * Multiplayer.
@@ -105,9 +105,9 @@ void Multiplayer::printDebugLeft(Printer &p) {
     p.breakLine();
     p.printTitle("Networking");
     p.printLn("inbound bandwidth (kB/s): "
-                  + showKbps(core.getHost().incomingBandwidth()));
+                  + printKbps(core.getHost().incomingBandwidth()));
     p.printLn("outbound bandwidth (kB/s): "
-                  + showKbps(core.getHost().outgoingBandwidth()));
+                  + printKbps(core.getHost().outgoingBandwidth()));
   } else {
     p.printLn("not connected...");
   }

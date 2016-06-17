@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "sky/skyhandle.h"
-#include "util/methods.h"
+#include "sky/skyhandle.hpp"
+#include "util/methods.hpp"
 
 /**
  * Our SkyHandle subsystem operates and networks correctly.

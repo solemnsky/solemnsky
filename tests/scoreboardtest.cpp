@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "sky/scoreboard.h"
+#include "sky/scoreboard.hpp"
 
 /**
  * The scoreboard subsystem operates and networks properly.

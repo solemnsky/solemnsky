@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "splash.h"
-#include "client/elements/style.h"
+#include "splash.hpp"
+#include "client/elements/style.hpp"
 
 namespace ui {
 
@@ -29,7 +29,7 @@ void SplashScreen::constructApp(const AppResources &resources) {
       references.window,
       references.profiler);
   animBegin = references.uptime;
-  control = std::move(mkApp(initializedReferences.get()));
+  control = mkApp(initializedReferences.get());
   areChildren({control.get()});
 }
 

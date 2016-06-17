@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "client.h"
-#include "elements/style.h"
-#include "util/methods.h"
-#include "util/printer.h"
+#include "client.hpp"
+#include "elements/style.hpp"
+#include "util/methods.hpp"
+#include "util/printer.hpp"
 
 /**
  * Client.
@@ -123,7 +123,7 @@ void Client::drawGame(ui::Frame &f) {
   shared.game->render(f);
 
   if (shared.settings.enableDebug) {
-    f.withAlpha(0.5, [&]() {
+    f.withAlpha(style.base.debugOpacity, [&]() {
       f.drawText(
           {20, 20},
           [&](ui::TextFrame &tf) {
@@ -142,7 +142,9 @@ void Client::drawGame(ui::Frame &f) {
       f.drawText(
           {1580, 20},
           [&](ui::TextFrame &tf) {
+            tf.setColor(255, 0, 0);
             tf.printLn("MORE GAME INFO:");
+            tf.setColor(255, 255, 255);
             tf.setColor(sf::Color::White);
             shared.game->printDebugRight(tf);
           }, style.base.debugRightText, resources.defaultFont);

@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "multiplayergame.h"
-#include "client/elements/style.h"
+#include "multiplayergame.hpp"
+#include "client/elements/style.hpp"
 
 void MultiplayerGame::doClientAction(const ClientAction action,
                                      const bool state) {
@@ -50,7 +50,7 @@ void MultiplayerGame::printScores(ui::TextFrame &tf, const sky::Team team) {
 
       tf.setColor(style.base.textColor);
       if (player.latencyIsCalculated()) {
-        tf.print("ping{" + showTimeDiff(player.getLatency()) + "}");
+        tf.print("ping{" + printTimeDiff(player.getLatency()) + "}");
       } else {
         tf.print("ping{unknown}");
       }

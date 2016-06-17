@@ -1,8 +1,8 @@
+#include "sky/protocol.hpp"
+#include "sky/sky.hpp"
+#include "util/methods.hpp"
+#include "util/printer.hpp"
 #include <gtest/gtest.h>
-#include "sky/protocol.h"
-#include "sky/sky.h"
-#include "util/methods.h"
-#include "util/printer.h"
 #include <cereal/archives/binary.hpp>
 
 /**
