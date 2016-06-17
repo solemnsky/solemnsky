@@ -24,7 +24,7 @@ namespace sky {
  */
 
 SkySettingsInit::SkySettingsInit() :
-    viewScale(1), gravity(1) {}
+    viewScale(0.5), gravity(1) {}
 
 bool SkySettingsInit::verifyStructure() const {
   return (viewScale > 0);
