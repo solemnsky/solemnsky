@@ -177,8 +177,6 @@ add_executable(solemnsky_client
         src/ui/widgets/textlog.cpp
         src/ui/widgets/textlog.hpp
 
-        src/ui/widgets/widgets.hpp
-
         src/ui/control.cpp
         src/ui/control.hpp
 
@@ -196,6 +194,8 @@ add_executable(solemnsky_client
 
         src/ui/splash.cpp
         src/ui/splash.hpp
+
+        src/ui/widgets.hpp
 
         src/util/clientutil.cpp
         src/util/clientutil.hpp

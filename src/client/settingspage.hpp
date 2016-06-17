@@ -20,7 +20,7 @@
  */
 #pragma once
 #include "elements/elements.hpp"
-#include "ui/widgets/widgets.hpp"
+#include "ui/widgets.hpp"
 
 /**
  * One tab of the control page.

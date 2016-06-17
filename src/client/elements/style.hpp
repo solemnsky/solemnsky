@@ -20,7 +20,7 @@
  */
 #pragma once
 #include "ui/control.hpp"
-#include "ui/widgets/widgets.hpp"
+#include "ui/widgets.hpp"
 
 struct Style {
   /**
