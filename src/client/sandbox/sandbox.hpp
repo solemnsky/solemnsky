@@ -23,6 +23,8 @@
 #include "sky/sky.hpp"
 #include "client/skyrender.hpp"
 #include "sky/debugview.hpp"
+#include "ui/widgets.hpp"
+
 
 /**
  * A command that can be executed in the sandbox.
@@ -43,6 +45,9 @@ private:
   optional<sky::SkyRender> skyRender;
 
   sky::Player *player;
+
+  // UI features.
+  ui::TextEntry commandEntry;
 
   // Submethods.
   void startGame();

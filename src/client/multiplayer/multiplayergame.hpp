@@ -21,7 +21,7 @@
 #pragma once
 #include "multiplayercore.hpp"
 #include "client/skyrender.hpp"
-#include "ui/widgets/widgets.hpp"
+#include "ui/widgets.hpp"
 
 /**
  * In the game, the rendered representation of the game is the central

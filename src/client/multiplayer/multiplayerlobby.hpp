@@ -20,7 +20,7 @@
  */
 #pragma once
 #include "multiplayercore.hpp"
-#include "ui/widgets/widgets.hpp"
+#include "ui/widgets.hpp"
 
 /**
  * In the lobby, we can talk to people, see teams, change teams, and vote for
