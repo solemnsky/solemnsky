@@ -100,32 +100,14 @@ void Multiplayer::doExit() {
 
 void Multiplayer::printDebugLeft(Printer &p) {
   if (core.conn) {
-    const auto &arena = core.conn->arena;
-    const auto &player = core.conn->player;
-
-    p.setColor(0, 0, 255);
-    p.printLn("** arena state **");
-    p.setColor(255, 255, 255);
-    p.printLn("name: " + arena.getName());
-    p.printLn("next map: " + arena.getNextMap());
-    p.printLn("your player ID: " + std::to_string(player.pid));
-    p.printLn("player count: " + std::to_string(arena.getPlayers().size()));
-    p.printLn("arena uptime: " + showTime(arena.getUptime()));
+    core.conn->debugView.printArenaReport(p);
 
     p.breakLine();
-    p.setColor(0, 0, 255);
-    p.printLn("** network state **");
-    p.setColor(255, 255, 255);
+    p.printTitle("Networking");
     p.printLn("inbound bandwidth (kB/s): "
                   + showKbps(core.getHost().incomingBandwidth()));
     p.printLn("outbound bandwidth (kB/s): "
                   + showKbps(core.getHost().outgoingBandwidth()));
-    if (player.latencyIsCalculated()) {
-      p.printLn("latency: " + showTimeDiff(player.getLatency()));
-      p.printLn("clock offset: " + showTime(player.getClockOffset()));
-    } else {
-      p.printLn("(latency not yet calculated)");
-    }
   } else {
     p.printLn("not connected...");
   }
@@ -133,28 +115,9 @@ void Multiplayer::printDebugLeft(Printer &p) {
 
 void Multiplayer::printDebugRight(Printer &p) {
   if (core.conn) {
-    const auto &skyHandle = core.conn->skyHandle;
-    const auto &player = core.conn->player;
-
-    if (skyHandle.isActive()) {
-      const auto &sky = skyHandle.sky.get();
-      p.setColor(0, 0, 255);
-      p.printLn("** sky state **");
-      p.setColor(255, 255, 255);
-      p.printLn("current map: " + core.conn->getSky()->getMap().name);
-      p.printLn("view scale: " + std::to_string(sky.getSettings().viewScale));
-      p.printLn("gravity: " + std::to_string(sky.getSettings().viewScale));
-
-      p.breakLine();
-      p.setColor(0, 0, 255);
-      p.printLn("** participation state **");
-      p.setColor(255, 255, 255);
-      p.printLn(std::string("spawned: ")
-                    + (sky.getParticipation(player).isSpawned() ?
-                       "yes" : "no"));
-    } else {
-      p.printLn("(Sky is not instantiated.)");
-    }
+    core.conn->debugView.printSkyReport(p);
+  } else {
+    p.printLn("not connected...");
   }
 }
 

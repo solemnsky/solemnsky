@@ -39,6 +39,13 @@ class Printer {
     print(str);
     breakLine();
   }
+
+  void printTitle(const std::string &title) {
+    setColor(0, 0, 255);
+    printLn("** " + title + " **");
+    setColor(255, 255, 255);
+  }
+
 };
 
 using PrintProcess = std::function<void(Printer &)>;
@@ -111,3 +118,8 @@ void appLogValue(const T &x) {
   archive(x);
   appLog(stream.str());
 }
+
+/**
+ * Things helpful for printing / logging.
+ */
+std::string printBool(const bool x);

@@ -41,7 +41,7 @@ class Plane {
   const PlaneControls &controls;
 
   // State.
-  PlaneTuning tuning;
+  const PlaneTuning tuning;
   PlaneState state;
   b2Body *const body;
 
