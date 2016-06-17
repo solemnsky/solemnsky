@@ -31,7 +31,7 @@ namespace sky {
 /**
  * Protocol verbs for the client.
  */
-struct ClientPacket: public VerifyStructure {
+struct ClientPacket : public VerifyStructure {
   enum class Type {
     Pong, // respond to a server Ping
     ReqJoin, // request joining in the arena, part of the connection protocol
@@ -110,7 +110,7 @@ struct ClientPacket: public VerifyStructure {
 /**
  * Protocol verbs for the server.
  */
-struct ServerPacket: public VerifyStructure {
+struct ServerPacket : public VerifyStructure {
   enum class Type {
     Ping, // request a client Pong
     Init, // acknowledge a ReqJoin, send ArenaInit

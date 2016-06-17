@@ -52,7 +52,8 @@ struct PlaneGraphics {
  *
  * Invariant: `sky` remains alive.
  */
-class SkyRender : public ClientComponent, public Subsystem<PlaneGraphics> {
+class SkyRender
+    : public ClientComponent, public Subsystem<PlaneGraphics> {
  private:
   // Parameters.
   const Sky &sky;

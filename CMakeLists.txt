@@ -2,7 +2,8 @@ project(solemnsky)
 
 # tool / compiler versions
 cmake_minimum_required(VERSION 3.2)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra \
+ \ -Wno-unused-parameter -pedantic -g")
 
 if (SANITIZE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -fsanitize=address")
@@ -33,8 +34,8 @@ add_library(solemnsky STATIC
         src/sky/arena.cpp
         src/sky/arena.h
 
-        src/sky/debuginfo.cpp
-        src/sky/debuginfo.h
+        src/sky/debugview.cpp
+        src/sky/debugview.h
 
         src/sky/event.cpp
         src/sky/event.h
