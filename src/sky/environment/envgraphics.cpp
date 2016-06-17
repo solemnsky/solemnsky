@@ -15,31 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * Set of static information that surrounds a Sky.
- */
-#pragma once
+#include "envgraphics.hpp"
 
 namespace sky {
 
-/**
- * Holder and asynchronous loader for pieces of static information extracted
- * from a .solx file, used to instantiate / add to the functionality /
- * display a Sky -- with, respectively, geometry data, scripts, and graphics
- * resources.
- */
-class Environment {
+class EnvGraphics {
  private:
-  // State.
-
-  // Loading coroutines.
 
  public:
-  Environment(); // the null environment, useful for testing and sandboxes
-  Environment(const std::string &filepath);
 
-  // we want a way to selectively load the different elements of an Environment
 };
 
 }
-

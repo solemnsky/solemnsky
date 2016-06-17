@@ -16,3 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "environment.hpp"
+
+namespace sky {
+
+/**
+ * EnvironmentURL.
+ */
+optional<std::string> getEnvironmentFile(const EnvironmentURL &url) {
+  return optional<std::string>();
+}
+
+Environment::Environment() {
+
+}
+
+Environment::Environment(const std::string &filepath) {
+
+}
+
+}

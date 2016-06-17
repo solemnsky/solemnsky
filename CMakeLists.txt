@@ -31,20 +31,26 @@ include_directories(
 
 ###### libsolemnsky, for common use by client and server
 add_library(solemnsky STATIC
+        src/sky/environment/envgraphics.cpp
+        src/sky/environment/envgraphics.hpp
+
+        src/sky/environment/environment.cpp
+        src/sky/environment/environment.hpp
+
+        src/sky/environment/envscripts.cpp
+        src/sky/environment/envscripts.hpp
+
+        src/sky/environment/map.cpp
+        src/sky/environment/map.hpp
+
         src/sky/arena.cpp
         src/sky/arena.hpp
 
         src/sky/debugview.cpp
         src/sky/debugview.hpp
 
-        src/sky/environment.cpp
-        src/sky/environment.hpp
-
         src/sky/event.cpp
         src/sky/event.hpp
-
-        src/sky/map.cpp
-        src/sky/map.hpp
 
         src/sky/participation.cpp
         src/sky/participation.hpp
