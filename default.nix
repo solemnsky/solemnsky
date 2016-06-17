@@ -31,7 +31,7 @@ in
     };
 
   default = 
-    stdenv.mkDerivation {
+    llvmPackages.stdenv.mkDerivation {
       buildInputs = deps;
       name = "solemnsky";
       src = ./.;
