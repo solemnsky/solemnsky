@@ -19,11 +19,7 @@
 
 #include <sstream>
 #include "printer.h"
-#include <vector>
-#include <math.h>
-#include <iostream>
 #include <cmath>
-#include <boost/format.hpp>
 #include "methods.h"
 
 /**
