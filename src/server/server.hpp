@@ -117,7 +117,7 @@ class ServerLogger: public sky::ArenaLogger {
  * We manage the basics here.
  */
 class ServerExec {
-  friend class ServerShared;
+  friend struct ServerShared;
 
  private:
   tg::UsageFlag flag; // for enet global state
