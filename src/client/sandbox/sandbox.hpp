@@ -29,15 +29,22 @@
  * A command that can be executed in the sandbox.
  */
 struct SandboxCommand {
+ public:
   enum Type {
     Start,
     Stop
-  } type;
+  };
 
+ private:
+  SandboxCommand(const Type type);
+
+ public:
   SandboxCommand() = delete;
-  SandboxCommand(const std::string &string); // parse user input
 
+  Type type;
   optional<std::string> mapName; // on Start command
+
+  static optional<SandboxCommand> parseCommand(const std::string &input);
 
 };
 

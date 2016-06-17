@@ -22,9 +22,27 @@
  * SandboxCommand.
  */
 
-SandboxCommand::SandboxCommand(const std::string &input) {
-  type = Type::Start;
-  mapName.emplace("ball_asteroids");
+SandboxCommand::SandboxCommand(const Type type) :
+    type(type) {}
+
+optional<SandboxCommand> SandboxCommand::parseCommand(
+    const std::string &input) {
+  // Split the command by whitespace
+  std::stringstream tmp(input);
+  std::vector<std::string> command{std::istream_iterator<std::string>{tmp},
+                                   std::istream_iterator<std::string>{}};
+
+  if (command[0] == "start" and command.size() == 2) {
+    SandboxCommand parsed{Type::Start};
+    parsed.mapName.emplace(command[1]);
+    return parsed;
+  }
+
+  if (command[0] == "stop" and command.size() == 1) {
+    return SandboxCommand{Type::Stop};
+  }
+
+  return {};
 }
 
 /**
@@ -117,27 +135,30 @@ void Sandbox::render(ui::Frame &f) {
 }
 
 bool Sandbox::handle(const sf::Event &event) {
-  if (skyHandle.isActive()) {
-    const auto &participation = skyHandle.sky.get().getParticipation(*player);
+  if (auto action = shared.triggerClientAction(event)) {
+    if (skyHandle.isActive()) {
+      const auto &sky = skyHandle.sky.get();
+      const auto &participation = sky.getParticipation(*player);
 
-    if (auto action = shared.triggerClientAction(event)) {
       if (action->first == ClientAction::Spawn
           and action->second
           and !participation.isSpawned()) {
-        player->spawn({}, {300, 300}, 0);
+        const auto spawnPoint = sky.getMap().pickSpawnPoint(0);
+        player->spawn({}, spawnPoint.pos, spawnPoint.angle);
         return true;
       }
-
-      if (action->first == ClientAction::Chat
-          and action->second
-          and !commandEntry.isFocused) {
-        commandEntry.focus();
-      }
     }
 
-    if (auto action = shared.triggerSkyAction(event)) {
-      player->doAction(action->first, action->second);
+    if (action->first == ClientAction::Chat
+        and action->second
+        and !commandEntry.isFocused) {
+      commandEntry.focus();
+      return true;
     }
+  }
+
+  if (auto action = shared.triggerSkyAction(event)) {
+    player->doAction(action->first, action->second);
   }
 
   return ui::Control::handle(event);
@@ -149,7 +170,12 @@ void Sandbox::reset() {
 
 void Sandbox::signalRead() {
   if (const auto signal = commandEntry.inputSignal) {
-    runCommand(signal.get());
+    auto parsed = SandboxCommand::parseCommand(signal.get());
+    if (parsed) {
+      runCommand(parsed.get());
+    } else {
+      appLog("Invalid sandbox command!", LogOrigin::Error);
+    }
   }
   ui::Control::signalRead();
 }
