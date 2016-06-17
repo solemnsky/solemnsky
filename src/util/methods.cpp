@@ -27,27 +27,6 @@
 #include "methods.h"
 
 /**
- * Displaying our float units.
- */
-std::string showTime(const Time delta) {
-  std::stringstream str;
-  str << boost::format("%.1f") % delta << "s";
-  return str.str();
-}
-
-std::string showTimeDiff(const TimeDiff delta) {
-  std::stringstream str;
-  str << boost::format("%.2f") % (delta * 1000) << "ms";
-  return str.str();
-}
-
-std::string showKbps(const Kbps rate) {
-  std::stringstream str;
-  str << boost::format("%.1f") % rate << "kBps";
-  return str.str();
-}
-
-/**
  * VecMath.
  */
 float VecMath::length(const sf::Vector2f &vec) {
@@ -92,10 +71,6 @@ bool verifyRequiredOptionals() {
 
 bool verifyOptionals() {
   return true;
-}
-
-std::string inQuotes(const std::string &str) {
-  return "\"" + str + "\"";
 }
 
 PID smallestUnused(std::vector<PID> &vec) {

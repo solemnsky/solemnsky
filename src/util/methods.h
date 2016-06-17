@@ -25,12 +25,6 @@
 #include "types.h"
 #include <cereal/archives/json.hpp>
 
-/**
- * Displaying our float units.
- */
-std::string showTime(const Time delta);
-std::string showTimeDiff(const TimeDiff delta);
-std::string showKbps(const Kbps rate);
 
 /****
  * For some reason sf::Vector has no math utilities, here are some.
@@ -122,7 +116,6 @@ bool verifyVector(const std::vector<Value> &vec) {
  * Random stuff.
  */
 
-std::string inQuotes(const std::string &str);
 PID smallestUnused(std::vector<PID> &vec);
 
 template<typename T>

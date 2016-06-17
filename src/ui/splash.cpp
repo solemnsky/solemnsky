@@ -29,7 +29,7 @@ void SplashScreen::constructApp(const AppResources &resources) {
       references.window,
       references.profiler);
   animBegin = references.uptime;
-  control = std::move(mkApp(initializedReferences.get()));
+  control = mkApp(initializedReferences.get());
   areChildren({control.get()});
 }
 

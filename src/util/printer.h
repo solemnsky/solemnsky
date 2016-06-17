@@ -123,3 +123,7 @@ void appLogValue(const T &x) {
  * Things helpful for printing / logging.
  */
 std::string printBool(const bool x);
+std::string inQuotes(const std::string &str);
+std::string printTime(const Time delta);
+std::string printTimeDiff(const TimeDiff delta);
+std::string printKbps(const Kbps rate);

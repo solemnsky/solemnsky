@@ -31,7 +31,7 @@ BodyTag BodyTag::BoundaryTag() {
   return BodyTag(Type::BoundaryTag);
 }
 
-BodyTag BodyTag::ObstacleTag(const class MapObstacle &obstacle) {
+BodyTag BodyTag::ObstacleTag(const MapObstacle &obstacle) {
   BodyTag tag(Type::ObstacleTag);
   tag.obstacle = &obstacle;
   return tag;
@@ -43,7 +43,7 @@ BodyTag BodyTag::PlaneTag(Plane &plane) {
   return tag;
 }
 
-BodyTag BodyTag::PropTag(class Prop &prop) {
+BodyTag BodyTag::PropTag(Prop &prop) {
   BodyTag tag(Type::PropTag);
   tag.prop = &prop;
   return tag;
@@ -74,7 +74,6 @@ void PhysicsDispatcher::EndContact(b2Contact *contact) {
 
 Physics::Physics(const Map &map, PhysicsListener &listener) :
     world({0, Settings().gravity / Settings().distanceScale}),
-    listener(listener),
     converter(listener),
     dims(map.getDimensions()) {
   // world boundaries

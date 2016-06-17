@@ -36,7 +36,7 @@ void DebugView::printArenaReport(Printer &p) const {
   p.printLn("getNextMap(): " + arena.getNextMap());
   p.printLn("getPlayers().size(): "
                 + std::to_string(arena.getPlayers().size()));
-  p.printLn("getUptime(): " + showTime(arena.getUptime()));
+  p.printLn("getUptime(): " + printTime(arena.getUptime()));
 
   if (playerID) {
     p.breakLine();
@@ -47,8 +47,8 @@ void DebugView::printArenaReport(Printer &p) const {
       p.printLn("latencyIsCalculated(): "
                     + printBool(player->latencyIsCalculated()));
       if (player->latencyIsCalculated()) {
-        p.printLn("getLatency(): " + showTimeDiff(player->getLatency()));
-        p.printLn("getClockOffset(): " + showTime(player->getClockOffset()));
+        p.printLn("getLatency(): " + printTimeDiff(player->getLatency()));
+        p.printLn("getClockOffset(): " + printTime(player->getClockOffset()));
       }
     } else {
       p.setColor(255, 0, 0);
@@ -75,7 +75,7 @@ void DebugView::printSkyReport(Printer &p) const {
     if (auto player = arena.getPlayer(playerID.get())) {
       const auto &participation = sky.getParticipation(*player);
       p.printLn("isSpawned(): " + printBool(participation.isSpawned()));
-      p.printLn("props.size()" + participation.props.size());
+      p.printLn("props.size()" + std::to_string(participation.props.size()));
     } else {
       p.setColor(255, 0, 0);
       p.printLn("ERROR: PID not associated with Player in Arena!");
