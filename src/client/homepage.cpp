@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "homepage.h"
-#include "elements/style.h"
-#include "client/multiplayer/multiplayer.h"
-#include "client/sandbox/sandbox.h"
+#include "homepage.hpp"
+#include "elements/style.hpp"
+#include "client/multiplayer/multiplayer.hpp"
+#include "client/sandbox/sandbox.hpp"
 
 HomePage::HomePage(ClientShared &clientState) :
     Page(clientState),

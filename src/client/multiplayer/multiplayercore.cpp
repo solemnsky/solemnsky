@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "multiplayercore.h"
-#include "client/elements/style.h"
+#include "multiplayercore.hpp"
+#include "client/elements/style.hpp"
 
 /**
  * MultiplayerLogger.
@@ -65,7 +65,7 @@ ArenaConnection::ArenaConnection(
     skyHandle(arena, skyInit),
     scoreboard(arena, scoreboardInit),
     player(*arena.getPlayer(pid)),
-    debugView(arena, skyHandle) {}
+    debugView(arena, skyHandle, pid) {}
 
 const optional<sky::Sky> &ArenaConnection::getSky() const {
   return skyHandle.sky;

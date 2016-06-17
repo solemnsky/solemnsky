@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "sky/arena.h"
+#include "sky/arena.hpp"
 
 /**
  * Arena is the backbone of a multiplayer server.

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "debugview.h"
+#include "debugview.hpp"
 
 namespace sky {
 
@@ -36,7 +36,7 @@ void DebugView::printArenaReport(Printer &p) const {
   p.printLn("getNextMap(): " + arena.getNextMap());
   p.printLn("getPlayers().size(): "
                 + std::to_string(arena.getPlayers().size()));
-  p.printLn("getUptime(): " + showTime(arena.getUptime()));
+  p.printLn("getUptime(): " + printTime(arena.getUptime()));
 
   if (playerID) {
     p.breakLine();
@@ -47,8 +47,8 @@ void DebugView::printArenaReport(Printer &p) const {
       p.printLn("latencyIsCalculated(): "
                     + printBool(player->latencyIsCalculated()));
       if (player->latencyIsCalculated()) {
-        p.printLn("getLatency(): " + showTimeDiff(player->getLatency()));
-        p.printLn("getClockOffset(): " + showTime(player->getClockOffset()));
+        p.printLn("getLatency(): " + printTimeDiff(player->getLatency()));
+        p.printLn("getClockOffset(): " + printTime(player->getClockOffset()));
       }
     } else {
       p.setColor(255, 0, 0);
@@ -66,20 +66,23 @@ void DebugView::printSkyReport(Printer &p) const {
     const auto &sky = skyHandle.sky.get();
     p.printLn("getMap().name: " + sky.getMap().name);
     p.printLn("getSettings().viewScale: "
-                  + std::to_string(sky.getSettings().viewScale));
+                  + printFloat(sky.getSettings().viewScale));
     p.printLn("getSettings().gravity: "
-                  + std::to_string(sky.getSettings().viewScale));
+                  + printFloat(sky.getSettings().viewScale));
 
     p.breakLine();
-    p.printTitle("Participation");
-    if (auto player = arena.getPlayer(playerID.get())) {
-      const auto &participation = sky.getParticipation(*player);
-      p.printLn("isSpawned(): " + printBool(participation.isSpawned()));
-      p.printLn("props.size()" + participation.props.size());
-    } else {
-      p.setColor(255, 0, 0);
-      p.printLn("ERROR: PID not associated with Player in Arena!");
-      p.setColor(255, 255, 255);
+    if (playerID) {
+      p.printTitle("Participation");
+      if (auto player = arena.getPlayer(playerID.get())) {
+        const auto &participation = sky.getParticipation(*player);
+        p.printLn("isSpawned(): " + printBool(participation.isSpawned()));
+        p.printLn("props.size(): "
+                      + std::to_string(participation.props.size()));
+      } else {
+        p.setColor(255, 0, 0);
+        p.printLn("ERROR: PID not associated with Player in Arena!");
+        p.setColor(255, 255, 255);
+      }
     }
   }
 

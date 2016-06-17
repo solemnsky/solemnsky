@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "settingspage.h"
-#include "elements/style.h"
-#include "util/methods.h"
+#include "settingspage.hpp"
+#include "elements/style.hpp"
+#include "util/methods.hpp"
 
 /**
  * SettingsTab.

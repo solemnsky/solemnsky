@@ -27,10 +27,9 @@
 #include <algorithm>
 #include <vector>
 #include <set>
+#include "polypartition.hpp"
 
-using namespace std;
-
-#include "polypartition.h"
+using namespace std; // ewwww
 
 sf::Vector2f operator/( const sf::Vector2f& v, const double& d ){
   sf::Vector2f ans;

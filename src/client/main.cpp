@@ -18,8 +18,8 @@
 /**
  * Client top-level.
  */
-#include "ui/control.h"
-#include "client.h"
+#include "ui/control.hpp"
+#include "client.hpp"
 
 int main() {
   // TODO: commandline arguments?

@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "settings.h"
-#include "util/methods.h"
 #include <cereal/archives/xml.hpp>
 #include <fstream>
+#include "settings.hpp"
+#include "util/methods.hpp"
 
 std::string showClientAction(const ClientAction action) {
   switch (action) {

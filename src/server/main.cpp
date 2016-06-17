@@ -18,8 +18,8 @@
 /**
  * Server top-level.
  */
-#include "server.h"
-#include "servers/vanilla.h"
+#include "server.hpp"
+#include "servers/vanilla.hpp"
 
 int main() {
   // TODO: commandline arguments

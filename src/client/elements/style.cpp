@@ -15,11 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * A whole bunch of values go here.
- * TODO: When I'm back to working on the UI, it might be worth organising this.
- */
-#include "style.h"
+#include "style.hpp"
+
+// Lots of magic values in this file. Have fun!
 
 Style::Base::Base() :
     pageSize(1600, 900),
@@ -53,7 +51,9 @@ Style::Base::Base() :
                     normalFontSize, heatRate),
     normalCheckbox(buttonColor, buttonHotColor, buttonPressedColor,
                    buttonInactiveColor, textColor,
-                   {40, 40}, heatRate, normalFontSize) {}
+                   {40, 40}, heatRate, normalFontSize),
+
+    debugOpacity(0.7) {}
 
 Style::Splash::Splash() :
     barWidth(800),
