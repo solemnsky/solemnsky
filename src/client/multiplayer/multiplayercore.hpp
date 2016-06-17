@@ -87,7 +87,8 @@ struct ArenaConnection {
 
 /**
  * Entity that listens to changes in the ArenaConnection.
- * Multiplayer has to do this, to keep the MultiplayerView synced with the ArenaConnection.
+ * Multiplayer has to do this, to keep the MultiplayerView synced
+ * with the ArenaConnection.
  */
 class ConnectionListener {
  public:

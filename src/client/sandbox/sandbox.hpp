@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * A sandbox for testing the engine.
+ * Sandbox for testing the engine and tuning parameters.
  */
 #pragma once
 #include "client/elements/elements.hpp"
@@ -24,22 +24,34 @@
 #include "client/skyrender.hpp"
 #include "sky/debugview.hpp"
 
+/**
+ * A command that can be executed in the sandbox.
+ */
+struct SandboxCommand {
+  SandboxCommand() = default;
+};
+
+/**
+ * The sandbox -- a sort of boring Game.
+ */
 class Sandbox : public Game {
 private:
+  // Engine state.
   sky::Arena arena;
-  sky::Map map;
-  sky::Sky sky;
-  sky::SkyRender skyRender;
+  sky::SkyHandle skyHandle;
+  sky::DebugView debugView;
+  optional<sky::SkyRender> skyRender;
 
   sky::Player *player;
-  const sky::Participation *participation;
+
+  // Submethods.
+  void startGame();
+  void stopGame();
 
 public:
   Sandbox(ClientShared &state);
 
-  /**
-   * Game interface.
-   */
+  // Game impl.
   void onChangeSettings(const SettingsDelta &settings) override;
   void onBlur() override;
   void onFocus() override;
@@ -47,9 +59,7 @@ public:
   virtual void printDebugLeft(Printer &p) override;
   virtual void printDebugRight(Printer &p) override;
 
-  /**
-   * Control interface.
-   */
+  // Control impl.
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
