@@ -1,7 +1,7 @@
 #include <vector>
+#include <gtest/gtest.h>
 #include "util/types.hpp"
 #include "util/methods.hpp"
-#include "gtest/gtest.hpp"
 
 /**
  * The basic utilities we have in src/util.

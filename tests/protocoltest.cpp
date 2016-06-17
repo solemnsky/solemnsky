@@ -1,9 +1,9 @@
-#include <cereal/archives/binary.hpp>
 #include "sky/protocol.hpp"
 #include "sky/sky.hpp"
 #include "util/methods.hpp"
 #include "util/printer.hpp"
 #include <gtest/gtest.h>
+#include <cereal/archives/binary.hpp>
 
 /**
  * Our multiplayer protocol verbs encode all network communication, and are
