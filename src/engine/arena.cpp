@@ -163,7 +163,7 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode) {
   return delta;
 }
 
-ArenaDelta ArenaDelta::EnvChange(const MapName &map) {
+ArenaDelta ArenaDelta::EnvChange(const EnvironmentURL &map) {
   ArenaDelta delta(Type::EnvChange);
   delta.environment = map;
   return delta;
@@ -199,9 +199,10 @@ ArenaLogger::ArenaLogger(Arena &arena) : arena(arena) {
  */
 
 ArenaInit::ArenaInit(
-    const std::string &name, const MapName &map,
+    const std::string &name,
+    const EnvironmentURL &environment,
     const ArenaMode mode) :
-    name(name), environment(map), mode(mode) {}
+    name(name), environment(environment), mode(mode) {}
 
 PID Arena::allocPid() const {
   return smallestUnused(players);
@@ -297,7 +298,7 @@ Arena::Arena(const ArenaInit &initializer) :
     Networked(initializer),
     name(initializer.name),
     motd(initializer.motd),
-    nextMap(initializer.environment),
+    nextEnv(initializer.environment),
     mode(initializer.mode),
     uptime(0),
     subsystemCaller(*this) {
@@ -345,8 +346,8 @@ void Arena::applyDelta(const ArenaDelta &delta) {
     }
 
     case ArenaDelta::Type::EnvChange: {
-      nextMap = *delta.environment;
-      logEvent(ArenaEvent::MapChange(nextMap));
+      nextEnv = *delta.environment;
+      logEvent(ArenaEvent::EnvChoose(nextEnv));
       for (auto s : subsystems) s.second->onMapChange();
     }
 
@@ -354,7 +355,7 @@ void Arena::applyDelta(const ArenaDelta &delta) {
 }
 
 ArenaInit Arena::captureInitializer() const {
-  ArenaInit initializer(name, nextMap);
+  ArenaInit initializer(name, nextEnv);
   for (auto &player : players) {
     initializer.players.emplace(
         player.first, player.second.captureInitializer());
@@ -382,16 +383,16 @@ const std::map<PID, Player> &Arena::getPlayers() const {
   return players;
 }
 
-std::string Arena::getName() const {
+const std::string &Arena::getName() const {
   return name;
 }
 
-std::string Arena::getMotd() const {
+const std::string &Arena::getMotd() const {
   return motd;
 }
 
-MapName Arena::getNextMap() const {
-  return nextMap;
+const EnvironmentURL &Arena::getNextEnv() const {
+  return nextEnv;
 }
 
 ArenaMode Arena::getMode() const {

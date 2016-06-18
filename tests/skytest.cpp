@@ -11,8 +11,8 @@ class SkyTest : public testing::Test {
   sky::Sky sky;
 
   SkyTest() :
-      arena(sky::ArenaInit("special arena", "NULL_MAP", sky::ArenaMode::Lobby)),
-      nullMap(sky::Map::load("NULL_MAP").get()),
+      arena(sky::ArenaInit("special arena", "NULL", sky::ArenaMode::Lobby)),
+      nullMap(),
       sky(arena, nullMap, sky::SkyInit()) {}
 
 };

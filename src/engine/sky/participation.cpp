@@ -17,8 +17,8 @@
  */
 #include <cmath>
 #include <SFML/Graphics/Rect.hpp>
-#include "sky/sky/sky.hpp"
-#include "sky/arena.hpp"
+#include "sky.hpp"
+#include "engine/arena.hpp"
 #include "participation.hpp"
 #include "util/printer.hpp"
 

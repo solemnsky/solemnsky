@@ -11,23 +11,27 @@ class SkyHandleTest: public testing::Test {
   sky::SkyHandle skyHandle;
 
   SkyHandleTest() :
-      arena(sky::ArenaInit("arena", "NULL_MAP")),
+      arena(sky::ArenaInit("arena", "NULL")),
       skyHandle(arena, sky::SkyHandleInit()) { }
 
 };
 
 /**
- * The allocation of the underlying sky and map is managed correctly.
+ * The allocation is handled properly.
  */
 TEST_F(SkyHandleTest, AllocTest) {
-  ASSERT_EQ(bool(skyHandle.isActive()), false);
-
   {
-    // Starting the engine with a map.
+    // Start the engine, and the environment is instantiated.
     skyHandle.start();
-    ASSERT_EQ(skyHandle.isActive(), true);
+    ASSERT_EQ(bool(skyHandle.environment), true);
+    ASSERT_EQ(bool(skyHandle.sky), false);
+
+    // After waiting for the environment to load, we can instantiate the Sky.
+    skyHandle.environment->waitForLoading();
+    skyHandle.instantiateSky(sky::SkyInit{});
+    ASSERT_EQ(bool(skyHandle.sky), true);
+
     const sky::Sky &sky = *skyHandle.sky;
-    ASSERT_EQ(sky.getMap().name, "NULL_MAP");
 
     // Signals pass correctly.
     arena.connectPlayer("nameless plane");

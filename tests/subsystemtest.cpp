@@ -8,7 +8,7 @@
  */
 class SubsystemTest: public testing::Test {
  public:
-  SubsystemTest() : arena(sky::ArenaInit("my arena", "NULL_MAP")) { }
+  SubsystemTest() : arena(sky::ArenaInit("my arena", "NULL")) {}
   sky::Arena arena;
 };
 

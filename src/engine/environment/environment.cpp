@@ -31,25 +31,31 @@ optional<std::string> getEnvironmentFile(const EnvironmentURL &url) {
  */
 
 void Environment::loadMap() {
-  loadProgress = 0;
-  map.emplace(); // stub
-  loadProgress = 1;
+  if (url == "NULL") {
+    map.emplace(); // null map
+  } else {
+    assert(false); // not implemented
+  }
 }
 
 void Environment::loadGraphics() {
-  loadProgress = 0;
-  graphics.emplace(); // stub
-  loadProgress = 1;
+  if (url == "NULl") {
+    graphics.emplace(); // null graphics
+  } else {
+    assert(false); // not implemented
+  }
 }
 
 void Environment::loadScripts() {
-  loadProgress = 0;
-  scripts.emplace(); // stub
-  loadProgress = 1;
+  if (url == "NULl") {
+    scripts.emplace(); // null scripts
+  } else {
+    assert(false); // not implemented
+  }
 }
 
 Environment::Environment(const EnvironmentURL &url) :
-    loadProgress0(0),
+    loadProgress(0),
     url(url) {
   workerThread = std::thread([&]() { loadMap(); });
 }
@@ -69,6 +75,10 @@ void Environment::loadMore(
       if (needScripts) loadScripts();
     });
   }
+}
+
+void Environment::waitForLoading() {
+  workerThread.join();
 }
 
 bool Environment::loadingErrored() const {

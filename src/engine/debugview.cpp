@@ -33,7 +33,7 @@ DebugView::DebugView(Arena &arena,
 void DebugView::printArenaReport(Printer &p) const {
   p.printTitle("Arena");
   p.printLn("getName(): " + arena.getName());
-  p.printLn("getNextMap(): " + arena.getNextMap());
+  p.printLn("getNextEnv(): " + arena.getNextEnv());
   p.printLn("getPlayers().size(): "
                 + std::to_string(arena.getPlayers().size()));
   p.printLn("getUptime(): " + printTime(arena.getUptime()));

@@ -124,7 +124,7 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer) :
   });
 
   syncSettings();
-  appLog("Started game on " + map.name, LogOrigin::Engine);
+  appLog("Instantiated Sky.", LogOrigin::Engine);
 }
 
 void Sky::applyDelta(const SkyDelta &delta) {

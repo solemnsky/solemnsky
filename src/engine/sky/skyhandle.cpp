@@ -48,7 +48,7 @@ void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
 }
 
 void SkyHandle::start() {
-  environment.emplace(arena.getNextMap());
+  environment.emplace(arena.getNextEnv());
 }
 
 void SkyHandle::instantiateSky(const SkyInit &init) {

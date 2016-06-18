@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "util/printer.hpp"
 #include "physics.hpp"
 #include "util/methods.hpp"
 
@@ -96,6 +97,8 @@ Physics::Physics(const Map &map, PhysicsListener &listener) :
 
   // listener
   world.SetContactListener(&converter);
+
+  appLog("Instantiated Physics.", LogOrigin::Engine);
 }
 
 Physics::~Physics() {
