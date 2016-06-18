@@ -120,8 +120,8 @@ bool ArenaDelta::verifyStructure() const {
       return verifyRequiredOptionals(motd);
     case Type::Mode:
       return verifyRequiredOptionals(mode);
-    case Type::MapChange:
-      return verifyRequiredOptionals(map);
+    case Type::EnvChange:
+      return verifyRequiredOptionals(environment);
   }
   return false; // enum out of bounds
 }
@@ -163,9 +163,9 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode) {
   return delta;
 }
 
-ArenaDelta ArenaDelta::MapChange(const MapName &map) {
-  ArenaDelta delta(Type::MapChange);
-  delta.map = map;
+ArenaDelta ArenaDelta::EnvChange(const MapName &map) {
+  ArenaDelta delta(Type::EnvChange);
+  delta.environment = map;
   return delta;
 }
 
@@ -344,8 +344,8 @@ void Arena::applyDelta(const ArenaDelta &delta) {
       break;
     }
 
-    case ArenaDelta::Type::MapChange: {
-      nextMap = *delta.map;
+    case ArenaDelta::Type::EnvChange: {
+      nextMap = *delta.environment;
       logEvent(ArenaEvent::MapChange(nextMap));
       for (auto s : subsystems) s.second->onMapChange();
     }
@@ -416,6 +416,10 @@ std::string Arena::allocNewNickname(const Player &player,
 void Arena::tick(const TimeDiff delta) {
   uptime += Time(delta);
   for (auto s : subsystems) s.second->onTick(delta);
+}
+
+void Arena::poll(const TimeDiff delta) {
+  for (auto s : subsystems) s.second->onPoll(delta);
 }
 
 }

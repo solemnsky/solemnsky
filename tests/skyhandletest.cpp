@@ -40,12 +40,12 @@ TEST_F(SkyHandleTest, AllocTest) {
 
   {
     // When the map can't load, the state still makes sense.
-    arena.applyDelta(sky::ArenaDelta::MapChange("map_that_cant_exist"));
+    arena.applyDelta(sky::ArenaDelta::EnvChange("map_that_cant_exist"));
     skyHandle.start();
     ASSERT_EQ(skyHandle.isActive(), false);
     ASSERT_EQ(skyHandle.loadingErrored(), true);
 
-    arena.applyDelta(sky::ArenaDelta::MapChange("NULL_MAP"));
+    arena.applyDelta(sky::ArenaDelta::EnvChange("NULL_MAP"));
     skyHandle.start();
     ASSERT_EQ(skyHandle.isActive(), true);
     ASSERT_EQ(skyHandle.loadingErrored(), false);
@@ -146,7 +146,7 @@ TEST_F(SkyHandleTest, DeltaAllocTest) {
   // Correct start followed by failed restart.
   skyHandle.start();
   remoteSkyHandle.applyDelta(skyHandle.collectDelta());
-  arena.applyDelta(sky::ArenaDelta::MapChange("map_that_doesnt_exist"));
+  arena.applyDelta(sky::ArenaDelta::EnvChange("map_that_doesnt_exist"));
   skyHandle.start();
   remoteSkyHandle.applyDelta(skyHandle.collectDelta());
   ASSERT_EQ(remoteSkyHandle.isActive(), false);

@@ -48,6 +48,7 @@ class Environment {
   const std::string filepath;
 
   // State.
+  bool loadErrored;
   optional<EnvGraphics> graphics;
   optional<EnvScripts> scripts;
   optional<Map> map;
@@ -63,6 +64,7 @@ class Environment {
   ~Environment();
 
   // Accessing loaded resources.
+  bool loadingErrored() const;
   Map const *getMap() const;
 
 };

@@ -24,7 +24,8 @@
 #include <vector>
 #include "util/types.hpp"
 #include "util/methods.hpp"
-#include "sky/sky/participation.hpp"
+#include "sky/planestate.hpp" // TODO: justify this (only Action is required)
+using EnvironmentURL = std::string; // from environment/environment.hpp
 
 namespace sky {
 
@@ -70,7 +71,7 @@ struct PlayerDelta {
 /**
  * Represents a player in the arena, with some minimal metadata.
  */
-class Player: public Networked<PlayerInitializer, PlayerDelta> {
+class Player : public Networked<PlayerInitializer, PlayerDelta> {
   template<typename T>
   friend
   class Subsystem;
@@ -127,24 +128,25 @@ class SubsystemListener {
   friend class SubsystemCaller;
  protected:
   // Managing player registration.
-  virtual void registerPlayer(Player &player) { }
-  virtual void unregisterPlayer(Player &player) { }
+  virtual void registerPlayer(Player &player) {}
+  virtual void unregisterPlayer(Player &player) {}
 
   // Callbacks.
-  virtual void onTick(const TimeDiff delta) { }
-  virtual void onJoin(Player &player) { }
-  virtual void onQuit(Player &player) { }
-  virtual void onMode(const ArenaMode newMode) { }
-  virtual void onMapChange() { }
+  virtual void onPoll(const TimeDiff delta) {}
+  virtual void onTick(const TimeDiff delta) {}
+  virtual void onJoin(Player &player) {}
+  virtual void onQuit(Player &player) {}
+  virtual void onMode(const ArenaMode newMode) {}
+  virtual void onMapChange() {}
   virtual void onDelta(Player &player,
-                       const PlayerDelta &delta) { }
+                       const PlayerDelta &delta) {}
   virtual void onAction(Player &player,
-                        const Action action, const bool state) { }
+                        const Action action, const bool state) {}
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
-                       const sf::Vector2f &pos, const float rot) { }
+                       const sf::Vector2f &pos, const float rot) {}
 
-  virtual void onStartGame() { }
-  virtual void onEndGame() { }
+  virtual void onStartGame() {}
+  virtual void onEndGame() {}
 
 };
 
@@ -167,7 +169,7 @@ class SubsystemCaller {
  * The subsystem abstraction: attaches additional layers of state and logic to the game.
  */
 template<typename PlayerData>
-class Subsystem: public SubsystemListener {
+class Subsystem : public SubsystemListener {
  protected:
   SubsystemCaller &caller;
   const PID id; // ID the render has allocated in the Arena
@@ -195,7 +197,7 @@ class Subsystem: public SubsystemListener {
 class ArenaLogger {
  protected:
   friend class Arena;
-  virtual void onEvent(const ArenaEvent &event) { }
+  virtual void onEvent(const ArenaEvent &event) {}
 
  public:
   class Arena &arena;
@@ -227,9 +229,9 @@ struct ArenaInit {
 /**
  * Delta type for Arena's Networked implementation.
  */
-struct ArenaDelta: public VerifyStructure {
+struct ArenaDelta : public VerifyStructure {
   enum class Type {
-    Quit, Join, Delta, Motd, Mode, MapChange
+    Quit, Join, Delta, Motd, Mode, EnvChange
   };
 
   ArenaDelta() = default; // packing
@@ -259,8 +261,8 @@ struct ArenaDelta: public VerifyStructure {
         ar(mode);
         break;
       }
-      case Type::MapChange: {
-        ar(map);
+      case Type::EnvChange: {
+        ar(environment);
         break;
       }
     }
@@ -272,8 +274,7 @@ struct ArenaDelta: public VerifyStructure {
   optional<std::map<PID, PlayerDelta>> playerDeltas;
   optional<std::string> motd;
   optional<ArenaMode> mode;
-  optional<MapName> map;
-  optional<std::map<PID, std::pair<sf::Time, sf::Time>>> latencyData;
+  optional<EnvironmentURL> environment;
 
   bool verifyStructure() const override;
 
@@ -283,14 +284,15 @@ struct ArenaDelta: public VerifyStructure {
   static ArenaDelta Delta(const std::map<PID, PlayerDelta> &playerDeltas);
   static ArenaDelta Motd(const std::string &motd);
   static ArenaDelta Mode(const ArenaMode mode);
-  static ArenaDelta MapChange(const MapName &name);
+  static ArenaDelta EnvChange(const EnvironmentURL &name);
+
 };
 
 /**
  * The backbone of a multiplayer game. Holds Players, Subsystems, and
  * an ArenaLoggers, and exposes a small API.
  */
-class Arena: public Networked<ArenaInit, ArenaDelta> {
+class Arena : public Networked<ArenaInit, ArenaDelta> {
   friend class Player;
   friend class SubsystemCaller;
  private:
@@ -306,7 +308,7 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   std::map<PID, Player> players;
   std::string name;
   std::string motd;
-  MapName nextMap;
+  EnvironmentURL nextMap;
   ArenaMode mode;
   Time uptime;
 
@@ -336,11 +338,13 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
 
   std::string getName() const;
   std::string getMotd() const;
-  MapName getNextMap() const;
+  EnvironmentURL getNextMap() const;
   ArenaMode getMode() const;
   Time getUptime() const;
 
+  // Ticking / polling.
   void tick(const TimeDiff delta);
+  void poll(const TimeDiff delta);
 
   // Server-specific API.
   ArenaDelta connectPlayer(const std::string &requestedNick);

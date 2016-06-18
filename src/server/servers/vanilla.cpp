@@ -96,7 +96,7 @@ void VanillaServer::onPacket(ENetPeer *const client,
           shared.rconResponse(client, "Usage: /map <name>");
           return;
         }
-        shared.registerArenaDelta(sky::ArenaDelta::MapChange(command[1]));
+        shared.registerArenaDelta(sky::ArenaDelta::EnvChange(command[1]));
         skyHandle.start();
         return;
       }

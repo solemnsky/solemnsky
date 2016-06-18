@@ -47,7 +47,7 @@ TEST_F(ArenaTest, ConnectionTest) {
  */
 TEST_F(ArenaTest, DeltaTest) {
   // Map, mode and motd.
-  arena.applyDelta(sky::ArenaDelta::MapChange("test2"));
+  arena.applyDelta(sky::ArenaDelta::EnvChange("test2"));
   arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
   arena.applyDelta(sky::ArenaDelta::Motd("new motd"));
 

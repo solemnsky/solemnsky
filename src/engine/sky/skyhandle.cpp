@@ -27,7 +27,7 @@ namespace sky {
 SkyHandleInit::SkyHandleInit(
     const MapName &mapName,
     const SkyInit &initializer) :
-    initializer({mapName, initializer}) { }
+    initializer({mapName, initializer}) {}
 
 bool SkyHandleInit::verifyStructure() const {
   if (initializer) {
@@ -58,13 +58,17 @@ SkyHandleDelta SkyHandleDelta::respectAuthority(const Player &player) const {
  * SkyHandle.
  */
 
-void SkyHandle::startWith(const MapName &mapName, const SkyInit &skyInit) {
-  if (const auto loaded = Map::load(mapName)) {
-    map.emplace(loaded.get());
-    sky.emplace(arena, map.get(), skyInit);
-    skyIsNew = true;
-    caller.doStartGame();
-  } else loadError = true;
+void SkyHandle::startWith(
+    const EnvironmentURL &envUrl, const SkyInit &skyInit) {
+  environment.emplace(getEnvironmentFile(envUrl));
+}
+
+void SkyHandle::onPoll(const TimeDiff) {
+  // Check for environment loading.
+  if (environment) {
+    loadError = environment.loadingErrored();
+
+  }
 }
 
 SkyHandle::SkyHandle(Arena &arena, const SkyHandleInit &initializer) :
