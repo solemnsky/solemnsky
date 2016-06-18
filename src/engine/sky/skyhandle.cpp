@@ -31,8 +31,24 @@ SkyHandle::SkyHandle(Arena &arena, const SkyHandleInit &initializer) :
   if (initializer) environment.emplace(initializer.get());
 }
 
+Environment *SkyHandle::getEnvironment() {
+  return environment.get_ptr();
+}
+
+Sky *SkyHandle::getSky() {
+  return sky.get_ptr();
+}
+
+Environment const *SkyHandle::getEnvironment() const {
+  return environment.get_ptr();
+}
+
+Sky const *SkyHandle::getSky() const {
+  return sky.get_ptr();
+}
+
 SkyHandleInit SkyHandle::captureInitializer() const {
-  if (sky) return SkyHandleInit{environment->url};
+  if (environment) return SkyHandleInit{environment->url};
   else return SkyHandleInit{};
 }
 
@@ -48,6 +64,7 @@ void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
 }
 
 void SkyHandle::start() {
+  envIsNew = true;
   environment.emplace(arena.getNextEnv());
 }
 
@@ -57,6 +74,7 @@ void SkyHandle::instantiateSky(const SkyInit &init) {
 }
 
 void SkyHandle::stop() {
+  envIsNew = false;
   environment.reset();
   sky.reset();
 }

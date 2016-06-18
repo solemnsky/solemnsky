@@ -24,15 +24,15 @@ TEST_F(SkyHandleTest, AllocTest) {
   {
     // Start the engine, and the environment is instantiated.
     skyHandle.start();
-    ASSERT_EQ(bool(skyHandle.environment), true);
-    ASSERT_EQ(bool(skyHandle.sky), false);
+    ASSERT_EQ(bool(skyHandle.getEnvironment()), true);
+    ASSERT_EQ(bool(skyHandle.getSky()), false);
 
     // After waiting for the environment to load, we can instantiate the Sky.
-    skyHandle.environment->waitForLoading();
+    skyHandle.getEnvironment()->waitForLoading();
     skyHandle.instantiateSky(sky::SkyInit{});
-    ASSERT_EQ(bool(skyHandle.sky), true);
+    ASSERT_EQ(bool(skyHandle.getSky()), true);
 
-    const sky::Sky &sky = skyHandle.sky.get();
+    const sky::Sky &sky = *skyHandle.getSky();
 
     // Signals pass correctly to the sky.
     arena.connectPlayer("nameless plane");
@@ -55,8 +55,8 @@ TEST_F(SkyHandleTest, InitializerTest) {
   {
     sky::Arena remoteArena{arena.captureInitializer()};
     sky::SkyHandle remoteHandle{remoteArena, skyHandle.captureInitializer()};
-    ASSERT_EQ(bool(remoteHandle.environment), true);
-    ASSERT_EQ(remoteHandle.environment->url, "NULL");
+    ASSERT_EQ(bool(remoteHandle.getEnvironment()), true);
+    ASSERT_EQ(remoteHandle.getEnvironment()->url, "NULL");
   }
 
   skyHandle.stop();
@@ -65,7 +65,7 @@ TEST_F(SkyHandleTest, InitializerTest) {
   {
     sky::Arena remoteArena{arena.captureInitializer()};
     sky::SkyHandle remoteHandle{remoteArena, skyHandle.captureInitializer()};
-    ASSERT_EQ(bool(remoteHandle.environment), false);
+    ASSERT_EQ(bool(remoteHandle.getEnvironment()), false);
   }
 
 }
@@ -81,18 +81,16 @@ TEST_F(SkyHandleTest, DeltaTest) {
   sky::SkyHandle remoteSkyHandle(remoteArena, skyHandle.captureInitializer());
 
   {
-    const sky::Sky &remoteSky = *remoteSkyHandle.sky;
-
     skyHandle.stop();
     remoteSkyHandle.applyDelta(skyHandle.collectDelta());
 
-    ASSERT_EQ(bool(remoteSkyHandle.environment), false);
-    ASSERT_EQ(bool(remoteSkyHandle.sky), false);
+    ASSERT_EQ(bool(remoteSkyHandle.getEnvironment()), false);
+    ASSERT_EQ(bool(remoteSkyHandle.getSky()), false);
 
     skyHandle.start();
     remoteSkyHandle.applyDelta(skyHandle.collectDelta());
 
-    ASSERT_EQ(bool(remoteSkyHandle.environment), true);
-    ASSERT_EQ(bool(remoteSkyHandle.sky), false);
+    ASSERT_EQ(bool(remoteSkyHandle.getEnvironment()), true);
+    ASSERT_EQ(bool(remoteSkyHandle.getSky()), false);
   }
 }
