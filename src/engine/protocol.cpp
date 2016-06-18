@@ -110,7 +110,7 @@ ServerPacket::ServerPacket(const Type type) : type(type) {}
 bool ServerPacket::verifyStructure() const {
   switch (type) {
     case Type::Ping:
-      return verifyRequiredOptionals(pingTime);
+      return verifyRequiredOptionals(timestamp);
     case Type::Init:
       return verifyRequiredOptionals(pid, arenaInit, skyHandleInit, scoreInit);
     case Type::InitSky:
@@ -120,7 +120,7 @@ bool ServerPacket::verifyStructure() const {
     case Type::DeltaSkyHandle:
       return verifyRequiredOptionals(skyHandleDelta);
     case Type::DeltaSky:
-      return verifyRequiredOptionals(pingTime, skyDelta);
+      return verifyRequiredOptionals(timestamp, skyDelta);
     case Type::DeltaScore:
       return verifyRequiredOptionals(scoreDelta);
     case Type::Chat:
@@ -135,7 +135,7 @@ bool ServerPacket::verifyStructure() const {
 
 ServerPacket ServerPacket::Ping(const Time pingTime) {
   ServerPacket packet(ServerPacket::Type::Ping);
-  packet.pingTime = pingTime;
+  packet.timestamp = pingTime;
   return packet;
 }
 
@@ -151,17 +151,30 @@ ServerPacket ServerPacket::Init(const PID pid,
   return packet;
 }
 
+ServerPacket ServerPacket::InitSky(const SkyInit &skyInit) {
+  ServerPacket packet(Type::InitSky);
+  packet.skyInit = skyInit;
+  return packet;
+}
+
 ServerPacket ServerPacket::DeltaArena(const ArenaDelta &arenaDelta) {
   ServerPacket packet(Type::DeltaArena);
   packet.arenaDelta = arenaDelta;
   return packet;
 }
 
-ServerPacket ServerPacket::DeltaSky(const SkyHandleDelta &skyDelta,
+ServerPacket ServerPacket::DeltaSkyHandle(
+    const SkyHandleDelta &skyHandleDelta) {
+  ServerPacket packet(Type::DeltaSky);
+  packet.skyHandleDelta = skyHandleDelta;
+  return packet;
+}
+
+ServerPacket ServerPacket::DeltaSky(const SkyDelta &skyDelta,
                                     const Time pingTime) {
   ServerPacket packet(Type::DeltaSky);
-  packet.skyHandleDelta = skyDelta;
-  packet.pingTime = pingTime;
+  packet.skyDelta = skyDelta;
+  packet.timestamp = pingTime;
   return packet;
 }
 

@@ -25,10 +25,10 @@
 #include "util/types.hpp"
 #include "util/methods.hpp"
 #include "sky/planestate.hpp" // TODO: justify this (only Action is required)
-using EnvironmentURL = std::string; // from environment/environment.hpp
 
 namespace sky {
 
+using EnvironmentURL = std::string; // from environment/environment.hpp
 struct ArenaEvent; // event.h
 
 /**
@@ -45,7 +45,7 @@ struct PlayerInitializer {
 
   PID pid;
   std::string nickname;
-  bool admin;
+  bool admin, envLoaded;
   Team team;
 };
 
@@ -62,7 +62,7 @@ struct PlayerDelta {
   }
 
   optional<std::string> nickname;
-  bool admin;
+  bool admin, envLoaded;
   optional<Team> team;
   optional<std::pair<TimeDiff, Time>> latencyStats;
 
@@ -78,9 +78,10 @@ class Player : public Networked<PlayerInitializer, PlayerDelta> {
   friend class Arena;
  private:
   // State.
-  std::string nickname;
-  bool admin;
+  std::string nickname; // Nickname allocated for player.
+  bool admin; // Whether they have admin rights.
   Team team;
+  bool envLoaded; // Whether their client has loaded the current environment.
   std::map<PID, void *> data; // this is a good and not a bad idea
 
   // Timing stats.
@@ -104,6 +105,7 @@ class Player : public Networked<PlayerInitializer, PlayerDelta> {
   std::string getNickname() const;
   bool isAdmin() const;
   Team getTeam() const;
+  bool hasLoadedEnv() const;
 
   bool latencyIsCalculated() const;
   TimeDiff getLatency() const;

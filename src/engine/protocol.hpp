@@ -138,7 +138,7 @@ struct ServerPacket : public VerifyStructure {
     ar(type);
     switch (type) {
       case Type::Ping: {
-        ar(pingTime);
+        ar(timestamp);
         break;
       }
       case Type::Init: {
@@ -158,7 +158,7 @@ struct ServerPacket : public VerifyStructure {
         break;
       }
       case Type::DeltaSky: {
-        ar(pingTime, skyDelta);
+        ar(timestamp, skyDelta);
         break;
       }
       case Type::DeltaScore: {
@@ -190,7 +190,7 @@ struct ServerPacket : public VerifyStructure {
   optional<ArenaDelta> arenaDelta;         // DeltaArena
   optional<SkyHandleDelta> skyHandleDelta; // DeltaSkyHandle
   optional<SkyDelta> skyDelta;             // DeltaSky
-  optional<Time> pingTime;
+  optional<Time> timestamp;
   optional<ScoreboardDelta> scoreDelta;    // DeltaScore
   optional<std::string> stringData; // Chat, Broadcast, RCon
 
@@ -201,8 +201,10 @@ struct ServerPacket : public VerifyStructure {
                            const ArenaInit &arenaInit,
                            const SkyHandleInit &skyInit,
                            const ScoreboardInit &scoreInit);
+  static ServerPacket InitSky(const SkyInit &skyInit);
   static ServerPacket DeltaArena(const ArenaDelta &arenaDelta);
-  static ServerPacket DeltaSky(const SkyHandleDelta &skyDelta,
+  static ServerPacket DeltaSkyHandle(const SkyHandleDelta &skyhandleDelta);
+  static ServerPacket DeltaSky(const SkyDelta &skyDelta,
                                const Time pingTime);
   static ServerPacket DeltaScore(const ScoreboardDelta &scoreDelta);
   static ServerPacket Chat(const PID pid, const std::string &chat);
