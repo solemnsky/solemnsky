@@ -13,8 +13,7 @@ class ArenaTest: public testing::Test {
 };
 
 /**
- * Connections / disconnections are managed correctly, along with nicknames
- * and PIDs.
+ * Player connections and disconnections are managed correctly.
  */
 TEST_F(ArenaTest, ConnectionTest) {
   // Join and quit.
@@ -39,6 +38,13 @@ TEST_F(ArenaTest, ConnectionTest) {
   // Nickname qualification.
   arena.connectPlayer("nameless plane");
   EXPECT_EQ(arena.getPlayer(3)->getNickname(), "nameless plane(2)");
+
+}
+
+/**
+ * Player nicknames are allocated correctly.
+ */
+TEST_F(ArenaTest, NicknameTest) {
 
 }
 
@@ -78,10 +84,12 @@ TEST_F(ArenaTest, PlayerDeltaTest) {
     sky::PlayerDelta delta{player};
     delta.latencyStats.emplace(50, 60);
     delta.admin = true;
+    delta.envLoaded = true;
 
     EXPECT_EQ(player.getLatency(), 0);
     EXPECT_EQ(player.getClockOffset(), 0);
     EXPECT_EQ(player.isAdmin(), false);
+    EXPECT_EQ(player.hasLoadedEnv(), false);
     EXPECT_EQ(player.latencyIsCalculated(), false);
 
     arena.applyDelta(sky::ArenaDelta::Delta(0, delta));
@@ -89,6 +97,7 @@ TEST_F(ArenaTest, PlayerDeltaTest) {
     EXPECT_EQ(player.getLatency(), 50);
     EXPECT_EQ(player.getClockOffset(), 60);
     EXPECT_EQ(player.isAdmin(), true);
+    EXPECT_EQ(player.hasLoadedEnv(), true);
     EXPECT_EQ(player.latencyIsCalculated(), true);
 
     // Out-of-bounds deltas don't break anything.
@@ -115,7 +124,7 @@ TEST_F(ArenaTest, PlayerDeltaTest) {
 }
 
 /**
- * A modified Arena can be copied to a new client with a SkyInit.
+ * A modified Arena can be copied to a new client with an ArenaInit.
  */
 TEST_F(ArenaTest, InitializerTest) {
   arena.applyDelta(sky::ArenaDelta::Motd("some motd"));

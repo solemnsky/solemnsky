@@ -25,7 +25,8 @@ namespace sky {
  */
 
 PlayerDelta::PlayerDelta(const Player &player) :
-    admin(player.isAdmin()) { }
+    admin(player.isAdmin()),
+    envLoaded(player.hasLoadedEnv()) {}
 
 /**
  * Player.
@@ -33,7 +34,8 @@ PlayerDelta::PlayerDelta(const Player &player) :
 
 PlayerInitializer::PlayerInitializer(
     const PID pid, const std::string &nickname) :
-    pid(pid), nickname(nickname), admin(false), team(0) { }
+    pid(pid), nickname(nickname), admin(false),
+    envLoaded(false), team(0) {}
 
 Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     Networked(initializer),
@@ -46,11 +48,12 @@ Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     clockOffset(0),
 
     arena(arena),
-    pid(initializer.pid) { }
+    pid(initializer.pid) {}
 
 void Player::applyDelta(const PlayerDelta &delta) {
   if (delta.nickname) nickname = *delta.nickname;
   admin = delta.admin;
+  envLoaded = delta.envLoaded;
   if (delta.team) team = delta.team.get();
   if (delta.latencyStats) {
     latency = delta.latencyStats->first;
@@ -64,6 +67,7 @@ PlayerInitializer Player::captureInitializer() const {
   initializer.pid = pid;
   initializer.nickname = nickname;
   initializer.admin = admin;
+  initializer.envLoaded = envLoaded;
   initializer.team = team;
   return initializer;
 }
@@ -78,6 +82,10 @@ bool Player::isAdmin() const {
 
 Team Player::getTeam() const {
   return team;
+}
+
+bool Player::hasLoadedEnv() const {
+  return envLoaded;
 }
 
 bool Player::latencyIsCalculated() const {
@@ -106,7 +114,7 @@ void Player::spawn(const PlaneTuning &tuning,
  * Arena.
  */
 
-ArenaDelta::ArenaDelta(const ArenaDelta::Type type) : type(type) { }
+ArenaDelta::ArenaDelta(const ArenaDelta::Type type) : type(type) {}
 
 bool ArenaDelta::verifyStructure() const {
   switch (type) {
@@ -174,7 +182,7 @@ ArenaDelta ArenaDelta::EnvChange(const EnvironmentURL &map) {
  */
 
 SubsystemCaller::SubsystemCaller(Arena &arena) :
-    arena(arena) { }
+    arena(arena) {}
 
 void SubsystemCaller::doStartGame() {
   for (const auto &pair : arena.subsystems)

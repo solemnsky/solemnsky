@@ -113,9 +113,9 @@ void ServerExec::processPacket(ENetPeer *client,
 
     switch (packet.type) {
       case ClientPacket::Type::ReqSky: {
-        if (shared.skyHandle.getSky()) {
-          shared.sendToClient(client,
-                              sky::ServerPacket::Ini)
+        if (auto sky = shared.skyHandle.getSky()) {
+          shared.sendToClient(
+              client, sky::ServerPacket::InitSky(sky->captureInitializer()));
         }
       }
 
