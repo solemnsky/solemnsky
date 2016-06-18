@@ -22,8 +22,7 @@
 #include <map>
 #include "util/types.hpp"
 #include "scoreboard.hpp"
-#include "participation.hpp"
-#include "skyhandle.hpp"
+#include "sky/skyhandle.hpp"
 #include "arena.hpp"
 
 namespace sky {
@@ -35,9 +34,10 @@ struct ClientPacket : public VerifyStructure {
   enum class Type {
     Pong, // respond to a server Ping
     ReqJoin, // request joining in the arena, part of the connection protocol
+    ReqSky, // request a Sky initializer, having loaded the Environment
 
     ReqPlayerDelta, // request a change to your player data
-    ReqInput, // request an input into your sky Participation
+    ReqInput, // request an input into your engine Participation
 
     ReqTeam, // request a team change
     ReqSpawn, // request to spawn
@@ -56,6 +56,9 @@ struct ClientPacket : public VerifyStructure {
       }
       case Type::ReqJoin: {
         ar(stringData);
+        break;
+      }
+      case Type::ReqSky: {
         break;
       }
       case Type::ReqPlayerDelta: {
@@ -113,9 +116,13 @@ struct ClientPacket : public VerifyStructure {
 struct ServerPacket : public VerifyStructure {
   enum class Type {
     Ping, // request a client Pong
+
     Init, // acknowledge a ReqJoin, send ArenaInit
+    InitSky, // sky initialization for a client who's loaded the environment
+
     DeltaArena, // broadcast a change in the Arena
-    DeltaSky, // broadcast a change in the SkyHandle
+    DeltaSkyHandle, // broadcast a change in the SkyHandle
+    DeltaSky, // broadcast a change in the Sky
     DeltaScore, // broadcast a change in the Scoreboard
 
     Chat, // chat relay to all clients
@@ -131,19 +138,27 @@ struct ServerPacket : public VerifyStructure {
     ar(type);
     switch (type) {
       case Type::Ping: {
-        ar(pingTime);
+        ar(timestamp);
         break;
       }
       case Type::Init: {
-        ar(pid, arenaInit, skyInit, scoreInit);
+        ar(pid, arenaInit, skyHandleInit, scoreInit);
+        break;
+      }
+      case Type::InitSky: {
+        ar(skyInit);
         break;
       }
       case Type::DeltaArena: {
         ar(arenaDelta);
         break;
       }
+      case Type::DeltaSkyHandle : {
+        ar(skyHandleDelta);
+        break;
+      }
       case Type::DeltaSky: {
-        ar(pingTime, skyDelta);
+        ar(timestamp, skyDelta);
         break;
       }
       case Type::DeltaScore: {
@@ -166,15 +181,18 @@ struct ServerPacket : public VerifyStructure {
   }
 
   Type type;
-  optional<Time> pingTime;
-  optional<PID> pid;
+
+  optional<PID> pid;                       // Init
   optional<ArenaInit> arenaInit;
-  optional<ArenaDelta> arenaDelta;
-  optional<ScoreboardDelta> scoreDelta;
-  optional<SkyHandleInit> skyInit;
+  optional<SkyHandleInit> skyHandleInit;
   optional<ScoreboardInit> scoreInit;
-  optional<SkyHandleDelta> skyDelta;
-  optional<std::string> stringData;
+  optional<SkyInit> skyInit;               // InitSky
+  optional<ArenaDelta> arenaDelta;         // DeltaArena
+  optional<SkyHandleDelta> skyHandleDelta; // DeltaSkyHandle
+  optional<SkyDelta> skyDelta;             // DeltaSky
+  optional<Time> timestamp;
+  optional<ScoreboardDelta> scoreDelta;    // DeltaScore
+  optional<std::string> stringData; // Chat, Broadcast, RCon
 
   bool verifyStructure() const override;
 
@@ -183,8 +201,10 @@ struct ServerPacket : public VerifyStructure {
                            const ArenaInit &arenaInit,
                            const SkyHandleInit &skyInit,
                            const ScoreboardInit &scoreInit);
+  static ServerPacket InitSky(const SkyInit &skyInit);
   static ServerPacket DeltaArena(const ArenaDelta &arenaDelta);
-  static ServerPacket DeltaSky(const SkyHandleDelta &skyDelta,
+  static ServerPacket DeltaSkyHandle(const SkyHandleDelta &skyhandleDelta);
+  static ServerPacket DeltaSky(const SkyDelta &skyDelta,
                                const Time pingTime);
   static ServerPacket DeltaScore(const ScoreboardDelta &scoreDelta);
   static ServerPacket Chat(const PID pid, const std::string &chat);

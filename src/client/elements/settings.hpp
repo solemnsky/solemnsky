@@ -20,7 +20,7 @@
  */
 #pragma once
 #include <SFML/Window.hpp>
-#include "sky/participation.hpp"
+#include "engine/sky/participation.hpp"
 #include "util/types.hpp"
 
 /**
@@ -30,6 +30,8 @@
 enum class ClientAction {
   Spawn, Chat, Scoreboard, MAX
 };
+
+void forClientActions(std::function<void(const ClientAction)> fn);
 
 std::string showClientAction(const ClientAction action);
 

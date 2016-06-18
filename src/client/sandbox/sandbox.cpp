@@ -51,10 +51,7 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
 
 void Sandbox::startHandle() {
   skyHandle.start();
-  if (!skyHandle.loadingErrored()) {
-    skyRender.emplace(shared, resources, arena, skyHandle.sky.get());
-    status = "running";
-  }
+  status = "loading...";
 }
 
 void Sandbox::stopHandle() {
@@ -66,7 +63,7 @@ void Sandbox::stopHandle() {
 void Sandbox::runCommand(const SandboxCommand &command) {
   switch (command.type) {
     case SandboxCommand::Type::Start: {
-      arena.applyDelta(sky::ArenaDelta::MapChange(
+      arena.applyDelta(sky::ArenaDelta::EnvChange(
           command.mapName.get()));
       startHandle();
       break;
@@ -76,7 +73,6 @@ void Sandbox::runCommand(const SandboxCommand &command) {
       break;
     }
   }
-
 }
 
 Sandbox::Sandbox(ClientShared &state) :
@@ -117,33 +113,40 @@ void Sandbox::doExit() {
  * Control interface.
  */
 
-void Sandbox::tick(float delta) {
+void Sandbox::tick(const TimeDiff delta) {
+  if (skyHandle.readyToLoadSky()) {
+    skyHandle.instantiateSky({});
+    skyRender.emplace(shared, resources, arena, *skyHandle.getSky());
+  }
+
   if (shared.ui.gameFocused()) arena.tick(delta);
   // if this were multiplayer of course we wouldn't have this liberty
   ui::Control::tick(delta);
 }
 
 void Sandbox::render(ui::Frame &f) {
-  if (skyHandle.isActive()) {
-    const auto &plane = skyHandle.sky.get().getParticipation(*player).plane;
+  if (auto sky = skyHandle.getSky()) {
+    const auto &plane = sky->getParticipation(*player).plane;
     skyRender->render(
         f, plane ?
            plane->getState().physical.pos :
            sf::Vector2f(0, 0));
   }
+
   ui::Control::render(f);
 }
 
 bool Sandbox::handle(const sf::Event &event) {
+  if (ui::Control::handle(event)) return true;
+
   if (auto action = shared.triggerClientAction(event)) {
-    if (skyHandle.isActive()) {
-      const auto &sky = skyHandle.sky.get();
-      const auto &participation = sky.getParticipation(*player);
+    if (auto sky = skyHandle.getSky()) {
+      const auto &participation = sky->getParticipation(*player);
 
       if (action->first == ClientAction::Spawn
           and action->second
           and !participation.isSpawned()) {
-        const auto spawnPoint = sky.getMap().pickSpawnPoint(0);
+        const auto spawnPoint = sky->getMap().pickSpawnPoint(0);
         player->spawn({}, spawnPoint.pos, spawnPoint.angle);
         return true;
       }
@@ -161,7 +164,7 @@ bool Sandbox::handle(const sf::Event &event) {
     player->doAction(action->first, action->second);
   }
 
-  return ui::Control::handle(event);
+  return false;
 }
 
 void Sandbox::reset() {

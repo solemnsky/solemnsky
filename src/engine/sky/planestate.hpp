@@ -41,6 +41,8 @@ enum class Action {
   MAX
 };
 
+void forSkyActions(std::function<void(const Action)> fn);
+
 std::string showAction(const Action action);
 optional<Action> readAction(const std::string &string);
 

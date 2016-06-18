@@ -23,8 +23,8 @@
 #include <memory>
 #include "physics.hpp"
 #include "participation.hpp"
-#include "arena.hpp"
 #include "skysettings.hpp"
+#include "engine/arena.hpp"
 
 namespace sky {
 
@@ -76,8 +76,10 @@ class Sky : public PhysicsListener,
   friend class SkyHandle;
   friend class Participation;
  private:
-  // State.
+  // Resources loaded by SkyHandle.
   const Map &map;
+
+  // State.
   Physics physics;
   std::map<PID, Participation> participations;
   SkySettings settings;

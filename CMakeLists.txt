@@ -26,49 +26,59 @@ include_directories(
         thirdparty/SFML/include/
         thirdparty/polypartition/
         thirdparty/mingw-std-threads/
+        thirdparty/miniz/
         "${Boost_INCLUDE_DIRS}"
 )
 
 ###### libsolemnsky, for common use by client and server
 add_library(solemnsky STATIC
-        src/sky/arena.cpp
-        src/sky/arena.hpp
+        src/engine/environment/envgraphics.cpp
+        src/engine/environment/envgraphics.hpp
 
-        src/sky/debugview.cpp
-        src/sky/debugview.hpp
+        src/engine/environment/environment.cpp
+        src/engine/environment/environment.hpp
 
-        src/sky/event.cpp
-        src/sky/event.hpp
+        src/engine/environment/envscripts.cpp
+        src/engine/environment/envscripts.hpp
 
-        src/sky/map.cpp
-        src/sky/map.hpp
+        src/engine/environment/map.cpp
+        src/engine/environment/map.hpp
 
-        src/sky/participation.cpp
-        src/sky/participation.hpp
+        src/engine/arena.cpp
+        src/engine/arena.hpp
 
-        src/sky/physics.cpp
-        src/sky/physics.hpp
+        src/engine/debugview.cpp
+        src/engine/debugview.hpp
 
-        src/sky/planestate.cpp
-        src/sky/planestate.hpp
+        src/engine/event.cpp
+        src/engine/event.hpp
 
-        src/sky/prop.cpp
-        src/sky/prop.hpp
+        src/engine/sky/participation.cpp
+        src/engine/sky/participation.hpp
 
-        src/sky/protocol.cpp
-        src/sky/protocol.hpp
+        src/engine/sky/physics.cpp
+        src/engine/sky/physics.hpp
 
-        src/sky/scoreboard.cpp
-        src/sky/scoreboard.hpp
+        src/engine/sky/planestate.cpp
+        src/engine/sky/planestate.hpp
 
-        src/sky/sky.cpp
-        src/sky/sky.hpp
+        src/engine/sky/prop.cpp
+        src/engine/sky/prop.hpp
 
-        src/sky/skyhandle.cpp
-        src/sky/skyhandle.hpp
+        src/engine/protocol.cpp
+        src/engine/protocol.hpp
 
-        src/sky/skysettings.cpp
-        src/sky/skysettings.hpp
+        src/engine/scoreboard.cpp
+        src/engine/scoreboard.hpp
+
+        src/engine/sky/sky.cpp
+        src/engine/sky/sky.hpp
+
+        src/engine/sky/skyhandle.cpp
+        src/engine/sky/skyhandle.hpp
+
+        src/engine/sky/skysettings.cpp
+        src/engine/sky/skysettings.hpp
 
         src/util/methods.cpp
         src/util/methods.hpp
@@ -92,6 +102,7 @@ target_link_libraries(solemnsky
         enet
         sfml-system
         sfml-network
+        sfml-graphics
         Box2D
         ${Boost_LIBRARIES}
         )
@@ -127,20 +138,20 @@ add_executable(solemnsky_client
         src/client/elements/style.cpp
         src/client/elements/style.hpp
 
-        src/client/multiplayer/multiplayer.cpp
-        src/client/multiplayer/multiplayer.hpp
-
-        src/client/multiplayer/multiplayercore.cpp
-        src/client/multiplayer/multiplayercore.hpp
-
-        src/client/multiplayer/multiplayergame.cpp
-        src/client/multiplayer/multiplayergame.hpp
-
-        src/client/multiplayer/multiplayerlobby.cpp
-        src/client/multiplayer/multiplayerlobby.hpp
-
-        src/client/multiplayer/multiplayerscoring.cpp
-        src/client/multiplayer/multiplayerscoring.hpp
+        #        src/client/multiplayer/multiplayer.cpp
+        #        src/client/multiplayer/multiplayer.hpp
+        #
+        #        src/client/multiplayer/multiplayercore.cpp
+        #        src/client/multiplayer/multiplayercore.hpp
+        #
+        #        src/client/multiplayer/multiplayergame.cpp
+        #        src/client/multiplayer/multiplayergame.hpp
+        #
+        #        src/client/multiplayer/multiplayerlobby.cpp
+        #        src/client/multiplayer/multiplayerlobby.hpp
+        #
+        #        src/client/multiplayer/multiplayerscoring.cpp
+        #        src/client/multiplayer/multiplayerscoring.hpp
 
         src/client/sandbox/sandbox.cpp
         src/client/sandbox/sandbox.hpp
@@ -202,7 +213,6 @@ add_executable(solemnsky_client
         )
 target_link_libraries(solemnsky_client
         solemnsky
-        sfml-graphics
         sfml-window
         )
 

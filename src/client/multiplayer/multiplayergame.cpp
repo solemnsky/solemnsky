@@ -101,9 +101,9 @@ MultiplayerGame::MultiplayerGame(
               style.multi.chatPos,
               "[ENTER TO CHAT]"),
     scoreboardFocused(false),
-    skyRender(shared, resources, conn.arena, conn.getSky().get()),
+    skyRender(shared, resources, conn.arena, conn.getSky()),
     participation(conn.getSky()->getParticipation(conn.player)) {
-  assert(conn.skyHandle.isActive());
+  assert(bool(conn.skyHandle.getSky()));
   areChildren({&chatInput});
   areChildComponents({&skyRender});
 }

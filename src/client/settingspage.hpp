@@ -26,15 +26,16 @@
  * One tab of the control page.
  * Simple user interface that can load / write from and to a Settings object.
  */
-class SettingsTab: public ui::Control {
+class SettingsTab : public ui::Control {
  public:
   SettingsTab(const ui::AppRefs &references, const Settings &settings);
 
   virtual void readSettings(const Settings &settings) = 0;
   virtual void writeSettings(Settings &settings) = 0;
+
 };
 
-class GeneralTab: public SettingsTab {
+class GeneralTab : public SettingsTab {
  private:
   ui::Checkbox debugOption;
 
@@ -43,9 +44,10 @@ class GeneralTab: public SettingsTab {
 
   void readSettings(const Settings &settings) override final;
   void writeSettings(Settings &buffer) override final;
+
 };
 
-class PlayerTab: public SettingsTab {
+class PlayerTab : public SettingsTab {
  private:
   ui::TextEntry nicknameOption;
 
@@ -54,12 +56,11 @@ class PlayerTab: public SettingsTab {
 
   void readSettings(const Settings &settings) override final;
   void writeSettings(Settings &settings) override final;
+
 };
 
-class ControlsTab: public SettingsTab {
+class ControlsTab : public SettingsTab {
  private:
-  std::vector<sky::Action> skyActions;
-  std::vector<ClientAction> clientActions;
   std::map<sky::Action, ui::KeySelector> skyBindingChoosers;
   std::map<ClientAction, ui::KeySelector> clientBindingChoosers;
 
@@ -68,9 +69,10 @@ class ControlsTab: public SettingsTab {
 
   void readSettings(const Settings &settings) override final;
   void writeSettings(Settings &buffer) override final;
+
 };
 
-class SettingsPage: public Page {
+class SettingsPage : public Page {
  private:
   Settings newSettings;
 

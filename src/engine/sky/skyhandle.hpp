@@ -20,49 +20,12 @@
  */
 #pragma once
 #include "sky.hpp"
+#include "engine/environment/environment.hpp"
 
 namespace sky {
 
-/**
- * Initializer for SkyHandle.
- */
-
-struct SkyHandleInit {
-  SkyHandleInit() = default;
-  SkyHandleInit(const MapName &name, const SkyInit &initializer);
-
-  template<typename Archive>
-  void serialize(Archive &ar) {
-    ar(initializer);
-  }
-
-  bool verifyStructure() const;
-
-  optional<std::pair<MapName, SkyInit>> initializer;
-
-};
-
-/**
- * Delta for SkyHandle.
- */
-
-struct SkyHandleDelta {
-  SkyHandleDelta() = default;
-
-  template<typename Archive>
-  void serialize(Archive &ar) {
-    ar(initializer, delta);
-  }
-
-  bool verifyStructure() const;
-
-  optional<std::pair<MapName, SkyInit>> initializer;
-  optional<SkyDelta> delta;
-
-  // Respecting client authority.
-  SkyHandleDelta respectAuthority(const Player &player) const;
-
-};
+using SkyHandleInit = optional<EnvironmentURL>;
+using SkyHandleDelta = optional<EnvironmentURL>;
 
 /**
  * Wraps an optional<Sky>, binding it to the arena when the game is in session.
@@ -72,31 +35,34 @@ class SkyHandle
     : public Subsystem<Nothing>,
       public Networked<SkyHandleInit, SkyHandleDelta> {
  private:
-  // Delta collection state.
-  bool skyIsNew;
+  // Wrapped state: environment and sky.
+  optional<Environment> environment;
+  optional<Sky> sky;
 
-  // Map, instantiated separately from Sky.
-  bool loadError;
-  optional<Map> map;
-  void startWith(const MapName &mapName, const SkyInit &skyInit);
+  // Delta collection state.
+  bool envStateIsNew;
 
  public:
   SkyHandle(class Arena &parent, const SkyHandleInit &initializer);
-  
-  // State.
-  optional<Sky> sky;
+
+  // Accessing.
+  Environment *getEnvironment();
+  Sky *getSky();
+  Environment const *getEnvironment() const;
+  Sky const *getSky() const;
+
+  bool loadingToSky() const;
+  bool readyToLoadSky() const;
 
   // Networking.
   SkyHandleInit captureInitializer() const override final;
-  SkyHandleDelta collectDelta();
+  optional<SkyHandleDelta> collectDelta();
   void applyDelta(const SkyHandleDelta &delta) override final;
 
   // User API.
   void start();
+  void instantiateSky(const SkyInit &skyInit);
   void stop();
-
-  bool isActive() const;
-  bool loadingErrored() const;
 
 };
 

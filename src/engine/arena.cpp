@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <boost/algorithm/string.hpp>
 #include "arena.hpp"
 #include "event.hpp"
 
@@ -25,7 +26,8 @@ namespace sky {
  */
 
 PlayerDelta::PlayerDelta(const Player &player) :
-    admin(player.isAdmin()) { }
+    admin(player.isAdmin()),
+    loadingEnv(player.isLoadingEnv()) {}
 
 /**
  * Player.
@@ -33,24 +35,29 @@ PlayerDelta::PlayerDelta(const Player &player) :
 
 PlayerInitializer::PlayerInitializer(
     const PID pid, const std::string &nickname) :
-    pid(pid), nickname(nickname), admin(false), team(0) { }
+    pid(pid), nickname(nickname), admin(false),
+    loadingEnv(false), team(0) {}
 
 Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     Networked(initializer),
     nickname(initializer.nickname),
     admin(initializer.admin),
     team(initializer.team),
+    loadingEnv(initializer.loadingEnv),
 
-    latencyInitialized(false),
-    latency(0),
-    clockOffset(0),
+    latencyInitialized(bool(initializer.latencyStats)),
+    latency(initializer.latencyStats
+            ? initializer.latencyStats->first : 0),
+    clockOffset(initializer.latencyStats
+                ? initializer.latencyStats->second : 0),
 
     arena(arena),
-    pid(initializer.pid) { }
+    pid(initializer.pid) {}
 
 void Player::applyDelta(const PlayerDelta &delta) {
   if (delta.nickname) nickname = *delta.nickname;
   admin = delta.admin;
+  loadingEnv = delta.loadingEnv;
   if (delta.team) team = delta.team.get();
   if (delta.latencyStats) {
     latency = delta.latencyStats->first;
@@ -64,7 +71,11 @@ PlayerInitializer Player::captureInitializer() const {
   initializer.pid = pid;
   initializer.nickname = nickname;
   initializer.admin = admin;
+  initializer.loadingEnv = loadingEnv;
   initializer.team = team;
+  if (latencyInitialized) {
+    initializer.latencyStats.emplace(latency, clockOffset);
+  }
   return initializer;
 }
 
@@ -78,6 +89,10 @@ bool Player::isAdmin() const {
 
 Team Player::getTeam() const {
   return team;
+}
+
+bool Player::isLoadingEnv() const {
+  return loadingEnv;
 }
 
 bool Player::latencyIsCalculated() const {
@@ -106,7 +121,7 @@ void Player::spawn(const PlaneTuning &tuning,
  * Arena.
  */
 
-ArenaDelta::ArenaDelta(const ArenaDelta::Type type) : type(type) { }
+ArenaDelta::ArenaDelta(const ArenaDelta::Type type) : type(type) {}
 
 bool ArenaDelta::verifyStructure() const {
   switch (type) {
@@ -116,12 +131,14 @@ bool ArenaDelta::verifyStructure() const {
       return verifyRequiredOptionals(join);
     case Type::Delta:
       return verifyRequiredOptionals(playerDeltas);
+    case Type::EnvLoadState:
+      return verifyRequiredOptionals(envLoadState);
     case Type::Motd:
       return verifyRequiredOptionals(motd);
     case Type::Mode:
       return verifyRequiredOptionals(mode);
-    case Type::MapChange:
-      return verifyRequiredOptionals(map);
+    case Type::EnvChange:
+      return verifyRequiredOptionals(environment);
   }
   return false; // enum out of bounds
 }
@@ -151,6 +168,12 @@ ArenaDelta ArenaDelta::Delta(const std::map<PID, PlayerDelta> &playerDeltas) {
   return delta;
 }
 
+ArenaDelta ArenaDelta::EnvLoadState(const bool state) {
+  ArenaDelta delta(Type::EnvLoadState);
+  delta.envLoadState = state;
+  return delta;
+}
+
 ArenaDelta ArenaDelta::Motd(const std::string &motd) {
   ArenaDelta delta(Type::Motd);
   delta.motd = motd;
@@ -163,9 +186,9 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode) {
   return delta;
 }
 
-ArenaDelta ArenaDelta::MapChange(const MapName &map) {
-  ArenaDelta delta(Type::MapChange);
-  delta.map = map;
+ArenaDelta ArenaDelta::EnvChange(const EnvironmentURL &map) {
+  ArenaDelta delta(Type::EnvChange);
+  delta.environment = map;
   return delta;
 }
 
@@ -174,7 +197,7 @@ ArenaDelta ArenaDelta::MapChange(const MapName &map) {
  */
 
 SubsystemCaller::SubsystemCaller(Arena &arena) :
-    arena(arena) { }
+    arena(arena) {}
 
 void SubsystemCaller::doStartGame() {
   for (const auto &pair : arena.subsystems)
@@ -199,19 +222,23 @@ ArenaLogger::ArenaLogger(Arena &arena) : arena(arena) {
  */
 
 ArenaInit::ArenaInit(
-    const std::string &name, const MapName &map,
+    const std::string &name,
+    const EnvironmentURL &environment,
     const ArenaMode mode) :
-    name(name), map(map), mode(mode) { }
+    name(name), environment(environment), mode(mode) {}
 
 PID Arena::allocPid() const {
   return smallestUnused(players);
 }
 
-std::string Arena::allocNickname(const std::string &requested,
+std::string Arena::allocNickname(const std::string &requestedNick,
                                  const optional<PID> ignorePid) const {
+  std::string cleanReq(requestedNick);
+  boost::algorithm::trim_right(cleanReq);
+
   std::stringstream readStream;
   PID nickNumber;
-  const size_t rsize = requested.size();
+  const size_t rsize = cleanReq.size();
   std::vector<PID> usedNumbers;
 
   for (const auto &player : players) {
@@ -221,13 +248,14 @@ std::string Arena::allocNickname(const std::string &requested,
 
     const std::string &name = player.second.getNickname();
     if (name.size() < rsize) continue;
-    if (name.substr(0, rsize) != requested) continue;
+    if (name.substr(0, rsize) != cleanReq) continue;
 
-    if (name == requested) {
+    if (name == cleanReq) {
       usedNumbers.push_back(0);
       continue;
     }
 
+    readStream.clear();
     readStream.str(name.substr(rsize));
 
     if (readStream.get() != '(') continue;
@@ -241,9 +269,9 @@ std::string Arena::allocNickname(const std::string &requested,
   }
 
   PID allocated = smallestUnused(usedNumbers);
-  if (allocated == 0) return requested;
+  if (allocated == 0) return cleanReq;
   else
-    return requested + "("
+    return cleanReq + "("
         + std::to_string(smallestUnused(usedNumbers)) + ")";
 }
 
@@ -297,7 +325,7 @@ Arena::Arena(const ArenaInit &initializer) :
     Networked(initializer),
     name(initializer.name),
     motd(initializer.motd),
-    nextMap(initializer.map),
+    nextEnv(initializer.environment),
     mode(initializer.mode),
     uptime(0),
     subsystemCaller(*this) {
@@ -330,6 +358,14 @@ void Arena::applyDelta(const ArenaDelta &delta) {
       break;
     }
 
+    case ArenaDelta::Type::EnvLoadState: {
+      bool newState = delta.envLoadState.get();
+      forPlayers([&](Player &player) {
+        player.loadingEnv = newState;
+      });
+      break;
+    }
+
     case ArenaDelta::Type::Motd: {
       motd = *delta.motd;
       break;
@@ -344,9 +380,9 @@ void Arena::applyDelta(const ArenaDelta &delta) {
       break;
     }
 
-    case ArenaDelta::Type::MapChange: {
-      nextMap = *delta.map;
-      logEvent(ArenaEvent::MapChange(nextMap));
+    case ArenaDelta::Type::EnvChange: {
+      nextEnv = *delta.environment;
+      logEvent(ArenaEvent::EnvChoose(nextEnv));
       for (auto s : subsystems) s.second->onMapChange();
     }
 
@@ -354,7 +390,7 @@ void Arena::applyDelta(const ArenaDelta &delta) {
 }
 
 ArenaInit Arena::captureInitializer() const {
-  ArenaInit initializer(name, nextMap);
+  ArenaInit initializer(name, nextEnv);
   for (auto &player : players) {
     initializer.players.emplace(
         player.first, player.second.captureInitializer());
@@ -382,16 +418,16 @@ const std::map<PID, Player> &Arena::getPlayers() const {
   return players;
 }
 
-std::string Arena::getName() const {
+const std::string &Arena::getName() const {
   return name;
 }
 
-std::string Arena::getMotd() const {
+const std::string &Arena::getMotd() const {
   return motd;
 }
 
-MapName Arena::getNextMap() const {
-  return nextMap;
+const EnvironmentURL &Arena::getNextEnv() const {
+  return nextEnv;
 }
 
 ArenaMode Arena::getMode() const {
@@ -416,6 +452,10 @@ std::string Arena::allocNewNickname(const Player &player,
 void Arena::tick(const TimeDiff delta) {
   uptime += Time(delta);
   for (auto s : subsystems) s.second->onTick(delta);
+}
+
+void Arena::poll(const TimeDiff delta) {
+  for (auto s : subsystems) s.second->onPoll(delta);
 }
 
 }

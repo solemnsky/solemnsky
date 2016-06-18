@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "sky/arena.hpp"
+#include "engine/arena.hpp"
 #include "util/methods.hpp"
 
 /**
@@ -8,7 +8,7 @@
  */
 class SubsystemTest: public testing::Test {
  public:
-  SubsystemTest() : arena(sky::ArenaInit("my arena", "NULL_MAP")) { }
+  SubsystemTest() : arena(sky::ArenaInit("my arena", "NULL")) {}
   sky::Arena arena;
 };
 
