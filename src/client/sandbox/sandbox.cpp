@@ -114,7 +114,10 @@ void Sandbox::doExit() {
  */
 
 void Sandbox::tick(const TimeDiff delta) {
-  if (skyHandle.readyToLoadSky()) skyHandle.instantiateSky({});
+  if (skyHandle.readyToLoadSky()) {
+    skyHandle.instantiateSky({});
+    skyRender.emplace(shared, resources, arena, *skyHandle.getSky());
+  }
 
   if (shared.ui.gameFocused()) arena.tick(delta);
   // if this were multiplayer of course we wouldn't have this liberty
