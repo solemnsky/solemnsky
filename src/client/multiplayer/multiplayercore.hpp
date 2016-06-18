@@ -22,10 +22,9 @@
 #include "ui/control.hpp"
 #include "client/skyrender.hpp"
 #include "util/telegraph.hpp"
-#include "sky/event.hpp"
-#include "sky/arena.hpp"
-#include "sky/protocol.hpp"
-#include "sky/debugview.hpp"
+#include "engine/event.hpp"
+#include "engine/protocol.hpp"
+#include "engine/debugview.hpp"
 #include "client/elements/elements.hpp"
 
 /**
@@ -81,7 +80,7 @@ struct ArenaConnection {
   sky::DebugView debugView;
 
   // Handy accessors.
-  const optional<sky::Sky> &getSky() const;
+  sky::Sky *getSky() const;
 
 };
 

@@ -27,7 +27,7 @@ namespace sky {
 
 PlayerDelta::PlayerDelta(const Player &player) :
     admin(player.isAdmin()),
-    skyLoaded(player.hasSkyLoaded()) {}
+    loadingEnv(player.isLoadingEnv()) {}
 
 /**
  * Player.
@@ -36,18 +36,20 @@ PlayerDelta::PlayerDelta(const Player &player) :
 PlayerInitializer::PlayerInitializer(
     const PID pid, const std::string &nickname) :
     pid(pid), nickname(nickname), admin(false),
-    envLoaded(false), team(0) {}
+    loadingEnv(false), team(0) {}
 
 Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     Networked(initializer),
     nickname(initializer.nickname),
     admin(initializer.admin),
     team(initializer.team),
-    skyLoaded(initializer.envLoaded),
+    loadingEnv(initializer.loadingEnv),
 
-    latencyInitialized(false),
-    latency(0),
-    clockOffset(0),
+    latencyInitialized(bool(initializer.latencyStats)),
+    latency(initializer.latencyStats
+            ? initializer.latencyStats->first : 0),
+    clockOffset(initializer.latencyStats
+                ? initializer.latencyStats->second : 0),
 
     arena(arena),
     pid(initializer.pid) {}
@@ -55,7 +57,7 @@ Player::Player(Arena &arena, const PlayerInitializer &initializer) :
 void Player::applyDelta(const PlayerDelta &delta) {
   if (delta.nickname) nickname = *delta.nickname;
   admin = delta.admin;
-  skyLoaded = delta.skyLoaded;
+  loadingEnv = delta.loadingEnv;
   if (delta.team) team = delta.team.get();
   if (delta.latencyStats) {
     latency = delta.latencyStats->first;
@@ -69,8 +71,11 @@ PlayerInitializer Player::captureInitializer() const {
   initializer.pid = pid;
   initializer.nickname = nickname;
   initializer.admin = admin;
-  initializer.envLoaded = skyLoaded;
+  initializer.loadingEnv = loadingEnv;
   initializer.team = team;
+  if (latencyInitialized) {
+    initializer.latencyStats.emplace(latency, clockOffset);
+  }
   return initializer;
 }
 
@@ -86,8 +91,8 @@ Team Player::getTeam() const {
   return team;
 }
 
-bool Player::hasSkyLoaded() const {
-  return skyLoaded;
+bool Player::isLoadingEnv() const {
+  return loadingEnv;
 }
 
 bool Player::latencyIsCalculated() const {

@@ -92,12 +92,12 @@ TEST_F(ArenaTest, PlayerDeltaTest) {
     sky::PlayerDelta delta{player};
     delta.latencyStats.emplace(50, 60);
     delta.admin = true;
-    delta.skyLoaded = true;
+    delta.loadingEnv = true;
 
     EXPECT_EQ(player.getLatency(), 0);
     EXPECT_EQ(player.getClockOffset(), 0);
     EXPECT_EQ(player.isAdmin(), false);
-    EXPECT_EQ(player.hasSkyLoaded(), false);
+    EXPECT_EQ(player.isLoadingEnv(), false);
     EXPECT_EQ(player.latencyIsCalculated(), false);
 
     arena.applyDelta(sky::ArenaDelta::Delta(0, delta));
@@ -105,7 +105,7 @@ TEST_F(ArenaTest, PlayerDeltaTest) {
     EXPECT_EQ(player.getLatency(), 50);
     EXPECT_EQ(player.getClockOffset(), 60);
     EXPECT_EQ(player.isAdmin(), true);
-    EXPECT_EQ(player.hasSkyLoaded(), true);
+    EXPECT_EQ(player.isLoadingEnv(), true);
     EXPECT_EQ(player.latencyIsCalculated(), true);
 
     // Out-of-bounds deltas don't break anything.
@@ -142,7 +142,7 @@ TEST_F(ArenaTest, InitializerTest) {
   arena.connectPlayer("nameless plane");
   {
     sky::PlayerDelta delta;
-    delta.skyLoaded = true;
+    delta.loadingEnv = true;
     delta.team = 2;
     arena.getPlayer(0)->applyDelta(delta);
   }
@@ -154,7 +154,7 @@ TEST_F(ArenaTest, InitializerTest) {
   EXPECT_EQ(remoteArena.getMotd(), "some motd");
   EXPECT_EQ(remoteArena.getMode(), sky::ArenaMode::Game);
   EXPECT_EQ(remoteArena.getPlayer(0)->getNickname(), "nameless plane");
-  EXPECT_EQ(remoteArena.getPlayer(0)->hasSkyLoaded(), true);
+  EXPECT_EQ(remoteArena.getPlayer(0)->isLoadingEnv(), true);
   EXPECT_EQ(remoteArena.getPlayer(0)->getTeam(), 2);
   EXPECT_EQ(remoteArena.getPlayer(1)->getNickname(), "nameless plane(1)");
 }

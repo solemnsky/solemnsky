@@ -40,13 +40,15 @@ struct PlayerInitializer {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(nickname, pid, admin, team);
+    ar(nickname, pid, admin, loadingEnv, team);
   }
 
   PID pid;
   std::string nickname;
-  bool admin, envLoaded;
+  bool admin, loadingEnv;
   Team team;
+  optional<std::pair<TimeDiff, Time>> latencyStats;
+
 };
 
 /**
@@ -58,11 +60,11 @@ struct PlayerDelta {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(nickname, admin, team, latencyStats);
+    ar(nickname, admin, loadingEnv, team, latencyStats);
   }
 
   optional<std::string> nickname;
-  bool admin, skyLoaded;
+  bool admin, loadingEnv;
   optional<Team> team;
   optional<std::pair<TimeDiff, Time>> latencyStats;
 
@@ -79,10 +81,12 @@ class Player : public Networked<PlayerInitializer, PlayerDelta> {
  private:
   // State.
   std::string nickname; // Nickname allocated for player.
-  bool admin; // Whether they have admin rights.
+  bool admin; // Player has admin rights?
   Team team;
-  bool skyLoaded; // Whether their client has loaded the current environment.
-  std::map<PID, void *> data; // this is a good and not a bad idea
+  bool loadingEnv; // Player is in process of loading environment?
+
+  // Subsystem state.
+  std::map<PID, void *> data;
 
   // Timing stats.
   bool latencyInitialized;
@@ -105,7 +109,7 @@ class Player : public Networked<PlayerInitializer, PlayerDelta> {
   std::string getNickname() const;
   bool isAdmin() const;
   Team getTeam() const;
-  bool hasSkyLoaded() const;
+  bool isLoadingEnv() const;
 
   bool latencyIsCalculated() const;
   TimeDiff getLatency() const;

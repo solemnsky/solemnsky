@@ -67,8 +67,8 @@ ArenaConnection::ArenaConnection(
     player(*arena.getPlayer(pid)),
     debugView(arena, skyHandle, pid) {}
 
-const optional<sky::Sky> &ArenaConnection::getSky() const {
-  return skyHandle.sky;
+sky::Sky const *ArenaConnection::getSky() const {
+  return skyHandle.getSky();
 }
 
 /**
