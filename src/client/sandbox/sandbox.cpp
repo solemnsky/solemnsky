@@ -132,10 +132,13 @@ void Sandbox::render(ui::Frame &f) {
            plane->getState().physical.pos :
            sf::Vector2f(0, 0));
   }
+
   ui::Control::render(f);
 }
 
 bool Sandbox::handle(const sf::Event &event) {
+  if (ui::Control::handle(event)) return true;
+
   if (auto action = shared.triggerClientAction(event)) {
     if (auto sky = skyHandle.getSky()) {
       const auto &participation = sky->getParticipation(*player);
@@ -161,7 +164,7 @@ bool Sandbox::handle(const sf::Event &event) {
     player->doAction(action->first, action->second);
   }
 
-  return ui::Control::handle(event);
+  return false;
 }
 
 void Sandbox::reset() {

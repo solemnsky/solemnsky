@@ -24,6 +24,14 @@
 
 namespace sky {
 
+void forSkyActions(std::function<void(const Action)> fn) {
+  for (sky::Action action = sky::Action(0);
+       action < sky::Action::MAX;
+       action = sky::Action(size_t(action) + 1)) {
+    fn(action);
+  }
+}
+
 static const std::vector<std::string> actionNames = {
     "thrust",
     "reverse",

@@ -61,8 +61,6 @@ class PlayerTab : public SettingsTab {
 
 class ControlsTab : public SettingsTab {
  private:
-  std::vector<sky::Action> skyActions;
-  std::vector<ClientAction> clientActions;
   std::map<sky::Action, ui::KeySelector> skyBindingChoosers;
   std::map<ClientAction, ui::KeySelector> clientBindingChoosers;
 

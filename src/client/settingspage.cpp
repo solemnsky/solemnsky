@@ -17,15 +17,14 @@
  */
 #include "settingspage.hpp"
 #include "elements/style.hpp"
-#include "util/methods.hpp"
 
 /**
  * SettingsTab.
  */
 
 SettingsTab::SettingsTab(const ui::AppRefs &references,
-                         const Settings &settings)
-    : ui::Control(references) {}
+                         const Settings &settings) :
+    ui::Control(references) {}
 
 /**
  * GeneralTab.
@@ -82,9 +81,7 @@ ControlsTab::ControlsTab(
     SettingsTab(references, settings) {
   sf::Vector2f pos = style.settings.column1Pos;
 
-  for (sky::Action action = sky::Action(0);
-       action < sky::Action::MAX;
-       action = sky::Action(size_t(action) + 1)) {
+  sky::forSkyActions([&](const sky::Action action) {
     skyBindingChoosers.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(action),
@@ -95,13 +92,11 @@ ControlsTab::ControlsTab(
     areChildren({&selector});
 
     pos += {0, style.settings.rowOffset};
-  }
+  });
 
   pos = style.settings.column2Pos;
 
-  for (ClientAction action = ClientAction(0);
-       action < ClientAction::MAX;
-       action = ClientAction(size_t(action) + 1)) {
+  forClientActions([&](const ClientAction action) {
     clientBindingChoosers.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(action),
@@ -112,36 +107,39 @@ ControlsTab::ControlsTab(
     areChildren({&selector});
 
     pos += {0, style.settings.rowOffset};
-  }
+  });
 
   readSettings(settings);
 }
 
 void ControlsTab::readSettings(const Settings &settings) {
-  for (const sky::Action action : skyActions) {
+  sky::forSkyActions([&](const sky::Action action) {
     skyBindingChoosers.at(action).setValue(
         settings.bindings.lookupBinding(action));
-  }
+  });
 
-  for (const ClientAction action : clientActions) {
+  forClientActions([&](const ClientAction action) {
     clientBindingChoosers.at(action).setValue(
         settings.bindings.lookupClientBinding(action));
-  }
+  });
 }
 
 void ControlsTab::writeSettings(Settings &settings) {
   settings.bindings.skyBindings.clear();
-  for (const sky::Action action : skyActions) {
+
+  sky::forSkyActions([&](const sky::Action action) {
     if (const auto binding = skyBindingChoosers.at(action).getValue()) {
       settings.bindings.skyBindings.emplace(binding.get(), action);
     }
-  }
+  });
+
   settings.bindings.clientBindings.clear();
-  for (const ClientAction action : clientActions) {
+
+  forClientActions([&](const ClientAction action) {
     if (const auto binding = clientBindingChoosers.at(action).getValue()) {
       settings.bindings.clientBindings.emplace(binding.get(), action);
     }
-  }
+  });
 }
 
 /**

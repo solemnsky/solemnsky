@@ -31,6 +31,8 @@ enum class ClientAction {
   Spawn, Chat, Scoreboard, MAX
 };
 
+void forClientActions(std::function<void(const ClientAction)> fn);
+
 std::string showClientAction(const ClientAction action);
 
 /**
