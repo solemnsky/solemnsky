@@ -50,8 +50,8 @@ void VanillaServer::tickGame(const TimeDiff delta, sky::Sky &sky) {
 }
 
 void VanillaServer::onTick(const TimeDiff delta) {
-  if (shared.skyHandle.isActive())
-    tickGame(delta, shared.skyHandle.sky.get());
+  if (shared.skyHandle.getSky())
+    tickGame(delta, *shared.skyHandle.getSky());
 
 }
 
@@ -114,13 +114,14 @@ void VanillaServer::onPacket(ENetPeer *const client,
   }
 
   if (packet.type == sky::ClientPacket::Type::ReqSpawn) {
-    if (player.getTeam() != 0 and shared.skyHandle.isActive()) {
-      auto sp = shared.skyHandle.sky->getMap().pickSpawnPoint(player.getTeam());
+    if (player.getTeam() != 0 and shared.skyHandle.getSky()) {
+      auto sp = shared.skyHandle.getSky()
+          ->getMap().pickSpawnPoint(player.getTeam());
       player.spawn({}, sp.pos, sp.angle);
     }
   }
 }
 
 VanillaServer::VanillaServer(ServerShared &shared) :
-    Server(shared) { }
+    Server(shared) {}
 

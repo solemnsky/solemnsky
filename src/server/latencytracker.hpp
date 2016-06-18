@@ -19,7 +19,7 @@
  * Latency recording subsystem for use by ServerExec.
  */
 #pragma once
-#include "sky/arena.hpp"
+#include "engine/arena.hpp"
 #include "util/types.hpp"
 
 /**
