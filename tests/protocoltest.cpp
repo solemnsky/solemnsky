@@ -1,5 +1,5 @@
 #include "sky/protocol.hpp"
-#include "sky/sky.hpp"
+#include "sky/sky/sky.hpp"
 #include "util/methods.hpp"
 #include "util/printer.hpp"
 #include <gtest/gtest.h>

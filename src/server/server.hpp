@@ -20,7 +20,7 @@
  */
 #pragma once
 #include <iostream>
-#include "sky/sky.hpp"
+#include "sky/sky/sky.hpp"
 #include "sky/arena.hpp"
 #include "util/telegraph.hpp"
 #include "sky/protocol.hpp"

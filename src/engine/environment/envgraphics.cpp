@@ -19,11 +19,4 @@
 
 namespace sky {
 
-class EnvGraphics {
- private:
-
- public:
-
-};
-
 }

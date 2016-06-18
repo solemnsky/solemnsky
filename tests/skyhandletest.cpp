@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "sky/skyhandle.hpp"
+#include "sky/sky/skyhandle.hpp"
 #include "util/methods.hpp"
 
 /**
@@ -23,7 +23,7 @@ TEST_F(SkyHandleTest, AllocTest) {
   ASSERT_EQ(bool(skyHandle.isActive()), false);
 
   {
-    // Starting the sky with a map.
+    // Starting the engine with a map.
     skyHandle.start();
     ASSERT_EQ(skyHandle.isActive(), true);
     const sky::Sky &sky = *skyHandle.sky;
@@ -74,7 +74,7 @@ TEST_F(SkyHandleTest, InitializerTest) {
   sky::SkyHandle remoteSkyHandle(remoteArena, skyHandle.captureInitializer());
 
   {
-    // The sky instantiation copied through.
+    // The engine instantiation copied through.
     ASSERT_EQ(remoteSkyHandle.isActive(), true);
     ASSERT_EQ(remoteSkyHandle.sky->getMap().name, "NULL_MAP");
     const sky::Sky &remoteSky = *remoteSkyHandle.sky;

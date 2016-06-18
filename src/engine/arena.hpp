@@ -24,7 +24,7 @@
 #include <vector>
 #include "util/types.hpp"
 #include "util/methods.hpp"
-#include "participation.hpp"
+#include "sky/sky/participation.hpp"
 
 namespace sky {
 
@@ -210,17 +210,17 @@ class ArenaLogger {
  */
 struct ArenaInit {
   ArenaInit() = default; // packing
-  ArenaInit(const std::string &name, const MapName &map,
+  ArenaInit(const std::string &name, const EnvironmentURL &map,
             const ArenaMode mode = ArenaMode::Lobby);
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(players, name, motd, map, mode);
+    ar(players, name, motd, environment, mode);
   }
 
   std::map<PID, PlayerInitializer> players;
   std::string name, motd;
-  MapName map;
+  EnvironmentURL environment;
   ArenaMode mode;
 };
 

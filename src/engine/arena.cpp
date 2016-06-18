@@ -201,7 +201,7 @@ ArenaLogger::ArenaLogger(Arena &arena) : arena(arena) {
 ArenaInit::ArenaInit(
     const std::string &name, const MapName &map,
     const ArenaMode mode) :
-    name(name), map(map), mode(mode) { }
+    name(name), environment(map), mode(mode) {}
 
 PID Arena::allocPid() const {
   return smallestUnused(players);
@@ -297,7 +297,7 @@ Arena::Arena(const ArenaInit &initializer) :
     Networked(initializer),
     name(initializer.name),
     motd(initializer.motd),
-    nextMap(initializer.map),
+    nextMap(initializer.environment),
     mode(initializer.mode),
     uptime(0),
     subsystemCaller(*this) {

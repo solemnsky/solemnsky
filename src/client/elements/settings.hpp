@@ -20,7 +20,7 @@
  */
 #pragma once
 #include <SFML/Window.hpp>
-#include "sky/participation.hpp"
+#include "sky/sky/participation.hpp"
 #include "util/types.hpp"
 
 /**

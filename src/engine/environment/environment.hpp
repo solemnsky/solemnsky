@@ -38,12 +38,15 @@ optional<std::string> getEnvironmentFile(const EnvironmentURL &url);
 
 /**
  * Holder and asynchronous loader for pieces of static information extracted
- * from a .solx file, used to instantiate / add to the functionality /
+ * from a .sky file, used to instantiate / add to the functionality /
  * display a Sky -- with, respectively, geometry data, scripts, and graphics
  * resources.
  */
 class Environment {
  private:
+  // Parameters.
+  const std::string filepath;
+
   // State.
   optional<EnvGraphics> graphics;
   optional<EnvScripts> scripts;
