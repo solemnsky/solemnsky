@@ -35,15 +35,21 @@ class SkyHandle
     : public Subsystem<Nothing>,
       public Networked<SkyHandleInit, SkyHandleDelta> {
  private:
+  // Wrapped state: environment and sky.
+  optional<Environment> environment;
+  optional<Sky> sky;
+
   // Delta collection state.
   bool envIsNew;
 
  public:
   SkyHandle(class Arena &parent, const SkyHandleInit &initializer);
 
-  // Wrapped state: environment and sky.
-  optional<Environment> environment;
-  optional<Sky> sky;
+  // Accessing.
+  Environment *getEnvironment();
+  Sky *getSky();
+  Environment const *getEnvironment() const;
+  Sky const *getSky() const;
 
   // Networking.
   SkyHandleInit captureInitializer() const override final;

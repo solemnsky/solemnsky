@@ -64,7 +64,7 @@ Environment::Environment() :
     Environment("NULL") {}
 
 Environment::~Environment() {
-  workerThread.join();
+  if (workerThread.joinable()) workerThread.join();
 }
 
 void Environment::loadMore(

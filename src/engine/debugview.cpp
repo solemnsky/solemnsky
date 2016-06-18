@@ -60,21 +60,21 @@ void DebugView::printArenaReport(Printer &p) const {
 
 void DebugView::printSkyReport(Printer &p) const {
   p.printTitle("SkyHandle");
-  p.printLn("bool(sky): " + printBool(bool(skyHandle.sky)));
-  p.printLn("bool(environment): " + printBool(bool(skyHandle.environment)));
-  if (skyHandle.sky) {
-    const auto &sky = skyHandle.sky.get();
-    p.printLn("environment.url: " + skyHandle.environment->url);
+  p.printLn("bool(getSky()): " + printBool(bool(skyHandle.getSky())));
+  p.printLn("bool(getEnvironment()): "
+                + printBool(bool(skyHandle.getEnvironment())));
+  if (const auto sky = skyHandle.getSky()) {
+    p.printLn("environment.url: " + skyHandle.getEnvironment()->url);
     p.printLn("sky.getSettings().gravity: "
-                  + printFloat(sky.getSettings().gravity));
+                  + printFloat(sky->getSettings().gravity));
     p.printLn("sky.getSettings().viewScale: "
-                  + printFloat(sky.getSettings().viewScale));
+                  + printFloat(sky->getSettings().viewScale));
 
     p.breakLine();
     if (playerID) {
       p.printTitle("Participation");
       if (auto player = arena.getPlayer(playerID.get())) {
-        const auto &participation = sky.getParticipation(*player);
+        const auto &participation = sky->getParticipation(*player);
         p.printLn("isSpawned(): " + printBool(participation.isSpawned()));
         p.printLn("props.size(): "
                       + std::to_string(participation.props.size()));
