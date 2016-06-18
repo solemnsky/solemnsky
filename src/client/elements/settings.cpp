@@ -20,6 +20,14 @@
 #include "settings.hpp"
 #include "util/methods.hpp"
 
+void forClientActions(std::function<void(const ClientAction)> fn) {
+  for (ClientAction action = ClientAction(0);
+       action < ClientAction::MAX;
+       action = ClientAction(size_t(action) + 1)) {
+    fn(action);
+  }
+}
+
 std::string showClientAction(const ClientAction action) {
   switch (action) {
     case ClientAction::Spawn:
@@ -85,7 +93,7 @@ optional<sf::Keyboard::Key> KeyBindings::lookupClientBinding(
 
 Settings::Settings() :
     enableDebug(false),
-    nickname("nameless plane") { }
+    nickname("nameless plane") {}
 
 void Settings::readFromFile(const std::string &filepath) {
   std::ifstream file(filepath);
@@ -103,7 +111,7 @@ void Settings::writeToFile(const std::string &filepath) {
  * SettingsDelta.
  */
 
-SettingsDelta::SettingsDelta() { }
+SettingsDelta::SettingsDelta() {}
 
 SettingsDelta::SettingsDelta(const Settings &oldSettings,
                              const Settings &newSettings) {
