@@ -45,8 +45,10 @@ struct ServerShared {
   tg::Telegraph<sky::ClientPacket> &telegraph;
   sky::Player *playerFromPeer(ENetPeer *peer) const;
 
-  // Registering arena deltas.
+  // Centralized state modification / synchronization.
   void registerArenaDelta(const sky::ArenaDelta &arenaDelta);
+  void registerGameStart();
+  void registerGameEnd();
 
   // Transmission.
   void sendToClients(const sky::ServerPacket &packet,

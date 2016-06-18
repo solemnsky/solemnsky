@@ -19,7 +19,7 @@
  * The place where the whole client converges.
  */
 #pragma once
-#include "sky/sky/participation.hpp"
+#include "engine/sky/participation.hpp"
 #include "ui/control.hpp"
 #include "settings.hpp"
 
