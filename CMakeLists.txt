@@ -26,6 +26,7 @@ include_directories(
         thirdparty/SFML/include/
         thirdparty/polypartition/
         thirdparty/mingw-std-threads/
+        thirdparty/miniz/
         "${Boost_INCLUDE_DIRS}"
 )
 
