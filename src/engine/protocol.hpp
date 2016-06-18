@@ -116,9 +116,13 @@ struct ClientPacket : public VerifyStructure {
 struct ServerPacket : public VerifyStructure {
   enum class Type {
     Ping, // request a client Pong
+
     Init, // acknowledge a ReqJoin, send ArenaInit
+    InitSky, // sky initialization for a client who's loaded the environment
+
     DeltaArena, // broadcast a change in the Arena
-    DeltaSky, // broadcast a change in the SkyHandle
+    DeltaSkyHandle, // broadcast a change in the SkyHandle
+    DeltaSky, // broadcast a change in the Sky
     DeltaScore, // broadcast a change in the Scoreboard
 
     Chat, // chat relay to all clients
@@ -138,11 +142,19 @@ struct ServerPacket : public VerifyStructure {
         break;
       }
       case Type::Init: {
-        ar(pid, arenaInit, skyInit, scoreInit);
+        ar(pid, arenaInit, skyHandleInit, scoreInit);
+        break;
+      }
+      case Type::InitSky: {
+        ar(skyInit);
         break;
       }
       case Type::DeltaArena: {
         ar(arenaDelta);
+        break;
+      }
+      case Type::DeltaSkyHandle : {
+        ar(skyHandleDelta);
         break;
       }
       case Type::DeltaSky: {
@@ -169,15 +181,18 @@ struct ServerPacket : public VerifyStructure {
   }
 
   Type type;
-  optional<Time> pingTime;
-  optional<PID> pid;
+
+  optional<PID> pid;                       // Init
   optional<ArenaInit> arenaInit;
-  optional<ArenaDelta> arenaDelta;
-  optional<ScoreboardDelta> scoreDelta;
-  optional<SkyHandleInit> skyInit;
+  optional<SkyHandleInit> skyHandleInit;
   optional<ScoreboardInit> scoreInit;
-  optional<SkyHandleDelta> skyDelta;
-  optional<std::string> stringData;
+  optional<SkyInit> skyInit;               // InitSky
+  optional<ArenaDelta> arenaDelta;         // DeltaArena
+  optional<SkyHandleDelta> skyHandleDelta; // DeltaSkyHandle
+  optional<SkyDelta> skyDelta;             // DeltaSky
+  optional<Time> pingTime;
+  optional<ScoreboardDelta> scoreDelta;    // DeltaScore
+  optional<std::string> stringData; // Chat, Broadcast, RCon
 
   bool verifyStructure() const override;
 

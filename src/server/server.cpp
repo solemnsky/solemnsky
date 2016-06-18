@@ -112,6 +112,13 @@ void ServerExec::processPacket(ENetPeer *client,
     // the player is in the arena
 
     switch (packet.type) {
+      case ClientPacket::Type::ReqSky: {
+        if (shared.skyHandle.getSky()) {
+          shared.sendToClient(client,
+                              sky::ServerPacket::Ini)
+        }
+      }
+
       case ClientPacket::Type::Pong: {
         latencyTracker.registerPong(*player,
                                     packet.pingTime.get(),
@@ -136,7 +143,7 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::ReqInput: {
-        if (auto &sky = shared.skyHandle.sky) {
+        if (const auto sky = shared.skyHandle.getSky()) {
           sky->getParticipation(*player).applyInput(
               packet.participationInput.get());
         }
