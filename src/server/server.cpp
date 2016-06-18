@@ -44,11 +44,11 @@ void ServerShared::registerArenaDelta(const sky::ArenaDelta &arenaDelta) {
 
 void ServerShared::registerGameStart() {
   skyHandle.start();
-
+  registerArenaDelta(sky::ArenaDelta::)
 }
 
 void ServerShared::registerGameEnd() {
-
+  skyHandle.stop();
 }
 
 void ServerShared::sendToClients(const sky::ServerPacket &packet,

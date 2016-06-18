@@ -131,6 +131,8 @@ bool ArenaDelta::verifyStructure() const {
       return verifyRequiredOptionals(join);
     case Type::Delta:
       return verifyRequiredOptionals(playerDeltas);
+    case Type::EnvLoadState:
+      return verifyRequiredOptionals(envLoadState);
     case Type::Motd:
       return verifyRequiredOptionals(motd);
     case Type::Mode:
@@ -163,6 +165,12 @@ ArenaDelta ArenaDelta::Delta(const PID pid, const PlayerDelta &playerDelta) {
 ArenaDelta ArenaDelta::Delta(const std::map<PID, PlayerDelta> &playerDeltas) {
   ArenaDelta delta(Type::Delta);
   delta.playerDeltas = playerDeltas;
+  return delta;
+}
+
+ArenaDelta ArenaDelta::EnvLoadState(const bool state) {
+  ArenaDelta delta(Type::EnvLoadState);
+  delta.envLoadState = state;
   return delta;
 }
 
@@ -348,6 +356,13 @@ void Arena::applyDelta(const ArenaDelta &delta) {
       for (const auto &pair : delta.playerDeltas.get())
         applyPlayerDelta(pair.first, pair.second);
       break;
+    }
+
+    case ArenaDelta::Type::EnvLoadState: {
+      bool newState = delta.envLoadState.get();
+      forPlayers([&](Player &player) {
+        player.envLoadState = newState;
+      }
     }
 
     case ArenaDelta::Type::Motd: {

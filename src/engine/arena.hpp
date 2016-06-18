@@ -238,7 +238,13 @@ struct ArenaInit {
  */
 struct ArenaDelta : public VerifyStructure {
   enum class Type {
-    Quit, Join, Delta, Motd, Mode, EnvChange
+    Quit,
+    Join,
+    Delta,
+    EnvLoadState, // Set all Player's environment load state.
+    Motd,
+    Mode,
+    EnvChange
   };
 
   ArenaDelta() = default; // packing
@@ -260,6 +266,10 @@ struct ArenaDelta : public VerifyStructure {
         ar(playerDeltas);
         break;
       }
+      case Type::EnvLoadState: {
+        ar(envLoadState);
+        break;
+      }
       case Type::Motd: {
         ar(motd);
         break;
@@ -276,6 +286,7 @@ struct ArenaDelta : public VerifyStructure {
   }
 
   Type type;
+  optional<bool> envLoadState;
   optional<PID> quit;
   optional<PlayerInitializer> join;
   optional<std::map<PID, PlayerDelta>> playerDeltas;
@@ -289,6 +300,7 @@ struct ArenaDelta : public VerifyStructure {
   static ArenaDelta Join(const PlayerInitializer &initializer);
   static ArenaDelta Delta(const PID, const PlayerDelta &playerDelta);
   static ArenaDelta Delta(const std::map<PID, PlayerDelta> &playerDeltas);
+  static ArenaDelta EnvLoadState(const bool state);
   static ArenaDelta Motd(const std::string &motd);
   static ArenaDelta Mode(const ArenaMode mode);
   static ArenaDelta EnvChange(const EnvironmentURL &name);
