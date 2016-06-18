@@ -64,10 +64,10 @@ void DebugView::printSkyReport(Printer &p) const {
   p.printLn("loadingErrored(): " + printBool(skyHandle.loadingErrored()));
   if (skyHandle.isActive()) {
     const auto &sky = skyHandle.sky.get();
-    p.printLn("getMap().name: ");
-    p.printLn("getSettings().viewScale: "
-                  + printFloat(sky.getSettings().viewScale));
-    p.printLn("getSettings().gravity: "
+    p.printLn("environment.url: " + skyHandle.environment->url);
+    p.printLn("sky.getSettings().gravity: "
+                  + printFloat(sky.getSettings().gravity));
+    p.printLn("sky.getSettings().viewScale: "
                   + printFloat(sky.getSettings().viewScale));
 
     p.breakLine();

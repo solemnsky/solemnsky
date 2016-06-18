@@ -24,46 +24,8 @@
 
 namespace sky {
 
-/**
- * Initializer for SkyHandle.
- */
-
-struct SkyHandleInit {
-  SkyHandleInit() = default;
-  SkyHandleInit(const EnvironmentURL &name, const SkyInit &initializer);
-
-  template<typename Archive>
-  void serialize(Archive &ar) {
-    ar(initializer);
-  }
-
-  bool verifyStructure() const;
-
-  optional<std::pair<EnvironmentURL, SkyInit>> initializer;
-
-};
-
-/**
- * Delta for SkyHandle.
- */
-
-struct SkyHandleDelta {
-  SkyHandleDelta() = default;
-
-  template<typename Archive>
-  void serialize(Archive &ar) {
-    ar(initializer, delta);
-  }
-
-  bool verifyStructure() const;
-
-  optional<std::pair<EnvironmentURL, SkyInit>> initializer;
-  optional<SkyDelta> delta;
-
-  // Respecting client authority.
-  SkyHandleDelta respectAuthority(const Player &player) const;
-
-};
+using SkyHandleInit = optional<EnvironmentURL>;
+using SkyHandleDelta = optional<EnvironmentURL>;
 
 /**
  * Wraps an optional<Sky>, binding it to the arena when the game is in session.
@@ -74,21 +36,13 @@ class SkyHandle
       public Networked<SkyHandleInit, SkyHandleDelta> {
  private:
   // Delta collection state.
-  bool skyIsNew;
-
-  // Environment, instantiated and loaded seperately from the Sky.
-  bool loadError;
-  optional<Environment> environment;
-
-  void startWith(const EnvironmentURL &envUrl, const SkyInit &skyInit);
- protected:
-  // Subsystem impl.
-  void onPoll(const TimeDiff delta) override final;
+  bool envIsNew;
 
  public:
   SkyHandle(class Arena &parent, const SkyHandleInit &initializer);
 
-  // State.
+  // Wrapped state: environment and sky.
+  optional<Environment> environment;
   optional<Sky> sky;
 
   // Networking.
@@ -97,7 +51,7 @@ class SkyHandle
   void applyDelta(const SkyHandleDelta &delta) override final;
 
   // User API.
-  void start();
+  void instantiateSky(const SkyInit &skyInit);
   void stop();
 
   bool isActive() const;
