@@ -44,9 +44,6 @@ optional<std::string> getEnvironmentFile(const EnvironmentURL &url);
  */
 class Environment {
  private:
-  // Parameters.
-  const std::string filepath;
-
   // State.
   bool loadError;
   float loadProgress;
