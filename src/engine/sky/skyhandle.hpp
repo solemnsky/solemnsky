@@ -87,7 +87,7 @@ class SkyHandle
 
  public:
   SkyHandle(class Arena &parent, const SkyHandleInit &initializer);
-  
+
   // State.
   optional<Sky> sky;
 

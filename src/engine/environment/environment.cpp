@@ -31,23 +31,56 @@ optional<std::string> getEnvironmentFile(const EnvironmentURL &url) {
  */
 
 void Environment::loadMap() {
+  loadProgress = 0;
   map.emplace(); // stub
+  loadProgress = 1;
 }
 
-Environment::Environment() {
-
+void Environment::loadGraphics() {
+  loadProgress = 0;
+  graphics.emplace(); // stub
+  loadProgress = 1;
 }
 
-Environment::Environment(const std::string &filepath) {
+void Environment::loadScripts() {
+  loadProgress = 0;
+  scripts.emplace(); // stub
+  loadProgress = 1;
+}
+
+Environment::Environment(const EnvironmentURL &url) :
+    url(url),
+    loadProgress(0) {
   workerThread = std::thread([&]() { loadMap(); });
 }
+
+Environment::Environment() :
+    Environment("NULL") {}
 
 Environment::~Environment() {
   workerThread.join();
 }
 
-bool Environment::loadingErrored() {
+void Environment::loadMore(
+    const bool needGraphics, const bool needScripts) {
+  if (loadingIdle()) {
+    workerThread = std::thread([&]() {
+      if (needGraphics) loadGraphics();
+      if (needScripts) loadScripts();
+    });
+  }
+}
+
+bool Environment::loadingErrored() const {
   return loadError;
+}
+
+bool Environment::loadingIdle() const {
+  return workerThread.joinable();
+}
+
+float Environment::loadingProgress() const {
+  return loadProgress;
 }
 
 Map const *Environment::getMap() const {
