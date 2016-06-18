@@ -135,7 +135,7 @@ void Sandbox::render(ui::Frame &f) {
 bool Sandbox::handle(const sf::Event &event) {
   if (auto action = shared.triggerClientAction(event)) {
     if (auto sky = skyHandle.getSky()) {
-      const auto &participation = sky.getParticipation(*player);
+      const auto &participation = sky->getParticipation(*player);
 
       if (action->first == ClientAction::Spawn
           and action->second
