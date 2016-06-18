@@ -112,9 +112,13 @@ bool ServerPacket::verifyStructure() const {
     case Type::Ping:
       return verifyRequiredOptionals(pingTime);
     case Type::Init:
-      return verifyRequiredOptionals(pid, arenaInit, skyInit, scoreInit);
+      return verifyRequiredOptionals(pid, arenaInit, skyHandleInit, scoreInit);
+    case Type::InitSky:
+      return verifyRequiredOptionals(skyInit);
     case Type::DeltaArena:
       return verifyRequiredOptionals(arenaDelta);
+    case Type::DeltaSkyHandle:
+      return verifyRequiredOptionals(skyHandleDelta);
     case Type::DeltaSky:
       return verifyRequiredOptionals(pingTime, skyDelta);
     case Type::DeltaScore:
@@ -142,7 +146,7 @@ ServerPacket ServerPacket::Init(const PID pid,
   ServerPacket packet(Type::Init);
   packet.pid = pid;
   packet.arenaInit = arenaInit;
-  packet.skyInit = skyInit;
+  packet.skyHandleInit = skyInit;
   packet.scoreInit = scoreInit;
   return packet;
 }
@@ -156,7 +160,7 @@ ServerPacket ServerPacket::DeltaArena(const ArenaDelta &arenaDelta) {
 ServerPacket ServerPacket::DeltaSky(const SkyHandleDelta &skyDelta,
                                     const Time pingTime) {
   ServerPacket packet(Type::DeltaSky);
-  packet.skyDelta = skyDelta;
+  packet.skyHandleDelta = skyDelta;
   packet.pingTime = pingTime;
   return packet;
 }
