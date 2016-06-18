@@ -10,7 +10,6 @@ class EnvironmentTest : public testing::Test {
 
 };
 
-TEST_F(EnvironmentTest, LoadTest
-) {
+TEST_F(EnvironmentTest, LoadTest) {
 
 }

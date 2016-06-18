@@ -22,8 +22,8 @@
 #include <map>
 #include "util/types.hpp"
 #include "scoreboard.hpp"
-#include "participation.hpp"
-#include "skyhandle.hpp"
+#include "sky/sky/participation.hpp"
+#include "sky/sky/skyhandle.hpp"
 #include "arena.hpp"
 
 namespace sky {
@@ -37,7 +37,7 @@ struct ClientPacket : public VerifyStructure {
     ReqJoin, // request joining in the arena, part of the connection protocol
 
     ReqPlayerDelta, // request a change to your player data
-    ReqInput, // request an input into your sky Participation
+    ReqInput, // request an input into your engine Participation
 
     ReqTeam, // request a team change
     ReqSpawn, // request to spawn

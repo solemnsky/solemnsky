@@ -20,7 +20,7 @@
  */
 #pragma once
 #include "client/elements/elements.hpp"
-#include "sky/sky.hpp"
+#include "sky/sky/sky.hpp"
 #include "client/skyrender.hpp"
 #include "sky/debugview.hpp"
 #include "ui/widgets.hpp"

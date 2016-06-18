@@ -32,53 +32,53 @@ include_directories(
 
 ###### libsolemnsky, for common use by client and server
 add_library(solemnsky STATIC
-        src/sky/environment/envgraphics.cpp
-        src/sky/environment/envgraphics.hpp
+        src/engine/environment/envgraphics.cpp
+        src/engine/environment/envgraphics.hpp
 
-        src/sky/environment/environment.cpp
-        src/sky/environment/environment.hpp
+        src/engine/environment/environment.cpp
+        src/engine/environment/environment.hpp
 
-        src/sky/environment/envscripts.cpp
-        src/sky/environment/envscripts.hpp
+        src/engine/environment/envscripts.cpp
+        src/engine/environment/envscripts.hpp
 
-        src/sky/environment/map.cpp
-        src/sky/environment/map.hpp
+        src/engine/environment/map.cpp
+        src/engine/environment/map.hpp
 
-        src/sky/arena.cpp
-        src/sky/arena.hpp
+        src/engine/arena.cpp
+        src/engine/arena.hpp
 
-        src/sky/debugview.cpp
-        src/sky/debugview.hpp
+        src/engine/debugview.cpp
+        src/engine/debugview.hpp
 
-        src/sky/event.cpp
-        src/sky/event.hpp
+        src/engine/event.cpp
+        src/engine/event.hpp
 
-        src/sky/participation.cpp
-        src/sky/participation.hpp
+        src/engine/sky/participation.cpp
+        src/engine/sky/participation.hpp
 
-        src/sky/physics.cpp
-        src/sky/physics.hpp
+        src/engine/sky/physics.cpp
+        src/engine/sky/physics.hpp
 
-        src/sky/planestate.cpp
-        src/sky/planestate.hpp
+        src/engine/sky/planestate.cpp
+        src/engine/sky/planestate.hpp
 
-        src/sky/prop.cpp
-        src/sky/prop.hpp
+        src/engine/sky/prop.cpp
+        src/engine/sky/prop.hpp
 
-        src/sky/protocol.cpp
-        src/sky/protocol.hpp
+        src/engine/protocol.cpp
+        src/engine/protocol.hpp
 
-        src/sky/scoreboard.cpp
-        src/sky/scoreboard.hpp
+        src/engine/scoreboard.cpp
+        src/engine/scoreboard.hpp
 
-        src/sky/sky.cpp
-        src/sky/sky.hpp
+        src/engine/sky/sky.cpp
+        src/engine/sky/sky.hpp
 
-        src/sky/skyhandle.cpp
-        src/sky/skyhandle.hpp
+        src/engine/sky/skyhandle.cpp
+        src/engine/sky/skyhandle.hpp
 
-        src/sky/skysettings.cpp
-        src/sky/skysettings.hpp
+        src/engine/sky/skysettings.cpp
+        src/engine/sky/skysettings.hpp
 
         src/util/methods.cpp
         src/util/methods.hpp

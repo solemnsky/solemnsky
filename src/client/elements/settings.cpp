@@ -46,7 +46,7 @@ void serialize(Archive &ar, Settings &settings) {
 
 template<typename Archive>
 void serialize(Archive &ar, KeyBindings &bindings) {
-  ar(cereal::make_nvp("sky", bindings.skyBindings),
+  ar(cereal::make_nvp("engine", bindings.skyBindings),
      cereal::make_nvp("client", bindings.clientBindings));
 }
 

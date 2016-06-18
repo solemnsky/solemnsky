@@ -21,7 +21,7 @@
 #pragma once
 
 #include "arena.hpp"
-#include "skyhandle.hpp"
+#include "sky/sky/skyhandle.hpp"
 #include "util/printer.hpp"
 
 namespace sky {

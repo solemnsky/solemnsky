@@ -25,7 +25,7 @@
 #include <istream>
 #include <cereal/cereal.hpp>
 #include "util/types.hpp"
-#include "sky/skysettings.hpp"
+#include "sky/sky/skysettings.hpp"
 
 namespace sky {
 

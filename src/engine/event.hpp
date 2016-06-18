@@ -73,7 +73,7 @@ struct ArenaEvent {
  */
 
 struct ServerEvent {
-  // TODO: sky::DisconnectType in ServerEvent::Disconnect
+  // TODO: engine::DisconnectType in ServerEvent::Disconnect
 
   enum class Type {
     Start, Event, Stop, Connect, Disconnect, RConIn, RConOut
