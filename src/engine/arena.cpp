@@ -361,8 +361,9 @@ void Arena::applyDelta(const ArenaDelta &delta) {
     case ArenaDelta::Type::EnvLoadState: {
       bool newState = delta.envLoadState.get();
       forPlayers([&](Player &player) {
-        player.envLoadState = newState;
-      }
+        player.loadingEnv = newState;
+      });
+      break;
     }
 
     case ArenaDelta::Type::Motd: {

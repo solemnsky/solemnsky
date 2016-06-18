@@ -31,7 +31,7 @@
  * ArenaLogger proxy for MultiplayerCore, to intercept arena events for
  * the MultiplayerCore event log.
  */
-class MultiplayerLogger: public sky::ArenaLogger {
+class MultiplayerLogger : public sky::ArenaLogger {
  private:
   class MultiplayerCore &core;
 
@@ -46,7 +46,7 @@ class MultiplayerLogger: public sky::ArenaLogger {
  * Subsystem proxy for MultiplayerCore, to intercept subsystem callbacks to
  * relay to ConnectionListener.
  */
-class MultiplayerSubsystem: public sky::Subsystem<Nothing> {
+class MultiplayerSubsystem : public sky::Subsystem<Nothing> {
  private:
   class MultiplayerCore &core;
 
@@ -80,7 +80,7 @@ struct ArenaConnection {
   sky::DebugView debugView;
 
   // Handy accessors.
-  sky::Sky *getSky() const;
+  sky::Sky *getSky();
 
 };
 
@@ -91,10 +91,10 @@ struct ArenaConnection {
  */
 class ConnectionListener {
  public:
-  virtual void onConnect() { }
-  virtual void onLoadMode(const sky::ArenaMode newMode) { }
-  virtual void onStartGame() { }
-  virtual void onEndGame() { }
+  virtual void onConnect() {}
+  virtual void onLoadMode(const sky::ArenaMode newMode) {}
+  virtual void onStartGame() {}
+  virtual void onEndGame() {}
 
 };
 
@@ -102,7 +102,7 @@ class ConnectionListener {
  * The core state of the multiplayer client, allocated for Multiplayer for
  * use by MultiplayerView.
  */
-class MultiplayerCore: public ClientComponent {
+class MultiplayerCore : public ClientComponent {
   friend class MultiplayerLogger;
   friend class MultiplayerSubsystem;
  private:
@@ -172,7 +172,7 @@ class MultiplayerCore: public ClientComponent {
  * Throughout the course of a client's activity in a server, we may go through various
  * interfaces: the lobby, a loading screen, the game, the scoring screen, etc.
  */
-class MultiplayerView: public ClientComponent, public ui::Control {
+class MultiplayerView : public ClientComponent, public ui::Control {
  public:
   // Shared state.
   MultiplayerCore &core;
@@ -182,7 +182,7 @@ class MultiplayerView: public ClientComponent, public ui::Control {
       sky::ArenaMode target,
       ClientShared &shared,
       MultiplayerCore &mShared);
-  virtual ~MultiplayerView() { }
+  virtual ~MultiplayerView() {}
 
   const sky::ArenaMode target;
 

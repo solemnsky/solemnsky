@@ -138,20 +138,20 @@ add_executable(solemnsky_client
         src/client/elements/style.cpp
         src/client/elements/style.hpp
 
-        src/client/multiplayer/multiplayer.cpp
-        src/client/multiplayer/multiplayer.hpp
-
-        src/client/multiplayer/multiplayercore.cpp
-        src/client/multiplayer/multiplayercore.hpp
-
-        src/client/multiplayer/multiplayergame.cpp
-        src/client/multiplayer/multiplayergame.hpp
-
-        src/client/multiplayer/multiplayerlobby.cpp
-        src/client/multiplayer/multiplayerlobby.hpp
-
-        src/client/multiplayer/multiplayerscoring.cpp
-        src/client/multiplayer/multiplayerscoring.hpp
+        #        src/client/multiplayer/multiplayer.cpp
+        #        src/client/multiplayer/multiplayer.hpp
+        #
+        #        src/client/multiplayer/multiplayercore.cpp
+        #        src/client/multiplayer/multiplayercore.hpp
+        #
+        #        src/client/multiplayer/multiplayergame.cpp
+        #        src/client/multiplayer/multiplayergame.hpp
+        #
+        #        src/client/multiplayer/multiplayerlobby.cpp
+        #        src/client/multiplayer/multiplayerlobby.hpp
+        #
+        #        src/client/multiplayer/multiplayerscoring.cpp
+        #        src/client/multiplayer/multiplayerscoring.hpp
 
         src/client/sandbox/sandbox.cpp
         src/client/sandbox/sandbox.hpp
