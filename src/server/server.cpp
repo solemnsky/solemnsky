@@ -116,6 +116,11 @@ void ServerExec::processPacket(ENetPeer *client,
         if (auto sky = shared.skyHandle.getSky()) {
           shared.sendToClient(
               client, sky::ServerPacket::InitSky(sky->captureInitializer()));
+
+          sky::PlayerDelta delta{*player};
+          delta.skyLoaded = true;
+          shared.registerArenaDelta(
+              sky::ArenaDelta::Delta(player->pid, delta));
         }
       }
 
