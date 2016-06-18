@@ -98,7 +98,7 @@ void ServerLogger::onEvent(const sky::ArenaEvent &event) {
 }
 
 ServerLogger::ServerLogger(ServerShared &shared, sky::Arena &arena) :
-    sky::ArenaLogger(arena), shared(shared) { }
+    sky::ArenaLogger(arena), shared(shared) {}
 
 /**
  * ServerExec.
@@ -182,6 +182,15 @@ void ServerExec::processPacket(ENetPeer *client,
 }
 
 bool ServerExec::poll() {
+  // Environment loading.
+  if (shared.skyHandle.getEnvironment()
+      and !shared.skyHandle.getSky()) {
+    if (shared.skyHandle.getEnvironment()->getMap()) {
+      shared.skyHandle.instantiateSky({});
+    }
+  }
+
+  // Network.
   static ENetEvent event;
   event = host.poll();
 
@@ -279,7 +288,7 @@ void ServerExec::run() {
   sf::Clock clock;
   while (running) {
     tick(clock.restart().asSeconds());
-    while (!poll()) { }
+    while (!poll()) {}
 
     sf::sleep(sf::milliseconds(16));
   }
