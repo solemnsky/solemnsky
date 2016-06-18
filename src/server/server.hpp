@@ -20,12 +20,11 @@
  */
 #pragma once
 #include <iostream>
-#include "sky/sky/sky.hpp"
-#include "sky/arena.hpp"
+#include "engine/arena.hpp"
 #include "util/telegraph.hpp"
-#include "sky/protocol.hpp"
-#include "sky/event.hpp"
 #include "latencytracker.hpp"
+#include "engine/protocol.hpp"
+#include "engine/event.hpp"
 
 /**
  * Shared object for the server, holding engine state and network

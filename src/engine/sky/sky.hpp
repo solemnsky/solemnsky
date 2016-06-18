@@ -23,8 +23,8 @@
 #include <memory>
 #include "physics.hpp"
 #include "participation.hpp"
-#include "sky/arena.hpp"
 #include "skysettings.hpp"
+#include "engine/arena.hpp"
 
 namespace sky {
 

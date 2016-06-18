@@ -25,7 +25,6 @@
 #include <istream>
 #include <cereal/cereal.hpp>
 #include "util/types.hpp"
-#include "sky/sky/skysettings.hpp"
 
 namespace sky {
 
@@ -75,7 +74,7 @@ struct MapObstacle {
 };
 
 /**
- *
+ * A map 'item' (currently unimplemented).
  */
 struct MapItem {
   enum class Type {

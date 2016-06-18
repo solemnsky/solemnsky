@@ -20,7 +20,7 @@
  * Subordinate to a Plane.
  */
 #pragma once
-#include "sky/sky/physics.hpp"
+#include "physics.hpp"
 
 namespace sky {
 

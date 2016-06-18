@@ -66,7 +66,7 @@ void Sandbox::stopHandle() {
 void Sandbox::runCommand(const SandboxCommand &command) {
   switch (command.type) {
     case SandboxCommand::Type::Start: {
-      arena.applyDelta(sky::ArenaDelta::MapChange(
+      arena.applyDelta(sky::ArenaDelta::EnvChange(
           command.mapName.get()));
       startHandle();
       break;

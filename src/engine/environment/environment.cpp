@@ -46,6 +46,10 @@ Environment::~Environment() {
   workerThread.join();
 }
 
+bool Environment::loadingErrored() {
+  return loadError;
+}
+
 Map const *Environment::getMap() const {
   return map.get_ptr();
 }

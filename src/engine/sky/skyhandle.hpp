@@ -20,6 +20,7 @@
  */
 #pragma once
 #include "sky.hpp"
+#include "engine/environment/environment.hpp"
 
 namespace sky {
 
@@ -29,7 +30,7 @@ namespace sky {
 
 struct SkyHandleInit {
   SkyHandleInit() = default;
-  SkyHandleInit(const MapName &name, const SkyInit &initializer);
+  SkyHandleInit(const EnvironmentURL &name, const SkyInit &initializer);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -38,7 +39,7 @@ struct SkyHandleInit {
 
   bool verifyStructure() const;
 
-  optional<std::pair<MapName, SkyInit>> initializer;
+  optional<std::pair<EnvironmentURL, SkyInit>> initializer;
 
 };
 
@@ -56,7 +57,7 @@ struct SkyHandleDelta {
 
   bool verifyStructure() const;
 
-  optional<std::pair<MapName, SkyInit>> initializer;
+  optional<std::pair<EnvironmentURL, SkyInit>> initializer;
   optional<SkyDelta> delta;
 
   // Respecting client authority.
@@ -75,10 +76,14 @@ class SkyHandle
   // Delta collection state.
   bool skyIsNew;
 
-  // Map, instantiated separately from Sky.
+  // Environment, instantiated and loaded seperately from the Sky.
   bool loadError;
-  optional<Map> map;
-  void startWith(const MapName &mapName, const SkyInit &skyInit);
+  optional<Environment> environment;
+
+  void startWith(const EnvironmentURL &envUrl, const SkyInit &skyInit);
+ protected:
+  // Subsystem impl.
+  void onPoll(const TimeDiff delta) override final;
 
  public:
   SkyHandle(class Arena &parent, const SkyHandleInit &initializer);
