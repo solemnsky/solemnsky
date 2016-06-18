@@ -66,8 +66,7 @@ void SkyHandle::startWith(
 void SkyHandle::onPoll(const TimeDiff) {
   // Check for environment loading.
   if (environment) {
-    loadError = environment.loadingErrored();
-
+    loadError = environment->loadingErrored();
   }
 }
 
@@ -85,7 +84,7 @@ SkyHandleInit SkyHandle::captureInitializer() const {
   SkyHandleInit initializer;
   if (sky) {
     initializer.initializer.emplace(
-        map->name,
+        environment->name,
         sky->captureInitializer());
   }
   return initializer;

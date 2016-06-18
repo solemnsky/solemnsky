@@ -22,8 +22,7 @@
 #include <map>
 #include "util/types.hpp"
 #include "scoreboard.hpp"
-#include "sky/sky/participation.hpp"
-#include "sky/sky/skyhandle.hpp"
+#include "sky/skyhandle.hpp"
 #include "arena.hpp"
 
 namespace sky {

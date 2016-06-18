@@ -48,7 +48,8 @@ class Environment {
   const std::string filepath;
 
   // State.
-  bool loadErrored;
+  bool loadError;
+  float loadProgress;
   optional<EnvGraphics> graphics;
   optional<EnvScripts> scripts;
   optional<Map> map;
@@ -57,14 +58,27 @@ class Environment {
 
   // Loading submethods.
   void loadMap();
+  void loadGraphics();
+  void loadScripts();
 
  public:
-  Environment(); // the null environment, useful for testing and sandboxes
-  Environment(const std::string &filepath);
+  Environment(const EnvironmentURL &url);
+  // The null environment, useful for testing and sandboxes.
+  // The default ctor is equilivant to supplying a URL of "NULL".
+  Environment();
   ~Environment();
 
-  // Accessing loaded resources.
+  const EnvironmentURL url;
+
+  // Loading optional resources.
+  void loadMore(const bool needGraphics, const bool needScripts);
+
+  // Load status.
   bool loadingErrored() const;
+  bool loadingIdle() const;
+  float loadingProgress() const;
+
+  // Accessing loaded resources.
   Map const *getMap() const;
 
 };
