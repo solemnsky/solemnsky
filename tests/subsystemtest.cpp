@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "sky/arena.hpp"
+#include "engine/arena.hpp"
 #include "util/methods.hpp"
 
 /**

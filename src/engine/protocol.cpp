@@ -24,8 +24,8 @@ namespace sky {
  * ClientPacket.
  */
 
-ClientPacket::ClientPacket() { }
-ClientPacket::ClientPacket(const Type type) : type(type) { }
+ClientPacket::ClientPacket() {}
+ClientPacket::ClientPacket(const Type type) : type(type) {}
 
 bool ClientPacket::verifyStructure() const {
   switch (type) {
@@ -33,6 +33,8 @@ bool ClientPacket::verifyStructure() const {
       return verifyRequiredOptionals(pingTime, pongTime);
     case Type::ReqJoin:
       return verifyRequiredOptionals(stringData);
+    case Type::ReqSky:
+      return true;
     case Type::ReqPlayerDelta:
       return verifyRequiredOptionals(playerDelta);
     case Type::ReqInput:
@@ -101,9 +103,9 @@ ClientPacket ClientPacket::RCon(const std::string &command) {
  * ServerPacket.
  */
 
-ServerPacket::ServerPacket() { }
+ServerPacket::ServerPacket() {}
 
-ServerPacket::ServerPacket(const Type type) : type(type) { }
+ServerPacket::ServerPacket(const Type type) : type(type) {}
 
 bool ServerPacket::verifyStructure() const {
   switch (type) {

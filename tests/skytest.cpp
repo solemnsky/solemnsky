@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "sky/sky/sky.hpp"
+#include "engine/sky/sky.hpp"
 
 /**
  * The Sky subsystem operates and networks correctly.

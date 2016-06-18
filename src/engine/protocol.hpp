@@ -58,6 +58,9 @@ struct ClientPacket : public VerifyStructure {
         ar(stringData);
         break;
       }
+      case Type::ReqSky: {
+        break;
+      }
       case Type::ReqPlayerDelta: {
         ar(playerDelta);
         break;
