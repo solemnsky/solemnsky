@@ -40,7 +40,7 @@ class SkyHandle
   optional<Sky> sky;
 
   // Delta collection state.
-  bool envIsNew;
+  bool envStateIsNew;
 
  public:
   SkyHandle(class Arena &parent, const SkyHandleInit &initializer);
@@ -53,7 +53,7 @@ class SkyHandle
 
   // Networking.
   SkyHandleInit captureInitializer() const override final;
-  SkyHandleDelta collectDelta();
+  optional<SkyHandleDelta> collectDelta();
   void applyDelta(const SkyHandleDelta &delta) override final;
 
   // User API.
