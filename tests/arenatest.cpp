@@ -4,10 +4,10 @@
 /**
  * Arena is the backbone of a multiplayer server.
  */
-class ArenaTest: public testing::Test {
+class ArenaTest : public testing::Test {
  public:
   ArenaTest() :
-      arena(sky::ArenaInit("home arena", "NULL_MAP")) { }
+      arena(sky::ArenaInit("home arena", "NULL_MAP")) {}
 
   sky::Arena arena;
 };
@@ -22,22 +22,10 @@ TEST_F(ArenaTest, ConnectionTest) {
   arena.applyDelta(sky::ArenaDelta::Quit(0));
   EXPECT_EQ(arena.getPlayer(0), nullptr);
 
-  // Nickname qualification.
-  arena.connectPlayer("nameless plane");
-  arena.connectPlayer("nameless somebody");
-  arena.connectPlayer("nameless plane");
-  EXPECT_EQ(arena.getPlayer(0)->getNickname(), "nameless plane");
-  EXPECT_EQ(arena.getPlayer(1)->getNickname(), "nameless somebody");
-  EXPECT_EQ(arena.getPlayer(2)->getNickname(), "nameless plane(1)");
-
   // Reusing PIDs.
   arena.applyDelta(sky::ArenaDelta::Quit(0));
   EXPECT_EQ(arena.connectPlayer("nameless plane").join->pid, PID(0));
   EXPECT_EQ(arena.getPlayer(0)->getNickname(), "nameless plane");
-
-  // Nickname qualification.
-  arena.connectPlayer("nameless plane");
-  EXPECT_EQ(arena.getPlayer(3)->getNickname(), "nameless plane(2)");
 
 }
 
@@ -45,6 +33,23 @@ TEST_F(ArenaTest, ConnectionTest) {
  * Player nicknames are allocated correctly.
  */
 TEST_F(ArenaTest, NicknameTest) {
+  // Nickname qualification.
+  arena.connectPlayer("nameless plane");
+  arena.connectPlayer("nameless somebody");
+  arena.connectPlayer("nameless plane");
+  arena.connectPlayer("nameless plane");
+  EXPECT_EQ(arena.getPlayer(0)->getNickname(), "nameless plane");
+  EXPECT_EQ(arena.getPlayer(1)->getNickname(), "nameless somebody");
+  EXPECT_EQ(arena.getPlayer(2)->getNickname(), "nameless plane(1)");
+  EXPECT_EQ(arena.getPlayer(3)->getNickname(), "nameless plane(2)");
+
+  // Requesting nickname change.
+  EXPECT_EQ(arena.allocNewNickname(*arena.getPlayer(3), "nameless plane"),
+            "nameless plane(2)");
+  EXPECT_EQ(arena.allocNewNickname(*arena.getPlayer(3), "nameless somebody"),
+            "nameless somebody(1)");
+  EXPECT_EQ(arena.allocNewNickname(*arena.getPlayer(0), "nameless plane"),
+            "nameless plane(3)");
 
 }
 
@@ -70,6 +75,7 @@ TEST_F(ArenaTest, DeltaTest) {
   // Player disconnection.
   remoteArena.applyDelta(sky::ArenaDelta::Quit(0));
   EXPECT_EQ(remoteArena.getPlayer(0), nullptr);
+
 }
 
 /**
@@ -129,8 +135,15 @@ TEST_F(ArenaTest, PlayerDeltaTest) {
 TEST_F(ArenaTest, InitializerTest) {
   arena.applyDelta(sky::ArenaDelta::Motd("some motd"));
   arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
+
   arena.connectPlayer("nameless plane");
   arena.connectPlayer("nameless plane");
+  {
+    sky::PlayerDelta delta;
+    delta.envLoaded = true;
+    delta.team = 2;
+    arena.getPlayer(0)->applyDelta(delta);
+  }
 
   sky::Arena remoteArena(arena.captureInitializer());
 
@@ -139,6 +152,8 @@ TEST_F(ArenaTest, InitializerTest) {
   EXPECT_EQ(remoteArena.getMotd(), "some motd");
   EXPECT_EQ(remoteArena.getMode(), sky::ArenaMode::Game);
   EXPECT_EQ(remoteArena.getPlayer(0)->getNickname(), "nameless plane");
+  EXPECT_EQ(remoteArena.getPlayer(0)->hasLoadedEnv(), true);
+  EXPECT_EQ(remoteArena.getPlayer(0)->getTeam(), 2);
   EXPECT_EQ(remoteArena.getPlayer(1)->getNickname(), "nameless plane(1)");
 }
 
