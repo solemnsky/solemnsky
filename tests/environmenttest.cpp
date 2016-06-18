@@ -1,8 +1,5 @@
-#include "sky/environment/environment.hpp"
-#include "util/methods.hpp"
-#include "util/printer.hpp"
+#include "engine/environment/environment.hpp"
 #include <gtest/gtest.h>
-#include <cereal/archives/binary.hpp>
 
 class EnvironmentTest : public testing::Test {
  public:

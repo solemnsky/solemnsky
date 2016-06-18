@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "prop.hpp"
-#include "sky/sky/participation.hpp"
 
 namespace sky {
 

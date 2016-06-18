@@ -10,7 +10,7 @@ class ScoreboardTest: public testing::Test {
   sky::Scoreboard scoreboard;
 
   ScoreboardTest() :
-      arena(sky::ArenaInit("special arena", "NULL_MAP", sky::ArenaMode::Lobby)),
+      arena(sky::ArenaInit("special arena", "NULL", sky::ArenaMode::Lobby)),
       scoreboard(arena,
                  sky::ScoreboardInit({"kills", "deaths", "assists"})) { }
 

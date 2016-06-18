@@ -212,7 +212,8 @@ class ArenaLogger {
  */
 struct ArenaInit {
   ArenaInit() = default; // packing
-  ArenaInit(const std::string &name, const EnvironmentURL &map,
+  ArenaInit(const std::string &name,
+            const EnvironmentURL &environment,
             const ArenaMode mode = ArenaMode::Lobby);
 
   template<typename Archive>
@@ -308,7 +309,7 @@ class Arena : public Networked<ArenaInit, ArenaDelta> {
   std::map<PID, Player> players;
   std::string name;
   std::string motd;
-  EnvironmentURL nextMap;
+  EnvironmentURL nextEnv;
   ArenaMode mode;
   Time uptime;
 
@@ -336,9 +337,9 @@ class Arena : public Networked<ArenaInit, ArenaDelta> {
   void forPlayers(std::function<void(Player &)> f);
   const std::map<PID, Player> &getPlayers() const;
 
-  std::string getName() const;
-  std::string getMotd() const;
-  EnvironmentURL getNextMap() const;
+  const std::string &getName() const;
+  const std::string &getMotd() const;
+  const EnvironmentURL &getNextEnv() const;
   ArenaMode getMode() const;
   Time getUptime() const;
 

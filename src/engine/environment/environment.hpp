@@ -67,8 +67,9 @@ class Environment {
 
   const EnvironmentURL url;
 
-  // Loading optional resources.
+  // Loading.
   void loadMore(const bool needGraphics, const bool needScripts);
+  void waitForLoading();
 
   // Load status.
   bool loadingErrored() const;

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "sky/arena.hpp"
+#include "engine/arena.hpp"
 
 /**
  * Arena is the backbone of a multiplayer server.
@@ -51,7 +51,7 @@ TEST_F(ArenaTest, DeltaTest) {
   arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
   arena.applyDelta(sky::ArenaDelta::Motd("new motd"));
 
-  EXPECT_EQ(arena.getNextMap(), "test2");
+  EXPECT_EQ(arena.getNextEnv(), "test2");
   EXPECT_EQ(arena.getMode(), sky::ArenaMode::Game);
   EXPECT_EQ(arena.getMotd(), "new motd");
 
@@ -126,7 +126,7 @@ TEST_F(ArenaTest, InitializerTest) {
   sky::Arena remoteArena(arena.captureInitializer());
 
   EXPECT_EQ(remoteArena.getName(), "home arena");
-  EXPECT_EQ(remoteArena.getNextMap(), "NULL_MAP");
+  EXPECT_EQ(remoteArena.getNextEnv(), "NULL_MAP");
   EXPECT_EQ(remoteArena.getMotd(), "some motd");
   EXPECT_EQ(remoteArena.getMode(), sky::ArenaMode::Game);
   EXPECT_EQ(remoteArena.getPlayer(0)->getNickname(), "nameless plane");

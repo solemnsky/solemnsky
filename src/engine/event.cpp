@@ -23,7 +23,7 @@ namespace sky {
  * ArenaEvent.
  */
 
-ArenaEvent::ArenaEvent(const Type type) : type(type) { }
+ArenaEvent::ArenaEvent(const Type type) : type(type) {}
 
 void ArenaEvent::print(Printer &p) const {
   p.setColor(255, 255, 255);
@@ -65,9 +65,10 @@ void ArenaEvent::print(Printer &p) const {
       }
       break;
     }
-    case Type::MapChange: {
+    case Type::EnvChoose: {
       p.setColor(0, 255, 0);
-      p.print("** Changed map to " + inQuotes(map.get()) + ". **");
+      p.print("** Picked " + inQuotes(environment.get())
+                  + " as next environment. **");
       break;
     }
   }
@@ -109,9 +110,9 @@ ArenaEvent ArenaEvent::ModeChange(const sky::ArenaMode mode) {
   return event;
 }
 
-ArenaEvent ArenaEvent::MapChange(const MapName &map) {
-  ArenaEvent event(Type::MapChange);
-  event.map = map;
+ArenaEvent ArenaEvent::EnvChoose(const EnvironmentURL &map) {
+  ArenaEvent event(Type::EnvChoose);
+  event.environment = map;
   return event;
 }
 
@@ -121,7 +122,7 @@ ArenaEvent ArenaEvent::MapChange(const MapName &map) {
  * ServerEvent.
  */
 
-ServerEvent::ServerEvent(const Type type) : type(type) { }
+ServerEvent::ServerEvent(const Type type) : type(type) {}
 
 void ServerEvent::print(Printer &p) const {
   p.setColor(255, 255, 255);
@@ -207,7 +208,7 @@ ServerEvent ServerEvent::RConOut(const std::string &response) {
  * ClientEvent.
  */
 
-ClientEvent::ClientEvent(const Type type) : type(type) { }
+ClientEvent::ClientEvent(const Type type) : type(type) {}
 
 void ClientEvent::print(Printer &p) const {
   p.setColor(255, 255, 255);
