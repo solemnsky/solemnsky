@@ -75,18 +75,18 @@ class Sandbox : public Game {
   Sandbox(ClientShared &state);
 
   // Game impl.
-  void onChangeSettings(const SettingsDelta &settings) override;
-  void onBlur() override;
-  void onFocus() override;
-  void doExit() override;
-  virtual void printDebugLeft(Printer &p) override;
-  virtual void printDebugRight(Printer &p) override;
+  void onChangeSettings(const SettingsDelta &settings) override final;
+  void onBlur() override final;
+  void onFocus() override final;
+  void doExit() override final;
+  virtual void printDebugLeft(Printer &p) override final;
+  virtual void printDebugRight(Printer &p) override final;
 
   // Control impl.
-  void tick(float delta) override;
-  void render(ui::Frame &f) override;
-  bool handle(const sf::Event &event) override;
-  void reset() override;
-  void signalRead() override;
-  void signalClear() override;
+  void tick(const TimeDiff delta) override final;
+  void render(ui::Frame &f) override final;
+  bool handle(const sf::Event &event) override final;
+  void reset() override final;
+  void signalRead() override final;
+  void signalClear() override final;
 };

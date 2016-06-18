@@ -161,6 +161,10 @@ void ServerExec::processPacket(ENetPeer *client,
           sky->getParticipation(*player).applyInput(
               packet.participationInput.get());
         }
+        if (shared.skyHandle.loadingToSky()) {
+          appLog("Warning: received input from client while still loading "
+                     "environment! Might want to define this case.");
+        }
         break;
       }
 
@@ -203,14 +207,6 @@ void ServerExec::processPacket(ENetPeer *client,
 }
 
 bool ServerExec::poll() {
-  // Environment loading.
-  if (shared.skyHandle.getEnvironment()
-      and !shared.skyHandle.getSky()) {
-    if (shared.skyHandle.getEnvironment()->getMap()) {
-      shared.skyHandle.instantiateSky({});
-    }
-  }
-
   // Network.
   static ENetEvent event;
   event = host.poll();
@@ -242,11 +238,14 @@ bool ServerExec::poll() {
 }
 
 void ServerExec::tick(const TimeDiff delta) {
+  // Environment loading.
+  if (shared.skyHandle.readyToLoadSky()) {
+    shared.skyHandle.instantiateSky({});
+  }
+
   // Tick game state and network host.
   shared.arena.tick(delta);
   host.tick(delta);
-
-  // Check
 
   // SkyHandle updating.
   if (const auto handleDelta = shared.skyHandle.collectDelta()) {
