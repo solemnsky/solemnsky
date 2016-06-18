@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <boost/algorithm/string.hpp>
 #include "arena.hpp"
 #include "event.hpp"
 
@@ -26,7 +27,7 @@ namespace sky {
 
 PlayerDelta::PlayerDelta(const Player &player) :
     admin(player.isAdmin()),
-    envLoaded(player.hasLoadedEnv()) {}
+    skyLoaded(player.hasSkyLoaded()) {}
 
 /**
  * Player.
@@ -42,6 +43,7 @@ Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     nickname(initializer.nickname),
     admin(initializer.admin),
     team(initializer.team),
+    skyLoaded(initializer.envLoaded),
 
     latencyInitialized(false),
     latency(0),
@@ -53,7 +55,7 @@ Player::Player(Arena &arena, const PlayerInitializer &initializer) :
 void Player::applyDelta(const PlayerDelta &delta) {
   if (delta.nickname) nickname = *delta.nickname;
   admin = delta.admin;
-  envLoaded = delta.envLoaded;
+  skyLoaded = delta.skyLoaded;
   if (delta.team) team = delta.team.get();
   if (delta.latencyStats) {
     latency = delta.latencyStats->first;
@@ -67,7 +69,7 @@ PlayerInitializer Player::captureInitializer() const {
   initializer.pid = pid;
   initializer.nickname = nickname;
   initializer.admin = admin;
-  initializer.envLoaded = envLoaded;
+  initializer.envLoaded = skyLoaded;
   initializer.team = team;
   return initializer;
 }
@@ -84,8 +86,8 @@ Team Player::getTeam() const {
   return team;
 }
 
-bool Player::hasLoadedEnv() const {
-  return envLoaded;
+bool Player::hasSkyLoaded() const {
+  return skyLoaded;
 }
 
 bool Player::latencyIsCalculated() const {
@@ -216,11 +218,14 @@ PID Arena::allocPid() const {
   return smallestUnused(players);
 }
 
-std::string Arena::allocNickname(const std::string &requested,
+std::string Arena::allocNickname(const std::string &requestedNick,
                                  const optional<PID> ignorePid) const {
+  std::string cleanReq(requestedNick);
+  boost::algorithm::trim_right(cleanReq);
+
   std::stringstream readStream;
   PID nickNumber;
-  const size_t rsize = requested.size();
+  const size_t rsize = cleanReq.size();
   std::vector<PID> usedNumbers;
 
   for (const auto &player : players) {
@@ -230,13 +235,14 @@ std::string Arena::allocNickname(const std::string &requested,
 
     const std::string &name = player.second.getNickname();
     if (name.size() < rsize) continue;
-    if (name.substr(0, rsize) != requested) continue;
+    if (name.substr(0, rsize) != cleanReq) continue;
 
-    if (name == requested) {
+    if (name == cleanReq) {
       usedNumbers.push_back(0);
       continue;
     }
 
+    readStream.clear();
     readStream.str(name.substr(rsize));
 
     if (readStream.get() != '(') continue;
@@ -250,9 +256,9 @@ std::string Arena::allocNickname(const std::string &requested,
   }
 
   PID allocated = smallestUnused(usedNumbers);
-  if (allocated == 0) return requested;
+  if (allocated == 0) return cleanReq;
   else
-    return requested + "("
+    return cleanReq + "("
         + std::to_string(smallestUnused(usedNumbers)) + ")";
 }
 

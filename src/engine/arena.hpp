@@ -62,7 +62,7 @@ struct PlayerDelta {
   }
 
   optional<std::string> nickname;
-  bool admin, envLoaded;
+  bool admin, skyLoaded;
   optional<Team> team;
   optional<std::pair<TimeDiff, Time>> latencyStats;
 
@@ -81,7 +81,7 @@ class Player : public Networked<PlayerInitializer, PlayerDelta> {
   std::string nickname; // Nickname allocated for player.
   bool admin; // Whether they have admin rights.
   Team team;
-  bool envLoaded; // Whether their client has loaded the current environment.
+  bool skyLoaded; // Whether their client has loaded the current environment.
   std::map<PID, void *> data; // this is a good and not a bad idea
 
   // Timing stats.
@@ -105,7 +105,7 @@ class Player : public Networked<PlayerInitializer, PlayerDelta> {
   std::string getNickname() const;
   bool isAdmin() const;
   Team getTeam() const;
-  bool hasLoadedEnv() const;
+  bool hasSkyLoaded() const;
 
   bool latencyIsCalculated() const;
   TimeDiff getLatency() const;
@@ -301,7 +301,7 @@ class Arena : public Networked<ArenaInit, ArenaDelta> {
  private:
   // Utilities.
   PID allocPid() const;
-  std::string allocNickname(const std::string &requested,
+  std::string allocNickname(const std::string &cleanReq,
                             const optional<PID> ignorePid = {}) const;
 
   // Event logging.
