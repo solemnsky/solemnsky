@@ -51,11 +51,9 @@ class SkyHandle
   void applyDelta(const SkyHandleDelta &delta) override final;
 
   // User API.
+  void start();
   void instantiateSky(const SkyInit &skyInit);
   void stop();
-
-  bool isActive() const;
-  bool loadingErrored() const;
 
 };
 

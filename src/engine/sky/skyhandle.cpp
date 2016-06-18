@@ -21,37 +21,6 @@
 namespace sky {
 
 /**
- * SkyHandleInit.
- */
-
-SkyHandleInit::SkyHandleInit(
-    const EnvironmentURL &environment) :
-    environment(environment) {}
-
-bool SkyHandleInit::verifyStructure() const {
-  return true;
-}
-
-/**
- * SkyHandleDelta.
- */
-
-bool SkyHandleDelta::verifyStructure() const {
-  if (bool(initializer) and bool(delta)) return false;
-
-  if (initializer) return verifyValue(initializer->second);
-  if (delta) return verifyValue(delta.get());
-  return true;
-}
-
-SkyHandleDelta SkyHandleDelta::respectAuthority(const Player &player) const {
-  SkyHandleDelta newDelta;
-  if (delta) newDelta.delta = delta->respectAuthority(player);
-  newDelta.initializer = initializer;
-  return newDelta;
-}
-
-/**
  * SkyHandle.
  */
 
@@ -59,56 +28,37 @@ SkyHandle::SkyHandle(Arena &arena, const SkyHandleInit &initializer) :
     Subsystem(arena),
     Networked(initializer),
     envIsNew(false) {
-  if (const auto &envUrl = initializer.environment) {
-    environment.emplace(envUrl);
-  }
+  if (initializer) environment.emplace(initializer.get());
 }
 
 SkyHandleInit SkyHandle::captureInitializer() const {
-  SkyHandleInit initializer;
   if (sky) return SkyHandleInit{environment->url};
   else return SkyHandleInit{};
 }
 
 SkyHandleDelta SkyHandle::collectDelta() {
-  SkyHandleDelta delta;
   if (environment and envIsNew) {
-    return environment->url;
     envIsNew = false;
-  }
-  if (sky) delta.delta = sky->collectDelta();
-  return delta;
+    return SkyHandleDelta{environment->url};
+  } else return SkyHandleDelta{};
 }
 
 void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
-  if (const auto init = delta.initializer) {
-    startWith(init->first, init->second);
-    return;
-  }
-  if (sky) {
-    if (delta.delta) sky->applyDelta(delta.delta.get());
-    else stop();
-  }
+  if (delta) environment.emplace(delta.get());
 }
 
 void SkyHandle::start() {
-  stop();
-  startWith(arena.getNextMap(), SkyInit());
+  environment.emplace(arena.getNextMap());
+}
+
+void SkyHandle::instantiateSky(const SkyInit &init) {
+  assert(environment->getMap());
+  sky.emplace(arena, *environment->getMap(), init);
 }
 
 void SkyHandle::stop() {
+  environment.reset();
   sky.reset();
-  map.reset();
-  loadError = false;
-  caller.doEndGame();
-}
-
-bool SkyHandle::isActive() const {
-  return bool(sky);
-}
-
-bool SkyHandle::loadingErrored() const {
-  return loadError;
 }
 
 }

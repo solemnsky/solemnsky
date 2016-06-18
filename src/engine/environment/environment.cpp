@@ -49,8 +49,8 @@ void Environment::loadScripts() {
 }
 
 Environment::Environment(const EnvironmentURL &url) :
-    url(url),
-    loadProgress(0) {
+    loadProgress0(0),
+    url(url) {
   workerThread = std::thread([&]() { loadMap(); });
 }
 

@@ -60,9 +60,9 @@ void DebugView::printArenaReport(Printer &p) const {
 
 void DebugView::printSkyReport(Printer &p) const {
   p.printTitle("SkyHandle");
-  p.printLn("isActive(): " + printBool(skyHandle.isActive()));
-  p.printLn("loadingErrored(): " + printBool(skyHandle.loadingErrored()));
-  if (skyHandle.isActive()) {
+  p.printLn("bool(sky): " + printBool(bool(skyHandle.sky)));
+  p.printLn("bool(environment): " + printBool(bool(skyHandle.environment)));
+  if (skyHandle.sky) {
     const auto &sky = skyHandle.sky.get();
     p.printLn("environment.url: " + skyHandle.environment->url);
     p.printLn("sky.getSettings().gravity: "
