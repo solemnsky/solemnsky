@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include "engine/sky/skyhandle.hpp"
-#include "util/methods.hpp"
 
 /**
  * Our SkyHandle subsystem operates and networks correctly.
@@ -61,7 +60,7 @@ TEST_F(SkyHandleTest, InitializerTest) {
 
   skyHandle.stop();
 
-  // This is the simpler case.
+  // A lack of environment instantiation also copies.
   {
     sky::Arena remoteArena{arena.captureInitializer()};
     sky::SkyHandle remoteHandle{remoteArena, skyHandle.captureInitializer()};
@@ -74,21 +73,24 @@ TEST_F(SkyHandleTest, InitializerTest) {
  * We can propagate changes between SkyHandles with a SkyHandleDelta.
  */
 TEST_F(SkyHandleTest, DeltaTest) {
-  // Initialize: body Skies are instantiated and a player joined.
   arena.connectPlayer("nameless plane");
   skyHandle.start();
   sky::Arena remoteArena(arena.captureInitializer());
   sky::SkyHandle remoteSkyHandle(remoteArena, skyHandle.captureInitializer());
 
   {
+    // We stop the SkyHandle and apply the delta.
     skyHandle.stop();
-    remoteSkyHandle.applyDelta(skyHandle.collectDelta());
+    remoteSkyHandle.applyDelta(skyHandle.collectDelta().get());
+    ASSERT_EQ(bool(skyHandle.collectDelta()), false);
 
     ASSERT_EQ(bool(remoteSkyHandle.getEnvironment()), false);
     ASSERT_EQ(bool(remoteSkyHandle.getSky()), false);
 
+    // We start the SkyHandle and apply the delta.
     skyHandle.start();
-    remoteSkyHandle.applyDelta(skyHandle.collectDelta());
+    remoteSkyHandle.applyDelta(skyHandle.collectDelta().get());
+    ASSERT_EQ(bool(skyHandle.collectDelta()), false);
 
     ASSERT_EQ(bool(remoteSkyHandle.getEnvironment()), true);
     ASSERT_EQ(bool(remoteSkyHandle.getSky()), false);

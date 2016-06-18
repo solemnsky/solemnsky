@@ -27,7 +27,7 @@ namespace sky {
 SkyHandle::SkyHandle(Arena &arena, const SkyHandleInit &initializer) :
     Subsystem(arena),
     Networked(initializer),
-    envIsNew(false) {
+    envStateIsNew(false) {
   if (initializer) environment.emplace(initializer.get());
 }
 
@@ -52,19 +52,26 @@ SkyHandleInit SkyHandle::captureInitializer() const {
   else return SkyHandleInit{};
 }
 
-SkyHandleDelta SkyHandle::collectDelta() {
-  if (environment and envIsNew) {
-    envIsNew = false;
-    return SkyHandleDelta{environment->url};
-  } else return SkyHandleDelta{};
+optional<SkyHandleDelta> SkyHandle::collectDelta() {
+  if (envStateIsNew) {
+    envStateIsNew = false;
+    if (environment) {
+      return SkyHandleDelta{environment->url};
+    } else {
+      return SkyHandleDelta{};
+    }
+  } else {
+    return optional<SkyHandleDelta>();
+  }
 }
 
 void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
   if (delta) environment.emplace(delta.get());
+  else environment.reset();
 }
 
 void SkyHandle::start() {
-  envIsNew = true;
+  envStateIsNew = true;
   environment.emplace(arena.getNextEnv());
 }
 
@@ -74,7 +81,7 @@ void SkyHandle::instantiateSky(const SkyInit &init) {
 }
 
 void SkyHandle::stop() {
-  envIsNew = false;
+  envStateIsNew = true;
   environment.reset();
   sky.reset();
 }
