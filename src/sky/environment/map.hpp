@@ -104,9 +104,10 @@ struct Map {
   std::vector<MapItem> items;
   bool loadSuccess;
 
-  Map(const MapName &name);
+  Map(std::istream &s);
 
  public:
+  Map(); // null map
   Map(const Map &map) = default;
 
   template<typename Archive>
@@ -123,8 +124,9 @@ struct Map {
   const std::vector<SpawnPoint> &getSpawnPoints() const;
   const SpawnPoint pickSpawnPoint(const Team team) const;
 
+  // Safe reading / saving from / to streams.
   void save(std::ostream &s);
-  static optional<Map> load(const MapName &name);
+  static optional<Map> load(std::istream &s);
 
 };
 

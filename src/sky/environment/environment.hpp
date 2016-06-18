@@ -49,19 +49,18 @@ class Environment {
   optional<EnvScripts> scripts;
   optional<Map> map;
 
-  // Loading subroutines.
-  void loadGraphics();
-  void loadScripts();
-  void loadMap();
-
   std::thread workerThread;
+
+  // Loading submethods.
+  void loadMap();
 
  public:
   Environment(); // the null environment, useful for testing and sandboxes
   Environment(const std::string &filepath);
+  ~Environment();
 
-  // Map.
-
+  // Accessing loaded resources.
+  Map const *getMap() const;
 
 };
 

@@ -26,12 +26,28 @@ optional<std::string> getEnvironmentFile(const EnvironmentURL &url) {
   return optional<std::string>();
 }
 
+/**
+ * Environment.
+ */
+
+void Environment::loadMap() {
+  map.emplace(); // stub
+}
+
 Environment::Environment() {
 
 }
 
 Environment::Environment(const std::string &filepath) {
+  workerThread = std::thread([&]() { loadMap(); });
+}
 
+Environment::~Environment() {
+  workerThread.join();
+}
+
+Map const *Environment::getMap() const {
+  return map.get_ptr();
 }
 
 }
