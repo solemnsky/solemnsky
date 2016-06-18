@@ -15,10 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "sky/participation.hpp"
+#include "engine/sky/participation.hpp"
 #include "client/elements/style.hpp"
 #include "skyrender.hpp"
-#include "util/methods.hpp"
 
 namespace sky {
 

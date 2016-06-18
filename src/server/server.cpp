@@ -42,6 +42,16 @@ void ServerShared::registerArenaDelta(const sky::ArenaDelta &arenaDelta) {
   sendToClients(sky::ServerPacket::DeltaArena(arenaDelta));
 }
 
+void ServerShared::registerGameStart() {
+  skyHandle.start();
+  registerArenaDelta(sky::ArenaDelta::EnvLoadState(true));
+}
+
+void ServerShared::registerGameEnd() {
+  skyHandle.stop();
+  registerArenaDelta(sky::ArenaDelta::EnvLoadState(false));
+}
+
 void ServerShared::sendToClients(const sky::ServerPacket &packet,
                                  const bool guaranteeOrder) {
   telegraph.transmit(
@@ -98,7 +108,7 @@ void ServerLogger::onEvent(const sky::ArenaEvent &event) {
 }
 
 ServerLogger::ServerLogger(ServerShared &shared, sky::Arena &arena) :
-    sky::ArenaLogger(arena), shared(shared) { }
+    sky::ArenaLogger(arena), shared(shared) {}
 
 /**
  * ServerExec.
@@ -112,6 +122,18 @@ void ServerExec::processPacket(ENetPeer *client,
     // the player is in the arena
 
     switch (packet.type) {
+      case ClientPacket::Type::ReqSky: {
+        if (auto sky = shared.skyHandle.getSky()) {
+          shared.sendToClient(
+              client, sky::ServerPacket::InitSky(sky->captureInitializer()));
+
+          sky::PlayerDelta delta{*player};
+          delta.loadingEnv = false;
+          shared.registerArenaDelta(
+              sky::ArenaDelta::Delta(player->pid, delta));
+        }
+      }
+
       case ClientPacket::Type::Pong: {
         latencyTracker.registerPong(*player,
                                     packet.pingTime.get(),
@@ -136,9 +158,13 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::ReqInput: {
-        if (auto &sky = shared.skyHandle.sky) {
+        if (const auto sky = shared.skyHandle.getSky()) {
           sky->getParticipation(*player).applyInput(
               packet.participationInput.get());
+        }
+        if (shared.skyHandle.loadingToSky()) {
+          appLog("Warning: received input from client while still loading "
+                     "environment! Might want to define this case.");
         }
         break;
       }
@@ -182,6 +208,7 @@ void ServerExec::processPacket(ENetPeer *client,
 }
 
 bool ServerExec::poll() {
+  // Network.
   static ENetEvent event;
   event = host.poll();
 
@@ -212,26 +239,41 @@ bool ServerExec::poll() {
 }
 
 void ServerExec::tick(const TimeDiff delta) {
+  // Environment loading.
+  if (shared.skyHandle.readyToLoadSky()) {
+    shared.skyHandle.instantiateSky({});
+  }
+
   // Tick game state and network host.
   shared.arena.tick(delta);
   host.tick(delta);
 
-  // Check transmission scheduling.
-  if (skyDeltaTimer.cool(delta)) {
-    auto handleDelta = shared.skyHandle.collectDelta();
-    for (auto peer : host.getPeers()) {
-      if (sky::Player *player = shared.playerFromPeer(peer)) {
-        shared.sendToClient(
-            peer, sky::ServerPacket::DeltaSky(
-                handleDelta.respectAuthority(*player),
-                shared.arena.getUptime()));
-      } else {
-        appLog("peer attached to no client");
-      }
-    }
-    skyDeltaTimer.reset();
+  // SkyHandle updating.
+  if (const auto handleDelta = shared.skyHandle.collectDelta()) {
+    shared.sendToClients(sky::ServerPacket::DeltaSkyHandle(handleDelta.get()));
   }
 
+  // Sky update scheduling.
+  if (const auto sky = shared.skyHandle.getSky()) {
+    if (skyDeltaTimer.cool(delta)) {
+      auto skyDelta = sky->collectDelta();
+
+      for (auto peer : host.getPeers()) {
+        if (sky::Player *player = shared.playerFromPeer(peer)) {
+          shared.sendToClient(
+              peer, sky::ServerPacket::DeltaSky(
+                  skyDelta.respectAuthority(*player),
+                  shared.arena.getUptime()));
+        } else {
+          appLog("Warning: Peer attached to no client!"
+                     " Think about what this means.");
+        }
+      }
+      skyDeltaTimer.reset();
+    }
+  }
+
+  // Scoreboard update scheduling.
   if (scoreDeltaTimer.cool(delta)) {
     if (const auto scoreDelta = shared.scoreboard.collectDelta()) {
       shared.sendToClients(
@@ -240,12 +282,14 @@ void ServerExec::tick(const TimeDiff delta) {
     scoreDeltaTimer.reset();
   }
 
+  // Ping scheduling.
   if (pingTimer.cool(delta)) {
     shared.sendToClients(sky::ServerPacket::Ping(
         shared.arena.getUptime()));
     pingTimer.reset();
   }
 
+  // Player latency update scheduling.
   if (latencyUpdateTimer.cool(delta)) {
     shared.registerArenaDelta(latencyTracker.makeUpdate());
     latencyUpdateTimer.reset();
@@ -279,7 +323,7 @@ void ServerExec::run() {
   sf::Clock clock;
   while (running) {
     tick(clock.restart().asSeconds());
-    while (!poll()) { }
+    while (!poll()) {}
 
     sf::sleep(sf::milliseconds(16));
   }

@@ -40,7 +40,7 @@ enum class DisconnectType {
 
 struct ArenaEvent {
   enum class Type {
-    Join, Quit, NickChange, TeamChange, ModeChange, MapChange
+    Join, Quit, NickChange, TeamChange, ModeChange, EnvChoose
   } type;
 
  private:
@@ -52,7 +52,7 @@ struct ArenaEvent {
   optional<std::string> name, newName;
   optional<sky::Team> oldTeam, newTeam;
   optional<sky::ArenaMode> mode;
-  optional<MapName> map;
+  optional<EnvironmentURL> environment;
 
   void print(Printer &p) const;
 
@@ -63,7 +63,8 @@ struct ArenaEvent {
   static ArenaEvent TeamChange(const std::string &name, const sky::Team oldTeam,
                                const sky::Team newTeam);
   static ArenaEvent ModeChange(const sky::ArenaMode mode);
-  static ArenaEvent MapChange(const MapName &map);
+  static ArenaEvent EnvChoose(const EnvironmentURL &map);
+
 };
 
 }
@@ -73,7 +74,7 @@ struct ArenaEvent {
  */
 
 struct ServerEvent {
-  // TODO: sky::DisconnectType in ServerEvent::Disconnect
+  // TODO: engine::DisconnectType in ServerEvent::Disconnect
 
   enum class Type {
     Start, Event, Stop, Connect, Disconnect, RConIn, RConOut

@@ -20,12 +20,11 @@
  */
 #pragma once
 #include <iostream>
-#include "sky/sky.hpp"
-#include "sky/arena.hpp"
+#include "engine/arena.hpp"
 #include "util/telegraph.hpp"
-#include "sky/protocol.hpp"
-#include "sky/event.hpp"
 #include "latencytracker.hpp"
+#include "engine/protocol.hpp"
+#include "engine/event.hpp"
 
 /**
  * Shared object for the server, holding engine state and network
@@ -46,8 +45,10 @@ struct ServerShared {
   tg::Telegraph<sky::ClientPacket> &telegraph;
   sky::Player *playerFromPeer(ENetPeer *peer) const;
 
-  // Registering arena deltas.
+  // Centralized state modification / synchronization.
   void registerArenaDelta(const sky::ArenaDelta &arenaDelta);
+  void registerGameStart();
+  void registerGameEnd();
 
   // Transmission.
   void sendToClients(const sky::ServerPacket &packet,

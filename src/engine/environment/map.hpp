@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * The *static* environment of a Sky.
+ * Static obstacle geometry data for a Sky.
  */
 #pragma once
 #include <SFML/System.hpp>
@@ -25,14 +25,8 @@
 #include <istream>
 #include <cereal/cereal.hpp>
 #include "util/types.hpp"
-#include "skysettings.hpp"
 
 namespace sky {
-
-/**
- * Map name, the handle people should know the map by.
- */
-using MapName = std::string;
 
 /**
  * A position and angle in a map where a plane can spawn.
@@ -79,6 +73,9 @@ struct MapObstacle {
 
 };
 
+/**
+ * A map 'item' (currently unimplemented).
+ */
 struct MapItem {
   enum class Type {
     RedThingy, BlueThingy
@@ -106,12 +103,11 @@ struct Map {
   std::vector<MapItem> items;
   bool loadSuccess;
 
-  Map(const MapName &name);
+  Map(std::istream &s);
 
  public:
+  Map(); // null map
   Map(const Map &map) = default;
-
-  const MapName name;
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -127,8 +123,9 @@ struct Map {
   const std::vector<SpawnPoint> &getSpawnPoints() const;
   const SpawnPoint pickSpawnPoint(const Team team) const;
 
+  // Safe reading / saving from / to streams.
   void save(std::ostream &s);
-  static optional<Map> load(const MapName &name);
+  static optional<Map> load(std::istream &s);
 
 };
 

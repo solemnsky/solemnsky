@@ -29,15 +29,15 @@ namespace sky {
  */
 
 sky::SpawnPoint::SpawnPoint(const sf::Vector2f &pos, const Angle &angle) :
-    pos(pos), angle(angle) { }
+    pos(pos), angle(angle) {}
 
-SpawnPoint::SpawnPoint() { }
+SpawnPoint::SpawnPoint() {}
 
 /**
 * MapObstacle.
 */
 
-MapObstacle::MapObstacle() { }
+MapObstacle::MapObstacle() {}
 
 MapObstacle::MapObstacle(const sf::Vector2f &pos,
                          const std::vector<sf::Vector2f> &localVertices,
@@ -70,33 +70,29 @@ void MapObstacle::decompose() {
  * Map.
  */
 
-Map::Map(const MapName &name) :
+Map::Map(std::istream &stream) :
     dimensions(3200, 900),
-    loadSuccess(true),
-    name(name) {
-  if (name == "NULL_MAP") {
-    return;
-  }
-
-  auto file = std::ifstream(rootPath() + "maps/" + name + ".json");
-  if (file.good()) {
-    try {
-      cereal::JSONInputArchive ar(file);
-      serialize(ar);
-    } catch (cereal::Exception e) {
-      appLog("Failed to parse map '" + name + "', " + e.what(),
-             LogOrigin::Engine);
-      loadSuccess = false;
-      return;
-    }
-  } else {
-    appLog("Map '" + name + "' was not found.", LogOrigin::Engine);
+    loadSuccess(true) {
+  try {
+    cereal::JSONInputArchive ar(stream);
+    serialize(ar);
+  } catch (cereal::Exception e) {
+    appLog("Failed to parse map!", LogOrigin::Engine);
     loadSuccess = false;
     return;
   }
+
   for (auto &o : obstacles) {
     o.decompose();
   }
+
+  appLog("Loaded map.", LogOrigin::Engine);
+}
+
+Map::Map() :
+    dimensions(1600, 900),
+    loadSuccess(true) {
+  appLog("Loaded null map.", LogOrigin::Engine);
 }
 
 const sf::Vector2f &Map::getDimensions() const {
@@ -128,8 +124,8 @@ void Map::save(std::ostream &s) {
   serialize(ar);
 }
 
-optional<Map> Map::load(const MapName &name) {
-  Map map{name};
+optional<Map> Map::load(std::istream &stream) {
+  Map map{stream};
   if (map.loadSuccess) return map;
   else return {};
 }

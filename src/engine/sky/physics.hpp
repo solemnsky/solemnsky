@@ -21,7 +21,7 @@
 #pragma once
 #include <Box2D/Box2D.h>
 #include "util/types.hpp"
-#include "map.hpp"
+#include "engine/environment/map.hpp"
 
 namespace sky {
 

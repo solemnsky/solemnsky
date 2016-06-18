@@ -67,4 +67,6 @@ TEST_F(UtilTest, AllocTest) {
   EXPECT_EQ(smallestUnused(x), PID(3));
   x = {2, 1, 3};
   EXPECT_EQ(smallestUnused(x), PID(0));
+  x = {0, 1, 2, 3, 4};
+  EXPECT_EQ(smallestUnused(x), PID(5));
 }
