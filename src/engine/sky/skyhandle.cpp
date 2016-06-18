@@ -25,14 +25,11 @@ namespace sky {
  */
 
 SkyHandleInit::SkyHandleInit(
-    const MapName &mapName,
-    const SkyInit &initializer) :
-    initializer({mapName, initializer}) {}
+    const EnvironmentURL &environment) :
+    environment(environment) {}
 
 bool SkyHandleInit::verifyStructure() const {
-  if (initializer) {
-    return verifyValue(initializer->second);
-  } else return false;
+  return true;
 }
 
 /**
@@ -58,45 +55,26 @@ SkyHandleDelta SkyHandleDelta::respectAuthority(const Player &player) const {
  * SkyHandle.
  */
 
-void SkyHandle::startWith(
-    const EnvironmentURL &envUrl, const SkyInit &skyInit) {
-  environment.emplace(getEnvironmentFile(envUrl));
-}
-
-void SkyHandle::onPoll(const TimeDiff) {
-  // Check for environment loading.
-  if (environment) {
-    loadError = environment->loadingErrored();
-  }
-}
-
 SkyHandle::SkyHandle(Arena &arena, const SkyHandleInit &initializer) :
     Subsystem(arena),
     Networked(initializer),
-    skyIsNew(false),
-    loadError(false) {
-  if (const auto &init = initializer.initializer) {
-    startWith(init->first, init->second);
+    envIsNew(false) {
+  if (const auto &envUrl = initializer.environment) {
+    environment.emplace(envUrl);
   }
 }
 
 SkyHandleInit SkyHandle::captureInitializer() const {
   SkyHandleInit initializer;
-  if (sky) {
-    initializer.initializer.emplace(
-        environment->name,
-        sky->captureInitializer());
-  }
-  return initializer;
+  if (sky) return SkyHandleInit{environment->url};
+  else return SkyHandleInit{};
 }
 
 SkyHandleDelta SkyHandle::collectDelta() {
   SkyHandleDelta delta;
-  if (sky and skyIsNew) {
-    delta.initializer.emplace(
-        map->name,
-        sky->captureInitializer());
-    skyIsNew = false;
+  if (environment and envIsNew) {
+    return environment->url;
+    envIsNew = false;
   }
   if (sky) delta.delta = sky->collectDelta();
   return delta;

@@ -34,6 +34,7 @@ struct ClientPacket : public VerifyStructure {
   enum class Type {
     Pong, // respond to a server Ping
     ReqJoin, // request joining in the arena, part of the connection protocol
+    ReqSky, // request a Sky initializer, having loaded the Environment
 
     ReqPlayerDelta, // request a change to your player data
     ReqInput, // request an input into your engine Participation
