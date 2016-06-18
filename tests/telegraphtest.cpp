@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include "util/telegraph.hpp"
-#include "util/methods.hpp"
-#include "sky/protocol.hpp"
+#include "engine/protocol.hpp"
 
 /**
  * The Telegraph utility helps us send and receive data.
