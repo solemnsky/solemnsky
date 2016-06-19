@@ -34,8 +34,6 @@ namespace sky {
  */
 using EnvironmentURL = std::string;
 
-optional<std::string> getEnvironmentFile(const EnvironmentURL &url);
-
 /**
  * Holder and asynchronous loader for pieces of static information extracted
  * from a .sky file, used to instantiate / add to the functionality /
@@ -44,6 +42,9 @@ optional<std::string> getEnvironmentFile(const EnvironmentURL &url);
  */
 class Environment {
  private:
+  // Filepath.
+  const optional<std::string> filepath;
+
   // State.
   bool loadError;
   float loadProgress;
@@ -54,9 +55,14 @@ class Environment {
   std::thread workerThread;
 
   // Loading submethods.
-  void loadMap();
-  void loadGraphics();
-  void loadScripts();
+  void loadMap(const std::string &filepath);
+  void loadGraphics(const std::string &filepath);
+  void loadScripts(const std::string &filepath);
+
+  // Null loading submethods.
+  void loadNullMap();
+  void loadNullGraphics();
+  void loadNullScripts();
 
  public:
   Environment(const EnvironmentURL &url);

@@ -15,7 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "util/printer.hpp"
 #include "environment.hpp"
+#include <miniz.c>
 
 namespace sky {
 
@@ -30,34 +32,70 @@ optional<std::string> getEnvironmentFile(const EnvironmentURL &url) {
  * Environment.
  */
 
-void Environment::loadMap() {
-  if (url == "NULL") {
-    map.emplace(); // null map
-  } else {
-    assert(false); // not implemented
+void Environment::loadMap(const std::string &filepath) {
+
+  mz_zip_archive zip_archive;
+
+  const auto status =
+      mz_zip_reader_init_file(&zip_archive, filepath.c_str(), 0);
+  if (!status) {
+    appLog("mz_zip_reader_init_file() failed!");
+  }
+
+  // Get and print information about each file in the archive.
+  for (mz_uint i = 0;
+       i < mz_zip_reader_get_num_files(&zip_archive); ++i) {
+    mz_zip_archive_file_stat file_stat;
+
+    if (!mz_zip_reader_file_stat(&zip_archive, i, &file_stat)) {
+      appLog("mz_zip_reader_file_stat() failed!");
+      mz_zip_reader_end(&zip_archive);
+
+    }
+
   }
 }
 
-void Environment::loadGraphics() {
-  if (url == "NULl") {
-    graphics.emplace(); // null graphics
-  } else {
-    assert(false); // not implemented
-  }
+void Environment::loadGraphics(const std::string &filepath) {
+  assert(false); // Not implemented.
 }
 
-void Environment::loadScripts() {
-  if (url == "NULl") {
-    scripts.emplace(); // null scripts
-  } else {
-    assert(false); // not implemented
-  }
+void Environment::loadScripts(const std::string &filepath) {
+  assert(false); // Not implemented.
+}
+
+void Environment::loadNullMap() {
+  map.emplace();
+}
+
+void Environment::loadNullGraphics() {
+  graphics.emplace();
+}
+
+void Environment::loadNullScripts() {
+  scripts.emplace();
 }
 
 Environment::Environment(const EnvironmentURL &url) :
+    filepath(getEnvironmentFile(url)),
     loadProgress(0),
     url(url) {
-  workerThread = std::thread([&]() { loadMap(); });
+  if (url == "NULL") {
+    appLog("Creating null environment.", LogOrigin::Engine);
+    workerThread = std::thread([&]() { loadNullMap(); });
+  } else {
+    if (filepath) {
+      appLog("Creating environment " + inQuotes(url)
+                 + " with environment file " + filepath.get(),
+             LogOrigin::Engine);
+      workerThread = std::thread([&]() { loadMap(filepath.get()); });
+    } else {
+      loadError = true;
+      appLog("Creating environment in error state: could not find "
+                 "environment file for URL " + inQuotes(url));
+    }
+  }
+
 }
 
 Environment::Environment() :
@@ -70,9 +108,15 @@ Environment::~Environment() {
 void Environment::loadMore(
     const bool needGraphics, const bool needScripts) {
   if (loadingIdle()) {
+    assert(!loadError); // it's pointless to load when we have a load error
     workerThread = std::thread([&]() {
-      if (needGraphics) loadGraphics();
-      if (needScripts) loadScripts();
+      if (url == "NULL") {
+        if (needGraphics) loadNullGraphics();
+        if (needScripts) loadNullScripts();
+      } else {
+        if (needGraphics) loadGraphics(filepath.get());
+        if (needScripts) loadScripts(filepath.get());
+      }
     });
   }
 }
