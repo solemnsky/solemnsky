@@ -9,9 +9,10 @@ if (SANITIZE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -fsanitize=address")
 endif ()
 
-# we depend on Box2D, SFML, and enet, from submodules in thirdparty/
+# thirdparty submodule dependencies with integrated CMakeLists.txt
 add_subdirectory("thirdparty/Box2D/Box2D")
 add_subdirectory("thirdparty/enet")
+add_subdirectory("thirdparty/moor")
 add_subdirectory("thirdparty/SFML")
 
 # we also depend on boost and gthread from the host system
@@ -26,7 +27,7 @@ include_directories(
         thirdparty/SFML/include/
         thirdparty/polypartition/
         thirdparty/mingw-std-threads/
-        thirdparty/miniz/
+        thirdparty/moor/
         "${Boost_INCLUDE_DIRS}"
 )
 
@@ -104,6 +105,7 @@ target_link_libraries(solemnsky
         sfml-network
         sfml-graphics
         Box2D
+        moor
         ${Boost_LIBRARIES}
         )
 

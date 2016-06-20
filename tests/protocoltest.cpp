@@ -7,7 +7,7 @@
 
 /**
  * Our multiplayer protocol verbs encode all network communication, and are
- * serialized through cereal.
+ * marshalled / unmarshalled correctly through cereal.
  */
 class ProtocolTest: public testing::Test {
  public:
