@@ -13,9 +13,9 @@ However, it suffers some unfortunate limitations and in recent years has become
 
 This is solemnsky: the open-source competitive multiplayer 2D plane game.
 
-## Documentation and Status
+## solemnsky-info
 
-solemnsky is in active development. See the top-level `solemnsky-info` directory for an overview
+solemnsky is in active development. See our `solemnsky-info` repository for an overview
  into the technical design and current status of our continuing efforts to build the best
  "alti2ude" we can manage.
 
@@ -33,6 +33,32 @@ Some roles we'd particularly like to see filled:
  * Web designer.
 
 We're dedicated to pulling this project through; your contributions will be matched.
+
+## First Development Alpha Release
+
+As of the moment that I write this, I've sketched support for almost every fundamental feature that we'll need in the final product. In order to become more attractive to potential contributors and avoid any over-extension of our limited resources -- my time and our team's interest in the project -- it would be prudent to aim directly at a near-future goal: presenting a development alpha release.
+
+By the development alpha release, I plan to have a highly usable client/server system, with a concrete set of foundations for all that will come. It will be playable and presentable, and prepare the ground for the addition of scripting.
+
+A list of the foreseeable developments necessary to reach this point follows.
+
+* Client UI 
+  * Should leave a good first impression, and be intuitive and functional. 
+  * Should have useful settings, with support for persistence.
+* Environment (.sky) Format. 
+  * Should be constructible from altitude's maps with an automated tool. 
+  * Should be easy to add custom game graphics to.
+* Engine 
+  * Should be improved to allow the server's implementation of a basic TBD-like mode.
+* Engine Sandbox 
+  * Should allow experimenting with engine tuning values. 
+  * Should allow testing of environments with minimal overhead.
+* Multiplayer Client 
+  * Should display lobby, environment loading, game, and score screens.
+* Multiplayer Server 
+  * Should implement a basic TBD-like mode.
+* Multiplayer 
+  * Should employ packet buffering to compensate latency fluctuation in `SkyDelta` (dynamic game state) packets, on both client and server.
 
 ## Licensing and Credits.
 
