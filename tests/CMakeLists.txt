@@ -4,7 +4,6 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 add_executable(solemnsky_tests
         arenatest.cpp
         environmenttest.cpp
-        moortest.cpp
         protocoltest.cpp
         scoreboardtest.cpp
         skyhandletest.cpp
