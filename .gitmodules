@@ -19,6 +19,6 @@
 [submodule "thirdparty/mingw-std-threads"]
 	path = thirdparty/mingw-std-threads
 	url = https://github.com/meganz/mingw-std-threads
-[submodule "thirdparty/miniz"]
-	path = thirdparty/miniz
-	url = https://github.com/solemnsky/miniz
+[submodule "thirdparty/moor"]
+	path = thirdparty/moor
+	url = https://github.com/saboorian/moor
