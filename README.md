@@ -15,9 +15,7 @@ This is solemnsky: the open-source competitive multiplayer 2D plane game.
 
 ## solemnsky-info
 
-solemnsky is in active development. See our `solemnsky-info` repository for an overview
- into the technical design and current status of our continuing efforts to build the best
- "alti2ude" we can manage.
+solemnsky is in active development. See our [solemnsky-info](https://github.com/solemnsky/solemnsky-info) repository for an overview into the technical design and current status of our continuing efforts to build the best "alti2ude" we can manage.
 
 ## You Can Help!
 
