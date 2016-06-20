@@ -17,7 +17,6 @@
  */
 #include "util/printer.hpp"
 #include "environment.hpp"
-#include <miniz.c>
 
 namespace sky {
 
@@ -25,7 +24,7 @@ namespace sky {
  * EnvironmentURL.
  */
 optional<std::string> getEnvironmentFile(const EnvironmentURL &url) {
-  return optional<std::string>();
+  return {};
 }
 
 /**
@@ -33,27 +32,26 @@ optional<std::string> getEnvironmentFile(const EnvironmentURL &url) {
  */
 
 void Environment::loadMap(const std::string &filepath) {
-
-  mz_zip_archive zip_archive;
-
-  const auto status =
-      mz_zip_reader_init_file(&zip_archive, filepath.c_str(), 0);
-  if (!status) {
-    appLog("mz_zip_reader_init_file() failed!");
-  }
-
-  // Get and print information about each file in the archive.
-  for (mz_uint i = 0;
-       i < mz_zip_reader_get_num_files(&zip_archive); ++i) {
-    mz_zip_archive_file_stat file_stat;
-
-    if (!mz_zip_reader_file_stat(&zip_archive, i, &file_stat)) {
-      appLog("mz_zip_reader_file_stat() failed!");
-      mz_zip_reader_end(&zip_archive);
-
-    }
-
-  }
+  assert(false);
+//  mz_zip_archive zip_archive;
+//
+//  // open the archive.
+//  const auto status =
+//      mz_zip_reader_init_file(&zip_archive, filepath.c_str(), 0);
+//  if (!status) {
+//    applog("mz_zip_reader_init_file() failed!");
+//  }
+//
+//  for (mz_uint i = 0;
+//       i < mz_zip_reader_get_num_files(&zip_archive); ++i) {
+//    mz_zip_archive_file_stat file_stat;
+//
+//    if (!mz_zip_reader_file_stat(&zip_archive, i, &file_stat)) {
+//      applog("mz_zip_reader_file_stat() failed!");
+//      mz_zip_reader_end(&zip_archive);
+//      applog("found file: " + std::string(file_stat.m_filename));
+//    }
+//  }
 }
 
 void Environment::loadGraphics(const std::string &filepath) {
