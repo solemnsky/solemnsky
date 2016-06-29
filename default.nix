@@ -14,6 +14,7 @@ let
     libarchive
     freetype 
     libjpeg 
+    llvmPackages.clang
     openal 
     libsndfile 
     glew 
