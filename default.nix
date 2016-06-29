@@ -11,6 +11,7 @@ let
     xorg.xcbutilimage
     flac
     libvorbis
+    libarchive
     freetype 
     libjpeg 
     openal 

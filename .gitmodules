@@ -19,6 +19,3 @@
 [submodule "thirdparty/mingw-std-threads"]
 	path = thirdparty/mingw-std-threads
 	url = https://github.com/meganz/mingw-std-threads
-[submodule "thirdparty/tarpp"]
-	path = thirdparty/tarpp
-	url = http://github.com/magneticduck/tarpp
