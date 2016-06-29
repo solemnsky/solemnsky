@@ -4,7 +4,8 @@
 #include "util/printer.hpp"
 
 /**
- * libarchive does what I expect it to.
+ * Our small libarchive wrapper for reading .tar files 
+ * does what one might expect it to.
  */
 class ArchiveTest: public testing::Test {
  public:
@@ -13,35 +14,43 @@ class ArchiveTest: public testing::Test {
 };
 
 /**
- * Basic things work.
+ * LibArchive does what I expect it to.
  */
-TEST_F(ArchiveTest, CopyTest) {
-  archive *a;
+TEST_F(ArchiveTest, LibArchiveTest) {
+  archive *archive;
   archive_entry *entry;
-  char* buff = new char[1000];
-  int r;
+  char* buffer = new char[100];
 
-  a = archive_read_new();
-  archive_read_support_filter_all(a);
-  archive_read_support_format_all(a);
+  // Allocate the archive.
+  archive = archive_read_new();
+  archive_read_support_filter_all(archive);
+  archive_read_support_format_all(archive);
 
-  r = archive_read_open_filename(a, "tests/test.tar", 10240); 
-  ASSERT_EQ(r, ARCHIVE_OK);
+  // Open the archive.
+  ASSERT_EQ(
+      archive_read_open_filename(archive, "tests/test.tar", 10240), 
+      ARCHIVE_OK);
 
-  while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
+  // Loop over header entries.
+  while (archive_read_next_header(archive, &entry) == ARCHIVE_OK) {
     appLog("reading: " + std::string(archive_entry_pathname(entry)));
-    size_t read_len;
+    size_t bufferSize, readSize = 0;
+    bool isFirstLoop = true;
+
+    // Incrementally read data.
     for (;;) {
-      read_len = archive_read_data(a, buff, 1000);
-      if (read_len == 0) break;
-      if (buff) {
-        appLog("read data: " + std::string(buff, read_len));
-      } 
+      bufferSize = archive_read_data(archive, buffer, 100);
+      if (bufferSize == 0) break;
+      readSize += bufferSize;
+      if (isFirstLoop) {
+        appLog("contents of first buffer (literal): \n" + std::string(buffer, bufferSize));
+      }
+      isFirstLoop = false;
     }
-    appLog("done reading entry");
+    appLog("done! total read bytes: " + std::to_string(readSize));
   }
 
-  r = archive_read_free(a);
-  ASSERT_EQ(r, ARCHIVE_OK);
+  // Free the archive.
+  ASSERT_EQ(archive_read_free(archive), ARCHIVE_OK);
 }
 
