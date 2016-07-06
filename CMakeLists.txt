@@ -15,7 +15,7 @@ add_subdirectory("thirdparty/enet")
 add_subdirectory("thirdparty/SFML")
 
 # we also depend on boost and libarchive from the host system
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED filesystem)
 
 # so we can #include stuff
 include_directories(
@@ -106,7 +106,6 @@ target_link_libraries(solemnsky
         sfml-network
         sfml-graphics
         Box2D
-        ${LibArchive_LIBRARIES}
         ${Boost_LIBRARIES}
         )
 

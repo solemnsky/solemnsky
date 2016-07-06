@@ -32,13 +32,13 @@ Directory::Directory(std::string &&name,
   directories(directories) { }
 
 optional<Directory> Directory::open(const std::string &filepath) {
-
-  fs::path fullpath(filepath);
-  if (!fs::is_directory(fullpath)) {
-    return {};
-  } else {
-    return Directory("stub", {}, {});
-  }
+  // fs::path fullpath(filepath);
+  // if (!fs::is_directory(fullpath)) {
+  //   return {};
+  // } else {
+  //   return Directory("stub", {}, {});
+  // }
+  return {};
 }
 
 /**
