@@ -16,7 +16,6 @@ add_subdirectory("thirdparty/SFML")
 
 # we also depend on boost and libarchive from the host system
 find_package(Boost REQUIRED)
-find_package(LibArchive REQUIRED)
 
 # so we can #include stuff
 include_directories(
@@ -28,7 +27,6 @@ include_directories(
         thirdparty/polypartition/
         thirdparty/mingw-std-threads/
         ${Boost_INCLUDE_DIRS}
-        ${LibArchive_INCLUDE_DIRS}
 )
 
 ###### libsolemnsky, for common use by client and server
