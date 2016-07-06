@@ -82,6 +82,9 @@ add_library(solemnsky STATIC
         src/util/archive.cpp
         src/util/archive.hpp
 
+        src/util/filepath.cpp
+        src/util/filepath.hpp
+
         src/util/methods.cpp
         src/util/methods.hpp
 
@@ -98,7 +101,7 @@ add_library(solemnsky STATIC
 
         thirdparty/polypartition/polypartition.cpp
         thirdparty/polypartition/polypartition.hpp
-        src/util/filepath.cpp src/util/filepath.hpp)
+        )
 
 target_link_libraries(solemnsky
         enet
