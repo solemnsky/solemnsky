@@ -8,6 +8,7 @@ dist: trusty
 install: 
   - bash <(curl -sS https://nixos.org/nix/install)
   - source $HOME/.nix-profile/etc/profile.d/nix.sh
+  - nix-env -iA nixpkgs.p7zip
   - nix-build . -A deps
 
 script:
