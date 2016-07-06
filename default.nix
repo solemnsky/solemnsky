@@ -19,6 +19,7 @@ let
     libsndfile 
     glew 
     udev 
+    p7zip
     boost ]; 
 
 in

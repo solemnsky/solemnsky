@@ -17,6 +17,51 @@
  */
 #include "archive.hpp"
 
-ZipArchive::ZipArchive(const std::string &filename) {
+/**
+ * Directory.
+ */
 
+Directory::Directory(const std::string &directory) :
+  directory(directory),
+  name("test name"),
+  files({"file1", "file2"}),
+  directories({}) {}
+
+/**
+ * Archive.
+ */
+
+void Archive::doWork() {
+  this->done = true;
+  error.emplace("Not implemented");
 }
+
+Archive::Archive(const std::string &filepath) :
+  progress(0),
+  done(false),
+  filepath(filepath) {}
+
+void Archive::load() {
+  workerThread = std::thread([&]() { this->doWork(); });
+}
+
+void Archive::finishLoading() {
+  workerThread.join();
+}
+
+float Archive::getProgress() const {
+  return progress;
+}
+
+bool Archive::isDone() const {
+  return done;
+}
+
+optional<std::string> Archive::getError() const {
+  return error;
+}
+
+optional<Directory> Archive::getResult() const {
+  return result;
+}
+

@@ -16,16 +16,65 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Utility to access data from a zip archve.
+ * Utilities to open and access zip archives.
  */
 #pragma once
 #include "util/types.hpp"
+#include "util/threads.hpp"
 
-class ZipArchive {
+/**
+ * Handle to the directory of an opened archive, whose contents we can access.
+ */
+struct Directory {
  private:
+  Directory(const std::string &directory);
+
+  const std::string directory;
 
  public:
-   ZipArchive(const std::string &filename);
+  Directory() = delete;
+
+  // Name and contents of the directory.
+  const std::string name;
+  const std::vector<std::string> files; // Accessible filepaths.
+  const std::vector<Directory> directories;
+
 };
+
+/**
+ * Handle to the (asynchronous) process of opening an archive.
+ */
+class Archive {
+ private:
+
+  // Worker thread.
+  void doWork();
+  std::thread workerThread;
+
+  // Progress state.
+  float progress;
+  bool done;
+
+  // Result state.
+  optional<std::string> error;
+  optional<Directory> result;
+
+ public:
+  Archive(const std::string &filepath);
+
+  const std::string filepath;
+
+  // Loading proces.
+  void load();
+  void finishLoading();
+  float getProgress() const;
+
+  // When done, we present either a result or an error.
+  bool isDone() const;
+  optional<std::string> getError() const;
+  optional<Directory> getResult() const;
+
+};
+
 
 
