@@ -16,16 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "archive.hpp"
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
 
 /**
  * Directory.
  */
 
-Directory::Directory(const std::string &directory) :
-  directory(directory),
-  name("test name"),
-  files({"file1", "file2"}),
-  directories({}) {}
+Directory::Directory(std::string &&name,
+                     std::vector<std::string> &&files,
+                     std::vector<Directory> &&directories) :
+  name(name),
+  files(files),
+  directories(directories) { }
+
+optional<Directory> Directory::open(const std::string &filepath) {
+
+  fs::path fullpath(filepath);
+  if (!fs::is_directory(fullpath)) {
+    return {};
+  } else {
+    return Directory("stub", {}, {});
+  }
+}
 
 /**
  * Archive.

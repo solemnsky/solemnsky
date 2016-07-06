@@ -27,9 +27,9 @@
  */
 struct Directory {
  private:
-  Directory(const std::string &directory);
-
-  const std::string directory;
+  Directory(std::string &&name,
+            std::vector<std::string> &&files,
+            std::vector<Directory> &&directories);
 
  public:
   Directory() = delete;
@@ -39,10 +39,14 @@ struct Directory {
   const std::vector<std::string> files; // Accessible filepaths.
   const std::vector<Directory> directories;
 
+  // Opening a directory.
+  static optional<Directory> open(const std::string &filepath);
+
 };
 
 /**
  * Handle to the (asynchronous) process of opening an archive.
+ * Uses the 7z binary found in the system PATH to unzip.
  */
 class Archive {
  private:
@@ -75,6 +79,4 @@ class Archive {
   optional<Directory> getResult() const;
 
 };
-
-
 

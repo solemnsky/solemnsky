@@ -12,11 +12,19 @@ class ArchiveTest: public testing::Test {
 
 };
 
+TEST_F(ArchiveTest, DirectoryTest) {
+  // We can tell when a directory doesn't exist.
+  ASSERT_EQ((bool) Directory::open("tests/definitely-not-a-test"), false);
+
+  const auto dir = Directory::open("tests/test"); // The test directory.
+  ASSERT_EQ(bool(dir), true);
+}
+
 /**
  * Basic operations work.
  */
 TEST_F(ArchiveTest, BasicTest) {
-  Archive archive("test.zip");
+  Archive archive("test.zip"); // The test archive.
   ASSERT_EQ(archive.isDone(), false);
 
   archive.load();
