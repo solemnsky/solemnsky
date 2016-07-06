@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "archive.hpp"
+#include <cstdlib>
+#include "util/printer.hpp"
 
 /**
  * Directory.
@@ -60,14 +62,34 @@ optional<Directory> Directory::open(const fs::path &path) {
  */
 
 void Archive::doWork() {
+  const auto filepath = this->archivePath.string();
+  appLog("Unzipping archive: " + filepath, LogOrigin::App);
+
+  if (!fs::exists(this->archivePath)) {
+    appLog("Archive filepath does not exist!");
+    this->done = true;
+    return;
+  }
+
+  if (!fs::is_regular_file(this->archivePath)) {
+    appLog("Archive filepath does not point to a regular file!");
+    this->done = true;
+    return;
+  }
+
+  appLog("Invoking 7zip...");
+
+  // begin filthy hacks //
+//  system(("7z x " + filepath).c_str());
+  // end filthy hacks //
+
+  this->error.emplace("haven't implemented this, sorry");
   this->done = true;
-  error.emplace("Not implemented");
 }
 
-Archive::Archive(const std::string &filepath) :
-    progress(0),
+Archive::Archive(const fs::path &archivePath) :
     done(false),
-    filepath(filepath) {}
+    archivePath(archivePath) {}
 
 void Archive::load() {
   workerThread = std::thread([&]() { this->doWork(); });
@@ -75,10 +97,6 @@ void Archive::load() {
 
 void Archive::finishLoading() {
   workerThread.join();
-}
-
-float Archive::getProgress() const {
-  return progress;
 }
 
 bool Archive::isDone() const {

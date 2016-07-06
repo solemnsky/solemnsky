@@ -43,23 +43,33 @@ TEST_F(ArchiveTest, DirectoryTest) {
 /**
  * Archive lets us load archives asynchronously and get their contents as a Directory.
  */
-TEST_F(ArchiveTest, BasicTest) {
-//  Archive archive("test.zip"); // The test archive.
-//  ASSERT_EQ(archive.isDone(), false);
-//
-//  archive.load();
-//  archive.finishLoading(); // blocking
-//
-//  ASSERT_EQ(archive.isDone(), true);
-//  ASSERT_EQ((bool) archive.getError(), false);
-//  ASSERT_EQ((bool) archive.getResult(), true);
-//
-//  const auto dir = *archive.getResult();
-//  ASSERT_EQ(dir.name, "test.zip");
-//  ASSERT_EQ(dir.files.siz
-//  ASSERT_EQ(dir.directories.size(), size_t(1));
-//
-//  const auto subdir = dir.directories[0];
-//  ASSERT_EQ(subdir.name, "subdirectory");
+TEST_F(ArchiveTest, ExtractTest) {
+  {
+    // When we open the archive, nothing happens.
+    Archive archive("not-a-real-path.zip"); // The test archive.
+    ASSERT_EQ(archive.isDone(), false);
+
+    // Then we load the archive, and join the worker thread...
+    archive.load();
+    archive.finishLoading(); // blocking call!
+
+    // And things are loaded.
+    ASSERT_EQ(archive.isDone(), true);
+
+    // We get an error instead of a result because the path that we specified doesn't exist.
+    ASSERT_EQ((bool) archive.getError(), true);
+    ASSERT_EQ((bool) archive.getResult(), false);
+  }
+
+  {
+    // Let's try that again.
+    Archive archive("../../tests/test.zip");
+    archive.load();
+    archive.finishLoading();
+
+    // Now it works.
+    ASSERT_EQ((bool) archive.getError(), false);
+    ASSERT_EQ((bool) archive.getResult(), true);
+  }
 }
 
