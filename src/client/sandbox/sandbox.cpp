@@ -31,6 +31,7 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
   std::stringstream tmp(input);
   std::vector<std::string> command{std::istream_iterator<std::string>{tmp},
                                    std::istream_iterator<std::string>{}};
+  if (command.empty()) return {};
 
   if (command[0] == "start" and command.size() == 2) {
     SandboxCommand parsed{Type::Start};
