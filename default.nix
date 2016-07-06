@@ -18,6 +18,7 @@ let
     openal 
     libsndfile 
     glew 
+    gdb
     udev 
     p7zip
     boost ]; 
