@@ -66,13 +66,13 @@ void Archive::doWork() {
   appLog("Unzipping archive: " + filepath, LogOrigin::App);
 
   if (!fs::exists(this->archivePath)) {
-    appLog("Archive filepath does not exist!");
+    appLog("Archive filepath does not exist!", LogOrigin::Error);
     this->done = true;
     return;
   }
 
   if (!fs::is_regular_file(this->archivePath)) {
-    appLog("Archive filepath does not point to a regular file!");
+    appLog("Archive filepath does not point to a regular file!", LogOrigin::Error);
     this->done = true;
     return;
   }
@@ -83,7 +83,6 @@ void Archive::doWork() {
 //  system(("7z x " + filepath).c_str());
   // end filthy hacks //
 
-  this->error.emplace("haven't implemented this, sorry");
   this->done = true;
 }
 
@@ -101,10 +100,6 @@ void Archive::finishLoading() {
 
 bool Archive::isDone() const {
   return done;
-}
-
-optional<std::string> Archive::getError() const {
-  return error;
 }
 
 optional<Directory> Archive::getResult() const {

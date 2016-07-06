@@ -61,7 +61,6 @@ class Archive {
 
   // Result state.
   bool done;
-  optional<std::string> error;
   optional<Directory> result;
 
  public:
@@ -75,7 +74,6 @@ class Archive {
 
   // When done, we present either a result or an error.
   bool isDone() const;
-  optional<std::string> getError() const;
   optional<Directory> getResult() const;
 
 };
