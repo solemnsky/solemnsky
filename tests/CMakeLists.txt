@@ -13,7 +13,7 @@ add_executable(solemnsky_tests
         telegraphtest.cpp
         threadtest.cpp
         utiltest.cpp
-        )
+        ../src/util/archive.cpp ../src/util/archive.hpp)
 target_link_libraries(solemnsky_tests
         gtest
         gtest_main
