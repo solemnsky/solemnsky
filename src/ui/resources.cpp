@@ -20,6 +20,7 @@
 #include "resources.hpp"
 #include "util/methods.hpp"
 #include "util/printer.hpp"
+#include "util/filepath.hpp"
 
 namespace ui {
 
@@ -126,7 +127,7 @@ optional<std::string> ResourceLoader::loadTexture(
     const TextureID id,
     const TextureMetadata &metadata) {
   sf::Texture texture;
-  if (texture.loadFromFile(pathFromResourceUrl(metadata.url))) {
+  if (texture.loadFromFile(getMediaPath(metadata.url).string())) {
     textures.emplace(id, std::move(texture));
     return {};
   } else {
@@ -139,7 +140,7 @@ optional<std::string> ResourceLoader::loadFont(
     const FontID id,
     const FontMetadata &metadata) {
   sf::Font font;
-  if (font.loadFromFile(pathFromResourceUrl(metadata.url))) {
+  if (font.loadFromFile(getMediaPath(metadata.url).string())) {
     fonts.emplace(id, std::move(font));
     return {};
   } else {
