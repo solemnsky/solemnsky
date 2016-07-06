@@ -48,8 +48,10 @@ void Environment::loadNullScripts() {
   scripts.emplace();
 }
 
+// TODO: complete this
+
 Environment::Environment(const EnvironmentURL &url) :
-    fileArchive(getEnvironmentPath(url)),
+    fileArchive(fs::path("not-a-path")),
     loadProgress(0),
     url(url) {
   if (url == "NULL") {
@@ -86,8 +88,8 @@ void Environment::loadMore(
         if (needGraphics) loadNullGraphics();
         if (needScripts) loadNullScripts();
       } else {
-        if (needGraphics) loadGraphics(filepath.get());
-        if (needScripts) loadScripts(filepath.get());
+//        if (needGraphics) loadGraphics(filepath.get());
+//        if (needScripts) loadScripts(filepath.get());
       }
     });
   }
