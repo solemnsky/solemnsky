@@ -24,6 +24,7 @@
 #include "envscripts.hpp"
 #include "map.hpp"
 #include "util/threads.hpp"
+#include "util/archive.hpp"
 
 namespace sky {
 
@@ -42,8 +43,8 @@ using EnvironmentURL = std::string;
  */
 class Environment {
  private:
-  // Filepath.
-  const optional<std::string> filepath;
+  // Associated archive.
+  Archive fileArchive;
 
   // State.
   bool loadError;
