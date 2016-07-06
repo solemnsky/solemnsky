@@ -59,23 +59,19 @@ class Archive {
   void doWork();
   std::thread workerThread;
 
-  // Progress state.
-  float progress;
-  bool done;
-
   // Result state.
+  bool done;
   optional<std::string> error;
   optional<Directory> result;
 
  public:
-  Archive(const std::string &filepath);
+  Archive(const fs::path &archivePath);
 
-  const std::string filepath;
+  const fs::path archivePath;
 
   // Loading proces.
   void load();
   void finishLoading();
-  float getProgress() const;
 
   // When done, we present either a result or an error.
   bool isDone() const;
