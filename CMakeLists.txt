@@ -79,6 +79,9 @@ add_library(solemnsky STATIC
         src/engine/sky/skysettings.cpp
         src/engine/sky/skysettings.hpp
 
+        src/util/archive.cpp
+        src/util/archive.hpp
+
         src/util/methods.cpp
         src/util/methods.hpp
 
