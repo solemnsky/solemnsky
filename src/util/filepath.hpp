@@ -16,23 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Utilities for client executables, depending on SFML window and graphics
- * modules.
+ * Canonical filepath utilities. Includes the boost filesystem library.
  */
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include "util/types.hpp" 
+#include <boost/filesystem.hpp>
+
+// alias to boost filesystem library
+namespace fs = boost::filesystem;
+
+// MEMO: the output of these functions can depend on the release platform.
 
 /**
- * Colors.
+ * Access a path relative to the media directory.
  */
-
-sf::Color mixColors(
-    const sf::Color color1, const sf::Color color2, const float degree);
+fs::path getMediaPath(const std::string &path);
 
 /**
- * Keyboards.
+ * Access a path relative to the environment directory.
  */
+fs::path getEnvironmentPath(const std::string &path);
 
-std::string printKey(const sf::Keyboard::Key key);
+/**
+ * Access a path relative to the test file directory.
+ */
+fs::path getTestPath(const std::string &path);

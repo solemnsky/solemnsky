@@ -15,24 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * Utilities for client executables, depending on SFML window and graphics
- * modules.
- */
-#pragma once
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include "util/types.hpp" 
+#include "filepath.hpp"
 
-/**
- * Colors.
- */
+fs::path getTopPath(const std::string &path) {
+  return fs::path("../../" + path);
+}
 
-sf::Color mixColors(
-    const sf::Color color1, const sf::Color color2, const float degree);
+fs::path getMediaPath(const std::string &path) {
+  return fs::path("../../media/" + path);
+}
 
-/**
- * Keyboards.
- */
-
-std::string printKey(const sf::Keyboard::Key key);
+fs::path getTestPath(const std::string &path) {
+  return fs::path("../../tests/" + path);
+}
