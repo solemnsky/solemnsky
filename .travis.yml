@@ -12,5 +12,6 @@ install:
 
 script:
   - nix-build . -A default
-  - ./result/bin/solemnsky_tests
+  - mkdir -p dist/release/ ; cd dist/release/
+  - ../../result/bin/solemnsky_tests
 
