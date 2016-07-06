@@ -21,14 +21,18 @@
 #pragma once
 #include "util/types.hpp"
 #include "util/threads.hpp"
+#include <boost/filesystem.hpp>
+
+// alias to boost filesystem library
+namespace fs = boost::filesystem;
 
 /**
  * Handle to the directory of an opened archive, whose contents we can access.
  */
 struct Directory {
  private:
-  Directory(std::string &&name,
-            std::vector<std::string> &&files,
+  Directory(const std::string &name,
+            std::vector<fs::path> &&files,
             std::vector<Directory> &&directories);
 
  public:
@@ -36,11 +40,11 @@ struct Directory {
 
   // Name and contents of the directory.
   const std::string name;
-  const std::vector<std::string> files; // Accessible filepaths.
+  const std::vector<fs::path> files;
   const std::vector<Directory> directories;
 
   // Opening a directory.
-  static optional<Directory> open(const std::string &filepath);
+  static optional<Directory> open(const fs::path &filepath);
 
 };
 

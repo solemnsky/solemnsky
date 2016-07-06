@@ -16,27 +16,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "archive.hpp"
-#include <boost/filesystem.hpp>
-
-namespace fs = boost::filesystem;
 
 /**
  * Directory.
  */
 
-Directory::Directory(std::string &&name,
-                     std::vector<std::string> &&files,
+Directory::Directory(const std::string &name,
+                     std::vector<fs::path> &&files,
                      std::vector<Directory> &&directories) :
-  name(name),
-  files(files),
-  directories(directories) { }
+    name(name),
+    files(files),
+    directories(directories) {}
 
-optional<Directory> Directory::open(const std::string &filepath) {
-  fs::path fullpath(filepath);
-  if (!fs::is_directory(fullpath)) {
+optional<Directory> Directory::open(const fs::path &path) {
+  if (!fs::exists(path)) return {};
+
+  if (!fs::is_directory(path)) {
     return {};
   } else {
-    return Directory("stub", {}, {});
+    std::vector<fs::path> files;
+    std::vector<Directory> directories;
+
+    fs::directory_iterator end;
+    for (fs::directory_iterator itr(path);
+         itr != end;
+         ++itr) {
+      const auto childPath = itr->path();
+      if (const auto dir = Directory::open(childPath)) {
+        directories.push_back(*dir);
+      } else {
+        files.push_back(childPath);
+      }
+    }
+
+    return Directory(path.filename().string(),
+                     std::move(files),
+                     std::move(directories));
   }
 }
 
@@ -50,9 +65,9 @@ void Archive::doWork() {
 }
 
 Archive::Archive(const std::string &filepath) :
-  progress(0),
-  done(false),
-  filepath(filepath) {}
+    progress(0),
+    done(false),
+    filepath(filepath) {}
 
 void Archive::load() {
   workerThread = std::thread([&]() { this->doWork(); });
