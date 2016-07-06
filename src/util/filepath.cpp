@@ -18,13 +18,15 @@
 #include "filepath.hpp"
 
 fs::path getTopPath(const std::string &path) {
-  return fs::path("../../" + path);
+  fs::path top = fs::system_complete("../../");
+  top += fs::path(path);
+  return top;
 }
 
 fs::path getMediaPath(const std::string &path) {
-  return fs::path("../../media/" + path);
+  return getTopPath("media/" + path);
 }
 
 fs::path getTestPath(const std::string &path) {
-  return fs::path("../../tests/" + path);
+  return getTopPath("tests/" + path);
 }

@@ -20,6 +20,7 @@
  */
 #pragma once
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/path.hpp>
 
 // alias to boost filesystem library
 namespace fs = boost::filesystem;

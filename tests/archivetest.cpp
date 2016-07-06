@@ -69,7 +69,10 @@ TEST_F(ArchiveTest, ExtractTest) {
     archive.finishLoading();
 
     // Now it works.
-//    ASSERT_EQ((bool) archive.getResult(), true);
+   ASSERT_EQ((bool) archive.getResult(), true);
+   const Directory &dir = *archive.getResult();
+   ASSERT_EQ(dir.name, "test.zip");
+   ASSERT_EQ(dir.files.size(), size_t(2));
   }
 }
 
