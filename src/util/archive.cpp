@@ -17,6 +17,7 @@
  */
 #include "archive.hpp"
 #include <cstdlib>
+#include <unistd.h>
 #include "util/printer.hpp"
 
 /**
@@ -79,16 +80,25 @@ void Archive::doWork() {
 
   appLog("Invoking 7zip...");
 
-  // begin filthy hacks //
-//  system(("7z x " + filepath).c_str());
-  // end filthy hacks //
+  fs::path workingDir(".unzip-tmp/" + this->archivePath.filename().string());
+  fs::remove_all(workingDir);
+  fs::create_directories(workingDir);
+
+  // this is the alternative to getting libarchive working on all our
+  // build platforms ... the choice was obvious
+  chdir(workingDir.string().c_str());
+  system(("7z x " + archivePath.string()).c_str());
+  chdir("../..");
+
+  if (const auto opened = Directory::open(workingDir))
+    this->result.emplace(*opened);
 
   this->done = true;
 }
 
 Archive::Archive(const fs::path &archivePath) :
     done(false),
-    archivePath(archivePath) {}
+    archivePath(fs::system_complete(archivePath)) {}
 
 void Archive::load() {
   workerThread = std::thread([&]() { this->doWork(); });

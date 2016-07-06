@@ -34,6 +34,7 @@ struct Directory {
 
  public:
   Directory() = delete;
+  Directory(const Directory &) = default;
 
   // Name and contents of the directory.
   const std::string name;
