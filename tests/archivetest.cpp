@@ -17,10 +17,10 @@ class ArchiveTest : public testing::Test {
  */
 TEST_F(ArchiveTest, DirectoryTest) {
   // We can tell when a directory doesn't exist.
-  ASSERT_EQ((bool) Directory::open("../../tests/definitely-not-a-test"), false);
+  ASSERT_EQ((bool) Directory::open(getTestPath("dir-that-does-not-exist")), false);
 
   // We can tell when a directory exists.
-  const auto dir = Directory::open("../../tests/test"); // The test directory.
+  const auto dir = Directory::open(getTestPath("test")); // The test directory.
   ASSERT_EQ(bool(dir), true);
 
   // We get its name.
@@ -50,7 +50,7 @@ TEST_F(ArchiveTest, DirectoryTest) {
 TEST_F(ArchiveTest, ExtractTest) {
   {
     // When we open the archive, nothing happens.
-    Archive archive("not-a-real-path.zip"); // The test archive.
+    Archive archive(getTestPath("archive-that-does-not-exist.zip")); // The test archive.
     ASSERT_EQ(archive.isDone(), false);
 
     // Then we load the archive, and join the worker thread...
@@ -66,7 +66,7 @@ TEST_F(ArchiveTest, ExtractTest) {
 
   {
     // Let's try that again.
-    Archive archive("../../tests/test.zip");
+    Archive archive(getTestPath("test.zip"));
     archive.load();
     archive.finishLoading();
 

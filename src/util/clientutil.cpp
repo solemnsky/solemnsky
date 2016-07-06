@@ -20,8 +20,8 @@
 inline sf::Uint8 mix(const sf::Uint8 x1,
                      const sf::Uint8 x2,
                      const float degree) {
-  const float _x1(x1), _x2(x2);
-  return (sf::Uint8) (std::round(degree * (_x2 - _x1)) + _x1);
+  const float x1f(x1), x2f(x2);
+  return (sf::Uint8) (std::round(degree * (x2f - x1f)) + x1f);
 }
 
 sf::Color mixColors(const sf::Color color1, const sf::Color color2,
@@ -241,10 +241,3 @@ std::string printKey(const sf::Keyboard::Key key) {
       return "<unknown key>";
   }
 }
-std::string pathFromResourceUrl(const std::string &url) {
-  return "../../media/" + url;
-}
-
-
-
-

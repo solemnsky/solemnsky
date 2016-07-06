@@ -21,10 +21,7 @@
 #pragma once
 #include "util/types.hpp"
 #include "util/threads.hpp"
-#include <boost/filesystem.hpp>
-
-// alias to boost filesystem library
-namespace fs = boost::filesystem;
+#include "util/filepath.hpp"
 
 /**
  * Handle to the directory of an opened archive, whose contents we can access.
