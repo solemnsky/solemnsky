@@ -32,6 +32,9 @@ bool SkyInit::verifyStructure() const {
  * SkyDelta.
  */
 
+SkyDelta::SkyDelta() :
+    settings(), participations() {}
+
 bool SkyDelta::verifyStructure() const {
   return verifyMap(participations) and verifyOptionals(settings);
 }

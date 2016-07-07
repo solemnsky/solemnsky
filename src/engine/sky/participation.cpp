@@ -203,17 +203,18 @@ void Plane::resetPrimary() {
  * ParticipationInit.
  */
 
-ParticipationInit::ParticipationInit() { }
+ParticipationInit::ParticipationInit() {}
 
 ParticipationInit::ParticipationInit(
     const PlaneControls &controls,
     const PlaneTuning &tuning,
     const PlaneState &state) :
     spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)),
-    controls(controls) { }
+    controls(controls) {}
 
 ParticipationInit::ParticipationInit(
-    const PlaneControls &controls) : controls(controls) { }
+    const PlaneControls &controls) :
+    spawn(), controls(controls), props() {}
 
 /**
  * ParticipationDelta.

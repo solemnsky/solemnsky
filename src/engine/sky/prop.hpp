@@ -63,7 +63,7 @@ class Prop: public Networked<PropInit, PropDelta> {
  private:
   // State.
   Physics &physics;
-  b2Body *const body;
+  b2Body *const body; // sorry, we need this r beucabecause box2d
   PhysicalState physical;
   float lifetime;
   bool destroyable;
@@ -81,7 +81,7 @@ class Prop: public Networked<PropInit, PropDelta> {
   Prop(const PID associatedPlayer,
        Physics &physics,
        const PropInit &initializer);
-  ~Prop();
+  virtual ~Prop();
 
   const PID associatedPlayer;
 

@@ -28,16 +28,17 @@ namespace sky {
  * SpawnPoint.
  */
 
-sky::SpawnPoint::SpawnPoint(const sf::Vector2f &pos, const Angle &angle) :
-    pos(pos), angle(angle) {}
+sky::SpawnPoint::SpawnPoint(const sf::Vector2f &pos, const Angle &angle, const Team team) :
+    pos(pos), angle(angle), team(team) {}
 
-SpawnPoint::SpawnPoint() {}
+SpawnPoint::SpawnPoint() : pos(), angle(0), team(0) {}
 
 /**
 * MapObstacle.
 */
 
-MapObstacle::MapObstacle() {}
+MapObstacle::MapObstacle() :
+    pos(), localVertices(), decomposed(), damage(0) {}
 
 MapObstacle::MapObstacle(const sf::Vector2f &pos,
                          const std::vector<sf::Vector2f> &localVertices,
@@ -72,6 +73,9 @@ void MapObstacle::decompose() {
 
 Map::Map(std::istream &stream) :
     dimensions(3200, 900),
+    obstacles(),
+    spawnPoints(),
+    items(),
     loadSuccess(true) {
   try {
     cereal::JSONInputArchive ar(stream);
@@ -111,11 +115,11 @@ const std::vector<SpawnPoint> &Map::getSpawnPoints() const {
   return spawnPoints;
 }
 
-const SpawnPoint Map::pickSpawnPoint(const Team team) const {
+const SpawnPoint Map::pickSpawnPoint(const Team) const {
   if (spawnPoints.size() > 0) {
     return spawnPoints[0];
   } else {
-    return SpawnPoint({200, 200}, 0); // default
+    return SpawnPoint({200, 200}, 0, 0); // default
   }
 }
 
