@@ -80,7 +80,7 @@ Map::Map(std::istream &stream) :
   try {
     cereal::JSONInputArchive ar(stream);
     serialize(ar);
-  } catch (cereal::Exception e) {
+  } catch (const cereal::Exception &e) {
     appLog("Failed to parse map!", LogOrigin::Engine);
     loadSuccess = false;
     return;

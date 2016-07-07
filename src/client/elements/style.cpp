@@ -37,7 +37,9 @@ Style::Base::Base() :
 
     heatRate(10),
 
+    smallFontSize(20),
     normalFontSize(30),
+    largeFontSize(40),
 
     pageMargins(50),
     pageBgColor{136, 156, 255},

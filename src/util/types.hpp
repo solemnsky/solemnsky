@@ -243,7 +243,7 @@ struct Cyclic {
 };
 
 bool cyclicApproach(Cyclic &x, const float target, const float amount);
-float cyclicDistance(const Cyclic x, const float y);
+float cyclicDistance(const Cyclic &x, const float y);
 
 /**
  * The linear movement of a one-dimensional variable at a unit or null rate.

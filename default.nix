@@ -40,5 +40,4 @@ in
       name = "solemnsky";
       src = ./.;
     };
-
 }

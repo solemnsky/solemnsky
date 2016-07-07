@@ -60,6 +60,7 @@ class TextLog: public Control, public Printer {
           const float maxHeightCollapsed,
           const float maxLifetime,
           const float maxLifetimeCollapsed,
+          const float fadeStart,
           const int fontSize);
   };
 

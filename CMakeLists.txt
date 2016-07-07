@@ -2,7 +2,7 @@ project(solemnsky)
 
 # tool / compiler versions
 cmake_minimum_required(VERSION 3.2)
-set(CAREFUL_CXX_FLAGS "-Wall -Wextra -Wpedantic -Weffc++ -Wno-unused-parameter -Werror")
+set(CAREFUL_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wno-unused-parameter -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 if (SANITIZE)
@@ -28,7 +28,9 @@ include_directories(SYSTEM
         thirdparty/SFML/include/
         thirdparty/polypartition/
         thirdparty/mingw-std-threads/
-        ${Boost_INCLUDE_DIRS})
+        thirdparty/spdlog/include/
+        ${Boost_INCLUDE_DIRS}
+)
 
 ###### libsolemnsky, for common use by client and server
 add_library(solemnsky STATIC
