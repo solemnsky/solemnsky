@@ -44,7 +44,8 @@ TEST_F(EnvironmentTest, ErrorTest) {
  * We can load environments from files.
  */
 TEST_F(EnvironmentTest, BasicTest) {
-  sky::Environment environment("demo"); // we should have a demo.sky something
+  // we should have a demo.sky in the environment directory
+  sky::Environment environment("demo");
   ASSERT_FALSE(environment.loadingIdle()); // we should be doing work!
 
   environment.waitForLoading();
