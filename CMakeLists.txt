@@ -2,7 +2,7 @@ project(solemnsky)
 
 # tool / compiler versions
 cmake_minimum_required(VERSION 3.2)
-set(CAREFUL_CXX_FLAGS "-Wall -Wextra -Wpedantic -Weffc++ -Wconversion -Werror")
+set(CAREFUL_CXX_FLAGS "-Wall -Wextra -Wpedantic -Weffc++ -Wconversion")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 if (SANITIZE)
@@ -129,6 +129,7 @@ add_executable(solemnsky_server
 target_link_libraries(solemnsky_server
         solemnsky
         )
+set_target_properties(solemnsky_server PROPERTIES COMPILE_FLAGS "${CAREFUL_CXX_FLAGS}")
 
 ###### solemnsky_client
 add_executable(solemnsky_client
@@ -221,6 +222,7 @@ target_link_libraries(solemnsky_client
         solemnsky
         sfml-window
         )
+set_target_properties(solemnsky_client PROPERTIES COMPILE_FLAGS "${CAREFUL_CXX_FLAGS}")
 
 ###### unit tests
 add_subdirectory(tests/)
