@@ -74,7 +74,7 @@ struct ScoreboardInit {
  * Delta for Scoreboard.
  */
 struct ScoreboardDelta {
-  ScoreboardDelta() = default;
+  ScoreboardDelta();
 
   template<typename Archive>
   void serialize(Archive &ar) {

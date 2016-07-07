@@ -30,6 +30,8 @@
  */
 class Printer {
  public:
+  virtual ~Printer() { }
+
   virtual void print(const std::string &str) = 0;
   virtual void setColor(const unsigned char r,
                         const unsigned char g,

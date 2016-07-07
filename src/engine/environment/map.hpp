@@ -34,7 +34,8 @@ namespace sky {
 struct SpawnPoint {
   SpawnPoint();
   SpawnPoint(const sf::Vector2f &pos,
-             const Angle &angle);
+             const Angle &angle,
+             const Team team);
   sf::Vector2f pos;
   Angle angle;
   Team team;
@@ -108,6 +109,7 @@ struct Map {
  public:
   Map(); // null map
   Map(const Map &map) = default;
+  Map(Map &&map) = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {

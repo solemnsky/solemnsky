@@ -25,7 +25,7 @@ namespace sky {
 
 ScoreRecord::ScoreRecord(const ScoreRecordInit &init) :
     Networked(init),
-    values(init) { }
+    values(init) {}
 
 void ScoreRecord::applyDelta(const ScoreRecordDelta &delta) {
   values = delta;
@@ -59,11 +59,14 @@ void ScoreRecord::setValueAt(const size_t index, const int value) {
 
 ScoreboardInit::ScoreboardInit(
     const std::vector<std::string> &fields) :
-    fields(fields) { }
+    fields(fields) {}
 
 /**
  * ScoreboardDelta.
  */
+
+ScoreboardDelta::ScoreboardDelta() :
+    deltas() {}
 
 /**
  * Scoreboard.
@@ -74,7 +77,6 @@ void Scoreboard::registerPlayerWith(Player &player,
   records.emplace(player.pid, initializer);
   setPlayerData(player, records.at(player.pid));
 }
-
 
 void Scoreboard::registerPlayer(Player &player) {
   registerPlayerWith(player, {});

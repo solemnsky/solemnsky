@@ -98,7 +98,8 @@ void appErrorRuntime(const std::string &contents) {
  */
 
 ConsolePrinter::ConsolePrinter(const LogOrigin origin) :
-    origin(origin) {}
+    origin(origin),
+    currentLine() {}
 
 ConsolePrinter::~ConsolePrinter() {
   breakLine();
@@ -108,9 +109,9 @@ void ConsolePrinter::print(const std::string &str) {
   currentLine += str;
 }
 
-void ConsolePrinter::setColor(const unsigned char r,
-                              const unsigned char g,
-                              const unsigned char b) {
+void ConsolePrinter::setColor(const unsigned char,
+                              const unsigned char,
+                              const unsigned char) {
   // TODO: console colors
 }
 

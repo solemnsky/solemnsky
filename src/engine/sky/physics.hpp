@@ -59,6 +59,8 @@ class PhysicsListener {
   friend class PhysicsDispatcher;
   virtual void onBeginContact(const BodyTag &body1, const BodyTag &body2) = 0;
   virtual void onEndContact(const BodyTag &body1, const BodyTag &body2) = 0;
+  virtual ~PhysicsListener() {}
+
 };
 
 /**
