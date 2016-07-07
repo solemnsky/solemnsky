@@ -14,7 +14,7 @@
 #include <chrono>
 #include <cstdio>
 #include <ctime>
-#include <mutex>
+#include "util/threads.hpp"
 #include <string>
 
 namespace spdlog

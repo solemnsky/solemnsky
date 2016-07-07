@@ -10,7 +10,7 @@
 
 #include <cstdio>
 #include <memory>
-#include <mutex>
+#include "util/threads.hpp"
 
 namespace spdlog
 {
