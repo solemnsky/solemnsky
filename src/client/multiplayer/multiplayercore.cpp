@@ -332,12 +332,10 @@ void MultiplayerCore::requestTeamChange(const sky::Team team) {
  */
 
 MultiplayerView::MultiplayerView(
-    sky::ArenaMode target,
     ClientShared &shared,
-    MultiplayerCore &mShared) :
+    MultiplayerCore &core) :
     ClientComponent(shared),
     ui::Control(shared.references),
-    core(mShared),
-    conn(mShared.conn.get()),
-    target(target) {}
+    core(core),
+    conn(core.conn.get()) {}
 

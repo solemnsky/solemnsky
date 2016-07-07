@@ -16,34 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Component of the multiplayer client corresponding to ArenaMode::Game.
+ * Loading screen to display while the Environment loads its components.
  */
 #pragma once
 #include "multiplayercore.hpp"
-#include "client/skyrender.hpp"
-#include "ui/widgets.hpp"
 
-/**
- * In the game, the rendered representation of the game is the central
- * point of the screen; peripheries include a chat / message interface, and a
- * score screen you can call up with tab.
- */
-class MultiplayerGame: public MultiplayerView {
+class MultiplayerLoader : public MultiplayerView {
  private:
-  ui::TextEntry chatInput;
-  bool scoreboardFocused;
-  sky::SkyRender skyRender;
-  const sky::Participation &participation;
-
-  // Helper subroutines.
-  void doClientAction(const ClientAction action, const bool state);
-  void printScores(ui::TextFrame &tf, const sky::Team team);
-  void printSpectators(ui::TextFrame &tf);
-  void renderScoreboard(ui::Frame &f);
-
  public:
-  MultiplayerGame(ClientShared &shared, MultiplayerCore &core);
+  MultiplayerLoader(ClientShared &shared, MultiplayerCore &core);
 
+  // Control impl.
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
@@ -51,4 +34,3 @@ class MultiplayerGame: public MultiplayerView {
   void signalClear() override;
 
 };
-
