@@ -64,7 +64,7 @@ TEST_F(ArchiveTest, ExtractTest) {
     archive.load(); // blocking call
 
     // And things are loaded.
-    ASSERT_EQ(archive.isDone(), true);
+    ASSERT_TRUE(archive.isDone());
 
     // We get an error instead of a result because the path that we specified doesn't exist.
     ASSERT_EQ((bool) archive.getResult(), false);
@@ -81,5 +81,18 @@ TEST_F(ArchiveTest, ExtractTest) {
    ASSERT_EQ(dir.name, "test.zip");
    ASSERT_EQ(dir.files.size(), size_t(2));
   }
+}
+
+/**
+ * Environments, themselves simply archives, can be opened with our Archive API.
+ */
+TEST_F(ArchiveTest, EnvironmentTest) {
+  Archive archive(getEnvironmentPath("demo.sky"));
+  archive.load();
+  ASSERT_TRUE((bool) archive.getResult());
+
+  const Directory &dir = *archive.getResult();
+  ASSERT_EQ(dir.files.size(), size_t(1));
+  ASSERT_EQ(dir.files[0].filename().string(), "map.json");
 }
 
