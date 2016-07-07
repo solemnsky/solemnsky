@@ -27,6 +27,10 @@ fs::path getMediaPath(const std::string &path) {
   return getTopPath("media/" + path);
 }
 
+fs::path getEnvironmentPath(const std::string &path) {
+  return getTopPath("environments/" + path);
+}
+
 fs::path getTestPath(const std::string &path) {
   return getTopPath("tests/" + path);
 }

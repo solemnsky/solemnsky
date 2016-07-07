@@ -108,6 +108,7 @@ struct Map {
  public:
   Map(); // null map
   Map(const Map &map) = default;
+  Map(Map &&map) = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {
