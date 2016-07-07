@@ -50,7 +50,7 @@ struct SkyInit : public VerifyStructure {
  * Delta for Sky. Broadcast by server, applied by clients.
  */
 struct SkyDelta : public VerifyStructure {
-  SkyDelta() = default;
+  SkyDelta();
 
   template<typename Archive>
   void serialize(Archive &ar) {

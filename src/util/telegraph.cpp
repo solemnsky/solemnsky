@@ -63,8 +63,8 @@ void Host::unregisterPeer(ENetPeer *peer) {
 }
 
 void Host::sampleBandwidth() {
-  lastIncomingBandwidth = host->totalReceivedData / 1000.0f;
-  lastOutgoingBandwidth = host->totalSentData / 1000.0f;
+  lastIncomingBandwidth = float(host->totalReceivedData) / 1000.0f;
+  lastOutgoingBandwidth = float(host->totalSentData) / 1000.0f;
   host->totalReceivedData = 0;
   host->totalSentData = 0;
 }
@@ -153,7 +153,7 @@ Kbps Host::outgoingBandwidth() const {
   return lastOutgoingBandwidth;
 }
 
-std::string printAddress(const ENetAddress &addr) {
+std::string printAddress(const ENetAddress &) {
   // TODO
   return "<address>";
 }

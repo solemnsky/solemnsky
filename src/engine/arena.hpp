@@ -96,6 +96,7 @@ class Player : public Networked<PlayerInitializer, PlayerDelta> {
  public:
   Player() = delete;
   Player(class Arena &arena, const PlayerInitializer &initializer);
+  ~Player() {}
 
   // Parameters.
   class Arena &arena;
@@ -133,26 +134,28 @@ class SubsystemListener {
   friend class Player;
   friend class SubsystemCaller;
  protected:
+  virtual ~SubsystemListener() {}
+
   // Managing player registration.
-  virtual void registerPlayer(Player &player) {}
-  virtual void unregisterPlayer(Player &player) {}
+  virtual void registerPlayer(Player &player);
+  virtual void unregisterPlayer(Player &player);
 
   // Callbacks.
-  virtual void onPoll(const TimeDiff delta) {}
-  virtual void onTick(const TimeDiff delta) {}
-  virtual void onJoin(Player &player) {}
-  virtual void onQuit(Player &player) {}
-  virtual void onMode(const ArenaMode newMode) {}
-  virtual void onMapChange() {}
+  virtual void onPoll(const TimeDiff delta);
+  virtual void onTick(const TimeDiff delta);
+  virtual void onJoin(Player &player);
+  virtual void onQuit(Player &player);
+  virtual void onMode(const ArenaMode newMode);
+  virtual void onMapChange();
   virtual void onDelta(Player &player,
-                       const PlayerDelta &delta) {}
+                       const PlayerDelta &delta);
   virtual void onAction(Player &player,
-                        const Action action, const bool state) {}
+                        const Action action, const bool state);
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
-                       const sf::Vector2f &pos, const float rot) {}
+                       const sf::Vector2f &pos, const float rot);
 
-  virtual void onStartGame() {}
-  virtual void onEndGame() {}
+  virtual void onStartGame();
+  virtual void onEndGame();
 
 };
 
@@ -203,13 +206,14 @@ class Subsystem : public SubsystemListener {
 class ArenaLogger {
  protected:
   friend class Arena;
-  virtual void onEvent(const ArenaEvent &event) {}
+  virtual void onEvent(const ArenaEvent &event);
 
  public:
   class Arena &arena;
 
   ArenaLogger() = delete;
   ArenaLogger(Arena &arena);
+  virtual ~ArenaLogger() {}
 
 };
 
