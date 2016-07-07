@@ -106,7 +106,7 @@ void Environment::loadNullScripts() {
 }
 
 Environment::Environment(const EnvironmentURL &url) :
-    archivePath(getEnvironmentPath(url)),
+    archivePath(getEnvironmentPath(url + ".sky")),
     fileArchive(archivePath),
     loadProgress(0),
     url(url) {
