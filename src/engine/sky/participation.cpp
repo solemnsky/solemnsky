@@ -203,17 +203,24 @@ void Plane::resetPrimary() {
  * ParticipationInit.
  */
 
-ParticipationInit::ParticipationInit() { }
+ParticipationInit::ParticipationInit() :
+    spawn(),
+    controls(),
+    props() {}
 
 ParticipationInit::ParticipationInit(
     const PlaneControls &controls,
     const PlaneTuning &tuning,
     const PlaneState &state) :
     spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)),
-    controls(controls) { }
+    controls(controls),
+    props() {}
 
 ParticipationInit::ParticipationInit(
-    const PlaneControls &controls) : controls(controls) { }
+    const PlaneControls &controls) :
+    spawn(),
+    controls(controls),
+    props() {}
 
 /**
  * ParticipationDelta.
@@ -284,8 +291,13 @@ Participation::Participation(const PID associatedPlayer,
                              const ParticipationInit &initializer) :
     Networked(initializer),
     physics(physics),
+    controls(),
     newlyAlive(false),
-    associatedPlayer(associatedPlayer) {
+    lastControls(),
+
+    associatedPlayer(associatedPlayer),
+    plane(),
+    props() {
   if (initializer.spawn)
     spawnWithState(initializer.spawn->first, initializer.spawn->second);
   controls = initializer.controls;

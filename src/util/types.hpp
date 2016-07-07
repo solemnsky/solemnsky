@@ -285,6 +285,7 @@ struct Angle {
 class VerifyStructure {
  public:
   virtual bool verifyStructure() const = 0;
+  virtual ~VerifyStructure() { }
 };
 
 /**
@@ -297,6 +298,8 @@ class Networked {
   // initializer type; this supports an orthogonal interface
   Networked() = delete;
   Networked(const Init &) { }
+  virtual ~Networked() {}
+
   virtual void applyDelta(const Delta &) = 0;
   virtual Init captureInitializer() const = 0;
 };

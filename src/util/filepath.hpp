@@ -40,3 +40,8 @@ fs::path getEnvironmentPath(const std::string &path);
  * Access a path relative to the test file directory.
  */
 fs::path getTestPath(const std::string &path);
+
+/**
+ * Access the filename of a path as a string.
+ */
+std::string getFilename(const fs::path &path);

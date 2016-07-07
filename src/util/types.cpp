@@ -63,7 +63,8 @@ Clamped::Clamped(const float value) :
     value(clamp(0.0f, 1.0f, value)) { }
 
 Clamped &Clamped::operator=(const float x) {
-  return operator=(Clamped(x));
+  operator=(Clamped(x));
+  return *this;
 }
 
 Clamped &Clamped::operator+=(const float x) {
