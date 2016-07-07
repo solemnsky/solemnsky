@@ -28,7 +28,7 @@
 //TODO: Think about the method.
 
 namespace g_log {
-  auto lout = spdlog::stdout_logger_mt("Console", false);
+auto lout = spdlog::stdout_logger_mt("solemnsky", false);
 }
 
 /**
@@ -80,7 +80,7 @@ std::string showOrigin(const LogOrigin origin) {
 
 void appLog(const std::string &contents, const LogOrigin origin) {
   //std::cout << showTime() << showOrigin(origin) << contents << "\n";
-  g_log::lout->info("{}{}{}", showTime(), showOrigin(origin), contents);
+  g_log::lout->info("{}{}", showOrigin(origin), contents);
 }
 
 void appErrorLogic(const std::string &contents) {

@@ -73,7 +73,7 @@ optional<Directory> Directory::open(const fs::path &path) {
 
 Archive::Archive(const fs::path &archivePath) :
     done(false),
-    archivePath(fs::system_complete(archivePath)) {}
+    archivePath(archivePath) {}
 
 void Archive::load() {
   const auto filepath = this->archivePath.string();
