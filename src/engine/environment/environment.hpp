@@ -31,34 +31,43 @@ namespace sky {
 /**
  * Uniform resource locator for Environments.
  * E.g.: vanilla/ball_asteroids, or some_fun_mod/interesting_map
- * Mapped to the filesystem location of a .solx file.
+ * Mapped to the filesystem location of a .sky file.
  */
 using EnvironmentURL = std::string;
 
 /**
  * Holder and asynchronous loader for pieces of static information extracted
  * from a .sky file, used to instantiate / add to the functionality /
- * display a Sky -- with, respectively, geometry data, scripts, and graphics
- * resources.
+ * display a Sky -- geometry data, scripts, and graphics resources.
  */
 class Environment {
  private:
   // Associated archive.
+  fs::path archivePath;
   Archive fileArchive;
+  optional<std::string> getArchiveFile(const std::string &filename);
 
   // State.
   bool loadError;
   float loadProgress;
+  optional<Map> map;
   optional<EnvGraphics> graphics;
   optional<EnvScripts> scripts;
-  optional<Map> map;
 
   std::thread workerThread;
 
-  // Loading submethods.
-  void loadMap(const std::string &filepath);
-  void loadGraphics(const std::string &filepath);
-  void loadScripts(const std::string &filepath);
+  // Canonical logging messages.
+  enum class Component {Map, Graphics, Scripts};
+  static std::string describeComponent(const Component c);
+  static std::string describeComponentLoading(const Component c);
+  static std::string describeComponentLoadingNull(const Component c);
+  static std::string describeComponentMissing(const Component c);
+  static std::string describeComponentMalformed(const Component c);
+
+  // Loading submethods -- they expect fileArchive to be loaded.
+  void loadMap(const fs::path &mapPath);
+  void loadGraphics(const fs::path &graphicsPath);
+  void loadScripts(const fs::path &scriptPath);
 
   // Null loading submethods.
   void loadNullMap();
@@ -83,8 +92,10 @@ class Environment {
   bool loadingIdle() const;
   float loadingProgress() const;
 
-  // Accessing loaded resources.
+  // Accessing loaded resources. nullptr if they aren't loaded.
   Map const *getMap() const;
+  EnvGraphics const *getGraphics() const;
+  EnvScripts const *getScripts() const;
 
 };
 

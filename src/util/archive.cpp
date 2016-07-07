@@ -62,7 +62,11 @@ optional<Directory> Directory::open(const fs::path &path) {
  * Archive.
  */
 
-void Archive::doWork() {
+Archive::Archive(const fs::path &archivePath) :
+    done(false),
+    archivePath(fs::system_complete(archivePath)) {}
+
+void Archive::load() {
   const auto filepath = this->archivePath.string();
   appLog("Unzipping archive: " + filepath, LogOrigin::App);
 
@@ -92,20 +96,6 @@ void Archive::doWork() {
 
   if (const auto opened = Directory::open(workingDir))
     this->result.emplace(*opened);
-
-  this->done = true;
-}
-
-Archive::Archive(const fs::path &archivePath) :
-    done(false),
-    archivePath(fs::system_complete(archivePath)) {}
-
-void Archive::load() {
-  workerThread = std::thread([&]() { this->doWork(); });
-}
-
-void Archive::finishLoading() {
-  workerThread.join();
 }
 
 bool Archive::isDone() const {

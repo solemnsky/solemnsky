@@ -24,52 +24,113 @@ namespace sky {
  * Environment.
  */
 
-void Environment::loadMap(const std::string &filepath) {
-  assert(false); // Not implemented.
+optional<std::string> Environment::getArchiveFile(
+    const std::string &filename) {
+  assert(bool(fileArchive.getResult()));
+
+  std::string archivePath;
+  bool fileFound{false};
+  for (const auto file : fileArchive.getResult()->files) {
+    if (file.filename() == filename) {
+      archivePath = file.string();
+      fileFound = true;
+    }
+  }
+
+  if (!fileFound) return {};
+  else return archivePath;
 }
 
-void Environment::loadGraphics(const std::string &filepath) {
-  assert(false); // Not implemented.
+std::string Environment::describeComponent(const Component c) {
+  switch (c) {
+  case Component::Map: return "map";
+  case Component::Graphics: return "map";
+  case Component::Scripts: return "scripts";
+  }
 }
 
-void Environment::loadScripts(const std::string &filepath) {
-  assert(false); // Not implemented.
+std::string Environment::describeComponentLoading(const Component c) {
+  return "Loading environment " + describeComponent(c) + " component...";
+}
+
+std::string Environment::describeComponentLoadingNull(const Component c) {
+  return "Creating null " + describeComponent(c)
+      + " component for environment...";
+}
+
+std::string Environment::describeComponentMissing(const Component c) {
+  return "Environment " + describeComponent(c) + " component data not found!";
+}
+
+std::string Environment::describeComponentMalformed(const Component c) {
+  return "Environment " + describeComponent(c) + " component data appears to be malformed!";
+}
+
+void Environment::loadMap(const fs::path &mapPath) {
+  appLog(describeComponentLoading(Component::Map), LogOrigin::Engine);
+  std::ifstream mapFile(mapPath.string());
+  if (auto map = Map::load(mapFile)) {
+    this->map.emplace(std::move(*map));
+  } else {
+    appLog(describeComponentMalformed(Component::Map), LogOrigin::Error);
+    loadError = true;
+  }
+}
+
+void Environment::loadGraphics(const fs::path &graphicsPath) {
+  appLog(describeComponentLoading(Component::Graphics), LogOrigin::Engine);
+  assert(false);
+}
+
+  void Environment::loadScripts(const fs::path &scriptPath) {
+  appLog(describeComponentLoading(Component::Scripts), LogOrigin::Engine);
+  assert(false);
 }
 
 void Environment::loadNullMap() {
+  appLog("Creating null environment map.", LogOrigin::Engine);
   map.emplace();
 }
 
 void Environment::loadNullGraphics() {
+  appLog("Creating null environment graphics.", LogOrigin::Engine);
   graphics.emplace();
 }
 
 void Environment::loadNullScripts() {
+  appLog("Creating null environment script.", LogOrigin::Engine);
   scripts.emplace();
 }
 
-// TODO: complete this
-
 Environment::Environment(const EnvironmentURL &url) :
-    fileArchive(fs::path("not-a-path")),
+    archivePath(getEnvironmentPath(url)),
+    fileArchive(archivePath),
     loadProgress(0),
     url(url) {
   if (url == "NULL") {
     appLog("Creating null environment.", LogOrigin::Engine);
     workerThread = std::thread([&]() { loadNullMap(); });
   } else {
-    // if (filepath) {
-    //   appLog("Creating environment " + inQuotes(url)
-    //              + " with environment file " + filepath.get(),
-    //          LogOrigin::Engine);
-    //   workerThread = std::thread([&]() { loadMap(filepath.get()); });
-    // } else {
-    //   loadError = true;
-    //   appLog("Creating environment in error state: could not find "
-    //              "environment file for URL " + inQuotes(url));
-    // }
-  }
+    appLog("Creating environment " + inQuotes(url)
+           + " with environment file " + archivePath.string(),
+              LogOrigin::Engine);
 
+    workerThread = std::thread([&]() {
+      fileArchive.load();
+      if (fileArchive.getResult()) {
+        if (const auto mapPath = getArchiveFile("map.json")) {
+          loadMap(mapPath.get());
+        } else {
+          appLog(describeComponentMissing(Component::Map), LogOrigin::Error);
+          loadError = true;
+        }
+      } else {
+        appLog("Could not open environment archive at path "
+               + archivePath.string());
+        loadError = true;
+      }
+    });
+  }
 }
 
 Environment::Environment() :
@@ -82,21 +143,41 @@ Environment::~Environment() {
 void Environment::loadMore(
     const bool needGraphics, const bool needScripts) {
   if (loadingIdle()) {
-    assert(!loadError); // it's pointless to load when we have a load error
+    assert(!loadError);
+    // it's pointless to load when we have a load error
+    // the user should handle the error case
+
     workerThread = std::thread([&]() {
       if (url == "NULL") {
         if (needGraphics) loadNullGraphics();
         if (needScripts) loadNullScripts();
       } else {
-//        if (needGraphics) loadGraphics(filepath.get());
-//        if (needScripts) loadScripts(filepath.get());
+        if (needGraphics) {
+          if (const auto graphicsFile = getArchiveFile("graphics/")) {
+            loadGraphics(graphicsFile.get());
+          } else {
+            appLog(describeComponentMissing(Component::Graphics),
+                   LogOrigin::Error);
+            loadError = true;
+          }
+        }
+        if (needScripts) {
+          if (const auto scriptFile = getArchiveFile("scripts.clj")) {
+            loadScripts(scriptFile.get());
+          } else {
+            appLog(describeComponentMissing(Component::Scripts),
+                   LogOrigin::Error);
+            loadError = true;
+          }
+        }
       }
     });
   }
 }
 
 void Environment::waitForLoading() {
-  workerThread.join();
+  if (workerThread.joinable())
+    workerThread.join();
 }
 
 bool Environment::loadingErrored() const {
@@ -104,7 +185,7 @@ bool Environment::loadingErrored() const {
 }
 
 bool Environment::loadingIdle() const {
-  return workerThread.joinable();
+  return !workerThread.joinable();
 }
 
 float Environment::loadingProgress() const {
@@ -113,6 +194,14 @@ float Environment::loadingProgress() const {
 
 Map const *Environment::getMap() const {
   return map.get_ptr();
+}
+
+EnvGraphics const *Environment::getGraphics() const {
+  return graphics.get_ptr();
+}
+
+EnvScripts const *Environment::getScripts() const {
+  return scripts.get_ptr();
 }
 
 }

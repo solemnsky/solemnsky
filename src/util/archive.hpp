@@ -53,10 +53,6 @@ struct Directory {
 class Archive {
  private:
 
-  // Worker thread.
-  void doWork();
-  std::thread workerThread;
-
   // Result state.
   bool done;
   optional<Directory> result;
@@ -66,12 +62,11 @@ class Archive {
 
   const fs::path archivePath;
 
-  // Loading proces.
+  // Try to load the archive -- this is blocking.
   void load();
-  void finishLoading();
+  bool isDone() const;
 
   // When done, we present either a result or an error.
-  bool isDone() const;
   optional<Directory> getResult() const;
 
 };
