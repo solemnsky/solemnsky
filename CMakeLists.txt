@@ -13,6 +13,7 @@ endif ()
 add_subdirectory("thirdparty/Box2D/Box2D")
 add_subdirectory("thirdparty/enet")
 add_subdirectory("thirdparty/SFML")
+add_subdirectory("thirdparty/spdlog")
 
 # we also depend on boost and libarchive from the host system
 find_package(Boost REQUIRED filesystem)
@@ -26,6 +27,8 @@ include_directories(
         thirdparty/SFML/include/
         thirdparty/polypartition/
         thirdparty/mingw-std-threads/
+        thirdparty/spdlog/include/
+
         ${Boost_INCLUDE_DIRS}
 )
 
