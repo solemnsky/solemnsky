@@ -33,7 +33,7 @@ optional<std::string> Environment::getArchiveFile(
   std::string archivePath;
   bool fileFound{false};
   for (const auto file : fileArchive.getResult()->files) {
-    if (file.filename() == filename) {
+    if (getFilename(file) == filename) {
       archivePath = file.string();
       fileFound = true;
     }

@@ -93,6 +93,6 @@ TEST_F(ArchiveTest, EnvironmentTest) {
 
   const Directory &dir = *archive.getResult();
   ASSERT_EQ(dir.files.size(), size_t(1));
-  ASSERT_EQ(dir.files[0].filename().string(), "map.json");
+  ASSERT_EQ(getFilename(dir.files[0]), "map.json");
 }
 
