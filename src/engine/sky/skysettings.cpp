@@ -34,6 +34,9 @@ bool SkySettingsInit::verifyStructure() const {
  * SkySettingsDelta.
  */
 
+SkySettingsDelta::SkySettingsDelta() :
+    viewScale(), gravity() {}
+
 bool SkySettingsDelta::verifyStructure() const {
   if (viewScale) return (*viewScale > 0);
   return true;
