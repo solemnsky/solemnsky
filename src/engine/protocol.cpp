@@ -107,7 +107,8 @@ ClientPacket ClientPacket::RCon(const std::string &command) {
  * ServerPacket.
  */
 
-ServerPacket::ServerPacket() {}
+ServerPacket::ServerPacket() :
+    ServerPacket(Type()) {}
 
 ServerPacket::ServerPacket(const Type type) :
     type(type), pid(), arenaInit(),
