@@ -42,7 +42,7 @@ using EnvironmentURL = std::string;
  */
 class Environment {
  private:
-  // Associated archive.
+  // Associated archive and filepath -- this makes no sense if the environment is NULL.
   fs::path archivePath;
   Archive fileArchive;
 
