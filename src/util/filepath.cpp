@@ -34,3 +34,7 @@ fs::path getEnvironmentPath(const std::string &path) {
 fs::path getTestPath(const std::string &path) {
   return getTopPath("tests/" + path);
 }
+
+std::string getFilename(const fs::path &path) {
+  return path.filename().filename().string(); // ahaha
+}
