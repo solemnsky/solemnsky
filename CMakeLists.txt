@@ -2,8 +2,9 @@ project(solemnsky)
 
 # tool / compiler versions
 cmake_minimum_required(VERSION 3.2)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra \
- \ -Wno-unused-parameter -pedantic -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+
+set(PROJECT_CXX_FLAGS "-Wall -Wextra -Werror -Weffc++ -Wno-unused-parameter -pedantic")
 
 if (SANITIZE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -fsanitize=address")
@@ -14,7 +15,7 @@ add_subdirectory("thirdparty/Box2D/Box2D")
 add_subdirectory("thirdparty/enet")
 add_subdirectory("thirdparty/SFML")
 
-# we also depend on boost and libarchive from the host system
+# we also depend on boost and ibarchive from the host system
 find_package(Boost REQUIRED filesystem)
 
 # so we can #include stuff
@@ -102,7 +103,6 @@ add_library(solemnsky STATIC
         thirdparty/polypartition/polypartition.cpp
         thirdparty/polypartition/polypartition.hpp
         )
-
 target_link_libraries(solemnsky
         enet
         sfml-system
@@ -111,6 +111,8 @@ target_link_libraries(solemnsky
         Box2D
         ${Boost_LIBRARIES}
         )
+set_target_properties(solemnsky PROPERTIES
+        COMPILE_FLAGS "${CUSTOM_CXX_FLAGS}")
 
 ###### solemnsky_server
 add_executable(solemnsky_server
@@ -128,6 +130,8 @@ add_executable(solemnsky_server
 target_link_libraries(solemnsky_server
         solemnsky
         )
+set_target_properties(solemnsky_server PROPERTIES
+        COMPILE_FLAGS "${CUSTOM_CXX_FLAGS}")
 
 ###### solemnsky_client
 add_executable(solemnsky_client
@@ -220,6 +224,8 @@ target_link_libraries(solemnsky_client
         solemnsky
         sfml-window
         )
+set_target_properties(solemnsky_client PROPERTIES
+        COMPILE_FLAGS "${CUSTOM_CXX_FLAGS}")
 
 ###### unit tests
 add_subdirectory(tests/)
