@@ -91,8 +91,8 @@ void Environment::loadNullScripts() {
 Environment::Environment(const EnvironmentURL &url) :
     archivePath(getEnvironmentPath(url + ".sky")),
     fileArchive(archivePath),
-    loadProgress(0),
     loadError(false),
+    loadProgress(0),
     url(url) {
   if (url == "NULL") {
     appLog("Creating null environment.", LogOrigin::Engine);
