@@ -285,6 +285,7 @@ struct Angle {
 class VerifyStructure {
  public:
   virtual bool verifyStructure() const = 0;
+  virtual ~VerifyStructure() { }
 };
 
 /**

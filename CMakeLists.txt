@@ -2,15 +2,14 @@ project(solemnsky)
 
 # tool / compiler versions
 cmake_minimum_required(VERSION 3.2)
+set(CAREFUL_CXX_FLAGS "-Wall -Wextra -Wpedantic -Weffc++ -Wconversion -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-
-set(PROJECT_CXX_FLAGS "-Wall -Wextra -Werror -Weffc++ -Wno-unused-parameter -pedantic")
 
 if (SANITIZE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -fsanitize=address")
 endif ()
 
-# thirdparty submodule dependencies with integrated CMakeLists.txt
+# thirdparty submodules that need to be built
 add_subdirectory("thirdparty/Box2D/Box2D")
 add_subdirectory("thirdparty/enet")
 add_subdirectory("thirdparty/SFML")
@@ -18,17 +17,18 @@ add_subdirectory("thirdparty/SFML")
 # we also depend on boost and ibarchive from the host system
 find_package(Boost REQUIRED filesystem)
 
-# so we can #include stuff
-include_directories(
-        src/
+# project includes
+include_directories(src/)
+
+## thirdparty includes, with -isystem to disable warnings
+include_directories(SYSTEM
         thirdparty/Box2D/Box2D/
         thirdparty/enet/include/
         thirdparty/cereal/
         thirdparty/SFML/include/
         thirdparty/polypartition/
         thirdparty/mingw-std-threads/
-        ${Boost_INCLUDE_DIRS}
-)
+        ${Boost_INCLUDE_DIRS})
 
 ###### libsolemnsky, for common use by client and server
 add_library(solemnsky STATIC
@@ -111,8 +111,7 @@ target_link_libraries(solemnsky
         Box2D
         ${Boost_LIBRARIES}
         )
-set_target_properties(solemnsky PROPERTIES
-        COMPILE_FLAGS "${CUSTOM_CXX_FLAGS}")
+set_target_properties(solemnsky PROPERTIES COMPILE_FLAGS "${CAREFUL_CXX_FLAGS}")
 
 ###### solemnsky_server
 add_executable(solemnsky_server
@@ -130,8 +129,6 @@ add_executable(solemnsky_server
 target_link_libraries(solemnsky_server
         solemnsky
         )
-set_target_properties(solemnsky_server PROPERTIES
-        COMPILE_FLAGS "${CUSTOM_CXX_FLAGS}")
 
 ###### solemnsky_client
 add_executable(solemnsky_client
@@ -224,8 +221,6 @@ target_link_libraries(solemnsky_client
         solemnsky
         sfml-window
         )
-set_target_properties(solemnsky_client PROPERTIES
-        COMPILE_FLAGS "${CUSTOM_CXX_FLAGS}")
 
 ###### unit tests
 add_subdirectory(tests/)
