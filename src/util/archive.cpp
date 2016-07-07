@@ -31,6 +31,10 @@ Directory::Directory(const std::string &name,
     files(files),
     directories(directories) {}
 
+optional<fs::path> Directory::getTopFile(const std::string &filename) const {
+  return {};
+}
+
 optional<Directory> Directory::open(const fs::path &path) {
   if (!fs::exists(path)) return {};
 
@@ -45,6 +49,7 @@ optional<Directory> Directory::open(const fs::path &path) {
          itr != end;
          ++itr) {
       const auto childPath = itr->path();
+
       if (const auto dir = Directory::open(childPath)) {
         directories.push_back(*dir);
       } else {

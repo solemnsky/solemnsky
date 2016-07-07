@@ -26,23 +26,6 @@ namespace sky {
  * Environment.
  */
 
-optional<std::string> Environment::getArchiveFile(
-    const std::string &filename) {
-  assert(bool(fileArchive.getResult()));
-
-  std::string archivePath;
-  bool fileFound{false};
-  for (const auto file : fileArchive.getResult()->files) {
-    if (getFilename(file) == filename) {
-      archivePath = file.string();
-      fileFound = true;
-    }
-  }
-
-  if (!fileFound) return {};
-  else return archivePath;
-}
-
 std::string Environment::describeComponent(const Component c) {
   switch (c) {
     case Component::Map: return "map";
@@ -120,8 +103,8 @@ Environment::Environment(const EnvironmentURL &url) :
 
     workerThread = std::thread([&]() {
       fileArchive.load();
-      if (fileArchive.getResult()) {
-        if (const auto mapPath = getArchiveFile("map.json")) {
+      if (const auto dir = fileArchive.getResult()) {
+        if (const auto mapPath = dir->getTopFile("map.json")) {
           loadMap(mapPath.get());
         } else {
           appLog(describeComponentMissing(Component::Map), LogOrigin::Error);
@@ -155,8 +138,9 @@ void Environment::loadMore(
         if (needGraphics) loadNullGraphics();
         if (needScripts) loadNullScripts();
       } else {
+        const auto dir = *this->fileArchive.getResult();
         if (needGraphics) {
-          if (const auto graphicsFile = getArchiveFile("graphics/")) {
+          if (const auto graphicsFile = dir.getTopFile("graphics.json")) {
             loadGraphics(graphicsFile.get());
           } else {
             appLog(describeComponentMissing(Component::Graphics),
@@ -165,7 +149,7 @@ void Environment::loadMore(
           }
         }
         if (needScripts) {
-          if (const auto scriptFile = getArchiveFile("scripts.clj")) {
+          if (const auto scriptFile = dir.getTopFile("scripts.clj")) {
             loadScripts(scriptFile.get());
           } else {
             appLog(describeComponentMissing(Component::Scripts),

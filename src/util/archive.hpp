@@ -41,6 +41,9 @@ struct Directory {
   const std::vector<fs::path> files;
   const std::vector<Directory> directories;
 
+  // Utility searches.
+  optional<fs::path> getTopFile(const std::string &filename) const;
+
   // Opening a directory.
   static optional<Directory> open(const fs::path &filepath);
 
