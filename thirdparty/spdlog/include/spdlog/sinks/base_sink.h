@@ -15,7 +15,7 @@
 #include <spdlog/common.h>
 #include <spdlog/details/log_msg.h>
 
-#include <mutex>
+#include "util/threads.hpp"
 
 namespace spdlog
 {

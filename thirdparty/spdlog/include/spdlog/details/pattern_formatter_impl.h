@@ -13,9 +13,8 @@
 #include <chrono>
 #include <ctime>
 #include <memory>
-#include <mutex>
+#include "util/threads.hpp"
 #include <string>
-#include <thread>
 #include <utility>
 #include <vector>
 

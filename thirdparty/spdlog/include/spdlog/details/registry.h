@@ -18,7 +18,7 @@
 #include <chrono>
 #include <functional>
 #include <memory>
-#include <mutex>
+#include "util/threads.hpp"
 #include <string>
 #include <unordered_map>
 
