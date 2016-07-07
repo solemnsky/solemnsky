@@ -111,7 +111,13 @@ PlaneStateServer::PlaneStateServer(const PlaneState &state) :
  * PlaneState.
  */
 
-PlaneState::PlaneState() : primaryCooldown(1) { }
+PlaneState::PlaneState() :
+    stalled(false),
+    afterburner(0),
+    throttle(1),
+    energy(1),
+    health(1),
+    primaryCooldown(1) { }
 
 PlaneState::PlaneState(const PlaneTuning &tuning,
                        const sf::Vector2f &pos,

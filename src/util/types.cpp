@@ -123,7 +123,7 @@ bool cyclicApproach(Cyclic &x, const float target, const float amount) {
   return amount < distance;
 }
 
-float cyclicDistance(const Cyclic x, const float y) {
+float cyclicDistance(const Cyclic &x, const float y) {
   const float range = x.max - x.min;
   const float diffUp = Cyclic(0, x.max - x.min, y - x);
   return (diffUp < range / 2) ? diffUp : diffUp - range;

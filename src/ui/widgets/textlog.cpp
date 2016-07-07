@@ -65,12 +65,14 @@ TextLog::Style::Style(
     const float maxHeightCollapsed,
     const float maxLifetime,
     const float maxLifetimeCollapsed,
+    const float fadeStart,
     const int fontSize) :
     maxWidth(maxWidth),
     maxHeight(maxHeight),
     maxHeightCollapsed(maxHeightCollapsed),
     maxLifetime(maxLifetime),
     maxLifetimeCollapsed(maxLifetimeCollapsed),
+    fadeStart(fadeStart),
     fontSize(fontSize) { }
 
 void TextLog::startNewLine() {
@@ -84,9 +86,8 @@ TextLog::TextLog(const AppRefs &appState, const Style &style,
     style(style), pos(pos),
     startingNewLine(true),
     textFormat(style.fontSize, 0, ui::HorizontalAlign::Left,
-               ui::VerticalAlign::Bottom) {
-
-}
+               ui::VerticalAlign::Bottom),
+    collapsed(false) {}
 
 void TextLog::tick(float delta) { }
 
