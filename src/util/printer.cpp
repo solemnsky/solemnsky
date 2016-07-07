@@ -20,6 +20,18 @@
 #include "printer.hpp"
 
 /**
+ * Global namespace for storing the logger object
+ * Used by appLog();
+ * NOTE: This is probably not the best idea, even though it's like C++'s std::cout.
+ *           -Lasoloz
+ */
+//TODO: Think about the method.
+
+namespace g_log {
+  auto lout = spdlog::stdout_logger_mt("Console", false);
+}
+
+/**
  * StringPrinter.
  */
 
@@ -67,7 +79,8 @@ std::string showOrigin(const LogOrigin origin) {
 }
 
 void appLog(const std::string &contents, const LogOrigin origin) {
-  std::cout << showTime() << showOrigin(origin) << contents << "\n";
+  //std::cout << showTime() << showOrigin(origin) << contents << "\n";
+  g_log::lout->info("{}{}{}", showTime(), showOrigin(origin), contents);
 }
 
 void appErrorLogic(const std::string &contents) {

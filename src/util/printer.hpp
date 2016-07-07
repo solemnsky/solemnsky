@@ -22,6 +22,7 @@
 #include <SFML/System.hpp>
 #include <Box2D/Box2D.h>
 #include <cereal/archives/json.hpp>
+#include <spdlog/spdlog.h>
 #include "types.hpp"
 
 /**
