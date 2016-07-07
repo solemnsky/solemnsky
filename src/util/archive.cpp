@@ -32,6 +32,10 @@ Directory::Directory(const std::string &name,
     directories(directories) {}
 
 optional<fs::path> Directory::getTopFile(const std::string &filename) const {
+  for (const auto file : files) {
+    if (getFilename(file) == filename)
+      return file;
+  }
   return {};
 }
 
