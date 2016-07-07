@@ -13,6 +13,7 @@ endif ()
 add_subdirectory("thirdparty/Box2D/Box2D")
 add_subdirectory("thirdparty/enet")
 add_subdirectory("thirdparty/SFML")
+add_subdirectory("thirdparty/spdlog")
 
 # we also depend on boost and ibarchive from the host system
 find_package(Boost REQUIRED filesystem)
@@ -28,7 +29,9 @@ include_directories(SYSTEM
         thirdparty/SFML/include/
         thirdparty/polypartition/
         thirdparty/mingw-std-threads/
-        ${Boost_INCLUDE_DIRS})
+        thirdparty/spdlog/include/
+        ${Boost_INCLUDE_DIRS}
+)
 
 ###### libsolemnsky, for common use by client and server
 add_library(solemnsky STATIC
