@@ -14,5 +14,5 @@ install:
 script:
   - nix-build . -A default
   - mkdir -p dist/release/ ; cd dist/release/ ; ../../result/bin/solemnsky_tests
-  - ./cppcheck.sh &> check-results ; [ -s check-results ] && exit 1
+  - ./cppcheck.sh &> check-results ; [ -s check-results ] && (cat check-results ; exit 1)
 
