@@ -41,7 +41,7 @@ struct SkySettingsInit : public VerifyStructure {
 };
 
 struct SkySettingsDelta : public VerifyStructure {
-  SkySettingsDelta() = default;
+  SkySettingsDelta();
 
   template<typename Archive>
   void serialize(Archive &ar) {

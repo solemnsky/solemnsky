@@ -58,7 +58,7 @@ bool verifyValue(
 
 template<typename X>
 bool verifyValue(
-    const X &x,
+    const X &,
     typename std::enable_if<!std::is_base_of<
         VerifyStructure, X>::value>::type * = 0) {
   return true;
@@ -129,7 +129,7 @@ PID smallestUnused(const std::map<PID, T> &map) {
   return i;
 }
 
-class enum_error: public std::logic_error {
+class enum_error : public std::logic_error {
  public:
   enum_error();
 };

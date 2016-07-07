@@ -193,6 +193,37 @@ ArenaDelta ArenaDelta::EnvChange(const EnvironmentURL &map) {
 }
 
 /**
+ * SubsystemListener.
+ */
+
+void SubsystemListener::registerPlayer(Player &) {}
+
+void SubsystemListener::unregisterPlayer(Player &) {}
+
+void SubsystemListener::onPoll(const TimeDiff) {}
+
+void SubsystemListener::onTick(const TimeDiff) {}
+
+void SubsystemListener::onJoin(Player &) {}
+
+void SubsystemListener::onQuit(Player &) {}
+
+void SubsystemListener::onMode(const ArenaMode) {}
+
+void SubsystemListener::onMapChange() {}
+
+void SubsystemListener::onDelta(Player &, const PlayerDelta &) {}
+
+void SubsystemListener::onAction(Player &, const Action, const bool) {}
+
+void SubsystemListener::onSpawn(Player &, const PlaneTuning &,
+                                const sf::Vector2f &, const float) {}
+
+void SubsystemListener::onStartGame() {}
+
+void SubsystemListener::onEndGame() {}
+
+/**
  * SubsystemCaller.
  */
 
@@ -212,6 +243,8 @@ void SubsystemCaller::doEndGame() {
 /**
  * ArenaLogger.
  */
+
+void ArenaLogger::onEvent(const ArenaEvent &) {}
 
 ArenaLogger::ArenaLogger(Arena &arena) : arena(arena) {
   arena.loggers.push_back(this);

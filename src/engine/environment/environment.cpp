@@ -15,7 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <util/methods.hpp>
 #include "util/printer.hpp"
+#include "util/methods.hpp"
 #include "environment.hpp"
 
 namespace sky {
@@ -24,52 +26,98 @@ namespace sky {
  * Environment.
  */
 
-void Environment::loadMap(const std::string &filepath) {
-  assert(false); // Not implemented.
+std::string Environment::describeComponent(const Component c) {
+  switch (c) {
+    case Component::Map: return "map";
+    case Component::Graphics: return "map";
+    case Component::Scripts: return "scripts";
+  }
+  throw enum_error();
 }
 
-void Environment::loadGraphics(const std::string &filepath) {
-  assert(false); // Not implemented.
+std::string Environment::describeComponentLoading(const Component c) {
+  return "Loading environment " + describeComponent(c) + " component...";
 }
 
-void Environment::loadScripts(const std::string &filepath) {
-  assert(false); // Not implemented.
+std::string Environment::describeComponentLoadingNull(const Component c) {
+  return "Creating null " + describeComponent(c)
+      + " component for environment...";
+}
+
+std::string Environment::describeComponentMissing(const Component c) {
+  return "Environment " + describeComponent(c) + " component data not found!";
+}
+
+std::string Environment::describeComponentMalformed(const Component c) {
+  return "Environment " + describeComponent(c) + " component data appears to be malformed!";
+}
+
+void Environment::loadMap(const fs::path &mapPath) {
+  appLog(describeComponentLoading(Component::Map), LogOrigin::Engine);
+  std::ifstream mapFile(mapPath.string());
+  if (auto map = Map::load(mapFile)) {
+    this->map.emplace(std::move(map.get()));
+  } else {
+    appLog(describeComponentMalformed(Component::Map), LogOrigin::Error);
+    loadError = true;
+  }
+}
+
+void Environment::loadGraphics(const fs::path &graphicsPath) {
+  appLog(describeComponentLoading(Component::Graphics), LogOrigin::Engine);
+  assert(false);
+}
+
+void Environment::loadScripts(const fs::path &scriptPath) {
+  appLog(describeComponentLoading(Component::Scripts), LogOrigin::Engine);
+  assert(false);
 }
 
 void Environment::loadNullMap() {
+  appLog(describeComponentLoadingNull(Component::Map), LogOrigin::Engine);
   map.emplace();
 }
 
 void Environment::loadNullGraphics() {
+  appLog(describeComponentLoadingNull(Component::Graphics), LogOrigin::Engine);
   graphics.emplace();
 }
 
 void Environment::loadNullScripts() {
+  appLog(describeComponentLoadingNull(Component::Scripts), LogOrigin::Engine);
   scripts.emplace();
 }
 
-// TODO: complete this
-
 Environment::Environment(const EnvironmentURL &url) :
-    fileArchive(fs::path("not-a-path")),
+    archivePath(getEnvironmentPath(url + ".sky")),
+    fileArchive(archivePath),
+    loadError(false),
     loadProgress(0),
     url(url) {
   if (url == "NULL") {
     appLog("Creating null environment.", LogOrigin::Engine);
     workerThread = std::thread([&]() { loadNullMap(); });
   } else {
-    // if (filepath) {
-    //   appLog("Creating environment " + inQuotes(url)
-    //              + " with environment file " + filepath.get(),
-    //          LogOrigin::Engine);
-    //   workerThread = std::thread([&]() { loadMap(filepath.get()); });
-    // } else {
-    //   loadError = true;
-    //   appLog("Creating environment in error state: could not find "
-    //              "environment file for URL " + inQuotes(url));
-    // }
-  }
+    appLog("Creating environment " + inQuotes(url)
+               + " with environment file " + archivePath.string(),
+           LogOrigin::Engine);
 
+    workerThread = std::thread([&]() {
+      fileArchive.load();
+      if (const auto dir = fileArchive.getResult()) {
+        if (const auto mapPath = dir->getTopFile("map.json")) {
+          loadMap(mapPath.get());
+        } else {
+          appLog(describeComponentMissing(Component::Map), LogOrigin::Error);
+          loadError = true;
+        }
+      } else {
+        appLog("Could not open environment archive at path "
+                   + archivePath.string());
+        loadError = true;
+      }
+    });
+  }
 }
 
 Environment::Environment() :
@@ -82,21 +130,42 @@ Environment::~Environment() {
 void Environment::loadMore(
     const bool needGraphics, const bool needScripts) {
   if (loadingIdle()) {
-    assert(!loadError); // it's pointless to load when we have a load error
+    assert(!loadError);
+    // it's pointless to load when we have a load error
+    // the user should handle the error case
+
     workerThread = std::thread([&]() {
       if (url == "NULL") {
         if (needGraphics) loadNullGraphics();
         if (needScripts) loadNullScripts();
       } else {
-//        if (needGraphics) loadGraphics(filepath.get());
-//        if (needScripts) loadScripts(filepath.get());
+        const auto dir = *this->fileArchive.getResult();
+        if (needGraphics) {
+          if (const auto graphicsFile = dir.getTopFile("graphics.json")) {
+            loadGraphics(graphicsFile.get());
+          } else {
+            appLog(describeComponentMissing(Component::Graphics),
+                   LogOrigin::Error);
+            loadError = true;
+          }
+        }
+        if (needScripts) {
+          if (const auto scriptFile = dir.getTopFile("scripts.clj")) {
+            loadScripts(scriptFile.get());
+          } else {
+            appLog(describeComponentMissing(Component::Scripts),
+                   LogOrigin::Error);
+            loadError = true;
+          }
+        }
       }
     });
   }
 }
 
 void Environment::waitForLoading() {
-  workerThread.join();
+  if (workerThread.joinable())
+    workerThread.join();
 }
 
 bool Environment::loadingErrored() const {
@@ -104,7 +173,7 @@ bool Environment::loadingErrored() const {
 }
 
 bool Environment::loadingIdle() const {
-  return workerThread.joinable();
+  return !workerThread.joinable();
 }
 
 float Environment::loadingProgress() const {
@@ -113,6 +182,14 @@ float Environment::loadingProgress() const {
 
 Map const *Environment::getMap() const {
   return map.get_ptr();
+}
+
+EnvGraphics const *Environment::getGraphics() const {
+  return graphics.get_ptr();
+}
+
+EnvScripts const *Environment::getScripts() const {
+  return scripts.get_ptr();
 }
 
 }
