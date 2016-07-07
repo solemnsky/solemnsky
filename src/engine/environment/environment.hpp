@@ -45,7 +45,6 @@ class Environment {
   // Associated archive.
   fs::path archivePath;
   Archive fileArchive;
-  optional<std::string> getArchiveFile(const std::string &filename);
 
   // State.
   bool loadError;
