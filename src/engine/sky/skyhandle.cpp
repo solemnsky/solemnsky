@@ -27,6 +27,8 @@ namespace sky {
 SkyHandle::SkyHandle(Arena &arena, const SkyHandleInit &initializer) :
     Subsystem(arena),
     Networked(initializer),
+    environment(),
+    sky(),
     envStateIsNew(false) {
   if (initializer) environment.emplace(initializer.get());
 }
