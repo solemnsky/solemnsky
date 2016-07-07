@@ -36,7 +36,7 @@ class Frame {
   std::stack<sf::Transform> transformStack;
   std::stack<float> alphaStack;
 
-  const sf::Color alphaScaleColor(const sf::Color);
+  const sf::Color alphaScaleColor(const sf::Color &);
 
   // Used by runSFML.
   sf::Transform windowToFrame;

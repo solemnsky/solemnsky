@@ -89,7 +89,7 @@ void Environment::loadNullScripts() {
 }
 
 Environment::Environment(const EnvironmentURL &url) :
-    archivePath(getEnvironmentPath(url + ".sky")),
+    archivePath(fs::system_complete(getEnvironmentPath(url + ".sky"))),
     fileArchive(archivePath),
     loadError(false),
     loadProgress(0),
@@ -113,7 +113,7 @@ Environment::Environment(const EnvironmentURL &url) :
         }
       } else {
         appLog("Could not open environment archive at path "
-                   + archivePath.string());
+                   + archivePath.string(), LogOrigin::Error);
         loadError = true;
       }
     });

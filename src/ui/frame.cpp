@@ -22,7 +22,7 @@
 
 namespace ui {
 
-const sf::Color Frame::alphaScaleColor(const sf::Color color) {
+const sf::Color Frame::alphaScaleColor(const sf::Color &color) {
   sf::Color newColor(color);
   newColor.a *= alphaStack.top();
   return newColor;
