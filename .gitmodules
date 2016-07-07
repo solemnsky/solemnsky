@@ -16,3 +16,6 @@
 [submodule "environments"]
 	path = environments
 	url = http://github.com/solemnsky/solemnsky-environments
+[submodule "thirdparty/spdlog"]
+	path = thirdparty/spdlog
+	url = https://github.com/gabime/spdlog.git/
