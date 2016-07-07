@@ -81,7 +81,6 @@ class Prop: public Networked<PropInit, PropDelta> {
   Prop(const PID associatedPlayer,
        Physics &physics,
        const PropInit &initializer);
-  virtual ~Prop();
 
   const PID associatedPlayer;
 

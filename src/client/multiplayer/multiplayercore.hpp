@@ -163,7 +163,6 @@ class MultiplayerCore : public ClientComponent {
   void rcon(const std::string &command);
   void handleChatInput(const std::string &input);
   void requestTeamChange(const sky::Team team);
-
 };
 
 /**
@@ -179,11 +178,7 @@ class MultiplayerView : public ClientComponent, public ui::Control {
   ArenaConnection &conn;
 
   MultiplayerView(
-      sky::ArenaMode target,
       ClientShared &shared,
-      MultiplayerCore &mShared);
-  virtual ~MultiplayerView() {}
-
-  const sky::ArenaMode target;
+      MultiplayerCore &core);
 
 };

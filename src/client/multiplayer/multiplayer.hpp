@@ -26,9 +26,8 @@
  */
 class Multiplayer: public Game, public ConnectionListener {
  private:
-
   // Arena connection state / protocol implementation and the current
-  // (mode-specific) interface that we show the user.
+  // MultiplayerView, presenting the user with a direct interface.
   MultiplayerCore core;
   std::unique_ptr<MultiplayerView> view;
   void loadView(const sky::ArenaMode arenaMode);

@@ -24,12 +24,8 @@ namespace sky {
  * ClientPacket.
  */
 
-ClientPacket::ClientPacket() {}
-ClientPacket::ClientPacket(const Type type) :
-    type(type), pongTime(),
-    stringData(), playerDelta(),
-    team(), participationInput(),
-    state() {}
+ClientPacket::ClientPacket() : ClientPacket(Type()) {}
+ClientPacket::ClientPacket(const Type type) : type(type) {}
 
 bool ClientPacket::verifyStructure() const {
   switch (type) {
@@ -107,14 +103,9 @@ ClientPacket ClientPacket::RCon(const std::string &command) {
  * ServerPacket.
  */
 
-ServerPacket::ServerPacket() :
-    ServerPacket(Type()) {}
+ServerPacket::ServerPacket() : ServerPacket(Type()) {}
 
-ServerPacket::ServerPacket(const Type type) :
-    type(type), pid(), arenaInit(),
-    skyHandleInit(), scoreInit(), skyInit(),
-    arenaDelta(), skyHandleDelta(), skyDelta(),
-    timestamp(), scoreDelta(), stringData() {}
+ServerPacket::ServerPacket(const Type type) : type(type) {}
 
 bool ServerPacket::verifyStructure() const {
   switch (type) {

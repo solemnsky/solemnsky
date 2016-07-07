@@ -94,8 +94,8 @@ void MultiplayerGame::renderScoreboard(ui::Frame &f) {
 }
 
 MultiplayerGame::MultiplayerGame(
-    ClientShared &shared, MultiplayerCore &connection) :
-    MultiplayerView(sky::ArenaMode::Game, shared, connection),
+    ClientShared &shared, MultiplayerCore &core) :
+    MultiplayerView(shared, core),
     chatInput(references,
               style.base.normalTextEntry,
               style.multi.chatPos,
