@@ -82,7 +82,7 @@ void Archive::load() {
     return;
   }
 
-  appLog("Invoking 7zip...");
+  appLog("Invoking 7zip...", LogOrigin::App);
 
   fs::path workingDir(".unzip-tmp/" + this->archivePath.filename().string());
   fs::remove_all(workingDir);

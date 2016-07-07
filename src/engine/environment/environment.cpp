@@ -15,7 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <util/methods.hpp>
 #include "util/printer.hpp"
+#include "util/methods.hpp"
 #include "environment.hpp"
 
 namespace sky {
@@ -43,10 +45,11 @@ optional<std::string> Environment::getArchiveFile(
 
 std::string Environment::describeComponent(const Component c) {
   switch (c) {
-  case Component::Map: return "map";
-  case Component::Graphics: return "map";
-  case Component::Scripts: return "scripts";
+    case Component::Map: return "map";
+    case Component::Graphics: return "map";
+    case Component::Scripts: return "scripts";
   }
+  throw enum_error();
 }
 
 std::string Environment::describeComponentLoading(const Component c) {
@@ -70,7 +73,7 @@ void Environment::loadMap(const fs::path &mapPath) {
   appLog(describeComponentLoading(Component::Map), LogOrigin::Engine);
   std::ifstream mapFile(mapPath.string());
   if (auto map = Map::load(mapFile)) {
-    this->map.emplace(std::move(*map));
+    this->map.emplace(std::move(map.get()));
   } else {
     appLog(describeComponentMalformed(Component::Map), LogOrigin::Error);
     loadError = true;
@@ -82,23 +85,23 @@ void Environment::loadGraphics(const fs::path &graphicsPath) {
   assert(false);
 }
 
-  void Environment::loadScripts(const fs::path &scriptPath) {
+void Environment::loadScripts(const fs::path &scriptPath) {
   appLog(describeComponentLoading(Component::Scripts), LogOrigin::Engine);
   assert(false);
 }
 
 void Environment::loadNullMap() {
-  appLog("Creating null environment map.", LogOrigin::Engine);
+  appLog(describeComponentLoadingNull(Component::Map), LogOrigin::Engine);
   map.emplace();
 }
 
 void Environment::loadNullGraphics() {
-  appLog("Creating null environment graphics.", LogOrigin::Engine);
+  appLog(describeComponentLoadingNull(Component::Graphics), LogOrigin::Engine);
   graphics.emplace();
 }
 
 void Environment::loadNullScripts() {
-  appLog("Creating null environment script.", LogOrigin::Engine);
+  appLog(describeComponentLoadingNull(Component::Scripts), LogOrigin::Engine);
   scripts.emplace();
 }
 
@@ -112,8 +115,8 @@ Environment::Environment(const EnvironmentURL &url) :
     workerThread = std::thread([&]() { loadNullMap(); });
   } else {
     appLog("Creating environment " + inQuotes(url)
-           + " with environment file " + archivePath.string(),
-              LogOrigin::Engine);
+               + " with environment file " + archivePath.string(),
+           LogOrigin::Engine);
 
     workerThread = std::thread([&]() {
       fileArchive.load();
@@ -126,7 +129,7 @@ Environment::Environment(const EnvironmentURL &url) :
         }
       } else {
         appLog("Could not open environment archive at path "
-               + archivePath.string());
+                   + archivePath.string());
         loadError = true;
       }
     });
