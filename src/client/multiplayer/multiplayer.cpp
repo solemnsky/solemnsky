@@ -55,7 +55,7 @@ Multiplayer::Multiplayer(ClientShared &shared,
 void Multiplayer::onConnect() {
   const auto mode = core.conn->arena.getMode();
   if (mode == sky::ArenaMode::Game) {
-    if (core.conn->skyHandle.isActive()) {
+    if (core.conn->skyHandle.getSky()) {
       loadView(mode);
     } else {
       loadView(sky::ArenaMode::Lobby);

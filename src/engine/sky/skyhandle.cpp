@@ -79,13 +79,19 @@ optional<SkyHandleDelta> SkyHandle::collectDelta() {
 }
 
 void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
-  if (delta) environment.emplace(delta.get());
-  else environment.reset();
+  if (delta) {
+    environment.emplace(delta.get());
+    caller.doStartGame();
+  } else {
+    environment.reset();
+    caller.doEndGame();
+  }
 }
 
 void SkyHandle::start() {
   envStateIsNew = true;
   environment.emplace(arena.getNextEnv());
+  caller.doStartGame();
 }
 
 void SkyHandle::instantiateSky(const SkyInit &init) {
@@ -99,6 +105,7 @@ void SkyHandle::stop() {
   envStateIsNew = true;
   environment.reset();
   sky.reset();
+  caller.doEndGame();
 }
 
 }

@@ -142,6 +142,7 @@ class SubsystemListener {
   // Callbacks.
   virtual void onPoll(const TimeDiff delta);
   virtual void onTick(const TimeDiff delta);
+
   virtual void onJoin(Player &player);
   virtual void onQuit(Player &player);
   virtual void onMode(const ArenaMode newMode);

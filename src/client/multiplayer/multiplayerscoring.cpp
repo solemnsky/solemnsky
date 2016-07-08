@@ -20,8 +20,7 @@
 
 MultiplayerScoring::MultiplayerScoring(
     ClientShared &shared, MultiplayerCore &connection) :
-    MultiplayerView(sky::ArenaMode::Scoring, shared, connection) {
-}
+    MultiplayerView(shared, connection) {}
 
 void MultiplayerScoring::tick(float delta) {
 
