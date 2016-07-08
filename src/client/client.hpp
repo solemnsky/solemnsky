@@ -44,9 +44,7 @@ class Client: public ui::Control {
   std::unique_ptr<class Game> game;
   ClientUiState uiState;
   Settings settings;
-
-  // ClientShared interface object for children.
-  ClientShared shared;
+  ClientShared shared; // interface reference
 
   // Misc ui.
   HomePage homePage;
@@ -71,7 +69,7 @@ class Client: public ui::Control {
 
   // Control impl.
   bool poll() override final;
-  void tick(float delta) override final;
+  void tick(TimeDiff delta) override final;
   void render(ui::Frame &f) override final;
   bool handle(const sf::Event &event) override final;
   void reset() override final;
@@ -87,6 +85,6 @@ class Client: public ui::Control {
   void focusPage(const PageType page);
   void blurPage();
 
-  void changeSettings(const SettingsDelta &settings);
+  void changeSettings(const SettingsDelta &settingsDelta);
 };
 

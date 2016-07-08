@@ -81,7 +81,7 @@ const Game *ClientShared::getGame() const {
   return client.game.get();
 }
 
-const ClientUiState &ClientShared::getUiState() const {
+const ClientUiState &ClientShared::getUi() const {
   return client.uiState;
 }
 
