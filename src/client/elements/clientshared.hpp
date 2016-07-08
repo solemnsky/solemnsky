@@ -22,9 +22,9 @@
 #include "engine/sky/participation.hpp"
 #include "ui/control.hpp"
 #include "settings.hpp"
-#include "elements.hpp"
 
 class Client;
+class Game;
 
 enum class PageType {
   Home, Listing, Settings
