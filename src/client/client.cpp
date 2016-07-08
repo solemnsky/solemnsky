@@ -336,8 +336,8 @@ void Client::signalClear() {
 }
 
 void Client::beginGame(std::unique_ptr<Game> &&game) {
-  if (game) exitGame();
-  else game = std::move(game);
+  if (this->game) exitGame();
+  else this->game = std::move(game);
   focusGame();
 }
 
