@@ -96,7 +96,6 @@ class Player : public Networked<PlayerInitializer, PlayerDelta> {
  public:
   Player() = delete;
   Player(class Arena &arena, const PlayerInitializer &initializer);
-  ~Player() {}
 
   // Parameters.
   class Arena &arena;

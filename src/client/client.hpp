@@ -39,7 +39,12 @@ class Client: public ui::Control {
       quitButton, // quitting solemnsky
       aboutButton; // for seeing the about screen
 
-  // Shared state.
+  // State.
+  std::unique_ptr<class Game> game;
+  ClientUiState uiState;
+  Settings settings;
+
+  // ClientShared interface object for children.
   ClientShared shared;
 
   // Misc ui.
@@ -78,7 +83,7 @@ class Client: public ui::Control {
   void blurGame();
   void exitGame();
 
-  void focusPage(const PageType type);
+  void focusPage(const PageType page);
   void blurPage();
 
   void changeSettings(const SettingsDelta &settings);

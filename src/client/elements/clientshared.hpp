@@ -16,12 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * The place where the whole client converges.
+ * Interface that children have to the top-level Client.
  */
 #pragma once
 #include "engine/sky/participation.hpp"
 #include "ui/control.hpp"
 #include "settings.hpp"
+#include "elements.hpp"
 
 class Client;
 
@@ -30,20 +31,9 @@ enum class PageType {
 };
 
 /**
- * Some UI state of our client; the various transitions and menu modes.
+ * The interesting UI state of the client.
  */
-class ClientUiState {
- private:
-  friend class Client;
-
-  void focusGame();
-  void blurGame();
-  void focusPage(PageType page);
-  void blurPage();
-
-  void tick(float delta);
-
- public:
+struct ClientUiState {
   ClientUiState();
 
   PageType focusedPage;
@@ -59,11 +49,9 @@ class ClientUiState {
 };
 
 /**
- * This is the shared core of the client, which all sub-elements refer to. It
- * has globally useful factors such as global settings, a unique_ptr to the Game
- * currently active, and UI methods that influence the whole Client.
- *
- * This is also used to propagate a `const ui::AppRefs &`.
+ * This is the interface that all ClientComponents have to interact with the top-level
+ * Client state. It also propogates an ui::AppRefs reference -- ClientShared substitutes AppRefs
+ * for ClientComponents.
  */
 struct ClientShared {
   friend class Client;
@@ -76,18 +64,12 @@ struct ClientShared {
  public:
   const ui::AppRefs &references;
 
-  // State.
-  Settings settings;
-  std::unique_ptr<class Game> game;
-  ClientUiState ui;
+  // Query client data.
+  const Settings &getSettings() const;
+  const Game *getGame() const;
+  const ClientUiState &getUiState() const;
 
-  // Access key bindings.
-  optional<std::pair<sky::Action, bool>> triggerSkyAction(
-      const sf::Event &event) const;
-  optional<std::pair<ClientAction, bool>> triggerClientAction(
-      const sf::Event &event) const;
-
-  // Relays to top-level.
+  // Call client methods.
   void beginGame(std::unique_ptr<Game> &&game);
   void blurGame();
   void focusGame();
@@ -97,6 +79,13 @@ struct ClientShared {
   void blurPage();
 
   void changeSettings(const SettingsDelta &settings);
+
+  // Access key bindings.
+  optional<std::pair<sky::Action, bool>> triggerSkyAction(
+      const sf::Event &event) const;
+  optional<std::pair<ClientAction, bool>> triggerClientAction(
+      const sf::Event &event) const;
+
 
 };
 

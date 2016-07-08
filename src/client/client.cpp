@@ -197,17 +197,20 @@ void Client::tick(const float delta) {
     profilerCooldown.reset();
   }
 
-  shared.ui.tick(delta);
+  uiState.pageFocusFactor += style.menu.pageFocusAnimSpeed
+      * delta * (uiState.pageFocusing ? 1 : -1);
+  uiState.gameFocusFactor += style.menu.gameFocusAnimSpeed
+      * delta * (uiState.gameFocusing ? 1 : -1);
 
-  if (shared.game) {
-    shared.game->tick(delta);
-    if (shared.game->quitting) {
+  if (game) {
+    game->tick(delta);
+    if (game->quitting) {
       if (tryingToQuit) {
         quitting = true;
         return;
       }
-      shared.game.reset();
-      shared.ui.blurGame();
+      game.reset();
+      blurGame();
     }
   }
 }
@@ -297,20 +300,20 @@ bool Client::handle(const sf::Event &event) {
 
 void Client::reset() {
   ui::Control::reset();
-  if (shared.game) shared.game->reset();
-  referencePage(shared.ui.focusedPage).reset();
+  if (game) game->reset();
+  referencePage(uiState.focusedPage).reset();
 }
 
 void Client::signalRead() {
   ui::Control::signalRead();
-  if (shared.game) shared.game->signalRead();
+  if (game) game->signalRead();
 
   if (backButton.clickSignal) {
     blurPage();
   }
 
   if (quitButton.clickSignal) {
-    if (shared.game) {
+    if (game) {
       tryingToQuit = true;
       exitGame();
     }
@@ -327,50 +330,55 @@ void Client::signalRead() {
 }
 
 void Client::signalClear() {
-  if (shared.game) shared.game->signalClear();
+  if (game) game->signalClear();
   ui::Control::signalClear();
 }
 
 void Client::beginGame(std::unique_ptr<Game> &&game) {
-  if (shared.game) exitGame();
-  else shared.game = std::move(game);
+  if (game) exitGame();
+  else game = std::move(game);
   focusGame();
 }
 
 void Client::focusGame() {
-  if (shared.game) {
+  if (game) {
     reset();
-    if (shared.ui.pageFocused()) referencePage(shared.ui.focusedPage).onBlur();
-    shared.ui.focusGame();
-    shared.game->onFocus();
+    if (uiState.pageFocused()) referencePage(uiState.focusedPage).onBlur();
+    uiState.gameFocusing = true;
+    game->onFocus();
   }
 }
 
 void Client::blurGame() {
-  shared.ui.blurGame();
-  if (shared.game) {
-    shared.game->reset();
-    shared.game->onBlur();
+  uiState.gameFocusing = false;
+  if (game) {
+    game->reset();
+    game->onBlur();
   }
 }
 
 void Client::exitGame() {
-  if (shared.game) shared.game->doExit();
+  if (game) game->doExit();
 }
 
-void Client::focusPage(const PageType type) {
-  shared.ui.focusPage(type);
+void Client::focusPage(const PageType page) {
+  if (uiState.pageFocusFactor != 0) {
+    uiState.pageFocusing = false;
+  } else {
+    uiState.pageFocusing = true;
+    uiState.focusedPage = page;
+  }
 }
 
 void Client::blurPage() {
-  referencePage(shared.ui.focusedPage).reset();
+  referencePage(uiState.focusedPage).reset();
   backButton.reset();
-  referencePage(shared.ui.focusedPage).onBlur();
-  shared.ui.blurPage();
+  referencePage(uiState.focusedPage).onBlur();
+  uiState.pageFocusing = false;
 }
 
 void Client::changeSettings(const SettingsDelta &settings) {
-  settings.apply(shared.settings);
+  settings.apply(settings);
   forAllPages([&settings](Page &page) {
     page.onChangeSettings(settings);
   });
