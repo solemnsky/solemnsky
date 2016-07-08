@@ -118,7 +118,7 @@ void MultiplayerGame::render(ui::Frame &f) {
          participation.plane->getState().physical.pos :
          sf::Vector2f(0, 0));
 
-  f.drawText(style.multi.chatPos, [&](ui::TextFrame &tf) {
+  f.drawText(style.multi.messageLogPos, [&](ui::TextFrame &tf) {
     if (chatInput.isFocused) core.drawEventLog(tf, style.multi.chatCutoff);
     else core.drawEventLog(tf, style.multi.chatIngameCutoff);
   }, style.multi.messageLogText, resources.defaultFont);
