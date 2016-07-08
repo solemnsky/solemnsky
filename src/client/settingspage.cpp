@@ -159,7 +159,7 @@ void SettingsPage::switchToTab(ui::Button &button, SettingsTab &tab) {
 SettingsPage::SettingsPage(ClientShared &shared) :
     Page(shared),
 
-    newSettings(shared.settings),
+    newSettings(shared.getSettings()),
 
     generalButton(references, style.base.normalButton,
                   {style.settings.generalButtonOffset,
@@ -174,9 +174,9 @@ SettingsPage::SettingsPage(ClientShared &shared) :
                     style.settings.pageButtonHeight},
                    "CONTROLS"),
 
-    generalTab(references, shared.settings),
-    playerTab(references, shared.settings),
-    controlsTab(references, shared.settings),
+    generalTab(references, shared.getSettings()),
+    playerTab(references, shared.getSettings()),
+    controlsTab(references, shared.getSettings()),
     currentTab(&generalButton, &generalTab) {
   areChildren(
       {&generalButton, &playerButton, &controlsButton});
@@ -184,14 +184,14 @@ SettingsPage::SettingsPage(ClientShared &shared) :
 }
 
 void SettingsPage::onChangeSettings(const SettingsDelta &delta) {
-  newSettings = shared.settings;
-  currentTab.second->readSettings(shared.settings);
+  newSettings = shared.getSettings();
+  currentTab.second->readSettings(shared.getSettings());
 }
 
 void SettingsPage::onBlur() {
   currentTab.second->reset();
   currentTab.second->writeSettings(newSettings);
-  shared.changeSettings(SettingsDelta(shared.settings, newSettings));
+  shared.changeSettings(SettingsDelta(shared.getSettings(), newSettings));
 }
 
 void SettingsPage::tick(float delta) {

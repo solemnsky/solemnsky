@@ -199,7 +199,7 @@ SkyRender::SkyRender(ClientShared &shared, const ui::AppResources &resources,
     sheet(ui::TextureID::PlayerSheet),
     planeSheet(resources.getTextureData(sheet).spritesheetForm.get(),
                resources.getTexture(sheet)),
-    enableDebug(shared.settings.enableDebug) {
+    enableDebug(shared.getSettings().enableDebug) {
   arena.forPlayers([&](Player &player) { registerPlayer(player); });
 }
 

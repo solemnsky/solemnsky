@@ -67,7 +67,7 @@ struct ClientShared {
   // Query client data.
   const Settings &getSettings() const;
   const Game *getGame() const;
-  const ClientUiState &getUiState() const;
+  const ClientUiState &getUi() const;
 
   // Call client methods.
   void beginGame(std::unique_ptr<Game> &&game);

@@ -121,7 +121,7 @@ void Sandbox::tick(const TimeDiff delta) {
     skyRender.emplace(shared, resources, arena, *skyHandle.getSky());
   }
 
-  if (shared.ui.gameFocused()) arena.tick(delta);
+  if (shared.getUi().gameFocused()) arena.tick(delta);
   // if this were multiplayer of course we wouldn't have this liberty
   ui::Control::tick(delta);
 }
