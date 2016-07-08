@@ -32,7 +32,7 @@
  * that brings everything together.
  */
 class Client: public ui::Control {
-  friend class ClientShared;
+  friend struct ClientShared;
  private:
   // Buttons.
   ui::Button backButton, // for exiting menus, lower right
