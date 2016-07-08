@@ -17,6 +17,7 @@
  */
 /**
  * Loading screen to display while the Environment loads its components.
+ * Used by MultiplayerGame.
  */
 #pragma once
 #include "multiplayercore.hpp"

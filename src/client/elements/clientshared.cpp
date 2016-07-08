@@ -27,35 +27,7 @@ ClientUiState::ClientUiState() :
     pageFocusing(false),
     gameFocusing(false),
     pageFocusFactor(0),
-    gameFocusFactor(0) { }
-
-void ClientUiState::focusGame() {
-  gameFocusing = true;
-}
-
-void ClientUiState::blurGame() {
-  gameFocusing = false;
-}
-
-void ClientUiState::focusPage(PageType page) {
-  if (pageFocusFactor != 0) {
-    pageFocusing = false;
-  } else {
-    pageFocusing = true;
-    focusedPage = page;
-  }
-}
-
-void ClientUiState::blurPage() {
-  pageFocusing = false;
-}
-
-void ClientUiState::tick(float delta) {
-  pageFocusFactor += style.menu.pageFocusAnimSpeed
-      * delta * (pageFocusing ? 1 : -1);
-  gameFocusFactor += style.menu.gameFocusAnimSpeed
-      * delta * (gameFocusing ? 1 : -1);
-}
+    gameFocusFactor(0) {}
 
 bool ClientUiState::pageFocused() const {
   return pageFocusFactor == 1 and gameFocusFactor == 0;
@@ -92,12 +64,24 @@ bindingFromEvent(const sf::Event &event,
 
 optional<std::pair<sky::Action, bool>>
 ClientShared::triggerSkyAction(const sf::Event &event) const {
-  return bindingFromEvent(event, settings.bindings.skyBindings);
+  return bindingFromEvent(event, client.settings.bindings.skyBindings);
 }
 
 optional<std::pair<ClientAction, bool>>
 ClientShared::triggerClientAction(const sf::Event &event) const {
-  return bindingFromEvent(event, settings.bindings.clientBindings);
+  return bindingFromEvent(event, client.settings.bindings.clientBindings);
+}
+
+const Settings &ClientShared::getSettings() const {
+  return client.settings;
+}
+
+const Game *ClientShared::getGame() const {
+  return client.game.get();
+}
+
+const ClientUiState &ClientShared::getUiState() const {
+  return client.uiState;
 }
 
 void ClientShared::beginGame(std::unique_ptr<Game> &&game) {

@@ -40,7 +40,7 @@ class Multiplayer: public Game, public ConnectionListener {
               const std::string &serverHostname,
               const unsigned short serverPort);
 
-  // MultiplayerListener impl.
+  // ConnectionListener impl.
   void onConnect() override final;
   void onLoadMode(const sky::ArenaMode mode) override final;
   void onStartGame() override final;
