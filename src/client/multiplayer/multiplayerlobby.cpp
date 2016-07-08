@@ -59,7 +59,7 @@ void MultiplayerLobby::render(ui::Frame &f) {
   f.drawSprite(resources.getTexture(ui::TextureID::Lobby),
                {0, 0}, {0, 0, 1600, 900});
 
-  f.drawText(style.multi.chatPos, [&](ui::TextFrame &tf) {
+  f.drawText(style.multi.messageLogPos, [&](ui::TextFrame &tf) {
     core.drawEventLog(tf, style.multi.chatCutoff);
   }, style.multi.messageLogText, resources.defaultFont);
 

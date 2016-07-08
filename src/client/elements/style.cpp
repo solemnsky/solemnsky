@@ -148,7 +148,7 @@ Style::Multi::Multi(const Style::Base &base) :
     gameChatWidth(500),
 
     chatPos(20, 850),
-    messageLogPos(20, 840),
+    messageLogPos(20, 850 - 15),
     playerListPos(1250, 200),
     lobbyButtonPos(lobbyChatWidth + 100, lobbyTopMargin),
     lobbyButtonSep(0, 100),
