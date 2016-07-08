@@ -51,6 +51,7 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
  */
 
 void Sandbox::startHandle() {
+  stopHandle();
   skyHandle.start();
   status = "loading...";
 }
