@@ -68,7 +68,7 @@ struct ArenaConnection {
   ArenaConnection(
       const PID pid,
       const sky::ArenaInit &arenaInit,
-      const sky::SkyHandleInit &skyInit,
+      const sky::SkyHandleInit &skyHandleInit,
       const sky::ScoreboardInit &scoreboardInit);
 
   // Engine state.

@@ -17,6 +17,7 @@
  */
 #include "client/client.hpp"
 #include "style.hpp"
+#include "elements.hpp"
 
 /**
  * ClientUiState.
