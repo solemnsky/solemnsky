@@ -134,6 +134,8 @@ void Environment::loadMore(
     // it's pointless to load when we have a load error
     // the user should handle the error case
 
+    appLog("Beginning secondary environment loading.", LogOrigin::Engine);
+
     workerThread = std::thread([&]() {
       if (url == "NULL") {
         if (needGraphics) loadNullVisuals();

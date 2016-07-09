@@ -86,6 +86,9 @@ enum_error::enum_error() :
                          "issue to the solemnsky team along with all the "
                          "relevant logs you can find, it should have been "
                          "caught by the packet sanitizer.") {}
+bool imply(const bool x, const bool y) {
+  return y or !x;
+}
 
 int getProcessID() {
 #ifdef __linux

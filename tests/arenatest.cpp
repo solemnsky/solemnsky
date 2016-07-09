@@ -101,7 +101,7 @@ TEST_F(ArenaTest, PlayerDeltaTest) {
     EXPECT_EQ(player.getLatency(), 0);
     EXPECT_EQ(player.getClockOffset(), 0);
     EXPECT_EQ(player.isAdmin(), false);
-    EXPECT_EQ(player.isLoadingEnv(), false);
+    EXPECT_EQ(player.isLoadingEnv(), true);
     EXPECT_EQ(player.latencyIsCalculated(), false);
 
     arena.applyDelta(sky::ArenaDelta::Delta(0, delta));

@@ -134,7 +134,7 @@ class enum_error : public std::logic_error {
   enum_error();
 };
 
-bool imply(const bool x, const bool y) { return y or !x; }
+bool imply(const bool x, const bool y);
 
 // return the process ID
 int getProcessID();
