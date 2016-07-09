@@ -89,7 +89,7 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
           packet.scoreInit.get());
       proxyLogger.emplace(conn->arena, *this);
       proxySubsystem.emplace(conn->arena, *this);
-      appLog("Joined arena!", LogOrigin::Client);
+      appLog("Joined arena as " + inQuotes(conn->player.getNickname()), LogOrigin::Client);
       observer.onConnect();
 
       logClientEvent(ClientEvent::Connect(
@@ -114,6 +114,11 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
 
     case ServerPacket::Type::DeltaArena: {
       conn->arena.applyDelta(packet.arenaDelta.get());
+      break;
+    }
+
+    case ServerPacket::Type::DeltaSkyHandle: {
+      conn->skyHandle.applyDelta(packet.skyHandleDelta.get());
       break;
     }
 
