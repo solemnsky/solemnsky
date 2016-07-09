@@ -27,7 +27,7 @@ TEST_F(SkyHandleTest, AllocTest) {
     ASSERT_EQ(bool(skyHandle.getSky()), false);
 
     // After waiting for the environment to load, we can instantiate the Sky.
-    skyHandle.getEnvironment()->waitForLoading();
+    skyHandle.getEnvironment()->joinWorker();
     skyHandle.instantiateSky(sky::SkyInit{});
     ASSERT_EQ(bool(skyHandle.getSky()), true);
 

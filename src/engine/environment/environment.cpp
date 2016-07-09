@@ -65,12 +65,12 @@ void Environment::loadMap(const fs::path &path) {
 
 void Environment::loadMechanics(const fs::path &path) {
   appLog(describeComponentLoading(Component::Mechanics), LogOrigin::Engine);
-  assert(false);
+  // TODO: mechanics
 }
 
 void Environment::loadVisuals(const fs::path &path) {
   appLog(describeComponentLoading(Component::Visuals), LogOrigin::Engine);
-  assert(false);
+  // TODO: visuals
 }
 
 void Environment::loadNullMap() {
@@ -91,6 +91,7 @@ void Environment::loadNullVisuals() {
 Environment::Environment(const EnvironmentURL &url) :
     archivePath(fs::system_complete(getEnvironmentPath(url + ".sky"))),
     fileArchive(archivePath),
+    workerRunning(false),
     loadError(false),
     loadProgress(0),
     url(url) {
@@ -128,12 +129,13 @@ Environment::Environment() :
     Environment("NULL") {}
 
 Environment::~Environment() {
-  if (workerThread.joinable()) workerThread.join();
+  joinWorker();
 }
 
 void Environment::loadMore(
     const bool needGraphics, const bool needScripts) {
-  if (map) {
+  if (loadingIdle()) {
+    joinWorker();
     assert(!loadError);
     // it's pointless to load when we have a load error
     // the user should handle the error case
@@ -177,7 +179,7 @@ void Environment::loadMore(
   }
 }
 
-void Environment::waitForLoading() {
+void Environment::joinWorker() {
   if (workerThread.joinable())
     workerThread.join();
 }

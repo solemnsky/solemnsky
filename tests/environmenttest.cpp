@@ -16,7 +16,7 @@ class EnvironmentTest : public testing::Test {
  */
 TEST_F(EnvironmentTest, NullTest) {
   sky::Environment environment("NULL"); // the magic null URL
-  environment.waitForLoading(); // joins the initialization
+  environment.joinWorker(); // joins the initialization
 
   ASSERT_EQ(environment.loadingIdle(), true);
   ASSERT_EQ(environment.loadingErrored(), false);
@@ -32,7 +32,7 @@ TEST_F(EnvironmentTest, NullTest) {
  */
 TEST_F(EnvironmentTest, ErrorTest) {
   sky::Environment environment("does-not-exist");
-  environment.waitForLoading();
+  environment.joinWorker();
 
   ASSERT_TRUE(environment.loadingIdle());
   ASSERT_TRUE(environment.loadingErrored());
@@ -47,7 +47,7 @@ TEST_F(EnvironmentTest, BasicTest) {
   sky::Environment environment("demo");
   ASSERT_FALSE(environment.loadingIdle()); // we should be doing work!
 
-  environment.waitForLoading();
+  environment.joinWorker();
   // this might take a second, we need to unpack the archive and load the map
   // good thing it's asynchronous
 
