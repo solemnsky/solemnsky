@@ -51,14 +51,13 @@ struct ServerShared {
   void registerGameEnd();
 
   // Transmission.
-  void sendToClients(const sky::ServerPacket &packet,
-                     const bool guaranteeOrder = true);
+  void sendToClients(const sky::ServerPacket &packet);
+  void sendToLoadedClients(const sky::ServerPacket &packet);
   void sendToClientsExcept(const PID pid,
-                           const sky::ServerPacket &packet,
-                           const bool guaranteeOrder = true);
+                           const sky::ServerPacket &packet);
   void sendToClient(ENetPeer *const client,
-                    const sky::ServerPacket &packet,
-                    const bool guaranteeOrder = true);
+                    const sky::ServerPacket &packet);
+
   void rconResponse(ENetPeer *const client, const std::string &response);
 
   // Logging.
