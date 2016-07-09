@@ -20,34 +20,15 @@
  */
 #pragma once
 #include "multiplayercore.hpp"
+#include "multiplayersplash.hpp"
 #include "client/skyrender.hpp"
 #include "ui/widgets.hpp"
 
 /**
- * Manager class for the Game arena mode that loads MultiplayerGame
- * only when the environment is loaded.
+ * The game interface itself. Assumes that the Sky is instantiated.
+ * This is the most important thing in the client.
  */
-class MultiplayerGameHandle : public MultiplayerView {
- private:
-  optional<MultiplayerGame> gameView;
-
- public:
-  MultiplayerGameHandle(ClientShared &shared, MultiplayerCore &core);
-
-  // Control impl.
-  virtual bool poll() override;
-  virtual void tick(const TimeDiff delta) override;
-  virtual void render(ui::Frame &f) override;
-  virtual bool handle(const sf::Event &event) override;
-
-};
-
-/**
- * In the game, the rendered representation of the game is the central
- * point of the screen; peripheries include a chat / message interface, and a
- * score screen you can call up with tab.
- */
-class MultiplayerGame: public MultiplayerView {
+class MultiplayerGame : public MultiplayerView {
  private:
   ui::TextEntry chatInput;
   bool scoreboardFocused;
@@ -71,4 +52,25 @@ class MultiplayerGame: public MultiplayerView {
   void signalClear() override;
 
 };
+
+/**
+ * Manager class for the Game arena mode that loads MultiplayerGame
+ * only when the environment is loaded, first waiting for MultiplayerSplash to exit.
+ */
+class MultiplayerGameHandle : public MultiplayerView {
+ private:
+  optional<MultiplayerSplash> gameSplash;
+  optional<MultiplayerGame> gameView;
+
+ public:
+  MultiplayerGameHandle(ClientShared &shared, MultiplayerCore &core);
+
+  // Control impl.
+  virtual bool poll() override;
+  virtual void tick(const TimeDiff delta) override;
+  virtual void render(ui::Frame &f) override;
+  virtual bool handle(const sf::Event &event) override;
+
+};
+
 

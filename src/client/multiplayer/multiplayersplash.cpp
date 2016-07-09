@@ -15,27 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "multiplayerloader.hpp"
+#include "multiplayersplash.hpp"
 
-MultiplayerLoader::MultiplayerLoader(ClientShared &shared, MultiplayerCore &core) :
+MultiplayerSplash::MultiplayerSplash(ClientShared &shared, MultiplayerCore &core) :
     MultiplayerView(shared, core) {}
 
-void MultiplayerLoader::tick(float delta) {
+void MultiplayerSplash::tick(float delta) {
   Control::tick(delta);
 }
 
-void MultiplayerLoader::render(ui::Frame &f) {
+void MultiplayerSplash::render(ui::Frame &f) {
   Control::render(f);
 }
 
-bool MultiplayerLoader::handle(const sf::Event &event) {
+bool MultiplayerSplash::handle(const sf::Event &event) {
   return Control::handle(event);
 }
 
-void MultiplayerLoader::signalRead() {
+void MultiplayerSplash::signalRead() {
   Control::signalRead();
 }
 
-void MultiplayerLoader::signalClear() {
+void MultiplayerSplash::signalClear() {
   Control::signalClear();
 }

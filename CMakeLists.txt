@@ -156,8 +156,8 @@ add_executable(solemnsky_client
         src/client/multiplayer/multiplayergame.cpp
         src/client/multiplayer/multiplayergame.hpp
 
-        src/client/multiplayer/multiplayerloader.cpp
-        src/client/multiplayer/multiplayerloader.hpp
+        src/client/multiplayer/multiplayersplash.cpp
+        src/client/multiplayer/multiplayersplash.hpp
 
         src/client/multiplayer/multiplayerlobby.cpp
         src/client/multiplayer/multiplayerlobby.hpp
