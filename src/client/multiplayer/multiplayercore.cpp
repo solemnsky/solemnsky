@@ -36,15 +36,15 @@ MultiplayerLogger::MultiplayerLogger(sky::Arena &arena,
  */
 
 void MultiplayerSubsystem::onMode(const sky::ArenaMode newMode) {
-  core.listener.onLoadMode(newMode);
+  core.observer.onLoadMode(newMode);
 }
 
 void MultiplayerSubsystem::onStartGame() {
-  core.listener.onStartGame();
+  core.observer.onStartGame();
 }
 
 void MultiplayerSubsystem::onEndGame() {
-  core.listener.onEndGame();
+  core.observer.onEndGame();
 }
 
 MultiplayerSubsystem::MultiplayerSubsystem(sky::Arena &arena,
@@ -90,7 +90,7 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
       proxyLogger.emplace(conn->arena, *this);
       proxySubsystem.emplace(conn->arena, *this);
       appLog("Joined arena!", LogOrigin::Client);
-      listener.onConnect();
+      observer.onConnect();
 
       logClientEvent(ClientEvent::Connect(
           conn->arena.getName(),
@@ -187,12 +187,12 @@ bool MultiplayerCore::pollNetwork() {
 
 MultiplayerCore::MultiplayerCore(
     ClientShared &shared,
-    ConnectionListener &listener,
+    ConnectionObserver &listener,
     const std::string &serverHostname,
     const unsigned short serverPort) :
     ClientComponent(shared),
 
-    listener(listener),
+    observer(listener),
     askedConnection(false),
     disconnectTimeout(1),
 

@@ -140,20 +140,22 @@ void Environment::loadMore(
         if (needScripts) loadNullMechanics();
       } else {
         const auto dir = *this->fileArchive.getResult();
-        if (needGraphics) {
-          if (const auto graphicsFile = dir.getTopFile("graphics.json")) {
-            loadVisuals(graphicsFile.get());
-          } else {
-            appLog(describeComponentMissing(Component::Graphics),
-                   LogOrigin::Error);
-            loadError = true;
-          }
-        }
+
         if (needScripts) {
           if (const auto scriptFile = dir.getTopFile("scripts.clj")) {
             loadMechanics(scriptFile.get());
           } else {
-            appLog(describeComponentMissing(Component::Scripts),
+            appLog(describeComponentMissing(Component::Mechanics),
+                   LogOrigin::Error);
+            loadError = true;
+          }
+        }
+
+        if (needGraphics) {
+          if (const auto graphicsFile = dir.getTopFile("graphics.json")) {
+            loadVisuals(graphicsFile.get());
+          } else {
+            appLog(describeComponentMissing(Component::Visuals),
                    LogOrigin::Error);
             loadError = true;
           }

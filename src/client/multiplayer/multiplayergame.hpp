@@ -24,6 +24,25 @@
 #include "ui/widgets.hpp"
 
 /**
+ * Manager class for the Game arena mode that loads MultiplayerGame
+ * only when the environment is loaded.
+ */
+class MultiplayerGameHandle : public MultiplayerView {
+ private:
+  optional<MultiplayerGame> gameView;
+
+ public:
+  MultiplayerGameHandle(ClientShared &shared, MultiplayerCore &core);
+
+  // Control impl.
+  virtual bool poll() override;
+  virtual void tick(const TimeDiff delta) override;
+  virtual void render(ui::Frame &f) override;
+  virtual bool handle(const sf::Event &event) override;
+
+};
+
+/**
  * In the game, the rendered representation of the game is the central
  * point of the screen; peripheries include a chat / message interface, and a
  * score screen you can call up with tab.
@@ -44,6 +63,7 @@ class MultiplayerGame: public MultiplayerView {
  public:
   MultiplayerGame(ClientShared &shared, MultiplayerCore &core);
 
+  // Control impl.
   void tick(float delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
