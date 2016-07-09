@@ -33,10 +33,7 @@ Directory::Directory(const std::string &name,
     directories(directories) {}
 
 optional<fs::path> Directory::getTopFile(const std::string &filename) const {
-  appLog("in method body");
   for (const auto file : files) {
-    appLog("checking file.");
-    appLog("checking file: " + file.string());
     if (getFilename(file) == filename)
       return file;
   }
