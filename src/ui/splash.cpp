@@ -48,8 +48,6 @@ SplashScreen::SplashScreen(
 }
 
 bool SplashScreen::poll() {
-  ConsolePrinter printer{LogOrigin::App};
-
   if (control) quitting = control->quitting;
 
   return Control::poll();
