@@ -32,7 +32,7 @@ void Multiplayer::loadView(const sky::ArenaMode arenaMode) {
       break;
     }
     case sky::ArenaMode::Game: {
-      view = std::make_unique<MultiplayerGame>(shared, core);
+      view = std::make_unique<MultiplayerGameHandle>(shared, core);
       break;
     }
     case sky::ArenaMode::Scoring: {
@@ -53,17 +53,7 @@ Multiplayer::Multiplayer(ClientShared &shared,
 }
 
 void Multiplayer::onConnect() {
-  const auto mode = core.conn->arena.getMode();
-  if (mode == sky::ArenaMode::Game) {
-    if (core.conn->skyHandle.isActive()) {
-      loadView(mode);
-    } else {
-      loadView(sky::ArenaMode::Lobby);
-    }
-  } else {
-    loadView(mode);
-  }
-
+  loadView(core.conn->arena.getMode());
 }
 
 void Multiplayer::onLoadMode(const sky::ArenaMode mode) {

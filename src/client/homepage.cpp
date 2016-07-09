@@ -17,7 +17,7 @@
  */
 #include "homepage.hpp"
 #include "elements/style.hpp"
-//#include "client/multiplayer/multiplayer.hpp"
+#include "client/multiplayer/multiplayer.hpp"
 #include "client/sandbox/sandbox.hpp"
 
 HomePage::HomePage(ClientShared &clientState) :
@@ -65,13 +65,13 @@ void HomePage::signalRead() {
   if (sandboxButton.clickSignal)
     shared.beginGame(std::make_unique<Sandbox>(shared));
 
-//  if (localhostButton.clickSignal)
-//    shared.beginGame(
-//        std::make_unique<Multiplayer>(shared, "localhost", 4242));
-//
-//  if (remoteButton.clickSignal)
-//    shared.beginGame(
-//        std::make_unique<Multiplayer>(shared, "46.101.20.237", 4242));
+  if (localhostButton.clickSignal)
+    shared.beginGame(
+        std::make_unique<Multiplayer>(shared, "localhost", 4242));
+
+  if (remoteButton.clickSignal)
+    shared.beginGame(
+        std::make_unique<Multiplayer>(shared, "46.101.20.237", 4242));
 }
 
 void HomePage::signalClear() {

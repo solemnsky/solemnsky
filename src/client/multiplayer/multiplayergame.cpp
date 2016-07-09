@@ -18,6 +18,63 @@
 #include "multiplayergame.hpp"
 #include "client/elements/style.hpp"
 
+/**
+ * MultiplayerGameHandle.
+ */
+
+MultiplayerGameHandle::MultiplayerGameHandle(
+    ClientShared &shared, MultiplayerCore &core) :
+    MultiplayerView(shared, core) {
+  assert(conn.skyHandle.getEnvironment());
+}
+
+bool MultiplayerGameHandle::poll() {
+  if (gameView) return gameView->poll();
+  return true;
+}
+
+void MultiplayerGameHandle::tick(const TimeDiff delta) {
+  auto &environment = *conn.skyHandle.getEnvironment();
+  if (!gameView) {
+    if (environment.getMap()) {
+      if (environment.getVisuals()) {
+        gameView.emplace(shared, core);
+      } else {
+        if (!environment.loadingErrored() and environment.loadingIdle()) {
+          environment.loadMore(true, false);
+        }
+      }
+    }
+  } else {
+    gameView->tick(delta);
+  }
+}
+
+void MultiplayerGameHandle::render(ui::Frame &f) {
+  if (!gameView) {
+    if (conn.skyHandle.getEnvironment()->loadingErrored()) {
+      f.drawText({500, 500}, "Environment loading errored!", sf::Color::White, style.base.normalText,
+                 resources.defaultFont);
+    } else {
+      f.drawText({500, 500}, "loading environment...", sf::Color::White, style.base.normalText,
+                 resources.defaultFont);
+    }
+  } else {
+    gameView->render(f);
+  }
+}
+
+bool MultiplayerGameHandle::handle(const sf::Event &event) {
+  if (gameView) {
+    return gameView->handle(event);
+  }
+  return false;
+}
+
+/**
+ * MultiplayerGame.
+ */
+
 void MultiplayerGame::doClientAction(const ClientAction action,
                                      const bool state) {
   switch (action) {
@@ -94,16 +151,19 @@ void MultiplayerGame::renderScoreboard(ui::Frame &f) {
 }
 
 MultiplayerGame::MultiplayerGame(
-    ClientShared &shared, MultiplayerCore &connection) :
-    MultiplayerView(sky::ArenaMode::Game, shared, connection),
+    ClientShared &shared, MultiplayerCore &core) :
+    MultiplayerView(shared, core),
     chatInput(references,
               style.base.normalTextEntry,
               style.multi.chatPos,
               "[ENTER TO CHAT]"),
     scoreboardFocused(false),
-    skyRender(shared, resources, conn.arena, conn.getSky()),
+    skyRender(shared, resources, conn.arena, *conn.getSky()),
     participation(conn.getSky()->getParticipation(conn.player)) {
   assert(bool(conn.skyHandle.getSky()));
+  assert(bool(conn.skyHandle.getEnvironment()));
+  assert(bool(conn.skyHandle.getEnvironment()->getVisuals()));
+
   areChildren({&chatInput});
   areChildComponents({&skyRender});
 }
@@ -118,7 +178,7 @@ void MultiplayerGame::render(ui::Frame &f) {
          participation.plane->getState().physical.pos :
          sf::Vector2f(0, 0));
 
-  f.drawText(style.multi.chatPos, [&](ui::TextFrame &tf) {
+  f.drawText(style.multi.messageLogPos, [&](ui::TextFrame &tf) {
     if (chatInput.isFocused) core.drawEventLog(tf, style.multi.chatCutoff);
     else core.drawEventLog(tf, style.multi.chatIngameCutoff);
   }, style.multi.messageLogText, resources.defaultFont);

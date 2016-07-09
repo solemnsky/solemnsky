@@ -24,12 +24,12 @@
 /**
  * Top-level multiplayer client.
  */
-class Multiplayer: public Game, public ConnectionListener {
+class Multiplayer : public Game, public ConnectionObserver {
  private:
-
-  // Arena connection state / protocol implementation and the current
-  // (mode-specific) interface that we show the user.
+  // Arena connection state / protocol implementation.
   MultiplayerCore core;
+
+  // MultiplayerView, presenting the user with a direct interface to the game.
   std::unique_ptr<MultiplayerView> view;
   void loadView(const sky::ArenaMode arenaMode);
 
@@ -41,7 +41,7 @@ class Multiplayer: public Game, public ConnectionListener {
               const std::string &serverHostname,
               const unsigned short serverPort);
 
-  // MultiplayerListener impl.
+  // ConnectionObserver impl.
   void onConnect() override final;
   void onLoadMode(const sky::ArenaMode mode) override final;
   void onStartGame() override final;

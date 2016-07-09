@@ -1,1 +1,0 @@
-[src/engine/sky/planestate.cpp:63]: (warning) Member variable 'PlaneTuning::maxHealth' is not initialized in the constructor.

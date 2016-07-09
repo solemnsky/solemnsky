@@ -23,7 +23,7 @@
  */
 
 ServerShared::ServerShared(
-    tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph,
+    tg::Host &host, tg::Telegraph <sky::ClientPacket> &telegraph,
     const sky::ArenaInit &arenaInit) :
     arena(arenaInit), // initialize engine state
     skyHandle(arena, {}),
@@ -44,46 +44,44 @@ void ServerShared::registerArenaDelta(const sky::ArenaDelta &arenaDelta) {
 
 void ServerShared::registerGameStart() {
   skyHandle.start();
-  registerArenaDelta(sky::ArenaDelta::EnvLoadState(true));
+  registerArenaDelta(sky::ArenaDelta::ResetEnvLoad());
 }
 
 void ServerShared::registerGameEnd() {
   skyHandle.stop();
-  registerArenaDelta(sky::ArenaDelta::EnvLoadState(false));
 }
 
-void ServerShared::sendToClients(const sky::ServerPacket &packet,
-                                 const bool guaranteeOrder) {
+void ServerShared::sendToClients(const sky::ServerPacket &packet) {
   telegraph.transmit(
       host,
-      [&](std::function<void(ENetPeer *const)> transmit) {
-        for (auto const peer : host.getPeers()) { transmit(peer); }
-      }, packet, guaranteeOrder);
+      [&](
+  std::function < void(ENetPeer *const)> transmit) {
+    for (auto const peer : host.getPeers()) { transmit(peer); }
+  }, packet);
 }
 
 void ServerShared::sendToClientsExcept(const PID pid,
-                                       const sky::ServerPacket &packet,
-                                       const bool guaranteeOrder) {
+                                       const sky::ServerPacket &packet) {
   telegraph.transmit(
       host,
-      [&](std::function<void(ENetPeer *const)> transmit) {
-        for (auto const peer : host.getPeers()) {
-          if (sky::Player *player = playerFromPeer(peer)) {
-            if (player->pid != pid) transmit(peer);
-          }
-        }
-      }, packet, guaranteeOrder);
+      [&](
+  std::function < void(ENetPeer *const)> transmit) {
+    for (auto const peer : host.getPeers()) {
+      if (sky::Player * player = playerFromPeer(peer)) {
+        if (player->pid != pid) transmit(peer);
+      }
+    }
+  }, packet);
 }
 
 void ServerShared::sendToClient(ENetPeer *const client,
-                                const sky::ServerPacket &packet,
-                                const bool guaranteeOrder) {
-  telegraph.transmit(host, client, packet, guaranteeOrder);
+                                const sky::ServerPacket &packet) {
+  telegraph.transmit(host, client, packet);
 }
 
 void ServerShared::rconResponse(ENetPeer *const client,
                                 const std::string &response) {
-  sendToClient(client, sky::ServerPacket::RCon(response), true);
+  sendToClient(client, sky::ServerPacket::RCon(response));
   logEvent(ServerEvent::RConOut(response));
 }
 
@@ -162,10 +160,6 @@ void ServerExec::processPacket(ENetPeer *client,
           sky->getParticipation(*player).applyInput(
               packet.participationInput.get());
         }
-        if (shared.skyHandle.loadingToSky()) {
-          appLog("Warning: received input from client while still loading "
-                     "environment! Might want to define this case.");
-        }
         break;
       }
 
@@ -200,7 +194,7 @@ void ServerExec::processPacket(ENetPeer *client,
           newPlayer->pid,
           shared.arena.captureInitializer(),
           shared.skyHandle.captureInitializer(),
-          shared.scoreboard.captureInitializer()), 0);
+          shared.scoreboard.captureInitializer()));
       shared.sendToClientsExcept(
           newPlayer->pid, ServerPacket::DeltaArena(delta));
     }
@@ -221,7 +215,7 @@ bool ServerExec::poll() {
       return false;
     }
     case ENET_EVENT_TYPE_DISCONNECT: {
-      if (sky::Player *player = shared.playerFromPeer(event.peer)) {
+      if (sky::Player * player = shared.playerFromPeer(event.peer)) {
         shared.logEvent(ServerEvent::Disconnect(player->getNickname()));
         shared.registerArenaDelta(sky::ArenaDelta::Quit(player->pid));
         event.peer->data = nullptr;
@@ -240,8 +234,16 @@ bool ServerExec::poll() {
 
 void ServerExec::tick(const TimeDiff delta) {
   // Environment loading.
-  if (shared.skyHandle.readyToLoadSky()) {
-    shared.skyHandle.instantiateSky({});
+  if (!shared.skyHandle.getSky()) {
+    if (auto *environment = shared.skyHandle.getEnvironment()) {
+      if (environment->getMap() and environment->getMechanics()) {
+        shared.skyHandle.instantiateSky({});
+      } else {
+        if (environment->loadingIdle() and !environment->loadingErrored()) {
+          environment->loadMore(false, true);
+        }
+      }
+    }
   }
 
   // Tick game state and network host.
@@ -253,17 +255,18 @@ void ServerExec::tick(const TimeDiff delta) {
     shared.sendToClients(sky::ServerPacket::DeltaSkyHandle(handleDelta.get()));
   }
 
-  // Sky update scheduling.
+  // Sky update and initialization scheduling.
   if (const auto sky = shared.skyHandle.getSky()) {
     if (skyDeltaTimer.cool(delta)) {
       auto skyDelta = sky->collectDelta();
 
       for (auto peer : host.getPeers()) {
         if (sky::Player *player = shared.playerFromPeer(peer)) {
-          shared.sendToClient(
-              peer, sky::ServerPacket::DeltaSky(
-                  skyDelta.respectAuthority(*player),
-                  shared.arena.getUptime()));
+          if (!player->isLoadingEnv())
+            shared.sendToClient(
+                peer, sky::ServerPacket::DeltaSky(
+                    skyDelta.respectAuthority(*player),
+                    shared.arena.getUptime()));
         } else {
           appLog("Warning: Peer attached to no client!"
                      " Think about what this means.");
@@ -300,7 +303,7 @@ ServerExec::ServerExec(
     const Port port,
     const sky::ArenaInit &arenaInit,
     std::function<std::unique_ptr<ServerListener>(
-        ServerShared &)> mkServer) :
+        ServerShared & )> mkServer) :
 
     host(tg::HostType::Server, port),
     shared(host, telegraph, arenaInit),

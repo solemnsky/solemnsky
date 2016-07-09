@@ -20,8 +20,8 @@
  */
 #pragma once
 #include "util/types.hpp"
-#include "envgraphics.hpp"
-#include "envscripts.hpp"
+#include "visuals.hpp"
+#include "mechanics.hpp"
 #include "map.hpp"
 #include "util/threads.hpp"
 #include "util/archive.hpp"
@@ -47,44 +47,45 @@ class Environment {
   Archive fileArchive;
 
   // State.
+  bool workerRunning;
   bool loadError;
   float loadProgress;
   optional<Map> map;
-  optional<EnvGraphics> graphics;
-  optional<EnvScripts> scripts;
+  optional<Visuals> visuals;
+  optional<Mechanics> mechanics;
 
   std::thread workerThread;
 
   // Canonical logging messages.
-  enum class Component {Map, Graphics, Scripts};
+  enum class Component { Map, Mechanics, Visuals };
   static std::string describeComponent(const Component c);
   static std::string describeComponentLoading(const Component c);
   static std::string describeComponentLoadingNull(const Component c);
   static std::string describeComponentMissing(const Component c);
   static std::string describeComponentMalformed(const Component c);
 
-  // Loading submethods -- they expect fileArchive to be loaded.
-  void loadMap(const fs::path &mapPath);
-  void loadGraphics(const fs::path &graphicsPath);
-  void loadScripts(const fs::path &scriptPath);
+  // Loading subroutines -- they expect fileArchive to be loaded.
+  void loadMap(const fs::path &path);
+  void loadMechanics(const fs::path &path);
+  void loadVisuals(const fs::path &path);
 
-  // Null loading submethods.
+  // Null loading subroutines.
   void loadNullMap();
-  void loadNullGraphics();
-  void loadNullScripts();
+  void loadNullMechanics();
+  void loadNullVisuals();
 
  public:
   Environment(const EnvironmentURL &url);
   // The null environment, useful for testing and sandboxes.
-  // The default ctor is equilivant to supplying a URL of "NULL".
+  // The default ctor is equilivent to supplying a URL of "NULL".
   Environment();
   ~Environment();
 
   const EnvironmentURL url;
 
   // Loading.
-  void loadMore(const bool needGraphics, const bool needScripts);
-  void waitForLoading();
+  void loadMore(const bool needVisuals, const bool needMechanics);
+  void joinWorker();
 
   // Load status.
   bool loadingErrored() const;
@@ -93,8 +94,8 @@ class Environment {
 
   // Accessing loaded resources. nullptr if they aren't loaded.
   Map const *getMap() const;
-  EnvGraphics const *getGraphics() const;
-  EnvScripts const *getScripts() const;
+  Visuals const *getVisuals() const;
+  Mechanics const *getMechanics() const;
 
 };
 

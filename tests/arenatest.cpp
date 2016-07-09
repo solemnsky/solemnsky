@@ -74,11 +74,9 @@ TEST_F(ArenaTest, DeltaTest) {
   remoteArena.applyDelta(delta);
   EXPECT_EQ(remoteArena.getPlayer(0)->getNickname(), "nameless plane");
 
-  // EnvLoadState.
-  remoteArena.applyDelta(sky::ArenaDelta::EnvLoadState(true));
+  // ResetEnvLoad.
+  remoteArena.applyDelta(sky::ArenaDelta::ResetEnvLoad());
   EXPECT_EQ(remoteArena.getPlayer(0)->isLoadingEnv(), true);
-  remoteArena.applyDelta(sky::ArenaDelta::EnvLoadState(false));
-  EXPECT_EQ(remoteArena.getPlayer(0)->isLoadingEnv(), false);
 
   // Player disconnection.
   remoteArena.applyDelta(sky::ArenaDelta::Quit(0));
@@ -103,7 +101,7 @@ TEST_F(ArenaTest, PlayerDeltaTest) {
     EXPECT_EQ(player.getLatency(), 0);
     EXPECT_EQ(player.getClockOffset(), 0);
     EXPECT_EQ(player.isAdmin(), false);
-    EXPECT_EQ(player.isLoadingEnv(), false);
+    EXPECT_EQ(player.isLoadingEnv(), true);
     EXPECT_EQ(player.latencyIsCalculated(), false);
 
     arena.applyDelta(sky::ArenaDelta::Delta(0, delta));

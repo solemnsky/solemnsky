@@ -85,4 +85,18 @@ enum_error::enum_error() :
                          "you're connection to a corrupted server? Report this "
                          "issue to the solemnsky team along with all the "
                          "relevant logs you can find, it should have been "
-                         "caught by the packet sanitizer.") { }
+                         "caught by the packet sanitizer.") {}
+bool imply(const bool x, const bool y) {
+  return y or !x;
+}
+
+int getProcessID() {
+#ifdef __linux
+#include <unistd.h>
+  return int(getpid());
+#endif
+
+#ifdef _WIN32
+  return int(GetCurrentProcessId());
+#endif
+}

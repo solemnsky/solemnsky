@@ -49,17 +49,6 @@ Sky const *SkyHandle::getSky() const {
   return sky.get_ptr();
 }
 
-bool SkyHandle::loadingToSky() const {
-  return getEnvironment() and !getSky();
-}
-
-bool SkyHandle::readyToLoadSky() const {
-  if (auto env = getEnvironment()) {
-    return env->getMap() and !getSky();
-  }
-  return false;
-}
-
 SkyHandleInit SkyHandle::captureInitializer() const {
   if (environment) return SkyHandleInit{environment->url};
   else return SkyHandleInit{};
@@ -79,13 +68,19 @@ optional<SkyHandleDelta> SkyHandle::collectDelta() {
 }
 
 void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
-  if (delta) environment.emplace(delta.get());
-  else environment.reset();
+  if (delta) {
+    environment.emplace(delta.get());
+    caller.doStartGame();
+  } else {
+    environment.reset();
+    caller.doEndGame();
+  }
 }
 
 void SkyHandle::start() {
   envStateIsNew = true;
   environment.emplace(arena.getNextEnv());
+  caller.doStartGame();
 }
 
 void SkyHandle::instantiateSky(const SkyInit &init) {
@@ -99,6 +94,7 @@ void SkyHandle::stop() {
   envStateIsNew = true;
   environment.reset();
   sky.reset();
+  caller.doEndGame();
 }
 
 }

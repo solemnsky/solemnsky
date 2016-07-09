@@ -71,6 +71,9 @@ class Sandbox : public Game {
   // Commands
   void runCommand(const SandboxCommand &command);
 
+  // Render submethods.
+  void displayStatus(ui::Frame &f, const std::string &status);
+
  public:
   Sandbox(ClientShared &state);
 

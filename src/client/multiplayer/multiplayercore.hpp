@@ -68,7 +68,7 @@ struct ArenaConnection {
   ArenaConnection(
       const PID pid,
       const sky::ArenaInit &arenaInit,
-      const sky::SkyHandleInit &skyInit,
+      const sky::SkyHandleInit &skyHandleInit,
       const sky::ScoreboardInit &scoreboardInit);
 
   // Engine state.
@@ -85,11 +85,10 @@ struct ArenaConnection {
 };
 
 /**
- * Entity that listens to changes in the ArenaConnection.
- * Multiplayer has to do this, to keep the MultiplayerView synced
- * with the ArenaConnection.
+ * Entity that observes changes in the ArenaConnection.
+ * Multiplayer has to do this.
  */
-class ConnectionListener {
+class ConnectionObserver {
  public:
   virtual void onConnect() {}
   virtual void onLoadMode(const sky::ArenaMode newMode) {}
@@ -106,8 +105,8 @@ class MultiplayerCore : public ClientComponent {
   friend class MultiplayerLogger;
   friend class MultiplayerSubsystem;
  private:
-  // Associated listener.
-  ConnectionListener &listener;
+  // Associated observer.
+  ConnectionObserver &observer;
 
   // Connection state.
   optional<MultiplayerLogger> proxyLogger;
@@ -132,7 +131,7 @@ class MultiplayerCore : public ClientComponent {
  public:
   MultiplayerCore(
       ClientShared &shared,
-      ConnectionListener &listener,
+      ConnectionObserver &listener,
       const std::string &serverHostname,
       const unsigned short serverPort);
   ~MultiplayerCore();
@@ -163,7 +162,6 @@ class MultiplayerCore : public ClientComponent {
   void rcon(const std::string &command);
   void handleChatInput(const std::string &input);
   void requestTeamChange(const sky::Team team);
-
 };
 
 /**
@@ -179,11 +177,7 @@ class MultiplayerView : public ClientComponent, public ui::Control {
   ArenaConnection &conn;
 
   MultiplayerView(
-      sky::ArenaMode target,
       ClientShared &shared,
-      MultiplayerCore &mShared);
-  virtual ~MultiplayerView() {}
-
-  const sky::ArenaMode target;
+      MultiplayerCore &core);
 
 };

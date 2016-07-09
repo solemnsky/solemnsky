@@ -51,9 +51,6 @@ class SkyHandle
   Environment const *getEnvironment() const;
   Sky const *getSky() const;
 
-  bool loadingToSky() const;
-  bool readyToLoadSky() const;
-
   // Networking.
   SkyHandleInit captureInitializer() const override final;
   optional<SkyHandleDelta> collectDelta();

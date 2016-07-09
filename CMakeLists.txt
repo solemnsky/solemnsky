@@ -30,21 +30,21 @@ include_directories(SYSTEM
         thirdparty/mingw-std-threads/
         thirdparty/spdlog/include/
         ${Boost_INCLUDE_DIRS}
-)
+        )
 
 ###### libsolemnsky, for common use by client and server
 add_library(solemnsky STATIC
-        src/engine/environment/envgraphics.cpp
-        src/engine/environment/envgraphics.hpp
-
         src/engine/environment/environment.cpp
         src/engine/environment/environment.hpp
 
-        src/engine/environment/envscripts.cpp
-        src/engine/environment/envscripts.hpp
-
         src/engine/environment/map.cpp
         src/engine/environment/map.hpp
+
+        src/engine/environment/mechanics.cpp
+        src/engine/environment/mechanics.hpp
+
+        src/engine/environment/visuals.cpp
+        src/engine/environment/visuals.hpp
 
         src/engine/arena.cpp
         src/engine/arena.hpp
@@ -147,20 +147,23 @@ add_executable(solemnsky_client
         src/client/elements/style.cpp
         src/client/elements/style.hpp
 
-        #        src/client/multiplayer/multiplayer.cpp
-        #        src/client/multiplayer/multiplayer.hpp
-        #
-        #        src/client/multiplayer/multiplayercore.cpp
-        #        src/client/multiplayer/multiplayercore.hpp
-        #
-        #        src/client/multiplayer/multiplayergame.cpp
-        #        src/client/multiplayer/multiplayergame.hpp
-        #
-        #        src/client/multiplayer/multiplayerlobby.cpp
-        #        src/client/multiplayer/multiplayerlobby.hpp
-        #
-        #        src/client/multiplayer/multiplayerscoring.cpp
-        #        src/client/multiplayer/multiplayerscoring.hpp
+        src/client/multiplayer/multiplayer.cpp
+        src/client/multiplayer/multiplayer.hpp
+
+        src/client/multiplayer/multiplayercore.cpp
+        src/client/multiplayer/multiplayercore.hpp
+
+        src/client/multiplayer/multiplayergame.cpp
+        src/client/multiplayer/multiplayergame.hpp
+
+        src/client/multiplayer/multiplayersplash.cpp
+        src/client/multiplayer/multiplayersplash.hpp
+
+        src/client/multiplayer/multiplayerlobby.cpp
+        src/client/multiplayer/multiplayerlobby.hpp
+
+        src/client/multiplayer/multiplayerscoring.cpp
+        src/client/multiplayer/multiplayerscoring.hpp
 
         src/client/sandbox/sandbox.cpp
         src/client/sandbox/sandbox.hpp

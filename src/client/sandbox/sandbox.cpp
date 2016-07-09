@@ -77,6 +77,11 @@ void Sandbox::runCommand(const SandboxCommand &command) {
   }
 }
 
+void Sandbox::displayStatus(ui::Frame &f, const std::string &status) {
+  f.drawText({500, 500}, status, sf::Color::White,
+             style.base.normalText, resources.defaultFont);
+}
+
 Sandbox::Sandbox(ClientShared &state) :
     Game(state, "sandbox"),
     arena(sky::ArenaInit("sandbox", "ball_funnelpark")),
@@ -116,12 +121,23 @@ void Sandbox::doExit() {
  */
 
 void Sandbox::tick(const TimeDiff delta) {
-  if (skyHandle.readyToLoadSky()) {
-    skyHandle.instantiateSky({});
-    skyRender.emplace(shared, resources, arena, *skyHandle.getSky());
+  if (!skyHandle.getSky()) {
+    if (auto environment = skyHandle.getEnvironment()) {
+      if (environment->getMap() and environment->getVisuals()) {
+        // Ready to load!
+        status = "loaded";
+        skyHandle.instantiateSky({});
+        skyRender.emplace(shared, resources, arena, *skyHandle.getSky());
+      } else {
+        // Waiting for loading to happen.
+        if (!environment->loadingErrored() and environment->loadingIdle()) {
+          environment->loadMore(true, false);
+        }
+      }
+    }
   }
 
-  if (shared.ui.gameFocused()) arena.tick(delta);
+  if (shared.getUi().gameFocused()) arena.tick(delta);
   // if this were multiplayer of course we wouldn't have this liberty
   ui::Control::tick(delta);
 }
@@ -133,6 +149,16 @@ void Sandbox::render(ui::Frame &f) {
         f, plane ?
            plane->getState().physical.pos :
            sf::Vector2f(0, 0));
+  } else {
+    if (const auto environment = skyHandle.getEnvironment()) {
+      if (environment->loadingErrored()) {
+        displayStatus(f, "Environment loading errored!");
+      } else {
+        displayStatus(f, "Loading environment...");
+      }
+    } else {
+      displayStatus(f, "No environment loaded.");
+    }
   }
 
   ui::Control::render(f);

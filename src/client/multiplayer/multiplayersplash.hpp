@@ -16,14 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Graphics data associated with an environment (for clientside).
+ * Splash screen for the client to interact with while the environment is loading.
  */
 #pragma once
+#include "multiplayercore.hpp"
 
-namespace sky {
+/**
+ * MultiplayerGameHandle waits for this to quit before moving on to the game.
+ */
+class MultiplayerSplash : public MultiplayerView {
+ private:
+ public:
+  MultiplayerSplash(ClientShared &shared, MultiplayerCore &core);
 
-class EnvGraphics {
+  // Control impl.
+  void tick(float delta) override;
+  void render(ui::Frame &f) override;
+  bool handle(const sf::Event &event) override;
+  void signalRead() override;
+  void signalClear() override;
 
 };
-
-}
