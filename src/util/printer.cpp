@@ -75,16 +75,15 @@ LogPrinter::LogPrinter()
   std::stringstream filename;
   filename << "logs/log_" << std::time(NULL) << ".txt";
   fs::create_directories(fs::path("./logs/"));
-#ifndef NDEBUG
+
   std::vector<spdlog::sink_ptr> sinks;
   sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_mt>());
   sinks.push_back(std::make_shared<spdlog::sinks::simple_file_sink_mt>(filename.str().c_str(), true));
   mlogger = std::make_shared<spdlog::logger>("solemnsky", begin(sinks), end(sinks));
-#else
-  mlogger = std::make_shared<spdlog::logger>("solemnsky",
-                                             std::make_shared<spdlog::sinks::simple_file_sink_mt>(filename.str().c_str(),
-                                                                                                  true));
-#endif
+
+  // mlogger = std::make_shared<spdlog::logger>("solemnsky",
+                                             // std::make_shared<spdlog::sinks::simple_file_sink_mt>(filename.str().c_str(),
+                                                                                                  // true));
   mlogger->set_pattern("[%t | %C-%m-%d | %T] %v");
 }
 
