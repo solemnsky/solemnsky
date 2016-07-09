@@ -229,13 +229,11 @@ SubsystemCaller::SubsystemCaller(Arena &arena) :
     arena(arena) {}
 
 void SubsystemCaller::doStartGame() {
-  appLog("Propagating start game callback.");
   for (const auto &pair : arena.subsystems)
     pair.second->onStartGame();
 }
 
 void SubsystemCaller::doEndGame() {
-  appLog("Propagating end game callback.");
   for (const auto &pair : arena.subsystems)
     pair.second->onEndGame();
 }
