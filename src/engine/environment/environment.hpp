@@ -20,8 +20,8 @@
  */
 #pragma once
 #include "util/types.hpp"
-#include "envgraphics.hpp"
-#include "envscripts.hpp"
+#include "visuals.hpp"
+#include "mechanics.hpp"
 #include "map.hpp"
 #include "util/threads.hpp"
 #include "util/archive.hpp"
@@ -50,13 +50,13 @@ class Environment {
   bool loadError;
   float loadProgress;
   optional<Map> map;
-  optional<EnvGraphics> graphics;
-  optional<EnvScripts> scripts;
+  optional<Visuals> graphics;
+  optional<Mechanics> scripts;
 
   std::thread workerThread;
 
   // Canonical logging messages.
-  enum class Component {Map, Graphics, Scripts};
+  enum class Component { Map, Mechanics, Visuals };
   static std::string describeComponent(const Component c);
   static std::string describeComponentLoading(const Component c);
   static std::string describeComponentLoadingNull(const Component c);
@@ -64,14 +64,14 @@ class Environment {
   static std::string describeComponentMalformed(const Component c);
 
   // Loading submethods -- they expect fileArchive to be loaded.
-  void loadMap(const fs::path &mapPath);
-  void loadGraphics(const fs::path &graphicsPath);
-  void loadScripts(const fs::path &scriptPath);
+  void loadMap(const fs::path &path);
+  void loadMechanics(const fs::path &path);
+  void loadVisuals(const fs::path &path);
 
   // Null loading submethods.
   void loadNullMap();
-  void loadNullGraphics();
-  void loadNullScripts();
+  void loadNullMechanics();
+  void loadNullVisuals();
 
  public:
   Environment(const EnvironmentURL &url);
@@ -93,8 +93,8 @@ class Environment {
 
   // Accessing loaded resources. nullptr if they aren't loaded.
   Map const *getMap() const;
-  EnvGraphics const *getGraphics() const;
-  EnvScripts const *getScripts() const;
+  Visuals const *getGraphics() const;
+  Mechanics const *getScripts() const;
 
 };
 

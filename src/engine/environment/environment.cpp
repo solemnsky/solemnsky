@@ -29,8 +29,8 @@ namespace sky {
 std::string Environment::describeComponent(const Component c) {
   switch (c) {
     case Component::Map: return "map";
-    case Component::Graphics: return "map";
-    case Component::Scripts: return "scripts";
+    case Component::Visuals: return "visuals";
+    case Component::Mechanics: return "mechanics";
   }
   throw enum_error();
 }
@@ -52,9 +52,9 @@ std::string Environment::describeComponentMalformed(const Component c) {
   return "Environment " + describeComponent(c) + " component data appears to be malformed!";
 }
 
-void Environment::loadMap(const fs::path &mapPath) {
+void Environment::loadMap(const fs::path &path) {
   appLog(describeComponentLoading(Component::Map), LogOrigin::Engine);
-  std::ifstream mapFile(mapPath.string());
+  std::ifstream mapFile(path.string());
   if (auto map = Map::load(mapFile)) {
     this->map.emplace(std::move(map.get()));
   } else {
@@ -63,13 +63,13 @@ void Environment::loadMap(const fs::path &mapPath) {
   }
 }
 
-void Environment::loadGraphics(const fs::path &graphicsPath) {
-  appLog(describeComponentLoading(Component::Graphics), LogOrigin::Engine);
+void Environment::loadMechanics(const fs::path &path) {
+  appLog(describeComponentLoading(Component::Mechanics), LogOrigin::Engine);
   assert(false);
 }
 
-void Environment::loadScripts(const fs::path &scriptPath) {
-  appLog(describeComponentLoading(Component::Scripts), LogOrigin::Engine);
+void Environment::loadVisuals(const fs::path &path) {
+  appLog(describeComponentLoading(Component::Visuals), LogOrigin::Engine);
   assert(false);
 }
 
@@ -78,14 +78,14 @@ void Environment::loadNullMap() {
   map.emplace();
 }
 
-void Environment::loadNullGraphics() {
-  appLog(describeComponentLoadingNull(Component::Graphics), LogOrigin::Engine);
-  graphics.emplace();
+void Environment::loadNullMechanics() {
+  appLog(describeComponentLoadingNull(Component::Mechanics), LogOrigin::Engine);
+  scripts.emplace();
 }
 
-void Environment::loadNullScripts() {
-  appLog(describeComponentLoadingNull(Component::Scripts), LogOrigin::Engine);
-  scripts.emplace();
+void Environment::loadNullVisuals() {
+  appLog(describeComponentLoadingNull(Component::Visuals), LogOrigin::Engine);
+  graphics.emplace();
 }
 
 Environment::Environment(const EnvironmentURL &url) :
@@ -136,13 +136,13 @@ void Environment::loadMore(
 
     workerThread = std::thread([&]() {
       if (url == "NULL") {
-        if (needGraphics) loadNullGraphics();
-        if (needScripts) loadNullScripts();
+        if (needGraphics) loadNullVisuals();
+        if (needScripts) loadNullMechanics();
       } else {
         const auto dir = *this->fileArchive.getResult();
         if (needGraphics) {
           if (const auto graphicsFile = dir.getTopFile("graphics.json")) {
-            loadGraphics(graphicsFile.get());
+            loadVisuals(graphicsFile.get());
           } else {
             appLog(describeComponentMissing(Component::Graphics),
                    LogOrigin::Error);
@@ -151,7 +151,7 @@ void Environment::loadMore(
         }
         if (needScripts) {
           if (const auto scriptFile = dir.getTopFile("scripts.clj")) {
-            loadScripts(scriptFile.get());
+            loadMechanics(scriptFile.get());
           } else {
             appLog(describeComponentMissing(Component::Scripts),
                    LogOrigin::Error);
@@ -184,11 +184,11 @@ Map const *Environment::getMap() const {
   return map.get_ptr();
 }
 
-EnvGraphics const *Environment::getGraphics() const {
+Visuals const *Environment::getGraphics() const {
   return graphics.get_ptr();
 }
 
-EnvScripts const *Environment::getScripts() const {
+Mechanics const *Environment::getScripts() const {
   return scripts.get_ptr();
 }
 

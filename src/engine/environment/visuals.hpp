@@ -16,15 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Scheme scripts held by an environment (for serverside consumption).
+ * Visual customization associated with an environment (for clientside).
  */
 #pragma once
 
 namespace sky {
 
-class EnvScripts {
+class Visuals {
 
 };
 
 }
-
