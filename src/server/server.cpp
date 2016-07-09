@@ -52,18 +52,16 @@ void ServerShared::registerGameEnd() {
   registerArenaDelta(sky::ArenaDelta::EnvLoadState(false));
 }
 
-void ServerShared::sendToClients(const sky::ServerPacket &packet,
-                                 const bool guaranteeOrder) {
+void ServerShared::sendToClients(const sky::ServerPacket &packet) {
   telegraph.transmit(
       host,
       [&](std::function<void(ENetPeer *const)> transmit) {
         for (auto const peer : host.getPeers()) { transmit(peer); }
-      }, packet, guaranteeOrder);
+      }, packet);
 }
 
 void ServerShared::sendToClientsExcept(const PID pid,
-                                       const sky::ServerPacket &packet,
-                                       const bool guaranteeOrder) {
+                                       const sky::ServerPacket &packet) {
   telegraph.transmit(
       host,
       [&](std::function<void(ENetPeer *const)> transmit) {
@@ -72,18 +70,17 @@ void ServerShared::sendToClientsExcept(const PID pid,
             if (player->pid != pid) transmit(peer);
           }
         }
-      }, packet, guaranteeOrder);
+      }, packet);
 }
 
 void ServerShared::sendToClient(ENetPeer *const client,
-                                const sky::ServerPacket &packet,
-                                const bool guaranteeOrder) {
-  telegraph.transmit(host, client, packet, guaranteeOrder);
+                                const sky::ServerPacket &packet) {
+  telegraph.transmit(host, client, packet);
 }
 
 void ServerShared::rconResponse(ENetPeer *const client,
                                 const std::string &response) {
-  sendToClient(client, sky::ServerPacket::RCon(response), true);
+  sendToClient(client, sky::ServerPacket::RCon(response));
   logEvent(ServerEvent::RConOut(response));
 }
 
@@ -200,7 +197,7 @@ void ServerExec::processPacket(ENetPeer *client,
           newPlayer->pid,
           shared.arena.captureInitializer(),
           shared.skyHandle.captureInitializer(),
-          shared.scoreboard.captureInitializer()), 0);
+          shared.scoreboard.captureInitializer()));
       shared.sendToClientsExcept(
           newPlayer->pid, ServerPacket::DeltaArena(delta));
     }
@@ -253,17 +250,18 @@ void ServerExec::tick(const TimeDiff delta) {
     shared.sendToClients(sky::ServerPacket::DeltaSkyHandle(handleDelta.get()));
   }
 
-  // Sky update scheduling.
+  // Sky update and initialization scheduling.
   if (const auto sky = shared.skyHandle.getSky()) {
     if (skyDeltaTimer.cool(delta)) {
       auto skyDelta = sky->collectDelta();
 
       for (auto peer : host.getPeers()) {
         if (sky::Player *player = shared.playerFromPeer(peer)) {
-          shared.sendToClient(
-              peer, sky::ServerPacket::DeltaSky(
-                  skyDelta.respectAuthority(*player),
-                  shared.arena.getUptime()));
+          if (!player->isLoadingEnv())
+            shared.sendToClient(
+                peer, sky::ServerPacket::DeltaSky(
+                    skyDelta.respectAuthority(*player),
+                    shared.arena.getUptime()));
         } else {
           appLog("Warning: Peer attached to no client!"
                      " Think about what this means.");

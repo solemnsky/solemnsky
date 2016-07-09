@@ -69,18 +69,28 @@ TEST_F(ProtocolTest, CerealProtocol) {
  */
 TEST_F(ProtocolTest, Invariant) {
   // Example: ClientPacket::ReqJoin needs a stringData.
-  sky::ClientPacket packet = sky::ClientPacket::ReqJoin("asdf");
-  EXPECT_EQ(packet.verifyStructure(), true);
-  packet.stringData.reset();
-  EXPECT_EQ(verifyValue(packet), false);
+  {
+    sky::ClientPacket packet = sky::ClientPacket::ReqJoin("asdf");
+    EXPECT_EQ(packet.verifyStructure(), true);
+    packet.stringData.reset();
+    EXPECT_EQ(verifyValue(packet), false);
+  }
 
   // Example: ServerPacket::Chat needs a pid.
-  sky::ServerPacket sPacket =
-      sky::ServerPacket::Broadcast("some broadcast");
-  EXPECT_EQ(sPacket.verifyStructure(), true);
-  sPacket.type = sky::ServerPacket::Type::Chat;
-  EXPECT_EQ(sPacket.verifyStructure(), false);
-  sPacket.type = (sky::ServerPacket::Type) 50;
-  EXPECT_EQ(sPacket.verifyStructure(), false);
+  {
+    sky::ServerPacket packet =
+        sky::ServerPacket::Broadcast("some broadcast");
+    EXPECT_EQ(packet.verifyStructure(), true);
+    packet.type = sky::ServerPacket::Type::Chat;
+    EXPECT_EQ(packet.verifyStructure(), false);
+    packet.type = (sky::ServerPacket::Type) 50;
+    EXPECT_EQ(packet.verifyStructure(), false);
+  }
+
+  // Various specific packets are considered valid.
+  {
+    sky::ServerPacket packet = sky::ServerPacket::InitSky(sky::SkyInit());
+    EXPECT_EQ(packet.verifyStructure(), true);
+  }
 }
 

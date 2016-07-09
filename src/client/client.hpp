@@ -52,6 +52,7 @@ class Client: public ui::Control {
   SettingsPage settingsPage;
   bool tryingToQuit; // trying to exit, waiting on the game to close
 
+  // Performance profiling.
   Cooldown profilerCooldown;
   ui::ProfilerSnapshot profilerSnap;
 
