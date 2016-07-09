@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include "util/printer.hpp"
+#include "methods.hpp"
 
 /**
  * Directory.
@@ -93,7 +94,8 @@ void Archive::load() {
 
   appLog("Invoking 7zip...", LogOrigin::App);
 
-  fs::path workingDir(".unzip-tmp/" + this->archivePath.filename().string());
+  fs::path workingDir(".unzip-tmp/" + std::to_string(getProcessID()) + "/"
+                          + this->archivePath.filename().string());
   fs::remove_all(workingDir);
   fs::create_directories(workingDir);
 
@@ -101,7 +103,7 @@ void Archive::load() {
   // build platforms ... the choice was obvious
   chdir(workingDir.string().c_str());
   system(("7z x " + archivePath.string()).c_str());
-  chdir("../..");
+  chdir("../../../");
 
   if (const auto opened = Directory::open(workingDir))
     this->result.emplace(*opened);
