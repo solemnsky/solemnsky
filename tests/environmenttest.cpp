@@ -45,11 +45,9 @@ TEST_F(EnvironmentTest, ErrorTest) {
 TEST_F(EnvironmentTest, BasicTest) {
   // we should have a demo.sky in the environment directory
   sky::Environment environment("demo");
-  ASSERT_FALSE(environment.loadingIdle()); // we should be doing work!
-
+  ASSERT_FALSE(environment.loadingIdle());
   environment.joinWorker();
   // this might take a second, we need to unpack the archive and load the map
-  // good thing it's asynchronous
 
   // The map has loaded properly!
   ASSERT_TRUE(environment.loadingIdle());
@@ -63,13 +61,35 @@ TEST_F(EnvironmentTest, BasicTest) {
  * Graphics can be loaded from environment files too, when we ask for them.
  */
 TEST_F(EnvironmentTest, GraphicsTest) {
-  // TODO: implement
+  sky::Environment environment("demo");
+  environment.joinWorker();
+
+  environment.loadMore(true, false);
+  ASSERT_FALSE(environment.loadingIdle());
+  environment.joinWorker();
+  ASSERT_TRUE(environment.loadingIdle());
+
+  ASSERT_TRUE(environment.getVisuals());
+  ASSERT_FALSE(environment.getMechanics());
+
+  // TODO: more
 }
 
 /**
  * We can even load scripts from environment files.
  */
 TEST_F(EnvironmentTest, ScriptTest) {
-  // TODO: implement
+  sky::Environment environment("demo");
+  environment.joinWorker();
+
+  environment.loadMore(false, true);
+  ASSERT_FALSE(environment.loadingIdle());
+  environment.joinWorker();
+  ASSERT_TRUE(environment.loadingIdle());
+
+  ASSERT_FALSE(environment.getVisuals());
+  ASSERT_TRUE(environment.getMechanics());
+
+  // TODO: more
 }
 

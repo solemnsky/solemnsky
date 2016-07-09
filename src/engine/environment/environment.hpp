@@ -51,8 +51,8 @@ class Environment {
   bool loadError;
   float loadProgress;
   optional<Map> map;
-  optional<Visuals> graphics;
-  optional<Mechanics> scripts;
+  optional<Visuals> visuals;
+  optional<Mechanics> mechanics;
 
   std::thread workerThread;
 
@@ -64,12 +64,12 @@ class Environment {
   static std::string describeComponentMissing(const Component c);
   static std::string describeComponentMalformed(const Component c);
 
-  // Loading submethods -- they expect fileArchive to be loaded.
+  // Loading subroutines -- they expect fileArchive to be loaded.
   void loadMap(const fs::path &path);
   void loadMechanics(const fs::path &path);
   void loadVisuals(const fs::path &path);
 
-  // Null loading submethods.
+  // Null loading subroutines.
   void loadNullMap();
   void loadNullMechanics();
   void loadNullVisuals();
@@ -77,14 +77,14 @@ class Environment {
  public:
   Environment(const EnvironmentURL &url);
   // The null environment, useful for testing and sandboxes.
-  // The default ctor is equilivant to supplying a URL of "NULL".
+  // The default ctor is equilivent to supplying a URL of "NULL".
   Environment();
   ~Environment();
 
   const EnvironmentURL url;
 
   // Loading.
-  void loadMore(const bool needGraphics, const bool needScripts);
+  void loadMore(const bool needVisuals, const bool needMechanics);
   void joinWorker();
 
   // Load status.

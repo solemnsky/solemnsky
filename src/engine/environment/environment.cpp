@@ -65,12 +65,12 @@ void Environment::loadMap(const fs::path &path) {
 
 void Environment::loadMechanics(const fs::path &path) {
   appLog(describeComponentLoading(Component::Mechanics), LogOrigin::Engine);
-  // TODO: mechanics
+  mechanics.emplace();
 }
 
 void Environment::loadVisuals(const fs::path &path) {
   appLog(describeComponentLoading(Component::Visuals), LogOrigin::Engine);
-  // TODO: visuals
+  visuals.emplace();
 }
 
 void Environment::loadNullMap() {
@@ -80,12 +80,12 @@ void Environment::loadNullMap() {
 
 void Environment::loadNullMechanics() {
   appLog(describeComponentLoadingNull(Component::Mechanics), LogOrigin::Engine);
-  scripts.emplace();
+  mechanics.emplace();
 }
 
 void Environment::loadNullVisuals() {
   appLog(describeComponentLoadingNull(Component::Visuals), LogOrigin::Engine);
-  graphics.emplace();
+  visuals.emplace();
 }
 
 Environment::Environment(const EnvironmentURL &url) :
@@ -103,9 +103,8 @@ Environment::Environment(const EnvironmentURL &url) :
                + " with environment file " + archivePath.string(),
            LogOrigin::Engine);
 
+    workerRunning = true;
     workerThread = std::thread([&]() {
-      workerRunning = true;
-
       fileArchive.load();
       if (const auto dir = fileArchive.getResult()) {
         if (const auto mapPath = dir->getTopFile("map.json")) {
@@ -133,39 +132,38 @@ Environment::~Environment() {
 }
 
 void Environment::loadMore(
-    const bool needGraphics, const bool needScripts) {
+    const bool needVisuals, const bool needMechanics) {
   if (loadingIdle()) {
     joinWorker();
     assert(!loadError);
-    // it's pointless to load when we have a load error
-    // the user should handle the error case
+    assert(imply(needVisuals, !visuals));
+    assert(imply(needMechanics, !mechanics));
 
     appLog("Beginning secondary environment loading.", LogOrigin::Engine);
 
-    workerThread = std::thread([&]() {
-      workerRunning = true;
-
+    workerRunning = true;
+    workerThread = std::thread([&, needVisuals, needMechanics]() {
       if (url == "NULL") {
-        if (needGraphics) loadNullVisuals();
-        if (needScripts) loadNullMechanics();
+        if (needVisuals) loadNullVisuals();
+        if (needMechanics) loadNullMechanics();
       } else {
-        const auto dir = *this->fileArchive.getResult();
+        const auto dir = this->fileArchive.getResult().get();
 
-        if (needScripts) {
-          if (const auto scriptFile = dir.getTopFile("scripts.clj")) {
-            loadMechanics(scriptFile.get());
+        if (needVisuals) {
+          if (const auto visualFile = dir.getTopFile("graphics.json")) {
+            loadVisuals(visualFile.get());
           } else {
-            appLog(describeComponentMissing(Component::Mechanics),
+            appLog(describeComponentMissing(Component::Visuals),
                    LogOrigin::Error);
             loadError = true;
           }
         }
 
-        if (needGraphics) {
-          if (const auto graphicsFile = dir.getTopFile("graphics.json")) {
-            loadVisuals(graphicsFile.get());
+        if (needMechanics) {
+          if (const auto mechanicsFile = dir.getTopFile("mechanics.json")) {
+            loadMechanics(mechanicsFile.get());
           } else {
-            appLog(describeComponentMissing(Component::Visuals),
+            appLog(describeComponentMissing(Component::Mechanics),
                    LogOrigin::Error);
             loadError = true;
           }
@@ -201,11 +199,11 @@ Map const *Environment::getMap() const {
 }
 
 Visuals const *Environment::getVisuals() const {
-  return graphics.get_ptr();
+  return visuals.get_ptr();
 }
 
 Mechanics const *Environment::getMechanics() const {
-  return scripts.get_ptr();
+  return mechanics.get_ptr();
 }
 
 }

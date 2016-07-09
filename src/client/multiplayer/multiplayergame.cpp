@@ -40,8 +40,7 @@ void MultiplayerGameHandle::tick(const TimeDiff delta) {
       if (environment.getVisuals()) {
         gameView.emplace(shared, core);
       } else {
-        if (!environment.loadingErrored()) {
-          appLog("loading more");
+        if (!environment.loadingErrored() and environment.loadingIdle()) {
           environment.loadMore(true, false);
         }
       }
