@@ -54,17 +54,7 @@ Multiplayer::Multiplayer(ClientShared &shared,
 
 void Multiplayer::onConnect() {
   appLog("Observer received event: Connection started!");
-  const auto mode = core.conn->arena.getMode();
-  if (mode == sky::ArenaMode::Game) {
-    if (core.conn->skyHandle.getSky()) {
-      loadView(mode);
-    } else {
-      loadView(sky::ArenaMode::Lobby);
-    }
-  } else {
-    loadView(mode);
-  }
-
+  loadView(core.conn->arena.getMode());
 }
 
 void Multiplayer::onLoadMode(const sky::ArenaMode mode) {
