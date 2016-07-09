@@ -41,25 +41,23 @@ By the development alpha release, I plan to have a highly usable client/server s
 A list of the foreseeable developments necessary to reach this point follows.
 
 * Client UI 
-  * Should leave a good first impression, and be intuitive and functional. 
-  * Should have useful settings, with support for persistence.
+  * Should leave a good first impression, and be intuitive and functional. (Issue #18)
+  * Should have useful settings, with support for persistence. (Issue #17)
 * Environment (.sky) Format. 
-  * Should be constructible from altitude's maps with an automated tool. 
-  * Should be easy to add custom game graphics to.
+  * Should be constructible from altitude's maps with an automated tool. (Issue #19)
+  * Should be easy to add custom game graphics to. (Issue #20)
 * Engine 
-  * Should be improved to allow the server's implementation of a basic TBD-like mode.
+  * Should be improved to allow the server's implementation of a basic TBD-like mode. (Issue #22)
 * Engine Sandbox 
-  * Should allow experimenting with engine tuning values. 
-  * Should allow testing of environments with minimal overhead.
+  * Should allow experimenting with engine tuning values. (Issue #22)
 * Multiplayer Client 
-  * Should display lobby, environment loading, game, and score screens.
+  * Should display lobby, environment loading, game, and score screens. (Issue #24)
 * Multiplayer Server 
-  * Should implement a basic TBD-like mode.
+  * Should implement a basic TBD-like mode. (Issue #23)
 * Multiplayer 
-  * Should employ packet buffering to compensate latency fluctuation in `SkyDelta` (dynamic game state) packets, on both client and server.
-* Application
-  * Should have better logging (faster, more expressive). (Issue #16)
-  * Should have end-user-friendly exports for Windows and Linux. (Issue #25)
+  * Should employ packet buffering to compensate latency fluctuation in `SkyDelta` (dynamic game state) packets, on both client and server. (Issue #21)
+* Logging
+  * Should use an external library for fast asynchronous logging, and have a nice informational format. (Issue #16)
 
 ## Licensing and Credits.
 
