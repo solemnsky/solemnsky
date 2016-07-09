@@ -57,6 +57,9 @@ A list of the foreseeable developments necessary to reach this point follows.
   * Should implement a basic TBD-like mode.
 * Multiplayer 
   * Should employ packet buffering to compensate latency fluctuation in `SkyDelta` (dynamic game state) packets, on both client and server.
+* Application
+  * Should have better logging (faster, more expressive). (Issue #16)
+  * Should have end-user-friendly exports for Windows and Linux. (Issue #25)
 
 ## Licensing and Credits.
 
