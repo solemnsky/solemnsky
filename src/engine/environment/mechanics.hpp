@@ -15,8 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "envscripts.hpp"
+/**
+ * Scheme scripts held by an environment (for serverside consumption).
+ */
+#pragma once
 
 namespace sky {
 
+class Mechanics {
+
+};
+
 }
+
