@@ -117,7 +117,6 @@ void VanillaServer::onPacket(ENetPeer *const client,
 
   if (packet.type == sky::ClientPacket::Type::ReqTeam) {
     if (arena.getMode() == sky::ArenaMode::Lobby) {
-      appLog("changing team");
       sky::PlayerDelta delta{player};
       delta.team = packet.team.get();
       shared.registerArenaDelta(sky::ArenaDelta::Delta(player.pid, delta));

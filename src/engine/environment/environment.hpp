@@ -93,8 +93,8 @@ class Environment {
 
   // Accessing loaded resources. nullptr if they aren't loaded.
   Map const *getMap() const;
-  Visuals const *getGraphics() const;
-  Mechanics const *getScripts() const;
+  Visuals const *getVisuals() const;
+  Mechanics const *getMechanics() const;
 
 };
 
