@@ -116,9 +116,19 @@ void Sandbox::doExit() {
  */
 
 void Sandbox::tick(const TimeDiff delta) {
-  if (skyHandle.readyToLoadSky()) {
-    skyHandle.instantiateSky({});
-    skyRender.emplace(shared, resources, arena, *skyHandle.getSky());
+  if (!skyHandle.getSky()) {
+    if (auto environment = skyHandle.getEnvironment()) {
+      if (environment->getMap() and environment->getVisuals()) {
+        // Ready to load!
+        skyHandle.instantiateSky({});
+        skyRender.emplace(shared, resources, arena, *skyHandle.getSky());
+      } else {
+        // Waiting for loading to happen.
+        if (environment->loadingIdle()) {
+          environment->loadMore(true, false);
+        }
+      }
+    }
   }
 
   if (shared.getUi().gameFocused()) arena.tick(delta);

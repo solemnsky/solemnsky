@@ -49,17 +49,6 @@ Sky const *SkyHandle::getSky() const {
   return sky.get_ptr();
 }
 
-bool SkyHandle::loadingToSky() const {
-  return getEnvironment() and !getSky();
-}
-
-bool SkyHandle::readyToLoadSky() const {
-  if (auto env = getEnvironment()) {
-    return env->getMap() and !getSky();
-  }
-  return false;
-}
-
 SkyHandleInit SkyHandle::captureInitializer() const {
   if (environment) return SkyHandleInit{environment->url};
   else return SkyHandleInit{};
