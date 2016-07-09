@@ -19,11 +19,16 @@
  * Printing text in ways appealing to humans.
  */
 #pragma once
+#include <ctime>
 #include <SFML/System.hpp>
 #include <Box2D/Box2D.h>
 #include <cereal/archives/json.hpp>
 #include <spdlog/spdlog.h>
 #include "types.hpp"
+#include <boost/filesystem.hpp>
+
+// alias to boost filesystem library
+namespace fs = boost::filesystem;
 
 /**
  * Implemented by StringPrinter below and TextFrame in the Client UI.
@@ -85,6 +90,29 @@ enum class LogOrigin {
   Error // is a fatal error
 };
 
+/**
+ * A Printer subclass wrapping logging features
+ */
+
+class LogPrinter:public Printer {
+public:
+  LogPrinter();
+
+  void print(const std::string &str) override final;
+  void print(const std::string& str, const LogOrigin& origin);
+  void setColor(const unsigned char r,
+                        const unsigned char g,
+                        const unsigned char b) override final{}
+  void breakLine() override final{}
+private:
+  std::shared_ptr<spdlog::logger> mlogger;
+};
+
+
+/**
+ * Logging functions
+ */
+
 void appLog(const std::string &contents, const LogOrigin = LogOrigin::None);
 void appErrorRuntime(const std::string &contents);
 
@@ -93,11 +121,11 @@ void appErrorRuntime(const std::string &contents);
  */
 
 class ConsolePrinter: public Printer {
- private:
+private:
   const LogOrigin origin;
   std::string currentLine;
 
- public:
+public:
   ConsolePrinter(const LogOrigin origin);
   ~ConsolePrinter();
 
