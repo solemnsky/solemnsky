@@ -157,7 +157,7 @@ MultiplayerGame::MultiplayerGame(
     participation(conn.getSky()->getParticipation(conn.player)) {
   assert(bool(conn.skyHandle.getSky()));
   assert(bool(conn.skyHandle.getEnvironment()));
-  assert(bool(conn.skyHandle.getEnvironment()->getGraphics()));
+  assert(bool(conn.skyHandle.getEnvironment()->getVisuals()));
 
   areChildren({&chatInput});
   areChildComponents({&skyRender});
