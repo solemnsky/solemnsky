@@ -46,10 +46,10 @@ Page &Client::referencePage(const PageType type) {
 void Client::drawPage(ui::Frame &f, const PageType type,
                       const sf::Vector2f &offset, const std::string &name,
                       ui::Control &page) {
-  const float focusFactor = shared.ui.pageFocusFactor;
+  const float focusFactor = uiState.pageFocusFactor;
 
   float alpha, scale, offsetAmnt, titleAlpha;
-  if (type == shared.ui.focusedPage) {
+  if (type == uiState.focusedPage) {
     alpha = 1;
     scale = linearTween(style.menu.unfocusedPageScale, 1.0f, focusFactor);
     offsetAmnt = linearTween(1.0f, 0.0f, focusFactor);
@@ -81,7 +81,7 @@ void Client::drawPage(ui::Frame &f, const PageType type,
 }
 
 void Client::drawUI(ui::Frame &f) {
-  const Clamped &pageFocusFactor = shared.ui.pageFocusFactor;
+  const Clamped &pageFocusFactor = uiState.pageFocusFactor;
 
   // draw the pages
   drawPage(
@@ -94,16 +94,17 @@ void Client::drawUI(ui::Frame &f) {
       f, PageType::Settings, style.menu.settingsOffset,
       "SETTINGS", settingsPage);
 
-  if (shared.game) {
+  if (const auto game = shared.getGame()) {
     f.drawText(
         {style.menu.closeButtonOffset.x - 10, 0}, [&](ui::TextFrame &tf) {
           tf.setColor(sf::Color::White);
-          tf.print(shared.game->name);
+          tf.print(game->name);
           tf.setColor(style.menu.statusFontColor);
-          tf.print("(" + shared.game->status + ")");
+          tf.print("(" + game->status + ")");
         }, style.menu.gameDescText, resources.defaultFont);
     closeButton.render(f);
   }
+
   f.withAlpha(
       linearTween(1, 0, pageFocusFactor),
       [&]() {
@@ -120,9 +121,9 @@ void Client::drawUI(ui::Frame &f) {
 }
 
 void Client::drawGame(ui::Frame &f) {
-  shared.game->render(f);
+  game->render(f);
 
-  if (shared.settings.enableDebug) {
+  if (settings.enableDebug) {
     f.withAlpha(style.base.debugOpacity, [&]() {
       f.drawText(
           {20, 20},
@@ -137,7 +138,7 @@ void Client::drawGame(ui::Frame &f) {
             tf.breakLine();
             tf.printLn("GAME INFO:");
             tf.setColor(sf::Color::White);
-            shared.game->printDebugLeft(tf);
+            game->printDebugLeft(tf);
           }, style.base.debugText, resources.defaultFont);
       f.drawText(
           {1580, 20},
@@ -146,7 +147,7 @@ void Client::drawGame(ui::Frame &f) {
             tf.printLn("MORE GAME INFO:");
             tf.setColor(255, 255, 255);
             tf.setColor(sf::Color::White);
-            shared.game->printDebugRight(tf);
+            game->printDebugRight(tf);
           }, style.base.debugRightText, resources.defaultFont);
     });
   }
@@ -183,8 +184,8 @@ Client::Client(const ui::AppRefs &references) :
 }
 
 bool Client::poll() {
-  if (shared.game) {
-    while (!shared.game->poll()) {};
+  if (game) {
+    while (!game->poll()) {};
   }
   return ui::Control::poll();
 }
@@ -197,29 +198,32 @@ void Client::tick(const float delta) {
     profilerCooldown.reset();
   }
 
-  shared.ui.tick(delta);
+  uiState.pageFocusFactor += style.menu.pageFocusAnimSpeed
+      * delta * (uiState.pageFocusing ? 1 : -1);
+  uiState.gameFocusFactor += style.menu.gameFocusAnimSpeed
+      * delta * (uiState.gameFocusing ? 1 : -1);
 
-  if (shared.game) {
-    shared.game->tick(delta);
-    if (shared.game->quitting) {
+  if (game) {
+    game->tick(delta);
+    if (game->quitting) {
       if (tryingToQuit) {
         quitting = true;
         return;
       }
-      shared.game.reset();
-      shared.ui.blurGame();
+      game.reset();
+      blurGame();
     }
   }
 }
 
 void Client::render(ui::Frame &f) {
-  const Clamped &gameFocusFactor = shared.ui.gameFocusFactor,
-      &pageFocusFactor = shared.ui.pageFocusFactor;
+  const Clamped &gameFocusFactor = uiState.gameFocusFactor,
+      &pageFocusFactor = uiState.pageFocusFactor;
 
-  if (shared.ui.gameFocused() && shared.game) {
+  if (uiState.gameFocused() && game) {
     drawGame(f);
   } else {
-    if (!shared.game) {
+    if (!game) {
       f.drawSprite(resources.getTexture(ui::TextureID::MenuBackground),
                    {0, 0}, {0, 0, 1600, 900});
     } else {
@@ -232,37 +236,37 @@ void Client::render(ui::Frame &f) {
 
     f.withAlpha(
         linearTween(1, 0, gameFocusFactor) *
-            (shared.game ? linearTween(style.menu.menuInGameFade, 1,
-                                       pageFocusFactor) : 1),
+            (game ? linearTween(style.menu.menuInGameFade, 1,
+                                pageFocusFactor) : 1),
         [&]() { drawUI(f); });
   }
 }
 
 bool Client::handle(const sf::Event &event) {
-  if (shared.game) {
-    if (shared.ui.gameFocused()) {
-      if (shared.game->handle(event)) return true;
+  if (game) {
+    if (uiState.gameFocused()) {
+      if (game->handle(event)) return true;
     } else {
       if (closeButton.handle(event)) return true;
     }
   }
 
-  if (shared.ui.pageFocused()) {
+  if (uiState.pageFocused()) {
     if (backButton.handle(event)) return true;
-    if (referencePage(shared.ui.focusedPage).handle(event)) return true;
+    if (referencePage(uiState.focusedPage).handle(event)) return true;
   }
 
   if (event.type == sf::Event::KeyPressed
       and event.key.code == sf::Keyboard::Escape) {
     // the escape key is pressed
-    if (shared.game) {
-      if (shared.ui.gameFocused()) blurGame();
+    if (game) {
+      if (uiState.gameFocused()) blurGame();
       else focusGame();
     } else blurPage();
     return false;
   }
 
-  if (shared.ui.menuFocused()) {
+  if (uiState.menuFocused()) {
     // we're in the menu
 
     if (quitButton.handle(event)) return true;
@@ -297,20 +301,20 @@ bool Client::handle(const sf::Event &event) {
 
 void Client::reset() {
   ui::Control::reset();
-  if (shared.game) shared.game->reset();
-  referencePage(shared.ui.focusedPage).reset();
+  if (game) game->reset();
+  referencePage(uiState.focusedPage).reset();
 }
 
 void Client::signalRead() {
   ui::Control::signalRead();
-  if (shared.game) shared.game->signalRead();
+  if (game) game->signalRead();
 
   if (backButton.clickSignal) {
     blurPage();
   }
 
   if (quitButton.clickSignal) {
-    if (shared.game) {
+    if (game) {
       tryingToQuit = true;
       exitGame();
     }
@@ -327,52 +331,57 @@ void Client::signalRead() {
 }
 
 void Client::signalClear() {
-  if (shared.game) shared.game->signalClear();
+  if (game) game->signalClear();
   ui::Control::signalClear();
 }
 
 void Client::beginGame(std::unique_ptr<Game> &&game) {
-  if (shared.game) exitGame();
-  else shared.game = std::move(game);
+  if (this->game) exitGame();
+  else this->game = std::move(game);
   focusGame();
 }
 
 void Client::focusGame() {
-  if (shared.game) {
+  if (game) {
     reset();
-    if (shared.ui.pageFocused()) referencePage(shared.ui.focusedPage).onBlur();
-    shared.ui.focusGame();
-    shared.game->onFocus();
+    if (uiState.pageFocused()) referencePage(uiState.focusedPage).onBlur();
+    uiState.gameFocusing = true;
+    game->onFocus();
   }
 }
 
 void Client::blurGame() {
-  shared.ui.blurGame();
-  if (shared.game) {
-    shared.game->reset();
-    shared.game->onBlur();
+  uiState.gameFocusing = false;
+  if (game) {
+    game->reset();
+    game->onBlur();
   }
 }
 
 void Client::exitGame() {
-  if (shared.game) shared.game->doExit();
+  if (game) game->doExit();
 }
 
-void Client::focusPage(const PageType type) {
-  shared.ui.focusPage(type);
+void Client::focusPage(const PageType page) {
+  if (uiState.pageFocusFactor != 0) {
+    uiState.pageFocusing = false;
+  } else {
+    uiState.pageFocusing = true;
+    uiState.focusedPage = page;
+  }
 }
 
 void Client::blurPage() {
-  referencePage(shared.ui.focusedPage).reset();
+  referencePage(uiState.focusedPage).reset();
   backButton.reset();
-  referencePage(shared.ui.focusedPage).onBlur();
-  shared.ui.blurPage();
+  referencePage(uiState.focusedPage).onBlur();
+  uiState.pageFocusing = false;
 }
 
-void Client::changeSettings(const SettingsDelta &settings) {
-  settings.apply(shared.settings);
-  forAllPages([&settings](Page &page) {
-    page.onChangeSettings(settings);
+void Client::changeSettings(const SettingsDelta &settingsDelta) {
+  settingsDelta.apply(settings);
+  forAllPages([&](Page &page) {
+    page.onChangeSettings(settingsDelta);
   });
-  if (shared.game) shared.game->onChangeSettings(settings);
+  if (game) game->onChangeSettings(settingsDelta);
 }

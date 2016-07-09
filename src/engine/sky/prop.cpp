@@ -62,10 +62,6 @@ Prop::Prop(const PID associatedPlayer,
   body->SetGravityScale(0);
 }
 
-Prop::~Prop() {
-  physics.deleteBody(body);
-}
-
 PropInit Prop::captureInitializer() const {
   PropInit init;
   init.physical = physical;

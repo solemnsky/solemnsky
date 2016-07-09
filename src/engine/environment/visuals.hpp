@@ -15,8 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "envscripts.hpp"
+/**
+ * Visual customization associated with an environment (for clientside).
+ */
+#pragma once
 
 namespace sky {
+
+class Visuals {
+
+};
 
 }

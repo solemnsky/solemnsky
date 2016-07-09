@@ -29,8 +29,8 @@ namespace sky {
 std::string Environment::describeComponent(const Component c) {
   switch (c) {
     case Component::Map: return "map";
-    case Component::Graphics: return "map";
-    case Component::Scripts: return "scripts";
+    case Component::Visuals: return "visuals";
+    case Component::Mechanics: return "mechanics";
   }
   throw enum_error();
 }
@@ -52,9 +52,9 @@ std::string Environment::describeComponentMalformed(const Component c) {
   return "Environment " + describeComponent(c) + " component data appears to be malformed!";
 }
 
-void Environment::loadMap(const fs::path &mapPath) {
+void Environment::loadMap(const fs::path &path) {
   appLog(describeComponentLoading(Component::Map), LogOrigin::Engine);
-  std::ifstream mapFile(mapPath.string());
+  std::ifstream mapFile(path.string());
   if (auto map = Map::load(mapFile)) {
     this->map.emplace(std::move(map.get()));
   } else {
@@ -63,14 +63,14 @@ void Environment::loadMap(const fs::path &mapPath) {
   }
 }
 
-void Environment::loadGraphics(const fs::path &graphicsPath) {
-  appLog(describeComponentLoading(Component::Graphics), LogOrigin::Engine);
-  assert(false);
+void Environment::loadMechanics(const fs::path &path) {
+  appLog(describeComponentLoading(Component::Mechanics), LogOrigin::Engine);
+  mechanics.emplace();
 }
 
-void Environment::loadScripts(const fs::path &scriptPath) {
-  appLog(describeComponentLoading(Component::Scripts), LogOrigin::Engine);
-  assert(false);
+void Environment::loadVisuals(const fs::path &path) {
+  appLog(describeComponentLoading(Component::Visuals), LogOrigin::Engine);
+  visuals.emplace();
 }
 
 void Environment::loadNullMap() {
@@ -78,19 +78,20 @@ void Environment::loadNullMap() {
   map.emplace();
 }
 
-void Environment::loadNullGraphics() {
-  appLog(describeComponentLoadingNull(Component::Graphics), LogOrigin::Engine);
-  graphics.emplace();
+void Environment::loadNullMechanics() {
+  appLog(describeComponentLoadingNull(Component::Mechanics), LogOrigin::Engine);
+  mechanics.emplace();
 }
 
-void Environment::loadNullScripts() {
-  appLog(describeComponentLoadingNull(Component::Scripts), LogOrigin::Engine);
-  scripts.emplace();
+void Environment::loadNullVisuals() {
+  appLog(describeComponentLoadingNull(Component::Visuals), LogOrigin::Engine);
+  visuals.emplace();
 }
 
 Environment::Environment(const EnvironmentURL &url) :
     archivePath(fs::system_complete(getEnvironmentPath(url + ".sky"))),
     fileArchive(archivePath),
+    workerRunning(false),
     loadError(false),
     loadProgress(0),
     url(url) {
@@ -102,6 +103,7 @@ Environment::Environment(const EnvironmentURL &url) :
                + " with environment file " + archivePath.string(),
            LogOrigin::Engine);
 
+    workerRunning = true;
     workerThread = std::thread([&]() {
       fileArchive.load();
       if (const auto dir = fileArchive.getResult()) {
@@ -116,6 +118,8 @@ Environment::Environment(const EnvironmentURL &url) :
                    + archivePath.string(), LogOrigin::Error);
         loadError = true;
       }
+
+      workerRunning = false;
     });
   }
 }
@@ -124,46 +128,56 @@ Environment::Environment() :
     Environment("NULL") {}
 
 Environment::~Environment() {
-  if (workerThread.joinable()) workerThread.join();
+  joinWorker();
 }
 
 void Environment::loadMore(
-    const bool needGraphics, const bool needScripts) {
+    const bool needVisuals, const bool needMechanics) {
   if (loadingIdle()) {
+    joinWorker();
     assert(!loadError);
-    // it's pointless to load when we have a load error
-    // the user should handle the error case
+    assert(imply(needVisuals, !visuals));
+    assert(imply(needMechanics, !mechanics));
 
-    workerThread = std::thread([&]() {
+    appLog("Beginning secondary environment loading.", LogOrigin::Engine);
+
+    workerRunning = true;
+    workerThread = std::thread([&, needVisuals, needMechanics]() {
       if (url == "NULL") {
-        if (needGraphics) loadNullGraphics();
-        if (needScripts) loadNullScripts();
+        if (needVisuals) loadNullVisuals();
+        if (needMechanics) loadNullMechanics();
       } else {
         const auto dir = *this->fileArchive.getResult();
-        if (needGraphics) {
-          if (const auto graphicsFile = dir.getTopFile("graphics.json")) {
-            loadGraphics(graphicsFile.get());
+
+        if (needVisuals) {
+          if (const auto visualFile = dir.getTopFile("graphics.json")) {
+            loadVisuals(visualFile.get());
           } else {
-            appLog(describeComponentMissing(Component::Graphics),
+            appLog(describeComponentMissing(Component::Visuals),
                    LogOrigin::Error);
             loadError = true;
           }
         }
-        if (needScripts) {
-          if (const auto scriptFile = dir.getTopFile("scripts.clj")) {
-            loadScripts(scriptFile.get());
+
+        if (needMechanics) {
+          if (const auto mechanicsFile = dir.getTopFile("mechanics.json")) {
+            loadMechanics(mechanicsFile.get());
           } else {
-            appLog(describeComponentMissing(Component::Scripts),
+            appLog(describeComponentMissing(Component::Mechanics),
                    LogOrigin::Error);
             loadError = true;
           }
         }
       }
+
+      workerRunning = false;
     });
+  } else {
+    appLog("Tried to start secondary loading before primary loading finished.", LogOrigin::Error);
   }
 }
 
-void Environment::waitForLoading() {
+void Environment::joinWorker() {
   if (workerThread.joinable())
     workerThread.join();
 }
@@ -173,7 +187,7 @@ bool Environment::loadingErrored() const {
 }
 
 bool Environment::loadingIdle() const {
-  return !workerThread.joinable();
+  return !workerRunning;
 }
 
 float Environment::loadingProgress() const {
@@ -184,12 +198,12 @@ Map const *Environment::getMap() const {
   return map.get_ptr();
 }
 
-EnvGraphics const *Environment::getGraphics() const {
-  return graphics.get_ptr();
+Visuals const *Environment::getVisuals() const {
+  return visuals.get_ptr();
 }
 
-EnvScripts const *Environment::getScripts() const {
-  return scripts.get_ptr();
+Mechanics const *Environment::getMechanics() const {
+  return mechanics.get_ptr();
 }
 
 }

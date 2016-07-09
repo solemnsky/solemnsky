@@ -36,15 +36,15 @@ MultiplayerLogger::MultiplayerLogger(sky::Arena &arena,
  */
 
 void MultiplayerSubsystem::onMode(const sky::ArenaMode newMode) {
-  core.listener.onLoadMode(newMode);
+  core.observer.onLoadMode(newMode);
 }
 
 void MultiplayerSubsystem::onStartGame() {
-  core.listener.onStartGame();
+  core.observer.onStartGame();
 }
 
 void MultiplayerSubsystem::onEndGame() {
-  core.listener.onEndGame();
+  core.observer.onEndGame();
 }
 
 MultiplayerSubsystem::MultiplayerSubsystem(sky::Arena &arena,
@@ -59,10 +59,10 @@ MultiplayerSubsystem::MultiplayerSubsystem(sky::Arena &arena,
 ArenaConnection::ArenaConnection(
     const PID pid,
     const sky::ArenaInit &arenaInit,
-    const sky::SkyHandleInit &skyInit,
+    const sky::SkyHandleInit &skyHandleInit,
     const sky::ScoreboardInit &scoreboardInit) :
     arena(arenaInit),
-    skyHandle(arena, skyInit),
+    skyHandle(arena, skyHandleInit),
     scoreboard(arena, scoreboardInit),
     player(*arena.getPlayer(pid)),
     debugView(arena, skyHandle, pid) {}
@@ -85,12 +85,12 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
       conn.emplace(
           packet.pid.get(),
           packet.arenaInit.get(),
-          packet.skyInit.get(),
+          packet.skyHandleInit.get(),
           packet.scoreInit.get());
       proxyLogger.emplace(conn->arena, *this);
       proxySubsystem.emplace(conn->arena, *this);
-      appLog("Joined arena!", LogOrigin::Client);
-      listener.onConnect();
+      appLog("Joined arena as " + inQuotes(conn->player.getNickname()), LogOrigin::Client);
+      observer.onConnect();
 
       logClientEvent(ClientEvent::Connect(
           conn->arena.getName(),
@@ -101,9 +101,14 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
 
   // we're in the arena, conn is instantiated
   switch (packet.type) {
+    case ServerPacket::Type::InitSky: {
+      conn->skyHandle.instantiateSky(packet.skyInit.get());
+      break;
+    }
+
     case ServerPacket::Type::Ping: {
       transmit(sky::ClientPacket::Pong(
-          packet.pingTime.get(), conn->arena.getUptime()));
+          packet.timestamp.get(), conn->arena.getUptime()));
       break;
     }
 
@@ -112,8 +117,18 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
       break;
     }
 
+    case ServerPacket::Type::DeltaSkyHandle: {
+      conn->skyHandle.applyDelta(packet.skyHandleDelta.get());
+      break;
+    }
+
     case ServerPacket::Type::DeltaSky: {
-      conn->skyHandle.applyDelta(packet.skyDelta.get());
+      if (const auto sky = conn->skyHandle.getSky()) {
+        sky->applyDelta(packet.skyDelta.get());
+      } else {
+        appLog("Received sky delta packet before sky was initialized! "
+                   "This should NEVER happen!", LogOrigin::Error);
+      }
       break;
     }
 
@@ -177,12 +192,12 @@ bool MultiplayerCore::pollNetwork() {
 
 MultiplayerCore::MultiplayerCore(
     ClientShared &shared,
-    ConnectionListener &listener,
+    ConnectionObserver &listener,
     const std::string &serverHostname,
     const unsigned short serverPort) :
     ClientComponent(shared),
 
-    listener(listener),
+    observer(listener),
     askedConnection(false),
     disconnectTimeout(1),
 
@@ -271,7 +286,7 @@ bool MultiplayerCore::poll() {
   if (server && !askedConnection) {
     // we have a link but haven't sent an arena connection request
     appLog("Asking to join arena...", LogOrigin::Client);
-    transmit(sky::ClientPacket::ReqJoin(shared.settings.nickname));
+    transmit(sky::ClientPacket::ReqJoin(shared.getSettings().nickname));
     askedConnection = true;
   }
 
@@ -283,7 +298,7 @@ void MultiplayerCore::tick(const float delta) {
   host.tick(delta);
 
   if (conn) {
-    if (auto &sky = conn->skyHandle.sky) {
+    if (const auto sky = conn->skyHandle.getSky()) {
       if (participationInputTimer.cool(delta)) {
         const auto input = sky->getParticipation(conn->player).collectInput();
         if (input) {
@@ -332,12 +347,10 @@ void MultiplayerCore::requestTeamChange(const sky::Team team) {
  */
 
 MultiplayerView::MultiplayerView(
-    sky::ArenaMode target,
     ClientShared &shared,
-    MultiplayerCore &mShared) :
+    MultiplayerCore &core) :
     ClientComponent(shared),
     ui::Control(shared.references),
-    core(mShared),
-    conn(mShared.conn.get()),
-    target(target) {}
+    core(core),
+    conn(core.conn.get()) {}
 

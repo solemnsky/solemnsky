@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include "util/printer.hpp"
+#include "methods.hpp"
 
 /**
  * Directory.
@@ -32,7 +33,10 @@ Directory::Directory(const std::string &name,
     directories(directories) {}
 
 optional<fs::path> Directory::getTopFile(const std::string &filename) const {
+  appLog("in method body");
   for (const auto file : files) {
+    appLog("checking file.");
+    appLog("checking file: " + file.string());
     if (getFilename(file) == filename)
       return file;
   }
@@ -93,7 +97,8 @@ void Archive::load() {
 
   appLog("Invoking 7zip...", LogOrigin::App);
 
-  fs::path workingDir(".unzip-tmp/" + this->archivePath.filename().string());
+  fs::path workingDir(".unzip-tmp/" + std::to_string(getProcessID()) + "/"
+                          + this->archivePath.filename().string());
   fs::remove_all(workingDir);
   fs::create_directories(workingDir);
 
@@ -101,7 +106,7 @@ void Archive::load() {
   // build platforms ... the choice was obvious
   chdir(workingDir.string().c_str());
   system(("7z x " + archivePath.string()).c_str());
-  chdir("../..");
+  chdir("../../../");
 
   if (const auto opened = Directory::open(workingDir))
     this->result.emplace(*opened);
@@ -111,7 +116,7 @@ bool Archive::isDone() const {
   return done;
 }
 
-optional<Directory> Archive::getResult() const {
-  return result;
+Directory const *Archive::getResult() const {
+  return result.get_ptr();
 }
 

@@ -15,33 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "multiplayerscoring.hpp"
-#include "client/elements/style.hpp"
+/**
+ * Scheme scripts held by an environment (for serverside consumption).
+ */
+#pragma once
 
-MultiplayerScoring::MultiplayerScoring(
-    ClientShared &shared, MultiplayerCore &connection) :
-    MultiplayerView(shared, connection) {}
+namespace sky {
 
-void MultiplayerScoring::tick(float delta) {
+class Mechanics {
 
-}
-
-void MultiplayerScoring::render(ui::Frame &f) {
+};
 
 }
 
-bool MultiplayerScoring::handle(const sf::Event &event) {
-  return false;
-}
-
-void MultiplayerScoring::signalRead() {
-  ui::Control::signalRead();
-}
-
-void MultiplayerScoring::signalClear() {
-  ui::Control::signalClear();
-}
-
-void MultiplayerScoring::onChangeSettings(const SettingsDelta &settings) {
-
-}

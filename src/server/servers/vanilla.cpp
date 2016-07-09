@@ -75,25 +75,37 @@ void VanillaServer::onPacket(ENetPeer *const client,
                                        std::istream_iterator<std::string>{}};
 
       if (command[0] == "start") {
-        skyHandle.start();
+        if (command.size() > 1) {
+          shared.rconResponse(client, "/start -- Starts the game on the next map.");
+          return;
+        }
         shared.registerArenaDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
+        shared.registerGameStart();
         return;
       }
 
       if (command[0] == "stop") {
-        skyHandle.stop();
+        if (command.size() > 1) {
+          shared.rconResponse(client, "/stop -- Stops the game and returns to lobby.");
+          return;
+        }
+        shared.registerGameEnd();
         shared.registerArenaDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Lobby));
         return;
       }
 
       if (command[0] == "restart") {
+        if (command.size() > 1) {
+          shared.rconResponse(client, "/restart -- Restarts the map.");
+          return;
+        }
         skyHandle.start();
         return;
       }
 
       if (command[0] == "map") {
         if (command.size() < 2) {
-          shared.rconResponse(client, "Usage: /map <name>");
+          shared.rconResponse(client, "/map <name> -- Sets <name> as the next map.");
           return;
         }
         shared.registerArenaDelta(sky::ArenaDelta::EnvChange(command[1]));
@@ -105,7 +117,6 @@ void VanillaServer::onPacket(ENetPeer *const client,
 
   if (packet.type == sky::ClientPacket::Type::ReqTeam) {
     if (arena.getMode() == sky::ArenaMode::Lobby) {
-      appLog("changing team");
       sky::PlayerDelta delta{player};
       delta.team = packet.team.get();
       shared.registerArenaDelta(sky::ArenaDelta::Delta(player.pid, delta));

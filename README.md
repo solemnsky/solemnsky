@@ -25,8 +25,7 @@ There are a lot of roles to fill on our team! Whether you want to contribute or 
  on our slack group along with the rest of the team.
 
 Some roles we'd particularly like to see filled:
- * Graphic designer.
- * Lua scripter.
+ * Scheme guru.
  * C++ programmer.
  * Web designer.
 
@@ -44,7 +43,7 @@ A list of the foreseeable developments necessary to reach this point follows.
   * Should leave a good first impression, and be intuitive and functional. (Issue #18)
   * Should have useful settings, with support for persistence. (Issue #17)
 * Environment (.sky) Format. 
-  * Should be constructible from altitude's maps with an automated tool. (Issue #19)
+  * Should be constructable from altitude's maps with an automated tool. (Issue #19)
   * Should be easy to add custom game graphics to. (Issue #20)
 * Engine 
   * Should be improved to allow the server's implementation of a basic TBD-like mode. (Issue #22)

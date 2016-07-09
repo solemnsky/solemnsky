@@ -70,7 +70,7 @@ class Archive {
   bool isDone() const;
 
   // When done, we present either a result or an error.
-  optional<Directory> getResult() const;
+  Directory const *getResult() const;
 
 };
 

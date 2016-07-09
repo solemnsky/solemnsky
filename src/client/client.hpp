@@ -32,6 +32,7 @@
  * that brings everything together.
  */
 class Client: public ui::Control {
+  friend struct ClientShared;
  private:
   // Buttons.
   ui::Button backButton, // for exiting menus, lower right
@@ -39,8 +40,11 @@ class Client: public ui::Control {
       quitButton, // quitting solemnsky
       aboutButton; // for seeing the about screen
 
-  // Shared state.
-  ClientShared shared;
+  // State.
+  std::unique_ptr<class Game> game;
+  ClientUiState uiState;
+  Settings settings;
+  ClientShared shared; // interface reference
 
   // Misc ui.
   HomePage homePage;
@@ -48,6 +52,7 @@ class Client: public ui::Control {
   SettingsPage settingsPage;
   bool tryingToQuit; // trying to exit, waiting on the game to close
 
+  // Performance profiling.
   Cooldown profilerCooldown;
   ui::ProfilerSnapshot profilerSnap;
 
@@ -65,7 +70,7 @@ class Client: public ui::Control {
 
   // Control impl.
   bool poll() override final;
-  void tick(float delta) override final;
+  void tick(TimeDiff delta) override final;
   void render(ui::Frame &f) override final;
   bool handle(const sf::Event &event) override final;
   void reset() override final;
@@ -78,9 +83,9 @@ class Client: public ui::Control {
   void blurGame();
   void exitGame();
 
-  void focusPage(const PageType type);
+  void focusPage(const PageType page);
   void blurPage();
 
-  void changeSettings(const SettingsDelta &settings);
+  void changeSettings(const SettingsDelta &settingsDelta);
 };
 

@@ -15,33 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "multiplayerscoring.hpp"
-#include "client/elements/style.hpp"
+#include "multiplayersplash.hpp"
 
-MultiplayerScoring::MultiplayerScoring(
-    ClientShared &shared, MultiplayerCore &connection) :
-    MultiplayerView(shared, connection) {}
+MultiplayerSplash::MultiplayerSplash(ClientShared &shared, MultiplayerCore &core) :
+    MultiplayerView(shared, core) {}
 
-void MultiplayerScoring::tick(float delta) {
-
+void MultiplayerSplash::tick(float delta) {
+  Control::tick(delta);
 }
 
-void MultiplayerScoring::render(ui::Frame &f) {
-
+void MultiplayerSplash::render(ui::Frame &f) {
+  Control::render(f);
 }
 
-bool MultiplayerScoring::handle(const sf::Event &event) {
-  return false;
+bool MultiplayerSplash::handle(const sf::Event &event) {
+  return Control::handle(event);
 }
 
-void MultiplayerScoring::signalRead() {
-  ui::Control::signalRead();
+void MultiplayerSplash::signalRead() {
+  Control::signalRead();
 }
 
-void MultiplayerScoring::signalClear() {
-  ui::Control::signalClear();
-}
-
-void MultiplayerScoring::onChangeSettings(const SettingsDelta &settings) {
-
+void MultiplayerSplash::signalClear() {
+  Control::signalClear();
 }
