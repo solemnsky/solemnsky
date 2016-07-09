@@ -20,18 +20,6 @@
 #include "printer.hpp"
 
 /**
- * Global namespace for storing the logger object
- * Used by appLog();
- * NOTE: This is probably not the best idea, even though it's like C++'s std::cout.
- *           -Lasoloz
- */
-//TODO: Think about the method.
-
-namespace g_log {
-auto lout = spdlog::stdout_logger_mt("solemnsky", false);
-}
-
-/**
  * StringPrinter.
  */
 
@@ -78,9 +66,49 @@ std::string showOrigin(const LogOrigin origin) {
   throw enum_error();
 }
 
+/**
+ * LogPrinter.
+ */
+
+LogPrinter::LogPrinter()
+{
+  std::stringstream filename;
+  filename << "logs/log_" << std::time(NULL) << ".txt";
+#ifndef NDEBUG
+  std::vector<spdlog::sink_ptr> sinks;
+  sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_mt>());
+  sinks.push_back(std::make_shared<spdlog::sinks::simple_file_sink_mt>(filename.str().c_str(), true));
+  mlogger = std::make_shared<spdlog::logger>("solemnsky", begin(sinks), end(sinks));
+#else
+  mlogger = std::make_shared<spdlog::logger>("solemnsky",
+                                             std::make_shared<spdlog::sinks::simple_file_sink_mt>(filename.str().c_str(),
+                                                                                                  true));
+#endif
+  mlogger->set_pattern("[%t | %C-%m-%d | %T] %v");
+}
+
+void LogPrinter::print(const std::string &str) {
+  std::string mes = showOrigin(LogOrigin::None) + str;
+  mlogger->info(mes);
+}
+
+void LogPrinter::print(const std::string &str, const LogOrigin &origin) {
+  std::string mes = showOrigin(origin) + str;
+  mlogger->info(mes);
+}
+
+namespace staticLogger {
+  LogPrinter lout;
+}
+
+
+/**
+ * App logging functions
+ */
+
 void appLog(const std::string &contents, const LogOrigin origin) {
   //std::cout << showTime() << showOrigin(origin) << contents << "\n";
-  g_log::lout->info("{}{}", showOrigin(origin), contents);
+  staticLogger::lout.print(contents, origin);
 }
 
 void appErrorLogic(const std::string &contents) {
