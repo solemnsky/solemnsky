@@ -47,6 +47,7 @@ class Environment {
   Archive fileArchive;
 
   // State.
+  bool workerRunning;
   bool loadError;
   float loadProgress;
   optional<Map> map;
