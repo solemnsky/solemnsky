@@ -87,10 +87,5 @@ TEST_F(ProtocolTest, Invariant) {
     EXPECT_EQ(packet.verifyStructure(), false);
   }
 
-  // Various specific packets are considered valid.
-  {
-    sky::ServerPacket packet = sky::ServerPacket::InitSky(sky::SkyInit());
-    EXPECT_EQ(packet.verifyStructure(), true);
-  }
 }
 

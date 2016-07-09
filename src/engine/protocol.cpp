@@ -165,7 +165,7 @@ ServerPacket ServerPacket::DeltaArena(const ArenaDelta &arenaDelta) {
 
 ServerPacket ServerPacket::DeltaSkyHandle(
     const SkyHandleDelta &skyHandleDelta) {
-  ServerPacket packet(Type::DeltaSky);
+  ServerPacket packet(Type::DeltaSkyHandle);
   packet.skyHandleDelta = skyHandleDelta;
   return packet;
 }
