@@ -16,16 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Loading screen to display while the Environment loads its components.
- * Used by MultiplayerGame.
+ * Splash screen for the client to interact with while the environment is loading.
  */
 #pragma once
 #include "multiplayercore.hpp"
 
-class MultiplayerLoader : public MultiplayerView {
+/**
+ * MultiplayerGameHandle waits for this to quit before moving on to the game.
+ */
+class MultiplayerSplash : public MultiplayerView {
  private:
  public:
-  MultiplayerLoader(ClientShared &shared, MultiplayerCore &core);
+  MultiplayerSplash(ClientShared &shared, MultiplayerCore &core);
 
   // Control impl.
   void tick(float delta) override;
