@@ -186,11 +186,11 @@ Map const *Environment::getMap() const {
   return map.get_ptr();
 }
 
-Visuals const *Environment::getGraphics() const {
+Visuals const *Environment::getVisuals() const {
   return graphics.get_ptr();
 }
 
-Mechanics const *Environment::getScripts() const {
+Mechanics const *Environment::getMechanics() const {
   return scripts.get_ptr();
 }
 

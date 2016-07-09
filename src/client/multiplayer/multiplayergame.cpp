@@ -37,7 +37,7 @@ void MultiplayerGameHandle::tick(const TimeDiff delta) {
   auto &environment = *conn.skyHandle.getEnvironment();
   if (!gameView) {
     if (environment.getMap()) {
-      if (environment.getGraphics()) {
+      if (environment.getVisuals()) {
         gameView.emplace(shared, core);
       } else {
         if (environment.loadingIdle()) {
@@ -156,6 +156,9 @@ MultiplayerGame::MultiplayerGame(
     skyRender(shared, resources, conn.arena, *conn.getSky()),
     participation(conn.getSky()->getParticipation(conn.player)) {
   assert(bool(conn.skyHandle.getSky()));
+  assert(bool(conn.skyHandle.getEnvironment()));
+  assert(bool(conn.skyHandle.getEnvironment()->getGraphics()));
+
   areChildren({&chatInput});
   areChildComponents({&skyRender});
 }

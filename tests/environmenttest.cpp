@@ -23,8 +23,8 @@ TEST_F(EnvironmentTest, NullTest) {
 
   // The map is loading, but graphics and scripts aren't.
   ASSERT_NE(environment.getMap(), nullptr);
-  ASSERT_EQ(environment.getGraphics(), nullptr);
-  ASSERT_EQ(environment.getScripts(), nullptr);
+  ASSERT_EQ(environment.getVisuals(), nullptr);
+  ASSERT_EQ(environment.getMechanics(), nullptr);
 
 }
 
