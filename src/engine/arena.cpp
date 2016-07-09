@@ -36,7 +36,7 @@ PlayerDelta::PlayerDelta(const Player &player) :
 PlayerInitializer::PlayerInitializer(
     const PID pid, const std::string &nickname) :
     pid(pid), nickname(nickname), admin(false),
-    loadingEnv(false), team(0) {}
+    loadingEnv(true), team(0) {}
 
 Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     Networked(initializer),
@@ -131,8 +131,8 @@ bool ArenaDelta::verifyStructure() const {
       return verifyRequiredOptionals(join);
     case Type::Delta:
       return verifyRequiredOptionals(playerDeltas);
-    case Type::EnvLoadState:
-      return verifyRequiredOptionals(envLoadState);
+    case Type::ResetEnvLoad:
+      return true;
     case Type::Motd:
       return verifyRequiredOptionals(motd);
     case Type::Mode:
@@ -168,10 +168,8 @@ ArenaDelta ArenaDelta::Delta(const std::map<PID, PlayerDelta> &playerDeltas) {
   return delta;
 }
 
-ArenaDelta ArenaDelta::EnvLoadState(const bool state) {
-  ArenaDelta delta(Type::EnvLoadState);
-  delta.envLoadState = state;
-  return delta;
+ArenaDelta ArenaDelta::ResetEnvLoad() {
+  return ArenaDelta(Type::ResetEnvLoad);
 }
 
 ArenaDelta ArenaDelta::Motd(const std::string &motd) {
@@ -393,10 +391,9 @@ void Arena::applyDelta(const ArenaDelta &delta) {
       break;
     }
 
-    case ArenaDelta::Type::EnvLoadState: {
-      bool newState = delta.envLoadState.get();
+    case ArenaDelta::Type::ResetEnvLoad: {
       forPlayers([&](Player &player) {
-        player.loadingEnv = newState;
+        player.loadingEnv = true;
       });
       break;
     }

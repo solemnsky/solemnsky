@@ -79,6 +79,7 @@ optional<SkyHandleDelta> SkyHandle::collectDelta() {
 }
 
 void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
+  appLog("Applying SkyHandleDelta.");
   if (delta) {
     environment.emplace(delta.get());
     caller.doStartGame();
