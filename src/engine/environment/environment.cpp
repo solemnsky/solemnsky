@@ -103,6 +103,8 @@ Environment::Environment(const EnvironmentURL &url) :
            LogOrigin::Engine);
 
     workerThread = std::thread([&]() {
+      workerRunning = true;
+
       fileArchive.load();
       if (const auto dir = fileArchive.getResult()) {
         if (const auto mapPath = dir->getTopFile("map.json")) {
@@ -116,6 +118,8 @@ Environment::Environment(const EnvironmentURL &url) :
                    + archivePath.string(), LogOrigin::Error);
         loadError = true;
       }
+
+      workerRunning = false;
     });
   }
 }
@@ -129,7 +133,7 @@ Environment::~Environment() {
 
 void Environment::loadMore(
     const bool needGraphics, const bool needScripts) {
-  if (loadingIdle()) {
+  if (map) {
     assert(!loadError);
     // it's pointless to load when we have a load error
     // the user should handle the error case
@@ -137,6 +141,8 @@ void Environment::loadMore(
     appLog("Beginning secondary environment loading.", LogOrigin::Engine);
 
     workerThread = std::thread([&]() {
+      workerRunning = true;
+
       if (url == "NULL") {
         if (needGraphics) loadNullVisuals();
         if (needScripts) loadNullMechanics();
@@ -163,7 +169,11 @@ void Environment::loadMore(
           }
         }
       }
+
+      workerRunning = false;
     });
+  } else {
+    appLog("Tried to start secondary loading before primary loading finished.", LogOrigin::Error);
   }
 }
 
@@ -177,7 +187,7 @@ bool Environment::loadingErrored() const {
 }
 
 bool Environment::loadingIdle() const {
-  return !workerThread.joinable();
+  return !workerRunning;
 }
 
 float Environment::loadingProgress() const {

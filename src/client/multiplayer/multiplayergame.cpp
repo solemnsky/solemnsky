@@ -40,7 +40,7 @@ void MultiplayerGameHandle::tick(const TimeDiff delta) {
       if (environment.getVisuals()) {
         gameView.emplace(shared, core);
       } else {
-        if (environment.loadingIdle()) {
+        if (!environment.loadingErrored()) {
           appLog("loading more");
           environment.loadMore(true, false);
         }
@@ -53,8 +53,13 @@ void MultiplayerGameHandle::tick(const TimeDiff delta) {
 
 void MultiplayerGameHandle::render(ui::Frame &f) {
   if (!gameView) {
-    f.drawText({500, 500}, "loading environment...", sf::Color::White, style.base.normalText,
-               resources.defaultFont);
+    if (conn.skyHandle.getEnvironment()->loadingErrored()) {
+      f.drawText({500, 500}, "Environment loading errored!", sf::Color::White, style.base.normalText,
+                 resources.defaultFont);
+    } else {
+      f.drawText({500, 500}, "loading environment...", sf::Color::White, style.base.normalText,
+                 resources.defaultFont);
+    }
   } else {
     gameView->render(f);
   }

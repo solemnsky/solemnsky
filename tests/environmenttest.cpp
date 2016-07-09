@@ -25,7 +25,6 @@ TEST_F(EnvironmentTest, NullTest) {
   ASSERT_NE(environment.getMap(), nullptr);
   ASSERT_EQ(environment.getVisuals(), nullptr);
   ASSERT_EQ(environment.getMechanics(), nullptr);
-
 }
 
 /**
