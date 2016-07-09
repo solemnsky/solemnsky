@@ -85,7 +85,7 @@ class Environment {
 
   // Loading.
   void loadMore(const bool needGraphics, const bool needScripts);
-  void waitForLoading();
+  void joinWorker();
 
   // Load status.
   bool loadingErrored() const;
