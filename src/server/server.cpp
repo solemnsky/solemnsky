@@ -158,10 +158,6 @@ void ServerExec::processPacket(ENetPeer *client,
           sky->getParticipation(*player).applyInput(
               packet.participationInput.get());
         }
-        if (shared.skyHandle.loadingToSky()) {
-          appLog("Warning: received input from client while still loading "
-                     "environment! Might want to define this case.");
-        }
         break;
       }
 
