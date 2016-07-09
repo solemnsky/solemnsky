@@ -147,7 +147,7 @@ void Environment::loadMore(
         if (needVisuals) loadNullVisuals();
         if (needMechanics) loadNullMechanics();
       } else {
-        const auto dir = this->fileArchive.getResult().get();
+        const auto dir = *this->fileArchive.getResult();
 
         if (needVisuals) {
           if (const auto visualFile = dir.getTopFile("graphics.json")) {
