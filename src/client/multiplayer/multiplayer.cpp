@@ -32,7 +32,7 @@ void Multiplayer::loadView(const sky::ArenaMode arenaMode) {
       break;
     }
     case sky::ArenaMode::Game: {
-      view = std::make_unique<MultiplayerGame>(shared, core);
+      view = std::make_unique<MultiplayerGameHandle>(shared, core);
       break;
     }
     case sky::ArenaMode::Scoring: {

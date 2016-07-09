@@ -18,6 +18,58 @@
 #include "multiplayergame.hpp"
 #include "client/elements/style.hpp"
 
+/**
+ * MultiplayerGameHandle.
+ */
+
+MultiplayerGameHandle::MultiplayerGameHandle(
+    ClientShared &shared, MultiplayerCore &core) :
+    MultiplayerView(shared, core) {
+  assert(conn.skyHandle.getEnvironment());
+}
+
+bool MultiplayerGameHandle::poll() {
+  if (gameView) return gameView->poll();
+  return true;
+}
+
+void MultiplayerGameHandle::tick(const TimeDiff delta) {
+  auto &environment = *conn.skyHandle.getEnvironment();
+  if (!gameView) {
+    if (environment.getMap()) {
+      if (environment.getGraphics()) {
+        gameView.emplace(shared, core);
+      } else {
+        if (environment.loadingIdle()) {
+          environment.loadMore(true, false);
+        }
+      }
+    }
+  } else {
+    gameView->tick(delta);
+  }
+}
+
+void MultiplayerGameHandle::render(ui::Frame &f) {
+  if (!gameView) {
+    f.drawText({500, 500}, "loading environment...", sf::Color::White, style.base.normalText,
+               resources.defaultFont);
+  } else {
+    gameView->render(f);
+  }
+}
+
+bool MultiplayerGameHandle::handle(const sf::Event &event) {
+  if (gameView) {
+    return gameView->handle(event);
+  }
+  return false;
+}
+
+/**
+ * MultiplayerGame.
+ */
+
 void MultiplayerGame::doClientAction(const ClientAction action,
                                      const bool state) {
   switch (action) {

@@ -34,17 +34,17 @@ include_directories(SYSTEM
 
 ###### libsolemnsky, for common use by client and server
 add_library(solemnsky STATIC
-        src/engine/environment/visuals.cpp
-        src/engine/environment/visuals.hpp
-
         src/engine/environment/environment.cpp
         src/engine/environment/environment.hpp
+
+        src/engine/environment/map.cpp
+        src/engine/environment/map.hpp
 
         src/engine/environment/mechanics.cpp
         src/engine/environment/mechanics.hpp
 
-        src/engine/environment/map.cpp
-        src/engine/environment/map.hpp
+        src/engine/environment/visuals.cpp
+        src/engine/environment/visuals.hpp
 
         src/engine/arena.cpp
         src/engine/arena.hpp
