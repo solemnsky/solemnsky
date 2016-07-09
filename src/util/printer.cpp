@@ -74,6 +74,7 @@ LogPrinter::LogPrinter()
 {
   std::stringstream filename;
   filename << "logs/log_" << std::time(NULL) << ".txt";
+  fs::create_directories(fs::path("./logs/"));
 #ifndef NDEBUG
   std::vector<spdlog::sink_ptr> sinks;
   sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_mt>());

@@ -25,6 +25,10 @@
 #include <cereal/archives/json.hpp>
 #include <spdlog/spdlog.h>
 #include "types.hpp"
+#include <boost/filesystem.hpp>
+
+// alias to boost filesystem library
+namespace fs = boost::filesystem;
 
 /**
  * Implemented by StringPrinter below and TextFrame in the Client UI.
