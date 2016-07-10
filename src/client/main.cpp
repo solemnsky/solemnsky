@@ -24,8 +24,17 @@
 int main() {
   // TODO: commandline arguments?
   // and He said,
-  ui::runSFML([](const ui::AppRefs &appState) {
-    return std::make_unique<Client>(appState); 
-  });
+  
+  // ui::runSFML([](const ui::AppRefs &appState) {
+    // return std::make_unique<Client>(appState); 
+  // });
+ 
+  ui::ResourceLoader loader({}, {});
+  loader.loadAllThreaded();
+  while (!loader.getHolder()) {
+    sf::sleep(sf::seconds(0.1));
+  }
+  appLog("done loading!");
+  
   // and lo, there appeared a client
 }
