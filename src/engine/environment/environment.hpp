@@ -19,10 +19,6 @@
  * Set of static information that surrounds a Sky.
  */
 #pragma once
-#ifdef __APPLE__
-#include <thread>
-#endif
-
 #include "util/types.hpp"
 #include "visuals.hpp"
 #include "mechanics.hpp"

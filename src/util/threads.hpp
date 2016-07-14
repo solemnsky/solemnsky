@@ -21,16 +21,16 @@
  */
 
 #ifdef __linux
-
 #include <thread>
 #include <mutex>
+#endif
 
+#ifdef __APPLE__
+#include <thread>
+#include <mutex>
 #endif
 
 #ifdef _WIN32
-
 #include <mingw.thread.h>
 #include <mingw.mutex.h>
-
 #endif
-
