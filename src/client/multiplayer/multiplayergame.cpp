@@ -36,12 +36,15 @@ bool MultiplayerGameHandle::poll() {
 void MultiplayerGameHandle::tick(const TimeDiff delta) {
   auto &environment = *conn.skyHandle.getEnvironment();
   if (!gameView) {
-    if (conn.skyHandle.getSky() and environment.getVisuals()) {
+    if (conn.skyHandle.getSky()) {
       gameView.emplace(shared, core);
-    } else {
+    } else if (!environment.getVisuals()) {
       if (!environment.loadingErrored() and environment.loadingIdle()) {
         appLog("trying to load environment");
         environment.loadMore(true, false);
+
+        //No sky, we need to send an InitSky
+        core.transmit(sky::ClientPacket::ReqSky());
       }
     }
   } else {

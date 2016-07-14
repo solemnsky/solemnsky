@@ -145,7 +145,7 @@ class Telegraph {
       input(receiveBuffer);
       if (!verifyValue(receiveBuffer)) {
         appLog("Malformed packet: violated invariants!", LogOrigin::Network);
-        appLogValue(receiveBuffer);
+//        appLogValue(receiveBuffer);
       } else {
         return receiveBuffer;
       }

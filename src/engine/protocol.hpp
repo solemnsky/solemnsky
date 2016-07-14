@@ -102,6 +102,7 @@ struct ClientPacket : public VerifyStructure {
 
   static ClientPacket Pong(const Time pingTime, const Time pongTime);
   static ClientPacket ReqJoin(const std::string &nickname);
+  static ClientPacket ReqSky();
   static ClientPacket ReqPlayerDelta(const PlayerDelta &playerDelta);
   static ClientPacket ReqInput(const ParticipationInput &input);
   static ClientPacket ReqTeam(const Team team);

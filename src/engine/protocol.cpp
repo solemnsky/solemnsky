@@ -65,6 +65,10 @@ ClientPacket ClientPacket::ReqJoin(const std::string &nickname) {
   return packet;
 }
 
+ClientPacket ClientPacket::ReqSky() {
+  return ClientPacket(Type::ReqSky);
+}
+
 ClientPacket ClientPacket::ReqPlayerDelta(const PlayerDelta &playerDelta) {
   ClientPacket packet(Type::ReqPlayerDelta);
   packet.playerDelta = playerDelta;
