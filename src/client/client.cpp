@@ -369,6 +369,7 @@ void Client::focusPage(const PageType page) {
   } else {
     uiState.pageFocusing = true;
     uiState.focusedPage = page;
+    referencePage(page).onFocus();
   }
 }
 
