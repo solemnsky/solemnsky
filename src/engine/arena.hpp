@@ -226,7 +226,8 @@ struct ArenaInit {
   ArenaInit() = default; // packing
   ArenaInit(const std::string &name,
             const EnvironmentURL &environment,
-            const ArenaMode mode = ArenaMode::Lobby);
+            const ArenaMode mode = ArenaMode::Lobby,
+            const int teamCount = 2);
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -237,6 +238,7 @@ struct ArenaInit {
   std::string name, motd;
   EnvironmentURL environment;
   ArenaMode mode;
+  int teamCount;
 };
 
 /**
@@ -250,7 +252,8 @@ struct ArenaDelta : public VerifyStructure {
     ResetEnvLoad,
     Motd,
     Mode,
-    EnvChange
+    EnvChange,
+    TeamCount
   };
 
   ArenaDelta() = default; // packing
@@ -285,6 +288,10 @@ struct ArenaDelta : public VerifyStructure {
         ar(environment);
         break;
       }
+      case Type::TeamCount: {
+        ar(teamCount);
+        break;
+      }
     }
   }
 
@@ -295,6 +302,7 @@ struct ArenaDelta : public VerifyStructure {
   optional<std::string> motd;
   optional<ArenaMode> mode;
   optional<EnvironmentURL> environment;
+  optional<int> teamCount;
 
   bool verifyStructure() const override;
 
@@ -306,6 +314,7 @@ struct ArenaDelta : public VerifyStructure {
   static ArenaDelta Motd(const std::string &motd);
   static ArenaDelta Mode(const ArenaMode mode);
   static ArenaDelta EnvChange(const EnvironmentURL &name);
+  static ArenaDelta TeamCount(const int &count);
 
 };
 
@@ -332,6 +341,7 @@ class Arena : public Networked<ArenaInit, ArenaDelta> {
   EnvironmentURL nextEnv;
   ArenaMode mode;
   Time uptime;
+  int teamCount;
 
   // Managing players.
   Player &joinPlayer(const PlayerInitializer &initializer);
@@ -362,6 +372,7 @@ class Arena : public Networked<ArenaInit, ArenaDelta> {
   const EnvironmentURL &getNextEnv() const;
   ArenaMode getMode() const;
   Time getUptime() const;
+  int getTeamCount() const;
 
   // Ticking / polling.
   void tick(const TimeDiff delta);

@@ -31,7 +31,7 @@ namespace sky {
 sky::SpawnPoint::SpawnPoint(const sf::Vector2f &pos, const Angle &angle, const Team team) :
     pos(pos), angle(angle), team(team) {}
 
-SpawnPoint::SpawnPoint() : pos(), angle(0), team(0) {}
+SpawnPoint::SpawnPoint() : pos(), angle(0), team(sky::Team::Spectator) {}
 
 /**
 * MapObstacle.
@@ -115,11 +115,11 @@ const std::vector<SpawnPoint> &Map::getSpawnPoints() const {
   return spawnPoints;
 }
 
-const SpawnPoint Map::pickSpawnPoint(const Team) const {
+const SpawnPoint Map::pickSpawnPoint(const Team team) const {
   if (spawnPoints.size() > 0) {
     return spawnPoints[0];
   } else {
-    return SpawnPoint({200, 200}, 0, 0); // default
+    return SpawnPoint({200, 200}, 0, team); // default
   }
 }
 
