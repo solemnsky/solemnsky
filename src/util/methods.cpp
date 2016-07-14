@@ -91,7 +91,7 @@ bool imply(const bool x, const bool y) {
 }
 
 int getProcessID() {
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 #include <unistd.h>
   return int(getpid());
 #endif
