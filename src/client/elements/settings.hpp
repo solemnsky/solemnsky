@@ -56,11 +56,13 @@ struct Settings {
   Settings(); // initialize with meaningful default settings
 
   void readFromFile(const std::string &filepath);
-  void writeToFile(const std::string &filepath);
+  void writeToFile(const std::string &filepath) const;
 
   bool enableDebug;
   std::string nickname;
   KeyBindings bindings;
+
+  static std::string saveFile;
 };
 
 /**

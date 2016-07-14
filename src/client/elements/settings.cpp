@@ -20,6 +20,9 @@
 #include "settings.hpp"
 #include "util/methods.hpp"
 
+//TODO: Potentially make this user-configurable, need a file picker or something
+std::string Settings::saveFile = "settings.xml";
+
 void forClientActions(std::function<void(const ClientAction)> fn) {
   for (ClientAction action = ClientAction(0);
        action < ClientAction::MAX;
@@ -97,14 +100,18 @@ Settings::Settings() :
 
 void Settings::readFromFile(const std::string &filepath) {
   std::ifstream file(filepath);
-  cereal::XMLInputArchive archive(file);
-  archive(*this);
+  if (file.is_open()) {
+    cereal::XMLInputArchive archive(file);
+    archive(*this);
+  }
 }
 
-void Settings::writeToFile(const std::string &filepath) {
+void Settings::writeToFile(const std::string &filepath) const {
   std::ofstream file(filepath);
-  cereal::XMLOutputArchive archive(file);
-  archive(*this);
+  if (file.is_open()) {
+    cereal::XMLOutputArchive archive(file);
+    archive(*this);
+  }
 }
 
 /**
