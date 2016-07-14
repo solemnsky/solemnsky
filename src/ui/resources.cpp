@@ -126,10 +126,11 @@ const sf::Texture &AppResources::getTexture(const TextureID id) const {
 optional<std::string> ResourceLoader::loadTexture(
     const TextureID id,
     const TextureMetadata &metadata) {
-  if (textures[id].loadFromFile(getMediaPath(metadata.url).string())) {
+  sf::Texture texture;
+  if (texture.loadFromFile(getMediaPath(metadata.url).string())) {
+    textures.emplace(id, std::move(texture));
     return {};
   } else {
-    textures.erase(textures.find(id));
     return std::string("Texture did not load correctly.");
     // TODO: get more information about failure to load
   }
@@ -138,10 +139,11 @@ optional<std::string> ResourceLoader::loadTexture(
 optional<std::string> ResourceLoader::loadFont(
     const FontID id,
     const FontMetadata &metadata) {
-  if (fonts[id].loadFromFile(getMediaPath(metadata.url).string())) {
+  sf::Font font;
+  if (font.loadFromFile(getMediaPath(metadata.url).string())) {
+    fonts.emplace(id, std::move(font));
     return {};
   } else {
-    fonts.erase(fonts.find(id));
     return std::string("Font did not load correctly.");
     // TODO: get more information about failure to load
   }

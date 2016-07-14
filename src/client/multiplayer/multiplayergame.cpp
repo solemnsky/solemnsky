@@ -36,13 +36,12 @@ bool MultiplayerGameHandle::poll() {
 void MultiplayerGameHandle::tick(const TimeDiff delta) {
   auto &environment = *conn.skyHandle.getEnvironment();
   if (!gameView) {
-    if (environment.getMap()) {
-      if (environment.getVisuals()) {
-        gameView.emplace(shared, core);
-      } else {
-        if (!environment.loadingErrored() and environment.loadingIdle()) {
-          environment.loadMore(true, false);
-        }
+    if (conn.skyHandle.getSky() and environment.getVisuals()) {
+      gameView.emplace(shared, core);
+    } else {
+      if (!environment.loadingErrored() and environment.loadingIdle()) {
+        appLog("trying to load environment");
+        environment.loadMore(true, false);
       }
     }
   } else {

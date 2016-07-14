@@ -21,6 +21,9 @@ class SkyHandleTest : public testing::Test {
  */
 TEST_F(SkyHandleTest, AllocTest) {
   {
+    // A player joins beforehand.
+    arena.connectPlayer("Magnetic Duck");
+
     // Start the engine, and the environment is instantiated.
     skyHandle.start();
     ASSERT_EQ(bool(skyHandle.getEnvironment()), true);
@@ -33,13 +36,19 @@ TEST_F(SkyHandleTest, AllocTest) {
 
     const sky::Sky &sky = *skyHandle.getSky();
 
-    // Signals pass correctly to the sky.
+    // A player joins after the sky is instantiated.
     arena.connectPlayer("nameless plane");
-    sky::Player &player = *arena.getPlayer(0);
-    ASSERT_EQ(sky.getParticipation(player).isSpawned(), false);
-    player.spawn({}, {300, 300}, 0);
-    ASSERT_EQ(sky.getParticipation(player).isSpawned(), true);
-    ASSERT_EQ(sky.getParticipation(player).plane->getState().physical.pos.x,
+
+    // The sky is connected to the arena.
+    sky::Player &player0 = *arena.getPlayer(0);
+    sky::Player &player1 = *arena.getPlayer(1);
+    ASSERT_EQ(sky.getParticipation(player0).isSpawned(), false);
+    ASSERT_EQ(sky.getParticipation(player1).isSpawned(), false);
+
+    // Signals pass to the sky.
+    player0.spawn({}, {300, 300}, 0);
+    ASSERT_EQ(sky.getParticipation(player0).isSpawned(), true);
+    ASSERT_EQ(sky.getParticipation(player0).plane->getState().physical.pos.x,
               300);
   }
 }
