@@ -232,6 +232,19 @@ target_link_libraries(solemnsky_client
 ###### unit tests
 add_subdirectory(tests/)
 
+source_group("engine\\environment" REGULAR_EXPRESSION src/engine/environment/.*)
+source_group("engine"              REGULAR_EXPRESSION src/engine/.*)
+source_group("engine\\sky"         REGULAR_EXPRESSION src/engine/sky/.*)
+source_group("util"                REGULAR_EXPRESSION src/util/.*)
+source_group("server\\servers"     REGULAR_EXPRESSION src/server/servers/.*)
+source_group("server"              REGULAR_EXPRESSION src/server/.*)
+source_group("client\\elements"    REGULAR_EXPRESSION src/client/elements/.*)
+source_group("client\\multiplayer" REGULAR_EXPRESSION src/client/multiplayer/.*)
+source_group("client\\sandbox"     REGULAR_EXPRESSION src/client/sandbox/.*)
+source_group("client"              REGULAR_EXPRESSION src/client/.*)
+source_group("ui\\widgets"         REGULAR_EXPRESSION src/ui/widgets/.*)
+source_group("ui"                  REGULAR_EXPRESSION src/ui/.*)
+
 ###### installation
 install(TARGETS solemnsky_client solemnsky_server
         RUNTIME DESTINATION bin)
