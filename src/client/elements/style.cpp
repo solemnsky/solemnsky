@@ -117,7 +117,8 @@ Style::Menu::Menu(const Style::Base &base) :
 Style::Home::Home(const Style::Base &) :
     tutorialButtonPos(500, 300),
     localhostButtonPos(1100, 300),
-    remoteButtonPos(800, 600) {}
+    remoteButtonPos(800, 600),
+    serverEntryPos(800, 500) {}
 
 Style::Settings::Settings(const Style::Base &base) :
     textEntry(base.normalTextEntry),
