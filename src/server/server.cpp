@@ -130,8 +130,8 @@ void ServerExec::processPacket(ENetPeer *client,
           shared.registerArenaDelta(
               sky::ArenaDelta::Delta(player->pid, delta));
         }
+        break;
       }
-
       case ClientPacket::Type::Pong: {
         latencyTracker.registerPong(*player,
                                     packet.pingTime.get(),

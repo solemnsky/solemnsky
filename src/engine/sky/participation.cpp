@@ -227,7 +227,7 @@ ParticipationInit::ParticipationInit(
  */
 
 bool ParticipationDelta::verifyStructure() const {
-  return imply(bool(spawn), bool(state));
+  return imply(bool(spawn), !bool(state));
 }
 
 ParticipationDelta ParticipationDelta::respectClientAuthority() const {
