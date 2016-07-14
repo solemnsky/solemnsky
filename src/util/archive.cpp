@@ -102,7 +102,7 @@ void Archive::load() {
   // this is the alternative to getting libarchive working on all our
   // build platforms ... the choice was obvious
   chdir(workingDir.string().c_str());
-  system(("7z x " + archivePath.string()).c_str());
+  system(("7z x \"" + archivePath.string() + "\"").c_str());
   chdir("../../../");
 
   if (const auto opened = Directory::open(workingDir))
