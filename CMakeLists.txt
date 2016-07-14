@@ -232,6 +232,7 @@ target_link_libraries(solemnsky_client
 ###### unit tests
 add_subdirectory(tests/)
 
+# Group the source files together so they appear nicely in Xcode
 source_group("engine\\environment" REGULAR_EXPRESSION src/engine/environment/.*)
 source_group("engine"              REGULAR_EXPRESSION src/engine/.*)
 source_group("engine\\sky"         REGULAR_EXPRESSION src/engine/sky/.*)
@@ -244,6 +245,7 @@ source_group("client\\sandbox"     REGULAR_EXPRESSION src/client/sandbox/.*)
 source_group("client"              REGULAR_EXPRESSION src/client/.*)
 source_group("ui\\widgets"         REGULAR_EXPRESSION src/ui/widgets/.*)
 source_group("ui"                  REGULAR_EXPRESSION src/ui/.*)
+source_group("thirdparty"          REGULAR_EXPRESSION thirdparty/.*)
 
 ###### installation
 install(TARGETS solemnsky_client solemnsky_server
