@@ -153,9 +153,18 @@ Kbps Host::outgoingBandwidth() const {
   return lastOutgoingBandwidth;
 }
 
-std::string printAddress(const ENetAddress &) {
-  // TODO
-  return "<address>";
+std::string printAddress(const ENetAddress &addr) {
+  union {
+    ENetAddress addr;
+    unsigned char ch[4];
+  } convenient;
+  convenient.addr = addr;
+
+  return std::to_string(int(convenient.ch[0])) + "."
+       + std::to_string(int(convenient.ch[1])) + "."
+       + std::to_string(int(convenient.ch[2])) + "."
+       + std::to_string(int(convenient.ch[3])) + ":"
+       + std::to_string(int(addr.port));
 }
 
 }
