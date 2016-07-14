@@ -1,3 +1,4 @@
+#include <fstream>
 #include <gtest/gtest.h>
 #include "util/printer.hpp"
 #include "util/archive.hpp"
