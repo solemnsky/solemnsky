@@ -179,6 +179,7 @@ Client::Client(const ui::AppRefs &references) :
     tryingToQuit(false),
 
     profilerCooldown(1) {
+  settings.readFromFile(Settings::saveFile);
   areChildren({&quitButton, &aboutButton, &closeButton, &backButton,
                &homePage, &listingPage, &settingsPage});
 }
