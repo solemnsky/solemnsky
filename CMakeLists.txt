@@ -6,7 +6,7 @@ set(CAREFUL_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wno-unused-parameter -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 if (SANITIZE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -fsanitize=address")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -fsanitize=address -g")
 endif ()
 
 # thirdparty submodules that need to be built
