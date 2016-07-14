@@ -118,7 +118,8 @@ struct Style {
   struct Home {
     sf::Vector2f tutorialButtonPos,
         localhostButtonPos,
-        remoteButtonPos;
+        remoteButtonPos,
+        serverEntryPos;
 
     Home(const Base &base);
   } home;
