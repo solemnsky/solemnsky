@@ -125,9 +125,43 @@ void VanillaServer::onPacket(ENetPeer *const client,
   }
 
   if (packet.type == sky::ClientPacket::Type::ReqSpawn) {
-    if (player.getTeam() != 0 and shared.skyHandle.getSky()) {
+    if (shared.skyHandle.getSky()) {
+      if (player.getTeam() == sky::Team::Spectator) {
+        //Spectator trying to join a game, just assign them a team
+
+        //TODO: Make this way more pretty (ie for any number of teams)
+        int reds = 0;
+        int blues = 0;
+        arena.forPlayers([&reds, &blues](const sky::Player &player){
+          switch (player.getTeam()) {
+            case sky::Team::Red:
+              reds ++;
+              return;
+            case sky::Team::Blue:
+              blues ++;
+              return;
+            case sky::Team::Spectator:
+              return;
+          }
+        });
+
+        sky::Team spawnTeam = sky::Team::Spectator;
+        if (reds < blues) {
+          spawnTeam = sky::Team::Red;
+        } else if (blues > reds) {
+          spawnTeam = sky::Team::Blue;
+        } else {
+          spawnTeam = static_cast<sky::Team>((std::rand() % arena.getTeamCount()) + 1);
+        }
+        sky::PlayerDelta delta{player};
+        delta.team = spawnTeam;
+        shared.registerArenaDelta(sky::ArenaDelta::Delta(player.pid, delta));
+        assert(player.getTeam() == spawnTeam);
+      }
+
+      //Spawn them
       auto sp = shared.skyHandle.getSky()
-          ->getMap().pickSpawnPoint(player.getTeam());
+        ->getMap().pickSpawnPoint(player.getTeam());
       player.spawn({}, sp.pos, sp.angle);
     }
   }
