@@ -311,7 +311,11 @@ typedef unsigned short Port; // network port
 
 namespace sky {
 
-typedef unsigned char Team; // 0 is spectator, 1 left, 2 right
+enum class Team {
+  Spectator,
+  Red,
+  Blue
+};
 
 enum class ArenaMode {
   Lobby, // lobby, to make teams
@@ -319,4 +323,8 @@ enum class ArenaMode {
   Scoring // viewing sandbox results
 };
 
+}
+
+namespace std {
+  std::string to_string(const sky::Team team);
 }

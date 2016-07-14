@@ -174,7 +174,7 @@ bool Sandbox::handle(const sf::Event &event) {
       if (action->first == ClientAction::Spawn
           and action->second
           and !participation.isSpawned()) {
-        const auto spawnPoint = sky->getMap().pickSpawnPoint(0);
+        const auto spawnPoint = sky->getMap().pickSpawnPoint(sky::Team::Spectator);
         player->spawn({}, spawnPoint.pos, spawnPoint.angle);
         return true;
       }

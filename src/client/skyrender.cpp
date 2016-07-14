@@ -149,8 +149,8 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
           tuning.flight.airspeedFactor;
       f.drawText({0, -style.skyRender.barArea.top - style.base.normalFontSize},
                  graphics.player.getNickname(),
-                 (graphics.player.getTeam() == 1) ? sf::Color::Red
-                                                  : sf::Color::Blue,
+                 (graphics.player.getTeam() == sky::Team::Red) ? sf::Color::Red
+                                                               : sf::Color::Blue,
                  style.base.centeredText, resources.defaultFont);
       renderBars(
           f,
