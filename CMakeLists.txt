@@ -113,7 +113,7 @@ target_link_libraries(solemnsky
         Box2D
         ${Boost_LIBRARIES}
         )
-set_target_properties(solemnsky PROPERTIES COMPILE_FLAGS "${CAREFUL_CXX_FLAGS}")
+# set_target_properties(solemnsky PROPERTIES COMPILE_FLAGS "${CAREFUL_CXX_FLAGS}")
 
 ###### solemnsky_server
 add_executable(solemnsky_server
@@ -131,7 +131,7 @@ add_executable(solemnsky_server
 target_link_libraries(solemnsky_server
         solemnsky
         )
-set_target_properties(solemnsky_server PROPERTIES COMPILE_FLAGS "${CAREFUL_CXX_FLAGS}")
+# set_target_properties(solemnsky_server PROPERTIES COMPILE_FLAGS "${CAREFUL_CXX_FLAGS}")
 
 ###### solemnsky_client
 add_executable(solemnsky_client
@@ -227,10 +227,25 @@ target_link_libraries(solemnsky_client
         solemnsky
         sfml-window
         )
-set_target_properties(solemnsky_client PROPERTIES COMPILE_FLAGS "${CAREFUL_CXX_FLAGS}")
+# set_target_properties(solemnsky_client PROPERTIES COMPILE_FLAGS "${CAREFUL_CXX_FLAGS}")
 
 ###### unit tests
 add_subdirectory(tests/)
+
+# Group the source files together so they appear nicely in Xcode
+source_group("engine\\environment" REGULAR_EXPRESSION src/engine/environment/.*)
+source_group("engine"              REGULAR_EXPRESSION src/engine/.*)
+source_group("engine\\sky"         REGULAR_EXPRESSION src/engine/sky/.*)
+source_group("util"                REGULAR_EXPRESSION src/util/.*)
+source_group("server\\servers"     REGULAR_EXPRESSION src/server/servers/.*)
+source_group("server"              REGULAR_EXPRESSION src/server/.*)
+source_group("client\\elements"    REGULAR_EXPRESSION src/client/elements/.*)
+source_group("client\\multiplayer" REGULAR_EXPRESSION src/client/multiplayer/.*)
+source_group("client\\sandbox"     REGULAR_EXPRESSION src/client/sandbox/.*)
+source_group("client"              REGULAR_EXPRESSION src/client/.*)
+source_group("ui\\widgets"         REGULAR_EXPRESSION src/ui/widgets/.*)
+source_group("ui"                  REGULAR_EXPRESSION src/ui/.*)
+source_group("thirdparty"          REGULAR_EXPRESSION thirdparty/.*)
 
 ###### installation
 install(TARGETS solemnsky_client solemnsky_server
