@@ -19,6 +19,7 @@
  * Ubiquotous types for use all over the engine.
  */
 #pragma once
+#include "util/types.hpp"
 
 namespace sky {
 
@@ -43,6 +44,22 @@ enum class Action {
   Special,
   Suicide,
   MAX
+};
+
+/**
+ * Reference to a graphics entity.
+ */
+struct VisualEntity {
+  VisualEntity(const bool isDefault, const PID index);
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(isDefault, index);
+  }
+
+  bool isDefault; // If it's in the default resources table -- otherwise, it's in the Visuals component.
+  PID index;
+
 };
 
 }
