@@ -207,6 +207,7 @@ MultiplayerCore::MultiplayerCore(
 
     observer(listener),
     askedConnection(false),
+    askedSky(false),
     disconnectTimeout(1),
 
     host(tg::HostType::Client),

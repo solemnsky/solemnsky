@@ -30,13 +30,14 @@ MultiplayerGameHandle::MultiplayerGameHandle(
 }
 
 bool MultiplayerGameHandle::poll() {
-  if (gameView) return gameView->poll();
-  return true;
+  if (gameView) {
+    return gameView->poll();
+  } else {
+    return splash.poll();
+  }
 }
 
 void MultiplayerGameHandle::tick(const TimeDiff delta) {
-  auto &environment = *conn.skyHandle.getEnvironment();
-
   if (!gameView && conn.skyHandle.getSky()) {
     gameView.emplace(shared, core);
   }
