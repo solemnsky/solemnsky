@@ -85,6 +85,7 @@ add_library(solemnsky STATIC
         src/engine/scoreboard.cpp
         src/engine/scoreboard.hpp
 
+        src/engine/types.cpp
         src/engine/types.hpp
 
         src/util/archive.cpp
