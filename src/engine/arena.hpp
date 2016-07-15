@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * The backbone of a multiplayer game.
+ * The backbone of the engine. Extensible through the Subsystem abstraction.
  */
 #pragma once
 #include <map>

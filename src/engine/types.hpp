@@ -29,8 +29,6 @@ namespace sky {
  */
 using EnvironmentURL = std::string;
 
-}
-
 /**
  * Degrees of action to with which to control Participation. Passed along with a state,
  * corresponding to whether the action was begun or ended.
@@ -47,3 +45,4 @@ enum class Action {
   MAX
 };
 
+}

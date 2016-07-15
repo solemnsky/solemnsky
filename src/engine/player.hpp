@@ -19,6 +19,11 @@
  * Representation of a player in an Arena.
  */
 #pragma once
+#include "util/types.hpp"
+#include "types.hpp"
+#include "sky/planestate.hpp"
+
+namespace sky {
 
 /**
  * Initializer type for Player's Networked implementation.
@@ -112,5 +117,6 @@ class Player : public Networked<PlayerInitializer, PlayerDelta> {
 
 };
 
+}
 
 
