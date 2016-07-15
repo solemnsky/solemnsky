@@ -115,12 +115,16 @@ bool verifyVector(const std::vector<Value> &vec) {
  * Random stuff.
  */
 
+/**
+ * Allocate the smallest PID that isn't already used in a vector.
+ */
 PID smallestUnused(std::vector<PID> &vec);
 
+/**
+ * Allocate the smallest PID that isn't already used in a map.
+ */
 template<typename T>
 PID smallestUnused(const std::map<PID, T> &map) {
-  // this could be faster, but it really doesn't need to be
-  // don't waste your effort here, waste it in other places!
   PID i{0};
   for (const auto &pair: map) {
     if (pair.first == i) ++i;
@@ -134,7 +138,18 @@ class enum_error : public std::logic_error {
   enum_error();
 };
 
+/**
+ * Boolean implication, i.e. the -> operator.
+ */
 bool imply(const bool x, const bool y);
 
-// return the process ID
+/**
+ * Return our process' ID.
+ */
 int getProcessID();
+
+/**
+ * Run a command in the system's shell, without printing any output to stdout.
+ */
+void runSystemQuiet(const std::string &command);
+

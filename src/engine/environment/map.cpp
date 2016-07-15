@@ -89,15 +89,11 @@ Map::Map(std::istream &stream) :
   for (auto &o : obstacles) {
     o.decompose();
   }
-
-  appLog("Loaded map.", LogOrigin::Engine);
 }
 
 Map::Map() :
     dimensions(1600, 900),
-    loadSuccess(true) {
-  appLog("Loaded null map.", LogOrigin::Engine);
-}
+    loadSuccess(true) {}
 
 const sf::Vector2f &Map::getDimensions() const {
   return dimensions;

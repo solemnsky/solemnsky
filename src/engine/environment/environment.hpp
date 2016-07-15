@@ -54,6 +54,7 @@ class Environment {
   enum class Component { Map, Mechanics, Visuals };
   static std::string describeComponent(const Component c);
   static std::string describeComponentLoading(const Component c);
+  static std::string describeComponentDone(const Component c);
   static std::string describeComponentLoadingNull(const Component c);
   static std::string describeComponentMissing(const Component c);
   static std::string describeComponentMalformed(const Component c);

@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "archive.hpp"
-#include <cstdlib>
 #include <unistd.h>
 #include "util/printer.hpp"
 #include "methods.hpp"
@@ -102,7 +101,7 @@ void Archive::load() {
   // this is the alternative to getting libarchive working on all our
   // build platforms ... the choice was obvious
   chdir(workingDir.string().c_str());
-  system(("7z x \"" + archivePath.string() + "\"").c_str());
+  runSystemQuiet(("7z x \"" + archivePath.string() + "\"").c_str() + " > /dev/null");
   chdir("../../../");
 
   if (const auto opened = Directory::open(workingDir))
