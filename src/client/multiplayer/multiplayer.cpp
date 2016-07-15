@@ -18,7 +18,7 @@
 #include "multiplayer.hpp"
 #include "client/elements/style.hpp"
 #include "multiplayerlobby.hpp"
-#include "multiplayergame.hpp"
+#include "multiplayergamehandle.hpp"
 #include "multiplayerscoring.hpp"
 
 /**

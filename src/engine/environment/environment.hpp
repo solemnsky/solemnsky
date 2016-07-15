@@ -29,13 +29,6 @@
 namespace sky {
 
 /**
- * Uniform resource locator for Environments.
- * E.g.: vanilla/ball_asteroids, or some_fun_mod/interesting_map
- * Mapped to the filesystem location of a .sky file.
- */
-using EnvironmentURL = std::string;
-
-/**
  * Holder and asynchronous loader for pieces of static information extracted
  * from a .sky file, used to instantiate / add to the functionality /
  * display a Sky -- geometry data, scripts, and graphics resources.
