@@ -22,24 +22,9 @@
 #include <bitset>
 #include "util/types.hpp"
 #include "physics.hpp"
+#include "engine/types.hpp"
 
 namespace sky {
-
-/**
- * Vectors of action to control a Participation. Passed along with a state,
- * corresponding to whether the action was begun or ended.
- */
-enum class Action {
-  Thrust,
-  Reverse,
-  Left,
-  Right,
-  Primary,
-  Secondary,
-  Special,
-  Suicide,
-  MAX
-};
 
 void forSkyActions(std::function<void(const Action)> fn);
 
@@ -86,7 +71,7 @@ struct PlaneTuning {
   struct Flight {
     Flight();
     // mechanics when not stalled
-    float maxRotVel = 180, // how quickly we can turn
+    float maxRotVel, // how quickly we can turn
         airspeedFactor,
         throttleInfluence,
         throttleEffect,

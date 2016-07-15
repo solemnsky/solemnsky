@@ -16,12 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Component of the multiplayer client corresponding to ArenaMode::Game.
+ * Splash screen and multiplayer game interface to display when the arena is in game mode.
  */
 #pragma once
 #include "multiplayercore.hpp"
-#include "multiplayersplash.hpp"
-#include "client/skyrender.hpp"
 #include "ui/widgets.hpp"
 
 /**
@@ -53,24 +51,20 @@ class MultiplayerGame : public MultiplayerView {
 
 };
 
-/**
- * Manager class for the Game arena mode that loads MultiplayerGame
- * only when the environment is loaded, first waiting for MultiplayerSplash to exit.
- */
-class MultiplayerGameHandle : public MultiplayerView {
- private:
-  optional<MultiplayerSplash> gameSplash;
-  optional<MultiplayerGame> gameView;
 
+/**
+ * MultiplayerGameHandle waits for this to quit before moving on to the game.
+ */
+class MultiplayerSplash : public MultiplayerView {
+ private:
  public:
-  MultiplayerGameHandle(ClientShared &shared, MultiplayerCore &core);
+  MultiplayerSplash(ClientShared &shared, MultiplayerCore &core);
 
   // Control impl.
-  virtual bool poll() override;
-  virtual void tick(const TimeDiff delta) override;
-  virtual void render(ui::Frame &f) override;
-  virtual bool handle(const sf::Event &event) override;
+  void tick(float delta) override;
+  void render(ui::Frame &f) override;
+  bool handle(const sf::Event &event) override;
+  void signalRead() override;
+  void signalClear() override;
 
 };
-
-

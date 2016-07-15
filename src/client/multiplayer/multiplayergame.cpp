@@ -19,61 +19,6 @@
 #include "client/elements/style.hpp"
 
 /**
- * MultiplayerGameHandle.
- */
-
-MultiplayerGameHandle::MultiplayerGameHandle(
-    ClientShared &shared, MultiplayerCore &core) :
-    MultiplayerView(shared, core) {
-  assert(conn.skyHandle.getEnvironment());
-}
-
-bool MultiplayerGameHandle::poll() {
-  if (gameView) return gameView->poll();
-  return true;
-}
-
-void MultiplayerGameHandle::tick(const TimeDiff delta) {
-  auto &environment = *conn.skyHandle.getEnvironment();
-  if (!gameView) {
-    if (conn.skyHandle.getSky()) {
-      gameView.emplace(shared, core);
-    } else if (!environment.getVisuals()) {
-      if (!environment.loadingErrored() and environment.loadingIdle()) {
-        appLog("trying to load environment");
-        environment.loadMore(true, false);
-
-        //No sky, we need to send an InitSky
-        core.transmit(sky::ClientPacket::ReqSky());
-      }
-    }
-  } else {
-    gameView->tick(delta);
-  }
-}
-
-void MultiplayerGameHandle::render(ui::Frame &f) {
-  if (!gameView) {
-    if (conn.skyHandle.getEnvironment()->loadingErrored()) {
-      f.drawText({500, 500}, "Environment loading errored!", sf::Color::White, style.base.normalText,
-                 resources.defaultFont);
-    } else {
-      f.drawText({500, 500}, "loading environment...", sf::Color::White, style.base.normalText,
-                 resources.defaultFont);
-    }
-  } else {
-    gameView->render(f);
-  }
-}
-
-bool MultiplayerGameHandle::handle(const sf::Event &event) {
-  if (gameView) {
-    return gameView->handle(event);
-  }
-  return false;
-}
-
-/**
  * MultiplayerGame.
  */
 
@@ -216,5 +161,38 @@ void MultiplayerGame::signalRead() {
 }
 
 void MultiplayerGame::signalClear() {
+  ui::Control::signalClear();
+}
+
+/**
+ * MultiplayerSplash.
+ */
+
+MultiplayerSplash::MultiplayerSplash(ClientShared &shared, MultiplayerCore &core) :
+    MultiplayerView(shared, core) {}
+
+void MultiplayerSplash::tick(float delta) {
+  ui::Control::tick(delta);
+}
+
+void MultiplayerSplash::render(ui::Frame &f) {
+  if (conn.skyHandle.getEnvironment()->loadingErrored()) {
+    f.drawText({500, 500}, "Environment loading errored!", sf::Color::White, style.base.normalText,
+               resources.defaultFont);
+  } else {
+    f.drawText({500, 500}, "loading environment...", sf::Color::White, style.base.normalText,
+               resources.defaultFont);
+  }
+}
+
+bool MultiplayerSplash::handle(const sf::Event &event) {
+  return ui::Control::handle(event);
+}
+
+void MultiplayerSplash::signalRead() {
+  ui::Control::signalRead();
+}
+
+void MultiplayerSplash::signalClear() {
   ui::Control::signalClear();
 }

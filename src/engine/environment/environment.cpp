@@ -40,6 +40,10 @@ std::string Environment::describeComponentLoading(const Component c) {
   return "Loading environment " + describeComponent(c) + " component...";
 }
 
+std::string Environment::describeComponentDone(const Environment::Component c) {
+  return "Loaded " + describeComponent(c) + " component!";
+}
+
 std::string Environment::describeComponentLoadingNull(const Component c) {
   return "Creating null " + describeComponent(c)
       + " component for environment...";
@@ -62,31 +66,37 @@ void Environment::loadMap(const fs::path &path) {
     appLog(describeComponentMalformed(Component::Map), LogOrigin::Error);
     loadError = true;
   }
+  appLog(describeComponentDone(Component::Map), LogOrigin::Engine);
 }
 
 void Environment::loadMechanics(const fs::path &path) {
   appLog(describeComponentLoading(Component::Mechanics), LogOrigin::Engine);
   mechanics.emplace();
+  appLog(describeComponentDone(Component::Mechanics), LogOrigin::Engine);
 }
 
 void Environment::loadVisuals(const fs::path &path) {
   appLog(describeComponentLoading(Component::Visuals), LogOrigin::Engine);
   visuals.emplace();
+  appLog(describeComponentDone(Component::Visuals), LogOrigin::Engine);
 }
 
 void Environment::loadNullMap() {
   appLog(describeComponentLoadingNull(Component::Map), LogOrigin::Engine);
   map.emplace();
+  appLog(describeComponentDone(Component::Map), LogOrigin::Engine);
 }
 
 void Environment::loadNullMechanics() {
   appLog(describeComponentLoadingNull(Component::Mechanics), LogOrigin::Engine);
   mechanics.emplace();
+  appLog(describeComponentDone(Component::Mechanics), LogOrigin::Engine);
 }
 
 void Environment::loadNullVisuals() {
   appLog(describeComponentLoadingNull(Component::Visuals), LogOrigin::Engine);
   visuals.emplace();
+  appLog(describeComponentDone(Component::Visuals), LogOrigin::Engine);
 }
 
 Environment::Environment(const EnvironmentURL &url) :

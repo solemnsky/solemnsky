@@ -70,7 +70,8 @@ bool verifyOptionals() {
 }
 
 PID smallestUnused(std::vector<PID> &vec) {
-  // TODO: this could be faster
+  // this could be faster, but it really doesn't need to be
+  // don't waste your effort here, waste it in other places!
   std::sort(vec.begin(), vec.end());
   PID v{0};
   for (const auto x : vec) {
@@ -98,5 +99,15 @@ int getProcessID() {
 
 #ifdef _WIN32
   return int(GetCurrentProcessId());
+#endif
+}
+
+void runSystemQuiet(const std::string &command) {
+#if defined(__linux) || defined(__APPLE__)
+  system((command + " &> /dev/null").c_str());
+#endif
+
+#ifdef _WIN32
+  system((command + " > NUL").c_str());
 #endif
 }
