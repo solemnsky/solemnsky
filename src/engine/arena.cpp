@@ -36,7 +36,7 @@ PlayerDelta::PlayerDelta(const Player &player) :
 PlayerInitializer::PlayerInitializer(
     const PID pid, const std::string &nickname) :
     pid(pid), nickname(nickname), admin(false),
-    loadingEnv(true), team(0) {}
+  loadingEnv(true), team(sky::Team::Spectator) {}
 
 Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     Networked(initializer),
@@ -139,6 +139,8 @@ bool ArenaDelta::verifyStructure() const {
       return verifyRequiredOptionals(mode);
     case Type::EnvChange:
       return verifyRequiredOptionals(environment);
+    case Type::TeamCount:
+      return verifyRequiredOptionals(teamCount);
   }
   return false; // enum out of bounds
 }
@@ -187,6 +189,12 @@ ArenaDelta ArenaDelta::Mode(const ArenaMode arenaMode) {
 ArenaDelta ArenaDelta::EnvChange(const EnvironmentURL &map) {
   ArenaDelta delta(Type::EnvChange);
   delta.environment = map;
+  return delta;
+}
+
+ArenaDelta ArenaDelta::TeamCount(const int &teamCount) {
+  ArenaDelta delta(Type::TeamCount);
+  delta.teamCount = teamCount;
   return delta;
 }
 
@@ -255,8 +263,9 @@ ArenaLogger::ArenaLogger(Arena &arena) : arena(arena) {
 ArenaInit::ArenaInit(
     const std::string &name,
     const EnvironmentURL &environment,
-    const ArenaMode mode) :
-    name(name), environment(environment), mode(mode) {}
+    const ArenaMode mode,
+    const int teamCount) :
+    name(name), environment(environment), mode(mode), teamCount(teamCount) {}
 
 PID Arena::allocPid() const {
   return smallestUnused(players);
@@ -359,6 +368,7 @@ Arena::Arena(const ArenaInit &initializer) :
     nextEnv(initializer.environment),
     mode(initializer.mode),
     uptime(0),
+    teamCount(initializer.teamCount),
     subsystemCaller(*this) {
   for (auto const &player : initializer.players) {
     players.emplace(std::piecewise_construct,
@@ -414,6 +424,12 @@ void Arena::applyDelta(const ArenaDelta &delta) {
       nextEnv = *delta.environment;
       logEvent(ArenaEvent::EnvChoose(nextEnv));
       for (auto s : subsystems) s.second->onMapChange();
+      break;
+    }
+
+    case ArenaDelta::Type::TeamCount: {
+      teamCount = *delta.teamCount;
+      break;
     }
 
   }
@@ -466,6 +482,10 @@ ArenaMode Arena::getMode() const {
 
 Time Arena::getUptime() const {
   return uptime;
+}
+
+int Arena::getTeamCount() const {
+  return teamCount;
 }
 
 ArenaDelta Arena::connectPlayer(const std::string &requestedNick) {

@@ -121,17 +121,17 @@ TEST_F(ArenaTest, PlayerDeltaTest) {
   std::map<PID, sky::PlayerDelta> deltas;
   {
     sky::PlayerDelta delta{*arena.getPlayer(0)};
-    delta.team.emplace(1);
+    delta.team.emplace(sky::Team::Red);
     deltas.emplace(0, delta);
   }
   {
     sky::PlayerDelta delta{*arena.getPlayer(1)};
-    delta.team.emplace(1);
+    delta.team.emplace(sky::Team::Red);
     deltas.emplace(1, delta);
   }
   arena.applyDelta(sky::ArenaDelta::Delta(deltas));
-  EXPECT_EQ(arena.getPlayer(0)->getTeam(), 1);
-  EXPECT_EQ(arena.getPlayer(1)->getTeam(), 1);
+  EXPECT_EQ(arena.getPlayer(0)->getTeam(), sky::Team::Red);
+  EXPECT_EQ(arena.getPlayer(1)->getTeam(), sky::Team::Red);
 
 }
 
@@ -147,7 +147,7 @@ TEST_F(ArenaTest, InitializerTest) {
   {
     sky::PlayerDelta delta;
     delta.loadingEnv = true;
-    delta.team = 2;
+    delta.team = sky::Team::Blue;
     arena.getPlayer(0)->applyDelta(delta);
   }
 
@@ -159,7 +159,7 @@ TEST_F(ArenaTest, InitializerTest) {
   EXPECT_EQ(remoteArena.getMode(), sky::ArenaMode::Game);
   EXPECT_EQ(remoteArena.getPlayer(0)->getNickname(), "nameless plane");
   EXPECT_EQ(remoteArena.getPlayer(0)->isLoadingEnv(), true);
-  EXPECT_EQ(remoteArena.getPlayer(0)->getTeam(), 2);
+  EXPECT_EQ(remoteArena.getPlayer(0)->getTeam(), sky::Team::Blue);
   EXPECT_EQ(remoteArena.getPlayer(1)->getNickname(), "nameless plane(1)");
 }
 

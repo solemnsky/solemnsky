@@ -67,8 +67,8 @@ void MultiplayerLobby::render(ui::Frame &f) {
       style.multi.playerListPos, [&](Printer &p) {
         conn.arena.forPlayers([&](const sky::Player &player) {
           p.setColor(0, 0, 0);
-          if (player.getTeam() == 1) p.setColor(255, 0, 0);
-          if (player.getTeam() == 2) p.setColor(0, 0, 255);
+          if (player.getTeam() == sky::Team::Red) p.setColor(255, 0, 0);
+          if (player.getTeam() == sky::Team::Blue) p.setColor(0, 0, 255);
           p.print(player.getNickname());
           p.breakLine();
         });
@@ -96,11 +96,11 @@ void MultiplayerLobby::signalRead() {
   ui::Control::signalRead();
 
   if (specButton.clickSignal)
-    core.requestTeamChange(0);
+    core.requestTeamChange(sky::Team::Spectator);
   if (redButton.clickSignal)
-    core.requestTeamChange(1);
+    core.requestTeamChange(sky::Team::Red);
   if (blueButton.clickSignal)
-    core.requestTeamChange(2);
+    core.requestTeamChange(sky::Team::Spectator);
   if (chatInput.inputSignal) {
     core.handleChatInput(chatInput.inputSignal.get());
   }

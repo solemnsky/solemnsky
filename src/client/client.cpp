@@ -179,6 +179,7 @@ Client::Client(const ui::AppRefs &references) :
     tryingToQuit(false),
 
     profilerCooldown(1) {
+  settings.readFromFile(Settings::saveFile);
   areChildren({&quitButton, &aboutButton, &closeButton, &backButton,
                &homePage, &listingPage, &settingsPage});
 }
@@ -368,6 +369,7 @@ void Client::focusPage(const PageType page) {
   } else {
     uiState.pageFocusing = true;
     uiState.focusedPage = page;
+    referencePage(page).onFocus();
   }
 }
 

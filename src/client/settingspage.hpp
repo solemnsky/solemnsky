@@ -91,6 +91,7 @@ class SettingsPage : public Page {
 
   // Page impl.
   void onChangeSettings(const SettingsDelta &) override;
+  void onFocus() override;
   void onBlur() override;
 
   // Control impl.

@@ -162,3 +162,14 @@ Movement addMovement(const bool down, const bool up) {
   if (up) return Movement::Up;
   return Movement::Down;
 }
+
+namespace std {
+  std::string to_string(const sky::Team team) {
+    switch (team) {
+      case sky::Team::Spectator: return std::string("Spectator");
+      case sky::Team::Red: return std::string("Red");
+      case sky::Team::Blue: return std::string("Blue");
+      default: return std::string("Unknown");
+    }
+  }
+}

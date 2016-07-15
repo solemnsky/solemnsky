@@ -25,6 +25,7 @@
 class HomePage : public Page {
  private:
   ui::Button sandboxButton, localhostButton, remoteButton;
+  ui::TextEntry serverEntry;
 
  public:
   HomePage(ClientShared &state);

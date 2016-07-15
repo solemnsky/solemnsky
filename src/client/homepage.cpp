@@ -30,8 +30,13 @@ HomePage::HomePage(ClientShared &clientState) :
                     "LOCAL GAME"),
     remoteButton(references, style.base.normalButton,
                  style.home.remoteButtonPos,
-                 "REMOTE GAME") {
-  areChildren({&sandboxButton, &localhostButton, &remoteButton});
+                 "REMOTE GAME"),
+    serverEntry(references, style.base.normalTextEntry,
+                style.home.serverEntryPos, "Address", true) {
+  areChildren({&sandboxButton, &localhostButton, &remoteButton, &serverEntry});
+
+  //Initial value
+  serverEntry.contents = "46.101.20.237";
 }
 
 void HomePage::tick(float delta) {
@@ -71,7 +76,7 @@ void HomePage::signalRead() {
 
   if (remoteButton.clickSignal)
     shared.beginGame(
-        std::make_unique<Multiplayer>(shared, "46.101.20.237", 4242));
+        std::make_unique<Multiplayer>(shared, serverEntry.contents, 4242));
 }
 
 void HomePage::signalClear() {

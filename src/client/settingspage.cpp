@@ -188,10 +188,17 @@ void SettingsPage::onChangeSettings(const SettingsDelta &delta) {
   currentTab.second->readSettings(shared.getSettings());
 }
 
+void SettingsPage::onFocus() {
+  //Load settings from the shared
+  newSettings = shared.getSettings();
+  currentTab.second->readSettings(shared.getSettings());
+}
+
 void SettingsPage::onBlur() {
   currentTab.second->reset();
   currentTab.second->writeSettings(newSettings);
   shared.changeSettings(SettingsDelta(shared.getSettings(), newSettings));
+  shared.getSettings().writeToFile(Settings::saveFile);
 }
 
 void SettingsPage::tick(float delta) {
