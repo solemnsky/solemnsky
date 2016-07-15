@@ -46,15 +46,6 @@ add_library(solemnsky STATIC
         src/engine/environment/visuals.cpp
         src/engine/environment/visuals.hpp
 
-        src/engine/arena.cpp
-        src/engine/arena.hpp
-
-        src/engine/debugview.cpp
-        src/engine/debugview.hpp
-
-        src/engine/event.cpp
-        src/engine/event.hpp
-
         src/engine/sky/participation.cpp
         src/engine/sky/participation.hpp
 
@@ -67,12 +58,6 @@ add_library(solemnsky STATIC
         src/engine/sky/prop.cpp
         src/engine/sky/prop.hpp
 
-        src/engine/protocol.cpp
-        src/engine/protocol.hpp
-
-        src/engine/scoreboard.cpp
-        src/engine/scoreboard.hpp
-
         src/engine/sky/sky.cpp
         src/engine/sky/sky.hpp
 
@@ -81,6 +66,27 @@ add_library(solemnsky STATIC
 
         src/engine/sky/skysettings.cpp
         src/engine/sky/skysettings.hpp
+
+        src/engine/arena.cpp
+        src/engine/arena.hpp
+
+        src/engine/debugview.cpp
+        src/engine/debugview.hpp
+
+        src/engine/event.cpp
+        src/engine/event.hpp
+
+        src/engine/player.cpp
+        src/engine/player.hpp
+
+        src/engine/protocol.cpp
+        src/engine/protocol.hpp
+
+        src/engine/scoreboard.cpp
+        src/engine/scoreboard.hpp
+
+        src/engine/types.cpp
+        src/engine/types.hpp
 
         src/util/archive.cpp
         src/util/archive.hpp
@@ -156,8 +162,8 @@ add_executable(solemnsky_client
         src/client/multiplayer/multiplayergame.cpp
         src/client/multiplayer/multiplayergame.hpp
 
-        src/client/multiplayer/multiplayersplash.cpp
-        src/client/multiplayer/multiplayersplash.hpp
+        src/client/multiplayer/multiplayergamehandle.cpp
+        src/client/multiplayer/multiplayergamehandle.hpp
 
         src/client/multiplayer/multiplayerlobby.cpp
         src/client/multiplayer/multiplayerlobby.hpp

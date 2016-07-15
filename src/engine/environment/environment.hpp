@@ -25,15 +25,9 @@
 #include "map.hpp"
 #include "util/threads.hpp"
 #include "util/archive.hpp"
+#include "engine/types.hpp"
 
 namespace sky {
-
-/**
- * Uniform resource locator for Environments.
- * E.g.: vanilla/ball_asteroids, or some_fun_mod/interesting_map
- * Mapped to the filesystem location of a .sky file.
- */
-using EnvironmentURL = std::string;
 
 /**
  * Holder and asynchronous loader for pieces of static information extracted
@@ -60,6 +54,7 @@ class Environment {
   enum class Component { Map, Mechanics, Visuals };
   static std::string describeComponent(const Component c);
   static std::string describeComponentLoading(const Component c);
+  static std::string describeComponentDone(const Component c);
   static std::string describeComponentLoadingNull(const Component c);
   static std::string describeComponentMissing(const Component c);
   static std::string describeComponentMalformed(const Component c);

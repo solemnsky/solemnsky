@@ -112,6 +112,7 @@ class MultiplayerCore : public ClientComponent {
   optional<MultiplayerLogger> proxyLogger;
   optional<MultiplayerSubsystem> proxySubsystem;
   bool askedConnection;
+  bool askedSky;
   Cooldown disconnectTimeout;
 
   tg::Telegraph<sky::ServerPacket> telegraph;
@@ -119,6 +120,10 @@ class MultiplayerCore : public ClientComponent {
   ENetPeer *server;
   bool disconnecting, // trying to disconnect
       disconnected; // it's over, close the multiplayer client
+
+  // Callbacks from MultiplayerSubsystem.
+  void onStartGame();
+  void onEndGame();
 
   // Transmission timers.
   Cooldown participationInputTimer;

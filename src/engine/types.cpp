@@ -15,25 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * Splash screen for the client to interact with while the environment is loading.
- */
-#pragma once
-#include "multiplayercore.hpp"
+#include "types.hpp"
+
+namespace sky {
 
 /**
- * MultiplayerGameHandle waits for this to quit before moving on to the game.
+ * VisualEntity.
  */
-class MultiplayerSplash : public MultiplayerView {
- private:
- public:
-  MultiplayerSplash(ClientShared &shared, MultiplayerCore &core);
 
-  // Control impl.
-  void tick(float delta) override;
-  void render(ui::Frame &f) override;
-  bool handle(const sf::Event &event) override;
-  void signalRead() override;
-  void signalClear() override;
+VisualEntity::VisualEntity(const bool isDefault, const PID index) :
+    isDefault(true), index(0) {}
 
-};
+}
