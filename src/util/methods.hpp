@@ -152,4 +152,3 @@ int getProcessID();
  * Run a command in the system's shell, without printing any output to stdout.
  */
 void runSystemQuiet(const std::string &command);
-
