@@ -25,6 +25,7 @@
 #include "map.hpp"
 #include "util/threads.hpp"
 #include "util/archive.hpp"
+#include "engine/types.hpp"
 
 namespace sky {
 

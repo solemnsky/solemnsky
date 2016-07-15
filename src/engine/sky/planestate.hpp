@@ -71,7 +71,7 @@ struct PlaneTuning {
   struct Flight {
     Flight();
     // mechanics when not stalled
-    float maxRotVel = 180, // how quickly we can turn
+    float maxRotVel, // how quickly we can turn
         airspeedFactor,
         throttleInfluence,
         throttleEffect,

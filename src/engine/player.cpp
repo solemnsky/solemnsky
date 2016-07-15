@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "player.hpp"
+#include "arena.hpp"
+
+namespace sky {
 
 /**
  * PlayerDelta.
@@ -32,7 +35,7 @@ PlayerDelta::PlayerDelta(const Player &player) :
 PlayerInitializer::PlayerInitializer(
     const PID pid, const std::string &nickname) :
     pid(pid), nickname(nickname), admin(false),
-  loadingEnv(true), team(sky::Team::Spectator) {}
+    loadingEnv(true), team(sky::Team::Spectator) {}
 
 Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     Networked(initializer),
@@ -113,3 +116,4 @@ void Player::spawn(const PlaneTuning &tuning,
   for (auto s : arena.subsystems) s.second->onSpawn(*this, tuning, pos, rot);
 }
 
+}
