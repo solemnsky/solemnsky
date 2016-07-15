@@ -55,6 +55,7 @@ class Page: public ClientComponent, public ui::Control {
   Page(ClientShared &shared);
 
   // Interface API.
+  virtual void onFocus() { }
   virtual void onBlur() { }
   void drawBackground(ui::Frame &f);
 

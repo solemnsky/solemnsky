@@ -319,6 +319,11 @@ ServerExec::ServerExec(
     latencyTracker(shared.arena),
 
     running(true) {
+
+  time_t current;
+  time(&current);
+  std::srand(current);
+      
   shared.logEvent(ServerEvent::Start(port, arenaInit.name));
 }
 
