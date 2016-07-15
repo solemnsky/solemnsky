@@ -146,3 +146,11 @@ TEST_F(SkyTest, PropTest) {
 
 }
 
+/**
+ * Tuning values can be accessed by name, for use in the rcon and sanbox.
+ */
+TEST_F(SkyTest, TuningTest) {
+  auto tuning = sky::PlaneTuning();
+  *tuning.accessParamByName("flight.threshold") = 42.0f;
+  ASSERT_EQ(tuning.flight.threshold, 42.0f);
+}

@@ -31,8 +31,10 @@
 struct SandboxCommand {
  public:
   enum Type {
-    Start,
-    Stop
+    Start, // start a game
+    Stop, // stop the game
+    Tune, // modify or query some PlaneTuning value
+    DumpTuning // dump the tuning data to disk
   };
 
  private:
@@ -43,6 +45,8 @@ struct SandboxCommand {
 
   Type type;
   optional<std::string> mapName; // on Start command
+  optional<std::string> tuningParam;
+  optional<float> tuningValue;
 
   static optional<SandboxCommand> parseCommand(const std::string &input);
 
@@ -60,6 +64,8 @@ class Sandbox : public Game {
   optional<sky::SkyRender> skyRender;
 
   sky::Player *player;
+
+  sky::PlaneTuning spawnTuning; // tuning to use on plane spawn
 
   // UI features.
   ui::TextEntry commandEntry;
