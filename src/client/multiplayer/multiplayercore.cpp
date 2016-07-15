@@ -75,6 +75,14 @@ sky::Sky *ArenaConnection::getSky() {
  * MultiplayerCore.
  */
 
+void MultiplayerCore::onStartGame() {
+  askedSky = false;
+}
+
+void MultiplayerCore::onEndGame() {
+  askedSky = true;
+}
+
 void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
   using namespace sky;
 
@@ -298,7 +306,10 @@ void MultiplayerCore::tick(const float delta) {
   host.tick(delta);
 
   if (conn) {
-    if (const auto sky = conn->skyHandle.getSky()) {
+    conn->arena.tick(delta);
+
+    // Sending scheduled participation inputs.
+    if (const auto &sky = conn->skyHandle.getSky()) {
       if (participationInputTimer.cool(delta)) {
         const auto input = sky->getParticipation(conn->player).collectInput();
         if (input) {
@@ -308,7 +319,21 @@ void MultiplayerCore::tick(const float delta) {
       }
     }
 
-    conn->arena.tick(delta);
+    if (const auto &env = conn->skyHandle.getEnvironment()) {
+      if (!conn->skyHandle.getSky()) {
+        // Asking for sky.
+        if (env->getMap() and env->getVisuals() and !askedSky) {
+          transmit(sky::ClientPacket::ReqSky());
+          askedSky = true;
+        }
+
+        // Loading secondary resources.
+        if (env->loadingIdle() and !env->getVisuals()) {
+          env->loadMore(true, false);
+        }
+      }
+
+    }
   }
 
   if (disconnecting) {

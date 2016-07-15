@@ -16,24 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Splash screen for the client to interact with while the environment is loading.
+ * Ubiquotous types for use all over the engine.
  */
 #pragma once
-#include "multiplayercore.hpp"
+
+namespace sky {
 
 /**
- * MultiplayerGameHandle waits for this to quit before moving on to the game.
+ * Uniform resource locator for Environments.
+ * E.g.: vanilla/ball_asteroids, or some_fun_mod/interesting_map
+ * Mapped to the filesystem location of a .sky file.
  */
-class MultiplayerSplash : public MultiplayerView {
- private:
- public:
-  MultiplayerSplash(ClientShared &shared, MultiplayerCore &core);
+using EnvironmentURL = std::string;
 
-  // Control impl.
-  void tick(float delta) override;
-  void render(ui::Frame &f) override;
-  bool handle(const sf::Event &event) override;
-  void signalRead() override;
-  void signalClear() override;
+}
 
+/**
+ * Degrees of action to with which to control Participation. Passed along with a state,
+ * corresponding to whether the action was begun or ended.
+ */
+enum class Action {
+  Thrust,
+  Reverse,
+  Left,
+  Right,
+  Primary,
+  Secondary,
+  Special,
+  Suicide,
+  MAX
 };
+
