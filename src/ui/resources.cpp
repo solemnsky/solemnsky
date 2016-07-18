@@ -71,7 +71,7 @@ const std::map<TextureID, TextureMetadata> textureMetadata{
      TextureMetadata::TextureResource("render-2d/title.png",
                                       "title screen")},
     {TextureID::MenuBackground,
-     TextureMetadata::TextureResource("render-2d/menubackground.png",
+     TextureMetadata::TextureResource("assets-2d/menubackground.png",
                                       "menu background")},
     {TextureID::Credits,
      TextureMetadata::TextureResource("render-2d/credits.png",
