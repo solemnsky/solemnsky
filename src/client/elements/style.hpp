@@ -46,6 +46,9 @@ struct Style {
     // Animation consistency.
     float heatRate; // inverse of time it takes for a UI element to 'heat up'
 
+    // Distance consistency.
+    float widgetWidth;
+
     // Vanilla widgets.
     ui::Button::Style normalButton;
     ui::TextEntry::Style normalTextEntry;
@@ -131,10 +134,11 @@ struct Style {
    * The function-packed settings page.
    */
   struct Settings {
+    // Widget styles.
     ui::TextEntry::Style textEntry;
     ui::Checkbox::Style checkbox;
-    sf::Vector2f entryOffset;
     ui::TextFormat descText;
+    ui::Button::Style sectionButton;
 
     sf::Vector2f column1Pos, column2Pos;
     float rowOffset;
@@ -146,7 +150,7 @@ struct Style {
     sf::Color selectedTabButtonColor, unselectedTabButtonColor;
     // color of the selected tab button
 
-    Settings(const Base &base);
+    Settings(const Style::Menu &menu, const Base &base);
   } settings;
 
   /**
