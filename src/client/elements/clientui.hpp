@@ -27,7 +27,7 @@
 class MessageInteraction : public ui::Control {
  private:
   ui::TextEntry messageEntry;
-  ui::TextLog messageLog;
+//  ui::TextLog messageLog;
 
  public:
   MessageInteraction();

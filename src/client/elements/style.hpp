@@ -27,30 +27,29 @@ struct Style {
    * Basic style consistencies.
    */
   struct Base {
-    sf::Vector2f pageSize;
-
+    // Font consistency.
+    int smallFontSize, normalFontSize, titleFontSize;
     ui::TextFormat centeredText, normalText, debugText, debugRightText;
 
+    // Color consistency.
     sf::Color buttonColor,
         buttonHotColor,
         buttonPressedColor,
         buttonInactiveColor,
         textColor,
         textAreaForeground,
-        textAreaBackground;
-    // TODO: organize color usage
+        textAreaBackground,
+        pageBgColor;
+
+    float debugOpacity;
+
+    // Animation consistency.
     float heatRate; // inverse of time it takes for a UI element to 'heat up'
 
-    int smallFontSize, normalFontSize, largeFontSize;
-
-    float pageMargins;
-    sf::Color pageBgColor;
-
+    // Vanilla widgets.
     ui::Button::Style normalButton;
     ui::TextEntry::Style normalTextEntry;
     ui::Checkbox::Style normalCheckbox;
-
-    float debugOpacity;
 
     Base();
   } base;
@@ -63,17 +62,17 @@ struct Style {
     sf::Color barColor;
     ui::TextFormat titleFormat;
 
-    Splash();
+    Splash(const Base &base);
   } splash;
 
   /**
-   * Top-level interface, implemented by Client.
+   * Top-level client interface.
    */
   struct Menu {
-    float unfocusedPageScale;
+    sf::Vector2f pageSize;
+    float unfocusedPageScale, pageMargins;
 
-    // position offsets for various elements, see the schema in
-    // media/source2d/board.png
+    // Position offsets. (See schema in media/source2d/board.png.)
     sf::Vector2f
         homeOffset,
         settingsOffset,
@@ -87,9 +86,11 @@ struct Style {
         settingsArea,
         listingArea;
 
+    // Some menu colors.
     sf::Color pageUnderlayColor, statusFontColor;
 
-    int descSize; // size of bits of text that describe things
+    // Page descriptions.
+    int descSize;
     float pageDescMargin;
 
     float pageFocusAnimSpeed, // s^-1
@@ -155,9 +156,9 @@ struct Style {
   } listing;
 
   /**
-   * The action-packed multiplayer client.
+   * The various game interfaces.
    */
-  struct Multi {
+  struct Game {
     sf::Vector2i scoreOverlayDims;
     float scoreOverlayTopMargin;
     int lobbyFontSize;
@@ -181,8 +182,8 @@ struct Style {
 
     ui::TextFormat messageLogText, playerListText;
 
-    Multi(const Base &base);
-  } multi;
+    Game(const Base &base);
+  } game;
 
   /**
    * Render settings for the game.
