@@ -62,7 +62,7 @@ void SplashScreen::render(ui::Frame &f) {
     f.drawSprite(background, {}, {0, 0, 1600, 900});
     if (!loader.getHolder()) {
       f.drawText({800, 450}, "loading resources...",
-                 sf::Color::White, style.splash.titleFormat,
+                 style.base.freeTextColor, style.splash.titleFormat,
                  defaultFont);
       f.drawRect({800.0f - (style.splash.barWidth / 2.0f),
                   (450.0f + style.splash.barPaddingTop),
@@ -74,7 +74,7 @@ void SplashScreen::render(ui::Frame &f) {
           linearTween(0.3, 1, sineAnim(float(references.uptime), 0.2)),
           [&]() {
             f.drawText({800, 450}, "press any key to begin",
-                       sf::Color::White, style.splash.titleFormat,
+                       style.base.freeTextColor, style.splash.titleFormat,
                        defaultFont);
           });
     }

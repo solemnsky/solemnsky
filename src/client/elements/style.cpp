@@ -32,11 +32,11 @@ Style::Base::Base() :
     buttonColor(132, 173, 181), // blue
     buttonHotColor(92, 189, 206), // hot blue
     buttonPressedColor(63, 208, 234), // less hot blue
-    buttonInactiveColor(200, 200, 200),
+    buttonInactiveColor(200, 200, 200), // grey, not blue
+    freeTextColor(98, 112, 145), // very grey blue
     textColor(255, 255, 255), // not blue
     textAreaForeground(0, 0, 0),
     textAreaBackground(255, 255, 255),
-    pageBgColor{136, 156, 255},
     debugOpacity(0.7),
 
     heatRate(10),
@@ -77,6 +77,7 @@ Style::Menu::Menu(const Style::Base &base) :
     settingsArea(settingsOffset, pageSize * unfocusedPageScale),
     listingArea(listingOffset, pageSize * unfocusedPageScale),
 
+    pageBgColor(113, 167, 198),
     pageUnderlayColor(0, 0, 0, 20),
     statusFontColor(200, 200, 200),
 
