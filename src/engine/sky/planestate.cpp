@@ -88,6 +88,42 @@ PlaneTuning::Flight::Flight() :
     leftoverDamping(0.3),
     threshold(110) { }
 
+float *PlaneTuning::accessParamByName(const std::string &name) {
+  if (name == "hitbox.x") return &hitbox.x;
+  if (name == "hitbox.y") return &hitbox.y;
+  if (name == "maxHealth") return &maxHealth;
+  if (name == "throttleSpeed") return &throttleSpeed;
+
+  if (name == "energy.thrustDrain") return &energy.thrustDrain;
+  if (name == "energy.recharge") return &energy.recharge;
+  if (name == "energy.laserGun") return &energy.laserGun;
+  if (name == "energy.primaryRecharge") return &energy.primaryRecharge;
+
+  if (name == "stall.maxRotVel") return &stall.maxRotVel;
+  if (name == "stall.maxVel") return &stall.maxVel;
+  if (name == "stall.thrust") return &stall.thrust;
+  if (name == "stall.damping") return &stall.damping;
+  if (name == "stall.threshold") return &stall.threshold;
+
+  if (name == "flight.maxRotVel") return &flight.maxRotVel;
+  if (name == "flight.airspeedFactor") return &flight.airspeedFactor;
+  if (name == "flight.throttleInfluence") return &flight.throttleInfluence;
+  if (name == "flight.throttleEffect") return &flight.throttleEffect;
+  if (name == "flight.gravityEffect") return &flight.gravityEffect;
+  if (name == "flight.afterburnDrive") return &flight.afterburnDrive;
+  if (name == "flight.leftoverDamping") return &flight.leftoverDamping;
+  if (name == "flight.threshold") return &flight.threshold;
+
+  return nullptr;
+}
+
+std::string PlaneTuning::toString() const {
+  std::ostringstream stream;
+  cereal::JSONOutputArchive ar(stream);
+  ar(*this);
+  return stream.str();
+}
+
 /**
  * PlaneStateClient.
  */

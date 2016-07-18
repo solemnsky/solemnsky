@@ -144,6 +144,9 @@ add_executable(solemnsky_client
         src/client/elements/clientshared.cpp
         src/client/elements/clientshared.hpp
 
+        src/client/elements/clientui.cpp
+        src/client/elements/clientui.hpp
+
         src/client/elements/elements.cpp
         src/client/elements/elements.hpp
 

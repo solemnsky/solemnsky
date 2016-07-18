@@ -38,16 +38,16 @@ MultiplayerLobby::MultiplayerLobby(
     ClientShared &shared, MultiplayerCore &connection) :
     MultiplayerView(shared, connection),
 
-    specButton(references, style.base.normalButton, style.multi.lobbyButtonPos,
+    specButton(references, style.base.normalButton, style.game.lobbyButtonPos,
                "SPECTATE"),
     redButton(references, style.base.normalButton,
-              style.multi.lobbyButtonPos + style.multi.lobbyButtonSep,
+              style.game.lobbyButtonPos + style.game.lobbyButtonSep,
               "JOIN RED"),
     blueButton(references, style.base.normalButton,
-               style.multi.lobbyButtonPos + 2.0f * style.multi.lobbyButtonSep,
+               style.game.lobbyButtonPos + 2.0f * style.game.lobbyButtonSep,
                "JOIN BLUE"),
     chatInput(references, style.base.normalTextEntry,
-              style.multi.chatPos, "[ENTER TO CHAT]") {
+              style.game.chatPos, "[ENTER TO CHAT]") {
   areChildren({&specButton, &redButton, &blueButton, &chatInput});
 }
 
@@ -59,12 +59,12 @@ void MultiplayerLobby::render(ui::Frame &f) {
   f.drawSprite(resources.getTexture(ui::TextureID::Lobby),
                {0, 0}, {0, 0, 1600, 900});
 
-  f.drawText(style.multi.messageLogPos, [&](ui::TextFrame &tf) {
-    core.drawEventLog(tf, style.multi.chatCutoff);
-  }, style.multi.messageLogText, resources.defaultFont);
+  f.drawText(style.game.messageLogPos, [&](ui::TextFrame &tf) {
+    core.drawEventLog(tf, style.game.chatCutoff);
+  }, style.game.messageLogText, resources.defaultFont);
 
   f.drawText(
-      style.multi.playerListPos, [&](Printer &p) {
+      style.game.playerListPos, [&](Printer &p) {
         conn.arena.forPlayers([&](const sky::Player &player) {
           p.setColor(0, 0, 0);
           if (player.getTeam() == sky::Team::Red) p.setColor(255, 0, 0);
@@ -72,7 +72,7 @@ void MultiplayerLobby::render(ui::Frame &f) {
           p.print(player.getNickname());
           p.breakLine();
         });
-      }, style.multi.playerListText, resources.defaultFont);
+      }, style.game.playerListText, resources.defaultFont);
 
   ui::Control::render(f);
 }
@@ -100,7 +100,7 @@ void MultiplayerLobby::signalRead() {
   if (redButton.clickSignal)
     core.requestTeamChange(sky::Team::Red);
   if (blueButton.clickSignal)
-    core.requestTeamChange(sky::Team::Spectator);
+    core.requestTeamChange(sky::Team::Blue);
   if (chatInput.inputSignal) {
     core.handleChatInput(chatInput.inputSignal.get());
   }

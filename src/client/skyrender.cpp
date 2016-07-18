@@ -175,7 +175,7 @@ void SkyRender::renderMap(ui::Frame &f) {
   const sky::Map &map = sky.getMap();
   const auto &dims = map.getDimensions();
 
-  f.drawRect({0, 0}, dims, style.base.pageBgColor);
+  f.drawRect({0, 0}, dims, style.menu.pageBgColor);
   f.drawSprite(resources.getTexture(ui::TextureID::Title),
                {(dims.x / 2) - 800, 0},
                {0, 0, 1600, 900});

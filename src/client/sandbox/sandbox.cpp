@@ -43,6 +43,28 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
     return SandboxCommand{Type::Stop};
   }
 
+  if (command[0] == "tuning" and (command.size() == 2 or command.size() == 3)) {
+    SandboxCommand parsed{Type::Tune};
+    parsed.tuningParam.emplace(command[1]);
+
+    // Potentially include the parsed value.
+    if (command.size() > 2) {
+      std::istringstream reader(command[2]);
+      float parsedValue;
+      reader >> parsedValue;
+      if (reader.good()) {
+        parsed.tuningValue = parsedValue;
+        return parsed;
+      } else {
+        return {};
+      }
+    }
+  }
+
+  if (command[0] == "dump" and command.size() == 1) {
+    return SandboxCommand(Type::DumpTuning);
+  }
+
   return {};
 }
 
@@ -74,6 +96,25 @@ void Sandbox::runCommand(const SandboxCommand &command) {
       stopHandle();
       break;
     }
+    case SandboxCommand::Type::Tune: {
+      const auto &param = command.tuningParam.get();
+      if (float *paramPtr = spawnTuning.accessParamByName(param)) {
+        if (const auto &value = command.tuningValue) {
+          *paramPtr = value.get();
+          appLog("Settings " + inQuotes(param) + " to " + printFloat(value.get()));
+        } else {
+          appLog(inQuotes(param) + " = " + printFloat(*paramPtr));
+        }
+      } else {
+        appLog("Unknown tuning parameter: " + inQuotes(param));
+      }
+      break;
+    }
+    case SandboxCommand::Type::DumpTuning: {
+      appLog("Dumping custom tuning values to log.");
+      appLog(spawnTuning.toString());
+    }
+    default: throw enum_error();
   }
 }
 
@@ -87,7 +128,7 @@ Sandbox::Sandbox(ClientShared &state) :
     arena(sky::ArenaInit("sandbox", "ball_funnelpark")),
     skyHandle(arena, sky::SkyHandleInit()),
     debugView(arena, skyHandle),
-    commandEntry(references, style.base.normalTextEntry, style.multi.chatPos) {
+    commandEntry(references, style.base.normalTextEntry, style.game.chatPos) {
   arena.connectPlayer("offline player");
   player = arena.getPlayer(0);
   stopHandle();
@@ -175,7 +216,7 @@ bool Sandbox::handle(const sf::Event &event) {
           and action->second
           and !participation.isSpawned()) {
         const auto spawnPoint = sky->getMap().pickSpawnPoint(sky::Team::Spectator);
-        player->spawn({}, spawnPoint.pos, spawnPoint.angle);
+        player->spawn(spawnTuning, spawnPoint.pos, spawnPoint.angle);
         return true;
       }
     }
