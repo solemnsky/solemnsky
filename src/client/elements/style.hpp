@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Style settings.
+ * Stylesheet for the whole application.
  */
 #pragma once
 #include "ui/control.hpp"
@@ -36,10 +36,10 @@ struct Style {
         buttonHotColor,
         buttonPressedColor,
         buttonInactiveColor,
-        textColor,
+        freeTextColor, // color of text on the sky background
+        textColor, // color of text on a readable background
         textAreaForeground,
-        textAreaBackground,
-        pageBgColor;
+        textAreaBackground;
 
     float debugOpacity;
 
@@ -58,7 +58,9 @@ struct Style {
    * Splash screen.
    */
   struct Splash {
+    // Geometry.
     float barWidth, barHeight, barPaddingTop;
+
     sf::Color barColor;
     ui::TextFormat titleFormat;
 
@@ -87,7 +89,7 @@ struct Style {
         listingArea;
 
     // Some menu colors.
-    sf::Color pageUnderlayColor, statusFontColor;
+    sf::Color pageBgColor, pageUnderlayColor, statusFontColor;
 
     // Page descriptions.
     int descSize;
@@ -159,6 +161,7 @@ struct Style {
    * The various game interfaces.
    */
   struct Game {
+    // Geometry.
     sf::Vector2i scoreOverlayDims;
     float scoreOverlayTopMargin;
     int lobbyFontSize;
