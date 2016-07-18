@@ -111,11 +111,10 @@ void Sandbox::runCommand(const SandboxCommand &command) {
       break;
     }
     case SandboxCommand::Type::DumpTuning: {
-      appLog("haven't implemented this yet, sorry");
+      appLog("Dumping custom tuning values to log.");
+      appLog(spawnTuning.toString());
     }
-    default: {
-      throw enum_error();
-    }
+    default: throw enum_error();
   }
 }
 

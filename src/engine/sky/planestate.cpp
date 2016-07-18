@@ -117,6 +117,13 @@ float *PlaneTuning::accessParamByName(const std::string &name) {
   return nullptr;
 }
 
+std::string PlaneTuning::toString() const {
+  std::ostringstream stream;
+  cereal::JSONOutputArchive ar(stream);
+  ar(*this);
+  return stream.str();
+}
+
 /**
  * PlaneStateClient.
  */
