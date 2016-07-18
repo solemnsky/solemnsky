@@ -64,7 +64,9 @@ void Client::drawPage(ui::Frame &f, const PageType type,
   if (alpha == 0) return;
 
   const sf::Transform transform = sf::Transform()
-      .translate(offsetAmnt * offset).scale(scale, scale);
+      .translate(offsetAmnt * offset)
+      .translate(sf::Vector2f(0, style.menu.pageYOffset))
+      .scale(scale, scale);
 
   f.withAlpha(alpha, [&]() {
     f.withTransform(transform, [&]() {

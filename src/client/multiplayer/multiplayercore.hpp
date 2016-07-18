@@ -142,10 +142,12 @@ class MultiplayerCore : public ClientComponent {
   ~MultiplayerCore();
 
   // Event logging.
-  std::vector<ClientEvent> eventLog;
   void logClientEvent(const ClientEvent &event);
   void logEvent(const sky::ArenaEvent &event);
   void drawEventLog(ui::TextFrame &tf, const float cutoff);
+
+  // MessageInteraction -- persistent among views.
+  MessageInteraction messageInteraction;
 
   // Connection state.
   optional<ArenaConnection> conn;
