@@ -33,17 +33,17 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
                                    std::istream_iterator<std::string>{}};
   if (command.empty()) return {};
 
-  if (command[0] == "start" and command.size() == 2) {
+  if (command[0] == "start" and (command.size() == 2)) {
     SandboxCommand parsed{Type::Start};
     parsed.mapName.emplace(command[1]);
     return parsed;
   }
 
-  if (command[0] == "stop" and command.size() == 1) {
+  if (command[0] == "stop" and (command.size() == 1)) {
     return SandboxCommand{Type::Stop};
   }
 
-  if (command[0] == "tuning" and (command.size() == 2 or command.size() == 3)) {
+  if (command[0] == "tuning" and (command.size() == 2 or (command.size() == 3))) {
     SandboxCommand parsed{Type::Tune};
     parsed.tuningParam.emplace(command[1]);
 

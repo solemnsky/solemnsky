@@ -229,14 +229,14 @@ void MultiplayerCore::logClientEvent(const ClientEvent &event) {
   StringPrinter p;
   event.print(p);
   appLog(p.getString(), LogOrigin::Client);
-  eventLog.push_back(event);
+  event.print(messageInteraction.messageLog);
 }
 
 void MultiplayerCore::logEvent(const sky::ArenaEvent &event) {
   StringPrinter p;
   event.print(p);
   appLog(p.getString(), LogOrigin::Engine);
-  eventLog.push_back(ClientEvent::Event(event));
+  event.print(messageInteraction.messageLog);
 }
 
 void MultiplayerCore::drawEventLog(ui::TextFrame &tf, const float cutoff) {

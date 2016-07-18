@@ -44,20 +44,30 @@ SplashScreen::SplashScreen(
     defaultFont(loader.accessFont(FontID::Default)),
     background(loader.accessTexture(ui::TextureID::MenuBackground)),
     animBegin(references.uptime) {
+  if (loader.getErrorStatus()) {
+    appLog("Bootstrap loading errored, quitting application!", LogOrigin::App);
+  }
   loader.loadAllThreaded();
 }
 
 bool SplashScreen::poll() {
-  if (control) quitting = control->quitting;
+  if (loader.getErrorStatus()) return;
 
+  if (control) quitting = control->quitting;
   return Control::poll();
 }
 
 void SplashScreen::tick(const TimeDiff delta) {
+  if (loader.getErrorStatus()) {
+    appLog("Resource loading errored, quitting application!", LogOrigin::App);
+    quitting = true;
+  }
   Control::tick(delta);
 }
 
 void SplashScreen::render(ui::Frame &f) {
+  if (loader.getErrorStatus()) return;
+
   if (!control) {
     f.drawSprite(background, {}, {0, 0, 1600, 900});
     if (!loader.getHolder()) {
@@ -93,6 +103,8 @@ void SplashScreen::render(ui::Frame &f) {
 }
 
 bool SplashScreen::handle(const sf::Event &event) {
+  if (loader.getErrorStatus()) return;
+
   if (loader.getHolder() && !control) {
     if (event.type == sf::Event::KeyReleased
         or event.type == sf::Event::MouseButtonReleased) {

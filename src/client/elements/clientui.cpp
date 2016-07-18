@@ -23,7 +23,7 @@ MessageInteraction::MessageInteraction() :
     messageEntry(references,
                  style.game.messageEntry,
                  style.game.messagePos,
-                 "[PRESS ENTER TO CHAT]"),
+                 "[<ENTER> TO TYPE]"),
     messageLog(references,
                style.game.messageLog,
                style.game.messagePos) {}

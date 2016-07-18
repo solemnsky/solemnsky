@@ -148,7 +148,6 @@ Style::Listing::Listing() {}
 Style::Game::Game(const Style::Base &base) :
     scoreOverlayDims{1330, 630},
     scoreOverlayTopMargin(100),
-    lobbyFontSize(base.normalFontSize),
 
     lobbyPlayersOffset(1250),
     lobbyTopMargin(205),
@@ -162,15 +161,16 @@ Style::Game::Game(const Style::Base &base) :
     lobbyButtonSep(0, 100),
     scoreboardOffset(100, 100),
     scoreboardDisplay(0, 0, 1400, 700),
-    scoreboardPaddingTop(100),
 
+    scoreboardPaddingTop(100),
     chatCutoff(500),
     chatIngameCutoff(150),
 
     playerSpecColor(255, 255, 255),
     playerJoinedColor(0, 255, 0),
-    readyButtonActiveDesc("READY!"),
-    readyButtonDeactiveDesc("CANCEL"),
+
+    messageEntry(base.normalTextEntry),
+    mesageLog(base.normalTextLog),
 
     messageLogText(base.normalText),
     playerListText(base.normalText) {

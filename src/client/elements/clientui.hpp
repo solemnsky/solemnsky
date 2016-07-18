@@ -26,11 +26,12 @@
  */
 class MessageInteraction : public ui::Control {
  private:
-  ui::TextEntry messageEntry;
-//  ui::TextLog messageLog;
-
  public:
   MessageInteraction();
+
+  // Subcomponents.
+  ui::TextEntry messageEntry;
+  ui::TextLog messageLog;
 
   // Control impl.
   virtual void tick(const TimeDiff delta) override;
