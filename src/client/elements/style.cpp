@@ -20,6 +20,8 @@
 // Lots of magic values in this file. Have fun!
 
 Style::Base::Base() :
+    screenSize(1600, 900),
+
     smallFontSize(25),
     normalFontSize(30),
     titleFontSize(50),
@@ -29,27 +31,30 @@ Style::Base::Base() :
     debugText(smallFontSize, {}, ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
     debugRightText(25, {}, ui::HorizontalAlign::Right, ui::VerticalAlign::Top),
 
-    buttonColor(132, 173, 181), // blue
-    buttonHotColor(92, 189, 206), // hot blue
-    buttonPressedColor(63, 208, 234), // less hot blue
-    buttonInactiveColor(200, 200, 200), // grey, not blue
-    freeTextColor(0, 0, 0),
+    dark(1, 14, 32),
+    backgroundDark(7, 34, 75),
+    background(29, 63, 109),
+    accentDark(56, 90, 137),
+    accentLight(106, 135, 176),
+
+    freeTextColor(dark),
     textColor(255, 255, 255), // not blue
     textAreaForeground(0, 0, 0),
     textAreaBackground(255, 255, 255),
+
     debugOpacity(0.7),
 
     heatRate(10),
 
-    normalButton(buttonColor, buttonHotColor, buttonPressedColor,
-                 buttonInactiveColor, textColor,
+    normalButton(accentLight, accentDark, backgroundDark,
+                 backgroundDark, textColor,
                  {200, 50}, heatRate, normalFontSize),
-    normalTextEntry(buttonColor, buttonHotColor, textAreaBackground,
+    normalTextEntry(accentLight, accentDark, textAreaBackground,
                     textColor, textAreaForeground, {500, 40},
                     normalFontSize, heatRate),
-    normalCheckbox(buttonColor, buttonHotColor, buttonPressedColor,
-                   buttonInactiveColor, textColor,
-                   {40, 40}, heatRate, normalFontSize) {}
+    normalCheckbox(normalButton) {
+  normalCheckbox.dimensions = {40, 40};
+}
 
 Style::Splash::Splash(const Base &base) :
     barWidth(800),
@@ -61,9 +66,9 @@ Style::Splash::Splash(const Base &base) :
                 ui::VerticalAlign::Middle) {}
 
 Style::Menu::Menu(const Style::Base &base) :
-    pageSize(1600, 900),
     unfocusedPageScale(500.0f / 1600.0f),
     pageMargins(50),
+    pageSize(base.screenSize - 2.0f * sf::Vector2f(pageMargins, pageMargins)),
 
     homeOffset(182.812, 121.875),
     settingsOffset(917.187, 121.875),
@@ -73,13 +78,13 @@ Style::Menu::Menu(const Style::Base &base) :
     closeButtonOffset(1300, 0),
     backButtonOffset(1067.18, 850),
 
-    homeArea(homeOffset, pageSize * unfocusedPageScale),
-    settingsArea(settingsOffset, pageSize * unfocusedPageScale),
-    listingArea(listingOffset, pageSize * unfocusedPageScale),
+    homeArea(homeOffset, base.screenSize * unfocusedPageScale),
+    settingsArea(settingsOffset, base.screenSize * unfocusedPageScale),
+    listingArea(listingOffset, base.screenSize * unfocusedPageScale),
 
-    pageBgColor(113, 167, 198),
-    pageUnderlayColor(0, 0, 0, 20),
-    statusFontColor(200, 200, 200),
+    pageBgColor(base.background),
+    pageUnderlayColor(0, 0, 0, 15),
+    statusFontColor(base.dark),
 
     descSize(base.normalFontSize),
 
@@ -132,9 +137,7 @@ Style::Settings::Settings(const Style::Menu &menu, const Style::Base &base) :
     pageButtonHeight(800),
     generalButtonOffset(menu.pageMargins),
     playerButtonOffset(menu.pageMargins + menu.pageSize.x / 3),
-    controlsButtonOffset(menu.pageMargins + 2 * menu.pageSize.x / 3),
-    selectedTabButtonColor(100, 100, 100),
-    unselectedTabButtonColor(base.buttonColor) {
+    controlsButtonOffset(menu.pageMargins + 2 * menu.pageSize.x / 3) {
   sectionButton.dimensions.x = menu.pageSize.x / 3;
 }
 

@@ -88,6 +88,7 @@ class SettingsPage : public Page {
 
  public:
   SettingsPage(ClientShared &shared);
+  ~SettingsPage();
 
   // Page impl.
   void onChangeSettings(const SettingsDelta &) override;

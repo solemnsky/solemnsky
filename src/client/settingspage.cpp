@@ -183,6 +183,10 @@ SettingsPage::SettingsPage(ClientShared &shared) :
   currentTab.first->setActive(false);
 }
 
+SettingsPage::~SettingsPage() {
+  onBlur();
+}
+
 void SettingsPage::onChangeSettings(const SettingsDelta &delta) {
   newSettings = shared.getSettings();
   currentTab.second->readSettings(shared.getSettings());
