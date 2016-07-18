@@ -22,9 +22,9 @@ MessageInteraction::MessageInteraction() :
     Control(references),
     messageEntry(references,
                  style.base.normalTextEntry,
-                 style.multi.chatPos,
-                 "[ENTER TO CHAT]"),
-    messageLog(references) {}
+                 style.game.chatPos,
+                 "[ENTER TO CHAT]") {}
+//    messageLog(references) {}
 
 void MessageInteraction::tick(const TimeDiff delta) {
   ui::Control::tick(delta);

@@ -80,16 +80,16 @@ void TextLog::startNewLine() {
   startingNewLine = false;
 }
 
-TextLog::TextLog(const AppRefs &appState, const Style &style,
+TextLog::TextLog(const AppRefs &references, const Style &style,
                  const sf::Vector2f &pos) :
-    Control(appState),
+    Control(references),
     style(style), pos(pos),
     startingNewLine(true),
     textFormat(style.fontSize, 0, ui::HorizontalAlign::Left,
                ui::VerticalAlign::Bottom),
     collapsed(false) {}
 
-void TextLog::tick(float delta) { }
+void TextLog::tick(TimeDiff) {}
 
 void TextLog::render(Frame &f) {
   const float

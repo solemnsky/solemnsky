@@ -128,7 +128,7 @@ Sandbox::Sandbox(ClientShared &state) :
     arena(sky::ArenaInit("sandbox", "ball_funnelpark")),
     skyHandle(arena, sky::SkyHandleInit()),
     debugView(arena, skyHandle),
-    commandEntry(references, style.base.normalTextEntry, style.multi.chatPos) {
+    commandEntry(references, style.base.normalTextEntry, style.game.chatPos) {
   arena.connectPlayer("offline player");
   player = arena.getPlayer(0);
   stopHandle();
