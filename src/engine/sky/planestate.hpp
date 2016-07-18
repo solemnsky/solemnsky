@@ -108,6 +108,7 @@ struct PlaneTuning {
   } flight;
 
   float *accessParamByName(const std::string &);
+  std::string toString() const;
 
 };
 
