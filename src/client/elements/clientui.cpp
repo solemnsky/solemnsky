@@ -21,10 +21,12 @@
 MessageInteraction::MessageInteraction() :
     Control(references),
     messageEntry(references,
-                 style.base.normalTextEntry,
-                 style.game.chatPos,
-                 "[ENTER TO CHAT]") {}
-//    messageLog(references) {}
+                 style.game.messageEntry,
+                 style.game.messagePos,
+                 "[PRESS ENTER TO CHAT]"),
+    messageLog(references,
+               style.game.messageLog,
+               style.game.messagePos) {}
 
 void MessageInteraction::tick(const TimeDiff delta) {
   ui::Control::tick(delta);
@@ -49,3 +51,4 @@ void MessageInteraction::signalRead() {
 void MessageInteraction::signalClear() {
   ui::Control::signalClear();
 }
+

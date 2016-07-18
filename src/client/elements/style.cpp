@@ -70,6 +70,7 @@ Style::Menu::Menu(const Style::Base &base) :
     unfocusedPageScale(500.0f / 1600.0f),
     pageMargins(50),
     pageSize(base.screenSize - 2.0f * sf::Vector2f(pageMargins, pageMargins)),
+    pageYOffset(20),
 
     homeOffset(182.812, 121.875),
     settingsOffset(917.187, 121.875),

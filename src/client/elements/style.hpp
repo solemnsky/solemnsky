@@ -81,6 +81,7 @@ struct Style {
   struct Menu {
     float unfocusedPageScale, pageMargins;
     sf::Vector2f pageSize;
+    float pageYOffset;
 
     // Position offsets. (See schema in media/source2d/board.png.)
     sf::Vector2f
@@ -159,7 +160,7 @@ struct Style {
   } settings;
 
   /**
-   * The rather important server listing page.
+   * Server listing page, still TODO.
    */
   struct Listing {
     // stub
@@ -173,25 +174,25 @@ struct Style {
     // Geometry.
     sf::Vector2i scoreOverlayDims;
     float scoreOverlayTopMargin;
-    int lobbyFontSize;
-
     float lobbyPlayersOffset,
         lobbyTopMargin,
         lobbyChatWidth,
         gameChatWidth;
-
-    sf::Vector2f chatPos,
-        messageLogPos,
-        playerListPos,
-        lobbyButtonPos, lobbyButtonSep,
-        scoreboardOffset;
+    sf::Vector2f messagePos,
+      playerListPos,
+      lobbyButtonPos,
+      lobbyButtonSep,
+      scoreboardOffset;
     sf::IntRect scoreboardDisplay;
     float scoreboardPaddingTop;
     float chatCutoff, chatIngameCutoff;
 
+    // Colors
     sf::Color playerSpecColor, playerJoinedColor;
-    std::string readyButtonActiveDesc, readyButtonDeactiveDesc;
 
+    // Widgets and styles.
+    ui::TextEntry::Style messageEntry;
+    ui::TextLog::Style messageLog;
     ui::TextFormat messageLogText, playerListText;
 
     Game(const Base &base);
