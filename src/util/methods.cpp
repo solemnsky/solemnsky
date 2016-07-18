@@ -104,7 +104,7 @@ int getProcessID() {
 
 void runSystemQuiet(const std::string &command) {
 #if defined(__linux) || defined(__APPLE__)
-  system((command + " &> /dev/null").c_str());
+  system((command + " > /dev/null 2>&1").c_str());
 #endif
 
 #ifdef _WIN32
