@@ -66,6 +66,9 @@ struct Style {
     // Geometry.
     float barWidth, barHeight, barPaddingTop;
 
+    // Transition animation.
+    float transition;
+
     sf::Color barColor;
     ui::TextFormat titleFormat;
 

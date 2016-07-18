@@ -60,6 +60,7 @@ Style::Splash::Splash(const Base &base) :
     barWidth(800),
     barHeight(30),
     barPaddingTop(50),
+    transition(1.5),
     barColor(sf::Color::White),
     titleFormat(base.titleFontSize, {},
                 ui::HorizontalAlign::Center,
