@@ -27,20 +27,22 @@ struct Style {
    * Basic style consistencies.
    */
   struct Base {
+    sf::Vector2f screenSize; // Hard-coded screen dimensions.
+
     // Font consistency.
     int smallFontSize, normalFontSize, titleFontSize;
     ui::TextFormat centeredText, normalText, debugText, debugRightText;
 
     // Color consistency.
-    sf::Color buttonColor,
-        buttonHotColor,
-        buttonPressedColor,
-        buttonInactiveColor,
-        freeTextColor, // color of text on the sky background
+    sf::Color dark, // Our basic 5-color palette.
+        backgroundDark,
+        background,
+        accentDark,
+        accentLight;
+    sf::Color freeTextColor, // color of text on the sky background
         textColor, // color of text on a readable background
         textAreaForeground,
         textAreaBackground;
-
     float debugOpacity;
 
     // Animation consistency.
@@ -74,8 +76,8 @@ struct Style {
    * Top-level client interface.
    */
   struct Menu {
-    sf::Vector2f pageSize;
     float unfocusedPageScale, pageMargins;
+    sf::Vector2f pageSize;
 
     // Position offsets. (See schema in media/source2d/board.png.)
     sf::Vector2f
