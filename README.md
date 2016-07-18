@@ -43,20 +43,20 @@ A list of the foreseeable developments necessary to reach this point follows.
   * Should leave a good first impression, and be intuitive and functional. (Issue #18)
   * Should have useful settings, with support for persistence. (Issue #17)
 * Environment (.sky) Format. 
-  * Should be constructable from altitude's maps with an automated tool. (Issue #19)
+  * Should be constructable from altitude's maps with an automated tool. (Issue #19) (DONE)
   * Should be easy to add custom game graphics to. (Issue #20)
 * Engine 
   * Should be improved to allow the server's implementation of a basic TBD-like mode. (Issue #22)
 * Engine Sandbox 
-  * Should allow experimenting with engine tuning values. (Issue #22)
+  * Should allow experimenting with engine tuning values. (Issue #22) (DONE)
 * Multiplayer Client 
-  * Should display lobby, environment loading, game, and score screens. (Issue #24)
+  * Should display lobby, environment loading, game, and score screens. (Issue #24) (DONE)
 * Multiplayer Server 
   * Should implement a basic TBD-like mode. (Issue #23)
 * Multiplayer 
   * Should employ packet buffering to compensate latency fluctuation in `SkyDelta` (dynamic game state) packets, on both client and server. (Issue #21)
 * Logging
-  * Should use an external library for fast asynchronous logging, and have a nice informational format. (Issue #16)
+  * Should use an external library for fast asynchronous logging, and have a nice informational format. (Issue #16) (DONE)
 
 ## Licensing and Credits.
 
