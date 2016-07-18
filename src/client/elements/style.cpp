@@ -20,53 +20,56 @@
 // Lots of magic values in this file. Have fun!
 
 Style::Base::Base() :
-    pageSize(1600, 900),
+    screenSize(1600, 900),
 
-    centeredText(30, {}, ui::HorizontalAlign::Center, ui::VerticalAlign::Top),
-    normalText(30, {}, ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
-    debugText(25, {}, ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
+    smallFontSize(25),
+    normalFontSize(30),
+    titleFontSize(50),
+
+    centeredText(normalFontSize, {}, ui::HorizontalAlign::Center, ui::VerticalAlign::Top),
+    normalText(normalFontSize, {}, ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
+    debugText(smallFontSize, {}, ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
     debugRightText(25, {}, ui::HorizontalAlign::Right, ui::VerticalAlign::Top),
 
-    buttonColor(132, 173, 181), // blue
-    buttonHotColor(92, 189, 206), // hot blue
-    buttonPressedColor(63, 208, 234), // less hot blue
-    buttonInactiveColor(200, 200, 200),
+    dark(1, 14, 32),
+    backgroundDark(7, 34, 75),
+    background(29, 63, 109),
+    accentDark(56, 90, 137),
+    accentLight(106, 135, 176),
+
+    freeTextColor(dark),
     textColor(255, 255, 255), // not blue
     textAreaForeground(0, 0, 0),
     textAreaBackground(255, 255, 255),
 
+    debugOpacity(0.7),
+
     heatRate(10),
 
-    smallFontSize(20),
-    normalFontSize(30),
-    largeFontSize(40),
-
-    pageMargins(50),
-    pageBgColor{136, 156, 255},
-
-    normalButton(buttonColor, buttonHotColor, buttonPressedColor,
-                 buttonInactiveColor, textColor,
+    normalButton(accentLight, accentDark, backgroundDark,
+                 backgroundDark, textColor,
                  {200, 50}, heatRate, normalFontSize),
-
-    normalTextEntry(buttonColor, buttonHotColor, textAreaBackground,
+    normalTextEntry(accentLight, accentDark, textAreaBackground,
                     textColor, textAreaForeground, {500, 40},
                     normalFontSize, heatRate),
-    normalCheckbox(buttonColor, buttonHotColor, buttonPressedColor,
-                   buttonInactiveColor, textColor,
-                   {40, 40}, heatRate, normalFontSize),
+    normalCheckbox(normalButton) {
+  normalCheckbox.dimensions = {40, 40};
+}
 
-    debugOpacity(0.7) {}
-
-Style::Splash::Splash() :
+Style::Splash::Splash(const Base &base) :
     barWidth(800),
     barHeight(30),
     barPaddingTop(50),
+    transition(1.5),
     barColor(sf::Color::White),
-    titleFormat(50, {}, ui::HorizontalAlign::Center,
+    titleFormat(base.titleFontSize, {},
+                ui::HorizontalAlign::Center,
                 ui::VerticalAlign::Middle) {}
 
 Style::Menu::Menu(const Style::Base &base) :
     unfocusedPageScale(500.0f / 1600.0f),
+    pageMargins(50),
+    pageSize(base.screenSize - 2.0f * sf::Vector2f(pageMargins, pageMargins)),
 
     homeOffset(182.812, 121.875),
     settingsOffset(917.187, 121.875),
@@ -76,16 +79,17 @@ Style::Menu::Menu(const Style::Base &base) :
     closeButtonOffset(1300, 0),
     backButtonOffset(1067.18, 850),
 
-    homeArea(homeOffset, base.pageSize * unfocusedPageScale),
-    settingsArea(settingsOffset, base.pageSize * unfocusedPageScale),
-    listingArea(listingOffset, base.pageSize * unfocusedPageScale),
+    homeArea(homeOffset, base.screenSize * unfocusedPageScale),
+    settingsArea(settingsOffset, base.screenSize * unfocusedPageScale),
+    listingArea(listingOffset, base.screenSize * unfocusedPageScale),
 
-    pageUnderlayColor(0, 0, 0, 20),
-    statusFontColor(200, 200, 200),
+    pageBgColor(base.background),
+    pageUnderlayColor(0, 0, 0, 15),
+    statusFontColor(base.dark),
 
     descSize(base.normalFontSize),
 
-    pageDescMargin(10),
+    pageDescMargin(-5),
 
     pageFocusAnimSpeed(4),
     gameFocusAnimSpeed(6),
@@ -120,25 +124,27 @@ Style::Home::Home(const Style::Base &) :
     remoteButtonPos(800, 600),
     serverEntryPos(800, 500) {}
 
-Style::Settings::Settings(const Style::Base &base) :
+Style::Settings::Settings(const Style::Menu &menu, const Style::Base &base) :
     textEntry(base.normalTextEntry),
     checkbox(base.normalCheckbox),
-    entryOffset(150, -0.5f * base.normalTextEntry.dimensions.y),
     descText(40, {}, ui::HorizontalAlign::Left, ui::VerticalAlign::Middle),
+    sectionButton(base.normalButton),
 
-    column1Pos(300, 80),
-    column2Pos(800, 80),
+    // We allocate 150 px for the description sizes, and 100 px side margin.
+    column1Pos(menu.pageMargins + 100 + 150, 80),
+    column2Pos(menu.pageMargins + menu.pageSize.x - 100 - 500, 80),
+
     rowOffset(80),
     pageButtonHeight(800),
-    generalButtonOffset(700 / 6),
-    playerButtonOffset(generalButtonOffset + 300 + 700 / 3),
-    controlsButtonOffset(playerButtonOffset + 300 + 700 / 3),
-    selectedTabButtonColor(100, 100, 100),
-    unselectedTabButtonColor(base.buttonColor) {}
+    generalButtonOffset(menu.pageMargins),
+    playerButtonOffset(menu.pageMargins + menu.pageSize.x / 3),
+    controlsButtonOffset(menu.pageMargins + 2 * menu.pageSize.x / 3) {
+  sectionButton.dimensions.x = menu.pageSize.x / 3;
+}
 
 Style::Listing::Listing() {}
 
-Style::Multi::Multi(const Style::Base &base) :
+Style::Game::Game(const Style::Base &base) :
     scoreOverlayDims{1330, 630},
     scoreOverlayTopMargin(100),
     lobbyFontSize(base.normalFontSize),
@@ -184,9 +190,10 @@ Style::SkyRender::SkyRender() :
 
 Style::Style() :
     base(),
+    splash(base),
     menu(base),
     home(base),
-    settings(base),
-    multi(base) {}
+    settings(menu, base),
+    game(base) {}
 
 

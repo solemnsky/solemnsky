@@ -161,15 +161,15 @@ SettingsPage::SettingsPage(ClientShared &shared) :
 
     newSettings(shared.getSettings()),
 
-    generalButton(references, style.base.normalButton,
+    generalButton(references, style.settings.sectionButton,
                   {style.settings.generalButtonOffset,
                    style.settings.pageButtonHeight},
                   "GENERAL"),
-    playerButton(references, style.base.normalButton,
+    playerButton(references, style.settings.sectionButton,
                  {style.settings.playerButtonOffset,
                   style.settings.pageButtonHeight},
                  "PLAYER"),
-    controlsButton(references, style.base.normalButton,
+    controlsButton(references, style.settings.sectionButton,
                    {style.settings.controlsButtonOffset,
                     style.settings.pageButtonHeight},
                    "CONTROLS"),
@@ -181,6 +181,10 @@ SettingsPage::SettingsPage(ClientShared &shared) :
   areChildren(
       {&generalButton, &playerButton, &controlsButton});
   currentTab.first->setActive(false);
+}
+
+SettingsPage::~SettingsPage() {
+  onBlur();
 }
 
 void SettingsPage::onChangeSettings(const SettingsDelta &delta) {

@@ -93,7 +93,7 @@ bool Button::handle(const sf::Event &event) {
   if (event.type == sf::Event::MouseMoved) {
     const sf::Vector2f pt(event.mouseMove.x, event.mouseMove.y);
     isHot = body.contains(pt);
-    return isHot;
+    return false;
   }
 
   if (event.type == sf::Event::MouseButtonPressed or

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Style settings.
+ * Stylesheet for the whole application.
  */
 #pragma once
 #include "ui/control.hpp"
@@ -27,30 +27,34 @@ struct Style {
    * Basic style consistencies.
    */
   struct Base {
-    sf::Vector2f pageSize;
+    sf::Vector2f screenSize; // Hard-coded screen dimensions.
 
+    // Font consistency.
+    int smallFontSize, normalFontSize, titleFontSize;
     ui::TextFormat centeredText, normalText, debugText, debugRightText;
 
-    sf::Color buttonColor,
-        buttonHotColor,
-        buttonPressedColor,
-        buttonInactiveColor,
-        textColor,
+    // Color consistency.
+    sf::Color dark, // Our basic 5-color palette.
+        backgroundDark,
+        background,
+        accentDark,
+        accentLight;
+    sf::Color freeTextColor, // color of text on the sky background
+        textColor, // color of text on a readable background
         textAreaForeground,
         textAreaBackground;
-    // TODO: organize color usage
+    float debugOpacity;
+
+    // Animation consistency.
     float heatRate; // inverse of time it takes for a UI element to 'heat up'
 
-    int smallFontSize, normalFontSize, largeFontSize;
+    // Distance consistency.
+    float widgetWidth;
 
-    float pageMargins;
-    sf::Color pageBgColor;
-
+    // Vanilla widgets.
     ui::Button::Style normalButton;
     ui::TextEntry::Style normalTextEntry;
     ui::Checkbox::Style normalCheckbox;
-
-    float debugOpacity;
 
     Base();
   } base;
@@ -59,21 +63,26 @@ struct Style {
    * Splash screen.
    */
   struct Splash {
+    // Geometry.
     float barWidth, barHeight, barPaddingTop;
+
+    // Transition animation.
+    float transition;
+
     sf::Color barColor;
     ui::TextFormat titleFormat;
 
-    Splash();
+    Splash(const Base &base);
   } splash;
 
   /**
-   * Top-level interface, implemented by Client.
+   * Top-level client interface.
    */
   struct Menu {
-    float unfocusedPageScale;
+    float unfocusedPageScale, pageMargins;
+    sf::Vector2f pageSize;
 
-    // position offsets for various elements, see the schema in
-    // media/source2d/board.png
+    // Position offsets. (See schema in media/source2d/board.png.)
     sf::Vector2f
         homeOffset,
         settingsOffset,
@@ -87,9 +96,11 @@ struct Style {
         settingsArea,
         listingArea;
 
-    sf::Color pageUnderlayColor, statusFontColor;
+    // Some menu colors.
+    sf::Color pageBgColor, pageUnderlayColor, statusFontColor;
 
-    int descSize; // size of bits of text that describe things
+    // Page descriptions.
+    int descSize;
     float pageDescMargin;
 
     float pageFocusAnimSpeed, // s^-1
@@ -128,10 +139,11 @@ struct Style {
    * The function-packed settings page.
    */
   struct Settings {
+    // Widget styles.
     ui::TextEntry::Style textEntry;
     ui::Checkbox::Style checkbox;
-    sf::Vector2f entryOffset;
     ui::TextFormat descText;
+    ui::Button::Style sectionButton;
 
     sf::Vector2f column1Pos, column2Pos;
     float rowOffset;
@@ -143,7 +155,7 @@ struct Style {
     sf::Color selectedTabButtonColor, unselectedTabButtonColor;
     // color of the selected tab button
 
-    Settings(const Base &base);
+    Settings(const Style::Menu &menu, const Base &base);
   } settings;
 
   /**
@@ -155,9 +167,10 @@ struct Style {
   } listing;
 
   /**
-   * The action-packed multiplayer client.
+   * The various game interfaces.
    */
-  struct Multi {
+  struct Game {
+    // Geometry.
     sf::Vector2i scoreOverlayDims;
     float scoreOverlayTopMargin;
     int lobbyFontSize;
@@ -181,8 +194,8 @@ struct Style {
 
     ui::TextFormat messageLogText, playerListText;
 
-    Multi(const Base &base);
-  } multi;
+    Game(const Base &base);
+  } game;
 
   /**
    * Render settings for the game.

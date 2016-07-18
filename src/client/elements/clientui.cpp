@@ -15,38 +15,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * The ubiquitous checkbox.
- */
-#pragma once
-#include "ui/control.hpp"
-#include "button.hpp"
+#include "clientui.hpp"
+#include "style.hpp"
 
-namespace ui {
+MessageInteraction::MessageInteraction() :
+    Control(references),
+    messageEntry(references,
+                 style.base.normalTextEntry,
+                 style.game.chatPos,
+                 "[ENTER TO CHAT]") {}
+//    messageLog(references) {}
 
-class Checkbox: public ui::Control {
- private:
-  Button button;
-  bool value;
+void MessageInteraction::tick(const TimeDiff delta) {
+  ui::Control::tick(delta);
+}
 
- public:
-  typedef Button::Style Style;
+void MessageInteraction::render(ui::Frame &f) {
+  ui::Control::render(f);
+}
 
-  Checkbox() = delete;
-  Checkbox(const AppRefs &references,
-           const Style &style,
-           const sf::Vector2f &pos);
+bool MessageInteraction::handle(const sf::Event &event) {
+  return ui::Control::handle(event);
+}
 
-  void signalRead() override;
-  void signalClear() override;
+void MessageInteraction::reset() {
+  ui::Control::reset();
+}
 
-  // User API.
-  void setValue(const bool newValue);
-  bool getValue() const;
+void MessageInteraction::signalRead() {
+  ui::Control::signalRead();
+}
 
-  void setDescription(const optional<std::string> &description);
-
-  bool &clickSignal;
-};
-
+void MessageInteraction::signalClear() {
+  ui::Control::signalClear();
 }

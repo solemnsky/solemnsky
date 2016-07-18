@@ -39,12 +39,9 @@ struct PlaneTuning {
 
   template<class Archive>
   void serialize(Archive &ar) {
-    ar(energy.thrustDrain, energy.recharge, energy.laserGun,
-       energy.primaryRecharge);
-    ar(stall.maxRotVel, stall.maxVel, stall.thrust, stall.damping);
-    ar(flight.maxRotVel, flight.airspeedFactor, flight.throttleInfluence,
-       flight.throttleEffect, flight.gravityEffect, flight.afterburnDrive,
-       flight.leftoverDamping, flight.threshold, throttleSpeed);
+    ar(cereal::make_nvp("energy", energy),
+       cereal::make_nvp("stall", stall),
+       cereal::make_nvp("flight", flight));
   }
 
   sf::Vector2f hitbox; // x axis parallel with flight direction
@@ -56,6 +53,14 @@ struct PlaneTuning {
     float thrustDrain, recharge, laserGun;
     // weapon mechanics
     float primaryRecharge;
+
+    template<typename Archive>
+    void serialize(Archive &ar) {
+      ar(cereal::make_nvp("thrustDrain", thrustDrain),
+         cereal::make_nvp("recharge", recharge),
+         cereal::make_nvp("laserGun", laserGun),
+         cereal::make_nvp("primaryRecharge", primaryRecharge));
+    }
   } energy;
 
   struct Stall {
@@ -66,6 +71,15 @@ struct PlaneTuning {
         thrust, // thrust acceleration (ps / s^2)
         damping; // how quickly we approach our terminal velocity
     float threshold; // the minimum airspeed that we need to enter flight
+
+    template<typename Archive>
+    void serialize(Archive &ar) {
+      ar(cereal::make_nvp("maxRotVel", maxRotVel),
+         cereal::make_nvp("maxVel", maxVel),
+         cereal::make_nvp("thrust", thrust),
+         cereal::make_nvp("damping", damping),
+         cereal::make_nvp("threshold", threshold));
+    }
   } stall;
 
   struct Flight {
@@ -79,7 +93,22 @@ struct PlaneTuning {
         afterburnDrive,
         leftoverDamping;
     float threshold; // the maximum airspeed that we need to enter stall
+
+    template<typename Archive>
+    void serialize(Archive &ar) {
+      ar(cereal::make_nvp("maxRotVel", maxRotVel),
+         cereal::make_nvp("airspeedFactor", airspeedFactor),
+         cereal::make_nvp("throttleInfluence", throttleInfluence),
+         cereal::make_nvp("throttleEffect", throttleEffect),
+         cereal::make_nvp("gravityEffect", gravityEffect),
+         cereal::make_nvp("afterburnDrive", afterburnDrive),
+         cereal::make_nvp("leftoverDamping", leftoverDamping),
+         cereal::make_nvp("threshold", threshold));
+    }
   } flight;
+
+  float *accessParamByName(const std::string &);
+  std::string toString() const;
 
 };
 
@@ -180,7 +209,6 @@ struct PlaneControls {
 
   template<Action action>
   bool getState() const { return controls[size_t(action)]; }
-
 
   Movement rotMovement() const;
 };

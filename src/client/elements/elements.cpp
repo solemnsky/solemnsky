@@ -44,9 +44,9 @@ Page::Page(ClientShared &shared) :
     ui::Control(shared.references) {}
 
 void Page::drawBackground(ui::Frame &f) {
-  const float margins = style.base.pageMargins;
+  const float margins = style.menu.pageMargins;
   f.drawRect({margins, margins},
-             {1600 - margins, 900 - margins}, style.base.pageBgColor);
+             {1600 - margins, 900 - margins}, style.menu.pageBgColor);
 }
 
 /**

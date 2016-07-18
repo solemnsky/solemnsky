@@ -16,37 +16,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * The ubiquitous checkbox.
+ * UI components specialized for the client.
  */
 #pragma once
-#include "ui/control.hpp"
-#include "button.hpp"
+#include "ui/widgets.hpp"
 
-namespace ui {
-
-class Checkbox: public ui::Control {
+/**
+ * Text entry / variable message log combo. Used in the sandbox and client.
+ */
+class MessageInteraction : public ui::Control {
  private:
-  Button button;
-  bool value;
+  ui::TextEntry messageEntry;
+//  ui::TextLog messageLog;
 
  public:
-  typedef Button::Style Style;
+  MessageInteraction();
 
-  Checkbox() = delete;
-  Checkbox(const AppRefs &references,
-           const Style &style,
-           const sf::Vector2f &pos);
+  // Control impl.
+  virtual void tick(const TimeDiff delta) override;
+  virtual void render(ui::Frame &f) override;
+  virtual bool handle(const sf::Event &event) override;
+  virtual void reset() override;
+  virtual void signalRead() override;
+  virtual void signalClear() override;
 
-  void signalRead() override;
-  void signalClear() override;
-
-  // User API.
-  void setValue(const bool newValue);
-  bool getValue() const;
-
-  void setDescription(const optional<std::string> &description);
-
-  bool &clickSignal;
 };
 
-}

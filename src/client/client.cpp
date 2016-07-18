@@ -67,15 +67,15 @@ void Client::drawPage(ui::Frame &f, const PageType type,
       .translate(offsetAmnt * offset).scale(scale, scale);
 
   f.withAlpha(alpha, [&]() {
-    f.withAlpha(titleAlpha, [&]() {
-      f.drawText(
-          sf::Vector2f(0, style.menu.pageDescMargin) + offsetAmnt * offset,
-          name, sf::Color::White, style.menu.menuDescText,
-          resources.defaultFont);
-    });
     f.withTransform(transform, [&]() {
       f.drawRect({0, 0, 1600, 900}, style.menu.pageUnderlayColor);
       page.render(f);
+    });
+    f.withAlpha(titleAlpha, [&]() {
+      f.drawText(
+          sf::Vector2f(0, style.menu.pageDescMargin) + offsetAmnt * offset,
+          name, style.base.freeTextColor, style.menu.menuDescText,
+          resources.defaultFont);
     });
   });
 }

@@ -20,11 +20,11 @@
 
 namespace ui {
 
-Checkbox::Checkbox(const AppRefs &appState,
+Checkbox::Checkbox(const AppRefs &references,
                    const ui::Button::Style &style,
                    const sf::Vector2f &pos) :
-    Control(appState),
-    button(appState, style, pos, ""),
+    Control(references),
+    button(references, style, pos, ""),
     value(false),
     clickSignal(button.clickSignal) {
   areChildren({&button});
