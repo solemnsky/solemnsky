@@ -80,10 +80,10 @@ void SplashScreen::render(ui::Frame &f) {
     }
   } else {
     const float animTime = float(references.timeSince(animBegin));
-    if (animTime < 0.5) {
+    if (animTime < style.splash.transition) {
       f.drawSprite(loader.accessTexture(ui::TextureID::MenuBackground),
                    {}, {0, 0, 1600, 900});
-      f.withAlpha(linearTween(0, 1, animTime * 2), [&]() {
+      f.withAlpha(linearTween(0, 1, animTime / style.splash.transition), [&]() {
         ui::Control::render(f);
       });
     } else {

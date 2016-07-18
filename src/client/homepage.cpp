@@ -27,12 +27,12 @@ HomePage::HomePage(ClientShared &clientState) :
                   "SANDBOX"),
     localhostButton(references, style.base.normalButton,
                     style.home.localhostButtonPos,
-                    "LOCAL GAME"),
+                    "LOCAL"),
     remoteButton(references, style.base.normalButton,
                  style.home.remoteButtonPos,
-                 "REMOTE GAME"),
+                 "REMOTE"),
     serverEntry(references, style.base.normalTextEntry,
-                style.home.serverEntryPos, "Address", true) {
+                style.home.serverEntryPos, "server address", true) {
   areChildren({&sandboxButton, &localhostButton, &remoteButton, &serverEntry});
 
   //Initial value

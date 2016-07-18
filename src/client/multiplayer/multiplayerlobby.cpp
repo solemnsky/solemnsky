@@ -100,7 +100,7 @@ void MultiplayerLobby::signalRead() {
   if (redButton.clickSignal)
     core.requestTeamChange(sky::Team::Red);
   if (blueButton.clickSignal)
-    core.requestTeamChange(sky::Team::Spectator);
+    core.requestTeamChange(sky::Team::Blue);
   if (chatInput.inputSignal) {
     core.handleChatInput(chatInput.inputSignal.get());
   }
