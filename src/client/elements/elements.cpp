@@ -46,7 +46,7 @@ Page::Page(ClientShared &shared) :
 void Page::drawBackground(ui::Frame &f) {
   const float margins = style.menu.pageMargins;
   f.drawRect({margins, margins},
-             {1600 - margins, 900 - margins}, style.base.pageBgColor);
+             {1600 - margins, 900 - margins}, style.menu.pageBgColor);
 }
 
 /**

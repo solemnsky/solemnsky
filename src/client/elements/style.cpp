@@ -33,7 +33,7 @@ Style::Base::Base() :
     buttonHotColor(92, 189, 206), // hot blue
     buttonPressedColor(63, 208, 234), // less hot blue
     buttonInactiveColor(200, 200, 200), // grey, not blue
-    freeTextColor(98, 112, 145), // very grey blue
+    freeTextColor(0, 0, 0),
     textColor(255, 255, 255), // not blue
     textAreaForeground(0, 0, 0),
     textAreaBackground(255, 255, 255),
@@ -83,7 +83,7 @@ Style::Menu::Menu(const Style::Base &base) :
 
     descSize(base.normalFontSize),
 
-    pageDescMargin(10),
+    pageDescMargin(-5),
 
     pageFocusAnimSpeed(4),
     gameFocusAnimSpeed(6),
@@ -118,21 +118,25 @@ Style::Home::Home(const Style::Base &) :
     remoteButtonPos(800, 600),
     serverEntryPos(800, 500) {}
 
-Style::Settings::Settings(const Style::Base &base) :
+Style::Settings::Settings(const Style::Menu &menu, const Style::Base &base) :
     textEntry(base.normalTextEntry),
     checkbox(base.normalCheckbox),
-    entryOffset(150, -0.5f * base.normalTextEntry.dimensions.y),
     descText(40, {}, ui::HorizontalAlign::Left, ui::VerticalAlign::Middle),
+    sectionButton(base.normalButton),
 
-    column1Pos(300, 80),
-    column2Pos(800, 80),
+    // We allocate 150 px for the description sizes, and 100 px side margin.
+    column1Pos(menu.pageMargins + 100 + 150, 80),
+    column2Pos(menu.pageMargins + menu.pageSize.x - 100 - 500, 80),
+
     rowOffset(80),
     pageButtonHeight(800),
-    generalButtonOffset(700 / 6),
-    playerButtonOffset(generalButtonOffset + 300 + 700 / 3),
-    controlsButtonOffset(playerButtonOffset + 300 + 700 / 3),
+    generalButtonOffset(menu.pageMargins),
+    playerButtonOffset(menu.pageMargins + menu.pageSize.x / 3),
+    controlsButtonOffset(menu.pageMargins + 2 * menu.pageSize.x / 3),
     selectedTabButtonColor(100, 100, 100),
-    unselectedTabButtonColor(base.buttonColor) {}
+    unselectedTabButtonColor(base.buttonColor) {
+  sectionButton.dimensions.x = menu.pageSize.x / 3;
+}
 
 Style::Listing::Listing() {}
 
@@ -185,7 +189,7 @@ Style::Style() :
     splash(base),
     menu(base),
     home(base),
-    settings(base),
+    settings(menu, base),
     game(base) {}
 
 
