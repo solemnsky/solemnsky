@@ -31,6 +31,18 @@ void Client::forAllPages(std::function<void(Page &)> f) {
   f(settingsPage.ctrl);
 }
 
+ui::TransformedBase &Client::referencePageBase(const PageType type) {
+  switch (type) {
+    case PageType::Home:
+      return homePage.base;
+    case PageType::Settings:
+      return settingsPage.base;
+    case PageType::Listing:
+      return listingPage.base;
+  }
+  throw enum_error();
+}
+
 Page &Client::referencePage(const PageType type) {
   switch (type) {
     case PageType::Home:
@@ -95,21 +107,21 @@ void Client::renderUI(ui::Frame &f) {
 
   renderPage(
       f, PageType::Home, style.menu.homeOffset,
-      "HOME", homePage.base);
+      "home", homePage.base);
   renderPage(
       f, PageType::Listing, style.menu.listingOffset,
-      "SERVER LISTING", listingPage.base);
+      "server listing", listingPage.base);
   renderPage(
       f, PageType::Settings, style.menu.settingsOffset,
-      "SETTINGS", settingsPage.base);
+      "settings", settingsPage.base);
 
   if (const auto game = shared.getGame()) {
     f.drawText(
-        {style.menu.closeButtonOffset.x - 10, 0}, [&](ui::TextFrame &tf) {
-          tf.setColor(sf::Color::White);
-          tf.print(game->name);
+        style.menu.closeButtonOffset - sf::Vector2f(10, 0),
+        [&](ui::TextFrame &tf) {
           tf.setColor(style.menu.statusFontColor);
-          tf.print("(" + game->status + ")");
+          tf.print(" (" + game->status + ")");
+          tf.print(game->name);
         }, style.menu.gameDescText, resources.defaultFont);
     closeButton.render(f);
   }
@@ -263,7 +275,7 @@ bool Client::handle(const sf::Event &event) {
 
   if (uiState.pageFocused()) {
     if (backButton.handle(event)) return true;
-    if (referencePage(uiState.focusedPage).handle(event)) return true;
+    if (referencePageBase(uiState.focusedPage).handle(event)) return true;
   }
 
   if (event.type == sf::Event::KeyPressed

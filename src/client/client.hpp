@@ -58,6 +58,7 @@ class Client: public ui::Control {
 
   // Internal helpers.
   void forAllPages(std::function<void(Page &)> f);
+  ui::TransformedBase &referencePageBase(const PageType type);
   Page &referencePage(const PageType type);
 
   // Render subroutines.

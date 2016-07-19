@@ -24,7 +24,7 @@ MessageInteraction::MessageInteraction(const ui::AppRefs &references) :
     messageEntry(references,
                  style.game.messageEntry,
                  style.game.messagePos,
-                 "[<ENTER> TO TYPE]"),
+                 "[enter to type]"),
     messageLog(references,
                style.game.messageLog,
                style.game.messagePos) {
