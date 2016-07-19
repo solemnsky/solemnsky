@@ -28,7 +28,8 @@
 class MessageInteraction : public ui::Control {
  private:
  public:
-  MessageInteraction();
+  MessageInteraction() = delete;
+  MessageInteraction(const ui::AppRefs &references);
 
   // Subcomponents.
   ui::TextEntry messageEntry;

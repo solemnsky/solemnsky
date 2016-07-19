@@ -19,7 +19,7 @@
 #include "style.hpp"
 #include "settings.hpp"
 
-MessageInteraction::MessageInteraction() :
+MessageInteraction::MessageInteraction(const ui::AppRefs &references) :
     Control(references),
     messageEntry(references,
                  style.game.messageEntry,

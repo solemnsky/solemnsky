@@ -48,9 +48,6 @@ struct Style {
     // Animation consistency.
     float heatRate; // inverse of time it takes for a UI element to 'heat up'
 
-    // Distance consistency.
-    float widgetWidth;
-
     // Vanilla widgets.
     ui::Button::Style normalButton;
     ui::TextEntry::Style normalTextEntry;
