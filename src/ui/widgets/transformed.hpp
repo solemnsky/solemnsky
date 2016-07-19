@@ -18,7 +18,7 @@
 /**
  * Wrapper to transform a Control, affecting display and event handling.
  */
-
+#pragma once
 #include "ui/control.hpp"
 
 namespace ui {
