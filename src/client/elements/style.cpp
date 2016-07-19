@@ -77,8 +77,8 @@ Style::Menu::Menu(const Style::Base &base) :
     listingOffset(550.000, 495.250),
     quitButtonOffset(182.812, 610.875),
     aboutButtonOffset(1217.188, 610.875),
-    closeButtonOffset(1300, 0),
-    backButtonOffset(1067.18, 850 + pageYOffset / 2.0f),
+    closeButtonOffset(1100, 850 + pageYOffset / 2.0f),
+    backButtonOffset(100, 850 + pageYOffset / 2.0f),
 
     homeArea(homeOffset, base.screenSize * unfocusedPageScale),
     settingsArea(settingsOffset, base.screenSize * unfocusedPageScale),
@@ -87,11 +87,11 @@ Style::Menu::Menu(const Style::Base &base) :
     pageBgColor(base.background),
     pageUnderlayColor(255, 255, 255, 15),
     statusFontColor(base.dark),
-    gameOverlayColor(255, 255, 255, 30),
+    gameOverlayColor(135, 206, 235, 200),
 
     descSize(base.normalFontSize),
 
-    pageDescMargin(-5),
+    pageDescMargin(-10),
 
     pageFocusAnimSpeed(4),
     gameFocusAnimSpeed(6),
