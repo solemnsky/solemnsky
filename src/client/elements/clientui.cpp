@@ -17,6 +17,7 @@
  */
 #include "clientui.hpp"
 #include "style.hpp"
+#include "settings.hpp"
 
 MessageInteraction::MessageInteraction() :
     Control(references),
@@ -26,7 +27,9 @@ MessageInteraction::MessageInteraction() :
                  "[<ENTER> TO TYPE]"),
     messageLog(references,
                style.game.messageLog,
-               style.game.messagePos) {}
+               style.game.messagePos) {
+  areChildren({&messageEntry, &messageLog});
+}
 
 void MessageInteraction::tick(const TimeDiff delta) {
   ui::Control::tick(delta);
@@ -46,9 +49,20 @@ void MessageInteraction::reset() {
 
 void MessageInteraction::signalRead() {
   ui::Control::signalRead();
+  inputSignal = messageEntry.inputSignal;
 }
 
 void MessageInteraction::signalClear() {
   ui::Control::signalClear();
+  inputSignal.reset();
 }
 
+bool MessageInteraction::handleClientAction(const ClientAction action, const bool state) {
+  switch (action) {
+    case ClientAction::Spawn: {
+      if (state) messageEntry.focus();
+      return true;
+    }
+    default: return false;
+  }
+}

@@ -127,17 +127,12 @@ Sandbox::Sandbox(ClientShared &state) :
     Game(state, "sandbox"),
     arena(sky::ArenaInit("sandbox", "ball_funnelpark")),
     skyHandle(arena, sky::SkyHandleInit()),
-    debugView(arena, skyHandle),
-    commandEntry(references, style.base.normalTextEntry, style.game.chatPos) {
+    debugView(arena, skyHandle) {
   arena.connectPlayer("offline player");
   player = arena.getPlayer(0);
   stopHandle();
-  areChildren({&commandEntry});
+  areChildren({&messageInteraction});
 }
-
-/**
- * Game interface.
- */
 
 void Sandbox::onChangeSettings(const SettingsDelta &settings) {
   ClientComponent::onChangeSettings(settings);
@@ -157,10 +152,6 @@ void Sandbox::doExit() {
   quitting = true;
 }
 
-/**
- * Control interface.
- */
-
 void Sandbox::tick(const TimeDiff delta) {
   if (!skyHandle.getSky()) {
     if (auto environment = skyHandle.getEnvironment()) {
@@ -179,7 +170,7 @@ void Sandbox::tick(const TimeDiff delta) {
   }
 
   if (shared.getUi().gameFocused()) arena.tick(delta);
-  // if this were multiplayer of course we wouldn't have this liberty
+
   ui::Control::tick(delta);
 }
 
@@ -209,6 +200,8 @@ bool Sandbox::handle(const sf::Event &event) {
   if (ui::Control::handle(event)) return true;
 
   if (auto action = shared.triggerClientAction(event)) {
+    if (messageInteraction.handleClientAction(action->first, action->second)) return true;
+
     if (auto sky = skyHandle.getSky()) {
       const auto &participation = sky->getParticipation(*player);
 
@@ -219,13 +212,6 @@ bool Sandbox::handle(const sf::Event &event) {
         player->spawn(spawnTuning, spawnPoint.pos, spawnPoint.angle);
         return true;
       }
-    }
-
-    if (action->first == ClientAction::Chat
-        and action->second
-        and !commandEntry.isFocused) {
-      commandEntry.focus();
-      return true;
     }
   }
 
@@ -241,8 +227,8 @@ void Sandbox::reset() {
 }
 
 void Sandbox::signalRead() {
-  if (const auto signal = commandEntry.inputSignal) {
-    auto parsed = SandboxCommand::parseCommand(signal.get());
+  if (const auto messageInput = messageInteraction.inputSignal) {
+    auto parsed = SandboxCommand::parseCommand(messageInput.get());
     if (parsed) {
       runCommand(parsed.get());
     } else {

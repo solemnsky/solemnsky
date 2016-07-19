@@ -180,13 +180,13 @@ bool TextEntry::handle(const sf::Event &event) {
     return contains;
   }
 
-  if (!isFocused) {
-    if (event.type == sf::Event::MouseMoved) {
-      const sf::Vector2f pt(event.mouseMove.x, event.mouseMove.y);
-      isHot = body.contains(pt);
-      return isHot;
-    }
-  } else {
+  if (event.type == sf::Event::MouseMoved) {
+    const sf::Vector2f pt(event.mouseMove.x, event.mouseMove.y);
+    isHot = body.contains(pt);
+    return false;
+  }
+
+  if (isFocused) {
     if (event.type == sf::Event::KeyReleased) {
       pressedKeyboardEvent.reset();
       repeatActivate.reset();

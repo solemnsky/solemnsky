@@ -63,14 +63,12 @@ TextLog::Style::Style(
     const float maxWidth,
     const float maxHeight,
     const float maxHeightCollapsed,
-    const float maxLifetime,
     const float maxLifetimeCollapsed,
     const float fadeStart,
     const int fontSize) :
     maxWidth(maxWidth),
     maxHeight(maxHeight),
     maxHeightCollapsed(maxHeightCollapsed),
-    maxLifetime(maxLifetime),
     maxLifetimeCollapsed(maxLifetimeCollapsed),
     fadeStart(fadeStart),
     fontSize(fontSize) { }
@@ -92,23 +90,22 @@ TextLog::TextLog(const AppRefs &references, const Style &style,
 void TextLog::tick(TimeDiff) {}
 
 void TextLog::render(Frame &f) {
-  const float
-      maxHeight = collapsed ? style.maxHeightCollapsed : style.maxHeight,
-      maxLifetime = collapsed ? style.maxLifetimeCollapsed : style.maxLifetime;
+  const float maxHeight = collapsed ? style.maxHeightCollapsed : style.maxHeight;
 
   f.drawText(pos, [&](TextFrame &tf) {
     for (const auto &pair : lines) {
       const double age = references.timeSince(pair.first);
-      if (age < maxLifetime || maxLifetime == 0) {
-        const double alpha =
-            (style.fadeStart == 0) ? 1 :
-            clamp(0.0, 1.0, (maxLifetime - age) / style.fadeStart);
-        f.withAlpha(float(alpha), [&]() {
-          for (auto &action : pair.second) action.print(tf);
-        });
-        tf.breakLine();
+      if (collapsed) {
+        if (age < style.maxLifetimeCollapsed) {
+          const double alpha =
+              (style.fadeStart == 0) ? 1 :
+              clamp(0.0, 1.0, (style.maxLifetimeCollapsed - age) / style.fadeStart);
+          f.withAlpha(float(alpha), [&]() {
+            for (auto &action : pair.second) action.print(tf);
+          });
+          tf.breakLine();
+        }
       }
-
       if (tf.drawOffset.y > maxHeight && maxHeight != 0) return;
     }
   }, textFormat, resources.defaultFont);

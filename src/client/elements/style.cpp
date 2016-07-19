@@ -154,8 +154,7 @@ Style::Game::Game(const Style::Base &base) :
     lobbyChatWidth(900),
     gameChatWidth(500),
 
-    chatPos(20, 850),
-    messageLogPos(20, 850 - 15),
+    messagePos(20, 850),
     playerListPos(1250, 200),
     lobbyButtonPos(lobbyChatWidth + 100, lobbyTopMargin),
     lobbyButtonSep(0, 100),
@@ -170,7 +169,7 @@ Style::Game::Game(const Style::Base &base) :
     playerJoinedColor(0, 255, 0),
 
     messageEntry(base.normalTextEntry),
-    mesageLog(base.normalTextLog),
+    messageLog(1200, 600, 200, 30, 25, base.normalFontSize),
 
     messageLogText(base.normalText),
     playerListText(base.normalText) {
