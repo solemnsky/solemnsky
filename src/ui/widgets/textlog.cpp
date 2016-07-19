@@ -63,7 +63,7 @@ TextLog::Style::Style(
     const float maxWidth,
     const float maxHeight,
     const float maxHeightCollapsed,
-    const float maxLifetimeCollapsed,
+    const Time maxLifetimeCollapsed,
     const float fadeStart,
     const int fontSize) :
     maxWidth(maxWidth),

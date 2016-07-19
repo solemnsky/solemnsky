@@ -24,7 +24,7 @@
 
 void MultiplayerGame::doClientAction(const ClientAction action,
                                      const bool state) {
-  core.messageInteraction.doClientAction(action, state);
+  if (core.messageInteraction.handleClientAction(action, state)) return;
   switch (action) {
     case ClientAction::Spawn: {
       if (state) core.transmit(sky::ClientPacket::ReqSpawn());

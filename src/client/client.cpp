@@ -19,11 +19,11 @@
 #include "elements/style.hpp"
 #include "util/methods.hpp"
 #include "util/printer.hpp"
+#include "util/clientutil.hpp"
 
 /**
  * Client.
  */
-
 
 void Client::forAllPages(std::function<void(Page &)> f) {
   f(homePage);
@@ -48,29 +48,34 @@ void Client::drawPage(ui::Frame &f, const PageType type,
                       ui::Control &page) {
   const float focusFactor = uiState.pageFocusFactor;
 
-  float alpha, scale, offsetAmnt, titleAlpha;
+  float alpha, scale, offsetAmnt, titleAlpha, backdropAlpha;
   if (type == uiState.focusedPage) {
     alpha = 1;
     scale = linearTween(style.menu.unfocusedPageScale, 1.0f, focusFactor);
     offsetAmnt = linearTween(1.0f, 0.0f, focusFactor);
     titleAlpha = linearTween(1.0f, 0.0f, focusFactor);
+    backdropAlpha = 0;
   } else {
     alpha = linearTween(1.0f, 0.0f, focusFactor);
     scale = style.menu.unfocusedPageScale;
     offsetAmnt = 1;
     titleAlpha = 1;
+    backdropAlpha = alpha;
   }
 
   if (alpha == 0) return;
 
   const sf::Transform transform = sf::Transform()
       .translate(offsetAmnt * offset)
-      .translate(sf::Vector2f(0, style.menu.pageYOffset))
+      .translate(sf::Vector2f(0, focusFactor * style.menu.pageYOffset))
       .scale(scale, scale);
 
   f.withAlpha(alpha, [&]() {
     f.withTransform(transform, [&]() {
-      f.drawRect({0, 0, 1600, 900}, style.menu.pageUnderlayColor);
+      f.withAlpha(backdropAlpha, [&]() {
+        f.drawRect({0, 0, 1600, 900},
+                   style.menu.pageUnderlayColor);
+      });
       page.render(f);
     });
     f.withAlpha(titleAlpha, [&]() {
@@ -85,7 +90,6 @@ void Client::drawPage(ui::Frame &f, const PageType type,
 void Client::drawUI(ui::Frame &f) {
   const Clamped &pageFocusFactor = uiState.pageFocusFactor;
 
-  // draw the pages
   drawPage(
       f, PageType::Home, style.menu.homeOffset,
       "HOME", homePage);
@@ -240,7 +244,8 @@ void Client::render(ui::Frame &f) {
     f.withAlpha(
         linearTween(1, 0, gameFocusFactor) *
             (game ? linearTween(style.menu.menuInGameFade, 1,
-                                pageFocusFactor) : 1),
+                                pageFocusFactor)
+                  : linearTween(style.menu.menuNormalFade, 1, pageFocusFactor)),
         [&]() { drawUI(f); });
   }
 }

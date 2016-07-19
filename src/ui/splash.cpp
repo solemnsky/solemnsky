@@ -51,7 +51,7 @@ SplashScreen::SplashScreen(
 }
 
 bool SplashScreen::poll() {
-  if (loader.getErrorStatus()) return;
+  if (loader.getErrorStatus()) return true;
 
   if (control) quitting = control->quitting;
   return Control::poll();
@@ -103,8 +103,6 @@ void SplashScreen::render(ui::Frame &f) {
 }
 
 bool SplashScreen::handle(const sf::Event &event) {
-  if (loader.getErrorStatus()) return;
-
   if (loader.getHolder() && !control) {
     if (event.type == sf::Event::KeyReleased
         or event.type == sf::Event::MouseButtonReleased) {

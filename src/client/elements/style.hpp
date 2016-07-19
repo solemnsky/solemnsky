@@ -120,6 +120,7 @@ struct Style {
     float menuInGameFade; // the opacity of the UI when we open it
     // by escaping from the game (this opacity factor dissipates when a page
     // is focused)
+    float menuNormalFade; // normal opacity of the menu UI
 
     Menu(const Base &base);
   } menu;

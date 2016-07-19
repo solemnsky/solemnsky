@@ -70,7 +70,7 @@ Style::Menu::Menu(const Style::Base &base) :
     unfocusedPageScale(500.0f / 1600.0f),
     pageMargins(50),
     pageSize(base.screenSize - 2.0f * sf::Vector2f(pageMargins, pageMargins)),
-    pageYOffset(20),
+    pageYOffset(-20),
 
     homeOffset(182.812, 121.875),
     settingsOffset(917.187, 121.875),
@@ -78,7 +78,7 @@ Style::Menu::Menu(const Style::Base &base) :
     quitButtonOffset(182.812, 610.875),
     aboutButtonOffset(1217.188, 610.875),
     closeButtonOffset(1300, 0),
-    backButtonOffset(1067.18, 850),
+    backButtonOffset(1067.18, 850 + pageYOffset / 2.0f),
 
     homeArea(homeOffset, base.screenSize * unfocusedPageScale),
     settingsArea(settingsOffset, base.screenSize * unfocusedPageScale),
@@ -106,7 +106,8 @@ Style::Menu::Menu(const Style::Base &base) :
     menuDescText(base.normalText),
     gameDescText(base.normalText),
 
-    menuInGameFade(0.7) {
+    menuInGameFade(0.7),
+    menuNormalFade(0.9) {
   highButtonStyle.fontSize = 50;
   highButtonStyle.dimensions.y = 70;
 

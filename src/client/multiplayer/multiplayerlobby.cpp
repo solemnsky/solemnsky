@@ -20,13 +20,11 @@
 
 void MultiplayerLobby::doClientAction(const ClientAction action,
                                       const bool state) {
+  if (core.messageInteraction.handleClientAction(action, state)) return;
+
   switch (action) {
     case ClientAction::Spawn:
       break;
-    case ClientAction::Chat: {
-      if (state) chatInput.focus();
-      break;
-    }
     case ClientAction::Scoreboard:
       break;
     default:
@@ -45,10 +43,8 @@ MultiplayerLobby::MultiplayerLobby(
               "JOIN RED"),
     blueButton(references, style.base.normalButton,
                style.game.lobbyButtonPos + 2.0f * style.game.lobbyButtonSep,
-               "JOIN BLUE"),
-    chatInput(references, style.base.normalTextEntry,
-              style.game.chatPos, "[ENTER TO CHAT]") {
-  areChildren({&specButton, &redButton, &blueButton, &chatInput});
+               "JOIN BLUE") {
+  areChildren({&specButton, &redButton, &blueButton, &core.messageInteraction});
 }
 
 void MultiplayerLobby::tick(float delta) {
@@ -58,10 +54,6 @@ void MultiplayerLobby::tick(float delta) {
 void MultiplayerLobby::render(ui::Frame &f) {
   f.drawSprite(resources.getTexture(ui::TextureID::Lobby),
                {0, 0}, {0, 0, 1600, 900});
-
-  f.drawText(style.game.messageLogPos, [&](ui::TextFrame &tf) {
-    core.drawEventLog(tf, style.game.chatCutoff);
-  }, style.game.messageLogText, resources.defaultFont);
 
   f.drawText(
       style.game.playerListPos, [&](Printer &p) {
@@ -101,8 +93,8 @@ void MultiplayerLobby::signalRead() {
     core.requestTeamChange(sky::Team::Red);
   if (blueButton.clickSignal)
     core.requestTeamChange(sky::Team::Blue);
-  if (chatInput.inputSignal) {
-    core.handleChatInput(chatInput.inputSignal.get());
+  if (const auto &signal = core.messageInteraction.inputSignal) {
+    core.handleChatInput(signal.get());
   }
 }
 
