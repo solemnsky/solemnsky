@@ -87,6 +87,7 @@ Style::Menu::Menu(const Style::Base &base) :
     pageBgColor(base.background),
     pageUnderlayColor(255, 255, 255, 15),
     statusFontColor(base.dark),
+    gameOverlayColor(255, 255, 255, 30),
 
     descSize(base.normalFontSize),
 

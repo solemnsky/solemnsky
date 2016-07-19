@@ -95,7 +95,7 @@ struct Style {
         listingArea;
 
     // Some menu colors.
-    sf::Color pageBgColor, pageUnderlayColor, statusFontColor;
+    sf::Color pageBgColor, pageUnderlayColor, statusFontColor, gameOverlayColor;
 
     // Page descriptions.
     int descSize;

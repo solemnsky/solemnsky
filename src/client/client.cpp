@@ -237,8 +237,7 @@ void Client::render(ui::Frame &f) {
       drawGame(f);
       f.drawRect(
           {0, 0, 1600, 900},
-          sf::Color(0, 0, 0,
-                    (sf::Uint8) (linearTween(1, 0, gameFocusFactor) * 100)));
+          mixColors(style.menu.gameOverlayColor, sf::Color(255, 255, 255, 0), gameFocusFactor));
     }
 
     f.withAlpha(
