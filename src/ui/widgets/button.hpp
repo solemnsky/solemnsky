@@ -71,7 +71,6 @@ class Button: public Control {
   void signalClear() override;
   void reset() override;
 
-
   // User API.
   optional<std::string> description;
 

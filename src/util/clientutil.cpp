@@ -241,3 +241,43 @@ std::string printKey(const sf::Keyboard::Key key) {
       return "<unknown key>";
   }
 }
+
+sf::Event transformEvent(const sf::Transform trans, const sf::Event event) {
+  const bool mouseMoved(event.type == sf::Event::MouseMoved),
+      mousePressed(event.type == sf::Event::MouseButtonPressed ||
+      event.type == sf::Event::MouseButtonReleased),
+      mouseSomething(mouseMoved || mousePressed);
+
+  if (mouseSomething) {
+    sf::Vector2f pos;
+    if (mouseMoved) {
+      pos = trans.transformPoint(
+          sf::Vector2f(event.mouseMove.x, event.mouseMove.y));
+    }
+    if (mousePressed) {
+      pos = trans.transformPoint(
+          sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+    }
+
+    sf::Event newEvent;
+    newEvent.type = event.type;
+
+    if (mouseMoved) {
+      sf::Event::MouseMoveEvent newMouseMove;
+      newMouseMove.x = (int) std::round(pos.x);
+      newMouseMove.y = (int) std::round(pos.y);
+      newEvent.mouseMove = newMouseMove;
+    }
+    if (mousePressed) {
+      sf::Event::MouseButtonEvent newMouseButton;
+      newMouseButton.x = (int) std::round(pos.x);
+      newMouseButton.y = (int) std::round(pos.y);
+      newMouseButton.button = event.mouseButton.button;
+      newEvent.mouseButton = newMouseButton;
+    }
+
+    return newEvent;
+  }
+
+  return event;
+}

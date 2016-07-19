@@ -41,29 +41,42 @@ SplashScreen::SplashScreen(
     loader(
         {FontID::Default},
         {TextureID::MenuBackground}),
-    defaultFont(loader.accessFont(FontID::Default)),
-    background(loader.accessTexture(ui::TextureID::MenuBackground)),
     animBegin(references.uptime) {
+  if (loader.getErrorStatus()) {
+    appLog("Bootstrap loading errored, quitting application!", LogOrigin::App);
+    quitting = true;
+    return;
+  }
+
+  defaultFont = &loader.accessFont(FontID::Default);
+  background = &loader.accessTexture(ui::TextureID::MenuBackground);
   loader.loadAllThreaded();
 }
 
 bool SplashScreen::poll() {
-  if (control) quitting = control->quitting;
+  if (loader.getErrorStatus()) return true;
 
+  if (control) quitting = control->quitting;
   return Control::poll();
 }
 
 void SplashScreen::tick(const TimeDiff delta) {
+  if (loader.getErrorStatus()) {
+    appLog("Resource loading errored, quitting application!", LogOrigin::App);
+    quitting = true;
+  }
   Control::tick(delta);
 }
 
 void SplashScreen::render(ui::Frame &f) {
+  if (loader.getErrorStatus()) return;
+
   if (!control) {
-    f.drawSprite(background, {}, {0, 0, 1600, 900});
+    f.drawSprite(*background, {}, {0, 0, 1600, 900});
     if (!loader.getHolder()) {
       f.drawText({800, 450}, "loading resources...",
                  style.base.freeTextColor, style.splash.titleFormat,
-                 defaultFont);
+                 *defaultFont);
       f.drawRect({800.0f - (style.splash.barWidth / 2.0f),
                   (450.0f + style.splash.barPaddingTop),
                   (loader.getProgress() * style.splash.barWidth),
@@ -75,7 +88,7 @@ void SplashScreen::render(ui::Frame &f) {
           [&]() {
             f.drawText({800, 450}, "press any key to begin",
                        style.base.freeTextColor, style.splash.titleFormat,
-                       defaultFont);
+                       *defaultFont);
           });
     }
   } else {

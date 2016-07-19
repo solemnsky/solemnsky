@@ -17,14 +17,19 @@
  */
 #include "clientui.hpp"
 #include "style.hpp"
+#include "settings.hpp"
 
-MessageInteraction::MessageInteraction() :
+MessageInteraction::MessageInteraction(const ui::AppRefs &references) :
     Control(references),
     messageEntry(references,
-                 style.base.normalTextEntry,
-                 style.game.chatPos,
-                 "[ENTER TO CHAT]") {}
-//    messageLog(references) {}
+                 style.game.messageEntry,
+                 style.game.messagePos,
+                 "[enter to type]"),
+    messageLog(references,
+               style.game.messageLog,
+               style.game.messagePos) {
+  areChildren({&messageEntry, &messageLog});
+}
 
 void MessageInteraction::tick(const TimeDiff delta) {
   ui::Control::tick(delta);
@@ -44,8 +49,20 @@ void MessageInteraction::reset() {
 
 void MessageInteraction::signalRead() {
   ui::Control::signalRead();
+  inputSignal = messageEntry.inputSignal;
 }
 
 void MessageInteraction::signalClear() {
   ui::Control::signalClear();
+  inputSignal.reset();
+}
+
+bool MessageInteraction::handleClientAction(const ClientAction action, const bool state) {
+  switch (action) {
+    case ClientAction::Chat: {
+      if (state) messageEntry.focus();
+      return true;
+    }
+    default: return false;
+  }
 }

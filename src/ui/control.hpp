@@ -78,10 +78,6 @@ struct AppRefs {
  */
 class Control {
  protected:
-  // Ref to reference struct, and aliases.
-  const AppRefs &references;
-  const AppResources &resources;
-
   // Children
   std::vector<Control *> children;
   void areChildren(std::initializer_list<Control *> controls);
@@ -89,6 +85,10 @@ class Control {
  public:
   Control(const AppRefs &references);
   virtual ~Control() {}
+
+  // Ref to reference struct, and aliases.
+  const AppRefs &references;
+  const AppResources &resources;
 
   // Quitting flag.
   bool quitting;

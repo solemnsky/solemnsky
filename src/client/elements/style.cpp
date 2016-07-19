@@ -53,7 +53,7 @@ Style::Base::Base() :
                     textColor, textAreaForeground, {500, 40},
                     normalFontSize, heatRate),
     normalCheckbox(normalButton) {
-  normalCheckbox.dimensions = {40, 40};
+  normalCheckbox.dimensions = {50, 50};
 }
 
 Style::Splash::Splash(const Base &base) :
@@ -70,26 +70,28 @@ Style::Menu::Menu(const Style::Base &base) :
     unfocusedPageScale(500.0f / 1600.0f),
     pageMargins(50),
     pageSize(base.screenSize - 2.0f * sf::Vector2f(pageMargins, pageMargins)),
+    pageYOffset(-20),
 
     homeOffset(182.812, 121.875),
     settingsOffset(917.187, 121.875),
     listingOffset(550.000, 495.250),
     quitButtonOffset(182.812, 610.875),
     aboutButtonOffset(1217.188, 610.875),
-    closeButtonOffset(1300, 0),
-    backButtonOffset(1067.18, 850),
+    closeButtonOffset(1600 - 200 - 200, 850 + pageYOffset / 2.0f),
+    backButtonOffset(200, 850 + pageYOffset / 2.0f),
 
     homeArea(homeOffset, base.screenSize * unfocusedPageScale),
     settingsArea(settingsOffset, base.screenSize * unfocusedPageScale),
     listingArea(listingOffset, base.screenSize * unfocusedPageScale),
 
     pageBgColor(base.background),
-    pageUnderlayColor(0, 0, 0, 15),
+    pageUnderlayColor(255, 255, 255, 15),
     statusFontColor(base.dark),
+    gameOverlayColor(255, 255, 255, 150),
 
     descSize(base.normalFontSize),
 
-    pageDescMargin(-5),
+    pageDescMargin(-10),
 
     pageFocusAnimSpeed(4),
     gameFocusAnimSpeed(6),
@@ -97,15 +99,16 @@ Style::Menu::Menu(const Style::Base &base) :
     highButtonStyle(base.normalButton),
     lowButtonStyle(base.normalButton),
 
-    backButtonText("MAIN MENU"),
-    closeButtonText("CLOSE GAME"),
-    quitButtonText("QUIT"),
-    aboutButtonText("ABOUT"),
+    backButtonText("main menu"),
+    closeButtonText("close game"),
+    quitButtonText("quit"),
+    aboutButtonText("about"),
 
     menuDescText(base.normalText),
     gameDescText(base.normalText),
 
-    menuInGameFade(0.7) {
+    menuInGameFade(0.7),
+    menuNormalFade(0.9) {
   highButtonStyle.fontSize = 50;
   highButtonStyle.dimensions.y = 70;
 
@@ -147,29 +150,28 @@ Style::Listing::Listing() {}
 Style::Game::Game(const Style::Base &base) :
     scoreOverlayDims{1330, 630},
     scoreOverlayTopMargin(100),
-    lobbyFontSize(base.normalFontSize),
 
     lobbyPlayersOffset(1250),
     lobbyTopMargin(205),
     lobbyChatWidth(900),
     gameChatWidth(500),
 
-    chatPos(20, 850),
-    messageLogPos(20, 850 - 15),
+    messagePos(20, 850),
     playerListPos(1250, 200),
     lobbyButtonPos(lobbyChatWidth + 100, lobbyTopMargin),
     lobbyButtonSep(0, 100),
     scoreboardOffset(100, 100),
     scoreboardDisplay(0, 0, 1400, 700),
-    scoreboardPaddingTop(100),
 
+    scoreboardPaddingTop(100),
     chatCutoff(500),
     chatIngameCutoff(150),
 
     playerSpecColor(255, 255, 255),
     playerJoinedColor(0, 255, 0),
-    readyButtonActiveDesc("READY!"),
-    readyButtonDeactiveDesc("CANCEL"),
+
+    messageEntry(base.normalTextEntry),
+    messageLog(1200, 600, 200, 30, 25, base.normalFontSize),
 
     messageLogText(base.normalText),
     playerListText(base.normalText) {

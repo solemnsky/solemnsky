@@ -55,7 +55,6 @@ TextEntry::TextEntry(const AppRefs &references,
     repeatCooldown(0.06), // TODO: Cooldowns don't compensate for
     // wrap-around, making their behaviour erratic when the tick interval
     // approaches the cooldown interval
-    // FIXME: do this next time things are stable
 
     textFormat(style.fontSize, 0,
                ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
@@ -69,7 +68,7 @@ TextEntry::TextEntry(const AppRefs &references,
     isHot(false),
     isFocused(false) {
   descriptionFormat.horizontal = HorizontalAlign::Right;
-  descriptionFormat.vertical = VerticalAlign::Middle;
+  descriptionFormat.vertical = VerticalAlign::Bottom;
 }
 
 sf::FloatRect TextEntry::getBody() {
@@ -133,7 +132,7 @@ void TextEntry::tick(float delta) {
 void TextEntry::render(Frame &f) {
   f.pushTransform(sf::Transform().translate(pos));
   if (persistent) {
-    f.drawText({-20, style.dimensions.y / 2.0f},
+    f.drawText(sf::Vector2f(-20, (style.dimensions.y + style.fontSize) / 2.0f),
                description, sf::Color::White, descriptionFormat,
                resources.defaultFont);
   }
@@ -180,13 +179,13 @@ bool TextEntry::handle(const sf::Event &event) {
     return contains;
   }
 
-  if (!isFocused) {
-    if (event.type == sf::Event::MouseMoved) {
-      const sf::Vector2f pt(event.mouseMove.x, event.mouseMove.y);
-      isHot = body.contains(pt);
-      return isHot;
-    }
-  } else {
+  if (event.type == sf::Event::MouseMoved) {
+    const sf::Vector2f pt(event.mouseMove.x, event.mouseMove.y);
+    isHot = body.contains(pt);
+    return false;
+  }
+
+  if (isFocused) {
     if (event.type == sf::Event::KeyReleased) {
       pressedKeyboardEvent.reset();
       repeatActivate.reset();

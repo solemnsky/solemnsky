@@ -209,6 +209,9 @@ add_executable(solemnsky_client
         src/ui/widgets/textlog.cpp
         src/ui/widgets/textlog.hpp
 
+        src/ui/widgets/transformed.cpp
+        src/ui/widgets/transformed.hpp
+
         src/ui/control.cpp
         src/ui/control.hpp
 

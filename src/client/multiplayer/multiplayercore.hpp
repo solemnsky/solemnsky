@@ -26,6 +26,7 @@
 #include "engine/protocol.hpp"
 #include "engine/debugview.hpp"
 #include "client/elements/elements.hpp"
+#include "client/elements/clientui.hpp"
 
 /**
  * ArenaLogger proxy for MultiplayerCore, to intercept arena events for
@@ -141,11 +142,10 @@ class MultiplayerCore : public ClientComponent {
       const unsigned short serverPort);
   ~MultiplayerCore();
 
-  // Event logging.
-  std::vector<ClientEvent> eventLog;
+  // MessageInteraction -- log messages and receive text input from the user.
   void logClientEvent(const ClientEvent &event);
   void logEvent(const sky::ArenaEvent &event);
-  void drawEventLog(ui::TextFrame &tf, const float cutoff);
+  MessageInteraction messageInteraction;
 
   // Connection state.
   optional<ArenaConnection> conn;

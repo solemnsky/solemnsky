@@ -20,17 +20,20 @@
  */
 #pragma once
 #include "ui/widgets.hpp"
+#include "settings.hpp"
 
 /**
  * Text entry / variable message log combo. Used in the sandbox and client.
  */
 class MessageInteraction : public ui::Control {
  private:
-  ui::TextEntry messageEntry;
-//  ui::TextLog messageLog;
-
  public:
-  MessageInteraction();
+  MessageInteraction() = delete;
+  MessageInteraction(const ui::AppRefs &references);
+
+  // Subcomponents.
+  ui::TextEntry messageEntry;
+  ui::TextLog messageLog;
 
   // Control impl.
   virtual void tick(const TimeDiff delta) override;
@@ -39,6 +42,12 @@ class MessageInteraction : public ui::Control {
   virtual void reset() override;
   virtual void signalRead() override;
   virtual void signalClear() override;
+
+  // ClientAction handling.
+  virtual bool handleClientAction(const ClientAction action, const bool state);
+
+  // Signals.
+  optional<std::string> inputSignal;
 
 };
 

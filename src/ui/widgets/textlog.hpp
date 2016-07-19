@@ -26,6 +26,10 @@ namespace ui {
 
 namespace detail {
 
+/**
+ * A single action effected by a PrinterProcess.
+ * Media through which the Printer invocations are stored in the TextLog.
+ */
 struct PrintAction {
  private:
   enum class Type {
@@ -51,15 +55,14 @@ class TextLog: public Control, public Printer {
  public:
   struct Style {
     float maxWidth, maxHeight, maxHeightCollapsed;
-    float maxLifetime, maxLifetimeCollapsed, fadeStart;
+    Time maxLifetimeCollapsed, fadeStart;
     int fontSize;
 
     Style() = delete;
     Style(const float maxWidth,
           const float maxHeight,
           const float maxHeightCollapsed,
-          const float maxLifetime,
-          const float maxLifetimeCollapsed,
+          const Time maxLifetimeCollapsed,
           const float fadeStart,
           const int fontSize);
   };

@@ -24,20 +24,17 @@
 
 void MultiplayerGame::doClientAction(const ClientAction action,
                                      const bool state) {
+  if (core.messageInteraction.handleClientAction(action, state)) return;
   switch (action) {
     case ClientAction::Spawn: {
       if (state) core.transmit(sky::ClientPacket::ReqSpawn());
-      break;
-    }
-    case ClientAction::Chat: {
-      if (state) chatInput.focus();
       break;
     }
     case ClientAction::Scoreboard: {
       scoreboardFocused = state;
       break;
     }
-    default: throw enum_error();
+    default: {}
   }
 }
 
@@ -100,10 +97,6 @@ void MultiplayerGame::renderScoreboard(ui::Frame &f) {
 MultiplayerGame::MultiplayerGame(
     ClientShared &shared, MultiplayerCore &core) :
     MultiplayerView(shared, core),
-    chatInput(references,
-              style.base.normalTextEntry,
-              style.game.chatPos,
-              "[ENTER TO CHAT]"),
     scoreboardFocused(false),
     skyRender(shared, resources, conn.arena, *conn.getSky()),
     participation(conn.getSky()->getParticipation(conn.player)) {
@@ -111,7 +104,7 @@ MultiplayerGame::MultiplayerGame(
   assert(bool(conn.skyHandle.getEnvironment()));
   assert(bool(conn.skyHandle.getEnvironment()->getVisuals()));
 
-  areChildren({&chatInput});
+  areChildren({&core.messageInteraction});
   areChildComponents({&skyRender});
 }
 
@@ -124,11 +117,6 @@ void MultiplayerGame::render(ui::Frame &f) {
       f, participation.plane ?
          participation.plane->getState().physical.pos :
          sf::Vector2f(0, 0));
-
-  f.drawText(style.game.messageLogPos, [&](ui::TextFrame &tf) {
-    if (chatInput.isFocused) core.drawEventLog(tf, style.game.chatCutoff);
-    else core.drawEventLog(tf, style.game.chatIngameCutoff);
-  }, style.game.messageLogText, resources.defaultFont);
 
   ui::Control::render(f);
 
@@ -153,9 +141,6 @@ bool MultiplayerGame::handle(const sf::Event &event) {
 
 void MultiplayerGame::signalRead() {
   ui::Control::signalRead();
-  if (chatInput.inputSignal) {
-    core.handleChatInput(chatInput.inputSignal.get());
-  }
 }
 
 void MultiplayerGame::signalClear() {

@@ -130,8 +130,8 @@ optional<std::string> ResourceLoader::loadTexture(
     return {};
   } else {
     textures.erase(textures.find(id));
+    loadingErrored = true;
     return std::string("Texture did not load correctly.");
-    // TODO: get more information about failure to load
   }
 }
 
@@ -143,8 +143,8 @@ optional<std::string> ResourceLoader::loadFont(
     return {};
   } else {
     fonts.erase(fonts.find(id));
+    loadingErrored = true;
     return std::string("Font did not load correctly.");
-    // TODO: get more information about failure to load
   }
 }
 
@@ -189,26 +189,33 @@ void ResourceLoader::loadAllBlocking() {
 ResourceLoader::ResourceLoader(
     std::initializer_list<FontID> bootstrapFonts,
     std::initializer_list<TextureID> bootstrapTextures) :
-    loadingProgress(0) {
+  loadingProgress(0),
+  loadingErrored(false) {
   // TODO: move resource metadata checks to compile-time?
   for (const auto font : bootstrapFonts) {
     assert(detail::fontMetadata.find(font)
                != detail::fontMetadata.end());
-    if (auto error = loadFont(font, detail::fontMetadata.at(font)))
+    if (auto error = loadFont(font, detail::fontMetadata.at(font))) {
       appLog("Error loading bootstrap font: " + error.get(), LogOrigin::App);
+      loadingErrored = true;
+      return;
+    }
   }
 
   for (const auto texture : bootstrapTextures) {
     assert(detail::textureMetadata.find(texture)
                != detail::textureMetadata.end());
-    if (auto error = loadTexture(texture, detail::textureMetadata.at(texture)))
+    if (auto error = loadTexture(texture, detail::textureMetadata.at(texture))) {
       appLog("Error loading bootstrap texture: " + error.get(), LogOrigin::App);
+      loadingErrored = true;
+      return;
+    }
   }
   appLog("Loaded bootstrap resources.", LogOrigin::App);
 }
 
 ResourceLoader::~ResourceLoader() {
-  workingThread.join();
+  if (workingThread.joinable()) workingThread.join();
 }
 
 const sf::Font &ResourceLoader::accessFont(const FontID id) {

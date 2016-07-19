@@ -28,7 +28,6 @@
  */
 class MultiplayerGame : public MultiplayerView {
  private:
-  ui::TextEntry chatInput;
   bool scoreboardFocused;
   sky::SkyRender skyRender;
   const sky::Participation &participation;

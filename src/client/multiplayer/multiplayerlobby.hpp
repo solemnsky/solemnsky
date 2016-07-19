@@ -32,9 +32,6 @@ class MultiplayerLobby: public MultiplayerView {
   ui::Button specButton;
   ui::Button redButton;
   ui::Button blueButton;
-  ui::TextEntry chatInput;
-
-  std::vector<ui::Control *> myControls;
 
   void doClientAction(const ClientAction action, const bool state);
 

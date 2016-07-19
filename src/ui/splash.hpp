@@ -40,8 +40,8 @@ class SplashScreen : public Control {
 
   // Loader and splash screen.
   ResourceLoader loader;
-  const sf::Font &defaultFont;
-  const sf::Texture &background;
+  sf::Font const *defaultFont;
+  sf::Texture const *background;
   double animBegin;
 
   // App construction.

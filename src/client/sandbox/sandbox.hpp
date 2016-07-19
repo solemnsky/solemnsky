@@ -24,6 +24,7 @@
 #include "client/skyrender.hpp"
 #include "engine/debugview.hpp"
 #include "ui/widgets.hpp"
+#include "client/elements/clientui.hpp"
 
 /**
  * A command that can be executed in the sandbox.
@@ -62,13 +63,11 @@ class Sandbox : public Game {
   sky::SkyHandle skyHandle;
   sky::DebugView debugView;
   optional<sky::SkyRender> skyRender;
-
+  sky::PlaneTuning spawnTuning; // tuning to use on plane spawn
   sky::Player *player;
 
-  sky::PlaneTuning spawnTuning; // tuning to use on plane spawn
-
   // UI features.
-  ui::TextEntry commandEntry;
+  MessageInteraction messageInteraction;
 
   // Submethods.
   void startHandle();

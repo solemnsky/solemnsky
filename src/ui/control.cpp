@@ -18,6 +18,7 @@
 #include <cmath>
 #include "splash.hpp"
 #include "util/printer.hpp"
+#include "util/clientutil.hpp"
 
 namespace ui {
 
@@ -93,53 +94,6 @@ void Control::signalRead() { // process signals
 
 void Control::signalClear() { // clear signals
   for (auto child : children) child->signalClear();
-}
-
-/**
- * Fakes a transformation of any potential position-related values on an
- * event. Unfortunately this doesn't preserve precision, but the alternative
- * would be to wrap sf::Event... it's not worth it, at least until people
- * complain about issues on their 4k systems.
- */
-sf::Event transformEvent(const sf::Transform trans,
-                         const sf::Event event) {
-  const bool mouseMoved(event.type == sf::Event::MouseMoved),
-      mousePressed(event.type == sf::Event::MouseButtonPressed ||
-      event.type == sf::Event::MouseButtonReleased),
-      mouseSomething(mouseMoved || mousePressed);
-
-  if (mouseSomething) {
-    sf::Vector2f pos;
-    if (mouseMoved) {
-      pos = trans.transformPoint(
-          sf::Vector2f(event.mouseMove.x, event.mouseMove.y));
-    }
-    if (mousePressed) {
-      pos = trans.transformPoint(
-          sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
-    }
-
-    sf::Event newEvent;
-    newEvent.type = event.type;
-
-    if (mouseMoved) {
-      sf::Event::MouseMoveEvent newMouseMove;
-      newMouseMove.x = (int) std::round(pos.x);
-      newMouseMove.y = (int) std::round(pos.y);
-      newEvent.mouseMove = newMouseMove;
-    }
-    if (mousePressed) {
-      sf::Event::MouseButtonEvent newMouseButton;
-      newMouseButton.x = (int) std::round(pos.x);
-      newMouseButton.y = (int) std::round(pos.y);
-      newMouseButton.button = event.mouseButton.button;
-      newEvent.mouseButton = newMouseButton;
-    }
-
-    return newEvent;
-  }
-
-  return event;
 }
 
 /**

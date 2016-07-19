@@ -19,58 +19,80 @@
 #include "elements/style.hpp"
 #include "util/methods.hpp"
 #include "util/printer.hpp"
+#include "util/clientutil.hpp"
 
 /**
  * Client.
  */
 
-
 void Client::forAllPages(std::function<void(Page &)> f) {
-  f(homePage);
-  f(listingPage);
-  f(settingsPage);
+  f(homePage.ctrl);
+  f(listingPage.ctrl);
+  f(settingsPage.ctrl);
+}
+
+ui::TransformedBase &Client::referencePageBase(const PageType type) {
+  switch (type) {
+    case PageType::Home:
+      return homePage.base;
+    case PageType::Settings:
+      return settingsPage.base;
+    case PageType::Listing:
+      return listingPage.base;
+  }
+  throw enum_error();
 }
 
 Page &Client::referencePage(const PageType type) {
   switch (type) {
     case PageType::Home:
-      return homePage;
+      return homePage.ctrl;
     case PageType::Settings:
-      return settingsPage;
+      return settingsPage.ctrl;
     case PageType::Listing:
-      return listingPage;
+      return listingPage.ctrl;
   }
   throw enum_error();
 }
 
-void Client::drawPage(ui::Frame &f, const PageType type,
-                      const sf::Vector2f &offset, const std::string &name,
-                      ui::Control &page) {
+void Client::renderPage(ui::Frame &f, const PageType type,
+                        const sf::Vector2f &offset, const std::string &name,
+                        ui::TransformedBase &page) {
   const float focusFactor = uiState.pageFocusFactor;
 
-  float alpha, scale, offsetAmnt, titleAlpha;
+  float alpha, scale, offsetAmnt, titleAlpha, backdropAlpha;
   if (type == uiState.focusedPage) {
     alpha = 1;
     scale = linearTween(style.menu.unfocusedPageScale, 1.0f, focusFactor);
     offsetAmnt = linearTween(1.0f, 0.0f, focusFactor);
     titleAlpha = linearTween(1.0f, 0.0f, focusFactor);
+    backdropAlpha = 0;
   } else {
     alpha = linearTween(1.0f, 0.0f, focusFactor);
     scale = style.menu.unfocusedPageScale;
     offsetAmnt = 1;
     titleAlpha = 1;
+    backdropAlpha = alpha;
   }
 
   if (alpha == 0) return;
 
-  const sf::Transform transform = sf::Transform()
-      .translate(offsetAmnt * offset).scale(scale, scale);
+  page.setTransform(sf::Transform()
+                        .translate(offsetAmnt * offset)
+                        .translate(0, linearTween(0, style.menu.pageYOffset, focusFactor))
+                        .scale(scale, scale));
 
   f.withAlpha(alpha, [&]() {
-    f.withTransform(transform, [&]() {
-      f.drawRect({0, 0, 1600, 900}, style.menu.pageUnderlayColor);
-      page.render(f);
+    // Underlay
+    f.withAlpha(backdropAlpha, [&]() {
+      f.drawRect({0, 0, 1600, 900},
+                 style.menu.pageUnderlayColor);
     });
+
+    // Page itself.
+    page.render(f);
+
+    // Page title.
     f.withAlpha(titleAlpha, [&]() {
       f.drawText(
           sf::Vector2f(0, style.menu.pageDescMargin) + offsetAmnt * offset,
@@ -80,27 +102,26 @@ void Client::drawPage(ui::Frame &f, const PageType type,
   });
 }
 
-void Client::drawUI(ui::Frame &f) {
+void Client::renderUI(ui::Frame &f) {
   const Clamped &pageFocusFactor = uiState.pageFocusFactor;
 
-  // draw the pages
-  drawPage(
+  renderPage(
       f, PageType::Home, style.menu.homeOffset,
-      "HOME", homePage);
-  drawPage(
+      "home", homePage.base);
+  renderPage(
       f, PageType::Listing, style.menu.listingOffset,
-      "SERVER LISTING", listingPage);
-  drawPage(
+      "server listing", listingPage.base);
+  renderPage(
       f, PageType::Settings, style.menu.settingsOffset,
-      "SETTINGS", settingsPage);
+      "settings", settingsPage.base);
 
   if (const auto game = shared.getGame()) {
     f.drawText(
-        {style.menu.closeButtonOffset.x - 10, 0}, [&](ui::TextFrame &tf) {
-          tf.setColor(sf::Color::White);
-          tf.print(game->name);
+        style.menu.closeButtonOffset - sf::Vector2f(10, 0),
+        [&](ui::TextFrame &tf) {
           tf.setColor(style.menu.statusFontColor);
-          tf.print("(" + game->status + ")");
+          tf.print(" (" + game->status + ")");
+          tf.print(game->name);
         }, style.menu.gameDescText, resources.defaultFont);
     closeButton.render(f);
   }
@@ -120,7 +141,7 @@ void Client::drawUI(ui::Frame &f) {
       });
 }
 
-void Client::drawGame(ui::Frame &f) {
+void Client::renderGame(ui::Frame &f) {
   game->render(f);
 
   if (settings.enableDebug) {
@@ -173,9 +194,9 @@ Client::Client(const ui::AppRefs &references) :
                 style.menu.aboutButtonText),
 
     shared(*this, references),
-    homePage(shared),
-    listingPage(shared),
-    settingsPage(shared),
+    homePage(std::make_unique<HomePage>(shared), sf::Transform()),
+    listingPage(std::make_unique<ListingPage>(shared), sf::Transform()),
+    settingsPage(std::make_unique<SettingsPage>(shared), sf::Transform()),
     tryingToQuit(false),
 
     profilerCooldown(1) {
@@ -222,24 +243,24 @@ void Client::render(ui::Frame &f) {
       &pageFocusFactor = uiState.pageFocusFactor;
 
   if (uiState.gameFocused() && game) {
-    drawGame(f);
+    renderGame(f);
   } else {
     if (!game) {
       f.drawSprite(resources.getTexture(ui::TextureID::MenuBackground),
                    {0, 0}, {0, 0, 1600, 900});
     } else {
-      drawGame(f);
+      renderGame(f);
       f.drawRect(
           {0, 0, 1600, 900},
-          sf::Color(0, 0, 0,
-                    (sf::Uint8) (linearTween(1, 0, gameFocusFactor) * 100)));
+          mixColors(style.menu.gameOverlayColor, sf::Color(255, 255, 255, 0), gameFocusFactor));
     }
 
     f.withAlpha(
         linearTween(1, 0, gameFocusFactor) *
             (game ? linearTween(style.menu.menuInGameFade, 1,
-                                pageFocusFactor) : 1),
-        [&]() { drawUI(f); });
+                                pageFocusFactor)
+                  : linearTween(style.menu.menuNormalFade, 1, pageFocusFactor)),
+        [&]() { renderUI(f); });
   }
 }
 
@@ -254,7 +275,7 @@ bool Client::handle(const sf::Event &event) {
 
   if (uiState.pageFocused()) {
     if (backButton.handle(event)) return true;
-    if (referencePage(uiState.focusedPage).handle(event)) return true;
+    if (referencePageBase(uiState.focusedPage).handle(event)) return true;
   }
 
   if (event.type == sf::Event::KeyPressed
@@ -323,7 +344,7 @@ void Client::signalRead() {
   }
 
   if (aboutButton.clickSignal) {
-    appLog("about message");
+    appLog("<about message>");
   }
 
   if (closeButton.clickSignal) {

@@ -216,7 +216,8 @@ MultiplayerCore::MultiplayerCore(
     disconnecting(false),
     disconnected(false),
 
-    participationInputTimer(0.03) {
+    participationInputTimer(0.03),
+    messageInteraction(shared.references) {
   host.connect(serverHostname, serverPort);
 }
 
@@ -229,23 +230,14 @@ void MultiplayerCore::logClientEvent(const ClientEvent &event) {
   StringPrinter p;
   event.print(p);
   appLog(p.getString(), LogOrigin::Client);
-  eventLog.push_back(event);
+  event.print(messageInteraction.messageLog);
 }
 
 void MultiplayerCore::logEvent(const sky::ArenaEvent &event) {
   StringPrinter p;
   event.print(p);
   appLog(p.getString(), LogOrigin::Engine);
-  eventLog.push_back(ClientEvent::Event(event));
-}
-
-void MultiplayerCore::drawEventLog(ui::TextFrame &tf, const float cutoff) {
-  for (auto iter = eventLog.rbegin();
-       iter < eventLog.rend(); iter++) {
-    ClientEvent(*iter).print(tf);
-    tf.breakLine();
-    if (tf.drawOffset.y < -cutoff) break;
-  }
+  event.print(messageInteraction.messageLog);
 }
 
 const tg::Host &MultiplayerCore::getHost() const {

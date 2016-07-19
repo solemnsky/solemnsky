@@ -62,6 +62,7 @@ Button::Button(const AppRefs &references,
     isHot(false),
     clickSignal(false) {
   descriptionFormat.horizontal = HorizontalAlign::Right;
+  descriptionFormat.vertical = VerticalAlign::Bottom;
 }
 
 void Button::tick(float delta) {
@@ -70,7 +71,7 @@ void Button::tick(float delta) {
 
 void Button::render(Frame &f) {
   if (description)
-    f.drawText(pos + sf::Vector2f(-20, style.dimensions.y / 2),
+    f.drawText(pos + sf::Vector2f(-20, (style.dimensions.y + style.fontSize) / 2.0f),
                description.get(), style.textColor,
                descriptionFormat, resources.defaultFont);
 

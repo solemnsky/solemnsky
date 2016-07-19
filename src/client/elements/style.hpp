@@ -48,9 +48,6 @@ struct Style {
     // Animation consistency.
     float heatRate; // inverse of time it takes for a UI element to 'heat up'
 
-    // Distance consistency.
-    float widgetWidth;
-
     // Vanilla widgets.
     ui::Button::Style normalButton;
     ui::TextEntry::Style normalTextEntry;
@@ -81,6 +78,7 @@ struct Style {
   struct Menu {
     float unfocusedPageScale, pageMargins;
     sf::Vector2f pageSize;
+    float pageYOffset;
 
     // Position offsets. (See schema in media/source2d/board.png.)
     sf::Vector2f
@@ -97,7 +95,7 @@ struct Style {
         listingArea;
 
     // Some menu colors.
-    sf::Color pageBgColor, pageUnderlayColor, statusFontColor;
+    sf::Color pageBgColor, pageUnderlayColor, statusFontColor, gameOverlayColor;
 
     // Page descriptions.
     int descSize;
@@ -119,6 +117,7 @@ struct Style {
     float menuInGameFade; // the opacity of the UI when we open it
     // by escaping from the game (this opacity factor dissipates when a page
     // is focused)
+    float menuNormalFade; // normal opacity of the menu UI
 
     Menu(const Base &base);
   } menu;
@@ -159,7 +158,7 @@ struct Style {
   } settings;
 
   /**
-   * The rather important server listing page.
+   * Server listing page, still TODO.
    */
   struct Listing {
     // stub
@@ -173,25 +172,25 @@ struct Style {
     // Geometry.
     sf::Vector2i scoreOverlayDims;
     float scoreOverlayTopMargin;
-    int lobbyFontSize;
-
     float lobbyPlayersOffset,
         lobbyTopMargin,
         lobbyChatWidth,
         gameChatWidth;
-
-    sf::Vector2f chatPos,
-        messageLogPos,
-        playerListPos,
-        lobbyButtonPos, lobbyButtonSep,
-        scoreboardOffset;
+    sf::Vector2f messagePos,
+      playerListPos,
+      lobbyButtonPos,
+      lobbyButtonSep,
+      scoreboardOffset;
     sf::IntRect scoreboardDisplay;
     float scoreboardPaddingTop;
     float chatCutoff, chatIngameCutoff;
 
+    // Colors
     sf::Color playerSpecColor, playerJoinedColor;
-    std::string readyButtonActiveDesc, readyButtonDeactiveDesc;
 
+    // Widgets and styles.
+    ui::TextEntry::Style messageEntry;
+    ui::TextLog::Style messageLog;
     ui::TextFormat messageLogText, playerListText;
 
     Game(const Base &base);
