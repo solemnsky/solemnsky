@@ -23,4 +23,4 @@
 #include "ui/widgets/keyselector.hpp"
 #include "ui/widgets/textlog.hpp"
 #include "ui/widgets/textentry.hpp"
-
+#include "ui/widgets/transformed.hpp"

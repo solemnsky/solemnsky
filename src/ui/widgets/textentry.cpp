@@ -132,7 +132,7 @@ void TextEntry::tick(float delta) {
 void TextEntry::render(Frame &f) {
   f.pushTransform(sf::Transform().translate(pos));
   if (persistent) {
-    f.drawText(pos + sf::Vector2f(-20, (style.dimensions.y + style.fontSize) / 2.0f),
+    f.drawText(sf::Vector2f(-20, (style.dimensions.y + style.fontSize) / 2.0f),
                description, sf::Color::White, descriptionFormat,
                resources.defaultFont);
   }

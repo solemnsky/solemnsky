@@ -36,3 +36,10 @@ sf::Color mixColors(
  */
 
 std::string printKey(const sf::Keyboard::Key key);
+
+/**
+ * TransformEvent.
+ */
+sf::Event transformEvent(const sf::Transform trans,
+                         const sf::Event event);
+

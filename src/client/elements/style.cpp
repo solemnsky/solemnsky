@@ -48,7 +48,7 @@ Style::Base::Base() :
 
     normalButton(accentLight, accentDark, backgroundDark,
                  backgroundDark, textColor,
-                 {200, 50}, heatRate, normalFontSize),
+                 {200, 40}, heatRate, normalFontSize),
     normalTextEntry(accentLight, accentDark, textAreaBackground,
                     textColor, textAreaForeground, {500, 40},
                     normalFontSize, heatRate),

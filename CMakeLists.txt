@@ -231,7 +231,7 @@ add_executable(solemnsky_client
 
         src/util/clientutil.cpp
         src/util/clientutil.hpp
-        )
+        src/ui/widgets/transformed.cpp src/ui/widgets/transformed.hpp)
 target_link_libraries(solemnsky_client
         solemnsky
         sfml-window
