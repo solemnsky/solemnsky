@@ -228,6 +228,7 @@ void Sandbox::reset() {
 }
 
 void Sandbox::signalRead() {
+  ui::Control::signalRead();
   if (const auto messageInput = messageInteraction.inputSignal) {
     auto parsed = SandboxCommand::parseCommand(messageInput.get());
     if (parsed) {
@@ -236,7 +237,6 @@ void Sandbox::signalRead() {
       appLog("Invalid sandbox command!", LogOrigin::Error);
     }
   }
-  ui::Control::signalRead();
 }
 
 void Sandbox::signalClear() {

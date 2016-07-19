@@ -85,7 +85,7 @@ Style::Menu::Menu(const Style::Base &base) :
     listingArea(listingOffset, base.screenSize * unfocusedPageScale),
 
     pageBgColor(base.background),
-    pageUnderlayColor(0, 0, 0, 15),
+    pageUnderlayColor(255, 255, 255, 15),
     statusFontColor(base.dark),
 
     descSize(base.normalFontSize),

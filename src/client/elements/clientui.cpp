@@ -59,7 +59,7 @@ void MessageInteraction::signalClear() {
 
 bool MessageInteraction::handleClientAction(const ClientAction action, const bool state) {
   switch (action) {
-    case ClientAction::Spawn: {
+    case ClientAction::Chat: {
       if (state) messageEntry.focus();
       return true;
     }

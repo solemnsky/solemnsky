@@ -217,7 +217,7 @@ MultiplayerCore::MultiplayerCore(
     disconnected(false),
 
     participationInputTimer(0.03),
-    messageInteraction(references) {
+    messageInteraction(shared.references) {
   host.connect(serverHostname, serverPort);
 }
 
