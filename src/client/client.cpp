@@ -66,8 +66,8 @@ void Client::renderPage(ui::Frame &f, const PageType type,
   if (alpha == 0) return;
 
   page.setTransform(sf::Transform()
-      .translate(offsetAmnt * offset)
-                        .translate(0, style.menu.pageYOffset)
+                        .translate(offsetAmnt * offset)
+                        .translate(0, linearTween(0, style.menu.pageYOffset, focusFactor))
                         .scale(scale, scale));
 
   f.withAlpha(alpha, [&]() {
