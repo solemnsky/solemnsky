@@ -26,6 +26,10 @@ namespace ui {
 
 namespace detail {
 
+/**
+ * A single action effected by a PrinterProcess.
+ * Media through which the Printer invocations are stored in the TextLog.
+ */
 struct PrintAction {
  private:
   enum class Type {

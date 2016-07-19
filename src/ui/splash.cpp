@@ -41,12 +41,15 @@ SplashScreen::SplashScreen(
     loader(
         {FontID::Default},
         {TextureID::MenuBackground}),
-    defaultFont(loader.accessFont(FontID::Default)),
-    background(loader.accessTexture(ui::TextureID::MenuBackground)),
     animBegin(references.uptime) {
   if (loader.getErrorStatus()) {
     appLog("Bootstrap loading errored, quitting application!", LogOrigin::App);
+    quitting = true;
+    return;
   }
+
+  defaultFont = &loader.accessFont(FontID::Default);
+  background = &loader.accessTexture(ui::TextureID::MenuBackground);
   loader.loadAllThreaded();
 }
 
@@ -69,11 +72,11 @@ void SplashScreen::render(ui::Frame &f) {
   if (loader.getErrorStatus()) return;
 
   if (!control) {
-    f.drawSprite(background, {}, {0, 0, 1600, 900});
+    f.drawSprite(*background, {}, {0, 0, 1600, 900});
     if (!loader.getHolder()) {
       f.drawText({800, 450}, "loading resources...",
                  style.base.freeTextColor, style.splash.titleFormat,
-                 defaultFont);
+                 *defaultFont);
       f.drawRect({800.0f - (style.splash.barWidth / 2.0f),
                   (450.0f + style.splash.barPaddingTop),
                   (loader.getProgress() * style.splash.barWidth),
@@ -85,7 +88,7 @@ void SplashScreen::render(ui::Frame &f) {
           [&]() {
             f.drawText({800, 450}, "press any key to begin",
                        style.base.freeTextColor, style.splash.titleFormat,
-                       defaultFont);
+                       *defaultFont);
           });
     }
   } else {

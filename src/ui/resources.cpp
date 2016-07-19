@@ -215,7 +215,7 @@ ResourceLoader::ResourceLoader(
 }
 
 ResourceLoader::~ResourceLoader() {
-  workingThread.join();
+  if (workingThread.joinable()) workingThread.join();
 }
 
 const sf::Font &ResourceLoader::accessFont(const FontID id) {
