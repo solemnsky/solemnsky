@@ -48,12 +48,12 @@ Style::Base::Base() :
 
     normalButton(accentLight, accentDark, backgroundDark,
                  backgroundDark, textColor,
-                 {200, 40}, heatRate, normalFontSize),
+                 {200, 50}, heatRate, normalFontSize),
     normalTextEntry(accentLight, accentDark, textAreaBackground,
                     textColor, textAreaForeground, {500, 40},
                     normalFontSize, heatRate),
     normalCheckbox(normalButton) {
-  normalCheckbox.dimensions = {40, 40};
+  normalCheckbox.dimensions = {50, 50};
 }
 
 Style::Splash::Splash(const Base &base) :

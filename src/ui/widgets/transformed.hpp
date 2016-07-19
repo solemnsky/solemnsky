@@ -23,15 +23,16 @@
 
 namespace ui {
 
-namespace detail {
-
 /**
  * Template-erased base class used by Transformed.
  */
 class TransformedBase : public Control {
  private:
   Control &ctrl;
+
+  // Transformation and cached inverse.
   sf::Transform transform;
+  sf::Transform inverseTransform;
 
  public:
   TransformedBase(Control &ctrl, const sf::Transform &transform);
@@ -45,22 +46,44 @@ class TransformedBase : public Control {
   virtual void signalRead() override;
   virtual void signalClear() override;
 
+  // Transformation.
+  const sf::Transform getTransform() const;
+  void setTransform(const sf::Transform &newTransform);
+
 };
 
-}
-
+/**
+ * Given an underlying control and a transformation, make a new wrapper control that acts
+ * like the underlying control, but is translated by the supplied isometry.
+ */
 template<typename Ctrl>
 class Transformed : public Control {
- private:
-  detail::TransformedBase base;
+ public:
+  std::unique_ptr<Ctrl> ctrlPtr;
 
  public:
   Transformed(std::unique_ptr<Ctrl> &&ctrl, const sf::Transform &transform) :
-      Control(ctrl->references), ctrl(ctrl), base(*ctrl) {
+      Control(ctrl->references),
+      ctrlPtr(std::move(ctrl)),
+      base(*ctrlPtr, transform),
+      ctrl(*ctrlPtr) {
     areChildren({&base});
   }
 
-  std::unique_ptr<Ctrl> ctrl;
+  // Type-erased base object with everything but access to the original Ctrl exposed.
+  TransformedBase base;
+
+  // Underlying Control.
+  Ctrl &ctrl;
+
+  // Transformation -- relays to the base.
+  inline const sf::Transform getTransform() const {
+    return base.getTransform();
+  }
+
+  inline void setTransform(const sf::Transform &newTransform) {
+    base.setTransform(newTransform);
+  }
 };
 
 }

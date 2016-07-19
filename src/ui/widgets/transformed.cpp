@@ -20,37 +20,46 @@
 
 namespace ui {
 
-detail::TransformedBase::TransformedBase(Control &ctrl, const sf::Transform &transform) :
+TransformedBase::TransformedBase(Control &ctrl, const sf::Transform &transform) :
     Control(ctrl.references), ctrl(ctrl), transform(transform) {}
 
-bool detail::TransformedBase::poll() {
+bool TransformedBase::poll() {
   return ctrl.poll();
 }
 
-void detail::TransformedBase::tick(const TimeDiff delta) {
+void TransformedBase::tick(const TimeDiff delta) {
   ctrl.tick(delta);
 }
 
-void detail::TransformedBase::render(Frame &f) {
+void TransformedBase::render(Frame &f) {
   f.withTransform(transform, [&]() {
     ctrl.render(f);
   });
 }
 
-bool detail::TransformedBase::handle(const sf::Event &event) {
-  return ctrl.handle(transformEvent(transform, event));
+bool TransformedBase::handle(const sf::Event &event) {
+  return ctrl.handle(transformEvent(inverseTransform, event));
 }
 
-void detail::TransformedBase::reset() {
-  Control::reset();
+void TransformedBase::reset() {
+  ctrl.reset();
 }
 
-void detail::TransformedBase::signalRead() {
-  Control::signalRead();
+void TransformedBase::signalRead() {
+  ctrl.signalRead();
 }
 
-void detail::TransformedBase::signalClear() {
-  Control::signalClear();
+void TransformedBase::signalClear() {
+  ctrl.signalClear();
+}
+
+const sf::Transform TransformedBase::getTransform() const {
+  return transform;
+}
+
+void TransformedBase::setTransform(const sf::Transform &newTransform) {
+  transform = newTransform;
+  inverseTransform = transform.getInverse();
 }
 
 }

@@ -26,26 +26,26 @@
  */
 
 void Client::forAllPages(std::function<void(Page &)> f) {
-  f(homePage);
-  f(listingPage);
-  f(settingsPage);
+  f(homePage.ctrl);
+  f(listingPage.ctrl);
+  f(settingsPage.ctrl);
 }
 
 Page &Client::referencePage(const PageType type) {
   switch (type) {
     case PageType::Home:
-      return homePage;
+      return homePage.ctrl;
     case PageType::Settings:
-      return settingsPage;
+      return settingsPage.ctrl;
     case PageType::Listing:
-      return listingPage;
+      return listingPage.ctrl;
   }
   throw enum_error();
 }
 
-void Client::drawPage(ui::Frame &f, const PageType type,
-                      const sf::Vector2f &offset, const std::string &name,
-                      ui::Control &page) {
+void Client::renderPage(ui::Frame &f, const PageType type,
+                        const sf::Vector2f &offset, const std::string &name,
+                        ui::TransformedBase &page) {
   const float focusFactor = uiState.pageFocusFactor;
 
   float alpha, scale, offsetAmnt, titleAlpha, backdropAlpha;
@@ -65,19 +65,22 @@ void Client::drawPage(ui::Frame &f, const PageType type,
 
   if (alpha == 0) return;
 
-  const sf::Transform transform = sf::Transform()
+  page.setTransform(sf::Transform()
       .translate(offsetAmnt * offset)
-      .translate(sf::Vector2f(0, focusFactor * style.menu.pageYOffset))
-      .scale(scale, scale);
+                        .translate(0, style.menu.pageYOffset)
+                        .scale(scale, scale));
 
   f.withAlpha(alpha, [&]() {
-    f.withTransform(transform, [&]() {
-      f.withAlpha(backdropAlpha, [&]() {
-        f.drawRect({0, 0, 1600, 900},
-                   style.menu.pageUnderlayColor);
-      });
-      page.render(f);
+    // Underlay
+    f.withAlpha(backdropAlpha, [&]() {
+      f.drawRect({0, 0, 1600, 900},
+                 style.menu.pageUnderlayColor);
     });
+
+    // Page itself.
+    page.render(f);
+
+    // Page title.
     f.withAlpha(titleAlpha, [&]() {
       f.drawText(
           sf::Vector2f(0, style.menu.pageDescMargin) + offsetAmnt * offset,
@@ -87,18 +90,18 @@ void Client::drawPage(ui::Frame &f, const PageType type,
   });
 }
 
-void Client::drawUI(ui::Frame &f) {
+void Client::renderUI(ui::Frame &f) {
   const Clamped &pageFocusFactor = uiState.pageFocusFactor;
 
-  drawPage(
+  renderPage(
       f, PageType::Home, style.menu.homeOffset,
-      "HOME", homePage);
-  drawPage(
+      "HOME", homePage.base);
+  renderPage(
       f, PageType::Listing, style.menu.listingOffset,
-      "SERVER LISTING", listingPage);
-  drawPage(
+      "SERVER LISTING", listingPage.base);
+  renderPage(
       f, PageType::Settings, style.menu.settingsOffset,
-      "SETTINGS", settingsPage);
+      "SETTINGS", settingsPage.base);
 
   if (const auto game = shared.getGame()) {
     f.drawText(
@@ -126,7 +129,7 @@ void Client::drawUI(ui::Frame &f) {
       });
 }
 
-void Client::drawGame(ui::Frame &f) {
+void Client::renderGame(ui::Frame &f) {
   game->render(f);
 
   if (settings.enableDebug) {
@@ -179,9 +182,9 @@ Client::Client(const ui::AppRefs &references) :
                 style.menu.aboutButtonText),
 
     shared(*this, references),
-    homePage(shared),
-    listingPage(shared),
-    settingsPage(shared),
+    homePage(std::make_unique<HomePage>(shared), sf::Transform()),
+    listingPage(std::make_unique<ListingPage>(shared), sf::Transform()),
+    settingsPage(std::make_unique<SettingsPage>(shared), sf::Transform()),
     tryingToQuit(false),
 
     profilerCooldown(1) {
@@ -228,13 +231,13 @@ void Client::render(ui::Frame &f) {
       &pageFocusFactor = uiState.pageFocusFactor;
 
   if (uiState.gameFocused() && game) {
-    drawGame(f);
+    renderGame(f);
   } else {
     if (!game) {
       f.drawSprite(resources.getTexture(ui::TextureID::MenuBackground),
                    {0, 0}, {0, 0, 1600, 900});
     } else {
-      drawGame(f);
+      renderGame(f);
       f.drawRect(
           {0, 0, 1600, 900},
           mixColors(style.menu.gameOverlayColor, sf::Color(255, 255, 255, 0), gameFocusFactor));
@@ -245,7 +248,7 @@ void Client::render(ui::Frame &f) {
             (game ? linearTween(style.menu.menuInGameFade, 1,
                                 pageFocusFactor)
                   : linearTween(style.menu.menuNormalFade, 1, pageFocusFactor)),
-        [&]() { drawUI(f); });
+        [&]() { renderUI(f); });
   }
 }
 
@@ -329,7 +332,7 @@ void Client::signalRead() {
   }
 
   if (aboutButton.clickSignal) {
-    appLog("about message");
+    appLog("<about message>");
   }
 
   if (closeButton.clickSignal) {
