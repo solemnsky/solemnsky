@@ -16,61 +16,66 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Flow control manager for timestamped multiplayer message streams, trading latency for timeflow consistency.
+ * Buffer timestamped message streams, pulling from them with constant timeflow rate.
  */
 #pragma once
+#include <queue>
 #include "util/types.hpp"
 
 namespace sky {
 
-namespace detail {
-
 /**
- * Component of FlowControl defined independently of the Message type.
+ * State of a FlowControl, governing what messages to pull.
  */
-class FlowControlBase {
- public:
-  FlowControlBase()
+struct FlowControlState {
+  FlowControlState(); // initialize with agnostic defaults
+
+  optional<Time> windowEntry;
+  TimeDiff windowSize;
 
 };
 
+namespace detail {
+
+// Decide whether to pull a message with a certain timestamp, given a
+bool pullMessage(const FlowControlState &state,
+                 const Time localtime, const Time timestamp);
 
 }
 
 /**
- * Settings governing the nature of the flexible flow control algorithm.
- */
-struct FlowControlSettings {
-  FlowControlSettings(); // initialize with sensible defaults
-
-};
-
-/**
  * FlowControl class, templated on the Message type. Push messages in chronological order and pull them.
+ *
+ * Very simply, the objective is to make the `pull` method return messages with timestamps
+ * equidistant to the supplied localtime.
  */
 template<typename Message>
 class FlowControl {
  private:
-  const FlowControlSettings settings;
-  std::vector<std::pair<Time, Message>> messages;
-  detail::FlowControlBase base;
+  const FlowControlState settings;
+  std::queue<std::pair<Time, Message>> messages;
+  FlowControlState state;
 
  public:
-  FlowControl(const FlowControlSettings &setttings) : settings(settings) {}
+  FlowControl(const FlowControlState &state) : state(state) {}
 
-  // Push a message received with the specified timestamp.
-  // Messages must be pushed in chronological order!
+  // A message with a timestamp arrives.
   void push(const Time timestamp, Message &&message) {
-    messages.push_back
+    messages.emplace(std::piecewise_construct, timestamp, message);
   }
 
-  // Pull aged messages. It's important to age the messages properly for their digital aromas to mature.
-  // Returns nullptr when no messages are available. Poll this function.
-  Message *pull() {
-    return nullptr;
+  // Potentially pull a message, given the current localtime.
+  optional<Message> pull(const Time localtime) {
+    if (!messages.empty()) {
+      if (detail::pullMessage(state, localtime, messages.front().first)) {
+        const Message msg = messages.front().second;
+        messages.pop();
+        return {msg};
+      }
+    } else {
+      return {};
+    }
   }
-
-
 
 };
 

@@ -39,11 +39,16 @@ float toRad(const float x);
 float toDeg(const float x);
 
 /**
- * Tweening and animation.
+ * Tweening, ranges, etc.
  */
 
 float linearTween(const float begin, const float end, const float time);
 float sineAnim(const float time, const float period);
+
+template<typename Value>
+bool inRange(const Value x, const Value min, const Value max) {
+  return x >= min && x <= max;
+}
 
 /**
  * Verify that a value respects any potential invariants.

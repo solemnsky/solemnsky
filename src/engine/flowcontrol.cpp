@@ -15,11 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <cdoex.h>
-#include <cdonts.h>
 #include "flowcontrol.hpp"
+#include "util/methods.hpp"
 
 namespace sky {
-FlowControlSettings() {}
+
+namespace detail {
+
+bool pullMessage(const FlowControlState &state,
+                 const Time localtime,
+                 const Time timestamp) {
+  if (state.windowEntry) {
+    return inRange(timestamp, localtime, localtime + *state.windowEntry);
+  }
+
+  return true;
+}
+
+}
+
+/**
+ * FlowControlState.
+ */
+FlowControlState::FlowControlState() :
+    windowSize(0.1) {}
 
 }
