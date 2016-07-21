@@ -123,6 +123,6 @@ bool InputAction::operator<(const InputAction &other) const {
   if (thisButton && otherButton) return joyButton.get() < other.joyButton.get();
 
   //thisAxis && joyAxis: Negative comes first, then lower axis #
-  if (joyAxis->first == other.joyAxis->first) return joyAxis->second == Negative;
+  if (joyAxis->first == other.joyAxis->first) return joyAxis->second < other.joyAxis->second;
   return joyAxis->first < other.joyAxis->first;
 }
