@@ -1,6 +1,7 @@
 /**
  * solemnsky: the open-source multiplayer competitive 2D plane game
  * Copyright (C) 2016  Chris Gadzinski
+ * Copyright (C) 2016  Glenn Smith
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +22,11 @@
 #include <SFML/Window.hpp>
 #include "util/types.hpp"
 
+/**
+ * Input Actions that signifiy either a key, joystick axis (in one direction), or joystick button.
+ * Actions don't have a make/break field, but you can test an event against an action to
+ * see if that event would be a make event for the action.
+ */
 struct InputAction {
   enum AxisDirection {
     Positive,
@@ -33,7 +39,9 @@ struct InputAction {
   optional<std::pair<sf::Joystick::Axis, AxisDirection>> joyAxis;
   optional<JoystickButton> joyButton;
 
+  //Get the (most relevant) action that an event corresponds with
   static InputAction actionForEvent(const sf::Event &event);
+  //Get all the actions that an event corresponds with (eg both +/- joystick axes)
   static std::vector<InputAction> actionsForEvent(const sf::Event &event);
 
   InputAction() : key(), joyAxis(), joyButton() {
@@ -50,11 +58,14 @@ struct InputAction {
 
   }
 
+  //Convenience
   inline bool isKey() const { return !!key; }
   inline bool isJoyAxis() const { return !!joyAxis; }
   inline bool isJoyButton() const { return !!joyButton; }
+  //Joystick actions are either axes or buttons
   inline bool isJoystick() const { return isJoyAxis() || isJoyButton(); }
 
+  //Is the action anything at all?
   inline operator bool() const { return isKey() || isJoystick(); }
 
   //If an event (that matches this action) is make
@@ -62,9 +73,6 @@ struct InputAction {
 
   //Comparison, for std::sort and friends
   bool operator==(const InputAction &other) const;
-  bool operator==(InputAction *other) const {
-    return operator==(*other);
-  }
   inline bool operator!=(const InputAction &other) const {
     return !operator==(other);
   }
@@ -78,6 +86,13 @@ struct InputAction {
   inline bool operator<=(const InputAction &other) const {
     return !operator>(other);
   }
+
+  //Pointers in case someone is crazy
+  bool operator==(InputAction *other) const {return operator==(*other);}
+  bool operator<=(InputAction *other) const {return operator<=(*other);}
+  bool operator>=(InputAction *other) const {return operator>=(*other);}
+  bool operator<(InputAction *other) const {return operator<(*other);}
+  bool operator>(InputAction *other) const {return operator>(*other);}
 
   //Cereal really does not want to find the template optional save/load so I have to remake this
   template<typename Archive>
