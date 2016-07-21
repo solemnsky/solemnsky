@@ -61,8 +61,8 @@ class PlayerTab : public SettingsTab {
 
 class ControlsTab : public SettingsTab {
  private:
-  std::map<sky::Action, ui::KeySelector> skyBindingChoosers;
-  std::map<ClientAction, ui::KeySelector> clientBindingChoosers;
+  std::map<sky::Action, ui::ActionSelector> skyBindingChoosers;
+  std::map<ClientAction, ui::ActionSelector> clientBindingChoosers;
 
  public:
   ControlsTab(const ui::AppRefs &references, const Settings &settings);

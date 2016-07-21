@@ -24,7 +24,7 @@
 
 namespace ui {
 
-class KeySelector: public ui::Control {
+class ActionSelector: public ui::Control {
  private:
   Button button;
   optional<sf::Keyboard::Key> value;
@@ -33,7 +33,7 @@ class KeySelector: public ui::Control {
  public:
   typedef Button::Style Style;
 
-  KeySelector(const AppRefs &references,
+  ActionSelector(const AppRefs &references,
               const Style &style, const sf::Vector2f &pos);
 
   // Control impl.

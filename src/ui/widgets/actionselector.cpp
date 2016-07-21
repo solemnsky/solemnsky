@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "keyselector.hpp"
+#include "actionselector.hpp"
 #include "util/clientutil.hpp"
 
 namespace ui {
 
-KeySelector::KeySelector(const AppRefs &references,
-                         const ui::KeySelector::Style &style,
+ActionSelector::ActionSelector(const AppRefs &references,
+                         const ui::ActionSelector::Style &style,
                          const sf::Vector2f &pos) :
     Control(references),
     button(references, style, pos, ""),
@@ -30,7 +30,7 @@ KeySelector::KeySelector(const AppRefs &references,
   areChildren({&button});
 }
 
-void KeySelector::render(ui::Frame &f) {
+void ActionSelector::render(ui::Frame &f) {
   Control::render(f);
   const auto body = button.getBody();
 
@@ -39,7 +39,7 @@ void KeySelector::render(ui::Frame &f) {
   }
 }
 
-bool KeySelector::handle(const sf::Event &event) {
+bool ActionSelector::handle(const sf::Event &event) {
   if (capturing) {
     if (event.type == sf::Event::KeyPressed) {
       if (event.key.code == sf::Keyboard::Escape) setValue({});
@@ -52,12 +52,12 @@ bool KeySelector::handle(const sf::Event &event) {
   return Control::handle(event);
 }
 
-void KeySelector::reset() {
+void ActionSelector::reset() {
   Control::reset();
   capturing = false;
 }
 
-void KeySelector::signalRead() {
+void ActionSelector::signalRead() {
   if (clickSignal) {
     setValue({});
     capturing = true;
@@ -65,21 +65,21 @@ void KeySelector::signalRead() {
   Control::signalRead();
 }
 
-void KeySelector::signalClear() {
+void ActionSelector::signalClear() {
   Control::signalClear();
 }
 
-void KeySelector::setValue(const optional<sf::Keyboard::Key> key) {
+void ActionSelector::setValue(const optional<sf::Keyboard::Key> key) {
   value = key;
   if (key) button.text = printKey(key.get());
   else button.text = "<unbound>";
 }
 
-optional<sf::Keyboard::Key> KeySelector::getValue() const {
+optional<sf::Keyboard::Key> ActionSelector::getValue() const {
   return value;
 }
 
-void KeySelector::setDescription(const optional<std::string> &description) {
+void ActionSelector::setDescription(const optional<std::string> &description) {
   button.description = description;
 }
 
