@@ -18,21 +18,38 @@
 #include "inputaction.hpp"
 #include "clientutil.hpp"
 
-InputAction::InputAction(const sf::Event &event) {
+InputAction InputAction::actionForEvent(const sf::Event &event) {
   switch (event.type) {
     case sf::Event::KeyPressed:
     case sf::Event::KeyReleased:
-      key.emplace(event.key.code);
-      break;
+      return InputAction(event.key.code);
     case sf::Event::JoystickButtonPressed:
     case sf::Event::JoystickButtonReleased:
-      joyButton.emplace(event.joystickButton.button);
-      break;
+      return InputAction(event.joystickButton.button);
     case sf::Event::JoystickMoved:
-      joyAxis.emplace(std::make_pair(event.joystickMove.axis, (event.joystickMove.position > 0.0f ? InputAction::AxisDirection::Positive : InputAction::AxisDirection::Negative)));
-      break;
+      if (event.joystickMove.position > 0.0f)
+        return InputAction(event.joystickMove.axis, InputAction::AxisDirection::Positive);
+      else
+        return InputAction(event.joystickMove.axis, InputAction::AxisDirection::Negative);
     default:
-      break;
+      return InputAction();
+  }
+}
+std::vector<InputAction> InputAction::actionsForEvent(const sf::Event &event) {
+  switch (event.type) {
+    case sf::Event::KeyPressed:
+    case sf::Event::KeyReleased:
+      return {InputAction(event.key.code)};
+    case sf::Event::JoystickButtonPressed:
+    case sf::Event::JoystickButtonReleased:
+      return {InputAction(event.joystickButton.button)};
+    case sf::Event::JoystickMoved:
+      return {
+        InputAction(event.joystickMove.axis, Positive),
+        InputAction(event.joystickMove.axis, Negative)
+      };
+    default:
+      return {};
   }
 }
 
@@ -45,7 +62,10 @@ bool InputAction::isMake(const sf::Event &e) const {
       case sf::Joystick::Axis::R:
         return e.joystickMove.position > 0.0f;
       default:
-        return fabsf(e.joystickMove.position) > 50.0f;
+        if (joyAxis->second == Positive)
+          return e.joystickMove.position > 50.0f;
+        else
+          return e.joystickMove.position < -50.0f;
     }
   }
 

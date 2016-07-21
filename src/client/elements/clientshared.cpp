@@ -50,29 +50,31 @@ ClientShared::ClientShared(Client &client, const ui::AppRefs &references) :
     client(client), references(references) {}
 
 template<typename T>
-optional<std::pair<T, bool>>
-bindingFromEvent(const sf::Event &event,
+std::vector<std::pair<T, bool>>
+bindingsFromEvent(const sf::Event &event,
                  const std::map<InputAction, T> &map) {
-  InputAction action(event);
-  bool value = action.isMake(event);
+  std::vector<InputAction> actions = InputAction::actionsForEvent(event);
+  std::vector<std::pair<T, bool>> makes;
 
-  if (action) {
+  for (const InputAction &action : actions) {
+    bool make = action.isMake(event);
     const auto &find = map.find(action);
-    if (find != map.end())
-      return {std::pair<T, bool>(find->second, value)};
+
+    if (find != map.end()) {
+      makes.push_back(std::make_pair(find->second, make));
+    }
   }
 
-  return {};
+  return makes;
 }
 
-optional<std::pair<sky::Action, bool>>
-ClientShared::triggerSkyAction(const sf::Event &event) const {
-  return bindingFromEvent(event, client.settings.bindings.skyBindings);
+std::vector<std::pair<sky::Action, bool>>
+ClientShared::findSkyActions(const sf::Event &event) const {
+  return bindingsFromEvent(event, client.settings.bindings.skyBindings);
 }
-
-optional<std::pair<ClientAction, bool>>
-ClientShared::triggerClientAction(const sf::Event &event) const {
-  return bindingFromEvent(event, client.settings.bindings.clientBindings);
+std::vector<std::pair<ClientAction, bool>>
+ClientShared::findClientActions(const sf::Event &event) const {
+  return bindingsFromEvent(event, client.settings.bindings.clientBindings);
 }
 
 const Settings &ClientShared::getSettings() const {

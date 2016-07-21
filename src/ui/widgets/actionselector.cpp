@@ -41,7 +41,7 @@ void ActionSelector::render(ui::Frame &f) {
 
 bool ActionSelector::handle(const sf::Event &event) {
   if (capturing) {
-    InputAction action(event);
+    InputAction action = InputAction::actionForEvent(event);
     if (action.isMake(event)) {
       if (action.isKey() && action.key.get() == sf::Keyboard::Escape) setValue({});
       else setValue(action);

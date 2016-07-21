@@ -33,6 +33,9 @@ struct InputAction {
   optional<std::pair<sf::Joystick::Axis, AxisDirection>> joyAxis;
   optional<JoystickButton> joyButton;
 
+  static InputAction actionForEvent(const sf::Event &event);
+  static std::vector<InputAction> actionsForEvent(const sf::Event &event);
+
   InputAction() : key(), joyAxis(), joyButton() {
 
   }
@@ -46,7 +49,6 @@ struct InputAction {
   InputAction(const JoystickButton &button) : key(), joyAxis(), joyButton(button) {
 
   }
-  InputAction(const sf::Event &e);
 
   inline bool isKey() const { return !!key; }
   inline bool isJoyAxis() const { return !!joyAxis; }
