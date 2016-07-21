@@ -41,12 +41,27 @@ void ActionSelector::render(ui::Frame &f) {
 
 bool ActionSelector::handle(const sf::Event &event) {
   if (capturing) {
-    if (event.type == sf::Event::KeyPressed) {
-      if (event.key.code == sf::Keyboard::Escape) setValue({});
-      else setValue(event.key.code);
+    switch (event.type) {
+      case sf::Event::KeyPressed:
+        if (event.key.code == sf::Keyboard::Escape) setValue({});
+        else setValue(InputAction(event.key.code));
 
-      capturing = false;
-      return true;
+        capturing = false;
+        return true;
+      case sf::Event::JoystickButtonPressed:
+        setValue(InputAction(event.joystickButton.button));
+
+        capturing = false;
+        return true;
+      case sf::Event::JoystickMoved:
+        if (fabsf(event.joystickMove.position) > 50.f) {
+          setValue(InputAction(event.joystickMove.axis, (event.joystickMove.position > 0.0f ? InputAction::AxisDirection::Positive : InputAction::AxisDirection::Negative)));
+
+          capturing = false;
+          return true;
+        }
+      default:
+        break;
     }
   }
   return Control::handle(event);
@@ -69,13 +84,13 @@ void ActionSelector::signalClear() {
   Control::signalClear();
 }
 
-void ActionSelector::setValue(const optional<sf::Keyboard::Key> key) {
-  value = key;
-  if (key) button.text = printKey(key.get());
+void ActionSelector::setValue(const optional<InputAction> action) {
+  value = action;
+  if (action) button.text = action->getName();
   else button.text = "<unbound>";
 }
 
-optional<sf::Keyboard::Key> ActionSelector::getValue() const {
+optional<InputAction> ActionSelector::getValue() const {
   return value;
 }
 

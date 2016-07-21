@@ -22,6 +22,7 @@
 #include <SFML/Window.hpp>
 #include "engine/sky/participation.hpp"
 #include "util/types.hpp"
+#include "util/inputaction.hpp"
 
 /**
  * Actions a key-press can achieve in a client. Like sky::Action but for the
@@ -38,14 +39,14 @@ std::string showClientAction(const ClientAction action);
 /**
  * Key bindings for the client.
  */
-struct KeyBindings {
-  KeyBindings();
+struct ActionBindings {
+  ActionBindings();
 
-  optional<sf::Keyboard::Key> lookupBinding(sky::Action) const;
-  optional<sf::Keyboard::Key> lookupClientBinding(ClientAction) const;
+  optional<InputAction> lookupBinding(sky::Action) const;
+  optional<InputAction> lookupClientBinding(ClientAction) const;
 
-  std::map<sf::Keyboard::Key, sky::Action> skyBindings;
-  std::map<sf::Keyboard::Key, ClientAction> clientBindings;
+  std::map<InputAction, sky::Action> skyBindings;
+  std::map<InputAction, ClientAction> clientBindings;
 };
 
 /**
@@ -60,7 +61,7 @@ struct Settings {
 
   bool enableDebug;
   std::string nickname;
-  KeyBindings bindings;
+  ActionBindings bindings;
 
   static std::string saveFile;
 };
@@ -78,5 +79,5 @@ struct SettingsDelta {
 
   optional<bool> enableDebug;
   optional<std::string> nickname;
-  optional<KeyBindings> bindings;
+  optional<ActionBindings> bindings;
 };

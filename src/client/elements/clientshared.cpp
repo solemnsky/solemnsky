@@ -52,7 +52,7 @@ ClientShared::ClientShared(Client &client, const ui::AppRefs &references) :
 template<typename T>
 optional<std::pair<T, bool>>
 bindingFromEvent(const sf::Event &event,
-                 const std::map<sf::Keyboard::Key, T> &map) {
+                 const std::map<InputAction, T> &map) {
   bool value = event.type == sf::Event::KeyPressed;
   if (value or event.type == sf::Event::KeyReleased) {
     const auto &action = map.find(event.key.code);
