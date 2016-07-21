@@ -53,11 +53,13 @@ template<typename T>
 optional<std::pair<T, bool>>
 bindingFromEvent(const sf::Event &event,
                  const std::map<InputAction, T> &map) {
-  bool value = event.type == sf::Event::KeyPressed;
-  if (value or event.type == sf::Event::KeyReleased) {
-    const auto &action = map.find(event.key.code);
-    if (action != map.end())
-      return {std::pair<T, bool>(action->second, value)};
+  InputAction action(event);
+  bool value = action.isMake(event);
+
+  if (action) {
+    const auto &find = map.find(action);
+    if (find != map.end())
+      return {std::pair<T, bool>(find->second, value)};
   }
 
   return {};

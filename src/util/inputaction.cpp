@@ -18,6 +18,40 @@
 #include "inputaction.hpp"
 #include "clientutil.hpp"
 
+InputAction::InputAction(const sf::Event &event) {
+  switch (event.type) {
+    case sf::Event::KeyPressed:
+    case sf::Event::KeyReleased:
+      key.emplace(event.key.code);
+      break;
+    case sf::Event::JoystickButtonPressed:
+    case sf::Event::JoystickButtonReleased:
+      joyButton.emplace(event.joystickButton.button);
+      break;
+    case sf::Event::JoystickMoved:
+      joyAxis.emplace(std::make_pair(event.joystickMove.axis, (event.joystickMove.position > 0.0f ? InputAction::AxisDirection::Positive : InputAction::AxisDirection::Negative)));
+      break;
+    default:
+      break;
+  }
+}
+
+bool InputAction::isMake(const sf::Event &e) const {
+  if (key) return e.type == sf::Event::KeyPressed;
+  if (joyButton) return e.type == sf::Event::JoystickButtonPressed;
+  if (joyAxis) {
+    switch (joyAxis->first) {
+      case sf::Joystick::Axis::Z:
+      case sf::Joystick::Axis::R:
+        return e.joystickMove.position > 0.0f;
+      default:
+        return fabsf(e.joystickMove.position) > 50.0f;
+    }
+  }
+
+  return false;
+}
+
 std::string InputAction::getName() const {
   if (key) {
     return printKey(key.get());

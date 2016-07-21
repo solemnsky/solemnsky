@@ -41,27 +41,13 @@ void ActionSelector::render(ui::Frame &f) {
 
 bool ActionSelector::handle(const sf::Event &event) {
   if (capturing) {
-    switch (event.type) {
-      case sf::Event::KeyPressed:
-        if (event.key.code == sf::Keyboard::Escape) setValue({});
-        else setValue(InputAction(event.key.code));
+    InputAction action(event);
+    if (action.isMake(event)) {
+      if (action.isKey() && action.key.get() == sf::Keyboard::Escape) setValue({});
+      else setValue(action);
 
-        capturing = false;
-        return true;
-      case sf::Event::JoystickButtonPressed:
-        setValue(InputAction(event.joystickButton.button));
-
-        capturing = false;
-        return true;
-      case sf::Event::JoystickMoved:
-        if (fabsf(event.joystickMove.position) > 50.f) {
-          setValue(InputAction(event.joystickMove.axis, (event.joystickMove.position > 0.0f ? InputAction::AxisDirection::Positive : InputAction::AxisDirection::Negative)));
-
-          capturing = false;
-          return true;
-        }
-      default:
-        break;
+      capturing = false;
+      return true;
     }
   }
   return Control::handle(event);

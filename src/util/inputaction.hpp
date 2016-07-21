@@ -46,14 +46,23 @@ struct InputAction {
   InputAction(const JoystickButton &button) : key(), joyAxis(), joyButton(button) {
 
   }
+  InputAction(const sf::Event &e);
 
   inline bool isKey() const { return !!key; }
   inline bool isJoyAxis() const { return !!joyAxis; }
   inline bool isJoyButton() const { return !!joyButton; }
   inline bool isJoystick() const { return isJoyAxis() || isJoyButton(); }
 
+  inline operator bool() const { return isKey() || isJoystick(); }
+
+  //If an event (that matches this action) is make
+  bool isMake(const sf::Event &e) const;
+
   //Comparison, for std::sort and friends
   bool operator==(const InputAction &other) const;
+  bool operator==(InputAction *other) const {
+    return operator==(*other);
+  }
   inline bool operator!=(const InputAction &other) const {
     return !operator==(other);
   }
