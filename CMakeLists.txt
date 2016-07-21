@@ -234,6 +234,9 @@ add_executable(solemnsky_client
 
         src/util/clientutil.cpp
         src/util/clientutil.hpp
+
+        src/util/inputaction.cpp
+        src/util/inputaction.hpp
         )
 target_link_libraries(solemnsky_client
         solemnsky
