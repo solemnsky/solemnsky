@@ -76,6 +76,9 @@ add_library(solemnsky STATIC
         src/engine/event.cpp
         src/engine/event.hpp
 
+        src/engine/flowcontrol.cpp
+        src/engine/flowcontrol.hpp
+
         src/engine/player.cpp
         src/engine/player.hpp
 
