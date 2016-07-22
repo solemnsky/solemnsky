@@ -22,22 +22,22 @@ namespace sky {
 
 namespace detail {
 
-bool pullMessage(const FlowControlState &state,
+bool pullMessage(const FlowControlSettings &settings,
                  const Time localtime,
                  const Time timestamp) {
-  if (state.windowEntry) {
-    return inRange(timestamp, localtime, localtime + *state.windowEntry);
-  }
-
+  if (settings.windowEntry)
+    return inRange<Time>(
+        (localtime - timestamp) - *settings.windowEntry,
+        0, settings.windowSize);
   return true;
 }
 
 }
 
 /**
- * FlowControlState.
+ * FlowControlSettings.
  */
-FlowControlState::FlowControlState() :
-    windowSize(0.1) {}
+FlowControlSettings::FlowControlSettings() :
+    windowSize(0.1) { }
 
 }

@@ -4,9 +4,9 @@
 /**
  * FlowControl allows management of message streams with variable timeflow.
  */
-class FlowTest : public testing::Test {
+class FlowTest: public testing::Test {
  public:
-  FlowTest() : control({}) {}
+  FlowTest() : control({}) { }
 
   sky::FlowControl<std::string> control;
 
@@ -16,23 +16,28 @@ class FlowTest : public testing::Test {
  * Verify some basic properties.
  */
 TEST_F(FlowTest, BasicTest) {
-  // we get a timestamped message "hello" with timestamp of 0
-  control.push(0, "hello");
+  // We get a timestamped message "hello" with timestamp of 0.
 
-  // presently there is no buffer
+  // By default, everything passes through.
   {
-    const optional<std::string> msg = control.pull(10);
+    control.push(0, "hello");
+    const auto msg = control.pull(10);
     ASSERT_TRUE(bool(msg));
     ASSERT_EQ(*msg, "hello");
+    ASSERT_FALSE(bool(control.pull(10)));
   }
 
-  //
+  // Set the window entry to 10, so we only start releasing messages
+  // when their timestamp is 10 seconds older than localtime.
+  // The window is 1 second wide.
+  control.settings.windowEntry.emplace(10);
+  control.settings.windowSize = 1;
 
-}
-
-/**
- * Test FlowControl's capacity to handle long, noisy message streams.
- */
-TEST_F(FlowTest, StressTest) {
-
+  {
+    control.push(10, "hello");
+    ASSERT_FALSE(bool(control.pull(10)));
+    ASSERT_FALSE(bool(control.pull(22)));
+    ASSERT_TRUE(bool(control.pull(20.5)));
+    ASSERT_FALSE(bool(control.pull(20.5)));
+  }
 }

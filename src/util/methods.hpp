@@ -24,6 +24,7 @@
 #include <functional>
 #include <cereal/archives/json.hpp>
 #include "types.hpp"
+#include "util/printer.hpp"
 
 /****
  * For some reason sf::Vector has no math utilities, here are some.
@@ -47,7 +48,7 @@ float sineAnim(const float time, const float period);
 
 template<typename Value>
 bool inRange(const Value x, const Value min, const Value max) {
-  return x >= min && x <= max;
+  return (x >= min) && (x <= max);
 }
 
 /**
@@ -138,7 +139,7 @@ PID smallestUnused(const std::map<PID, T> &map) {
   return i;
 }
 
-class enum_error : public std::logic_error {
+class enum_error: public std::logic_error {
  public:
   enum_error();
 };

@@ -27,8 +27,8 @@ namespace sky {
 /**
  * State of a FlowControl, governing what messages to pull.
  */
-struct FlowControlState {
-  FlowControlState(); // initialize with agnostic defaults
+struct FlowControlSettings {
+  FlowControlSettings(); // agnostic defaults
 
   optional<Time> windowEntry;
   TimeDiff windowSize;
@@ -37,8 +37,9 @@ struct FlowControlState {
 
 namespace detail {
 
-// Decide whether to pull a message with a certain timestamp, given a
-bool pullMessage(const FlowControlState &state,
+// Decide whether to pull a message given the flow settings and a
+// localtime / timestamp pair.
+bool pullMessage(const FlowControlSettings &settings,
                  const Time localtime, const Time timestamp);
 
 }
@@ -46,35 +47,35 @@ bool pullMessage(const FlowControlState &state,
 /**
  * FlowControl class, templated on the Message type. Push messages in chronological order and pull them.
  *
- * Very simply, the objective is to make the `pull` method return messages with timestamps
- * equidistant to the supplied localtime.
+ * Very simply, the objective is to make the `pull` method return messages
+ * with timestamps equidistant to the supplied localtimes.
  */
 template<typename Message>
 class FlowControl {
  private:
-  const FlowControlState settings;
   std::queue<std::pair<Time, Message>> messages;
-  FlowControlState state;
 
  public:
-  FlowControl(const FlowControlState &state) : state(state) {}
+  FlowControl(const FlowControlSettings &settings) :
+      settings(settings) { }
+
+  FlowControlSettings settings;
 
   // A message with a timestamp arrives.
-  void push(const Time timestamp, Message &&message) {
-    messages.emplace(std::piecewise_construct, timestamp, message);
+  void push(const Time timestamp, const Message &message) {
+    messages.push({timestamp, message});
   }
 
   // Potentially pull a message, given the current localtime.
   optional<Message> pull(const Time localtime) {
     if (!messages.empty()) {
-      if (detail::pullMessage(state, localtime, messages.front().first)) {
+      if (detail::pullMessage(settings, localtime, messages.front().first)) {
         const Message msg = messages.front().second;
         messages.pop();
         return {msg};
       }
-    } else {
-      return {};
     }
+    return {};
   }
 
 };
