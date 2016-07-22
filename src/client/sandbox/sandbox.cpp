@@ -74,6 +74,7 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
 
 void SandboxLogger::onEvent(const sky::ArenaEvent &event) {
   event.print(sandbox.enginePrinter);
+  sandbox.enginePrinter.breakLine();
 }
 
 SandboxLogger::SandboxLogger(sky::Arena &arena, Sandbox &sandbox) :
@@ -142,6 +143,8 @@ Sandbox::Sandbox(ClientShared &state) :
     debugView(arena, skyHandle),
     logger(arena, *this),
     messageInteraction(references),
+    enginePrinter(messageInteraction),
+    clientPrinter(messageInteraction),
     consolePrinter(messageInteraction) {
   arena.connectPlayer("offline player");
   player = arena.getPlayer(0);

@@ -63,20 +63,22 @@ void JointPrinter::breakLine() {
 
 void PrefixPrinter::verifyPrefix() {
   if (isNewLine) {
-    prefix(*this);
+    prefix(base);
     isNewLine = false;
   }
 }
 
 PrefixPrinter::PrefixPrinter(Printer &base, PrintProcess prefix) :
-    base(base), prefix(prefix) { }
+    base(base), prefix(prefix), isNewLine(true) { }
 
 void PrefixPrinter::print(const std::string &str) {
   verifyPrefix();
   base.print(str);
 }
 
-void PrefixPrinter::setColor(const unsigned char r, const unsigned char g, const unsigned char b) {
+void PrefixPrinter::setColor(const unsigned char r,
+                             const unsigned char g,
+                             const unsigned char b) {
   verifyPrefix();
   base.setColor(r, b, g);
 }
@@ -195,6 +197,7 @@ void ConsolePrinter::setColor(const unsigned char,
 
 void ConsolePrinter::breakLine() {
   if (currentLine.size() != 0) appLog(std::move(currentLine), origin);
+  currentLine.clear();
 }
 
 /**

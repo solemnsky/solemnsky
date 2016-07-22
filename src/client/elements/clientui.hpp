@@ -65,6 +65,19 @@ class EnginePrinter: public JointPrinter {
 };
 
 /**
+ * Printer printer for client events.
+ */
+class ClientPrinter: public JointPrinter {
+ private:
+  ConsolePrinter consolePrinter;
+
+ public:
+  ClientPrinter(MessageInteraction &messageInteraction);
+
+};
+
+
+/**
  * Printer for game console input/output.
  */
 class GameConsolePrinter: private JointPrinter {
@@ -79,16 +92,3 @@ class GameConsolePrinter: private JointPrinter {
   void consoleOutput(const std::string &string);
 
 };
-
-/**
- * Printer printer for client events.
- */
-class ClientPrinter: public JointPrinter {
- private:
-  ConsolePrinter consolePrinter;
-
- public:
-  ClientPrinter(MessageInteraction &messageInteraction);
-
-};
-

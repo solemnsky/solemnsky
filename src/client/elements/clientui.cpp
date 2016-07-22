@@ -78,6 +78,15 @@ EnginePrinter::EnginePrinter(MessageInteraction &messageInteraction) :
 }
 
 /**
+ * ClientPrinter.
+ */
+
+ClientPrinter::ClientPrinter(MessageInteraction &messageInteraction) :
+    consolePrinter(LogOrigin::App) {
+  areChildPrinters({&consolePrinter, &messageInteraction.messageLog});
+}
+
+/**
  * GameConsolePrinter.
  */
 
@@ -96,6 +105,7 @@ void GameConsolePrinter::consoleInput(const std::string &string) {
   print(">> ");
   setColor(255, 255, 255);
   print(string);
+  breakLine();
 }
 
 void GameConsolePrinter::consoleOutput(const std::string &string) {
@@ -103,14 +113,5 @@ void GameConsolePrinter::consoleOutput(const std::string &string) {
   print("<< ");
   setColor(255, 255, 255);
   print(string);
-
-}
-
-/**
- * ClientPrinter.
- */
-
-ClientPrinter::ClientPrinter(MessageInteraction &messageInteraction) :
-    consolePrinter(LogOrigin::App) {
-  areChildPrinters({&consolePrinter, &messageInteraction.messageLog});
+  breakLine();
 }

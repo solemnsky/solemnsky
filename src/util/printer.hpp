@@ -144,6 +144,7 @@ class LogPrinter: public Printer {
                 const unsigned char g,
                 const unsigned char b) override final { }
   void breakLine() override final { }
+
  private:
   std::shared_ptr<spdlog::logger> mlogger;
 };
