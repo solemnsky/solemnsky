@@ -53,10 +53,42 @@ struct SandboxCommand {
 
 };
 
+class Sandbox;
+
+/**
+ * ArenaLogger used by the sandbox to catch events.
+ */
+class SandboxLogger: public sky::ArenaLogger {
+ private:
+  Sandbox &sandbox;
+
+ protected:
+  virtual void onEvent(const sky::ArenaEvent &event) override;
+
+ public:
+  SandboxLogger(sky::Arena &arena, Sandbox &sandbox);
+
+};
+
+/**
+ * Custom printer for the sandbox, printing to the MessageInteraction and to the console.
+ */
+class SandboxPrinter: public JointPrinter {
+ private:
+  // Printer to the console.
+  ConsolePrinter consolePrinterBase;
+  PrefixPrinter consolePrinter;
+
+ public:
+  SandboxPrinter(MessageInteraction &messageInteraction);
+
+};
+
 /**
  * The sandbox -- a sort of boring Game.
  */
-class Sandbox : public Game {
+class Sandbox: public Game {
+  friend class Sandbox;
  private:
   // Engine state.
   sky::Arena arena;
@@ -66,8 +98,16 @@ class Sandbox : public Game {
   sky::PlaneTuning spawnTuning; // tuning to use on plane spawn
   sky::Player *player;
 
+  SandboxLogger logger;
+
   // UI features.
   MessageInteraction messageInteraction;
+
+  // Logging.
+  SandboxPrinter sandboxPrinter;
+  void logArenaEvent(const sky::ArenaEvent &event);
+  void logConsoleInput(const std::string &command);
+  void logConsoleResponse(const std::string &response);
 
   // Submethods.
   void startHandle();

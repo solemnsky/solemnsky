@@ -23,7 +23,7 @@
  */
 
 SandboxCommand::SandboxCommand(const Type type) :
-    type(type) {}
+    type(type) { }
 
 optional<SandboxCommand> SandboxCommand::parseCommand(
     const std::string &input) {
@@ -69,8 +69,51 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
 }
 
 /**
+ * SandboxLogger.
+ */
+
+void SandboxLogger::onEvent(const sky::ArenaEvent &event) {
+  sandbox.logArenaEvent(event);
+}
+
+SandboxLogger::SandboxLogger(sky::Arena &arena, Sandbox &sandbox) :
+    sky::ArenaLogger(arena), sandbox(sandbox) { }
+
+/**
+ * SandboxPrinter.
+ */
+
+void printConsolePrefix(Printer &p) {
+  p.print("[sandbox console] ");
+}
+
+SandboxPrinter::SandboxPrinter(MessageInteraction &messageInteraction) :
+    consolePrinterBase(LogOrigin::App),
+    consolePrinter(consolePrinterBase, std::function(printConsolePrefix)) {
+  areChildPrinters({&consolePrinter, &messageInteraction.messageLog});
+}
+
+/**
  * Sandbox.
  */
+
+void Sandbox::logArenaEvent(const sky::ArenaEvent &event) {
+  event.print(messageInteraction.messageLog);
+}
+
+void Sandbox::logConsoleInput(const std::string &command) {
+  sandboxPrinter.setColor(255, 0, 0);
+  sandboxPrinter.print(">> ");
+  sandboxPrinter.setColor(255, 255, 255);
+  sandboxPrinter.print(command);
+}
+
+void Sandbox::logConsoleResponse(const std::string &response) {
+  sandboxPrinter.setColor(255, 0, 0);
+  sandboxPrinter.print("<< ");
+  sandboxPrinter.setColor(255, 255, 255);
+  sandboxPrinter.print(response);
+}
 
 void Sandbox::startHandle() {
   stopHandle();
@@ -114,7 +157,8 @@ void Sandbox::runCommand(const SandboxCommand &command) {
       appLog("Dumping custom tuning values to log.");
       appLog(spawnTuning.toString());
     }
-    default: throw enum_error();
+    default:
+      throw enum_error();
   }
 }
 
@@ -128,6 +172,7 @@ Sandbox::Sandbox(ClientShared &state) :
     arena(sky::ArenaInit("sandbox", "ball_funnelpark")),
     skyHandle(arena, sky::SkyHandleInit()),
     debugView(arena, skyHandle),
+    logger(arena, *this),
     messageInteraction(references) {
   arena.connectPlayer("offline player");
   player = arena.getPlayer(0);
@@ -230,11 +275,15 @@ void Sandbox::reset() {
 void Sandbox::signalRead() {
   ui::Control::signalRead();
   if (const auto messageInput = messageInteraction.inputSignal) {
-    auto parsed = SandboxCommand::parseCommand(messageInput.get());
+    const auto input = messageInput.get();
+    logConsoleInput(input);
+
+    auto parsed = SandboxCommand::parseCommand(input);
+
     if (parsed) {
       runCommand(parsed.get());
     } else {
-      appLog("Invalid sandbox command!", LogOrigin::Error);
+      logConsoleResponse("Invalid sandbox command!");
     }
   }
 }

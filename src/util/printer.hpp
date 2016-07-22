@@ -67,6 +67,7 @@ class StringPrinter: public Printer {
  public:
   StringPrinter() = default;
 
+  // Printer impl.
   void print(const std::string &str) override final;
   void setColor(const unsigned char,
                 const unsigned char,
@@ -74,6 +75,44 @@ class StringPrinter: public Printer {
   void breakLine() override final;
 
   std::string getString() const;
+};
+
+/**
+ * Relay printing to a set of child printers.
+ */
+class JointPrinter: public Printer {
+ private:
+  std::vector<Printer *> childPrinters;
+
+ protected:
+  void areChildPrinters(std::initializer_list<Printer *> childPrinters);
+
+ public:
+  JointPrinter();
+
+  // Printer impl.
+  virtual void print(const std::string &str);
+  virtual void setColor(const unsigned char r, const unsigned char g, const unsigned char b);
+  virtual void breakLine();
+};
+
+/**
+ * Wrap a printer, printing an additional prefix at every non-empty line.
+ */
+class PrefixPrinter: public Printer {
+ private:
+  Printer &base;
+  PrintProcess prefix;
+  bool isNewLine;
+
+  void verifyPrefix();
+
+ public:
+  PrefixPrinter(Printer &base, PrintProcess prefix);
+
+  virtual void print(const std::string &str);
+  virtual void setColor(const unsigned char r, const unsigned char g, const unsigned char b);
+  virtual void breakLine();
 };
 
 /**
@@ -94,20 +133,20 @@ enum class LogOrigin {
  * A Printer subclass wrapping logging features
  */
 
-class LogPrinter:public Printer {
-public:
+class LogPrinter: public Printer {
+ public:
   LogPrinter();
 
+  // Printer impl.
   void print(const std::string &str) override final;
-  void print(const std::string& str, const LogOrigin& origin);
+  void print(const std::string &str, const LogOrigin &origin);
   void setColor(const unsigned char r,
-                        const unsigned char g,
-                        const unsigned char b) override final{}
-  void breakLine() override final{}
-private:
+                const unsigned char g,
+                const unsigned char b) override final { }
+  void breakLine() override final { }
+ private:
   std::shared_ptr<spdlog::logger> mlogger;
 };
-
 
 /**
  * Logging functions
@@ -121,14 +160,15 @@ void appErrorRuntime(const std::string &contents);
  */
 
 class ConsolePrinter: public Printer {
-private:
+ private:
   const LogOrigin origin;
   std::string currentLine;
 
-public:
+ public:
   ConsolePrinter(const LogOrigin origin);
   ~ConsolePrinter();
 
+  // Printer impl.
   void print(const std::string &str) override final;
   virtual void setColor(const unsigned char r,
                         const unsigned char g,
