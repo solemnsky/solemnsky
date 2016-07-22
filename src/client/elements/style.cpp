@@ -164,14 +164,13 @@ Style::Game::Game(const Style::Base &base) :
     scoreboardDisplay(0, 0, 1400, 700),
 
     scoreboardPaddingTop(100),
-    chatCutoff(500),
-    chatIngameCutoff(150),
+    chatYPadding(12),
 
     playerSpecColor(255, 255, 255),
     playerJoinedColor(0, 255, 0),
 
     messageEntry(base.normalTextEntry),
-    messageLog(1200, 600, 200, 30, 25, base.normalFontSize),
+    messageLog(700, 300, 300, 10, 9, base.normalFontSize),
 
     messageLogText(base.normalText),
     playerListText(base.normalText) {

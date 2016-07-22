@@ -27,7 +27,7 @@ MessageInteraction::MessageInteraction(const ui::AppRefs &references) :
                  "[enter to type]"),
     messageLog(references,
                style.game.messageLog,
-               style.game.messagePos) {
+               style.game.messagePos + sf::Vector2f(0, -style.game.chatYPadding)) {
   areChildren({&messageEntry, &messageLog});
 }
 
@@ -50,6 +50,7 @@ void MessageInteraction::reset() {
 void MessageInteraction::signalRead() {
   ui::Control::signalRead();
   inputSignal = messageEntry.inputSignal;
+  messageLog.collapsed = !messageEntry.isFocused();
 }
 
 void MessageInteraction::signalClear() {
@@ -63,6 +64,7 @@ bool MessageInteraction::handleClientAction(const ClientAction action, const boo
       if (state) messageEntry.focus();
       return true;
     }
-    default: return false;
+    default:
+      return false;
   }
 }

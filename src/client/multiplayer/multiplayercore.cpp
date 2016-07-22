@@ -230,14 +230,18 @@ void MultiplayerCore::logClientEvent(const ClientEvent &event) {
   StringPrinter p;
   event.print(p);
   appLog(p.getString(), LogOrigin::Client);
+
   event.print(messageInteraction.messageLog);
+  messageInteraction.messageLog.breakLine();
 }
 
 void MultiplayerCore::logEvent(const sky::ArenaEvent &event) {
   StringPrinter p;
   event.print(p);
   appLog(p.getString(), LogOrigin::Engine);
+
   event.print(messageInteraction.messageLog);
+  messageInteraction.messageLog.breakLine();
 }
 
 const tg::Host &MultiplayerCore::getHost() const {

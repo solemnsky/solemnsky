@@ -26,7 +26,7 @@ namespace ui {
 
 class TextEntry: public Control {
  public:
-  struct Style {
+  const struct Style {
     sf::Color inactiveColor{142, 183, 191}, // background when inactive
         hotColor{162, 203, 211}, // background when active (hot)
         focusedColor{255, 255, 255},
@@ -53,8 +53,10 @@ class TextEntry: public Control {
 
   Clamped heat;
 
+  // UI state.
   float scroll;
   int cursor;
+  bool focused, hot;
 
   optional<sf::Event> pressedKeyboardEvent;
   Cooldown repeatActivate;
@@ -92,8 +94,8 @@ class TextEntry: public Control {
   void unfocus();
 
   // Signals.
-  bool isHot;
-  bool isFocused;
+  bool isFocused() const;
+  bool isHot() const;
   optional<std::string> inputSignal;
 
 };
