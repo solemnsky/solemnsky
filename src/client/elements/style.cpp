@@ -188,7 +188,7 @@ Style::SkyRender::SkyRender() :
     health(sf::Color::Green),
     energy(sf::Color::Blue),
     deathRate(0.5),
-    planeGraphicsScale(1.2) { }
+    planeGraphicsScale(1.5) { }
 
 Style::Style() :
     base(),

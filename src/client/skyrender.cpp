@@ -131,19 +131,19 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
         sf::Transform()
             .translate(state.physical.pos)
             .rotate(state.physical.rot), [&]() {
-      f.withAlpha(state.afterburner,
-                  [&]() {
-                    f.drawRect(style.skyRender.afterburnArea,
-                               sf::Color::Red);
-                  });
 
       f.withTransform(sf::Transform().scale(scaleFactor, scaleFactor), [&]() {
-        planeSheet.drawIndexAtRoll(f,
-                                   sf::Vector2f(200, 200),
-                                   graphics.roll());
+        // Plane graphics, scaled down so the plane's length is 200 px from this perspective.
+        f.withAlpha(state.afterburner, [&]() {
+          f.drawRect(style.skyRender.afterburnArea,
+                     sf::Color::Red);
+        });
+        planeSheet.drawIndexAtRoll(
+            f, sf::Vector2f(200, 200), graphics.roll());
       });
 
       if (enableDebug) {
+        // Debug graphics.
         const auto halfHitbox = 0.5f * tuning.hitbox;
         f.drawRect(-halfHitbox, halfHitbox, sf::Color(255, 255, 255, 100));
       }
