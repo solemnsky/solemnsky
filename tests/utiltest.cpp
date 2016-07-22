@@ -79,12 +79,11 @@ TEST_F(UtilTest, ReadTest) {
   ASSERT_TRUE(bool(readFloat("1")));
   EXPECT_EQ(*readFloat("1"), 1);
 
-  ASSERT_TRUE(bool(readFloat("42 ")));
-  EXPECT_EQ(*readFloat("42 "), 42);
+  ASSERT_TRUE(bool(readFloat("4.2")));
+  EXPECT_FLOAT_EQ(*readFloat("4.2"), 4.2f);
 
-  ASSERT_TRUE(bool(readFloat(" 3.0 ")));
-  EXPECT_EQ(*readFloat(" 3.0 "), 3.0);
-
+  EXPECT_FALSE(bool(readFloat("1 ")));
+  EXPECT_FALSE(bool(readFloat(" 1")));
   EXPECT_FALSE(bool(readFloat("a")));
   EXPECT_FALSE(bool(readFloat("1,")));
   EXPECT_FALSE(bool(readFloat("1a")));
