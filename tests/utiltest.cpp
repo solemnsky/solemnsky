@@ -70,3 +70,14 @@ TEST_F(UtilTest, AllocTest) {
   x = {0, 1, 2, 3, 4};
   EXPECT_EQ(smallestUnused(x), PID(5));
 }
+
+TEST_F(UtilTest, ReadTest) {
+  EXPECT_EQ(readFloat("1"), optional<float>(1));
+  EXPECT_EQ(readFloat("42 "), optional<float>(42));
+  EXPECT_EQ(readFloat("3.0"), optional<float>(3.0));
+  EXPECT_EQ(readFloat(" 3.0 "), optional<float>(3.0));
+
+  EXPECT_FALSE(bool(readFloat("a")));
+  EXPECT_FALSE(bool(readFloat("1,")));
+  EXPECT_FALSE(bool(readFloat("1a")));
+}

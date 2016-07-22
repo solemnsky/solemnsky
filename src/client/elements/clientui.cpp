@@ -49,7 +49,11 @@ void MessageInteraction::reset() {
 
 void MessageInteraction::signalRead() {
   ui::Control::signalRead();
-  inputSignal = messageEntry.inputSignal;
+  if (messageEntry.inputSignal) {
+    if (!messageEntry.inputSignal.get().empty())
+      inputSignal = messageEntry.inputSignal;
+  }
+
   messageLog.collapsed = !messageEntry.isFocused();
 }
 

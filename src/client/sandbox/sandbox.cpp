@@ -49,20 +49,12 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
 
     // Potentially include the tuning value to set.
     if (command.size() > 2) {
-      appLog("Reading: " + command[2]);
-
-      std::istringstream reader(command[2]);
-      float parsedValue;
-      reader >> parsedValue;
-      if (reader.good()) {
-        parsed.tuningValue = parsedValue;
-        return parsed;
-      } else {
-        return {};
-      }
-    } else {
-      return parsed;
+      if (const auto tuningValue = readFloat(command[2])) {
+        parsed.tuningValue = tuningValue;
+      } else return {};
     }
+
+    return parsed;
   }
 
   if (command[0] == "dump" and command.size() == 1) {

@@ -158,3 +158,8 @@ int getProcessID();
  * Run a command in the system's shell, without printing any output to stdout.
  */
 void runSystemQuiet(const std::string &command);
+
+/**
+ * Read certain type of values from input (useful for consoles).
+ */
+optional<float> readFloat(const std::string &string);

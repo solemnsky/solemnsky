@@ -86,7 +86,7 @@ enum_error::enum_error() :
                          "you're connection to a corrupted server? Report this "
                          "issue to the solemnsky team along with all the "
                          "relevant logs you can find, it should have been "
-                         "caught by the packet sanitizer.") {}
+                         "caught by the packet sanitizer.") { }
 bool imply(const bool x, const bool y) {
   return y or !x;
 }
@@ -110,4 +110,14 @@ void runSystemQuiet(const std::string &command) {
 #ifdef _WIN32
   system((command + " > NUL").c_str());
 #endif
+}
+
+optional<float> readFloat(const std::string &string) {
+  std::stringstream stream(string);
+  float input;
+  stream >> input;
+  if (stream.good()) {
+    return input;
+  }
+  return {};
 }
