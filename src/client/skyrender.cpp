@@ -130,17 +130,18 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
     f.withTransform(
         sf::Transform()
             .translate(state.physical.pos)
-            .rotate(state.physical.rot)
-            .scale(scaleFactor, scaleFactor), [&]() {
+            .rotate(state.physical.rot), [&]() {
       f.withAlpha(state.afterburner,
                   [&]() {
                     f.drawRect(style.skyRender.afterburnArea,
                                sf::Color::Red);
                   });
 
-      planeSheet.drawIndexAtRoll(f,
-                                 sf::Vector2f(200, 200),
-                                 graphics.roll());
+      f.withTransform(sf::Transform().scale(scaleFactor, scaleFactor), [&]() {
+        planeSheet.drawIndexAtRoll(f,
+                                   sf::Vector2f(200, 200),
+                                   graphics.roll());
+      });
 
       if (enableDebug) {
         const auto halfHitbox = 0.5f * tuning.hitbox;
