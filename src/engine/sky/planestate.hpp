@@ -39,9 +39,13 @@ struct PlaneTuning {
 
   template<class Archive>
   void serialize(Archive &ar) {
-    ar(cereal::make_nvp("energy", energy),
-       cereal::make_nvp("stall", stall),
-       cereal::make_nvp("flight", flight));
+    ar(
+        cereal::make_nvp("hitbox", hitbox),
+        cereal::make_nvp("maxHealth", maxHealth),
+        cereal::make_nvp("throttleSpeed", throttleSpeed),
+        cereal::make_nvp("energy", energy),
+        cereal::make_nvp("stall", stall),
+        cereal::make_nvp("flight", flight));
   }
 
   sf::Vector2f hitbox; // x axis parallel with flight direction

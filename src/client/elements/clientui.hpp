@@ -88,7 +88,7 @@ class GameConsolePrinter: private JointPrinter {
  public:
   GameConsolePrinter(MessageInteraction &messageInteraction);
 
-  void consoleInput(const std::string &string);
-  void consoleOutput(const std::string &string);
+  void input(const std::string &string);
+  void output(const std::string &string);
 
 };

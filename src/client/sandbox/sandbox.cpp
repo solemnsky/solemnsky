@@ -47,8 +47,10 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
     SandboxCommand parsed{Type::Tune};
     parsed.tuningParam.emplace(command[1]);
 
-    // Potentially include the parsed value.
+    // Potentially include the tuning value to set.
     if (command.size() > 2) {
+      appLog("Reading: " + command[2]);
+
       std::istringstream reader(command[2]);
       float parsedValue;
       reader >> parsedValue;
@@ -58,6 +60,8 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
       } else {
         return {};
       }
+    } else {
+      return parsed;
     }
   }
 
@@ -86,11 +90,13 @@ SandboxLogger::SandboxLogger(sky::Arena &arena, Sandbox &sandbox) :
 
 void Sandbox::startHandle() {
   stopHandle();
-  skyHandle.start();
+  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
   status = "loading...";
+  skyHandle.start();
 }
 
 void Sandbox::stopHandle() {
+  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Lobby));
   status = "stopped";
   skyRender.reset();
   skyHandle.stop();
@@ -102,33 +108,36 @@ void Sandbox::runCommand(const SandboxCommand &command) {
       arena.applyDelta(sky::ArenaDelta::EnvChange(
           command.mapName.get()));
       startHandle();
-      break;
+      return;
     }
     case SandboxCommand::Type::Stop: {
       stopHandle();
-      break;
+      return;
     }
     case SandboxCommand::Type::Tune: {
       const auto &param = command.tuningParam.get();
       if (float *paramPtr = spawnTuning.accessParamByName(param)) {
         if (const auto &value = command.tuningValue) {
           *paramPtr = value.get();
-          appLog("Settings " + inQuotes(param) + " to " + printFloat(value.get()));
+          consolePrinter.output(
+              "Settings " + inQuotes(param) + " to " + printFloat(value.get()));
         } else {
-          appLog(inQuotes(param) + " = " + printFloat(*paramPtr));
+          consolePrinter.output(
+              inQuotes(param) + " = " + printFloat(*paramPtr));
         }
       } else {
-        appLog("Unknown tuning parameter: " + inQuotes(param));
+        consolePrinter.output("Unknown tuning parameter: " + inQuotes(param));
       }
-      break;
+      return;
     }
     case SandboxCommand::Type::DumpTuning: {
-      appLog("Dumping custom tuning values to log.");
+      consolePrinter.output("Dumping custom tuning values to log.");
       appLog(spawnTuning.toString());
+      return;
     }
-    default:
-      throw enum_error();
   }
+
+  throw enum_error();
 }
 
 void Sandbox::displayStatus(ui::Frame &f, const std::string &status) {
@@ -248,14 +257,14 @@ void Sandbox::signalRead() {
   ui::Control::signalRead();
   if (const auto messageInput = messageInteraction.inputSignal) {
     const auto input = messageInput.get();
-    consolePrinter.consoleInput(input);
+    consolePrinter.input(input);
 
     auto parsed = SandboxCommand::parseCommand(input);
 
     if (parsed) {
       runCommand(parsed.get());
     } else {
-      consolePrinter.consoleOutput("Invalid sandbox command!");
+      consolePrinter.output("Invalid sandbox command!");
     }
   }
 }

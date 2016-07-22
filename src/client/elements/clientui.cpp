@@ -91,7 +91,7 @@ ClientPrinter::ClientPrinter(MessageInteraction &messageInteraction) :
  */
 
 void printConsolePrefix(Printer &p) {
-  p.print("[sandbox console] ");
+  p.print("[console] ");
 }
 
 GameConsolePrinter::GameConsolePrinter(MessageInteraction &messageInteraction) :
@@ -100,7 +100,7 @@ GameConsolePrinter::GameConsolePrinter(MessageInteraction &messageInteraction) :
   areChildPrinters({&consolePrinter, &messageInteraction.messageLog});
 }
 
-void GameConsolePrinter::consoleInput(const std::string &string) {
+void GameConsolePrinter::input(const std::string &string) {
   setColor(255, 0, 0);
   print(">> ");
   setColor(255, 255, 255);
@@ -108,7 +108,7 @@ void GameConsolePrinter::consoleInput(const std::string &string) {
   breakLine();
 }
 
-void GameConsolePrinter::consoleOutput(const std::string &string) {
+void GameConsolePrinter::output(const std::string &string) {
   setColor(255, 0, 0);
   print("<< ");
   setColor(255, 255, 255);

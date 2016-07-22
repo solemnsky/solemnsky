@@ -89,6 +89,7 @@ PlaneTuning::Flight::Flight() :
     threshold(110) { }
 
 float *PlaneTuning::accessParamByName(const std::string &name) {
+  // TODO: access this using the cereal JSON serialization?
   if (name == "hitbox.x") return &hitbox.x;
   if (name == "hitbox.y") return &hitbox.y;
   if (name == "maxHealth") return &maxHealth;
@@ -120,7 +121,7 @@ float *PlaneTuning::accessParamByName(const std::string &name) {
 std::string PlaneTuning::toString() const {
   std::ostringstream stream;
   cereal::JSONOutputArchive ar(stream);
-  ar(*this);
+  ar(cereal::make_nvp("tuning", *this));
   return stream.str();
 }
 
