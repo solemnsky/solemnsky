@@ -91,15 +91,12 @@ void Archive::load() {
     return;
   }
 
-  appLog("Invoking 7zip...", LogOrigin::App);
-
   fs::path workingDir(".unzip-tmp/" + std::to_string(getProcessID()) + "/"
                           + this->archivePath.filename().string());
   fs::remove_all(workingDir);
   fs::create_directories(workingDir);
 
-  // this is the alternative to getting libarchive working on all our
-  // build platforms ... the choice was obvious
+  // Invoke 7zip through the shell. I'm sorry.
   chdir(workingDir.string().c_str());
   runSystemQuiet("7z x " + inQuotes(archivePath.string()));
   chdir("../../../");

@@ -68,7 +68,7 @@ class TextLog: public Control, public Printer {
   };
 
  private:
-  Style style;
+  const Style style;
   sf::Vector2f pos;
 
   void startNewLine();

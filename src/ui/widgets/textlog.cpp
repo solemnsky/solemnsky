@@ -94,19 +94,21 @@ void TextLog::render(Frame &f) {
 
   f.drawText(pos, [&](TextFrame &tf) {
     for (const auto &pair : lines) {
-      const double age = references.timeSince(pair.first);
-      if (collapsed) {
-        if (age < style.maxLifetimeCollapsed) {
-          const double alpha =
-              (style.fadeStart == 0) ? 1 :
-              clamp(0.0, 1.0, (style.maxLifetimeCollapsed - age) / style.fadeStart);
-          f.withAlpha(float(alpha), [&]() {
-            for (auto &action : pair.second) action.print(tf);
-          });
-          tf.breakLine();
-        }
-      }
-      if (tf.drawOffset.y > maxHeight && maxHeight != 0) return;
+//      const double age = references.timeSince(pair.first);
+//      if (collapsed) {
+//        if (age < style.maxLifetimeCollapsed) {
+//          const double alpha =
+//              (style.fadeStart == 0) ? 1 :
+//              clamp(0.0, 1.0, (style.maxLifetimeCollapsed - age) / style.fadeStart);
+//          f.withAlpha(float(alpha), [&]() {
+//            for (auto &action : pair.second) action.print(tf);
+//          });
+//          tf.breakLine();
+//        }
+//      }
+      for (auto &action : pair.second) action.print(tf);
+      tf.breakLine();
+      if (tf.drawOffset.y > maxHeight && maxHeight != 0) break;
     }
   }, textFormat, resources.defaultFont);
 }

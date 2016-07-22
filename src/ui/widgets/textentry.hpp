@@ -26,7 +26,7 @@ namespace ui {
 
 class TextEntry: public Control {
  public:
-  struct Style {
+  const struct Style {
     sf::Color inactiveColor{142, 183, 191}, // background when inactive
         hotColor{162, 203, 211}, // background when active (hot)
         focusedColor{255, 255, 255},
