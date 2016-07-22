@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "textlog.hpp"
+#include <boost/iterator_adaptors.hpp>
 
 namespace ui {
 
@@ -85,30 +86,38 @@ TextLog::TextLog(const AppRefs &references, const Style &style,
     startingNewLine(true),
     textFormat(style.fontSize, 0, ui::HorizontalAlign::Left,
                ui::VerticalAlign::Bottom),
-    collapsed(false) {}
+    collapsed(false) { }
 
-void TextLog::tick(TimeDiff) {}
+void TextLog::tick(TimeDiff) { }
 
 void TextLog::render(Frame &f) {
   const float maxHeight = collapsed ? style.maxHeightCollapsed : style.maxHeight;
 
   f.drawText(pos, [&](TextFrame &tf) {
-    for (const auto &pair : lines) {
-//      const double age = references.timeSince(pair.first);
-//      if (collapsed) {
-//        if (age < style.maxLifetimeCollapsed) {
-//          const double alpha =
-//              (style.fadeStart == 0) ? 1 :
-//              clamp(0.0, 1.0, (style.maxLifetimeCollapsed - age) / style.fadeStart);
-//          f.withAlpha(float(alpha), [&]() {
-//            for (auto &action : pair.second) action.print(tf);
-//          });
-//          tf.breakLine();
-//        }
-//      }
+    for (auto iter = lines.rbegin();
+         iter < lines.rend();
+         iter++) {
+      const auto &pair = *iter;
+      const Time age = references.timeSince(pair.first);
+
+      if (collapsed) {
+        if (age < style.maxLifetimeCollapsed) {
+          const double alpha =
+              (style.fadeStart == 0) ? 1 :
+              clamp(0.0, 1.0, (style.maxLifetimeCollapsed - age) / style.fadeStart);
+          f.withAlpha(float(alpha), [&]() {
+            for (auto &action : pair.second) action.print(tf);
+          });
+          tf.breakLine();
+        } else {
+          break;
+        }
+      }
+
       for (auto &action : pair.second) action.print(tf);
       tf.breakLine();
-      if (tf.drawOffset.y > maxHeight && maxHeight != 0) break;
+
+      if (tf.drawOffset.y > maxHeight && maxHeight != 0) return;
     }
   }, textFormat, resources.defaultFont);
 }

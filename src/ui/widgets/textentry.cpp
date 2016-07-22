@@ -50,23 +50,23 @@ TextEntry::TextEntry(const AppRefs &references,
     heat(0),
     scroll(0),
     cursor(0),
+    focused(false),
+    hot(false),
 
     repeatActivate(0.3),
     repeatCooldown(0.06), // TODO: Cooldowns don't compensate for
-    // wrap-around, making their behaviour erratic when the tick interval
-    // approaches the cooldown interval
+// wrap-around, making their behaviour erratic when the tick interval
+// approaches the cooldown interval
 
-    textFormat(style.fontSize, 0,
+    textFormat(style
+                   .fontSize, 0,
                ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
     descriptionFormat(textFormat),
 
     persistent(persistent),
     pos(pos),
 
-    description(description),
-
-    isHot(false),
-    isFocused(false) {
+    description(description) {
   descriptionFormat.horizontal = HorizontalAlign::Right;
   descriptionFormat.vertical = VerticalAlign::Bottom;
 }
@@ -117,7 +117,7 @@ void TextEntry::handleKeyboardEvent(const sf::Event &event) {
 }
 
 void TextEntry::tick(float delta) {
-  heat += (isHot ? 1 : -1) * delta * style.heatRate;
+  heat += (hot ? 1 : -1) * delta * style.heatRate;
 
   if (pressedKeyboardEvent) {
     if (repeatActivate.cool(delta)) {
@@ -137,22 +137,22 @@ void TextEntry::render(Frame &f) {
                resources.defaultFont);
   }
 
-  if (isFocused) {
+  if (focused) {
     f.drawRect({}, style.dimensions, style.focusedColor);
     f.drawText(
         sf::Vector2f(sidePadding - scroll, 0), [&](TextFrame &tf) {
-          tf.setColor(style.textColor);
-          tf.print(contents.substr(0, size_t(cursor)));
-          const float scroll =
-              (tf.drawOffset.x > (style.dimensions.x + sidePadding))
-              ? tf.drawOffset.x - style.dimensions.x + 2 * sidePadding : 0;
-          f.drawRect(
-              {sidePadding + tf.drawOffset.x - scroll, 0},
-              {sidePadding + tf.drawOffset.x - scroll +
-                  cursorWidth, style.dimensions.y},
-              style.textColor);
-          tf.print(contents.substr(size_t(cursor)));
-        }, textFormat, resources.defaultFont);
+      tf.setColor(style.textColor);
+      tf.print(contents.substr(0, size_t(cursor)));
+      const float scroll =
+          (tf.drawOffset.x > (style.dimensions.x + sidePadding))
+          ? tf.drawOffset.x - style.dimensions.x + 2 * sidePadding : 0;
+      f.drawRect(
+          {sidePadding + tf.drawOffset.x - scroll, 0},
+          {sidePadding + tf.drawOffset.x - scroll +
+              cursorWidth, style.dimensions.y},
+          style.textColor);
+      tf.print(contents.substr(size_t(cursor)));
+    }, textFormat, resources.defaultFont);
   } else {
     f.drawRect({}, style.dimensions,
                mixColors(style.inactiveColor, style.hotColor, heat));
@@ -181,11 +181,11 @@ bool TextEntry::handle(const sf::Event &event) {
 
   if (event.type == sf::Event::MouseMoved) {
     const sf::Vector2f pt(event.mouseMove.x, event.mouseMove.y);
-    isHot = body.contains(pt);
+    hot = body.contains(pt);
     return false;
   }
 
-  if (isFocused) {
+  if (focused) {
     if (event.type == sf::Event::KeyReleased) {
       pressedKeyboardEvent.reset();
       repeatActivate.reset();
@@ -219,22 +219,30 @@ void TextEntry::signalClear() {
 }
 
 void TextEntry::reset() {
-  isHot = false;
+  hot = false;
 }
 
 void TextEntry::focus() {
-  isFocused = true;
+  focused = true;
   if (persistent) cursor = (int) contents.size();
 }
 
 void TextEntry::unfocus() {
-  isFocused = false;
+  focused = false;
   if (!persistent) {
     contents = "";
     cursor = 0;
   }
   repeatActivate.reset();
   repeatCooldown.reset();
+}
+
+bool TextEntry::isFocused() const {
+  return focused;
+}
+
+bool TextEntry::isHot() const {
+  return hot;
 }
 
 }

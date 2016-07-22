@@ -182,8 +182,7 @@ struct Style {
       lobbyButtonSep,
       scoreboardOffset;
     sf::IntRect scoreboardDisplay;
-    float scoreboardPaddingTop;
-    float chatCutoff, chatIngameCutoff;
+    float scoreboardPaddingTop, chatYPadding;
 
     // Colors
     sf::Color playerSpecColor, playerJoinedColor;

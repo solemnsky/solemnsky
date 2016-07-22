@@ -53,7 +53,7 @@ using LogLine = std::vector<PrintAction>;
 
 class TextLog: public Control, public Printer {
  public:
-  struct Style {
+  const struct Style {
     float maxWidth, maxHeight, maxHeightCollapsed;
     Time maxLifetimeCollapsed, fadeStart;
     int fontSize;
@@ -65,15 +65,14 @@ class TextLog: public Control, public Printer {
           const Time maxLifetimeCollapsed,
           const float fadeStart,
           const int fontSize);
-  };
+  } style;
 
  private:
-  const Style style;
   sf::Vector2f pos;
 
   void startNewLine();
   bool startingNewLine;
-  std::vector<std::pair<double, detail::LogLine>> lines;
+  std::vector<std::pair<Time, detail::LogLine>> lines;
 
   TextFormat textFormat; // derived from style
 

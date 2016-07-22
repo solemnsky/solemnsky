@@ -53,8 +53,10 @@ class TextEntry: public Control {
 
   Clamped heat;
 
+  // UI state.
   float scroll;
   int cursor;
+  bool focused, hot;
 
   optional<sf::Event> pressedKeyboardEvent;
   Cooldown repeatActivate;
@@ -92,8 +94,8 @@ class TextEntry: public Control {
   void unfocus();
 
   // Signals.
-  bool isHot;
-  bool isFocused;
+  bool isFocused() const;
+  bool isHot() const;
   optional<std::string> inputSignal;
 
 };
