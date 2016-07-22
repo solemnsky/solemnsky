@@ -199,6 +199,10 @@ void Plane::resetPrimary() {
   state.primaryCooldown.reset();
 }
 
+void Plane::damage(const float amount) {
+  state.health -= amount;
+}
+
 /**
  * ParticipationInit.
  */
