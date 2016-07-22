@@ -104,7 +104,8 @@ void TextLog::render(Frame &f) {
         if (age < style.maxLifetimeCollapsed) {
           const double alpha =
               (style.fadeStart == 0) ? 1 :
-              clamp(0.0, 1.0, (style.maxLifetimeCollapsed - age) / style.fadeStart);
+              clamp(0.0, 1.0, 1 - ((age - style.fadeStart)
+                  / (style.maxLifetimeCollapsed - style.fadeStart)));
           f.withAlpha(float(alpha), [&]() {
             for (auto &action : pair.second) action.print(tf);
           });
@@ -112,12 +113,12 @@ void TextLog::render(Frame &f) {
         } else {
           break;
         }
+      } else {
+        for (auto &action : pair.second) action.print(tf);
+        tf.breakLine();
       }
 
-      for (auto &action : pair.second) action.print(tf);
-      tf.breakLine();
-
-      if (tf.drawOffset.y > maxHeight && maxHeight != 0) return;
+      if (tf.drawOffset.y > maxHeight && maxHeight != 0) break;
     }
   }, textFormat, resources.defaultFont);
 }
