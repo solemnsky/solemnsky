@@ -78,6 +78,7 @@ class Plane {
   bool requestDiscreteEnergy(const float reqEnergy);
   float requestEnergy(const float reqEnergy);
   void resetPrimary();
+  void damage(const float amount);
 
 };
 

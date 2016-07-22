@@ -59,6 +59,7 @@ class PhysicsListener {
   friend class PhysicsDispatcher;
   virtual void onBeginContact(const BodyTag &body1, const BodyTag &body2) = 0;
   virtual void onEndContact(const BodyTag &body1, const BodyTag &body2) = 0;
+  virtual bool enableContact(const BodyTag &body1, const BodyTag &body2) = 0;
   virtual ~PhysicsListener() {}
 
 };
@@ -76,7 +77,7 @@ class PhysicsDispatcher : public b2ContactListener {
   // b2ContactListener
   virtual void BeginContact(b2Contact *contact) override;
   virtual void EndContact(b2Contact *contact) override;
-
+  virtual void PreSolve(b2Contact *contact, const b2Manifold *oldManifold) override;
 };
 
 /**

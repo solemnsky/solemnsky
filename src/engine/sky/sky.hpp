@@ -104,6 +104,8 @@ class Sky : public PhysicsListener,
                       const BodyTag &body2) override final;
   void onEndContact(const BodyTag &body1,
                     const BodyTag &body2) override final;
+  bool enableContact(const BodyTag &body1,
+                     const BodyTag &body2) override final;
 
   // Syncing settings to potential state.
   void syncSettings();
