@@ -112,12 +112,3 @@ void runSystemQuiet(const std::string &command) {
 #endif
 }
 
-optional<float> readFloat(const std::string &string) {
-  std::stringstream stream(string);
-  float input;
-  stream >> input;
-  if (stream.good()) {
-    return input;
-  }
-  return {};
-}

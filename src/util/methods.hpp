@@ -25,6 +25,7 @@
 #include <cereal/archives/json.hpp>
 #include "types.hpp"
 #include "util/printer.hpp"
+#include <boost/lexical_cast.hpp>
 
 /****
  * For some reason sf::Vector has no math utilities, here are some.
@@ -160,6 +161,21 @@ int getProcessID();
 void runSystemQuiet(const std::string &command);
 
 /**
- * Read certain type of values from input (useful for consoles).
+ * Read values from string inputs, wrapper around boost::lexical_cast.
  */
-optional<float> readFloat(const std::string &string);
+template<typename Value>
+optional<Value> readString(const std::string &string) {
+  try {
+    return boost::lexical_cast<Value>(string);
+  } catch (boost::bad_lexical_cast &) {
+    return {};
+  }
+}
+
+inline optional<float> readFloat(const std::string &string) {
+  return readString<float>(string);
+}
+
+inline optional<double> readDouble(const std::string &string) {
+  return readString<double>(string);
+}
