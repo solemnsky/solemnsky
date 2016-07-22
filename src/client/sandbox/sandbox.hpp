@@ -25,6 +25,7 @@
 #include "engine/debugview.hpp"
 #include "ui/widgets.hpp"
 #include "client/elements/clientui.hpp"
+#include "engine/event.hpp"
 
 /**
  * A command that can be executed in the sandbox.
@@ -71,24 +72,10 @@ class SandboxLogger: public sky::ArenaLogger {
 };
 
 /**
- * Custom printer for the sandbox, printing to the MessageInteraction and to the console.
- */
-class SandboxPrinter: public JointPrinter {
- private:
-  // Printer to the console.
-  ConsolePrinter consolePrinterBase;
-  PrefixPrinter consolePrinter;
-
- public:
-  SandboxPrinter(MessageInteraction &messageInteraction);
-
-};
-
-/**
  * The sandbox -- a sort of boring Game.
  */
 class Sandbox: public Game {
-  friend class Sandbox;
+  friend class SandboxLogger;
  private:
   // Engine state.
   sky::Arena arena;
@@ -103,11 +90,10 @@ class Sandbox: public Game {
   // UI features.
   MessageInteraction messageInteraction;
 
-  // Logging.
-  SandboxPrinter sandboxPrinter;
-  void logArenaEvent(const sky::ArenaEvent &event);
-  void logConsoleInput(const std::string &command);
-  void logConsoleResponse(const std::string &response);
+  // Printers.
+  EnginePrinter enginePrinter;
+  ClientPrinter clientPrinter;
+  GameConsolePrinter consolePrinter;
 
   // Submethods.
   void startHandle();

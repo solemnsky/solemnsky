@@ -73,47 +73,15 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
  */
 
 void SandboxLogger::onEvent(const sky::ArenaEvent &event) {
-  sandbox.logArenaEvent(event);
+  event.print(sandbox.enginePrinter);
 }
 
 SandboxLogger::SandboxLogger(sky::Arena &arena, Sandbox &sandbox) :
     sky::ArenaLogger(arena), sandbox(sandbox) { }
 
 /**
- * SandboxPrinter.
- */
-
-void printConsolePrefix(Printer &p) {
-  p.print("[sandbox console] ");
-}
-
-SandboxPrinter::SandboxPrinter(MessageInteraction &messageInteraction) :
-    consolePrinterBase(LogOrigin::App),
-    consolePrinter(consolePrinterBase, std::function(printConsolePrefix)) {
-  areChildPrinters({&consolePrinter, &messageInteraction.messageLog});
-}
-
-/**
  * Sandbox.
  */
-
-void Sandbox::logArenaEvent(const sky::ArenaEvent &event) {
-  event.print(messageInteraction.messageLog);
-}
-
-void Sandbox::logConsoleInput(const std::string &command) {
-  sandboxPrinter.setColor(255, 0, 0);
-  sandboxPrinter.print(">> ");
-  sandboxPrinter.setColor(255, 255, 255);
-  sandboxPrinter.print(command);
-}
-
-void Sandbox::logConsoleResponse(const std::string &response) {
-  sandboxPrinter.setColor(255, 0, 0);
-  sandboxPrinter.print("<< ");
-  sandboxPrinter.setColor(255, 255, 255);
-  sandboxPrinter.print(response);
-}
 
 void Sandbox::startHandle() {
   stopHandle();
@@ -173,7 +141,8 @@ Sandbox::Sandbox(ClientShared &state) :
     skyHandle(arena, sky::SkyHandleInit()),
     debugView(arena, skyHandle),
     logger(arena, *this),
-    messageInteraction(references) {
+    messageInteraction(references),
+    consolePrinter(messageInteraction) {
   arena.connectPlayer("offline player");
   player = arena.getPlayer(0);
   stopHandle();
@@ -276,14 +245,14 @@ void Sandbox::signalRead() {
   ui::Control::signalRead();
   if (const auto messageInput = messageInteraction.inputSignal) {
     const auto input = messageInput.get();
-    logConsoleInput(input);
+    consolePrinter.consoleInput(input);
 
     auto parsed = SandboxCommand::parseCommand(input);
 
     if (parsed) {
       runCommand(parsed.get());
     } else {
-      logConsoleResponse("Invalid sandbox command!");
+      consolePrinter.consoleOutput("Invalid sandbox command!");
     }
   }
 }

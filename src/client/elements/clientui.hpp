@@ -21,11 +21,12 @@
 #pragma once
 #include "ui/widgets.hpp"
 #include "settings.hpp"
+#include "util/printer.hpp"
 
 /**
  * Text entry / variable message log combo. Used in the sandbox and client.
  */
-class MessageInteraction : public ui::Control {
+class MessageInteraction: public ui::Control {
  private:
  public:
   MessageInteraction() = delete;
@@ -48,6 +49,46 @@ class MessageInteraction : public ui::Control {
 
   // Signals.
   optional<std::string> inputSignal;
+
+};
+
+/**
+ * Printer for engine events.
+ */
+class EnginePrinter: public JointPrinter {
+ private:
+  ConsolePrinter consolePrinter;
+
+ public:
+  EnginePrinter(MessageInteraction &messageInteraction);
+
+};
+
+/**
+ * Printer for game console input/output.
+ */
+class GameConsolePrinter: private JointPrinter {
+ private:
+  ConsolePrinter consolePrinterBase;
+  PrefixPrinter consolePrinter;
+
+ public:
+  GameConsolePrinter(MessageInteraction &messageInteraction);
+
+  void consoleInput(const std::string &string);
+  void consoleOutput(const std::string &string);
+
+};
+
+/**
+ * Printer printer for client events.
+ */
+class ClientPrinter: public JointPrinter {
+ private:
+  ConsolePrinter consolePrinter;
+
+ public:
+  ClientPrinter(MessageInteraction &messageInteraction);
 
 };
 

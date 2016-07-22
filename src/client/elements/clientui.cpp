@@ -68,3 +68,49 @@ bool MessageInteraction::handleClientAction(const ClientAction action, const boo
       return false;
   }
 }
+
+/**
+ * EnginePrinter.
+ */
+EnginePrinter::EnginePrinter(MessageInteraction &messageInteraction) :
+    consolePrinter(LogOrigin::Engine) {
+  areChildPrinters({&messageInteraction.messageLog, &consolePrinter});
+}
+
+/**
+ * GameConsolePrinter.
+ */
+
+void printConsolePrefix(Printer &p) {
+  p.print("[sandbox console] ");
+}
+
+GameConsolePrinter::GameConsolePrinter(MessageInteraction &messageInteraction) :
+    consolePrinterBase(LogOrigin::App),
+    consolePrinter(consolePrinterBase, printConsolePrefix) {
+  areChildPrinters({&consolePrinter, &messageInteraction.messageLog});
+}
+
+void GameConsolePrinter::consoleInput(const std::string &string) {
+  setColor(255, 0, 0);
+  print(">> ");
+  setColor(255, 255, 255);
+  print(string);
+}
+
+void GameConsolePrinter::consoleOutput(const std::string &string) {
+  setColor(255, 0, 0);
+  print("<< ");
+  setColor(255, 255, 255);
+  print(string);
+
+}
+
+/**
+ * ClientPrinter.
+ */
+
+ClientPrinter::ClientPrinter(MessageInteraction &messageInteraction) :
+    consolePrinter(LogOrigin::App) {
+  areChildPrinters({&consolePrinter, &messageInteraction.messageLog});
+}
