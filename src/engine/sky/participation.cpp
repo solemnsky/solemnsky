@@ -107,9 +107,15 @@ void Plane::tickFlight(const TimeDiff delta) {
     }
     state.airspeed += speedMod;
 
-    approach(state.airspeed,
-             (float) state.throttle * tuning.flight.throttleInfluence,
-             tuning.flight.throttleEffect * delta);
+    const float targetThrottle = state.throttle * tuning.flight.throttleInfluence;
+    if (state.airspeed > targetThrottle) {
+      approach(state.airspeed, targetThrottle,
+               tuning.flight.throttleBrakeEffect * delta);
+    } else {
+      approach(state.airspeed, targetThrottle,
+               tuning.flight.throttleEffect * delta);
+    }
+
 
     float targetSpeed = state.airspeed * tuning.flight.airspeedFactor;
 
@@ -210,7 +216,7 @@ void Plane::damage(const float amount) {
 ParticipationInit::ParticipationInit() :
     spawn(),
     controls(),
-    props() {}
+    props() { }
 
 ParticipationInit::ParticipationInit(
     const PlaneControls &controls,
@@ -218,13 +224,13 @@ ParticipationInit::ParticipationInit(
     const PlaneState &state) :
     spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)),
     controls(controls),
-    props() {}
+    props() { }
 
 ParticipationInit::ParticipationInit(
     const PlaneControls &controls) :
     spawn(),
     controls(controls),
-    props() {}
+    props() { }
 
 /**
  * ParticipationDelta.

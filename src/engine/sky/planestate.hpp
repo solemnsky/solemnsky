@@ -93,6 +93,7 @@ struct PlaneTuning {
         airspeedFactor,
         throttleInfluence,
         throttleEffect,
+        throttleBrakeEffect,
         gravityEffect,
         afterburnDrive,
         leftoverDamping;
@@ -104,6 +105,7 @@ struct PlaneTuning {
          cereal::make_nvp("airspeedFactor", airspeedFactor),
          cereal::make_nvp("throttleInfluence", throttleInfluence),
          cereal::make_nvp("throttleEffect", throttleEffect),
+         cereal::make_nvp("throttleBrakeEffect", throttleBrakeEffect),
          cereal::make_nvp("gravityEffect", gravityEffect),
          cereal::make_nvp("afterburnDrive", afterburnDrive),
          cereal::make_nvp("leftoverDamping", leftoverDamping),

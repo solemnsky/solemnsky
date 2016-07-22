@@ -61,7 +61,7 @@ optional<Action> readAction(const std::string &str) {
  */
 
 PlaneTuning::PlaneTuning() :
-    hitbox(110, 60),
+    hitbox(75, 30),
     maxHealth(10),
     throttleSpeed(1.5) { }
 
@@ -79,14 +79,15 @@ PlaneTuning::Stall::Stall() :
     threshold(130) { }
 
 PlaneTuning::Flight::Flight() :
-    maxRotVel(180),
+    maxRotVel(190),
     airspeedFactor(330),
     throttleInfluence(0.6),
     throttleEffect(0.3),
+    throttleBrakeEffect(0.9),
     gravityEffect(0.6),
-    afterburnDrive(0.9),
+    afterburnDrive(1.2),
     leftoverDamping(0.3),
-    threshold(110) { }
+    threshold(100) { }
 
 float *PlaneTuning::accessParamByName(const std::string &name) {
   // TODO: access this using the cereal JSON serialization?
@@ -110,6 +111,7 @@ float *PlaneTuning::accessParamByName(const std::string &name) {
   if (name == "flight.airspeedFactor") return &flight.airspeedFactor;
   if (name == "flight.throttleInfluence") return &flight.throttleInfluence;
   if (name == "flight.throttleEffect") return &flight.throttleEffect;
+  if (name == "flight.throttleBrakeEffect") return &flight.throttleBrakeEffect;
   if (name == "flight.gravityEffect") return &flight.gravityEffect;
   if (name == "flight.afterburnDrive") return &flight.afterburnDrive;
   if (name == "flight.leftoverDamping") return &flight.leftoverDamping;

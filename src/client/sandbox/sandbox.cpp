@@ -129,7 +129,7 @@ void Sandbox::runCommand(const SandboxCommand &command) {
     case SandboxCommand::Type::DefaultTuning: {
       consolePrinter.output("Resetting tuning to default.");
       spawnTuning = {};
-      break;
+      return;
     }
     case SandboxCommand::Type::DumpTuning: {
       consolePrinter.output("Dumping custom tuning values to log.");
@@ -165,7 +165,11 @@ Sandbox::Sandbox(ClientShared &state) :
 void Sandbox::onChangeSettings(const SettingsDelta &settings) {
   ClientComponent::onChangeSettings(settings);
   if (skyRender) skyRender->onChangeSettings(settings);
-  if (settings.nickname) player->getNickname() = *settings.nickname;
+  if (settings.nickname) {
+    sky::PlayerDelta delta;
+    delta.nickname = *settings.nickname;
+    arena.applyDelta(sky::ArenaDelta::Delta(0, delta));
+  }
 }
 
 void Sandbox::onBlur() {
