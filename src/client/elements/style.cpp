@@ -64,7 +64,7 @@ Style::Splash::Splash(const Base &base) :
     barColor(sf::Color::White),
     titleFormat(base.titleFontSize, {},
                 ui::HorizontalAlign::Center,
-                ui::VerticalAlign::Middle) {}
+                ui::VerticalAlign::Middle) { }
 
 Style::Menu::Menu(const Style::Base &base) :
     unfocusedPageScale(500.0f / 1600.0f),
@@ -125,7 +125,7 @@ Style::Home::Home(const Style::Base &) :
     tutorialButtonPos(500, 300),
     localhostButtonPos(1100, 300),
     remoteButtonPos(800, 600),
-    serverEntryPos(800, 500) {}
+    serverEntryPos(800, 500) { }
 
 Style::Settings::Settings(const Style::Menu &menu, const Style::Base &base) :
     textEntry(base.normalTextEntry),
@@ -145,7 +145,7 @@ Style::Settings::Settings(const Style::Menu &menu, const Style::Base &base) :
   sectionButton.dimensions.x = menu.pageSize.x / 3;
 }
 
-Style::Listing::Listing() {}
+Style::Listing::Listing() { }
 
 Style::Game::Game(const Style::Base &base) :
     scoreOverlayDims{1330, 630},
@@ -187,7 +187,8 @@ Style::SkyRender::SkyRender() :
     throttle(sf::Color::Black),
     health(sf::Color::Green),
     energy(sf::Color::Blue),
-    deathRate(0.5) {}
+    deathRate(0.5),
+    planeGraphicsScale(1.2) { }
 
 Style::Style() :
     base(),
@@ -195,6 +196,6 @@ Style::Style() :
     menu(base),
     home(base),
     settings(menu, base),
-    game(base) {}
+    game(base) { }
 
 

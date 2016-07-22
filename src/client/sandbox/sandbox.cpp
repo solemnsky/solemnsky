@@ -44,6 +44,10 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
   }
 
   if (command[0] == "tuning" and (command.size() == 2 or (command.size() == 3))) {
+    if (command[1] == "default") {
+      return SandboxCommand{Type::DefaultTuning};
+    }
+
     SandboxCommand parsed{Type::Tune};
     parsed.tuningParam.emplace(command[1]);
 
@@ -112,7 +116,7 @@ void Sandbox::runCommand(const SandboxCommand &command) {
         if (const auto &value = command.tuningValue) {
           *paramPtr = value.get();
           consolePrinter.output(
-              "Settings " + inQuotes(param) + " to " + printFloat(value.get()));
+              "Setting " + inQuotes(param) + " to " + printFloat(value.get()));
         } else {
           consolePrinter.output(
               inQuotes(param) + " = " + printFloat(*paramPtr));
@@ -122,9 +126,14 @@ void Sandbox::runCommand(const SandboxCommand &command) {
       }
       return;
     }
+    case SandboxCommand::Type::DefaultTuning: {
+      consolePrinter.output("Resetting tuning to default.");
+      spawnTuning = {};
+      break;
+    }
     case SandboxCommand::Type::DumpTuning: {
       consolePrinter.output("Dumping custom tuning values to log.");
-      appLog(spawnTuning.toString());
+      appLog("\n" + spawnTuning.toString());
       return;
     }
   }

@@ -115,7 +115,6 @@ void GameConsolePrinter::input(const std::string &string) {
 void GameConsolePrinter::output(const std::string &string) {
   setColor(255, 0, 0);
   print("<< ");
-  setColor(255, 255, 255);
   print(string);
   breakLine();
 }

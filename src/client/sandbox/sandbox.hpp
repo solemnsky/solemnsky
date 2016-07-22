@@ -36,6 +36,7 @@ struct SandboxCommand {
     Start, // start a game
     Stop, // stop the game
     Tune, // modify or query some PlaneTuning value
+    DefaultTuning, // reset tuning to default
     DumpTuning // dump the tuning data to disk
   };
 
