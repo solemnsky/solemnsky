@@ -83,7 +83,7 @@ PlaneTuning::Flight::Flight() :
     airspeedFactor(330),
     throttleInfluence(0.6),
     throttleEffect(0.3),
-    throttleBrakeEffect(0.9),
+    throttleBrakeEffect(0.5),
     gravityEffect(0.6),
     afterburnDrive(1.2),
     leftoverDamping(0.3),
