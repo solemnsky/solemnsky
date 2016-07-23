@@ -232,6 +232,8 @@ bool Sandbox::handle(const sf::Event &event) {
   if (ui::Control::handle(event)) return true;
 
   if (auto action = shared.triggerClientAction(event)) {
+    appLog("running client action " + std::to_string(int(action->first)) + " in state " + std::to_string(action->second));
+
     if (messageInteraction.handleClientAction(action->first, action->second)) return true;
 
     if (auto sky = skyHandle.getSky()) {
@@ -248,6 +250,7 @@ bool Sandbox::handle(const sf::Event &event) {
   }
 
   if (auto action = shared.triggerSkyAction(event)) {
+    appLog("running sky action " + std::to_string(int(action->first)) + " in state " + std::to_string(action->second));
     player->doAction(action->first, action->second);
   }
 
