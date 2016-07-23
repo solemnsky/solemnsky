@@ -39,9 +39,13 @@ struct PlaneTuning {
 
   template<class Archive>
   void serialize(Archive &ar) {
-    ar(cereal::make_nvp("energy", energy),
-       cereal::make_nvp("stall", stall),
-       cereal::make_nvp("flight", flight));
+    ar(
+        cereal::make_nvp("hitbox", hitbox),
+        cereal::make_nvp("maxHealth", maxHealth),
+        cereal::make_nvp("throttleSpeed", throttleSpeed),
+        cereal::make_nvp("energy", energy),
+        cereal::make_nvp("stall", stall),
+        cereal::make_nvp("flight", flight));
   }
 
   sf::Vector2f hitbox; // x axis parallel with flight direction
@@ -89,6 +93,7 @@ struct PlaneTuning {
         airspeedFactor,
         throttleInfluence,
         throttleEffect,
+        throttleBrakeEffect,
         gravityEffect,
         afterburnDrive,
         leftoverDamping;
@@ -100,6 +105,7 @@ struct PlaneTuning {
          cereal::make_nvp("airspeedFactor", airspeedFactor),
          cereal::make_nvp("throttleInfluence", throttleInfluence),
          cereal::make_nvp("throttleEffect", throttleEffect),
+         cereal::make_nvp("throttleBrakeEffect", throttleBrakeEffect),
          cereal::make_nvp("gravityEffect", gravityEffect),
          cereal::make_nvp("afterburnDrive", afterburnDrive),
          cereal::make_nvp("leftoverDamping", leftoverDamping),

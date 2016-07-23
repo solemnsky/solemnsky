@@ -23,7 +23,7 @@
  */
 
 SandboxCommand::SandboxCommand(const Type type) :
-    type(type) {}
+    type(type) { }
 
 optional<SandboxCommand> SandboxCommand::parseCommand(
     const std::string &input) {
@@ -44,21 +44,21 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
   }
 
   if (command[0] == "tuning" and (command.size() == 2 or (command.size() == 3))) {
+    if (command[1] == "default") {
+      return SandboxCommand{Type::DefaultTuning};
+    }
+
     SandboxCommand parsed{Type::Tune};
     parsed.tuningParam.emplace(command[1]);
 
-    // Potentially include the parsed value.
+    // Potentially include the tuning value to set.
     if (command.size() > 2) {
-      std::istringstream reader(command[2]);
-      float parsedValue;
-      reader >> parsedValue;
-      if (reader.good()) {
-        parsed.tuningValue = parsedValue;
-        return parsed;
-      } else {
-        return {};
-      }
+      if (const auto tuningValue = readFloat(command[2])) {
+        parsed.tuningValue = tuningValue;
+      } else return {};
     }
+
+    return parsed;
   }
 
   if (command[0] == "dump" and command.size() == 1) {
@@ -69,16 +69,30 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
 }
 
 /**
+ * SandboxLogger.
+ */
+
+void SandboxLogger::onEvent(const sky::ArenaEvent &event) {
+  event.print(sandbox.enginePrinter);
+  sandbox.enginePrinter.breakLine();
+}
+
+SandboxLogger::SandboxLogger(sky::Arena &arena, Sandbox &sandbox) :
+    sky::ArenaLogger(arena), sandbox(sandbox) { }
+
+/**
  * Sandbox.
  */
 
 void Sandbox::startHandle() {
   stopHandle();
-  skyHandle.start();
+  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Game));
   status = "loading...";
+  skyHandle.start();
 }
 
 void Sandbox::stopHandle() {
+  arena.applyDelta(sky::ArenaDelta::Mode(sky::ArenaMode::Lobby));
   status = "stopped";
   skyRender.reset();
   skyHandle.stop();
@@ -90,32 +104,41 @@ void Sandbox::runCommand(const SandboxCommand &command) {
       arena.applyDelta(sky::ArenaDelta::EnvChange(
           command.mapName.get()));
       startHandle();
-      break;
+      return;
     }
     case SandboxCommand::Type::Stop: {
       stopHandle();
-      break;
+      return;
     }
     case SandboxCommand::Type::Tune: {
       const auto &param = command.tuningParam.get();
       if (float *paramPtr = spawnTuning.accessParamByName(param)) {
         if (const auto &value = command.tuningValue) {
           *paramPtr = value.get();
-          appLog("Settings " + inQuotes(param) + " to " + printFloat(value.get()));
+          consolePrinter.output(
+              "Setting " + inQuotes(param) + " to " + printFloat(value.get()));
         } else {
-          appLog(inQuotes(param) + " = " + printFloat(*paramPtr));
+          consolePrinter.output(
+              inQuotes(param) + " = " + printFloat(*paramPtr));
         }
       } else {
-        appLog("Unknown tuning parameter: " + inQuotes(param));
+        consolePrinter.output("Unknown tuning parameter: " + inQuotes(param));
       }
-      break;
+      return;
+    }
+    case SandboxCommand::Type::DefaultTuning: {
+      consolePrinter.output("Resetting tuning to default.");
+      spawnTuning = {};
+      return;
     }
     case SandboxCommand::Type::DumpTuning: {
-      appLog("Dumping custom tuning values to log.");
-      appLog(spawnTuning.toString());
+      consolePrinter.output("Dumping custom tuning values to log.");
+      appLog("\n" + spawnTuning.toString());
+      return;
     }
-    default: throw enum_error();
   }
+
+  throw enum_error();
 }
 
 void Sandbox::displayStatus(ui::Frame &f, const std::string &status) {
@@ -128,7 +151,11 @@ Sandbox::Sandbox(ClientShared &state) :
     arena(sky::ArenaInit("sandbox", "ball_funnelpark")),
     skyHandle(arena, sky::SkyHandleInit()),
     debugView(arena, skyHandle),
-    messageInteraction(references) {
+    logger(arena, *this),
+    messageInteraction(references),
+    enginePrinter(messageInteraction),
+    clientPrinter(messageInteraction),
+    consolePrinter(messageInteraction) {
   arena.connectPlayer("offline player");
   player = arena.getPlayer(0);
   stopHandle();
@@ -138,7 +165,11 @@ Sandbox::Sandbox(ClientShared &state) :
 void Sandbox::onChangeSettings(const SettingsDelta &settings) {
   ClientComponent::onChangeSettings(settings);
   if (skyRender) skyRender->onChangeSettings(settings);
-  if (settings.nickname) player->getNickname() = *settings.nickname;
+  if (settings.nickname) {
+    sky::PlayerDelta delta;
+    delta.nickname = *settings.nickname;
+    arena.applyDelta(sky::ArenaDelta::Delta(0, delta));
+  }
 }
 
 void Sandbox::onBlur() {
@@ -230,11 +261,15 @@ void Sandbox::reset() {
 void Sandbox::signalRead() {
   ui::Control::signalRead();
   if (const auto messageInput = messageInteraction.inputSignal) {
-    auto parsed = SandboxCommand::parseCommand(messageInput.get());
+    const auto input = messageInput.get();
+    consolePrinter.input(input);
+
+    auto parsed = SandboxCommand::parseCommand(input);
+
     if (parsed) {
       runCommand(parsed.get());
     } else {
-      appLog("Invalid sandbox command!", LogOrigin::Error);
+      consolePrinter.output("Invalid sandbox command!");
     }
   }
 }

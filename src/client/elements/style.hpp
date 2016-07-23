@@ -212,7 +212,9 @@ struct Style {
         throttle,
         health,
         energy;
-    float deathRate = 0.5;
+    float deathRate = 0.5; // TODO: implement this
+
+    float planeGraphicsScale;
 
     SkyRender();
   } skyRender;

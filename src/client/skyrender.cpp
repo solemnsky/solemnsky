@@ -30,7 +30,7 @@ PlaneGraphics::PlaneGraphics(const Player &player, const Participation &plane) :
     player(player),
     orientation(false),
     flipState(0),
-    rollState(0) {}
+    rollState(0) { }
 
 void PlaneGraphics::tick(const float delta) {
   if (auto &plane = participation.plane) {
@@ -56,7 +56,7 @@ Angle PlaneGraphics::roll() const {
   return flipComponent + style.skyRender.rollAmount * rollState;
 }
 
-void PlaneGraphics::kill() {}
+void PlaneGraphics::kill() { }
 
 void PlaneGraphics::spawn() {
   orientation =
@@ -109,10 +109,10 @@ void SkyRender::renderProps(ui::Frame &f,
         sf::Transform()
             .translate(prop.second.getPhysical().pos)
             .rotate(prop.second.getPhysical().rot), [&]() {
-          f.drawRect(sf::Vector2f(-5, -5),
-                     sf::Vector2f(5, 5),
-                     sf::Color::White);
-        });
+      f.drawRect(sf::Vector2f(-5, -5),
+                 sf::Vector2f(5, 5),
+                 sf::Color::White);
+    });
   }
 }
 
@@ -124,25 +124,30 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
     auto &state = plane->getState();
     auto &tuning = plane->getTuning();
 
+    const float scaleFactor = style.skyRender.planeGraphicsScale
+        * tuning.hitbox.x / 200;
+
     f.withTransform(
         sf::Transform()
             .translate(state.physical.pos)
             .rotate(state.physical.rot), [&]() {
-          f.withAlpha(state.afterburner,
-                      [&]() {
-                        f.drawRect(style.skyRender.afterburnArea,
-                                   sf::Color::Red);
-                      });
 
-          planeSheet.drawIndexAtRoll(f,
-                                     sf::Vector2f(200, 200),
-                                     graphics.roll());
-
-          if (enableDebug) {
-            const auto halfHitbox = 0.5f * tuning.hitbox;
-            f.drawRect(-halfHitbox, halfHitbox, sf::Color(255, 255, 255, 100));
-          }
+      f.withTransform(sf::Transform().scale(scaleFactor, scaleFactor), [&]() {
+        // Plane graphics, scaled down so the plane's length is 200 px from this perspective.
+        f.withAlpha(state.afterburner, [&]() {
+          f.drawRect(style.skyRender.afterburnArea,
+                     sf::Color::Red);
         });
+        planeSheet.drawIndexAtRoll(
+            f, sf::Vector2f(200, 200), graphics.roll());
+      });
+
+      if (enableDebug) {
+        // Debug graphics.
+        const auto halfHitbox = 0.5f * tuning.hitbox;
+        f.drawRect(-halfHitbox, halfHitbox, sf::Color(255, 255, 255, 100));
+      }
+    });
 
     f.withTransform(sf::Transform().translate(state.physical.pos), [&]() {
       const float airspeedStall = tuning.flight.threshold /

@@ -205,9 +205,13 @@ Client::Client(const ui::AppRefs &references) :
                &homePage, &listingPage, &settingsPage});
 }
 
+Client::~Client() {
+  shared.getSettings().writeToFile(Settings::saveFile);
+}
+
 bool Client::poll() {
   if (game) {
-    while (!game->poll()) {};
+    while (!game->poll()) { };
   }
   return ui::Control::poll();
 }

@@ -70,3 +70,23 @@ TEST_F(UtilTest, AllocTest) {
   x = {0, 1, 2, 3, 4};
   EXPECT_EQ(smallestUnused(x), PID(5));
 }
+
+/**
+ * We can read stuff from strings.
+ */
+TEST_F(UtilTest, ReadTest) {
+  // Floats!
+  ASSERT_TRUE(bool(readFloat("1")));
+  EXPECT_EQ(*readFloat("1"), 1);
+
+  ASSERT_TRUE(bool(readFloat("4.2")));
+  EXPECT_FLOAT_EQ(*readFloat("4.2"), 4.2f);
+
+  EXPECT_FALSE(bool(readFloat("1 ")));
+  EXPECT_FALSE(bool(readFloat(" 1")));
+  EXPECT_FALSE(bool(readFloat("a")));
+  EXPECT_FALSE(bool(readFloat("1,")));
+  EXPECT_FALSE(bool(readFloat("1a")));
+
+  // Other things??
+}

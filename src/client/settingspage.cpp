@@ -202,7 +202,6 @@ void SettingsPage::onBlur() {
   currentTab.second->reset();
   currentTab.second->writeSettings(newSettings);
   shared.changeSettings(SettingsDelta(shared.getSettings(), newSettings));
-  shared.getSettings().writeToFile(Settings::saveFile);
 }
 
 void SettingsPage::tick(float delta) {

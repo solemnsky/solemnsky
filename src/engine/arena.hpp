@@ -41,6 +41,7 @@ class SubsystemListener {
   friend class Arena;
   friend class Player;
   friend class SubsystemCaller;
+  friend class Sky;
  protected:
   virtual ~SubsystemListener() {}
 
@@ -62,6 +63,10 @@ class SubsystemListener {
                         const Action action, const bool state);
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
                        const sf::Vector2f &pos, const float rot);
+
+  virtual void onBeginContact(const BodyTag &body1, const BodyTag &body2);
+  virtual void onEndContact(const BodyTag &body1, const BodyTag &body2);
+  virtual bool enableContact(const BodyTag &body1, const BodyTag &body2);
 
   virtual void onStartGame();
   virtual void onEndGame();

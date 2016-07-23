@@ -129,6 +129,15 @@ void SubsystemListener::onAction(Player &, const Action, const bool) {}
 void SubsystemListener::onSpawn(Player &, const PlaneTuning &,
                                 const sf::Vector2f &, const float) {}
 
+void SubsystemListener::onBeginContact(const BodyTag &body1, const BodyTag &body2) {}
+
+void SubsystemListener::onEndContact(const BodyTag &body1, const BodyTag &body2) {}
+
+bool SubsystemListener::enableContact(const BodyTag &body1, const BodyTag &body2) {
+  //Enable all by default
+  return true;
+}
+
 void SubsystemListener::onStartGame() {}
 
 void SubsystemListener::onEndGame() {}
