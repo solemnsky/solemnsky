@@ -163,18 +163,30 @@ void ControlExec::renderAndSleep() {
   if (!window.hasFocus()) sf::sleep(sf::milliseconds(16));
 }
 
-sf::ContextSettings ControlExec::makeSettings() {
-  sf::ContextSettings settings;
-  settings.antialiasingLevel = 8;
-  return settings;
+sf::ContextSettings makeContextSettings(const Settings &settings) {
+  sf::ContextSettings csettings;
+  csettings.antialiasingLevel = 8;
+  return csettings;
+}
+
+size_t makeDisplayStyle(const Settings &settings) {
+  if (settings.fullscreen) {
+    return sf::Style::Fullscreen;
+  } else {
+    return sf::Style::Default;
+  }
+}
+
+sf::VideoMode makeVideoMode(const Settings &settings) {
+  return sf::VideoMode(1600, 900);
 }
 
 ControlExec::ControlExec() :
     settingsFile("solemnsky-settings.xml"),
     settings(settingsFile),
 
-    window(sf::VideoMode(800, 600), "solemnsky",
-           sf::Style::Default, makeSettings()),
+    window(makeVideoMode(settings), "solemnsky",
+           sf::Style::Default, makeContextSettings(settings)),
 
     frame(window),
     resizeCooldown(0.5),

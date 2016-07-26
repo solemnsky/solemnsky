@@ -98,7 +98,8 @@ optional<sf::Keyboard::Key> KeyBindings::lookupClientBinding(
  * Settings.
  */
 
-Settings::Settings(const std::string &filepath) : enableDebug(false) {
+Settings::Settings(const std::string &filepath) :
+    enableDebug(false), fullscreen(false) {
   appLog("Loading client settings from " + inQuotes(filepath), LogOrigin::Client);
 
   std::ifstream file(filepath);

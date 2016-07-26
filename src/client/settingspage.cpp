@@ -38,16 +38,20 @@ GeneralTab::GeneralTab(
     fullscreenOption(references, style.settings.checkbox,
                      style.settings.column1Pos + sf::Vector2f(0, style.settings.rowOffset)) {
   debugOption.setDescription(optional<std::string>("debug mode"));
+  fullscreenOption.setDescription(optional<std::string>("full-screen"));
+
   areChildren({&debugOption, &fullscreenOption});
   readSettings(settings);
 }
 
-void GeneralTab::readSettings(const ui::Settings &buffer) {
-  debugOption.setValue(buffer.enableDebug);
+void GeneralTab::readSettings(const ui::Settings &settings) {
+  debugOption.setValue(settings.enableDebug);
+  fullscreenOption.setValue(settings.fullscreen);
 }
 
 void GeneralTab::writeSettings(ui::Settings &settings) const {
   settings.enableDebug = debugOption.getValue();
+  settings.fullscreen = fullscreenOption.getValue();
 }
 
 /**

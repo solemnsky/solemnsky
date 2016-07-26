@@ -123,7 +123,6 @@ class ControlExec {
   Settings settings;
 
   // SFML / graphics state.
-  static sf::ContextSettings makeSettings();
   sf::RenderWindow window;
   Frame frame;
   Cooldown resizeCooldown;
