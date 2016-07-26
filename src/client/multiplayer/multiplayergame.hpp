@@ -50,7 +50,6 @@ class MultiplayerGame : public MultiplayerView {
 
 };
 
-
 /**
  * MultiplayerGameHandle waits for this to quit before moving on to the game.
  */

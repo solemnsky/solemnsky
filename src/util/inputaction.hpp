@@ -18,7 +18,6 @@
  */
 
 #pragma once
-#include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include "util/types.hpp"
 
@@ -44,19 +43,11 @@ struct InputAction {
   //Get all the actions that an event corresponds with (eg both +/- joystick axes)
   static std::vector<InputAction> actionsForEvent(const sf::Event &event);
 
-  InputAction() : key(), joyAxis(), joyButton() {
+  InputAction() = default;
 
-  }
-
-  InputAction(const sf::Keyboard::Key &key) : key(key), joyAxis(), joyButton() {
-
-  }
-  InputAction(const sf::Joystick::Axis &axis, const AxisDirection &direction) : key(), joyAxis(std::make_pair(axis, direction)), joyButton() {
-
-  }
-  InputAction(const JoystickButton &button) : key(), joyAxis(), joyButton(button) {
-
-  }
+  InputAction(const sf::Keyboard::Key &key);
+  InputAction(const sf::Joystick::Axis &axis, const AxisDirection &direction);
+  InputAction(const JoystickButton &button);
 
   //Convenience
   inline bool isKey() const { return !!key; }
@@ -88,51 +79,17 @@ struct InputAction {
   }
 
   //Pointers in case someone is crazy
-  bool operator==(InputAction *other) const {return operator==(*other);}
-  bool operator<=(InputAction *other) const {return operator<=(*other);}
-  bool operator>=(InputAction *other) const {return operator>=(*other);}
-  bool operator<(InputAction *other) const {return operator<(*other);}
-  bool operator>(InputAction *other) const {return operator>(*other);}
-
-  //Cereal really does not want to find the template optional save/load so I have to remake this
-  template<typename Archive>
-  void save(Archive &ar) const {
-    //TODO: There has got to be a better way to do this
-    ar(isKey());
-    if (isKey()) {
-      ar(key.get());
-    }
-    ar(isJoyAxis());
-    if (isJoyAxis()) {
-      ar(joyAxis.get());
-    }
-    ar(isJoyButton());
-    if (isJoyButton()) {
-      ar(joyButton.get());
-    }
-  }
+  bool operator==(InputAction *other) const { return operator==(*other); }
+  bool operator<=(InputAction *other) const { return operator<=(*other); }
+  bool operator>=(InputAction *other) const { return operator>=(*other); }
+  bool operator<(InputAction *other) const { return operator<(*other); }
+  bool operator>(InputAction *other) const { return operator>(*other); }
 
   template<typename Archive>
-  void load(Archive &ar) {
-    bool _key, _axis, _button;
-    ar(_key);
-    if (_key) {
-      sf::Keyboard::Key k;
-      ar(k);
-      key.emplace(k);
-    }
-    ar(_axis);
-    if (_axis) {
-      std::pair<sf::Joystick::Axis, AxisDirection> p;
-      ar(p);
-      joyAxis.emplace(p);
-    }
-    ar(_button);
-    if (_button) {
-      unsigned int b;
-      ar(b);
-      joyButton.emplace(b);
-    }
+  void serialize(Archive &ar) {
+    ar(cereal::make_nvp("key", key),
+       cereal::make_nvp("joyAxis", joyAxis),
+       cereal::make_nvp("isJoyButton", isJoyButton));
   }
 
   //For visual prettiness

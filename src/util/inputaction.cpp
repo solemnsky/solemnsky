@@ -19,6 +19,19 @@
 #include "inputaction.hpp"
 #include "clientutil.hpp"
 
+/**
+ * InputAction.
+ */
+
+InputAction::InputAction(const sf::Keyboard::Key &key) :
+    key(key), joyAxis(), joyButton() {}
+
+InputAction::InputAction(const sf::Joystick::Axis &axis, const AxisDirection &direction) :
+    key(), joyAxis(std::make_pair(axis, direction)), joyButton() {}
+
+InputAction::InputAction(const JoystickButton &button) :
+    key(), joyAxis(), joyButton(button) {}
+
 InputAction InputAction::actionForEvent(const sf::Event &event) {
   switch (event.type) {
     case sf::Event::KeyPressed:
@@ -37,6 +50,7 @@ InputAction InputAction::actionForEvent(const sf::Event &event) {
       return InputAction();
   }
 }
+
 std::vector<InputAction> InputAction::actionsForEvent(const sf::Event &event) {
   switch (event.type) {
     case sf::Event::KeyPressed:

@@ -72,6 +72,7 @@ std::vector<std::pair<sky::Action, bool>>
 ClientShared::findSkyActions(const sf::Event &event) const {
   return bindingsFromEvent(event, client.settings.bindings.skyBindings);
 }
+
 std::vector<std::pair<ui::ClientAction, bool>>
 ClientShared::findClientActions(const sf::Event &event) const {
   return bindingsFromEvent(event, client.settings.bindings.clientBindings);
