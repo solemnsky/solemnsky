@@ -74,16 +74,17 @@ PlaneTuning::Energy::Energy() :
 PlaneTuning::Stall::Stall() :
     maxRotVel(200),
     maxVel(300),
-    thrust(500),
+    thrust(250),
     damping(0.8),
     threshold(130) { }
 
 PlaneTuning::Flight::Flight() :
     maxRotVel(190),
-    airspeedFactor(330),
-    throttleInfluence(0.6),
+    airspeedFactor(350),
+    throttleInfluence(0.65),
     throttleEffect(0.3),
-    throttleBrakeEffect(0.5),
+    throttleBrakeEffect(0.6),
+    throttleGlideDamper(0.5),
     gravityEffect(0.6),
     afterburnDrive(1.2),
     leftoverDamping(0.3),
@@ -112,6 +113,7 @@ float *PlaneTuning::accessParamByName(const std::string &name) {
   if (name == "flight.throttleInfluence") return &flight.throttleInfluence;
   if (name == "flight.throttleEffect") return &flight.throttleEffect;
   if (name == "flight.throttleBrakeEffect") return &flight.throttleBrakeEffect;
+  if (name == "flight.throttleGlideDamper") return &flight.throttleGlideDamper;
   if (name == "flight.gravityEffect") return &flight.gravityEffect;
   if (name == "flight.afterburnDrive") return &flight.afterburnDrive;
   if (name == "flight.leftoverDamping") return &flight.leftoverDamping;
