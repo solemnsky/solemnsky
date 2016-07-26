@@ -200,13 +200,8 @@ Client::Client(const ui::AppRefs &references) :
     tryingToQuit(false),
 
     profilerCooldown(1) {
-  settings.readFromFile(Settings::saveFile);
   areChildren({&quitButton, &aboutButton, &closeButton, &backButton,
                &homePage, &listingPage, &settingsPage});
-}
-
-Client::~Client() {
-  shared.getSettings().writeToFile(Settings::saveFile);
 }
 
 bool Client::poll() {
@@ -405,7 +400,7 @@ void Client::blurPage() {
   uiState.pageFocusing = false;
 }
 
-void Client::changeSettings(const SettingsDelta &settingsDelta) {
+void Client::changeSettings(const ui::SettingsDelta &settingsDelta) {
   settingsDelta.apply(settings);
   forAllPages([&](Page &page) {
     page.onChangeSettings(settingsDelta);

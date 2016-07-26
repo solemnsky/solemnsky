@@ -21,7 +21,7 @@
 #pragma once
 #include "engine/sky/participation.hpp"
 #include "ui/control.hpp"
-#include "settings.hpp"
+#include "ui/settings.hpp"
 
 class Client;
 class Game;
@@ -50,8 +50,9 @@ struct ClientUiState {
 
 /**
  * This is the interface that all ClientComponents have to interact with the top-level
- * Client state. It also propogates an ui::AppRefs reference -- ClientShared substitutes AppRefs
- * for ClientComponents.
+ * Client state. It also propogates an ui::AppRefs reference.
+ *
+ *  ClientShared : ClientComponent :: Control : AppRefs
  */
 struct ClientShared {
   friend class Client;
@@ -65,7 +66,6 @@ struct ClientShared {
   const ui::AppRefs &references;
 
   // Query client data.
-  const Settings &getSettings() const;
   const Game *getGame() const;
   const ClientUiState &getUi() const;
 
@@ -78,12 +78,12 @@ struct ClientShared {
   void focusPage(const PageType type);
   void blurPage();
 
-  void changeSettings(const SettingsDelta &settings);
+  void changeSettings(const ui::SettingsDelta &settings);
 
   // Access key bindings.
   optional<std::pair<sky::Action, bool>> triggerSkyAction(
       const sf::Event &event) const;
-  optional<std::pair<ClientAction, bool>> triggerClientAction(
+  optional<std::pair<ui::ClientAction, bool>> triggerClientAction(
       const sf::Event &event) const;
 
 

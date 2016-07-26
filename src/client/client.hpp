@@ -43,7 +43,6 @@ class Client: public ui::Control {
   // State.
   std::unique_ptr<class Game> game;
   ClientUiState uiState;
-  Settings settings;
   ClientShared shared; // interface reference
 
   // Misc ui.
@@ -70,7 +69,6 @@ class Client: public ui::Control {
 
  public:
   Client(const ui::AppRefs &references);
-  ~Client();
 
   // Control impl.
   bool poll() override final;
@@ -81,7 +79,7 @@ class Client: public ui::Control {
   void signalRead() override final;
   void signalClear() override final;
 
-  // UI methods.
+  // UI Methods, callable from children UI objects.
   void beginGame(std::unique_ptr<Game> &&game);
   void focusGame();
   void blurGame();
@@ -90,6 +88,8 @@ class Client: public ui::Control {
   void focusPage(const PageType page);
   void blurPage();
 
-  void changeSettings(const SettingsDelta &settingsDelta);
+  // Changing settings, propogating the delta everywhere.
+  void changeSettings(const ui::SettingsDelta &settingsDelta);
+
 };
 

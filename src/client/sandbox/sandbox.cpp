@@ -162,7 +162,7 @@ Sandbox::Sandbox(ClientShared &state) :
   areChildren({&messageInteraction});
 }
 
-void Sandbox::onChangeSettings(const SettingsDelta &settings) {
+void Sandbox::onChangeSettings(const ui::SettingsDelta &settings) {
   ClientComponent::onChangeSettings(settings);
   if (skyRender) skyRender->onChangeSettings(settings);
   if (settings.nickname) {
@@ -237,7 +237,7 @@ bool Sandbox::handle(const sf::Event &event) {
     if (auto sky = skyHandle.getSky()) {
       const auto &participation = sky->getParticipation(*player);
 
-      if (action->first == ClientAction::Spawn
+      if (action->first == ui::ClientAction::Spawn
           and action->second
           and !participation.isSpawned()) {
         const auto spawnPoint = sky->getMap().pickSpawnPoint(sky::Team::Spectator);

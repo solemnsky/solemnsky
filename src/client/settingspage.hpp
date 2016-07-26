@@ -24,26 +24,26 @@
 
 /**
  * One tab of the control page.
- * Simple user interface that can load / write from and to a Settings object.
+ * A Control that can read and write to a settings object.
  */
 class SettingsTab : public ui::Control {
  public:
-  SettingsTab(const ui::AppRefs &references, const Settings &settings);
+  SettingsTab(const ui::AppRefs &references);
 
-  virtual void readSettings(const Settings &settings) = 0;
-  virtual void writeSettings(Settings &settings) = 0;
+  virtual void readSettings(const ui::Settings &settings) = 0;
+  virtual void writeSettings(ui::Settings &settings) const = 0;
 
 };
 
 class GeneralTab : public SettingsTab {
  private:
-  ui::Checkbox debugOption;
+  ui::Checkbox debugOption, fullscreenOption;
 
  public:
-  GeneralTab(const ui::AppRefs &references, const Settings &settings);
+  GeneralTab(const ui::AppRefs &references);
 
-  void readSettings(const Settings &settings) override final;
-  void writeSettings(Settings &buffer) override final;
+  void readSettings(const ui::Settings &settings) override final;
+  void writeSettings(ui::Settings &settings) const override final;
 
 };
 
@@ -52,29 +52,29 @@ class PlayerTab : public SettingsTab {
   ui::TextEntry nicknameOption;
 
  public:
-  PlayerTab(const ui::AppRefs &references, const Settings &settings);
+  PlayerTab(const ui::AppRefs &references);
 
-  void readSettings(const Settings &settings) override final;
-  void writeSettings(Settings &settings) override final;
+  void readSettings(const ui::Settings &settings) override final;
+  void writeSettings(ui::Settings &settings) const override final;
 
 };
 
 class ControlsTab : public SettingsTab {
  private:
   std::map<sky::Action, ui::KeySelector> skyBindingChoosers;
-  std::map<ClientAction, ui::KeySelector> clientBindingChoosers;
+  std::map<ui::ClientAction, ui::KeySelector> clientBindingChoosers;
 
  public:
-  ControlsTab(const ui::AppRefs &references, const Settings &settings);
+  ControlsTab(const ui::AppRefs &references);
 
-  void readSettings(const Settings &settings) override final;
-  void writeSettings(Settings &buffer) override final;
+  void readSettings(const ui::Settings &settings) override final;
+  void writeSettings(ui::Settings &buffer) const override final;
 
 };
 
 class SettingsPage : public Page {
  private:
-  Settings newSettings;
+  ui::Settings newSettings;
 
   ui::Button generalButton, playerButton, controlsButton;
 
@@ -91,7 +91,7 @@ class SettingsPage : public Page {
   ~SettingsPage();
 
   // Page impl.
-  void onChangeSettings(const SettingsDelta &) override;
+  void onChangeSettings(const ui::SettingsDelta &) override;
   void onFocus() override;
   void onBlur() override;
 

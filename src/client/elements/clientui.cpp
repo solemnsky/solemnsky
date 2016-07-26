@@ -17,7 +17,7 @@
  */
 #include "clientui.hpp"
 #include "style.hpp"
-#include "settings.hpp"
+#include "ui/settings.hpp"
 
 MessageInteraction::MessageInteraction(const ui::AppRefs &references) :
     Control(references),
@@ -62,9 +62,9 @@ void MessageInteraction::signalClear() {
   inputSignal.reset();
 }
 
-bool MessageInteraction::handleClientAction(const ClientAction action, const bool state) {
+bool MessageInteraction::handleClientAction(const ui::ClientAction action, const bool state) {
   switch (action) {
-    case ClientAction::Chat: {
+    case ui::ClientAction::Chat: {
       if (state) messageEntry.focus();
       return true;
     }

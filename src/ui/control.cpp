@@ -38,10 +38,12 @@ ProfilerSnapshot::ProfilerSnapshot(const Profiler &profiler) :
  * AppState.
  */
 
-AppRefs::AppRefs(const AppResources &resources,
+AppRefs::AppRefs(Settings &settings,
+                 const AppResources &resources,
                  const Time &time,
                  const sf::RenderWindow &window,
                  const Profiler &profiler) :
+    settings(settings),
     resources(resources),
     uptime(time),
     window(window),
@@ -62,6 +64,7 @@ void Control::areChildren(std::initializer_list<Control *> controls) {
 Control::Control(const AppRefs &references) :
     references(references),
     resources(references.resources),
+    settings(references.settings),
     quitting(false) {}
 
 bool Control::poll() {
@@ -160,15 +163,31 @@ void ControlExec::renderAndSleep() {
   if (!window.hasFocus()) sf::sleep(sf::milliseconds(16));
 }
 
-sf::ContextSettings ControlExec::makeSettings() {
-  sf::ContextSettings settings;
-  settings.antialiasingLevel = 8;
-  return settings;
+sf::ContextSettings makeContextSettings(const Settings &settings) {
+  sf::ContextSettings csettings;
+  csettings.antialiasingLevel = 8;
+  return csettings;
+}
+
+sf::Uint32 makeDisplayStyle(const Settings &settings) {
+  if (settings.fullscreen) {
+    return sf::Style::Fullscreen;
+  } else {
+    return sf::Style::Default;
+  }
+}
+
+sf::VideoMode makeVideoMode(const Settings &settings) {
+  return sf::VideoMode(settings.resolution.x, settings.resolution.y);
 }
 
 ControlExec::ControlExec() :
-    window(sf::VideoMode(800, 600), "solemnsky",
-           sf::Style::Default, makeSettings()),
+    settingsFile("solemnsky-settings.xml"),
+    settings(settingsFile),
+
+    window(makeVideoMode(settings), "solemnsky",
+           makeDisplayStyle(settings), makeContextSettings(settings)),
+
     frame(window),
     resizeCooldown(0.5),
 
@@ -178,14 +197,22 @@ ControlExec::ControlExec() :
 
     profiler(100),
 
-    appState(*((AppResources *) nullptr), uptime, window, profiler) {
+    // Let me apologize in advance for this undefined behaviour (null references
+    // are not permitted by The Standard). It was necessary. Only you and I shall
+    // ever know of it; it stays a secret between us, yes?
+
+    appState(settings, *((AppResources *) nullptr), uptime, window, profiler) {
   window.setVerticalSyncEnabled(true);
   window.setKeyRepeatEnabled(false);
   appLog("Initialized SFML!", LogOrigin::App);
 }
 
-void
-ControlExec::run(std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp) {
+ControlExec::~ControlExec() {
+  ctrl = nullptr;
+  settings.writeToFile(settingsFile);
+}
+
+void ControlExec::run(std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp) {
   ctrl = std::make_unique<detail::SplashScreen>(appState, mkApp);
   appLog("Starting application loop...", LogOrigin::App);
 

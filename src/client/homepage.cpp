@@ -43,7 +43,7 @@ void HomePage::tick(float delta) {
   ui::Control::tick(delta);
 }
 
-void HomePage::onChangeSettings(const SettingsDelta &settings) {
+void HomePage::onChangeSettings(const ui::SettingsDelta &settings) {
 
 }
 

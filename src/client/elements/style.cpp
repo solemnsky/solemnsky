@@ -170,7 +170,7 @@ Style::Game::Game(const Style::Base &base) :
     playerJoinedColor(0, 255, 0),
 
     messageEntry(base.normalTextEntry),
-    messageLog(700, 300, 300, 10, 9, base.normalFontSize),
+    messageLog(700, 800, 300, 10, 9, base.normalFontSize),
 
     messageLogText(base.normalText),
     playerListText(base.normalText) {

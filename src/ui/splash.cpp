@@ -24,6 +24,7 @@ namespace detail {
 
 void SplashScreen::constructApp(const AppResources &resources) {
   initializedReferences.emplace(
+      settings,
       resources,
       references.uptime,
       references.window,

@@ -26,7 +26,7 @@ public:
   ListingPage(ClientShared &state);
 
   // Page impl.
-  void onChangeSettings(const SettingsDelta &settings) override;
+  void onChangeSettings(const ui::SettingsDelta &settings) override;
   void onBlur() override;
 
   // Control impl.

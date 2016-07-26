@@ -118,7 +118,7 @@ void TextLog::render(Frame &f) {
         tf.breakLine();
       }
 
-      if (tf.drawOffset.y > maxHeight && maxHeight != 0) break;
+      if (-tf.drawOffset.y > maxHeight && maxHeight != 0) break;
     }
   }, textFormat, resources.defaultFont);
 }
