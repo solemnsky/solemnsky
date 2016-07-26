@@ -77,10 +77,6 @@ ClientShared::findClientActions(const sf::Event &event) const {
   return bindingsFromEvent(event, client.settings.bindings.clientBindings);
 }
 
-const Settings &ClientShared::getSettings() const {
-  return client.settings;
-}
-
 const Game *ClientShared::getGame() const {
   return client.game.get();
 }
