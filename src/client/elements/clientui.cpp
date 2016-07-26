@@ -65,10 +65,7 @@ void MessageInteraction::signalClear() {
 bool MessageInteraction::handleClientAction(const ClientAction action, const bool state) {
   switch (action) {
     case ClientAction::Chat: {
-      if (state) {
-        messageEntry.focus();
-        messageEntry.contents = "tuning flight.afterburnDrive";
-      }
+      if (state) messageEntry.focus();
       return true;
     }
     default:
