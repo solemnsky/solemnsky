@@ -46,7 +46,7 @@ Multiplayer::Multiplayer(ClientShared &shared,
                          const std::string &serverHostname,
                          const unsigned short serverPort) :
     Game(shared, "multiplayer"),
-    core(shared, *this, serverHostname, serverPort),
+    core(settings, shared, *this, serverHostname, serverPort),
     view(nullptr),
     hudFont(resources.getFont(ui::FontID::Default)) {
   areChildComponents({&core});

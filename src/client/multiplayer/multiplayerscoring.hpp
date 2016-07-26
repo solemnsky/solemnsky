@@ -38,5 +38,5 @@ class MultiplayerScoring: public MultiplayerView {
   void signalRead() override;
   void signalClear() override;
 
-  void onChangeSettings(const SettingsDelta &settings) override;
+  void onChangeSettings(const ui::SettingsDelta &settings) override;
 };

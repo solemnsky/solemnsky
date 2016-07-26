@@ -110,7 +110,7 @@ class Sandbox: public Game {
   Sandbox(ClientShared &state);
 
   // Game impl.
-  void onChangeSettings(const SettingsDelta &settings) override final;
+  void onChangeSettings(const ui::SettingsDelta &settings) override final;
   void onBlur() override final;
   void onFocus() override final;
   void doExit() override final;

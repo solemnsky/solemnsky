@@ -291,7 +291,7 @@ bool MultiplayerCore::poll() {
   if (server && !askedConnection) {
     // we have a link but haven't sent an arena connection request
     appLog("Asking to join arena...", LogOrigin::Client);
-    transmit(sky::ClientPacket::ReqJoin(settings.nickname));
+    transmit(sky::ClientPacket::ReqJoin(shared.settings.nickname));
     askedConnection = true;
   }
 

@@ -195,20 +195,18 @@ void SkyRender::renderMap(ui::Frame &f) {
   }
 }
 
-SkyRender::SkyRender(ui::Settings &settings,
-                     ClientShared &shared,
+SkyRender::SkyRender(ClientShared &shared,
                      const ui::AppResources &resources,
                      Arena &arena,
                      const Sky &sky) :
     ClientComponent(shared),
     Subsystem(arena),
-    settings(settings),
     sky(sky),
     resources(resources),
     sheet(ui::TextureID::PlayerSheet),
     planeSheet(resources.getTextureData(sheet).spritesheetForm.get(),
                resources.getTexture(sheet)),
-    enableDebug(settings.enableDebug) {
+    enableDebug(shared.settings.enableDebug) {
   arena.forPlayers([&](Player &player) { registerPlayer(player); });
 }
 

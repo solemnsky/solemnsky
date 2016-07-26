@@ -62,9 +62,9 @@ void MessageInteraction::signalClear() {
   inputSignal.reset();
 }
 
-bool MessageInteraction::handleClientAction(const ClientAction action, const bool state) {
+bool MessageInteraction::handleClientAction(const ui::ClientAction action, const bool state) {
   switch (action) {
-    case ClientAction::Chat: {
+    case ui::ClientAction::Chat: {
       if (state) messageEntry.focus();
       return true;
     }

@@ -28,9 +28,9 @@ void ClientComponent::areChildComponents(
 }
 
 ClientComponent::ClientComponent(ClientShared &shared) :
-    shared(shared) { }
+    shared(shared) {}
 
-void ClientComponent::onChangeSettings(const SettingsDelta &settings) {
+void ClientComponent::onChangeSettings(const ui::SettingsDelta &settings) {
   for (const auto child : childComponents)
     child->onChangeSettings(settings);
 }
@@ -57,7 +57,7 @@ Game::Game(ClientShared &shared,
            const std::string &name) :
     ClientComponent(shared),
     ui::Control(shared.references),
-    name(name) { }
+    name(name) {}
 
 void Game::printDebugLeft(Printer &p) {
   p.printLn("undefined!");

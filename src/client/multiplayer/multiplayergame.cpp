@@ -26,11 +26,11 @@ void MultiplayerGame::doClientAction(const ui::ClientAction action,
                                      const bool state) {
   if (core.messageInteraction.handleClientAction(action, state)) return;
   switch (action) {
-    case ClientAction::Spawn: {
+    case ui::ClientAction::Spawn: {
       if (state) core.transmit(sky::ClientPacket::ReqSpawn());
       break;
     }
-    case ClientAction::Scoreboard: {
+    case ui::ClientAction::Scoreboard: {
       scoreboardFocused = state;
       break;
     }

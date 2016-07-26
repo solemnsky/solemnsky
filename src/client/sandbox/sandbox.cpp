@@ -162,7 +162,7 @@ Sandbox::Sandbox(ClientShared &state) :
   areChildren({&messageInteraction});
 }
 
-void Sandbox::onChangeSettings(const SettingsDelta &settings) {
+void Sandbox::onChangeSettings(const ui::SettingsDelta &settings) {
   ClientComponent::onChangeSettings(settings);
   if (skyRender) skyRender->onChangeSettings(settings);
   if (settings.nickname) {

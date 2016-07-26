@@ -58,17 +58,17 @@ struct ProfilerSnapshot {
  */
 struct AppRefs {
   friend class Control;
- private:
-  const AppResources &resources;
-  Settings &settings;
-
- public:
   AppRefs(Settings &settings,
           const AppResources &resources,
           const Time &time,
           const sf::RenderWindow &window,
           const Profiler &profiler);
 
+  // References accessible from Control member variables.
+  const AppResources &resources;
+  Settings &settings;
+
+  // References only accessible from this struct.
   const Time &uptime;
   const sf::RenderWindow &window;
   const Profiler &profiler;

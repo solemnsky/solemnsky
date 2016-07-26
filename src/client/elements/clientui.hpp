@@ -45,7 +45,7 @@ class MessageInteraction: public ui::Control {
   virtual void signalClear() override;
 
   // ClientAction handling.
-  virtual bool handleClientAction(const ClientAction action, const bool state);
+  virtual bool handleClientAction(const ui::ClientAction action, const bool state);
 
   // Signals.
   optional<std::string> inputSignal;

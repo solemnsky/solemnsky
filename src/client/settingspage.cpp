@@ -22,8 +22,7 @@
  * SettingsTab.
  */
 
-SettingsTab::SettingsTab(const ui::AppRefs &references,
-                         const Settings &settings) :
+SettingsTab::SettingsTab(const ui::AppRefs &references) :
     ui::Control(references) {}
 
 /**
@@ -45,7 +44,7 @@ void GeneralTab::readSettings(const Settings &buffer) {
   debugOption.setValue(buffer.enableDebug);
 }
 
-void GeneralTab::writeSettings(Settings &buffer) {
+void GeneralTab::writeSettings(Settings & buffer) {
   buffer.enableDebug = debugOption.getValue();
 }
 
@@ -64,11 +63,11 @@ PlayerTab::PlayerTab(
   readSettings(settings);
 }
 
-void PlayerTab::readSettings(const Settings &settings) {
+void PlayerTab::readSettings(const ui::Settings &settings) {
   nicknameOption.contents = settings.nickname;
 }
 
-void PlayerTab::writeSettings(Settings &settings) {
+void PlayerTab::writeSettings(ui::Settings & settings) const {
   settings.nickname = nicknameOption.contents;
 }
 
@@ -77,7 +76,7 @@ void PlayerTab::writeSettings(Settings &settings) {
  */
 
 ControlsTab::ControlsTab(
-    const ui::AppRefs &references, const Settings &settings) :
+    const ui::AppRefs &references, const ui::Settings &settings) :
     SettingsTab(references, settings) {
   sf::Vector2f pos = style.settings.column1Pos;
 
@@ -96,7 +95,7 @@ ControlsTab::ControlsTab(
 
   pos = style.settings.column2Pos;
 
-  forClientActions([&](const ClientAction action) {
+  forClientActions([&](const ui::ClientAction action) {
     clientBindingChoosers.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(action),
@@ -124,7 +123,7 @@ void ControlsTab::readSettings(const Settings &settings) {
   });
 }
 
-void ControlsTab::writeSettings(Settings &settings) {
+void ControlsTab::writeSettings(ui::Settings &settings) const {
   settings.bindings.skyBindings.clear();
 
   sky::forSkyActions([&](const sky::Action action) {

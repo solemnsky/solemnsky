@@ -37,7 +37,7 @@ class ClientComponent {
   ClientComponent(ClientShared &shared);
 
   // Interface API.
-  virtual void onChangeSettings(const SettingsDelta &settings);
+  virtual void onChangeSettings(const ui::SettingsDelta &settings);
 
 };
 
@@ -50,13 +50,13 @@ class ClientComponent {
  * that they always exist, with their state and tick() operations, whether they
  * are displayed or not.
  */
-class Page: public ClientComponent, public ui::Control {
+class Page : public ClientComponent, public ui::Control {
  public:
   Page(ClientShared &shared);
 
   // Interface API.
-  virtual void onFocus() { }
-  virtual void onBlur() { }
+  virtual void onFocus() {}
+  virtual void onBlur() {}
   void drawBackground(ui::Frame &f);
 
 };
@@ -66,14 +66,14 @@ class Page: public ClientComponent, public ui::Control {
  * are various game-like interfaces we can provide: a tutorial, a multiplayer
  * client, etc.
  */
-class Game: public ClientComponent, public ui::Control {
+class Game : public ClientComponent, public ui::Control {
  public:
   Game(ClientShared &shared, const std::string &name);
-  virtual ~Game() { }
+  virtual ~Game() {}
 
   // Interface API.
-  virtual void onBlur() { }
-  virtual void onFocus() { }
+  virtual void onBlur() {}
+  virtual void onFocus() {}
   // try to exit, set Control::quitting flag eventually
   // (a multiplayer connection may want to do this at its leisure to
   // disconnect gracefully)
