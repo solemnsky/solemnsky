@@ -71,7 +71,7 @@ void Multiplayer::onEndGame() {
     loadView(sky::ArenaMode::Lobby);
 }
 
-void Multiplayer::onChangeSettings(const SettingsDelta &settings) {
+void Multiplayer::onChangeSettings(const ui::SettingsDelta &settings) {
   if (view) view->onChangeSettings(settings);
   ClientComponent::onChangeSettings(settings);
 }

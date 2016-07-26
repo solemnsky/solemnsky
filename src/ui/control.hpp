@@ -25,6 +25,8 @@
 #include <memory>
 #include "util/telegraph.hpp"
 #include "frame.hpp"
+#include "settings.hpp"
+#include "resources.hpp"
 
 namespace ui {
 
@@ -58,9 +60,11 @@ struct AppRefs {
   friend class Control;
  private:
   const AppResources &resources;
+  Settings &settings;
 
  public:
-  AppRefs(const AppResources &resources,
+  AppRefs(Settings &settings,
+          const AppResources &resources,
           const Time &time,
           const sf::RenderWindow &window,
           const Profiler &profiler);
@@ -89,6 +93,7 @@ class Control {
   // Ref to reference struct, and aliases.
   const AppRefs &references;
   const AppResources &resources;
+  Settings &settings;
 
   // Quitting flag.
   bool quitting;
@@ -112,6 +117,10 @@ class Control {
 class ControlExec {
  private:
   tg::UsageFlag flag;
+
+  // Settings -- read on startup, written on close, propogated to Controls.
+  std::string settingsFile;
+  Settings settings;
 
   // SFML / graphics state.
   static sf::ContextSettings makeSettings();
@@ -140,6 +149,8 @@ class ControlExec {
 
  public:
   ControlExec();
+  ~ControlExec();
+
   void run(std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp);
 
 };

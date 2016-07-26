@@ -260,7 +260,7 @@ bool MultiplayerCore::isDisconnected() const {
   return disconnected;
 }
 
-void MultiplayerCore::onChangeSettings(const SettingsDelta &settings) {
+void MultiplayerCore::onChangeSettings(const ui::SettingsDelta &settings) {
   if (conn) {
     if (settings.nickname) {
       sky::PlayerDelta delta{conn->player};
@@ -291,7 +291,7 @@ bool MultiplayerCore::poll() {
   if (server && !askedConnection) {
     // we have a link but haven't sent an arena connection request
     appLog("Asking to join arena...", LogOrigin::Client);
-    transmit(sky::ClientPacket::ReqJoin(shared.getSettings().nickname));
+    transmit(sky::ClientPacket::ReqJoin(settings.nickname));
     askedConnection = true;
   }
 

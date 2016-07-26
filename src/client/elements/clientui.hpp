@@ -20,7 +20,7 @@
  */
 #pragma once
 #include "ui/widgets.hpp"
-#include "settings.hpp"
+#include "ui/settings.hpp"
 #include "util/printer.hpp"
 
 /**

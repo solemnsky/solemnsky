@@ -154,9 +154,6 @@ add_executable(solemnsky_client
         src/client/elements/elements.cpp
         src/client/elements/elements.hpp
 
-        src/client/elements/settings.cpp
-        src/client/elements/settings.hpp
-
         src/client/elements/style.cpp
         src/client/elements/style.hpp
 
@@ -224,6 +221,9 @@ add_executable(solemnsky_client
 
         src/ui/resources.cpp
         src/ui/resources.hpp
+
+        src/ui/settings.cpp
+        src/ui/settings.hpp
 
         src/ui/sheet.cpp
         src/ui/sheet.hpp

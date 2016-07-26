@@ -63,20 +63,6 @@ bindingFromEvent(const sf::Event &event,
   return {};
 }
 
-optional<std::pair<sky::Action, bool>>
-ClientShared::triggerSkyAction(const sf::Event &event) const {
-  return bindingFromEvent(event, client.settings.bindings.skyBindings);
-}
-
-optional<std::pair<ClientAction, bool>>
-ClientShared::triggerClientAction(const sf::Event &event) const {
-  return bindingFromEvent(event, client.settings.bindings.clientBindings);
-}
-
-const Settings &ClientShared::getSettings() const {
-  return client.settings;
-}
-
 const Game *ClientShared::getGame() const {
   return client.game.get();
 }
@@ -109,8 +95,19 @@ void ClientShared::blurPage() {
   client.blurPage();
 }
 
-void ClientShared::changeSettings(const SettingsDelta &settings) {
+void ClientShared::changeSettings(const ui::SettingsDelta &settings) {
   client.changeSettings(settings);
 }
+
+optional<std::pair<sky::Action, bool>>
+ClientShared::triggerSkyAction(const sf::Event &event) const {
+  return bindingFromEvent(event, client.settings.bindings.skyBindings);
+}
+
+optional<std::pair<ui::ClientAction, bool>>
+ClientShared::triggerClientAction(const sf::Event &event) const {
+  return bindingFromEvent(event, client.settings.bindings.clientBindings);
+}
+
 
 

@@ -17,7 +17,7 @@
  */
 #include "clientui.hpp"
 #include "style.hpp"
-#include "settings.hpp"
+#include "ui/settings.hpp"
 
 MessageInteraction::MessageInteraction(const ui::AppRefs &references) :
     Control(references),

@@ -55,6 +55,9 @@ struct PlaneGraphics {
 class SkyRender
     : public ClientComponent, public Subsystem<PlaneGraphics> {
  private:
+  // Although we aren't a Control, we need access to the ui::Settings reference.
+  ui::Settings &settings;
+
   // Parameters.
   const Sky &sky;
 
@@ -84,11 +87,14 @@ class SkyRender
   void onTick(const float delta) override final;
 
  public:
-  SkyRender(ClientShared &shared, const ui::AppResources &resources,
-            Arena &arena, const Sky &sky);
+  SkyRender(ui::Settings &settings,
+            ClientShared &shared,
+            const ui::AppResources &resources,
+            Arena &arena,
+            const Sky &sky);
 
   // ClientComponent impl.
-  void onChangeSettings(const SettingsDelta &settings) override final;
+  void onChangeSettings(const ui::SettingsDelta &settings) override final;
 
   // User API.
   void render(ui::Frame &f, const sf::Vector2f &pos);

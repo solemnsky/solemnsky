@@ -47,7 +47,8 @@ enum class Action {
 };
 
 /**
- * Reference to a graphics entity.
+ * Reference to a graphics entity, either from the default resources or from
+ * an environment  visual component.
  */
 struct VisualEntity {
   VisualEntity(const bool isDefault, const PID index);

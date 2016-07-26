@@ -39,10 +39,12 @@ ProfilerSnapshot::ProfilerSnapshot(const Profiler &profiler) :
  */
 
 AppRefs::AppRefs(const AppResources &resources,
+                 Settings &settings,
                  const Time &time,
                  const sf::RenderWindow &window,
                  const Profiler &profiler) :
     resources(resources),
+    settings(settings),
     uptime(time),
     window(window),
     profiler(profiler) {}
@@ -169,6 +171,9 @@ sf::ContextSettings ControlExec::makeSettings() {
 ControlExec::ControlExec() :
     window(sf::VideoMode(800, 600), "solemnsky",
            sf::Style::Default, makeSettings()),
+    settingsFile("solemnsky-settings.xml"),
+    settings(settingsFile),
+
     frame(window),
     resizeCooldown(0.5),
 
@@ -178,14 +183,21 @@ ControlExec::ControlExec() :
 
     profiler(100),
 
-    appState(*((AppResources *) nullptr), uptime, window, profiler) {
+    // Let me apologize in advance for this undefined behaviour (null references
+    // are not permitted by The Standard). It was necessary. Only you and I shall
+    // ever know of it; it stays a secret between us, yes?
+
+    appState(settings, *((AppResources *) nullptr), uptime, window, profiler) {
   window.setVerticalSyncEnabled(true);
   window.setKeyRepeatEnabled(false);
   appLog("Initialized SFML!", LogOrigin::App);
 }
 
-void
-ControlExec::run(std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp) {
+ControlExec::~ControlExec() {
+  settings.writeToFile(settingsFile);
+}
+
+void ControlExec::run(std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp) {
   ctrl = std::make_unique<detail::SplashScreen>(appState, mkApp);
   appLog("Starting application loop...", LogOrigin::App);
 

@@ -22,7 +22,7 @@
  * MultiplayerGame.
  */
 
-void MultiplayerGame::doClientAction(const ClientAction action,
+void MultiplayerGame::doClientAction(const ui::ClientAction action,
                                      const bool state) {
   if (core.messageInteraction.handleClientAction(action, state)) return;
   switch (action) {
@@ -98,7 +98,7 @@ MultiplayerGame::MultiplayerGame(
     ClientShared &shared, MultiplayerCore &core) :
     MultiplayerView(shared, core),
     scoreboardFocused(false),
-    skyRender(shared, resources, conn.arena, *conn.getSky()),
+    skyRender(settings, shared, resources, conn.arena, *conn.getSky()),
     participation(conn.getSky()->getParticipation(conn.player)) {
   assert(bool(conn.skyHandle.getSky()));
   assert(bool(conn.skyHandle.getEnvironment()));

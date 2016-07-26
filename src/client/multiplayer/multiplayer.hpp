@@ -48,7 +48,7 @@ class Multiplayer : public Game, public ConnectionObserver {
   void onEndGame() override final;
 
   // Game impl.
-  void onChangeSettings(const SettingsDelta &settings) override final;
+  void onChangeSettings(const ui::SettingsDelta &settings) override final;
   void onBlur() override final;
   void onFocus() override final;
   void doExit() override final;
