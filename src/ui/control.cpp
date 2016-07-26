@@ -169,7 +169,7 @@ sf::ContextSettings makeContextSettings(const Settings &settings) {
   return csettings;
 }
 
-size_t makeDisplayStyle(const Settings &settings) {
+sf::Uint32 makeDisplayStyle(const Settings &settings) {
   if (settings.fullscreen) {
     return sf::Style::Fullscreen;
   } else {
@@ -178,7 +178,7 @@ size_t makeDisplayStyle(const Settings &settings) {
 }
 
 sf::VideoMode makeVideoMode(const Settings &settings) {
-  return sf::VideoMode(1600, 900);
+  return sf::VideoMode(settings.resolution.x, settings.resolution.y);
 }
 
 ControlExec::ControlExec() :
@@ -186,7 +186,7 @@ ControlExec::ControlExec() :
     settings(settingsFile),
 
     window(makeVideoMode(settings), "solemnsky",
-           sf::Style::Default, makeContextSettings(settings)),
+           makeDisplayStyle(settings), makeContextSettings(settings)),
 
     frame(window),
     resizeCooldown(0.5),
@@ -208,6 +208,7 @@ ControlExec::ControlExec() :
 }
 
 ControlExec::~ControlExec() {
+  ctrl = nullptr;
   settings.writeToFile(settingsFile);
 }
 

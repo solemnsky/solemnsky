@@ -51,6 +51,7 @@ template<typename Archive>
 void serialize(Archive &ar, Settings &settings) {
   ar(cereal::make_nvp("enableDebug", settings.enableDebug),
      cereal::make_nvp("fullscreen", settings.fullscreen),
+     cereal::make_nvp("resolution", settings.resolution),
      cereal::make_nvp("nickname", settings.nickname),
      cereal::make_nvp("bindings", settings.bindings));
 }
@@ -100,7 +101,8 @@ optional<sf::Keyboard::Key> KeyBindings::lookupClientBinding(
 
 Settings::Settings(const std::string &filepath) :
     fullscreen(false),
-    enableDebug(false) {
+    enableDebug(false),
+    resolution(1600, 900) {
   appLog("Loading client settings from " + inQuotes(filepath), LogOrigin::Client);
 
   std::ifstream file(filepath);

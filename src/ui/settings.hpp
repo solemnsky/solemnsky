@@ -62,6 +62,7 @@ struct Settings {
 
   // Launcher settings.
   bool fullscreen;
+  sf::Vector2u resolution;
 
   // Client settings.
   bool enableDebug;
