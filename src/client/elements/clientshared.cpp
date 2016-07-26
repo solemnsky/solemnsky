@@ -52,7 +52,7 @@ ClientShared::ClientShared(Client &client, const ui::AppRefs &references) :
 template<typename T>
 std::vector<std::pair<T, bool>>
 bindingsFromEvent(const sf::Event &event,
-                 const std::map<InputAction, T> &map) {
+                  const std::map<InputAction, T> &map) {
   std::vector<InputAction> actions = InputAction::actionsForEvent(event);
   std::vector<std::pair<T, bool>> makes;
 
@@ -62,7 +62,7 @@ bindingsFromEvent(const sf::Event &event,
 
     if (find != map.end()) {
       makes.push_back(std::make_pair(find->second, make));
-}
+    }
   }
 
   return makes;
