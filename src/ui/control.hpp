@@ -65,8 +65,8 @@ struct AppRefs {
           const Profiler &profiler);
 
   // References accessible from Control member variables.
-  const AppResources &resources;
   Settings &settings;
+  const AppResources &resources;
 
   // References only accessible from this struct.
   const Time &uptime;

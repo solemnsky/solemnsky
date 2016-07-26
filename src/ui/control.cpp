@@ -38,13 +38,13 @@ ProfilerSnapshot::ProfilerSnapshot(const Profiler &profiler) :
  * AppState.
  */
 
-AppRefs::AppRefs(const AppResources &resources,
-                 Settings &settings,
+AppRefs::AppRefs(Settings &settings,
+                 const AppResources &resources,
                  const Time &time,
                  const sf::RenderWindow &window,
                  const Profiler &profiler) :
-    resources(resources),
     settings(settings),
+    resources(resources),
     uptime(time),
     window(window),
     profiler(profiler) {}
@@ -64,6 +64,7 @@ void Control::areChildren(std::initializer_list<Control *> controls) {
 Control::Control(const AppRefs &references) :
     references(references),
     resources(references.resources),
+    settings(references.settings),
     quitting(false) {}
 
 bool Control::poll() {
@@ -169,10 +170,11 @@ sf::ContextSettings ControlExec::makeSettings() {
 }
 
 ControlExec::ControlExec() :
-    window(sf::VideoMode(800, 600), "solemnsky",
-           sf::Style::Default, makeSettings()),
     settingsFile("solemnsky-settings.xml"),
     settings(settingsFile),
+
+    window(sf::VideoMode(800, 600), "solemnsky",
+           sf::Style::Default, makeSettings()),
 
     frame(window),
     resizeCooldown(0.5),

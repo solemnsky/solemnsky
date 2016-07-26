@@ -98,7 +98,7 @@ MultiplayerGame::MultiplayerGame(
     ClientShared &shared, MultiplayerCore &core) :
     MultiplayerView(shared, core),
     scoreboardFocused(false),
-    skyRender(settings, shared, resources, conn.arena, *conn.getSky()),
+    skyRender(shared, resources, conn.arena, *conn.getSky()),
     participation(conn.getSky()->getParticipation(conn.player)) {
   assert(bool(conn.skyHandle.getSky()));
   assert(bool(conn.skyHandle.getEnvironment()));

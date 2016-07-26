@@ -69,7 +69,6 @@ class Client: public ui::Control {
 
  public:
   Client(const ui::AppRefs &references);
-  ~Client();
 
   // Control impl.
   bool poll() override final;

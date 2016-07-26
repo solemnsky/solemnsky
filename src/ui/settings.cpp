@@ -22,9 +22,6 @@
 
 namespace ui {
 
-//TODO: Potentially make this user-configurable, need a file picker or something
-std::string Settings::saveFile = "settings.xml";
-
 void forClientActions(std::function<void(const ClientAction)> fn) {
   for (ClientAction action = ClientAction(0);
        action < ClientAction::MAX;

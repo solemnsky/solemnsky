@@ -20,7 +20,7 @@
 ListingPage::ListingPage(ClientShared &state) :
     Page(state) {}
 
-void ListingPage::onChangeSettings(const SettingsDelta &settings) {}
+void ListingPage::onChangeSettings(const ui::SettingsDelta &settings) {}
 
 void ListingPage::onBlur() {
 
