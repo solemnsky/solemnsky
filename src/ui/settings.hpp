@@ -16,13 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Configuration values, persistent across reboots.
+ * Configuration values for the launcher and application.
  */
 #pragma once
 #include <SFML/Window.hpp>
-#include "engine/sky/participation.hpp"
+#include "engine/types.hpp"
 #include "util/types.hpp"
 #include "util/inputaction.hpp"
+
+namespace ui {
 
 /**
  * Actions a key-press can achieve in a client. Like sky::Action but for the
@@ -54,16 +56,20 @@ struct ActionBindings {
  * Saved to and loaded from disk.
  */
 struct Settings {
-  Settings(); // initialize with meaningful default settings
+  Settings(const std::string &filepath);
+  Settings() = delete;
 
-  void readFromFile(const std::string &filepath);
   void writeToFile(const std::string &filepath) const;
 
+  // Launcher settings.
+  bool fullscreen;
+  sf::Vector2u resolution;
+
+  // Client settings.
   bool enableDebug;
   std::string nickname;
   ActionBindings bindings;
 
-  static std::string saveFile;
 };
 
 /**
@@ -77,7 +83,10 @@ struct SettingsDelta {
 
   void apply(Settings &settings) const;
 
+  optional<bool> fullscreen;
   optional<bool> enableDebug;
   optional<std::string> nickname;
   optional<ActionBindings> bindings;
 };
+
+}

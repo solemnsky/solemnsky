@@ -36,6 +36,59 @@ std::string StringPrinter::getString() const {
 }
 
 /**
+ * JointPrinter.
+ */
+
+void JointPrinter::areChildPrinters(std::initializer_list<Printer *> childPrinters) {
+  this->childPrinters = childPrinters;
+}
+
+JointPrinter::JointPrinter() { }
+
+void JointPrinter::print(const std::string &str) {
+  for (auto child : childPrinters) child->print(str);
+}
+
+void JointPrinter::setColor(const unsigned char r, const unsigned char g, const unsigned char b) {
+  for (auto child : childPrinters) child->setColor(r, g, b);
+}
+
+void JointPrinter::breakLine() {
+  for (auto child : childPrinters) child->breakLine();
+}
+
+/**
+ * PrefixPrinter.
+ */
+
+void PrefixPrinter::verifyPrefix() {
+  if (isNewLine) {
+    prefix(base);
+    isNewLine = false;
+  }
+}
+
+PrefixPrinter::PrefixPrinter(Printer &base, PrintProcess prefix) :
+    base(base), prefix(prefix), isNewLine(true) { }
+
+void PrefixPrinter::print(const std::string &str) {
+  verifyPrefix();
+  base.print(str);
+}
+
+void PrefixPrinter::setColor(const unsigned char r,
+                             const unsigned char g,
+                             const unsigned char b) {
+  verifyPrefix();
+  base.setColor(r, b, g);
+}
+
+void PrefixPrinter::breakLine() {
+  isNewLine = true;
+  base.breakLine();
+}
+
+/**
  * AppLog.
  */
 
@@ -70,8 +123,7 @@ std::string showOrigin(const LogOrigin origin) {
  * LogPrinter.
  */
 
-LogPrinter::LogPrinter()
-{
+LogPrinter::LogPrinter() {
   std::stringstream filename;
   filename << "logs/log_" << std::time(NULL) << ".txt";
   fs::create_directories(fs::path("./logs/"));
@@ -82,8 +134,8 @@ LogPrinter::LogPrinter()
   mlogger = std::make_shared<spdlog::logger>("solemnsky", begin(sinks), end(sinks));
 
   // mlogger = std::make_shared<spdlog::logger>("solemnsky",
-                                             // std::make_shared<spdlog::sinks::simple_file_sink_mt>(filename.str().c_str(),
-                                                                                                  // true));
+  // std::make_shared<spdlog::sinks::simple_file_sink_mt>(filename.str().c_str(),
+  // true));
   mlogger->set_pattern("[%t | %C-%m-%d | %T] %v");
 }
 
@@ -98,7 +150,7 @@ void LogPrinter::print(const std::string &str, const LogOrigin &origin) {
 }
 
 namespace staticLogger {
-  LogPrinter lout;
+LogPrinter lout;
 }
 
 
@@ -127,7 +179,7 @@ void appErrorRuntime(const std::string &contents) {
 
 ConsolePrinter::ConsolePrinter(const LogOrigin origin) :
     origin(origin),
-    currentLine() {}
+    currentLine() { }
 
 ConsolePrinter::~ConsolePrinter() {
   breakLine();
@@ -145,6 +197,7 @@ void ConsolePrinter::setColor(const unsigned char,
 
 void ConsolePrinter::breakLine() {
   if (currentLine.size() != 0) appLog(std::move(currentLine), origin);
+  currentLine.clear();
 }
 
 /**
@@ -185,4 +238,3 @@ std::string printKbps(const Kbps rate) {
   str << boost::format("%.1f") % rate << "kBps";
   return str.str();
 }
-

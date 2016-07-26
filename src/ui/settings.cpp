@@ -20,8 +20,7 @@
 #include "settings.hpp"
 #include "util/methods.hpp"
 
-//TODO: Potentially make this user-configurable, need a file picker or something
-std::string Settings::saveFile = "settings.xml";
+namespace ui {
 
 void forClientActions(std::function<void(const ClientAction)> fn) {
   for (ClientAction action = ClientAction(0);
@@ -51,6 +50,8 @@ std::string showClientAction(const ClientAction action) {
 template<typename Archive>
 void serialize(Archive &ar, Settings &settings) {
   ar(cereal::make_nvp("enableDebug", settings.enableDebug),
+     cereal::make_nvp("fullscreen", settings.fullscreen),
+     cereal::make_nvp("resolution", settings.resolution),
      cereal::make_nvp("nickname", settings.nickname),
      cereal::make_nvp("bindings", settings.bindings));
 }
@@ -94,23 +95,45 @@ optional<InputAction> ActionBindings::lookupClientBinding(
   return {};
 }
 
-Settings::Settings() :
-    enableDebug(false),
-    nickname("nameless plane") {}
+/**
+ * Settings.
+ */
 
-void Settings::readFromFile(const std::string &filepath) {
+Settings::Settings(const std::string &filepath) :
+    fullscreen(false),
+    resolution(1600, 900),
+    enableDebug(false) {
+  appLog("Loading client settings from " + inQuotes(filepath), LogOrigin::Client);
+
   std::ifstream file(filepath);
   if (file.is_open()) {
     cereal::XMLInputArchive archive(file);
-    archive(*this);
+    try {
+      archive(*this);
+      appLog("Settings loaded!",
+             LogOrigin::Client);
+      return;
+    } catch (cereal::Exception &) {
+      appLog("File appears invalid. Was it written by an earlier version of the client?",
+             LogOrigin::Client);
+    }
+  } else {
+    appLog("File does not exist.",
+           LogOrigin::Client);
   }
+
+  appLog("Using default settings.", LogOrigin::Client);
 }
 
 void Settings::writeToFile(const std::string &filepath) const {
+  appLog("Writing client settings to " + inQuotes(filepath), LogOrigin::Client);
+
   std::ofstream file(filepath);
   if (file.is_open()) {
     cereal::XMLOutputArchive archive(file);
     archive(*this);
+  } else {
+    appLog("Could not open settings file for writing!", LogOrigin::Error);
   }
 }
 
@@ -122,6 +145,8 @@ SettingsDelta::SettingsDelta() {}
 
 SettingsDelta::SettingsDelta(const Settings &oldSettings,
                              const Settings &newSettings) {
+  if (oldSettings.fullscreen != newSettings.fullscreen)
+    fullscreen = newSettings.fullscreen;
   if (oldSettings.nickname != newSettings.nickname)
     nickname = newSettings.nickname;
   if (oldSettings.enableDebug != newSettings.enableDebug)
@@ -130,8 +155,10 @@ SettingsDelta::SettingsDelta(const Settings &oldSettings,
 }
 
 void SettingsDelta::apply(Settings &settings) const {
+  if (fullscreen) settings.fullscreen = *fullscreen;
   if (nickname) settings.nickname = *nickname;
   if (enableDebug) settings.enableDebug = *enableDebug;
   if (bindings) settings.bindings = *bindings;
 }
 
+}

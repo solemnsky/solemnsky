@@ -68,6 +68,16 @@ template<typename Archive>
 void serialize(Archive &ar, sf::Vector2f &x) {
   ar(cereal::make_nvp("x", x.x), cereal::make_nvp("y", x.y));
 }
+
+template<typename Archive>
+void serialize(Archive &ar, sf::Vector2u &x) {
+  ar(cereal::make_nvp("x", x.x), cereal::make_nvp("y", x.y));
+}
+
+template<typename Archive>
+void serialize(Archive &ar, sf::Vector2i &x) {
+  ar(cereal::make_nvp("x", x.x), cereal::make_nvp("y", x.y));
+}
 }
 
 #include <cereal/types/string.hpp>

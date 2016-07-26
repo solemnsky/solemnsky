@@ -17,7 +17,7 @@
  */
 #include "clientui.hpp"
 #include "style.hpp"
-#include "settings.hpp"
+#include "ui/settings.hpp"
 
 MessageInteraction::MessageInteraction(const ui::AppRefs &references) :
     Control(references),
@@ -27,7 +27,7 @@ MessageInteraction::MessageInteraction(const ui::AppRefs &references) :
                  "[enter to type]"),
     messageLog(references,
                style.game.messageLog,
-               style.game.messagePos) {
+               style.game.messagePos + sf::Vector2f(0, -style.game.chatYPadding)) {
   areChildren({&messageEntry, &messageLog});
 }
 
@@ -49,7 +49,12 @@ void MessageInteraction::reset() {
 
 void MessageInteraction::signalRead() {
   ui::Control::signalRead();
-  inputSignal = messageEntry.inputSignal;
+  if (messageEntry.inputSignal) {
+    if (!messageEntry.inputSignal.get().empty())
+      inputSignal = messageEntry.inputSignal;
+  }
+
+  messageLog.collapsed = !messageEntry.isFocused();
 }
 
 void MessageInteraction::signalClear() {
@@ -57,12 +62,59 @@ void MessageInteraction::signalClear() {
   inputSignal.reset();
 }
 
-bool MessageInteraction::handleClientAction(const ClientAction action, const bool state) {
+bool MessageInteraction::handleClientAction(const ui::ClientAction action, const bool state) {
   switch (action) {
-    case ClientAction::Chat: {
+    case ui::ClientAction::Chat: {
       if (state) messageEntry.focus();
       return true;
     }
-    default: return false;
+    default:
+      return false;
   }
+}
+
+/**
+ * EnginePrinter.
+ */
+EnginePrinter::EnginePrinter(MessageInteraction &messageInteraction) :
+    consolePrinter(LogOrigin::Engine) {
+  areChildPrinters({&messageInteraction.messageLog, &consolePrinter});
+}
+
+/**
+ * ClientPrinter.
+ */
+
+ClientPrinter::ClientPrinter(MessageInteraction &messageInteraction) :
+    consolePrinter(LogOrigin::App) {
+  areChildPrinters({&consolePrinter, &messageInteraction.messageLog});
+}
+
+/**
+ * GameConsolePrinter.
+ */
+
+void printConsolePrefix(Printer &p) {
+  p.print("[console] ");
+}
+
+GameConsolePrinter::GameConsolePrinter(MessageInteraction &messageInteraction) :
+    consolePrinterBase(LogOrigin::App),
+    consolePrinter(consolePrinterBase, printConsolePrefix) {
+  areChildPrinters({&consolePrinter, &messageInteraction.messageLog});
+}
+
+void GameConsolePrinter::input(const std::string &string) {
+  setColor(255, 0, 0);
+  print(">> ");
+  setColor(255, 255, 255);
+  print(string);
+  breakLine();
+}
+
+void GameConsolePrinter::output(const std::string &string) {
+  setColor(255, 0, 0);
+  print("<< ");
+  print(string);
+  breakLine();
 }

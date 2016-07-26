@@ -107,9 +107,19 @@ void Plane::tickFlight(const TimeDiff delta) {
     }
     state.airspeed += speedMod;
 
-    approach(state.airspeed,
-             (float) state.throttle * tuning.flight.throttleInfluence,
-             tuning.flight.throttleEffect * delta);
+    const float targetThrottle = state.throttle * tuning.flight.throttleInfluence,
+          throttleEffectFactor = 
+            (state.airspeed <= tuning.flight.throttleInfluence || state.throttle < 0.9)
+            ? 1 : tuning.flight.throttleGlideDamper;
+
+    if (state.airspeed > targetThrottle) {
+      approach(state.airspeed, targetThrottle,
+               tuning.flight.throttleBrakeEffect * throttleEffectFactor * delta);
+    } else {
+      approach(state.airspeed, targetThrottle,
+               tuning.flight.throttleEffect * throttleEffectFactor * delta);
+    }
+
 
     float targetSpeed = state.airspeed * tuning.flight.airspeedFactor;
 
@@ -199,6 +209,10 @@ void Plane::resetPrimary() {
   state.primaryCooldown.reset();
 }
 
+void Plane::damage(const float amount) {
+  state.health -= amount;
+}
+
 /**
  * ParticipationInit.
  */
@@ -206,7 +220,7 @@ void Plane::resetPrimary() {
 ParticipationInit::ParticipationInit() :
     spawn(),
     controls(),
-    props() {}
+    props() { }
 
 ParticipationInit::ParticipationInit(
     const PlaneControls &controls,
@@ -214,13 +228,13 @@ ParticipationInit::ParticipationInit(
     const PlaneState &state) :
     spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)),
     controls(controls),
-    props() {}
+    props() { }
 
 ParticipationInit::ParticipationInit(
     const PlaneControls &controls) :
     spawn(),
     controls(controls),
-    props() {}
+    props() { }
 
 /**
  * ParticipationDelta.

@@ -69,6 +69,14 @@ void PhysicsDispatcher::EndContact(b2Contact *contact) {
       *((BodyTag *) contact->GetFixtureB()->GetBody()->GetUserData()));
 }
 
+void PhysicsDispatcher::PreSolve(b2Contact *contact, const b2Manifold *oldManifold) {
+  if (!listener.enableContact(
+      *((BodyTag *) contact->GetFixtureA()->GetBody()->GetUserData()),
+      *((BodyTag *) contact->GetFixtureB()->GetBody()->GetUserData()))) {
+    contact->SetEnabled(false);
+  }
+}
+
 /**
  * Physics.
  */

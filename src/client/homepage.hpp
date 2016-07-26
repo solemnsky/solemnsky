@@ -31,7 +31,7 @@ class HomePage : public Page {
   HomePage(ClientShared &state);
 
   // Page impl.
-  void onChangeSettings(const SettingsDelta &settings) override final;
+  void onChangeSettings(const ui::SettingsDelta &settings) override final;
   void onBlur() override final;
 
   // Control impl.

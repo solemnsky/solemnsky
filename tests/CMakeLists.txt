@@ -13,7 +13,7 @@ add_executable(solemnsky_tests
         telegraphtest.cpp
         threadtest.cpp
         utiltest.cpp
-        )
+        flowtest.cpp)
 target_link_libraries(solemnsky_tests
         gtest
         gtest_main

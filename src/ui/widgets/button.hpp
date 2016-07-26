@@ -29,7 +29,7 @@ namespace ui {
  */
 class Button: public Control {
  public:
-  struct Style {
+  const struct Style {
     sf::Color baseColor, hotColor, clickedColor, inactiveColor, textColor;
     sf::Vector2f dimensions;
     float heatRate;

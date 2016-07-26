@@ -62,7 +62,7 @@ bindingsFromEvent(const sf::Event &event,
 
     if (find != map.end()) {
       makes.push_back(std::make_pair(find->second, make));
-    }
+}
   }
 
   return makes;
@@ -72,7 +72,7 @@ std::vector<std::pair<sky::Action, bool>>
 ClientShared::findSkyActions(const sf::Event &event) const {
   return bindingsFromEvent(event, client.settings.bindings.skyBindings);
 }
-std::vector<std::pair<ClientAction, bool>>
+std::vector<std::pair<ui::ClientAction, bool>>
 ClientShared::findClientActions(const sf::Event &event) const {
   return bindingsFromEvent(event, client.settings.bindings.clientBindings);
 }
@@ -113,7 +113,7 @@ void ClientShared::blurPage() {
   client.blurPage();
 }
 
-void ClientShared::changeSettings(const SettingsDelta &settings) {
+void ClientShared::changeSettings(const ui::SettingsDelta &settings) {
   client.changeSettings(settings);
 }
 

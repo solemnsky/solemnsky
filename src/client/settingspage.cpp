@@ -22,8 +22,7 @@
  * SettingsTab.
  */
 
-SettingsTab::SettingsTab(const ui::AppRefs &references,
-                         const Settings &settings) :
+SettingsTab::SettingsTab(const ui::AppRefs &references) :
     ui::Control(references) {}
 
 /**
@@ -31,22 +30,28 @@ SettingsTab::SettingsTab(const ui::AppRefs &references,
  */
 
 GeneralTab::GeneralTab(
-    const ui::AppRefs &references, const Settings &settings) :
-    SettingsTab(references, settings),
+    const ui::AppRefs &references) :
+    SettingsTab(references),
     debugOption(references,
                 style.settings.checkbox,
-                style.settings.column1Pos) {
+                style.settings.column1Pos),
+    fullscreenOption(references, style.settings.checkbox,
+                     style.settings.column1Pos + sf::Vector2f(0, style.settings.rowOffset)) {
   debugOption.setDescription(optional<std::string>("debug mode"));
-  areChildren({&debugOption});
+  fullscreenOption.setDescription(optional<std::string>("full-screen"));
+
+  areChildren({&debugOption, &fullscreenOption});
   readSettings(settings);
 }
 
-void GeneralTab::readSettings(const Settings &buffer) {
-  debugOption.setValue(buffer.enableDebug);
+void GeneralTab::readSettings(const ui::Settings &settings) {
+  debugOption.setValue(settings.enableDebug);
+  fullscreenOption.setValue(settings.fullscreen);
 }
 
-void GeneralTab::writeSettings(Settings &buffer) {
-  buffer.enableDebug = debugOption.getValue();
+void GeneralTab::writeSettings(ui::Settings &settings) const {
+  settings.enableDebug = debugOption.getValue();
+  settings.fullscreen = fullscreenOption.getValue();
 }
 
 /**
@@ -54,8 +59,8 @@ void GeneralTab::writeSettings(Settings &buffer) {
  */
 
 PlayerTab::PlayerTab(
-    const ui::AppRefs &references, const Settings &settings) :
-    SettingsTab(references, settings),
+    const ui::AppRefs &references) :
+    SettingsTab(references),
     nicknameOption(references, style.base.normalTextEntry,
                    style.settings.column1Pos) {
   nicknameOption.persistent = true;
@@ -64,11 +69,11 @@ PlayerTab::PlayerTab(
   readSettings(settings);
 }
 
-void PlayerTab::readSettings(const Settings &settings) {
+void PlayerTab::readSettings(const ui::Settings &settings) {
   nicknameOption.contents = settings.nickname;
 }
 
-void PlayerTab::writeSettings(Settings &settings) {
+void PlayerTab::writeSettings(ui::Settings &settings) const {
   settings.nickname = nicknameOption.contents;
 }
 
@@ -77,8 +82,8 @@ void PlayerTab::writeSettings(Settings &settings) {
  */
 
 ControlsTab::ControlsTab(
-    const ui::AppRefs &references, const Settings &settings) :
-    SettingsTab(references, settings) {
+    const ui::AppRefs &references) :
+    SettingsTab(references) {
   sf::Vector2f pos = style.settings.column1Pos;
 
   sky::forSkyActions([&](const sky::Action action) {
@@ -96,7 +101,7 @@ ControlsTab::ControlsTab(
 
   pos = style.settings.column2Pos;
 
-  forClientActions([&](const ClientAction action) {
+  ui::forClientActions([&](const ui::ClientAction action) {
     clientBindingChoosers.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(action),
@@ -112,19 +117,19 @@ ControlsTab::ControlsTab(
   readSettings(settings);
 }
 
-void ControlsTab::readSettings(const Settings &settings) {
+void ControlsTab::readSettings(const ui::Settings &settings) {
   sky::forSkyActions([&](const sky::Action action) {
     skyBindingChoosers.at(action).setValue(
         settings.bindings.lookupBinding(action));
   });
 
-  forClientActions([&](const ClientAction action) {
+  ui::forClientActions([&](const ui::ClientAction action) {
     clientBindingChoosers.at(action).setValue(
         settings.bindings.lookupClientBinding(action));
   });
 }
 
-void ControlsTab::writeSettings(Settings &settings) {
+void ControlsTab::writeSettings(ui::Settings &settings) const {
   settings.bindings.skyBindings.clear();
 
   sky::forSkyActions([&](const sky::Action action) {
@@ -135,7 +140,7 @@ void ControlsTab::writeSettings(Settings &settings) {
 
   settings.bindings.clientBindings.clear();
 
-  forClientActions([&](const ClientAction action) {
+  ui::forClientActions([&](const ui::ClientAction action) {
     if (const auto binding = clientBindingChoosers.at(action).getValue()) {
       settings.bindings.clientBindings.emplace(binding.get(), action);
     }
@@ -159,7 +164,7 @@ void SettingsPage::switchToTab(ui::Button &button, SettingsTab &tab) {
 SettingsPage::SettingsPage(ClientShared &shared) :
     Page(shared),
 
-    newSettings(shared.getSettings()),
+    newSettings(settings),
 
     generalButton(references, style.settings.sectionButton,
                   {style.settings.generalButtonOffset,
@@ -174,9 +179,9 @@ SettingsPage::SettingsPage(ClientShared &shared) :
                     style.settings.pageButtonHeight},
                    "CONTROLS"),
 
-    generalTab(references, shared.getSettings()),
-    playerTab(references, shared.getSettings()),
-    controlsTab(references, shared.getSettings()),
+    generalTab(references),
+    playerTab(references),
+    controlsTab(references),
     currentTab(&generalButton, &generalTab) {
   areChildren(
       {&generalButton, &playerButton, &controlsButton});
@@ -187,22 +192,20 @@ SettingsPage::~SettingsPage() {
   onBlur();
 }
 
-void SettingsPage::onChangeSettings(const SettingsDelta &delta) {
-  newSettings = shared.getSettings();
-  currentTab.second->readSettings(shared.getSettings());
+void SettingsPage::onChangeSettings(const ui::SettingsDelta &delta) {
+  newSettings = settings;
+  currentTab.second->readSettings(settings);
 }
 
 void SettingsPage::onFocus() {
-  //Load settings from the shared
-  newSettings = shared.getSettings();
-  currentTab.second->readSettings(shared.getSettings());
+  newSettings = settings;
+  currentTab.second->readSettings(settings);
 }
 
 void SettingsPage::onBlur() {
   currentTab.second->reset();
   currentTab.second->writeSettings(newSettings);
-  shared.changeSettings(SettingsDelta(shared.getSettings(), newSettings));
-  shared.getSettings().writeToFile(Settings::saveFile);
+  shared.changeSettings(ui::SettingsDelta(settings, newSettings));
 }
 
 void SettingsPage::tick(float delta) {

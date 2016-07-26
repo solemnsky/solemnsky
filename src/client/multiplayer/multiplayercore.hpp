@@ -155,7 +155,7 @@ class MultiplayerCore : public ClientComponent {
   bool isDisconnected() const;
 
   // ClientComponent impl.
-  void onChangeSettings(const SettingsDelta &settings);
+  void onChangeSettings(const ui::SettingsDelta &settings);
 
   // User API.
   void transmit(const sky::ClientPacket &packet);

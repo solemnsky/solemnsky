@@ -15,30 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "listingpage.hpp"
+#include "flowcontrol.hpp"
+#include "util/methods.hpp"
 
-ListingPage::ListingPage(ClientShared &state) :
-    Page(state) {}
+namespace sky {
 
-void ListingPage::onChangeSettings(const ui::SettingsDelta &settings) {}
+namespace detail {
 
-void ListingPage::onBlur() {
+bool pullMessage(const FlowControlSettings &settings,
+                 const Time localtime,
+                 const Time timestamp) {
+  if (settings.windowEntry)
+    return inRange<Time>(
+        (localtime - timestamp) - *settings.windowEntry,
+        0, settings.windowSize);
+  return true;
+}
 
 }
 
-void ListingPage::tick(float) {
+/**
+ * FlowControlSettings.
+ */
+FlowControlSettings::FlowControlSettings() :
+    windowSize(0.1) { }
 
 }
-
-void ListingPage::render(ui::Frame &f) {
-  drawBackground(f);
-}
-
-bool ListingPage::handle(const sf::Event &event) {
-  return false;
-}
-
-void ListingPage::reset() {
-
-}
-

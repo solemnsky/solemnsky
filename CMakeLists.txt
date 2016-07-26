@@ -6,7 +6,8 @@ set(CAREFUL_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wno-unused-parameter -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 if (SANITIZE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -fsanitize=address -g")
+  error()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -fsanitize=address -fno-omit-frame-pointer -O2 -g")
 endif ()
 
 # thirdparty submodules that need to be built
@@ -75,6 +76,9 @@ add_library(solemnsky STATIC
 
         src/engine/event.cpp
         src/engine/event.hpp
+
+        src/engine/flowcontrol.cpp
+        src/engine/flowcontrol.hpp
 
         src/engine/player.cpp
         src/engine/player.hpp
@@ -150,9 +154,6 @@ add_executable(solemnsky_client
         src/client/elements/elements.cpp
         src/client/elements/elements.hpp
 
-        src/client/elements/settings.cpp
-        src/client/elements/settings.hpp
-
         src/client/elements/style.cpp
         src/client/elements/style.hpp
 
@@ -220,6 +221,9 @@ add_executable(solemnsky_client
 
         src/ui/resources.cpp
         src/ui/resources.hpp
+
+        src/ui/settings.cpp
+        src/ui/settings.hpp
 
         src/ui/sheet.cpp
         src/ui/sheet.hpp

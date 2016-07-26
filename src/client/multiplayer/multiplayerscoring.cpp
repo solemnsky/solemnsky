@@ -42,6 +42,6 @@ void MultiplayerScoring::signalClear() {
   ui::Control::signalClear();
 }
 
-void MultiplayerScoring::onChangeSettings(const SettingsDelta &settings) {
+void MultiplayerScoring::onChangeSettings(const ui::SettingsDelta &settings) {
 
 }

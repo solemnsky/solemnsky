@@ -18,14 +18,14 @@
 #include "multiplayerlobby.hpp"
 #include "client/elements/style.hpp"
 
-void MultiplayerLobby::doClientAction(const ClientAction action,
+void MultiplayerLobby::doClientAction(const ui::ClientAction action,
                                       const bool state) {
   if (core.messageInteraction.handleClientAction(action, state)) return;
 
   switch (action) {
-    case ClientAction::Spawn:
+    case ui::ClientAction::Spawn:
       break;
-    case ClientAction::Scoreboard:
+    case ui::ClientAction::Scoreboard:
       break;
     default:
       throw enum_error();
@@ -101,7 +101,7 @@ void MultiplayerLobby::signalClear() {
   ui::Control::signalClear();
 }
 
-void MultiplayerLobby::onChangeSettings(const SettingsDelta &settings) {
+void MultiplayerLobby::onChangeSettings(const ui::SettingsDelta &settings) {
 
 }
 

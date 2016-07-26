@@ -25,6 +25,7 @@
 #include "engine/debugview.hpp"
 #include "ui/widgets.hpp"
 #include "client/elements/clientui.hpp"
+#include "engine/event.hpp"
 
 /**
  * A command that can be executed in the sandbox.
@@ -35,6 +36,7 @@ struct SandboxCommand {
     Start, // start a game
     Stop, // stop the game
     Tune, // modify or query some PlaneTuning value
+    DefaultTuning, // reset tuning to default
     DumpTuning // dump the tuning data to disk
   };
 
@@ -53,10 +55,28 @@ struct SandboxCommand {
 
 };
 
+class Sandbox;
+
+/**
+ * ArenaLogger used by the sandbox to catch events.
+ */
+class SandboxLogger: public sky::ArenaLogger {
+ private:
+  Sandbox &sandbox;
+
+ protected:
+  virtual void onEvent(const sky::ArenaEvent &event) override;
+
+ public:
+  SandboxLogger(sky::Arena &arena, Sandbox &sandbox);
+
+};
+
 /**
  * The sandbox -- a sort of boring Game.
  */
-class Sandbox : public Game {
+class Sandbox: public Game {
+  friend class SandboxLogger;
  private:
   // Engine state.
   sky::Arena arena;
@@ -66,8 +86,15 @@ class Sandbox : public Game {
   sky::PlaneTuning spawnTuning; // tuning to use on plane spawn
   sky::Player *player;
 
+  SandboxLogger logger;
+
   // UI features.
   MessageInteraction messageInteraction;
+
+  // Printers.
+  EnginePrinter enginePrinter;
+  ClientPrinter clientPrinter;
+  GameConsolePrinter consolePrinter;
 
   // Submethods.
   void startHandle();
@@ -83,7 +110,7 @@ class Sandbox : public Game {
   Sandbox(ClientShared &state);
 
   // Game impl.
-  void onChangeSettings(const SettingsDelta &settings) override final;
+  void onChangeSettings(const ui::SettingsDelta &settings) override final;
   void onBlur() override final;
   void onFocus() override final;
   void doExit() override final;

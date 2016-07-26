@@ -124,21 +124,26 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
     auto &state = plane->getState();
     auto &tuning = plane->getTuning();
 
+    const float scaleFactor = style.skyRender.planeGraphicsScale
+        * tuning.hitbox.x / 200;
+
     f.withTransform(
         sf::Transform()
             .translate(state.physical.pos)
             .rotate(state.physical.rot), [&]() {
-          f.withAlpha(state.afterburner,
-                      [&]() {
-                        f.drawRect(style.skyRender.afterburnArea,
-                                   sf::Color::Red);
-                      });
 
-          planeSheet.drawIndexAtRoll(f,
-                                     sf::Vector2f(200, 200),
-                                     graphics.roll());
+          f.withTransform(sf::Transform().scale(scaleFactor, scaleFactor), [&]() {
+            // Plane graphics, scaled down so the plane's length is 200 px from this perspective.
+            f.withAlpha(state.afterburner, [&]() {
+              f.drawRect(style.skyRender.afterburnArea,
+                         sf::Color::Red);
+            });
+            planeSheet.drawIndexAtRoll(
+                f, sf::Vector2f(200, 200), graphics.roll());
+          });
 
           if (enableDebug) {
+            // Debug graphics.
             const auto halfHitbox = 0.5f * tuning.hitbox;
             f.drawRect(-halfHitbox, halfHitbox, sf::Color(255, 255, 255, 100));
           }
@@ -190,8 +195,10 @@ void SkyRender::renderMap(ui::Frame &f) {
   }
 }
 
-SkyRender::SkyRender(ClientShared &shared, const ui::AppResources &resources,
-                     Arena &arena, const Sky &sky) :
+SkyRender::SkyRender(ClientShared &shared,
+                     const ui::AppResources &resources,
+                     Arena &arena,
+                     const Sky &sky) :
     ClientComponent(shared),
     Subsystem(arena),
     sky(sky),
@@ -199,7 +206,7 @@ SkyRender::SkyRender(ClientShared &shared, const ui::AppResources &resources,
     sheet(ui::TextureID::PlayerSheet),
     planeSheet(resources.getTextureData(sheet).spritesheetForm.get(),
                resources.getTexture(sheet)),
-    enableDebug(shared.getSettings().enableDebug) {
+    enableDebug(shared.references.settings.enableDebug) {
   arena.forPlayers([&](Player &player) { registerPlayer(player); });
 }
 
@@ -222,7 +229,7 @@ void SkyRender::onTick(const float delta) {
   for (auto &pair : graphics) pair.second.tick(delta);
 }
 
-void SkyRender::onChangeSettings(const SettingsDelta &settings) {
+void SkyRender::onChangeSettings(const ui::SettingsDelta &settings) {
   if (settings.enableDebug) enableDebug = settings.enableDebug.get();
 }
 
