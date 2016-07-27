@@ -19,9 +19,7 @@
  * Configuration values for the launcher and application.
  */
 #pragma once
-#include <SFML/Window.hpp>
 #include "engine/types.hpp"
-#include "util/types.hpp"
 #include "util/inputaction.hpp"
 
 namespace ui {

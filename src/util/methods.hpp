@@ -22,8 +22,8 @@
 #include <SFML/System.hpp>
 #include <Box2D/Box2D.h>
 #include <functional>
-#include <cereal/archives/json.hpp>
 #include "types.hpp"
+#include <cereal/archives/json.hpp>
 #include "util/printer.hpp"
 #include <boost/lexical_cast.hpp>
 

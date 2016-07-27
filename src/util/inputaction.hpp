@@ -89,7 +89,7 @@ struct InputAction {
   void serialize(Archive &ar) {
     ar(cereal::make_nvp("key", key),
        cereal::make_nvp("joyAxis", joyAxis),
-       cereal::make_nvp("isJoyButton", isJoyButton));
+       cereal::make_nvp("isJoyButton", joyButton));
   }
 
   //For visual prettiness

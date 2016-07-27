@@ -18,7 +18,6 @@
 #include <fstream>
 #include "settings.hpp"
 #include "util/methods.hpp"
-#include <cereal/archives/xml.hpp>
 
 namespace ui {
 
@@ -107,7 +106,7 @@ Settings::Settings(const std::string &filepath) :
 
   std::ifstream file(filepath);
   if (file.is_open()) {
-    cereal::XMLInputArchive archive(file);
+    cereal::JSONInputArchive archive(file);
     try {
       archive(*this);
       appLog("Settings loaded!",
@@ -130,7 +129,7 @@ void Settings::writeToFile(const std::string &filepath) const {
 
   std::ofstream file(filepath);
   if (file.is_open()) {
-    cereal::XMLOutputArchive archive(file);
+    cereal::JSONOutputArchive archive(file);
     archive(*this);
   } else {
     appLog("Could not open settings file for writing!", LogOrigin::Error);
