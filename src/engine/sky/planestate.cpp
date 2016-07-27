@@ -86,7 +86,7 @@ PlaneTuning::Flight::Flight() :
     throttleBrakeEffect(0.6),
     throttleGlideDamper(0.5),
     gravityEffect(0.6),
-    afterburnDrive(1.2),
+    afterburnDrive(0.8),
     leftoverDamping(0.3),
     threshold(100) { }
 

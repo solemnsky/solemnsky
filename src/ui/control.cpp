@@ -188,7 +188,7 @@ sf::VideoMode makeVideoMode(const Settings &settings) {
 }
 
 ControlExec::ControlExec() :
-    settingsFile("solemnsky-settings.xml"),
+    settingsFile("solemnsky-settings.json"),
     settings(settingsFile),
 
     window(makeVideoMode(settings), "solemnsky",
