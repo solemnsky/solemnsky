@@ -20,7 +20,7 @@
  */
 #pragma once
 #include "engine/types.hpp"
-#include "util/inputaction.hpp"
+#include "inputaction.hpp"
 
 namespace ui {
 

@@ -17,7 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "inputaction.hpp"
-#include "clientutil.hpp"
+#include "util/clientutil.hpp"
+
+namespace ui {
 
 /**
  * InputAction.
@@ -63,8 +65,8 @@ std::vector<InputAction> InputAction::actionsForEvent(const sf::Event &event) {
       //Return both positive and negative directions because we'll miss some break events
       // due to controllers going from 100.0 to -5.0 in one event
       return {
-        InputAction(event.joystickMove.axis, Positive),
-        InputAction(event.joystickMove.axis, Negative)
+          InputAction(event.joystickMove.axis, Positive),
+          InputAction(event.joystickMove.axis, Negative)
       };
     default:
       //No actions, empty vector
@@ -149,4 +151,6 @@ bool InputAction::operator<(const InputAction &other) const {
   //thisAxis && joyAxis: Whichever's direction is "less" than the other (in the enum)
   if (joyAxis->first == other.joyAxis->first) return joyAxis->second < other.joyAxis->second;
   return joyAxis->first < other.joyAxis->first;
+}
+
 }

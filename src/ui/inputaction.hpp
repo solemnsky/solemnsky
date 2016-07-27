@@ -21,16 +21,18 @@
 #include <SFML/Window.hpp>
 #include "util/types.hpp"
 
+namespace ui {
+
 /**
  * Input Actions that signifiy either a key, joystick axis (in one direction), or joystick button.
  * Actions don't have a make/break field, but you can test an event against an action to
  * see if that event would be a make event for the action.
  */
 struct InputAction {
-  enum AxisDirection {
-    Positive,
-    Negative
-  };
+    enum AxisDirection {
+      Positive,
+      Negative
+    };
 
   typedef unsigned int JoystickButton;
 
@@ -95,3 +97,5 @@ struct InputAction {
   //For visual prettiness
   std::string getName() const;
 };
+
+}

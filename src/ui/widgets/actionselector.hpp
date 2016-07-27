@@ -21,7 +21,7 @@
 #pragma once
 #include "ui/control.hpp"
 #include "button.hpp"
-#include "util/inputaction.hpp"
+#include "ui/inputaction.hpp"
 
 namespace ui {
 

@@ -219,6 +219,9 @@ add_executable(solemnsky_client
         src/ui/frame.cpp
         src/ui/frame.hpp
 
+        src/ui/inputaction.cpp
+        src/ui/inputaction.hpp
+
         src/ui/resources.cpp
         src/ui/resources.hpp
 
@@ -238,9 +241,6 @@ add_executable(solemnsky_client
 
         src/util/clientutil.cpp
         src/util/clientutil.hpp
-
-        src/util/inputaction.cpp
-        src/util/inputaction.hpp
         )
 target_link_libraries(solemnsky_client
         solemnsky

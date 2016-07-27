@@ -52,11 +52,11 @@ ClientShared::ClientShared(Client &client, const ui::AppRefs &references) :
 template<typename T>
 std::vector<std::pair<T, bool>>
 bindingsFromEvent(const sf::Event &event,
-                  const std::map<InputAction, T> &map) {
-  std::vector<InputAction> actions = InputAction::actionsForEvent(event);
+                  const std::map<ui::InputAction, T> &map) {
+  const auto actions = ui::InputAction::actionsForEvent(event);
   std::vector<std::pair<T, bool>> makes;
 
-  for (const InputAction &action : actions) {
+  for (const ui::InputAction &action : actions) {
     bool make = action.isMake(event);
     const auto &find = map.find(action);
 
