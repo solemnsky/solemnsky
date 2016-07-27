@@ -19,9 +19,8 @@
  * Configuration values for the launcher and application.
  */
 #pragma once
-#include <SFML/Window.hpp>
 #include "engine/types.hpp"
-#include "util/types.hpp"
+#include "inputaction.hpp"
 
 namespace ui {
 
@@ -40,14 +39,14 @@ std::string showClientAction(const ClientAction action);
 /**
  * Key bindings for the client.
  */
-struct KeyBindings {
-  KeyBindings();
+struct ActionBindings {
+  ActionBindings();
 
-  optional<sf::Keyboard::Key> lookupBinding(sky::Action) const;
-  optional<sf::Keyboard::Key> lookupClientBinding(ClientAction) const;
+  optional<InputAction> lookupBinding(sky::Action) const;
+  optional<InputAction> lookupClientBinding(ClientAction) const;
 
-  std::map<sf::Keyboard::Key, sky::Action> skyBindings;
-  std::map<sf::Keyboard::Key, ClientAction> clientBindings;
+  std::map<InputAction, sky::Action> skyBindings;
+  std::map<InputAction, ClientAction> clientBindings;
 };
 
 /**
@@ -67,7 +66,7 @@ struct Settings {
   // Client settings.
   bool enableDebug;
   std::string nickname;
-  KeyBindings bindings;
+  ActionBindings bindings;
 
 };
 
@@ -85,7 +84,7 @@ struct SettingsDelta {
   optional<bool> fullscreen;
   optional<bool> enableDebug;
   optional<std::string> nickname;
-  optional<KeyBindings> bindings;
+  optional<ActionBindings> bindings;
 };
 
 }

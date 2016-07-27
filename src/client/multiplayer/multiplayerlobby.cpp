@@ -72,9 +72,8 @@ void MultiplayerLobby::render(ui::Frame &f) {
 bool MultiplayerLobby::handle(const sf::Event &event) {
   if (ui::Control::handle(event)) return true;
 
-  if (const auto action = shared.triggerClientAction(event)) {
-    doClientAction(action->first, action->second);
-    return true;
+  for (const auto &action : shared.findClientActions(event)) {
+    doClientAction(action.first, action.second);
   }
 
   return false;

@@ -21,19 +21,20 @@
 #pragma once
 #include "ui/control.hpp"
 #include "button.hpp"
+#include "ui/inputaction.hpp"
 
 namespace ui {
 
-class KeySelector: public ui::Control {
+class ActionSelector: public ui::Control {
  private:
   Button button;
-  optional<sf::Keyboard::Key> value;
+  optional<InputAction> value;
   bool capturing;
 
  public:
   typedef Button::Style Style;
 
-  KeySelector(const AppRefs &references,
+  ActionSelector(const AppRefs &references,
               const Style &style, const sf::Vector2f &pos);
 
   // Control impl.
@@ -44,8 +45,8 @@ class KeySelector: public ui::Control {
   void signalClear() override;
 
   // Custom API.
-  void setValue(const optional<sf::Keyboard::Key> key);
-  optional<sf::Keyboard::Key> getValue() const;
+  void setValue(const optional<InputAction> action);
+  optional<InputAction> getValue() const;
 
   void setDescription(const optional<std::string> &description);
 

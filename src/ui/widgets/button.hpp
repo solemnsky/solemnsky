@@ -52,7 +52,7 @@ class Button: public Control {
 
   sf::FloatRect getBody();
 
-  friend class KeySelector;
+  friend class ActionSelector;
   TextFormat textFormat, descriptionFormat; // deduced from the style
 
  public:

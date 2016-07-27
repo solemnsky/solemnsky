@@ -130,22 +130,28 @@ void ControlExec::tick() {
 void ControlExec::handle() {
   static sf::Event event;
   while (window.pollEvent(event)) {
-    if (event.type == sf::Event::Closed) {
-      appLog("Caught close signal.", LogOrigin::App);
-      window.close();
-    }
+    switch (event.type) {
+      case sf::Event::Closed:
+        appLog("Caught close signal.", LogOrigin::App);
+        window.close();
+        break;
+      case sf::Event::Resized:
+        resizeCooldown.reset();
+        frame.resize();
+        break;
+      case sf::Event::LostFocus:
+        ctrl->reset();
+        break;
 
-    if (event.type == sf::Event::Resized) {
-      resizeCooldown.reset();
-      frame.resize();
-    }
+      case sf::Event::MouseWheelScrolled:
+        // fk mouse wheels
+        break;
 
-    if (event.type == sf::Event::LostFocus) ctrl->reset();
-
-    if (event.type != sf::Event::MouseWheelScrolled) { // fk mouse wheels
-      ctrl->handle(transformEvent(frame.windowToFrame, event));
-      ctrl->signalRead();
-      ctrl->signalClear();
+      default:
+        ctrl->handle(transformEvent(frame.windowToFrame, event));
+        ctrl->signalRead();
+        ctrl->signalClear();
+        break;
     }
   }
 }
@@ -182,7 +188,7 @@ sf::VideoMode makeVideoMode(const Settings &settings) {
 }
 
 ControlExec::ControlExec() :
-    settingsFile("solemnsky-settings.xml"),
+    settingsFile("solemnsky-settings.json"),
     settings(settingsFile),
 
     window(makeVideoMode(settings), "solemnsky",

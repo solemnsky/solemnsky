@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <cereal/archives/xml.hpp>
 #include <fstream>
 #include "settings.hpp"
 #include "util/methods.hpp"
@@ -57,7 +56,7 @@ void serialize(Archive &ar, Settings &settings) {
 }
 
 template<typename Archive>
-void serialize(Archive &ar, KeyBindings &bindings) {
+void serialize(Archive &ar, ActionBindings &bindings) {
   ar(cereal::make_nvp("engine", bindings.skyBindings),
      cereal::make_nvp("client", bindings.clientBindings));
 }
@@ -66,7 +65,7 @@ void serialize(Archive &ar, KeyBindings &bindings) {
  * Settings.
  */
 
-KeyBindings::KeyBindings() {
+ActionBindings::ActionBindings() {
   skyBindings.emplace(sf::Keyboard::I, sky::Action::Thrust);
   skyBindings.emplace(sf::Keyboard::K, sky::Action::Reverse);
   skyBindings.emplace(sf::Keyboard::J, sky::Action::Left);
@@ -81,14 +80,14 @@ KeyBindings::KeyBindings() {
   clientBindings.emplace(sf::Keyboard::Tab, ClientAction::Scoreboard);
 }
 
-optional<sf::Keyboard::Key> KeyBindings::lookupBinding(
+optional<InputAction> ActionBindings::lookupBinding(
     const sky::Action action) const {
   for (const auto pair : skyBindings)
     if (pair.second == action) return {pair.first};
   return {};
 }
 
-optional<sf::Keyboard::Key> KeyBindings::lookupClientBinding(
+optional<InputAction> ActionBindings::lookupClientBinding(
     const ClientAction action) const {
   for (const auto pair : clientBindings)
     if (pair.second == action) return {pair.first};
@@ -107,7 +106,7 @@ Settings::Settings(const std::string &filepath) :
 
   std::ifstream file(filepath);
   if (file.is_open()) {
-    cereal::XMLInputArchive archive(file);
+    cereal::JSONInputArchive archive(file);
     try {
       archive(*this);
       appLog("Settings loaded!",
@@ -130,7 +129,7 @@ void Settings::writeToFile(const std::string &filepath) const {
 
   std::ofstream file(filepath);
   if (file.is_open()) {
-    cereal::XMLOutputArchive archive(file);
+    cereal::JSONOutputArchive archive(file);
     archive(*this);
   } else {
     appLog("Could not open settings file for writing!", LogOrigin::Error);

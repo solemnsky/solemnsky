@@ -50,17 +50,32 @@ ClientShared::ClientShared(Client &client, const ui::AppRefs &references) :
     client(client), references(references) {}
 
 template<typename T>
-optional<std::pair<T, bool>>
-bindingFromEvent(const sf::Event &event,
-                 const std::map<sf::Keyboard::Key, T> &map) {
-  bool value = event.type == sf::Event::KeyPressed;
-  if (value or event.type == sf::Event::KeyReleased) {
-    const auto &action = map.find(event.key.code);
-    if (action != map.end())
-      return {std::pair<T, bool>(action->second, value)};
+std::vector<std::pair<T, bool>>
+bindingsFromEvent(const sf::Event &event,
+                  const std::map<ui::InputAction, T> &map) {
+  const auto actions = ui::InputAction::actionsForEvent(event);
+  std::vector<std::pair<T, bool>> makes;
+
+  for (const ui::InputAction &action : actions) {
+    bool make = action.isMake(event);
+    const auto &find = map.find(action);
+
+    if (find != map.end()) {
+      makes.push_back(std::make_pair(find->second, make));
+    }
   }
 
-  return {};
+  return makes;
+}
+
+std::vector<std::pair<sky::Action, bool>>
+ClientShared::findSkyActions(const sf::Event &event) const {
+  return bindingsFromEvent(event, client.settings.bindings.skyBindings);
+}
+
+std::vector<std::pair<ui::ClientAction, bool>>
+ClientShared::findClientActions(const sf::Event &event) const {
+  return bindingsFromEvent(event, client.settings.bindings.clientBindings);
 }
 
 const Game *ClientShared::getGame() const {
@@ -98,16 +113,5 @@ void ClientShared::blurPage() {
 void ClientShared::changeSettings(const ui::SettingsDelta &settings) {
   client.changeSettings(settings);
 }
-
-optional<std::pair<sky::Action, bool>>
-ClientShared::triggerSkyAction(const sf::Event &event) const {
-  return bindingFromEvent(event, client.settings.bindings.skyBindings);
-}
-
-optional<std::pair<ui::ClientAction, bool>>
-ClientShared::triggerClientAction(const sf::Event &event) const {
-  return bindingFromEvent(event, client.settings.bindings.clientBindings);
-}
-
 
 

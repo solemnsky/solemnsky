@@ -49,12 +49,15 @@ struct PlaneTuning {
   }
 
   sf::Vector2f hitbox; // x axis parallel with flight direction
-  float maxHealth, throttleSpeed;
+  float maxHealth,
+        throttleSpeed; // how quickly the throttle is modified
 
   struct Energy {
     Energy();
     // energy mechanics
-    float thrustDrain, recharge, laserGun;
+    float thrustDrain, // rate of energy used by the afterburner
+          recharge,  // rate of energy replenished
+          laserGun; // amount of energy used by the laser gun
     // weapon mechanics
     float primaryRecharge;
 
@@ -70,10 +73,10 @@ struct PlaneTuning {
   struct Stall {
     Stall();
     // mechanics when stalled
-    float maxRotVel, // how quickly we can turn, (deg / s)
-        maxVel, // our terminal velocity (px / s)
-        thrust, // thrust acceleration (ps / s^2)
-        damping; // how quickly we approach our terminal velocity
+    float maxRotVel, // how quickly we can turn
+        maxVel, // our terminal velocity
+        thrust, // thrust acceleration
+        damping; // magic value related to the damping towards the terminal velocity
     float threshold; // the minimum airspeed that we need to enter flight
 
     template<typename Archive>
@@ -90,13 +93,14 @@ struct PlaneTuning {
     Flight();
     // mechanics when not stalled
     float maxRotVel, // how quickly we can turn
-        airspeedFactor,
-        throttleInfluence,
-        throttleEffect,
-        throttleBrakeEffect,
-        gravityEffect,
-        afterburnDrive,
-        leftoverDamping;
+        airspeedFactor, // maximum speed we can achieve in air without afterburner
+        throttleInfluence, // proportion of normal airspeed that can be achieved with the throttle
+        throttleEffect, // effect the throttle has to increase the airspeed within the throttle influence
+        throttleBrakeEffect, // effect the throttle has to decrease the airspeed within the throttle influence
+        throttleGlideDamper, // fraction of the brake effect exerted by the throttle outside of its influence
+        gravityEffect, // effect gravity has to modify the airspeed
+        afterburnDrive, // effect the afterburner has to increase the airspeed
+        leftoverDamping; // magic value related to the damping of the sideways velocity we break a stall with
     float threshold; // the maximum airspeed that we need to enter stall
 
     template<typename Archive>
@@ -106,6 +110,7 @@ struct PlaneTuning {
          cereal::make_nvp("throttleInfluence", throttleInfluence),
          cereal::make_nvp("throttleEffect", throttleEffect),
          cereal::make_nvp("throttleBrakeEffect", throttleBrakeEffect),
+         cereal::make_nvp("throttleGlideDamper", throttleGlideDamper),
          cereal::make_nvp("gravityEffect", gravityEffect),
          cereal::make_nvp("afterburnDrive", afterburnDrive),
          cereal::make_nvp("leftoverDamping", leftoverDamping),

@@ -107,13 +107,17 @@ void Plane::tickFlight(const TimeDiff delta) {
     }
     state.airspeed += speedMod;
 
-    const float targetThrottle = state.throttle * tuning.flight.throttleInfluence;
+    const float targetThrottle = state.throttle * tuning.flight.throttleInfluence,
+          throttleEffectFactor = 
+            (state.airspeed <= tuning.flight.throttleInfluence || state.throttle < 0.9)
+            ? 1 : tuning.flight.throttleGlideDamper;
+
     if (state.airspeed > targetThrottle) {
       approach(state.airspeed, targetThrottle,
-               tuning.flight.throttleBrakeEffect * delta);
+               tuning.flight.throttleBrakeEffect * throttleEffectFactor * delta);
     } else {
       approach(state.airspeed, targetThrottle,
-               tuning.flight.throttleEffect * delta);
+               tuning.flight.throttleEffect * throttleEffectFactor * delta);
     }
 
 

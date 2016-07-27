@@ -20,7 +20,7 @@
  */
 #include "ui/widgets/button.hpp"
 #include "ui/widgets/checkbox.hpp"
-#include "ui/widgets/keyselector.hpp"
+#include "ui/widgets/actionselector.hpp"
 #include "ui/widgets/textlog.hpp"
 #include "ui/widgets/textentry.hpp"
 #include "ui/widgets/transformed.hpp"

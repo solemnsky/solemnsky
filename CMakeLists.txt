@@ -201,8 +201,8 @@ add_executable(solemnsky_client
         src/ui/widgets/checkbox.cpp
         src/ui/widgets/checkbox.hpp
 
-        src/ui/widgets/keyselector.cpp
-        src/ui/widgets/keyselector.hpp
+        src/ui/widgets/actionselector.cpp
+        src/ui/widgets/actionselector.hpp
 
         src/ui/widgets/textentry.cpp
         src/ui/widgets/textentry.hpp
@@ -218,6 +218,9 @@ add_executable(solemnsky_client
 
         src/ui/frame.cpp
         src/ui/frame.hpp
+
+        src/ui/inputaction.cpp
+        src/ui/inputaction.hpp
 
         src/ui/resources.cpp
         src/ui/resources.hpp

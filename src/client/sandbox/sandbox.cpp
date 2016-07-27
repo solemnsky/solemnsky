@@ -231,14 +231,14 @@ void Sandbox::render(ui::Frame &f) {
 bool Sandbox::handle(const sf::Event &event) {
   if (ui::Control::handle(event)) return true;
 
-  if (auto action = shared.triggerClientAction(event)) {
-    if (messageInteraction.handleClientAction(action->first, action->second)) return true;
+  for (const auto &action : shared.findClientActions(event)) {
+    if (messageInteraction.handleClientAction(action.first, action.second)) return true;
 
     if (auto sky = skyHandle.getSky()) {
       const auto &participation = sky->getParticipation(*player);
 
-      if (action->first == ui::ClientAction::Spawn
-          and action->second
+      if (action.first == ui::ClientAction::Spawn
+          and action.second
           and !participation.isSpawned()) {
         const auto spawnPoint = sky->getMap().pickSpawnPoint(sky::Team::Spectator);
         player->spawn(spawnTuning, spawnPoint.pos, spawnPoint.angle);
@@ -247,8 +247,8 @@ bool Sandbox::handle(const sf::Event &event) {
     }
   }
 
-  if (auto action = shared.triggerSkyAction(event)) {
-    player->doAction(action->first, action->second);
+  for (const auto &action : shared.findSkyActions(event)) {
+    player->doAction(action.first, action.second);
   }
 
   return false;

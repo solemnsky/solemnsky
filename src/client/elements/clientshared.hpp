@@ -81,9 +81,9 @@ struct ClientShared {
   void changeSettings(const ui::SettingsDelta &settings);
 
   // Access key bindings.
-  optional<std::pair<sky::Action, bool>> triggerSkyAction(
+  std::vector<std::pair<sky::Action, bool>> findSkyActions(
       const sf::Event &event) const;
-  optional<std::pair<ui::ClientAction, bool>> triggerClientAction(
+  std::vector<std::pair<ui::ClientAction, bool>> findClientActions(
       const sf::Event &event) const;
 
 
