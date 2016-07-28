@@ -72,6 +72,7 @@ void SkyHandle::applyDelta(const SkyHandleDelta &delta) {
     environment.emplace(delta.get());
     caller.doStartGame();
   } else {
+    sky.reset();
     environment.reset();
     caller.doEndGame();
   }

@@ -36,12 +36,23 @@ class MultiplayerGameHandle : public MultiplayerView {
  public:
   MultiplayerGameHandle(ClientShared &shared, MultiplayerCore &core);
 
-  // Control impl.
-  virtual bool poll() override;
-  virtual void tick(const TimeDiff delta) override;
-  virtual void render(ui::Frame &f) override;
-  virtual bool handle(const sf::Event &event) override;
+  // We have to pass all the callbacks through!
 
+  // Control impl.
+  bool poll() override final;
+  void tick(const TimeDiff delta) override final;
+  void render(ui::Frame &f) override final;
+  void reset() override final;
+  void signalRead() override final;
+  void signalClear() override final;
+  bool handle(const sf::Event &event) override final;
+
+  // ClientComponent impl.
+  void onChangeSettings(const ui::SettingsDelta &delta) override final;
+
+  // MultiplayerView impl.
+  void handleSkyAction(const sky::Action action, const bool state) override final;
+  void handleClientAction(const ui::ClientAction action, const bool state) override final;
 };
 
 
