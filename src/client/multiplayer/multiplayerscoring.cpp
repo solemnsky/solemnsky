@@ -20,7 +20,9 @@
 
 MultiplayerScoring::MultiplayerScoring(
     ClientShared &shared, MultiplayerCore &connection) :
-    MultiplayerView(shared, connection) {}
+    MultiplayerView(shared, connection) {
+  areChildren({&core.messageInteraction});
+}
 
 void MultiplayerScoring::tick(float delta) {
 
@@ -31,11 +33,15 @@ void MultiplayerScoring::render(ui::Frame &f) {
 }
 
 bool MultiplayerScoring::handle(const sf::Event &event) {
-  return false;
+  return ui::Control::handle(event);
 }
 
 void MultiplayerScoring::signalRead() {
   ui::Control::signalRead();
+
+  if (const auto &signal = core.messageInteraction.inputSignal) {
+    core.handleChatInput(signal.get());
+  }
 }
 
 void MultiplayerScoring::signalClear() {

@@ -80,12 +80,6 @@ struct ClientShared {
 
   void changeSettings(const ui::SettingsDelta &settings);
 
-  // Access key bindings.
-  std::vector<std::pair<sky::Action, bool>> findSkyActions(
-      const sf::Event &event) const;
-  std::vector<std::pair<ui::ClientAction, bool>> findClientActions(
-      const sf::Event &event) const;
-
 
 };
 

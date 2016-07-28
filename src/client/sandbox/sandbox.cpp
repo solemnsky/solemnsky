@@ -231,7 +231,7 @@ void Sandbox::render(ui::Frame &f) {
 bool Sandbox::handle(const sf::Event &event) {
   if (ui::Control::handle(event)) return true;
 
-  for (const auto &action : shared.findClientActions(event)) {
+  for (const auto &action : settings.bindings.findClientActions(event)) {
     if (messageInteraction.handleClientAction(action.first, action.second)) return true;
 
     if (auto sky = skyHandle.getSky()) {
@@ -247,7 +247,7 @@ bool Sandbox::handle(const sf::Event &event) {
     }
   }
 
-  for (const auto &action : shared.findSkyActions(event)) {
+  for (const auto &action : settings.bindings.findSkyActions(event)) {
     player->doAction(action.first, action.second);
   }
 

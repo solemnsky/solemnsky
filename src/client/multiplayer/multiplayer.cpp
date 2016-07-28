@@ -116,6 +116,7 @@ bool Multiplayer::poll() {
 }
 
 void Multiplayer::tick(const TimeDiff delta) {
+  ui::Control::tick(delta);
   core.tick(delta);
 
   if (core.isDisconnected()) quitting = true;
@@ -142,7 +143,24 @@ void Multiplayer::render(ui::Frame &f) {
 }
 
 bool Multiplayer::handle(const sf::Event &event) {
-  if (view) return view->handle(event);
+  if (view) {
+    if (view->handle(event)) return true;
+
+    bool bindingFound{false};
+    const auto &bindings = settings.bindings;
+    for (const auto &action : bindings.findClientActions(event)) {
+      bindingFound = true;
+      if (core.messageInteraction.handleClientAction(action.first, action.second)) continue;
+      view->handleClientAction(action.first, action.second);
+    }
+    for (const auto &action : bindings.findSkyActions(event)) {
+      view->handleSkyAction(action.first, action.second);
+      bindingFound = true;
+    }
+
+    return bindingFound;
+  }
+
   return false;
 }
 
@@ -155,6 +173,7 @@ void Multiplayer::signalRead() {
 }
 
 void Multiplayer::signalClear() {
+  core.messageInteraction.signalClear();
   if (view) view->signalClear();
 }
 

@@ -18,20 +18,6 @@
 #include "multiplayerlobby.hpp"
 #include "client/elements/style.hpp"
 
-void MultiplayerLobby::doClientAction(const ui::ClientAction action,
-                                      const bool state) {
-  if (core.messageInteraction.handleClientAction(action, state)) return;
-
-  switch (action) {
-    case ui::ClientAction::Spawn:
-      break;
-    case ui::ClientAction::Scoreboard:
-      break;
-    default:
-      throw enum_error();
-  }
-}
-
 MultiplayerLobby::MultiplayerLobby(
     ClientShared &shared, MultiplayerCore &connection) :
     MultiplayerView(shared, connection),
@@ -57,26 +43,20 @@ void MultiplayerLobby::render(ui::Frame &f) {
 
   f.drawText(
       style.game.playerListPos, [&](Printer &p) {
-        conn.arena.forPlayers([&](const sky::Player &player) {
-          p.setColor(0, 0, 0);
-          if (player.getTeam() == sky::Team::Red) p.setColor(255, 0, 0);
-          if (player.getTeam() == sky::Team::Blue) p.setColor(0, 0, 255);
-          p.print(player.getNickname());
-          p.breakLine();
-        });
-      }, style.game.playerListText, resources.defaultFont);
+    conn.arena.forPlayers([&](const sky::Player &player) {
+      p.setColor(0, 0, 0);
+      if (player.getTeam() == sky::Team::Red) p.setColor(255, 0, 0);
+      if (player.getTeam() == sky::Team::Blue) p.setColor(0, 0, 255);
+      p.print(player.getNickname());
+      p.breakLine();
+    });
+  }, style.game.playerListText, resources.defaultFont);
 
   ui::Control::render(f);
 }
 
 bool MultiplayerLobby::handle(const sf::Event &event) {
-  if (ui::Control::handle(event)) return true;
-
-  for (const auto &action : shared.findClientActions(event)) {
-    doClientAction(action.first, action.second);
-  }
-
-  return false;
+  return ui::Control::handle(event);
 }
 
 void MultiplayerLobby::reset() {
@@ -92,6 +72,7 @@ void MultiplayerLobby::signalRead() {
     core.requestTeamChange(sky::Team::Red);
   if (blueButton.clickSignal)
     core.requestTeamChange(sky::Team::Blue);
+
   if (const auto &signal = core.messageInteraction.inputSignal) {
     core.handleChatInput(signal.get());
   }
@@ -104,4 +85,17 @@ void MultiplayerLobby::signalClear() {
 void MultiplayerLobby::onChangeSettings(const ui::SettingsDelta &settings) {
 
 }
+
+void MultiplayerLobby::handleClientAction(const ui::ClientAction action,
+                                          const bool state) {
+  switch (action) {
+    case ui::ClientAction::Spawn:
+      break;
+    case ui::ClientAction::Scoreboard:
+      break;
+    default:
+      throw enum_error();
+  }
+}
+
 

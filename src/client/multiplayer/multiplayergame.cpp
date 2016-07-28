@@ -22,22 +22,6 @@
  * MultiplayerGame.
  */
 
-void MultiplayerGame::doClientAction(const ui::ClientAction action,
-                                     const bool state) {
-  if (core.messageInteraction.handleClientAction(action, state)) return;
-  switch (action) {
-    case ui::ClientAction::Spawn: {
-      if (state) core.transmit(sky::ClientPacket::ReqSpawn());
-      break;
-    }
-    case ui::ClientAction::Scoreboard: {
-      scoreboardFocused = state;
-      break;
-    }
-    default: {}
-  }
-}
-
 void MultiplayerGame::printScores(ui::TextFrame &tf, const sky::Team team) {
   const sf::Color color = (team == sky::Team::Red) ? sf::Color::Red : sf::Color::Blue;
 
@@ -124,32 +108,48 @@ void MultiplayerGame::render(ui::Frame &f) {
 }
 
 bool MultiplayerGame::handle(const sf::Event &event) {
-  if (ui::Control::handle(event)) return true;
-
-  for (const auto &action : shared.findSkyActions(event)) {
-    conn.player.doAction(action.first, action.second);
-  }
-  for (const auto &clientAction : shared.findClientActions(event)) {
-    doClientAction(clientAction.first, clientAction.second);
-  }
-
-  return false;
+  return ui::Control::handle(event);
 }
 
 void MultiplayerGame::signalRead() {
   ui::Control::signalRead();
+
+  if (const auto &signal = core.messageInteraction.inputSignal) {
+    core.handleChatInput(signal.get());
+  }
 }
 
 void MultiplayerGame::signalClear() {
   ui::Control::signalClear();
 }
 
+void MultiplayerGame::handleSkyAction(const sky::Action action, const bool state) {
+  conn.player.doAction(action, state);
+}
+
+void MultiplayerGame::handleClientAction(const ui::ClientAction action,
+                                         const bool state) {
+  switch (action) {
+    case ui::ClientAction::Spawn: {
+      if (state) core.transmit(sky::ClientPacket::ReqSpawn());
+      break;
+    }
+    case ui::ClientAction::Scoreboard: {
+      scoreboardFocused = state;
+      break;
+    }
+    default: {
+    }
+  }
+}
+
+
 /**
  * MultiplayerSplash.
  */
 
 MultiplayerSplash::MultiplayerSplash(ClientShared &shared, MultiplayerCore &core) :
-    MultiplayerView(shared, core) {}
+    MultiplayerView(shared, core) { }
 
 void MultiplayerSplash::tick(float delta) {
   ui::Control::tick(delta);

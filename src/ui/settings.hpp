@@ -47,6 +47,13 @@ struct ActionBindings {
 
   std::map<InputAction, sky::Action> skyBindings;
   std::map<InputAction, ClientAction> clientBindings;
+
+  // Access key bindings.
+  std::vector<std::pair<sky::Action, bool>> findSkyActions(
+      const sf::Event &event) const;
+  std::vector<std::pair<ui::ClientAction, bool>> findClientActions(
+      const sf::Event &event) const;
+
 };
 
 /**

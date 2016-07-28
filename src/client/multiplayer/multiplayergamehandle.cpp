@@ -38,7 +38,7 @@ bool MultiplayerGameHandle::poll() {
 }
 
 void MultiplayerGameHandle::tick(const TimeDiff delta) {
-  if (!gameView && conn.skyHandle.getSky()) {
+  if (!gameView and conn.skyHandle.getSky()) {
     gameView.emplace(shared, core);
   }
 

@@ -26,14 +26,13 @@
  * The game interface itself. Assumes that the Sky is instantiated.
  * This is the most important thing in the client.
  */
-class MultiplayerGame : public MultiplayerView {
+class MultiplayerGame: public MultiplayerView {
  private:
   bool scoreboardFocused;
   sky::SkyRender skyRender;
   const sky::Participation &participation;
 
   // Helper subroutines.
-  void doClientAction(const ui::ClientAction action, const bool state);
   void printScores(ui::TextFrame &tf, const sky::Team team);
   void printSpectators(ui::TextFrame &tf);
   void renderScoreboard(ui::Frame &f);
@@ -48,12 +47,16 @@ class MultiplayerGame : public MultiplayerView {
   void signalRead() override;
   void signalClear() override;
 
+  // MultiplayerView impl.
+  void handleSkyAction(const sky::Action action, const bool state) override;
+  void handleClientAction(const ui::ClientAction action, const bool state) override final;
+
 };
 
 /**
  * MultiplayerGameHandle waits for this to quit before moving on to the game.
  */
-class MultiplayerSplash : public MultiplayerView {
+class MultiplayerSplash: public MultiplayerView {
  private:
  public:
   MultiplayerSplash(ClientShared &shared, MultiplayerCore &core);

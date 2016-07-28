@@ -94,6 +94,35 @@ optional<InputAction> ActionBindings::lookupClientBinding(
   return {};
 }
 
+template<typename T>
+std::vector<std::pair<T, bool>>
+bindingsFromEvent(const sf::Event &event,
+                  const std::map<ui::InputAction, T> &map) {
+  const auto actions = ui::InputAction::actionsForEvent(event);
+  std::vector<std::pair<T, bool>> makes;
+
+  for (const ui::InputAction &action : actions) {
+    bool make = action.isMake(event);
+    const auto &find = map.find(action);
+
+    if (find != map.end()) {
+      makes.push_back(std::make_pair(find->second, make));
+    }
+  }
+
+  return makes;
+}
+
+std::vector<std::pair<sky::Action, bool>>
+ActionBindings::findSkyActions(const sf::Event &event) const {
+  return bindingsFromEvent(event, skyBindings);
+}
+
+std::vector<std::pair<ui::ClientAction, bool>>
+ActionBindings::findClientActions(const sf::Event &event) const {
+  return bindingsFromEvent(event, clientBindings);
+}
+
 /**
  * Settings.
  */

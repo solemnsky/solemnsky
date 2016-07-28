@@ -32,7 +32,7 @@
  * ArenaLogger proxy for MultiplayerCore, to intercept arena events for
  * the MultiplayerCore event log.
  */
-class MultiplayerLogger : public sky::ArenaLogger {
+class MultiplayerLogger: public sky::ArenaLogger {
  private:
   class MultiplayerCore &core;
 
@@ -47,7 +47,7 @@ class MultiplayerLogger : public sky::ArenaLogger {
  * Subsystem proxy for MultiplayerCore, to intercept subsystem callbacks to
  * relay to ConnectionListener.
  */
-class MultiplayerSubsystem : public sky::Subsystem<Nothing> {
+class MultiplayerSubsystem: public sky::Subsystem<Nothing> {
  private:
   class MultiplayerCore &core;
 
@@ -91,10 +91,10 @@ struct ArenaConnection {
  */
 class ConnectionObserver {
  public:
-  virtual void onConnect() {}
-  virtual void onLoadMode(const sky::ArenaMode newMode) {}
-  virtual void onStartGame() {}
-  virtual void onEndGame() {}
+  virtual void onConnect() { }
+  virtual void onLoadMode(const sky::ArenaMode newMode) { }
+  virtual void onStartGame() { }
+  virtual void onEndGame() { }
 
 };
 
@@ -102,7 +102,7 @@ class ConnectionObserver {
  * The core state of the multiplayer client, allocated for Multiplayer for
  * use by MultiplayerView.
  */
-class MultiplayerCore : public ClientComponent {
+class MultiplayerCore: public ClientComponent {
   friend class MultiplayerLogger;
   friend class MultiplayerSubsystem;
  private:
@@ -170,12 +170,12 @@ class MultiplayerCore : public ClientComponent {
 };
 
 /**
- * A particular interface we can offer the user.
+ * A game interface we can offer the user.
  *
  * Throughout the course of a client's activity in a server, we may go through various
  * interfaces: the lobby, a loading screen, the game, the scoring screen, etc.
  */
-class MultiplayerView : public ClientComponent, public ui::Control {
+class MultiplayerView: public ClientComponent, public ui::Control {
  public:
   // Shared state.
   MultiplayerCore &core;
@@ -184,5 +184,9 @@ class MultiplayerView : public ClientComponent, public ui::Control {
   MultiplayerView(
       ClientShared &shared,
       MultiplayerCore &core);
+
+  // Callbacks.
+  virtual void handleSkyAction(const sky::Action action, const bool state) { }
+  virtual void handleClientAction(const ui::ClientAction action, const bool state) { }
 
 };

@@ -40,10 +40,12 @@ void MultiplayerSubsystem::onMode(const sky::ArenaMode newMode) {
 }
 
 void MultiplayerSubsystem::onStartGame() {
+  core.onStartGame();
   core.observer.onStartGame();
 }
 
 void MultiplayerSubsystem::onEndGame() {
+  core.onEndGame();
   core.observer.onEndGame();
 }
 
@@ -76,11 +78,11 @@ sky::Sky *ArenaConnection::getSky() {
  */
 
 void MultiplayerCore::onStartGame() {
-  askedSky = false;
+
 }
 
 void MultiplayerCore::onEndGame() {
-  askedSky = true;
+  askedSky = false;
 }
 
 void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
@@ -300,8 +302,7 @@ bool MultiplayerCore::poll() {
 }
 
 void MultiplayerCore::tick(const float delta) {
-  host.tick(delta);
-
+  host.tick(delta);;
   if (conn) {
     conn->arena.tick(delta);
 

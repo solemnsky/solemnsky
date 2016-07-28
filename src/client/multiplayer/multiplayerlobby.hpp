@@ -27,24 +27,27 @@
  * the game to start.
  */
 
-class MultiplayerLobby : public MultiplayerView {
+class MultiplayerLobby: public MultiplayerView {
  private:
   ui::Button specButton;
   ui::Button redButton;
   ui::Button blueButton;
 
-  void doClientAction(const ui::ClientAction action, const bool state);
-
  public:
   MultiplayerLobby(ClientShared &shared, MultiplayerCore &connection);
 
-  void tick(float delta) override;
-  void render(ui::Frame &f) override;
-  bool handle(const sf::Event &event) override;
-  void reset() override;
-  void signalRead() override;
-  void signalClear() override;
+  // Control impl.
+  void tick(float delta) override final;
+  void render(ui::Frame &f) override final;
+  bool handle(const sf::Event &event) override final;
+  void reset() override final;
+  void signalRead() override final;
+  void signalClear() override final;
 
-  void onChangeSettings(const ui::SettingsDelta &settings) override;
+  // ClientComponent impl.
+  void onChangeSettings(const ui::SettingsDelta &settings) override final;
+
+  // MultiplayerView impl.
+  void handleClientAction(const ui::ClientAction action, const bool state) override final;
 
 };
