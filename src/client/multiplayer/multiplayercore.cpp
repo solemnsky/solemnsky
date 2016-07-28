@@ -29,7 +29,7 @@ void MultiplayerLogger::onEvent(const sky::ArenaEvent &event) {
 MultiplayerLogger::MultiplayerLogger(sky::Arena &arena,
                                      class MultiplayerCore &core) :
     sky::ArenaLogger(arena),
-    core(core) {}
+    core(core) { }
 
 /**
  * MultiplayerSubsystem.
@@ -52,7 +52,7 @@ void MultiplayerSubsystem::onEndGame() {
 MultiplayerSubsystem::MultiplayerSubsystem(sky::Arena &arena,
                                            class MultiplayerCore &core) :
     sky::Subsystem<Nothing>(arena),
-    core(core) {}
+    core(core) { }
 
 /**
  * ArenaConnection.
@@ -67,7 +67,7 @@ ArenaConnection::ArenaConnection(
     skyHandle(arena, skyHandleInit),
     scoreboard(arena, scoreboardInit),
     player(*arena.getPlayer(pid)),
-    debugView(arena, skyHandle, pid) {}
+    debugView(arena, skyHandle, pid) { }
 
 sky::Sky *ArenaConnection::getSky() {
   return skyHandle.getSky();
@@ -219,31 +219,17 @@ MultiplayerCore::MultiplayerCore(
     disconnected(false),
 
     participationInputTimer(0.03),
-    messageInteraction(shared.references) {
+
+    messageInteraction(shared.references),
+    enginePrinter(messageInteraction),
+    clientPrinter(messageInteraction),
+    consolePrinter(messageInteraction) {
   host.connect(serverHostname, serverPort);
 }
 
 MultiplayerCore::~MultiplayerCore() {
   proxyLogger.reset();
   proxySubsystem.reset(); // must destroy subsystem before its arena
-}
-
-void MultiplayerCore::logClientEvent(const ClientEvent &event) {
-  StringPrinter p;
-  event.print(p);
-  appLog(p.getString(), LogOrigin::Client);
-
-  event.print(messageInteraction.messageLog);
-  messageInteraction.messageLog.breakLine();
-}
-
-void MultiplayerCore::logEvent(const sky::ArenaEvent &event) {
-  StringPrinter p;
-  event.print(p);
-  appLog(p.getString(), LogOrigin::Engine);
-
-  event.print(messageInteraction.messageLog);
-  messageInteraction.messageLog.breakLine();
 }
 
 const tg::Host &MultiplayerCore::getHost() const {
@@ -297,7 +283,7 @@ bool MultiplayerCore::poll() {
     askedConnection = true;
   }
 
-  while (!pollNetwork()) {}
+  while (!pollNetwork()) { }
   return true;
 }
 
@@ -375,5 +361,5 @@ MultiplayerView::MultiplayerView(
     ClientComponent(shared),
     ui::Control(shared.references),
     core(core),
-    conn(core.conn.get()) {}
+    conn(core.conn.get()) { }
 

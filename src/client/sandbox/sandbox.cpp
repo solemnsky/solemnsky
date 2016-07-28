@@ -73,8 +73,7 @@ optional<SandboxCommand> SandboxCommand::parseCommand(
  */
 
 void SandboxLogger::onEvent(const sky::ArenaEvent &event) {
-  event.print(sandbox.enginePrinter);
-  sandbox.enginePrinter.breakLine();
+  sandbox.enginePrinter.printLn(event);
 }
 
 SandboxLogger::SandboxLogger(sky::Arena &arena, Sandbox &sandbox) :

@@ -41,6 +41,7 @@ class MultiplayerLogger: public sky::ArenaLogger {
 
  public:
   MultiplayerLogger(sky::Arena &arena, class MultiplayerCore &core);
+
 };
 
 /**
@@ -142,10 +143,11 @@ class MultiplayerCore: public ClientComponent {
       const unsigned short serverPort);
   ~MultiplayerCore();
 
-  // MessageInteraction -- log messages and receive text input from the user.
-  void logClientEvent(const ClientEvent &event);
-  void logEvent(const sky::ArenaEvent &event);
+  // MessageInteraction and printers.
   MessageInteraction messageInteraction;
+  EnginePrinter enginePrinter;
+  ClientPrinter clientPrinter;
+  GameConsolePrinter consolePrinter;
 
   // Connection state.
   optional<ArenaConnection> conn;
