@@ -64,3 +64,26 @@ bool MultiplayerGameHandle::handle(const sf::Event &event) {
   return false;
 }
 
+void MultiplayerGameHandle::reset() {
+  if (gameView) gameView->reset();
+}
+
+void MultiplayerGameHandle::signalRead() {
+  if (gameView) gameView->signalRead();
+}
+
+void MultiplayerGameHandle::signalClear() {
+  if (gameView) gameView->signalClear();
+}
+
+void MultiplayerGameHandle::onChangeSettings(const ui::SettingsDelta &delta) {
+  if (gameView) gameView->onChangeSettings(delta);
+}
+
+void MultiplayerGameHandle::handleSkyAction(const sky::Action action, const bool state) {
+  if (gameView) gameView->handleSkyAction(action, state);
+}
+
+void MultiplayerGameHandle::handleClientAction(const ui::ClientAction action, const bool state) {
+  if (gameView) gameView->handleClientAction(action, state);
+}

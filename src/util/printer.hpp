@@ -31,6 +31,15 @@
 namespace fs = boost::filesystem;
 
 /**
+ * Interface for a Printable thing.
+ */
+class Printable {
+ public:
+  virtual void print(class Printer &p) const = 0;
+
+};
+
+/**
  * Implemented by StringPrinter below and TextFrame in the Client UI.
  */
 class Printer {
@@ -45,6 +54,15 @@ class Printer {
 
   void printLn(const std::string &str) {
     print(str);
+    breakLine();
+  }
+
+  void print(const Printable &p) {
+    p.print(*this);
+  }
+
+  void printLn(const Printable &p) {
+    p.print(*this);
     breakLine();
   }
 

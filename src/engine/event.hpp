@@ -38,7 +38,7 @@ enum class DisconnectType {
   Graceful, Timeout
 };
 
-struct ArenaEvent {
+struct ArenaEvent: public Printable {
   enum class Type {
     Join, Quit, NickChange, TeamChange, ModeChange, EnvChoose
   } type;
@@ -73,9 +73,7 @@ struct ArenaEvent {
  * ArenaEvent + server-specific events.
  */
 
-struct ServerEvent {
-  // TODO: engine::DisconnectType in ServerEvent::Disconnect
-
+struct ServerEvent: public Printable {
   enum class Type {
     Start, Event, Stop, Connect, Disconnect, RConIn, RConOut
   } type;
@@ -91,7 +89,7 @@ struct ServerEvent {
   optional<sky::ArenaEvent> arenaEvent;
   optional<double> uptime;
 
-  void print(Printer &p) const;
+  void print(Printer &p) const override final;
 
   static ServerEvent Start(const Port port,
                            const std::string &name);
@@ -108,7 +106,7 @@ struct ServerEvent {
  * ArenaEvent + client-specific events.
  */
 
-struct ClientEvent {
+struct ClientEvent: public Printable {
   enum class Type {
     Connect, Event, Disconnect, Chat, Broadcast,
     RConCommand, RConResponse
@@ -126,7 +124,7 @@ struct ClientEvent {
   optional<double> uptime;
   optional<sky::DisconnectType> disconnect;
 
-  void print(Printer &p) const;
+  void print(Printer &p) const override final;
 
   static ClientEvent Connect(const std::string &name,
                              const sf::IpAddress &ipAddr);
