@@ -21,6 +21,7 @@
 #include "engine/arena.hpp"
 #include "participation.hpp"
 #include "util/printer.hpp"
+#include "util/methods.hpp"
 
 namespace sky {
 
@@ -108,9 +109,9 @@ void Plane::tickFlight(const TimeDiff delta) {
     state.airspeed += speedMod;
 
     const float targetThrottle = state.throttle * tuning.flight.throttleInfluence,
-          throttleEffectFactor = 
-            (state.airspeed <= tuning.flight.throttleInfluence || state.throttle < 0.9)
-            ? 1 : tuning.flight.throttleGlideDamper;
+        throttleEffectFactor =
+        (state.airspeed <= tuning.flight.throttleInfluence || state.throttle < 0.9)
+        ? 1 : tuning.flight.throttleGlideDamper;
 
     if (state.airspeed > targetThrottle) {
       approach(state.airspeed, targetThrottle,
@@ -412,6 +413,10 @@ void Participation::spawnProp(const PropInit &init) {
   props.emplace(std::piecewise_construct,
                 std::forward_as_tuple(smallestUnused(props)),
                 std::forward_as_tuple(associatedPlayer, physics, init));
+}
+
+void Participation::spawnExplosion(const ExplosionInit &init) {
+  explosions.emplace(smallestUnused(explosions), init);
 }
 
 void Participation::suicide() {

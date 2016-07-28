@@ -31,7 +31,7 @@ namespace sky {
 /**
  * Initializer for Sky.
  */
-struct SkyInit : public VerifyStructure {
+struct SkyInit: public VerifyStructure {
   SkyInit() = default;
 
   template<typename Archive>
@@ -49,7 +49,7 @@ struct SkyInit : public VerifyStructure {
 /**
  * Delta for Sky. Broadcast by server, applied by clients.
  */
-struct SkyDelta : public VerifyStructure {
+struct SkyDelta: public VerifyStructure {
   SkyDelta();
 
   template<typename Archive>
@@ -70,9 +70,9 @@ struct SkyDelta : public VerifyStructure {
 /**
  * Game world when a game is in session.
  */
-class Sky : public PhysicsListener,
-            public Subsystem<Participation>,
-            public Networked<SkyInit, SkyDelta> {
+class Sky: public PhysicsListener,
+           public Subsystem<Participation>,
+           public Networked<SkyInit, SkyDelta> {
   friend class SkyHandle;
   friend class Participation;
  private:

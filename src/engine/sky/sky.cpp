@@ -100,10 +100,10 @@ void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
   if (body2.type == BodyTag::Type::PlaneTag)
     body2.plane->onBeginContact(body1);
 
-  for (auto s : arena.subsystems) {
-    if (s.second != this)
-      s.second->onBeginContact(body1, body2);
-  }
+//  for (auto s : arena.subsystems) {
+//    if (s.second != this)
+//      s.second->onBeginContact(body1, body2);
+//  }
 }
 
 void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
@@ -112,19 +112,18 @@ void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
   if (body2.type == BodyTag::Type::PlaneTag)
     body2.plane->onEndContact(body1);
 
-  for (auto s : arena.subsystems) {
-    if (s.second != this)
-      s.second->onEndContact(body1, body2);
-  }
+//  for (auto s : arena.subsystems) {
+//    if (s.second != this)
+//      s.second->onEndContact(body1, body2);
+//  }
 }
 
 bool Sky::enableContact(const BodyTag &body1, const BodyTag &body2) {
-  //If any subsystem says to disable it, then do
-  for (auto s : arena.subsystems) {
-    if (s.second != this)
-      if (!s.second->enableContact(body1, body2))
-        return false;
-  }
+//  for (auto s : arena.subsystems) {
+//    if (s.second != this)
+//      if (!s.second->enableContact(body1, body2))
+//        return false;
+//  }
   return true;
 }
 

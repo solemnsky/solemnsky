@@ -25,6 +25,7 @@
 #include "prop.hpp"
 #include "physics.hpp"
 #include "planestate.hpp"
+#include "explosion.hpp"
 
 namespace sky {
 
@@ -157,7 +158,7 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   // Parameters.
   Physics &physics;
 
-  // State.
+  // Game state.
   PlaneControls controls;
 
   // Delta collection state.
@@ -187,6 +188,7 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   const PID associatedPlayer;
   optional<Plane> plane;
   std::map<PID, Prop> props;
+  std::map<PID, Explosion> explosions;
 
   // Networked impl (for Sky).
   void applyDelta(const ParticipationDelta &delta) override;
@@ -199,6 +201,7 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
 
   // User API, serverside.
   void spawnProp(const PropInit &init);
+  void spawnExplosion(const ExplosionInit &init);
   void suicide();
 
   // ParticipationInput.
