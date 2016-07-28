@@ -173,7 +173,6 @@ void Multiplayer::signalRead() {
 }
 
 void Multiplayer::signalClear() {
-  core.messageInteraction.signalClear();
   if (view) view->signalClear();
 }
 

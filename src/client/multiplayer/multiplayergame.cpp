@@ -115,6 +115,7 @@ void MultiplayerGame::signalRead() {
   ui::Control::signalRead();
 
   if (const auto &signal = core.messageInteraction.inputSignal) {
+    appLog(signal.get());
     core.handleChatInput(signal.get());
   }
 }

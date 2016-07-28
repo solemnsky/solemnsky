@@ -23,14 +23,14 @@
  */
 
 ServerShared::ServerShared(
-    tg::Host &host, tg::Telegraph <sky::ClientPacket> &telegraph,
+    tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph,
     const sky::ArenaInit &arenaInit) :
     arena(arenaInit), // initialize engine state
     skyHandle(arena, {}),
     scoreboard(arena, {}),
 
     host(host),
-    telegraph(telegraph) {}
+    telegraph(telegraph) { }
 
 sky::Player *ServerShared::playerFromPeer(ENetPeer *peer) const {
   if (peer->data) return (sky::Player *) peer->data;
@@ -55,9 +55,9 @@ void ServerShared::sendToClients(const sky::ServerPacket &packet) {
   telegraph.transmit(
       host,
       [&](
-  std::function < void(ENetPeer *const)> transmit) {
-    for (auto const peer : host.getPeers()) { transmit(peer); }
-  }, packet);
+          std::function<void(ENetPeer *const)> transmit) {
+        for (auto const peer : host.getPeers()) { transmit(peer); }
+      }, packet);
 }
 
 void ServerShared::sendToClientsExcept(const PID pid,
@@ -65,13 +65,13 @@ void ServerShared::sendToClientsExcept(const PID pid,
   telegraph.transmit(
       host,
       [&](
-  std::function < void(ENetPeer *const)> transmit) {
-    for (auto const peer : host.getPeers()) {
-      if (sky::Player * player = playerFromPeer(peer)) {
-        if (player->pid != pid) transmit(peer);
-      }
-    }
-  }, packet);
+          std::function<void(ENetPeer *const)> transmit) {
+        for (auto const peer : host.getPeers()) {
+          if (sky::Player *player = playerFromPeer(peer)) {
+            if (player->pid != pid) transmit(peer);
+          }
+        }
+      }, packet);
 }
 
 void ServerShared::sendToClient(ENetPeer *const client,
@@ -106,7 +106,7 @@ void ServerLogger::onEvent(const sky::ArenaEvent &event) {
 }
 
 ServerLogger::ServerLogger(ServerShared &shared, sky::Arena &arena) :
-    sky::ArenaLogger(arena), shared(shared) {}
+    sky::ArenaLogger(arena), shared(shared) { }
 
 /**
  * ServerExec.
@@ -215,7 +215,7 @@ bool ServerExec::poll() {
       return false;
     }
     case ENET_EVENT_TYPE_DISCONNECT: {
-      if (sky::Player * player = shared.playerFromPeer(event.peer)) {
+      if (sky::Player *player = shared.playerFromPeer(event.peer)) {
         shared.logEvent(ServerEvent::Disconnect(player->getNickname()));
         shared.registerArenaDelta(sky::ArenaDelta::Quit(player->pid));
         event.peer->data = nullptr;
@@ -265,11 +265,8 @@ void ServerExec::tick(const TimeDiff delta) {
           if (!player->isLoadingEnv())
             shared.sendToClient(
                 peer, sky::ServerPacket::DeltaSky(
-                    skyDelta.respectAuthority(*player),
-                    shared.arena.getUptime()));
-        } else {
-          appLog("Warning: Peer attached to no client!"
-                     " Think about what this means.");
+                skyDelta.respectAuthority(*player),
+                shared.arena.getUptime()));
         }
       }
       skyDeltaTimer.reset();
@@ -303,7 +300,7 @@ ServerExec::ServerExec(
     const Port port,
     const sky::ArenaInit &arenaInit,
     std::function<std::unique_ptr<ServerListener>(
-        ServerShared & )> mkServer) :
+        ServerShared &)> mkServer) :
 
     host(tg::HostType::Server, port),
     shared(host, telegraph, arenaInit),
@@ -323,7 +320,7 @@ ServerExec::ServerExec(
   time_t current;
   time(&current);
   std::srand(current);
-      
+
   shared.logEvent(ServerEvent::Start(port, arenaInit.name));
 }
 
@@ -331,7 +328,7 @@ void ServerExec::run() {
   sf::Clock clock;
   while (running) {
     tick(clock.restart().asSeconds());
-    while (!poll()) {}
+    while (!poll()) { }
 
     sf::sleep(sf::milliseconds(16));
   }
