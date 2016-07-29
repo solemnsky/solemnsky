@@ -33,7 +33,7 @@ bool SkyInit::verifyStructure() const {
  */
 
 SkyDelta::SkyDelta() :
-    settings(), participations() {}
+    settings(), participations() { }
 
 bool SkyDelta::verifyStructure() const {
   return verifyMap(participations) and verifyOptionals(settings);
@@ -131,12 +131,13 @@ void Sky::syncSettings() {
   physics.setGravity(settings.gravity);
 }
 
-Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer) :
+Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *listener) :
     Subsystem(arena),
     Networked(initializer),
     map(map),
     physics(map, *this),
-    settings(initializer.settings) {
+    settings(initializer.settings),
+    listener(listener) {
   arena.forPlayers([&](Player &player) {
     const auto iter = initializer.participations.find(player.pid);
     registerPlayerWith(

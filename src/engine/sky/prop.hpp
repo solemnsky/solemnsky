@@ -63,7 +63,7 @@ class Prop: public Networked<PropInit, PropDelta> {
  private:
   // State.
   Physics &physics;
-  b2Body *const body; // sorry, we need this r beucabecause box2d
+  b2Body *const body; // sorry, we need this because box2d
   PhysicalState physical;
   float lifetime;
   bool destroyable;

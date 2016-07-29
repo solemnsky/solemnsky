@@ -84,11 +84,11 @@ void SkyHandle::start() {
   caller.doStartGame();
 }
 
-void SkyHandle::instantiateSky(const SkyInit &init) {
+void SkyHandle::instantiateSky(const SkyInit &init, SkyListener *listener) {
   assert(environment);
   assert(environment->getMap());
 
-  sky.emplace(arena, *environment->getMap(), init);
+  sky.emplace(arena, *environment->getMap(), init, listener);
 }
 
 void SkyHandle::stop() {

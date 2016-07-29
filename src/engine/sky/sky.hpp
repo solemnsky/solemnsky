@@ -25,6 +25,7 @@
 #include "participation.hpp"
 #include "skysettings.hpp"
 #include "engine/arena.hpp"
+#include "skylistener.hpp"
 
 namespace sky {
 
@@ -84,6 +85,9 @@ class Sky: public PhysicsListener,
   std::map<PID, Participation> participations;
   SkySettings settings;
 
+  // GameHandler.
+  SkyListener *listener;
+
  protected:
   void registerPlayerWith(Player &player,
                           const ParticipationInit &initializer);
@@ -112,8 +116,8 @@ class Sky: public PhysicsListener,
 
  public:
   Sky(Arena &arena, Map &&map,
-      std::map<PID, optional<Participation>> &) = delete; // Map can't be temp
-  Sky(Arena &arena, const Map &map, const SkyInit &initializer);
+      const SkyInit &, SkyListener *) = delete; // Map can't be temp
+  Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *listener);
 
   // Networked impl.
   void applyDelta(const SkyDelta &delta) override final;
