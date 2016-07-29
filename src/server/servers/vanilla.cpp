@@ -54,24 +54,6 @@ void VanillaServer::onTick(const TimeDiff delta) {
     tickGame(delta, *shared.skyHandle.getSky());
 
 }
-//Collision
-void VanillaServer::onBeginContact(const sky::BodyTag &body1, const sky::BodyTag &body2) {
-  //"Death walls"
-  if (body1.type == sky::BodyTag::Type::PlaneTag && body2.type == sky::BodyTag::Type::ObstacleTag) {
-    body1.plane->damage(body1.plane->getState().health);
-  } else if (body2.type == sky::BodyTag::Type::PlaneTag && body1.type == sky::BodyTag::Type::ObstacleTag) {
-    body2.plane->damage(body2.plane->getState().health);
-  }
-}
-
-void VanillaServer::onEndContact(const sky::BodyTag &body1, const sky::BodyTag &body2) {
-
-}
-
-bool VanillaServer::enableContact(const sky::BodyTag &body1, const sky::BodyTag &body2) {
-  //Doesn't work for planes because physics is client authoritative
-  return false;
-}
 
 void VanillaServer::onPacket(ENetPeer *const client,
                              sky::Player &player,

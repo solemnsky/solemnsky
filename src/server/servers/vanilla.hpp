@@ -31,11 +31,6 @@ class VanillaServer: public Server<Nothing> {
   // Subsystem callbacks.
   void onTick(const TimeDiff delta) override final;
 
-  //Collision
-  void onBeginContact(const sky::BodyTag &body1, const sky::BodyTag &body2) override final;
-  void onEndContact(const sky::BodyTag &body1, const sky::BodyTag &body2) override final;
-  bool enableContact(const sky::BodyTag &body1, const sky::BodyTag &body2) override final;
-
   // Server callbacks.
   void onPacket(ENetPeer *const client,
                 sky::Player &player,
