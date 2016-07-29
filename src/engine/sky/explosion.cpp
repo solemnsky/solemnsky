@@ -23,6 +23,8 @@ namespace sky {
  * ExplosionInit.
  */
 
+ExplosionInit::ExplosionInit() {}
+
 /**
  * ExplosionDelta.
  */

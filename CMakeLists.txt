@@ -16,7 +16,7 @@ add_subdirectory("thirdparty/enet")
 add_subdirectory("thirdparty/SFML")
 
 # we also depend on boost and ibarchive from the host system
-find_package(Boost REQUIRED filesystem)
+find_package(Boost REQUIRED filesystem system)
 
 # project includes
 include_directories(src/)
