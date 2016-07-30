@@ -4,7 +4,7 @@
 /**
  * The Sky subsystem operates and networks correctly.
  */
-class SkyTest : public testing::Test {
+class SkyTest: public testing::Test {
  public:
   sky::Arena arena;
   sky::Map nullMap;
@@ -13,7 +13,7 @@ class SkyTest : public testing::Test {
   SkyTest() :
       arena(sky::ArenaInit("special arena", "NULL", sky::ArenaMode::Lobby)),
       nullMap(),
-      sky(arena, nullMap, sky::SkyInit()) {}
+      sky(arena, nullMap, sky::SkyInit(), nullptr) { }
 
 };
 

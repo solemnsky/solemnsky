@@ -117,7 +117,7 @@ class Sky: public PhysicsListener,
  public:
   Sky(Arena &arena, Map &&map,
       const SkyInit &, SkyListener *) = delete; // Map can't be temp
-  Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *listener);
+  Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *listener = nullptr);
 
   // Networked impl.
   void applyDelta(const SkyDelta &delta) override final;

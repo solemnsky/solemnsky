@@ -19,7 +19,4 @@
 
 namespace sky {
 
-GameHandler::GameHandler(Arena &arena) :
-    Subsystem(arena) { }
-
 }

@@ -19,6 +19,7 @@
  * Interface used on server-side to push callbacks into the Sky game logic.
  */
 #include "engine/arena.hpp"
+#pragma once
 
 namespace sky {
 
