@@ -36,7 +36,7 @@ struct BodyTag {
   const Type type;
 
  private:
-  BodyTag(const Type type);
+  BodyTag(const Type type, class Player *player = nullptr);
 
  public:
   union {
@@ -45,10 +45,13 @@ struct BodyTag {
     class Prop *prop;
   };
 
+  class Player *player;
+
   static BodyTag BoundaryTag();
   static BodyTag ObstacleTag(const struct MapObstacle &obstacle);
-  static BodyTag PlaneTag(Plane &plane);
-  static BodyTag PropTag(class Prop &prop);
+  static BodyTag PlaneTag(Plane &plane, Player &player);
+  static BodyTag PropTag(Prop &prop, Player &player);
+
 };
 
 /**

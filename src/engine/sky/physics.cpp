@@ -25,8 +25,8 @@ namespace sky {
  * BodyTag.
  */
 
-BodyTag::BodyTag(const BodyTag::Type type) :
-    type(type), plane(nullptr) {}
+BodyTag::BodyTag(const BodyTag::Type type, Player *player) :
+    type(type), plane(nullptr), player(player) {}
 
 BodyTag BodyTag::BoundaryTag() {
   return BodyTag(Type::BoundaryTag);
@@ -38,14 +38,14 @@ BodyTag BodyTag::ObstacleTag(const MapObstacle &obstacle) {
   return tag;
 }
 
-BodyTag BodyTag::PlaneTag(Plane &plane) {
-  BodyTag tag(Type::PlaneTag);
+BodyTag BodyTag::PlaneTag(Plane &plane, Player &player) {
+  BodyTag tag(Type::PlaneTag, &player);
   tag.plane = &plane;
   return tag;
 }
 
-BodyTag BodyTag::PropTag(Prop &prop) {
-  BodyTag tag(Type::PropTag);
+BodyTag BodyTag::PropTag(Prop &prop, Player &player) {
+  BodyTag tag(Type::PropTag, &player);
   tag.prop = &prop;
   return tag;
 }

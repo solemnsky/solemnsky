@@ -26,7 +26,7 @@ namespace sky {
 
 PlayerDelta::PlayerDelta(const Player &player) :
     admin(player.isAdmin()),
-    loadingEnv(player.isLoadingEnv()) {}
+    loadingEnv(player.isLoadingEnv()) { }
 
 /**
  * Player.
@@ -35,7 +35,7 @@ PlayerDelta::PlayerDelta(const Player &player) :
 PlayerInitializer::PlayerInitializer(
     const PID pid, const std::string &nickname) :
     pid(pid), nickname(nickname), admin(false),
-    loadingEnv(true), team(sky::Team::Spectator) {}
+    loadingEnv(true), team(sky::Team::Spectator) { }
 
 Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     Networked(initializer),
@@ -51,7 +51,7 @@ Player::Player(Arena &arena, const PlayerInitializer &initializer) :
                 ? initializer.latencyStats->second : 0),
 
     arena(arena),
-    pid(initializer.pid) {}
+    pid(initializer.pid) { }
 
 void Player::applyDelta(const PlayerDelta &delta) {
   if (delta.nickname) nickname = *delta.nickname;
@@ -114,6 +114,14 @@ void Player::spawn(const PlaneTuning &tuning,
                    const sf::Vector2f &pos,
                    const float rot) {
   for (auto s : arena.subsystems) s.second->onSpawn(*this, tuning, pos, rot);
+}
+
+bool operator==(const Player &x, const Player &y) {
+  return x.pid == y.pid;
+}
+
+bool operator!=(const Player &x, const Player &y) {
+  return !(x == y);
 }
 
 }

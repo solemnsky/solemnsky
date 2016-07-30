@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "prop.hpp"
+#include "engine/player.hpp"
 
 namespace sky {
 
@@ -46,18 +47,19 @@ void Prop::tick(const float delta) {
   lifetime += delta;
 }
 
-Prop::Prop(const PID associatedPlayer,
+Prop::Prop(Player &player,
            Physics &physics,
            const PropInit &initializer) :
     Networked(initializer),
     physics(physics),
     body(physics.createBody(physics.rectShape({10, 10}),
-                            BodyTag::PropTag(*this))),
+                            BodyTag::PropTag(*this, player))),
     physical(initializer.physical),
     lifetime(0),
     destroyable(false),
     newlyAlive(true),
-    associatedPlayer(associatedPlayer) {
+
+    player(player) {
   physical.hardWriteToBody(physics, body);
   body->SetGravityScale(0);
 }

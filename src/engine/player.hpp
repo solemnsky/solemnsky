@@ -67,7 +67,7 @@ struct PlayerDelta {
 /**
  * Represents a player in the arena, with some minimal metadata.
  */
-class Player : public Networked<PlayerInitializer, PlayerDelta> {
+class Player: public Networked<PlayerInitializer, PlayerDelta> {
   template<typename T>
   friend
   class Subsystem;
@@ -117,6 +117,10 @@ class Player : public Networked<PlayerInitializer, PlayerDelta> {
 
 };
 
+/**
+ * Comparison by PID.
+ */
+bool operator==(const Player &, const Player &);
+bool operator!=(const Player &, const Player &);
+
 }
-
-

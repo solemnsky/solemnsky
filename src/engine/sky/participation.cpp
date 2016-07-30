@@ -155,7 +155,7 @@ void Plane::postPhysics(const TimeDiff delta) {
 
 void Plane::onBeginContact(const BodyTag &body) {
   if (body.type == BodyTag::Type::PropTag) {
-    if (body.prop->associatedPlayer != associatedPlayer) {
+    if (*body.player != player) {
       state.health = 0;
     }
   }
@@ -165,7 +165,7 @@ void Plane::onEndContact(const BodyTag &body) {
 
 }
 
-Plane::Plane(const PID player,
+Plane::Plane(Player &player,
              Physics &physics,
              const PlaneControls &controls,
              const PlaneTuning &tuning,
@@ -176,8 +176,8 @@ Plane::Plane(const PID player,
     tuning(tuning),
     state(state),
     body(physics.createBody(physics.rectShape(tuning.hitbox),
-                            BodyTag::PlaneTag(*this))),
-    associatedPlayer(player) {
+                            BodyTag::PlaneTag(*this, player))),
+    player(player) {
   state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(state.stalled ? 1 : 0);
 }
@@ -261,7 +261,7 @@ ParticipationDelta ParticipationDelta::respectClientAuthority() const {
 
 void Participation::spawnWithState(const PlaneTuning &tuning,
                                    const PlaneState &state) {
-  plane.emplace(associatedPlayer, physics, controls, tuning, state);
+  plane.emplace(player, physics, controls, tuning, state);
 }
 
 void Participation::doAction(const Action action, bool actionState) {
@@ -301,7 +301,7 @@ void Participation::spawn(const PlaneTuning &tuning,
   newlyAlive = true;
 }
 
-Participation::Participation(const PID associatedPlayer,
+Participation::Participation(Player &player,
                              Physics &physics,
                              const ParticipationInit &initializer) :
     Networked(initializer),
@@ -310,9 +310,7 @@ Participation::Participation(const PID associatedPlayer,
     newlyAlive(false),
     lastControls(),
 
-    associatedPlayer(associatedPlayer),
-    plane(),
-    props() {
+    player(player) {
   if (initializer.spawn)
     spawnWithState(initializer.spawn->first, initializer.spawn->second);
   controls = initializer.controls;
@@ -320,8 +318,7 @@ Participation::Participation(const PID associatedPlayer,
   for (const auto &prop : initializer.props) {
     props.emplace(std::piecewise_construct,
                   std::forward_as_tuple(prop.first),
-                  std::forward_as_tuple(associatedPlayer,
-                                        physics, prop.second));
+                  std::forward_as_tuple(player, physics, prop.second));
   }
 }
 
@@ -353,8 +350,7 @@ void Participation::applyDelta(const ParticipationDelta &delta) {
   for (const auto &init : delta.propInits) {
     props.emplace(std::piecewise_construct,
                   std::forward_as_tuple(init.first),
-                  std::forward_as_tuple(associatedPlayer, physics,
-                                        init.second));
+                  std::forward_as_tuple(player, physics, init.second));
   }
 
   // Modify controls.
@@ -412,7 +408,7 @@ bool Participation::isSpawned() const {
 void Participation::spawnProp(const PropInit &init) {
   props.emplace(std::piecewise_construct,
                 std::forward_as_tuple(smallestUnused(props)),
-                std::forward_as_tuple(associatedPlayer, physics, init));
+                std::forward_as_tuple(player, physics, init));
 }
 
 void Participation::spawnExplosion(const ExplosionInit &init) {

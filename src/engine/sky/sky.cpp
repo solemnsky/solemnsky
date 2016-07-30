@@ -65,7 +65,7 @@ void Sky::registerPlayerWith(Player &player,
   participations.emplace(
       std::piecewise_construct,
       std::forward_as_tuple(player.pid),
-      std::forward_as_tuple(player.pid, physics, initializer));
+      std::forward_as_tuple(player, physics, initializer));
   setPlayerData(player, participations.find(player.pid)->second);
 }
 

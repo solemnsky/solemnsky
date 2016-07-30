@@ -78,11 +78,12 @@ class Prop: public Networked<PropInit, PropDelta> {
 
  public:
   Prop() = delete;
-  Prop(const PID associatedPlayer,
+  Prop(class Player &player,
        Physics &physics,
        const PropInit &initializer);
 
-  const PID associatedPlayer;
+  // Associated player.
+  class Player &player;
 
   // Networked API.
   PropInit captureInitializer() const override final;
