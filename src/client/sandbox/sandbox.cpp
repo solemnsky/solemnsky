@@ -155,7 +155,7 @@ Sandbox::Sandbox(ClientShared &state) :
     enginePrinter(messageInteraction),
     clientPrinter(messageInteraction),
     consolePrinter(messageInteraction) {
-  arena.connectPlayer("offline player");
+  arena.connectPlayer(settings.nickname);
   player = arena.getPlayer(0);
   stopHandle();
   areChildren({&messageInteraction});
