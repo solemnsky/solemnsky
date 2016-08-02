@@ -25,6 +25,7 @@
 #include "prop.hpp"
 #include "physics.hpp"
 #include "planestate.hpp"
+#include "explosion.hpp"
 
 namespace sky {
 
@@ -60,16 +61,17 @@ class Plane {
 
  public:
   Plane() = delete;
-  Plane(const PID player, Physics &, PlaneControls &&, const PlaneTuning &,
+  Plane(class Player &, const PID player, Physics &, PlaneControls &&, const PlaneTuning &,
         const PlaneState &) = delete; // `controls` must not be a temp
-  Plane(const PID player,
+  Plane(class Player &player,
         Physics &physics,
         const PlaneControls &controls,
         const PlaneTuning &tuning,
         const PlaneState &state);
   ~Plane();
 
-  const PID associatedPlayer;
+  // Associated player.
+  class Player &player;
 
   // User API.
   const PlaneTuning &getTuning() const;
@@ -157,7 +159,7 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   // Parameters.
   Physics &physics;
 
-  // State.
+  // Game state.
   PlaneControls controls;
 
   // Delta collection state.
@@ -179,14 +181,15 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
 
  public:
   Participation() = delete;
-  Participation(const PID associatedPlayer,
+  Participation(class Player &player,
                 Physics &physics,
                 const ParticipationInit &initializer);
 
   // State.
-  const PID associatedPlayer;
+  class Player &player;
   optional<Plane> plane;
   std::map<PID, Prop> props;
+  std::map<PID, Explosion> explosions;
 
   // Networked impl (for Sky).
   void applyDelta(const ParticipationDelta &delta) override;
@@ -199,6 +202,7 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
 
   // User API, serverside.
   void spawnProp(const PropInit &init);
+  void spawnExplosion(const ExplosionInit &init);
   void suicide();
 
   // ParticipationInput.

@@ -21,6 +21,7 @@
 #pragma once
 #include "sky.hpp"
 #include "engine/environment/environment.hpp"
+#include "skylistener.hpp"
 
 namespace sky {
 
@@ -58,7 +59,7 @@ class SkyHandle
 
   // User API.
   void start();
-  void instantiateSky(const SkyInit &skyInit);
+  void instantiateSky(const SkyInit &skyInit, SkyListener *listener = nullptr);
   void stop();
 
 };

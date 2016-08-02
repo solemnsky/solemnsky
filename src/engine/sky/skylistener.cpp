@@ -15,28 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * Default multiplayer server, with a cool rcon and a lazy tdm mode.
- */
-#pragma once
-#include "server/server.hpp"
-#include "util/types.hpp"
+#include "skylistener.hpp"
 
-class VanillaServer: public Server<Nothing> {
- private:
-  // Subroutines.
-  void tickGame(const TimeDiff delta, sky::Sky &sky);
+namespace sky {
 
- protected:
-  // Subsystem callbacks.
-  void onTick(const TimeDiff delta) override final;
-
-  // Server callbacks.
-  void onPacket(ENetPeer *const client,
-                sky::Player &player,
-                const sky::ClientPacket &packet) override final;
-
- public:
-  VanillaServer(ServerShared &shared);
-
-};
+}

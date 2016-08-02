@@ -54,5 +54,3 @@ class MultiplayerGameHandle : public MultiplayerView {
   void handleSkyAction(const sky::Action action, const bool state) override final;
   void handleClientAction(const ui::ClientAction action, const bool state) override final;
 };
-
-

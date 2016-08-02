@@ -63,7 +63,7 @@ ArenaConnection::ArenaConnection(
     const sky::ArenaInit &arenaInit,
     const sky::SkyHandleInit &skyHandleInit,
     const sky::ScoreboardInit &scoreboardInit) :
-    arena(arenaInit),
+    arena(arenaInit, {pid}),
     skyHandle(arena, skyHandleInit),
     scoreboard(arena, scoreboardInit),
     player(*arena.getPlayer(pid)),

@@ -147,7 +147,7 @@ void Sandbox::displayStatus(ui::Frame &f, const std::string &status) {
 
 Sandbox::Sandbox(ClientShared &state) :
     Game(state, "sandbox"),
-    arena(sky::ArenaInit("sandbox", "ball_funnelpark")),
+    arena(sky::ArenaInit("sandbox", "ball_funnelpark"), {0}),
     skyHandle(arena, sky::SkyHandleInit()),
     debugView(arena, skyHandle),
     logger(arena, *this),
@@ -155,7 +155,7 @@ Sandbox::Sandbox(ClientShared &state) :
     enginePrinter(messageInteraction),
     clientPrinter(messageInteraction),
     consolePrinter(messageInteraction) {
-  arena.connectPlayer("offline player");
+  arena.connectPlayer(settings.nickname);
   player = arena.getPlayer(0);
   stopHandle();
   areChildren({&messageInteraction});

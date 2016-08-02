@@ -43,7 +43,7 @@ class SubsystemListener {
   friend class SubsystemCaller;
   friend class Sky;
  protected:
-  virtual ~SubsystemListener() {}
+  virtual ~SubsystemListener() { }
 
   // Managing player registration.
   virtual void registerPlayer(Player &player);
@@ -63,10 +63,6 @@ class SubsystemListener {
                         const Action action, const bool state);
   virtual void onSpawn(Player &player, const PlaneTuning &tuning,
                        const sf::Vector2f &pos, const float rot);
-
-  virtual void onBeginContact(const BodyTag &body1, const BodyTag &body2);
-  virtual void onEndContact(const BodyTag &body1, const BodyTag &body2);
-  virtual bool enableContact(const BodyTag &body1, const BodyTag &body2);
 
   virtual void onStartGame();
   virtual void onEndGame();
@@ -92,7 +88,7 @@ class SubsystemCaller {
  * The subsystem abstraction: attaches additional layers of state and logic to the game.
  */
 template<typename PlayerData>
-class Subsystem : public SubsystemListener {
+class Subsystem: public SubsystemListener {
  protected:
   SubsystemCaller &caller;
   const PID id; // ID the render has allocated in the Arena
@@ -127,7 +123,7 @@ class ArenaLogger {
 
   ArenaLogger() = delete;
   ArenaLogger(Arena &arena);
-  virtual ~ArenaLogger() {}
+  virtual ~ArenaLogger() { }
 
 };
 
@@ -156,7 +152,7 @@ struct ArenaInit {
 /**
  * Delta type for Arena's Networked implementation.
  */
-struct ArenaDelta : public VerifyStructure {
+struct ArenaDelta: public VerifyStructure {
   enum class Type {
     Quit,
     Join,
@@ -187,7 +183,9 @@ struct ArenaDelta : public VerifyStructure {
         ar(playerDeltas);
         break;
       }
-      case Type::ResetEnvLoad: { break; };
+      case Type::ResetEnvLoad: {
+        break;
+      };
       case Type::Motd: {
         ar(motd);
         break;
@@ -234,7 +232,7 @@ struct ArenaDelta : public VerifyStructure {
  * The backbone of a multiplayer game. Holds Players, Subsystems, and
  * an ArenaLoggers, and exposes a small API.
  */
-class Arena : public Networked<ArenaInit, ArenaDelta> {
+class Arena: public Networked<ArenaInit, ArenaDelta> {
   friend class Player;
   friend class SubsystemCaller;
  private:
@@ -262,7 +260,11 @@ class Arena : public Networked<ArenaInit, ArenaDelta> {
 
  public:
   Arena() = delete;
-  Arena(const ArenaInit &initializer);
+  Arena(const ArenaInit &initializer, const optional<PID> = {});
+
+  // Where this particular arena is on the network.
+  const optional<PID> playerOwnership;
+  inline bool serverOwnership() { return !playerOwnership; }
 
   // Attachments.
   SubsystemCaller subsystemCaller;

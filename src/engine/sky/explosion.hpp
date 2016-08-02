@@ -16,27 +16,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Default multiplayer server, with a cool rcon and a lazy tdm mode.
+ * An explosion in a Sky. Its effects are only simulated on the client of a participating plane.
  */
 #pragma once
-#include "server/server.hpp"
-#include "util/types.hpp"
+#include "physics.hpp"
 
-class VanillaServer: public Server<Nothing> {
- private:
-  // Subroutines.
-  void tickGame(const TimeDiff delta, sky::Sky &sky);
+namespace sky {
 
- protected:
-  // Subsystem callbacks.
-  void onTick(const TimeDiff delta) override final;
+struct ExplosionInit {
+  ExplosionInit();
 
-  // Server callbacks.
-  void onPacket(ENetPeer *const client,
-                sky::Player &player,
-                const sky::ClientPacket &packet) override final;
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar();
+  }
+};
 
+struct ExplosionDelta {
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar();
+  }
+};
+
+struct Explosion: public Networked<ExplosionInit, ExplosionDelta> {
  public:
-  VanillaServer(ServerShared &shared);
+  Explosion(const ExplosionInit &init);
+
+  // Networked impl.
+  ExplosionInit captureInitializer() const override final;
+  void applyDelta(const ExplosionDelta &delta) override final;
+  ExplosionDelta collectDelta();
 
 };
+
+}

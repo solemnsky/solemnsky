@@ -25,7 +25,7 @@ namespace sky {
  * Arena.
  */
 
-ArenaDelta::ArenaDelta(const ArenaDelta::Type type) : type(type) {}
+ArenaDelta::ArenaDelta(const ArenaDelta::Type type) : type(type) { }
 
 bool ArenaDelta::verifyStructure() const {
   switch (type) {
@@ -106,48 +106,39 @@ ArenaDelta ArenaDelta::TeamCount(const int &teamCount) {
  * SubsystemListener.
  */
 
-void SubsystemListener::registerPlayer(Player &) {}
+void SubsystemListener::registerPlayer(Player &) { }
 
-void SubsystemListener::unregisterPlayer(Player &) {}
+void SubsystemListener::unregisterPlayer(Player &) { }
 
-void SubsystemListener::onPoll(const TimeDiff) {}
+void SubsystemListener::onPoll(const TimeDiff) { }
 
-void SubsystemListener::onTick(const TimeDiff) {}
+void SubsystemListener::onTick(const TimeDiff) { }
 
-void SubsystemListener::onJoin(Player &) {}
+void SubsystemListener::onJoin(Player &) { }
 
-void SubsystemListener::onQuit(Player &) {}
+void SubsystemListener::onQuit(Player &) { }
 
-void SubsystemListener::onMode(const ArenaMode) {}
+void SubsystemListener::onMode(const ArenaMode) { }
 
-void SubsystemListener::onMapChange() {}
+void SubsystemListener::onMapChange() { }
 
-void SubsystemListener::onDelta(Player &, const PlayerDelta &) {}
+void SubsystemListener::onDelta(Player &, const PlayerDelta &) { }
 
-void SubsystemListener::onAction(Player &, const Action, const bool) {}
+void SubsystemListener::onAction(Player &, const Action, const bool) { }
 
 void SubsystemListener::onSpawn(Player &, const PlaneTuning &,
-                                const sf::Vector2f &, const float) {}
+                                const sf::Vector2f &, const float) { }
 
-void SubsystemListener::onBeginContact(const BodyTag &body1, const BodyTag &body2) {}
+void SubsystemListener::onStartGame() { }
 
-void SubsystemListener::onEndContact(const BodyTag &body1, const BodyTag &body2) {}
-
-bool SubsystemListener::enableContact(const BodyTag &body1, const BodyTag &body2) {
-  //Enable all by default
-  return true;
-}
-
-void SubsystemListener::onStartGame() {}
-
-void SubsystemListener::onEndGame() {}
+void SubsystemListener::onEndGame() { }
 
 /**
  * SubsystemCaller.
  */
 
 SubsystemCaller::SubsystemCaller(Arena &arena) :
-    arena(arena) {}
+    arena(arena) { }
 
 void SubsystemCaller::doStartGame() {
   for (const auto &pair : arena.subsystems)
@@ -163,7 +154,7 @@ void SubsystemCaller::doEndGame() {
  * ArenaLogger.
  */
 
-void ArenaLogger::onEvent(const ArenaEvent &) {}
+void ArenaLogger::onEvent(const ArenaEvent &) { }
 
 ArenaLogger::ArenaLogger(Arena &arena) : arena(arena) {
   arena.loggers.push_back(this);
@@ -178,7 +169,7 @@ ArenaInit::ArenaInit(
     const EnvironmentURL &environment,
     const ArenaMode mode,
     const int teamCount) :
-    name(name), environment(environment), mode(mode), teamCount(teamCount) {}
+    name(name), environment(environment), mode(mode), teamCount(teamCount) { }
 
 PID Arena::allocPid() const {
   return smallestUnused(players);
@@ -274,7 +265,7 @@ void Arena::applyPlayerDelta(const PID pid, const PlayerDelta &playerDelta) {
   }
 }
 
-Arena::Arena(const ArenaInit &initializer) :
+Arena::Arena(const ArenaInit &initializer, const optional<PID> playerOwnership) :
     Networked(initializer),
     name(initializer.name),
     motd(initializer.motd),
@@ -282,6 +273,7 @@ Arena::Arena(const ArenaInit &initializer) :
     mode(initializer.mode),
     uptime(0),
     teamCount(initializer.teamCount),
+    playerOwnership(playerOwnership),
     subsystemCaller(*this) {
   for (auto const &player : initializer.players) {
     players.emplace(std::piecewise_construct,

@@ -25,13 +25,14 @@
 #include "participation.hpp"
 #include "skysettings.hpp"
 #include "engine/arena.hpp"
+#include "skylistener.hpp"
 
 namespace sky {
 
 /**
  * Initializer for Sky.
  */
-struct SkyInit : public VerifyStructure {
+struct SkyInit: public VerifyStructure {
   SkyInit() = default;
 
   template<typename Archive>
@@ -49,7 +50,7 @@ struct SkyInit : public VerifyStructure {
 /**
  * Delta for Sky. Broadcast by server, applied by clients.
  */
-struct SkyDelta : public VerifyStructure {
+struct SkyDelta: public VerifyStructure {
   SkyDelta();
 
   template<typename Archive>
@@ -70,9 +71,9 @@ struct SkyDelta : public VerifyStructure {
 /**
  * Game world when a game is in session.
  */
-class Sky : public PhysicsListener,
-            public Subsystem<Participation>,
-            public Networked<SkyInit, SkyDelta> {
+class Sky: public PhysicsListener,
+           public Subsystem<Participation>,
+           public Networked<SkyInit, SkyDelta> {
   friend class SkyHandle;
   friend class Participation;
  private:
@@ -83,6 +84,9 @@ class Sky : public PhysicsListener,
   Physics physics;
   std::map<PID, Participation> participations;
   SkySettings settings;
+
+  // GameHandler.
+  SkyListener *listener;
 
  protected:
   void registerPlayerWith(Player &player,
@@ -112,8 +116,8 @@ class Sky : public PhysicsListener,
 
  public:
   Sky(Arena &arena, Map &&map,
-      std::map<PID, optional<Participation>> &) = delete; // Map can't be temp
-  Sky(Arena &arena, const Map &map, const SkyInit &initializer);
+      const SkyInit &, SkyListener *) = delete; // Map can't be temp
+  Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *listener = nullptr);
 
   // Networked impl.
   void applyDelta(const SkyDelta &delta) override final;

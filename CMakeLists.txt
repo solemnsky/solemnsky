@@ -16,7 +16,7 @@ add_subdirectory("thirdparty/enet")
 add_subdirectory("thirdparty/SFML")
 
 # we also depend on boost and ibarchive from the host system
-find_package(Boost REQUIRED filesystem)
+find_package(Boost REQUIRED filesystem system)
 
 # project includes
 include_directories(src/)
@@ -47,6 +47,9 @@ add_library(solemnsky STATIC
         src/engine/environment/visuals.cpp
         src/engine/environment/visuals.hpp
 
+        src/engine/sky/explosion.cpp
+        src/engine/sky/explosion.hpp
+
         src/engine/sky/participation.cpp
         src/engine/sky/participation.hpp
 
@@ -64,6 +67,9 @@ add_library(solemnsky STATIC
 
         src/engine/sky/skyhandle.cpp
         src/engine/sky/skyhandle.hpp
+
+        src/engine/sky/skylistener.cpp
+        src/engine/sky/skylistener.hpp
 
         src/engine/sky/skysettings.cpp
         src/engine/sky/skysettings.hpp

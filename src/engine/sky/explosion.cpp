@@ -15,28 +15,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "explosion.hpp"
+
+namespace sky {
+
 /**
- * Default multiplayer server, with a cool rcon and a lazy tdm mode.
+ * ExplosionInit.
  */
-#pragma once
-#include "server/server.hpp"
-#include "util/types.hpp"
 
-class VanillaServer: public Server<Nothing> {
- private:
-  // Subroutines.
-  void tickGame(const TimeDiff delta, sky::Sky &sky);
+ExplosionInit::ExplosionInit() {}
 
- protected:
-  // Subsystem callbacks.
-  void onTick(const TimeDiff delta) override final;
+/**
+ * ExplosionDelta.
+ */
 
-  // Server callbacks.
-  void onPacket(ENetPeer *const client,
-                sky::Player &player,
-                const sky::ClientPacket &packet) override final;
+/**
+ * Explosion.
+ */
 
- public:
-  VanillaServer(ServerShared &shared);
+Explosion::Explosion(const ExplosionInit &init) :
+    Networked(init) { }
 
-};
+ExplosionInit Explosion::captureInitializer() const {
+  return sky::ExplosionInit();
+}
+
+void Explosion::applyDelta(const ExplosionDelta &delta) {
+
+}
+
+ExplosionDelta Explosion::collectDelta() {
+  return sky::ExplosionDelta();
+}
+
+}
