@@ -273,7 +273,6 @@ Arena::Arena(const ArenaInit &initializer, const optional<PID> playerOwnership) 
     mode(initializer.mode),
     uptime(0),
     teamCount(initializer.teamCount),
-    playerOwnership(playerOwnership),
     subsystemCaller(*this) {
   for (auto const &player : initializer.players) {
     players.emplace(std::piecewise_construct,

@@ -147,7 +147,7 @@ void Sandbox::displayStatus(ui::Frame &f, const std::string &status) {
 
 Sandbox::Sandbox(ClientShared &state) :
     Game(state, "sandbox"),
-    arena(sky::ArenaInit("sandbox", "ball_funnelpark"), {0}),
+    arena(sky::ArenaInit("sandbox", "ball_funnelpark"), 0),
     skyHandle(arena, sky::SkyHandleInit()),
     debugView(arena, skyHandle),
     logger(arena, *this),
