@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Basic state types for Plane.
+ * Data associated with a single plan, in tuning values and game state.
  */
 #pragma once
 #include <bitset>

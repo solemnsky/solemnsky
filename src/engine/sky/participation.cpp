@@ -71,7 +71,7 @@ void Plane::tickFlight(const TimeDiff delta) {
 
   if (state.stalled) {
     // Afterburner.
-    if (throtCtrl == Movement::Up) {
+    if (throtCtrl == MovementLaws::Up) {
       const float thrustEfficacy =
           requestEnergy(tuning.energy.thrustDrain * delta);
 
@@ -91,7 +91,7 @@ void Plane::tickFlight(const TimeDiff delta) {
     // Modify throttle and afterburner according to controls.
     state.throttle += movementValue(throtCtrl) * delta;
     bool afterburning =
-        (throtCtrl == Movement::Up) && state.throttle == 1;
+        (throtCtrl == MovementLaws::Up) && state.throttle == 1;
 
     // Pick away at leftover velocity.
     state.leftoverVel *= std::pow(tuning.flight.leftoverDamping, delta);
@@ -272,15 +272,6 @@ void Participation::doAction(const Action action, bool actionState) {
 }
 
 void Participation::prePhysics() {
-  auto iter = props.begin();
-  while (iter != props.end()) {
-    if (iter->second.destroyable) {
-      const auto toErase = iter;
-      ++iter;
-      props.erase(toErase);
-    } else ++iter;
-  }
-
   if (plane) plane->prePhysics();
   for (auto &prop : props) prop.second.writeToBody();
 }

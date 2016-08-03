@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * The laws of movement governing props and entities.
+ * The laws of movement governing entities.
  */
 #pragma once
 #include "util/methods.hpp"
@@ -24,7 +24,7 @@
 
 namespace sky {
 
-struct Movement {
+struct MovementLaws {
   enum class Type {
     Free, // Free-fall, with potential damping at terminal velocity.
     Linear, // Move in a line, potentially bouncing off surfaces.

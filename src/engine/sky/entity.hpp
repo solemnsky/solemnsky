@@ -29,8 +29,11 @@ namespace sky {
  * All the data that defines an entity.
  */
 struct EntityData {
+  EntityData(const optional<MovementLaws> movement,
+             const FillStyle &fill, const sf::Vector2f &pos, const sf::Vector2f &vel);
+
   // Constants.
-  const optional<Movement> movement;
+  const optional<MovementLaws> movement; // The body is fixed if this does not exist.
   const FillStyle fill;
 
   // Variables.
@@ -49,7 +52,6 @@ struct EntityData {
  * This alias makes this decision more explicit.
  */
 using EntityInit = EntityData;
-
 
 /**
  * Delta for Entity.
@@ -73,14 +75,13 @@ class Entity: public Networked<EntityInit, EntityDelta> {
   friend class Participation;
  private:
   // Settings.
-  optional<Movement> movement; // If this doesn't exist, it's fixed.
+  optional<MovementLaws> movement; // If this doesn't exist, it's fixed.
 
   // State.
   Physics &physics;
   b2Body *const body;
   PhysicalState physical;
   float lifetime;
-  bool destroyable;
 
   // Delta collection state, for Participation.
   bool newlyAlive;
@@ -108,6 +109,9 @@ class Entity: public Networked<EntityInit, EntityDelta> {
   const PhysicalState &getPhysical() const;
   float getLifetime() const;
   void destroy();
+
+  // Destroyable flag, for simulation on server.
+  bool destroyable;
 
 };
 

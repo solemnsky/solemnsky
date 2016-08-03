@@ -20,8 +20,11 @@
 
 namespace sky {
 
+/**
+ * MovementLaws.
+ */
 
-b2Body *Movement::createBody(Physics &physics, const b2Shape &shape, const BodyTag &tag) {
+b2Body *MovementLaws::createBody(Physics &physics, const b2Shape &shape, const BodyTag &tag) {
   auto *body = physics.createBody(shape, tag, false);
 
   // Set additional physics options.
@@ -46,7 +49,7 @@ b2Body *Movement::createBody(Physics &physics, const b2Shape &shape, const BodyT
   return body;
 }
 
-void Movement::tick(const TimeDiff delta, Physics &physics, PhysicalState &state) {
+void MovementLaws::tick(const TimeDiff delta, Physics &physics, PhysicalState &state) {
   switch (type) {
     case Type::Free: {
       if (terminalDamping) {

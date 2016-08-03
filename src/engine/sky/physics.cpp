@@ -26,7 +26,7 @@ namespace sky {
  */
 
 BodyTag::BodyTag(const BodyTag::Type type, Player *player) :
-    type(type), plane(nullptr), player(player) {}
+    type(type), plane(nullptr), player(player) { }
 
 BodyTag BodyTag::BoundaryTag() {
   return BodyTag(Type::BoundaryTag);
@@ -44,9 +44,9 @@ BodyTag BodyTag::PlaneTag(Plane &plane, Player &player) {
   return tag;
 }
 
-BodyTag BodyTag::PropTag(Prop &prop, Player &player) {
+BodyTag BodyTag::EntityTag(Entity &entity, Player &player) {
   BodyTag tag(Type::PropTag, &player);
-  tag.prop = &prop;
+  tag.entity = &entity;
   return tag;
 }
 
@@ -55,7 +55,7 @@ BodyTag BodyTag::PropTag(Prop &prop, Player &player) {
  */
 
 PhysicsDispatcher::PhysicsDispatcher(PhysicsListener &listener) :
-    listener(listener) {}
+    listener(listener) { }
 
 void PhysicsDispatcher::BeginContact(b2Contact *contact) {
   listener.onBeginContact(
@@ -223,7 +223,7 @@ PhysicalState::PhysicalState(const sf::Vector2f &pos,
                              const sf::Vector2f &vel,
                              const Angle rot,
                              const float rotvel) :
-    pos(pos), vel(vel), rot(rot), rotvel(rotvel) {}
+    pos(pos), vel(vel), rot(rot), rotvel(rotvel) { }
 
 void PhysicalState::hardWriteToBody(const Physics &physics,
                                     b2Body *const body) const {

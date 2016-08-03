@@ -78,7 +78,22 @@ void Sky::unregisterPlayer(Player &player) {
 }
 
 void Sky::onTick(const TimeDiff delta) {
-  for (auto &p: participations) p.second.prePhysics();
+  if (arena.serverOwnership()) {
+    // Remove destroyable entities.
+    // Only necessary if we're the server, client have no business doing this.
+    auto entity = entities.begin();
+    while (entity != entities.end()) {
+      if (entity->second.destroyable) {
+        const auto toErase = iter;
+        ++iter;
+        props.erase(toErase);
+      } else ++iter;
+    }
+  }
+
+  for (auto &participation: participations) participation.second.prePhysics();
+  for (auto &entity: entities) entity.second.prePhysics();
+
   physics.tick(delta);
   for (auto &p: participations) p.second.postPhysics(delta);
 }
@@ -146,6 +161,15 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
         ParticipationInit{} : iter->second);
   });
 
+  for (const auto &entity : initializer.entities) {
+    entities.emplace(entity.first, entity.second);
+  }
+
+  for (const auto &explosion: initializer.explosions) {
+    explosions.emplace(explosion.first, explosion.second);
+  }
+
+
   syncSettings();
   appLog("Instantiated Sky.", LogOrigin::Engine);
 }
@@ -164,6 +188,15 @@ SkyInit Sky::captureInitializer() const {
   for (const auto &participation : participations)
     initializer.participations.emplace(
         participation.first, participation.second.captureInitializer());
+
+  for (const auto &entity : entities) {
+    initializer.entities.emplace(entity.first, entity.second.captureInitializer());
+  }
+
+  for (const auto &explosion: explosions) {
+    initializer.explosions.emplace(explosion.first, explosion.second.captureInitializer());
+  }
+
   initializer.settings = settings.captureInitializer();
   return initializer;
 }
@@ -174,6 +207,15 @@ SkyDelta Sky::collectDelta() {
     delta.participations.emplace(
         participation.first, participation.second.collectDelta());
   }
+
+  for (auto &entity: entities) {
+    delta.entities.emplace(entity.first, entity.second.collectDelta());
+  }
+
+  for (auto &explosion: explosions) {
+    delta.explosions.emplace(explosion.first, explosion.second.collectDelta());
+  }
+
   delta.settings = settings.collectDelta();
   return delta;
 }

@@ -265,8 +265,10 @@ void Arena::applyPlayerDelta(const PID pid, const PlayerDelta &playerDelta) {
   }
 }
 
-Arena::Arena(const ArenaInit &initializer, const optional<PID> playerOwnership) :
+Arena::Arena(const ArenaInit &initializer, const optional<PID> playerOwnership, const bool sandboxed) :
     Networked(initializer),
+    playerOwnership(playerOwnership),
+    sandboxed(sandboxed),
     name(initializer.name),
     motd(initializer.motd),
     nextEnv(initializer.environment),

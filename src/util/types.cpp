@@ -78,7 +78,7 @@ Clamped &Clamped::operator-=(const float x) {
 }
 
 /**
- * Movement.
+ * MovementLaws.
  */
 float movementValue(const Movement movement) {
   switch (movement) {

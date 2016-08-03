@@ -42,7 +42,7 @@ struct BodyTag {
   union {
     const struct MapObstacle *obstacle;
     class Plane *plane;
-    class Prop *prop;
+    class Entity *entity;
   };
 
   class Player *player;
@@ -50,7 +50,7 @@ struct BodyTag {
   static BodyTag BoundaryTag();
   static BodyTag ObstacleTag(const struct MapObstacle &obstacle);
   static BodyTag PlaneTag(Plane &plane, Player &player);
-  static BodyTag PropTag(Prop &prop, Player &player);
+  static BodyTag EntityTag(Entity &entity, Player &player);
 
 };
 

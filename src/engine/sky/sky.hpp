@@ -87,9 +87,6 @@ class Sky: public PhysicsListener,
   // State.
   SkySettings settings;
   Physics physics;
-  std::map<PID, Participation> participations;
-  std::map<PID, Entity> entities;
-  std::map<PID, Explosion> explosions;
 
   // GameHandler.
   SkyListener *listener;
@@ -125,6 +122,13 @@ class Sky: public PhysicsListener,
       const SkyInit &, SkyListener *) = delete; // Map can't be temp
   Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *listener = nullptr);
 
+  // State tables. These three PID allocations are completely independent.
+  // While participations are linked to the Arena Players, entities and explosions have PIDs
+  // merely for networking purposes.
+  std::map<PID, Participation> participations;
+  std::map<PID, Entity> entities;
+  std::map<PID, Explosion> explosions;
+
   // Networked impl.
   void applyDelta(const SkyDelta &delta) override final;
   SkyInit captureInitializer() const override final;
@@ -134,7 +138,7 @@ class Sky: public PhysicsListener,
   const Map &getMap() const;
   Participation &getParticipation(const Player &player) const;
 
-  const Settings &getSettings() const;
+  const SkySettings &getSettings() const;
   void changeSettings(const SkySettingsDelta &delta);
 
 };

@@ -21,11 +21,13 @@
 namespace sky {
 
 /**
- * EntityInit.
+ * EntityData == EntityInit.
  */
-
-EntityInit::EntityInit(const sf::Vector2f &pos, const sf::Vector2f &vel) :
-    physical(pos, vel, Angle(0), 0) { }
+EntityData::EntityData(const optional<MovementLaws> movement,
+                       const FillStyle &fill,
+                       const sf::Vector2f &pos,
+                       const sf::Vector2f &vel) :
+    movement(movement), fill(fill), physical(pos, vel, Angle(0), 0) { }
 
 /**
  * EntityDelta.
@@ -53,7 +55,7 @@ Entity::Entity(Player &player,
     Networked(initializer),
     physics(physics),
     body(physics.createBody(physics.rectShape({10, 10}),
-                            BodyTag::PropTag(*this, player))),
+                            BodyTag::EntityTag(*this, player))),
     physical(initializer.physical),
     lifetime(0),
     destroyable(false),
