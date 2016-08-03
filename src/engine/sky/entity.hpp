@@ -16,37 +16,85 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Some non-player entity in a Sky.
+ * A prop, a mutable-lifetime (projectile, etc) entity that a Plane can own.
+ * Subordinate to a Plane.
  */
 #pragma once
-#include "util/types.hpp"
-#include "engine/multimedia.hpp"
+#include "physics.hpp"
 
 namespace sky {
 
 /**
- * Data that defines the entity.
+ * Initializer for Prop.
  */
-class EntityData {
-  sf::Vector2f pos;
-  std::vector<sf::Vector2f> localVerticies;
-  bool collide, fixed;
+struct PropInit {
+  PropInit() = default;
+  PropInit(const sf::Vector2f &pos, const sf::Vector2f &vel);
 
-  FillType fillType;
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(physical);
+  }
+
+  PhysicalState physical;
 
 };
 
 /**
- * Delta type for Entity.
+ * Delta for Prop.
  */
-class EntityDelta {
+struct PropDelta {
+  PropDelta() = default;
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(physical);
+  }
+
+  PhysicalState physical;
 
 };
 
 /**
- * A non-player entity, defined by an EntityData.
+ * Something a player can create.
  */
-class Entity : public Networked<EntityData, EntityDelta> {
+class Prop: public Networked<PropInit, PropDelta> {
+  friend class Participation;
+ private:
+  // State.
+  Physics &physics;
+  b2Body *const body;
+  PhysicalState physical;
+  optional<Movement> movement; // If this doesn't exist, it's fixed.
+  float lifetime;
+  bool destroyable;
+
+  // Delta collection state, for Participation.
+  bool newlyAlive;
+
+  // Sky API.
+  void writeToBody();
+  void readFromBody();
+  void tick(const TimeDiff delta);
+
+ public:
+  Prop() = delete;
+  Prop(class Player &player,
+       Physics &physics,
+       const PropInit &initializer);
+
+  // Associated player.
+  class Player &player;
+
+  // Networked API.
+  PropInit captureInitializer() const override final;
+  void applyDelta(const PropDelta &delta) override final;
+  PropDelta collectDelta();
+
+  // User API.
+  const PhysicalState &getPhysical() const;
+  float getLifetime() const;
+  void destroy();
 
 };
 

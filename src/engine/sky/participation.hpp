@@ -22,7 +22,7 @@
 #include <Box2D/Box2D.h>
 #include <forward_list>
 #include "util/types.hpp"
-#include "prop.hpp"
+#include "entity.hpp"
 #include "physics.hpp"
 #include "planestate.hpp"
 #include "explosion.hpp"

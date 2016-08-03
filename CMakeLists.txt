@@ -47,9 +47,6 @@ add_library(solemnsky STATIC
         src/engine/environment/visuals.cpp
         src/engine/environment/visuals.hpp
 
-        src/engine/sky/entity.cpp
-        src/engine/sky/entity.hpp
-
         src/engine/sky/explosion.cpp
         src/engine/sky/explosion.hpp
 
@@ -65,8 +62,8 @@ add_library(solemnsky STATIC
         src/engine/sky/planestate.cpp
         src/engine/sky/planestate.hpp
 
-        src/engine/sky/prop.cpp
-        src/engine/sky/prop.hpp
+        src/engine/sky/entity.cpp
+        src/engine/sky/entity.hpp
 
         src/engine/sky/sky.cpp
         src/engine/sky/sky.hpp

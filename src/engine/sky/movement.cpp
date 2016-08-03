@@ -46,20 +46,32 @@ b2Body *Movement::createBody(Physics &physics, const b2Shape &shape, const BodyT
   return body;
 }
 
-void Movement::tick(const TimeDiff delta, Physics &physics, b2Body &body) {
+void Movement::tick(const TimeDiff delta, Physics &physics, PhysicalState &state) {
   switch (type) {
     case Type::Free: {
       if (terminalDamping) {
-        float maxVel = terminalDamping->first,
-            dampingFactor = terminalDamping->second;
-        if (VecMath::length(state.vel) > maxVel) {
-          physics.approachVel()
-        }
+        const float maxVel = terminalDamping->first,
+            dampingFactor = terminalDamping->second,
+            vel = VecMath::length(state.vel),
+            excessVel = vel - maxVel;
 
+        if (vel > maxVel) {
+          const float reduction = excessVel * dampingFactor * delta;
+          state.vel *= vel / (vel - reduction);
+        }
       }
     }
-    default:
+    case Type::Linear: {
+      const float targetVel = velocity, actualVel = VecMath::length(state.vel);
+      state.vel *= actualVel / targetVel;
       break;
+    }
+    case Type::Hover: {
+      state.vel /= float(drag) * delta;
+      break;
+    }
+    default:
+      throw enum_error();
   }
 
 }

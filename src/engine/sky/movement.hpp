@@ -31,7 +31,7 @@ struct Movement {
   } type;
 
   // Freefall.
-  optional<std::pair<float, float>> terminalDamping; // Damp velocity over a terminal point.
+  optional<std::pair<float, Clamped>> terminalDamping; // Damp velocity over a terminal point.
 
   // Linear.
   float velocity;
@@ -58,7 +58,7 @@ struct Movement {
 
   // Applying to physics.
   b2Body *createBody(Physics &physics, const b2Shape &shape, const BodyTag &tag);
-  void tick(const TimeDiff delta, Physics &physics, b2Body &body);
+  void tick(const TimeDiff delta, Physics &physics, PhysicalState &state);
 
 };
 
