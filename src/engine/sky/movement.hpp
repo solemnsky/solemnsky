@@ -19,6 +19,7 @@
  * The laws of movement governing props and entities.
  */
 #pragma once
+#include "util/methods.hpp"
 #include "physics.hpp"
 
 namespace sky {
@@ -40,6 +41,11 @@ struct Movement {
   // Hover.
   Clamped drag;
 
+  // Applying to physics.
+  b2Body *createBody(Physics &physics, const b2Shape &shape, const BodyTag &tag);
+  void tick(const TimeDiff delta, Physics &physics, PhysicalState &state);
+
+  // Cereal serialization.
   template<typename Archive>
   void serialize(Archive &ar) {
     switch (type) {
@@ -55,10 +61,6 @@ struct Movement {
       }
     }
   }
-
-  // Applying to physics.
-  b2Body *createBody(Physics &physics, const b2Shape &shape, const BodyTag &tag);
-  void tick(const TimeDiff delta, Physics &physics, PhysicalState &state);
 
 };
 

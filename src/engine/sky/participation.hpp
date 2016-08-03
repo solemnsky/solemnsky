@@ -101,7 +101,7 @@ struct ParticipationInit {
 
   optional<std::pair<PlaneTuning, PlaneState>> spawn;
   PlaneControls controls;
-  std::map<PID, PropInit> props;
+  std::map<PID, EntityInit> props;
 
 };
 
@@ -125,8 +125,8 @@ struct ParticipationDelta: public VerifyStructure {
   optional<PlaneStateServer> serverState; // if client has authority
   optional<PlaneControls> controls; // client authority
 
-  std::map<PID, PropInit> propInits;
-  std::map<PID, PropDelta> propDeltas;
+  std::map<PID, EntityInit> propInits;
+  std::map<PID, EntityDelta> propDeltas;
 
   ParticipationDelta respectClientAuthority() const;
 
@@ -188,7 +188,7 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   // State.
   class Player &player;
   optional<Plane> plane;
-  std::map<PID, Prop> props;
+  std::map<PID, Entity> props;
   std::map<PID, Explosion> explosions;
 
   // Networked impl (for Sky).
@@ -201,7 +201,7 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   bool isSpawned() const;
 
   // User API, serverside.
-  void spawnProp(const PropInit &init);
+  void spawnProp(const EntityInit &init);
   void spawnExplosion(const ExplosionInit &init);
   void suicide();
 

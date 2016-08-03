@@ -405,7 +405,7 @@ bool Participation::isSpawned() const {
   return bool(plane);
 }
 
-void Participation::spawnProp(const PropInit &init) {
+void Participation::spawnProp(const EntityInit &init) {
   props.emplace(std::piecewise_construct,
                 std::forward_as_tuple(smallestUnused(props)),
                 std::forward_as_tuple(player, physics, init));

@@ -16,35 +16,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * A prop, a mutable-lifetime (projectile, etc) entity that a Plane can own.
- * Subordinate to a Plane.
+ * Any non-player entity in the game.
  */
 #pragma once
+#include "engine/multimedia.hpp"
 #include "physics.hpp"
+#include "movement.hpp"
 
 namespace sky {
 
 /**
- * Initializer for Prop.
+ * All the data that defines an entity.
  */
-struct PropInit {
-  PropInit() = default;
-  PropInit(const sf::Vector2f &pos, const sf::Vector2f &vel);
+struct EntityData {
+  // Constants.
+  const optional<Movement> movement;
+  const FillStyle fill;
 
+  // Variables.
+  PhysicalState physical;
+
+  // Cereal serialization.
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(physical);
+    ar(movement, fill, physical);
   }
-
-  PhysicalState physical;
 
 };
 
+
 /**
- * Delta for Prop.
+ * Delta for Entity.
  */
-struct PropDelta {
-  PropDelta() = default;
+struct EntityDelta {
+  EntityDelta() = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -58,14 +63,16 @@ struct PropDelta {
 /**
  * Something a player can create.
  */
-class Prop: public Networked<PropInit, PropDelta> {
+class Entity: public Networked<EntityInit, EntityDelta> {
   friend class Participation;
  private:
+  // Settings.
+  optional<Movement> movement; // If this doesn't exist, it's fixed.
+
   // State.
   Physics &physics;
   b2Body *const body;
   PhysicalState physical;
-  optional<Movement> movement; // If this doesn't exist, it's fixed.
   float lifetime;
   bool destroyable;
 
@@ -78,18 +85,18 @@ class Prop: public Networked<PropInit, PropDelta> {
   void tick(const TimeDiff delta);
 
  public:
-  Prop() = delete;
-  Prop(class Player &player,
-       Physics &physics,
-       const PropInit &initializer);
+  Entity() = delete;
+  Entity(class Player &player,
+         Physics &physics,
+         const EntityInit &initializer);
 
   // Associated player.
   class Player &player;
 
   // Networked API.
-  PropInit captureInitializer() const override final;
-  void applyDelta(const PropDelta &delta) override final;
-  PropDelta collectDelta();
+  EntityInit captureInitializer() const override final;
+  void applyDelta(const EntityDelta &delta) override final;
+  EntityDelta collectDelta();
 
   // User API.
   const PhysicalState &getPhysical() const;

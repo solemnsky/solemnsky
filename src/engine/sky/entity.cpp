@@ -21,35 +21,35 @@
 namespace sky {
 
 /**
- * PropInit.
+ * EntityInit.
  */
 
-PropInit::PropInit(const sf::Vector2f &pos, const sf::Vector2f &vel) :
+EntityInit::EntityInit(const sf::Vector2f &pos, const sf::Vector2f &vel) :
     physical(pos, vel, Angle(0), 0) { }
 
 /**
- * PropDelta.
+ * EntityDelta.
  */
 
 /**
- * Prop.
+ * Entity.
  */
 
-void Prop::writeToBody() {
+void Entity::writeToBody() {
   physical.writeToBody(physics, body);
 }
 
-void Prop::readFromBody() {
+void Entity::readFromBody() {
   physical.readFromBody(physics, body);
 }
 
-void Prop::tick(const TimeDiff delta) {
+void Entity::tick(const TimeDiff delta) {
   lifetime += delta;
 }
 
-Prop::Prop(Player &player,
-           Physics &physics,
-           const PropInit &initializer) :
+Entity::Entity(Player &player,
+               Physics &physics,
+               const EntityInit &initializer) :
     Networked(initializer),
     physics(physics),
     body(physics.createBody(physics.rectShape({10, 10}),
@@ -64,31 +64,31 @@ Prop::Prop(Player &player,
   body->SetGravityScale(0);
 }
 
-PropInit Prop::captureInitializer() const {
-  PropInit init;
+EntityInit Entity::captureInitializer() const {
+  EntityInit init;
   init.physical = physical;
   return init;
 }
 
-void Prop::applyDelta(const PropDelta &delta) {
+void Entity::applyDelta(const EntityDelta &delta) {
   physical = delta.physical;
 }
 
-PropDelta Prop::collectDelta() {
-  PropDelta delta;
+EntityDelta Entity::collectDelta() {
+  EntityDelta delta;
   delta.physical = physical;
   return delta;
 }
 
-const PhysicalState &Prop::getPhysical() const {
+const PhysicalState &Entity::getPhysical() const {
   return physical;
 }
 
-float Prop::getLifetime() const {
+float Entity::getLifetime() const {
   return lifetime;
 }
 
-void Prop::destroy() {
+void Entity::destroy() {
   destroyable = true;
 }
 
