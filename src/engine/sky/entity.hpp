@@ -44,6 +44,12 @@ struct EntityData {
 
 };
 
+/**
+ * The network initialized for Entity is just EntityData.
+ * This alias makes this decision more explicit.
+ */
+using EntityInit = EntityData;
+
 
 /**
  * Delta for Entity.

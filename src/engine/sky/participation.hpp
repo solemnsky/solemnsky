@@ -96,12 +96,11 @@ struct ParticipationInit {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(spawn, controls, props);
+    ar(spawn, controls);
   }
 
   optional<std::pair<PlaneTuning, PlaneState>> spawn;
   PlaneControls controls;
-  std::map<PID, EntityInit> props;
 
 };
 
@@ -114,7 +113,6 @@ struct ParticipationDelta: public VerifyStructure {
   template<typename Archive>
   void serialize(Archive &ar) {
     ar(spawn, planeAlive, state, serverState, controls);
-    ar(propInits, propDeltas);
   }
 
   bool verifyStructure() const;
@@ -124,9 +122,6 @@ struct ParticipationDelta: public VerifyStructure {
   optional<PlaneState> state; // if client doesn't have authority
   optional<PlaneStateServer> serverState; // if client has authority
   optional<PlaneControls> controls; // client authority
-
-  std::map<PID, EntityInit> propInits;
-  std::map<PID, EntityDelta> propDeltas;
 
   ParticipationDelta respectClientAuthority() const;
 
@@ -188,8 +183,6 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   // State.
   class Player &player;
   optional<Plane> plane;
-  std::map<PID, Entity> props;
-  std::map<PID, Explosion> explosions;
 
   // Networked impl (for Sky).
   void applyDelta(const ParticipationDelta &delta) override;
@@ -201,8 +194,6 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   bool isSpawned() const;
 
   // User API, serverside.
-  void spawnProp(const EntityInit &init);
-  void spawnExplosion(const ExplosionInit &init);
   void suicide();
 
   // ParticipationInput.

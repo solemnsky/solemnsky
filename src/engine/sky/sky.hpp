@@ -37,13 +37,15 @@ struct SkyInit: public VerifyStructure {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(settings, participations);
+    ar(settings, participations, entities, explosions);
   }
 
   bool verifyStructure() const;
 
   SkySettingsInit settings;
   std::map<PID, ParticipationInit> participations;
+  std::map<PID, EntityInit> entities;
+  std::map<PID, ExplosionInit> explosions;
 
 };
 
@@ -55,13 +57,15 @@ struct SkyDelta: public VerifyStructure {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(settings, participations);
+    ar(settings, participations, entities, explosions);
   }
 
   bool verifyStructure() const;
 
   optional<SkySettingsDelta> settings;
   std::map<PID, ParticipationDelta> participations;
+  std::map<PID, EntityDelta> entities;
+  std::map<PID, ExplosionDelta> explosions;
 
   // Transform to respect client authority.
   SkyDelta respectAuthority(const Player &player) const;
@@ -81,8 +85,11 @@ class Sky: public PhysicsListener,
   const Map &map;
 
   // State.
+  SkySettings settings;
   Physics physics;
   std::map<PID, Participation> participations;
+  std::map<PID, Entity> entities;
+  std::map<PID, Explosion> explosions;
 
   // GameHandler.
   SkyListener *listener;
@@ -124,9 +131,10 @@ class Sky: public PhysicsListener,
   SkyDelta collectDelta();
 
   // User API.
-  SkySettings settings;
   const Map &getMap() const;
   Participation &getParticipation(const Player &player) const;
+
+  const Settings &getSettings() const;
   void changeSettings(const SkySettingsDelta &delta);
 
 };

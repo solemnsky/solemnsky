@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * An explosion in a Sky. Its effects are only simulated on the client of a participating plane.
+ * An explosion in a Sky. Its effects are only simulated on the client of an affected plane.
  */
 #pragma once
 #include "physics.hpp"
