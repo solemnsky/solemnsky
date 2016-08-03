@@ -19,11 +19,36 @@
 
 namespace sky {
 
-/**
- * VisualEntity.
- */
+void forSkyActions(std::function<void(const Action)> fn) {
+  for (sky::Action action = sky::Action(0);
+       action < sky::Action::MAX;
+       action = sky::Action(size_t(action) + 1)) {
+    fn(action);
+  }
+}
 
-VisualEntity::VisualEntity(const bool isDefault, const PID index) :
-    isDefault(true), index(0) {}
+static const std::vector<std::string> actionNames = {
+    "thrust",
+    "reverse",
+    "left",
+    "right",
+    "primary",
+    "secondary",
+    "special",
+    "suicide"
+};
+
+std::string showAction(const Action action) {
+  return actionNames.at((size_t) action);
+}
+
+optional<Action> readAction(const std::string &str) {
+  Action action = Action::Thrust;
+  for (const auto &search : actionNames) {
+    if (search == str) return action;
+    action = Action(char(action) + 1);
+  }
+  return {};
+}
 
 }

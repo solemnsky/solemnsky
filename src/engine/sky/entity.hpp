@@ -20,6 +20,7 @@
  */
 #pragma once
 #include "util/types.hpp"
+#include "engine/multimedia.hpp"
 
 namespace sky {
 
@@ -27,6 +28,11 @@ namespace sky {
  * Data that defines the entity.
  */
 class EntityData {
+  sf::Vector2f pos;
+  std::vector<sf::Vector2f> localVerticies;
+  bool collide, fixed;
+
+  FillType fillType;
 
 };
 

@@ -26,11 +26,6 @@
 
 namespace sky {
 
-void forSkyActions(std::function<void(const Action)> fn);
-
-std::string showAction(const Action action);
-optional<Action> readAction(const std::string &string);
-
 /**
  * The POD static state of a Plane.
  */

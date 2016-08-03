@@ -47,8 +47,14 @@ add_library(solemnsky STATIC
         src/engine/environment/visuals.cpp
         src/engine/environment/visuals.hpp
 
+        src/engine/sky/entity.cpp
+        src/engine/sky/entity.hpp
+
         src/engine/sky/explosion.cpp
         src/engine/sky/explosion.hpp
+
+        src/engine/sky/movement.cpp
+        src/engine/sky/movement.hpp
 
         src/engine/sky/participation.cpp
         src/engine/sky/participation.hpp
@@ -86,6 +92,9 @@ add_library(solemnsky STATIC
         src/engine/flowcontrol.cpp
         src/engine/flowcontrol.hpp
 
+        src/engine/multimedia.cpp
+        src/engine/multimedia.hpp
+
         src/engine/player.cpp
         src/engine/player.hpp
 
@@ -120,7 +129,7 @@ add_library(solemnsky STATIC
 
         thirdparty/polypartition/polypartition.cpp
         thirdparty/polypartition/polypartition.hpp
-        src/engine/sky/entity.cpp src/engine/sky/entity.hpp)
+        )
 target_link_libraries(solemnsky
         enet
         sfml-system
