@@ -71,7 +71,7 @@ void Plane::tickFlight(const TimeDiff delta) {
 
   if (state.stalled) {
     // Afterburner.
-    if (throtCtrl == MovementLaws::Up) {
+    if (throtCtrl == Movement::Up) {
       const float thrustEfficacy =
           requestEnergy(tuning.energy.thrustDrain * delta);
 
@@ -91,7 +91,7 @@ void Plane::tickFlight(const TimeDiff delta) {
     // Modify throttle and afterburner according to controls.
     state.throttle += movementValue(throtCtrl) * delta;
     bool afterburning =
-        (throtCtrl == MovementLaws::Up) && state.throttle == 1;
+        (throtCtrl == Movement::Up) && state.throttle == 1;
 
     // Pick away at leftover velocity.
     state.leftoverVel *= std::pow(tuning.flight.leftoverDamping, delta);
@@ -218,24 +218,16 @@ void Plane::damage(const float amount) {
  * ParticipationInit.
  */
 
-ParticipationInit::ParticipationInit() :
-    spawn(),
-    controls(),
-    props() { }
-
 ParticipationInit::ParticipationInit(
     const PlaneControls &controls,
     const PlaneTuning &tuning,
     const PlaneState &state) :
     spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)),
-    controls(controls),
-    props() { }
+    controls(controls) { }
 
 ParticipationInit::ParticipationInit(
     const PlaneControls &controls) :
-    spawn(),
-    controls(controls),
-    props() { }
+    controls(controls) { }
 
 /**
  * ParticipationDelta.
@@ -248,7 +240,7 @@ bool ParticipationDelta::verifyStructure() const {
 ParticipationDelta ParticipationDelta::respectClientAuthority() const {
   ParticipationDelta delta{*this};
   if (state) {
-    delta.serverState.emplace(state.get());
+    delta.serverState = state;
     delta.state.reset();
   }
   delta.controls.reset();
@@ -273,16 +265,10 @@ void Participation::doAction(const Action action, bool actionState) {
 
 void Participation::prePhysics() {
   if (plane) plane->prePhysics();
-  for (auto &prop : props) prop.second.writeToBody();
 }
 
 void Participation::postPhysics(const float delta) {
   if (plane) plane->postPhysics(delta);
-
-  for (auto &prop : props) {
-    prop.second.readFromBody();
-    prop.second.tick(delta);
-  }
 }
 
 void Participation::spawn(const PlaneTuning &tuning,
@@ -306,11 +292,6 @@ Participation::Participation(Player &player,
     spawnWithState(initializer.spawn->first, initializer.spawn->second);
   controls = initializer.controls;
   lastControls = initializer.controls;
-  for (const auto &prop : initializer.props) {
-    props.emplace(std::piecewise_construct,
-                  std::forward_as_tuple(prop.first),
-                  std::forward_as_tuple(player, physics, prop.second));
-  }
 }
 
 void Participation::applyDelta(const ParticipationDelta &delta) {
@@ -327,23 +308,6 @@ void Participation::applyDelta(const ParticipationDelta &delta) {
     } else plane.reset();
   }
 
-  // Apply prop deltas / erasure.
-  auto iter = props.begin();
-  while (iter != props.end()) {
-    if (delta.propDeltas.find(iter->first) == delta.propDeltas.end()) {
-      const auto toErase = iter;
-      ++iter;
-      props.erase(toErase);
-    } else ++iter;
-  }
-
-  // Create new props.
-  for (const auto &init : delta.propInits) {
-    props.emplace(std::piecewise_construct,
-                  std::forward_as_tuple(init.first),
-                  std::forward_as_tuple(player, physics, init.second));
-  }
-
   // Modify controls.
   if (delta.controls) {
     controls = *delta.controls;
@@ -354,9 +318,6 @@ ParticipationInit Participation::captureInitializer() const {
   ParticipationInit init{controls};
   if (plane) {
     init.spawn.emplace(plane->tuning, plane->state);
-  }
-  for (const auto &prop : props) {
-    init.props.emplace(prop.first, prop.second.captureInitializer());
   }
   return init;
 }

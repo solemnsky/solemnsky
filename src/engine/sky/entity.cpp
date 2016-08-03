@@ -40,54 +40,48 @@ EntityState::EntityState(const optional<MovementLaws> movement,
  * Entity.
  */
 
-void Entity::writeToBody() {
-  data..physical.writeToBody(physics, body);
+void Entity::prePhysics() {
+  state.physical.writeToBody(physics, body);
 }
 
-void Entity::readFromBody() {
-  data.physical.readFromBody(physics, body);
-}
-
-void Entity::tick(const TimeDiff delta) {
-  data.lifetime += delta;
+void Entity::postPhysics(const TimeDiff delta) {
+  state.physical.readFromBody(physics, body);
+  state.lifetime += delta;
+  if (const auto &movement = state.movement)
+    movement->tick(delta, state.physical);
 }
 
 Entity::Entity(Player &player,
                Physics &physics,
                const EntityInit &initializer) :
     Networked(initializer),
+    state(initializer),
     physics(physics),
     body(physics.createBody(physics.rectShape({10, 10}),
                             BodyTag::EntityTag(*this, player))),
-    physical(initializer.physical),
-    lifetime(0),
     newlyAlive(true),
 
     player(player), destroyable(false) {
-  physical.hardWriteToBody(physics, body);
+  state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(0);
 }
 
 EntityInit Entity::captureInitializer() const {
-  return data;
+  return state;
 }
 
 void Entity::applyDelta(const EntityDelta &delta) {
-  physical = delta.physical;
+  state.physical = delta.physical;
 }
 
 EntityDelta Entity::collectDelta() {
   EntityDelta delta;
-  delta.physical = physical;
+  delta.physical = state.physical;
   return delta;
 }
 
-const PhysicalState &Entity::getPhysical() const {
-  return physical;
-}
-
-float Entity::getLifetime() const {
-  return lifetime;
+const EntityState &Entity::getState() const {
+  return state;
 }
 
 void Entity::destroy() {

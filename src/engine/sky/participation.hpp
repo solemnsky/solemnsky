@@ -88,7 +88,7 @@ class Plane {
  * Initializer for Participation's Networked impl.
  */
 struct ParticipationInit {
-  ParticipationInit();
+  ParticipationInit() = default;
   ParticipationInit(const PlaneControls &controls,
                     const PlaneTuning &tuning,
                     const PlaneState &state);

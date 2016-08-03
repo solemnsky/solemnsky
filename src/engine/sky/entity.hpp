@@ -73,10 +73,10 @@ struct EntityDelta {
  * Some non-player entity.
  */
 class Entity: public Networked<EntityInit, EntityDelta> {
-  friend class Participation;
+  friend class Sky;
  private:
   // Data.
-  EntityState data;
+  EntityState state;
 
   // Physics.
   Physics &physics;
@@ -86,9 +86,8 @@ class Entity: public Networked<EntityInit, EntityDelta> {
   bool newlyAlive;
 
   // Sky API.
-  void writeToBody();
-  void readFromBody();
-  void tick(const TimeDiff delta);
+  void prePhysics();
+  void postPhysics(const TimeDiff delta);
 
  public:
   Entity() = delete;
@@ -105,8 +104,8 @@ class Entity: public Networked<EntityInit, EntityDelta> {
   EntityDelta collectDelta();
 
   // User API.
-  const EntityState &data
-  getState() const;
+  const EntityState &getState() const;
+  void destroy();
 
   // Destroyable flag, for simulation on server.
   bool destroyable;

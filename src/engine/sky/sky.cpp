@@ -78,24 +78,30 @@ void Sky::unregisterPlayer(Player &player) {
 }
 
 void Sky::onTick(const TimeDiff delta) {
-  if (arena.serverOwnership()) {
+  if (arena.serverResponsible()) {
     // Remove destroyable entities.
     // Only necessary if we're the server, client have no business doing this.
     auto entity = entities.begin();
     while (entity != entities.end()) {
       if (entity->second.destroyable) {
-        const auto toErase = iter;
-        ++iter;
-        props.erase(toErase);
-      } else ++iter;
+        const auto toErase = entity;
+        ++entity;
+        entities.erase(toErase);
+      } else ++entity;
     }
   }
 
+  // Synchronize state with box2d.
   for (auto &participation: participations) participation.second.prePhysics();
   for (auto &entity: entities) entity.second.prePhysics();
+  for (auto &explosion: explosions) explosion.second.prePhysics();
 
   physics.tick(delta);
-  for (auto &p: participations) p.second.postPhysics(delta);
+
+  // Tick everything.
+  for (auto &participation: participations) participation.second.postPhysics(delta);
+  for (auto &entity: entities) entity.second.postPhysics(delta);
+  for (auto &explosion: explosions) explosion.second.postPhysics(delta);
 }
 
 void Sky::onAction(Player &player, const Action action, const bool state) {
@@ -150,9 +156,9 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
     Subsystem(arena),
     Networked(initializer),
     map(map),
+    settings(initializer.settings),
     physics(map, *this),
-    listener(listener),
-    settings(initializer.settings) {
+    listener(listener) {
   arena.forPlayers([&](Player &player) {
     const auto iter = initializer.participations.find(player.pid);
     registerPlayerWith(
@@ -161,26 +167,50 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
         ParticipationInit{} : iter->second);
   });
 
-  for (const auto &entity : initializer.entities) {
+  for (const auto &entity : initializer.entities)
     entities.emplace(entity.first, entity.second);
-  }
-
-  for (const auto &explosion: initializer.explosions) {
+  for (const auto &explosion: initializer.explosions)
     explosions.emplace(explosion.first, explosion.second);
-  }
-
 
   syncSettings();
   appLog("Instantiated Sky.", LogOrigin::Engine);
 }
 
+template<typename Data, typename Init, typename Delta>
+void syncNetworkedMap(std::map<PID, Data> &map, std::map<PID, Init> &inits,
+                      std::map<PID, Delta> &deltas, Physics &physics) {
+  auto iter = map.begin();
+  while (iter != map.end()) {
+    if (deltas.find(iter->first) == deltas.end()) {
+      const auto toErase = iter;
+      ++iter;
+      map.erase(toErase);
+    } else ++iter;
+  }
+  for (const auto &init : inits) {
+    map.emplace(std::piecewise_construct,
+                std::forward_as_tuple(init.first),
+                std::forward_as_tuple(physics, init.second));
+  }
+};
+
 void Sky::applyDelta(const SkyDelta &delta) {
+  // Participations.
   for (const auto &participation: delta.participations) {
     if (const Player *player = arena.getPlayer(participation.first)) {
       getPlayerData(*player).applyDelta(participation.second);
     }
   }
+
+  // Settings.
   settings.applyDelta(delta.settings.get());
+
+  // Entities.
+  syncNetworkedMap(entities, delta.newEntities, delta.entities, physics);
+
+  // Explosions.
+  syncNetworkedMap(explosions, delta.newExplosions, delta.explosions, physics);
+
 }
 
 SkyInit Sky::captureInitializer() const {
@@ -209,7 +239,11 @@ SkyDelta Sky::collectDelta() {
   }
 
   for (auto &entity: entities) {
-    delta.entities.emplace(entity.first, entity.second.collectDelta());
+    if (entity.second.newlyAlive) {
+      delta.newEntities.emplace(entity.first, entity.second.captureInitializer());
+    } else {
+      delta.entities.emplace(entity.first, entity.second.collectDelta());
+    }
   }
 
   for (auto &explosion: explosions) {

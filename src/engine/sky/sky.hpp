@@ -63,7 +63,10 @@ struct SkyDelta: public VerifyStructure {
   bool verifyStructure() const;
 
   optional<SkySettingsDelta> settings;
+
   std::map<PID, ParticipationDelta> participations;
+  std::map<PID, EntityInit> newEntities;
+  std::map<PID, ExplosionInit> newExplosions;
   std::map<PID, EntityDelta> entities;
   std::map<PID, ExplosionDelta> explosions;
 

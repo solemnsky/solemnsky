@@ -40,6 +40,12 @@ struct ExplosionDelta {
 };
 
 struct Explosion: public Networked<ExplosionInit, ExplosionDelta> {
+  friend class Sky;
+ private:
+  // Sky API.
+  void prePhysics();
+  void postPhysics(const TimeDiff delta);
+
  public:
   Explosion(const ExplosionInit &init);
 
