@@ -51,17 +51,16 @@ void Entity::postPhysics(const TimeDiff delta) {
     movement->tick(delta, state.physical);
 }
 
-Entity::Entity(Player &player,
-               Physics &physics,
+Entity::Entity(Physics &physics,
                const EntityInit &initializer) :
     Networked(initializer),
     state(initializer),
     physics(physics),
     body(physics.createBody(physics.rectShape({10, 10}),
-                            BodyTag::EntityTag(*this, player))),
+                            BodyTag::EntityTag(*this))),
     newlyAlive(true),
 
-    player(player), destroyable(false) {
+    destroyable(false) {
   state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(0);
 }

@@ -187,11 +187,11 @@ void syncNetworkedMap(std::map<PID, Data> &map, std::map<PID, Init> &inits,
       map.erase(toErase);
     } else ++iter;
   }
-  for (const auto &init : inits) {
-    map.emplace(std::piecewise_construct,
-                std::forward_as_tuple(init.first),
-                std::forward_as_tuple(physics, init.second));
-  }
+//  for (const auto &init : inits) {
+//    map.emplace(std::piecewise_construct,
+//                std::forward_as_tuple(init.first),
+//                std::forward_as_tuple(physics, init.second));
+//  }
 };
 
 void Sky::applyDelta(const SkyDelta &delta) {
@@ -218,14 +218,12 @@ SkyInit Sky::captureInitializer() const {
   for (const auto &participation : participations)
     initializer.participations.emplace(
         participation.first, participation.second.captureInitializer());
-
-  for (const auto &entity : entities) {
-    initializer.entities.emplace(entity.first, entity.second.captureInitializer());
-  }
-
-  for (const auto &explosion: explosions) {
-    initializer.explosions.emplace(explosion.first, explosion.second.captureInitializer());
-  }
+  for (const auto &entity : entities)
+    initializer.entities.emplace(
+        entity.first, entity.second.captureInitializer());
+  for (const auto &explosion: explosions)
+    initializer.explosions.emplace(
+        explosion.first, explosion.second.captureInitializer());
 
   initializer.settings = settings.captureInitializer();
   return initializer;

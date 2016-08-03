@@ -44,8 +44,8 @@ BodyTag BodyTag::PlaneTag(Plane &plane, Player &player) {
   return tag;
 }
 
-BodyTag BodyTag::EntityTag(Entity &entity, Player &player) {
-  BodyTag tag(Type::PropTag, &player);
+BodyTag BodyTag::EntityTag(Entity &entity) {
+  BodyTag tag(Type::PropTag);
   tag.entity = &entity;
   return tag;
 }

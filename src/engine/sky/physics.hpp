@@ -50,7 +50,7 @@ struct BodyTag {
   static BodyTag BoundaryTag();
   static BodyTag ObstacleTag(const struct MapObstacle &obstacle);
   static BodyTag PlaneTag(Plane &plane, Player &player);
-  static BodyTag EntityTag(Entity &entity, Player &player);
+  static BodyTag EntityTag(Entity &entity);
 
 };
 

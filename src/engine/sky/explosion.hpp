@@ -32,12 +32,8 @@ struct ExplosionInit {
   }
 };
 
-struct ExplosionDelta {
-  template<typename Archive>
-  void serialize(Archive &ar) {
-    ar();
-  }
-};
+// Explosions do not change over their lifetime.
+using ExplosionDelta = Nothing;
 
 struct Explosion: public Networked<ExplosionInit, ExplosionDelta> {
   friend class Sky;

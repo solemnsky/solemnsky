@@ -335,15 +335,6 @@ ParticipationDelta Participation::collectDelta() {
     }
   }
 
-  for (auto &prop : props) {
-    if (prop.second.newlyAlive) {
-      delta.propInits.emplace(prop.first, prop.second.captureInitializer());
-      prop.second.newlyAlive = false;
-    } else {
-      delta.propDeltas.emplace(prop.first, prop.second.collectDelta());
-    }
-  }
-
   delta.controls = controls;
 
   return delta;
@@ -355,16 +346,6 @@ const PlaneControls &Participation::getControls() const {
 
 bool Participation::isSpawned() const {
   return bool(plane);
-}
-
-void Participation::spawnProp(const EntityInit &init) {
-  props.emplace(std::piecewise_construct,
-                std::forward_as_tuple(smallestUnused(props)),
-                std::forward_as_tuple(player, physics, init));
-}
-
-void Participation::spawnExplosion(const ExplosionInit &init) {
-  explosions.emplace(smallestUnused(explosions), init);
 }
 
 void Participation::suicide() {

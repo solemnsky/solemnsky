@@ -28,9 +28,8 @@
 #include <boost/optional.hpp>
 
 /**
- * Small comforts.
+ * This is pretty useful.
  */
-struct Nothing {};
 using boost::optional;
 
 /**
@@ -84,6 +83,14 @@ void serialize(Archive &ar, sf::Vector2i &x) {
 #include <cereal/types/vector.hpp>
 #include <cereal/types/map.hpp>
 #include <cereal/types/utility.hpp>
+
+/**
+ * The unit type, with exactly one value.
+ */
+struct Nothing {
+  template<typename Archive>
+  void serialize(Archive &ar) { }
+};
 
 /**
  * Useful functions.
@@ -146,7 +153,7 @@ class RollingSampler {
  public:
   RollingSampler() = delete;
   RollingSampler(const unsigned int maxMemory) :
-      maxMemory(maxMemory) {}
+      maxMemory(maxMemory) { }
 
   void push(const Data value) {
     if (data.size() >= maxMemory) data.erase(data.begin());
@@ -272,7 +279,7 @@ struct Angle {
  private:
   Cyclic value;
  public:
-  inline Angle() : Angle(0) {}
+  inline Angle() : Angle(0) { }
   Angle(const float x);
   Angle(const sf::Vector2f &);
 
@@ -295,7 +302,7 @@ struct Angle {
 class VerifyStructure {
  public:
   virtual bool verifyStructure() const = 0;
-  virtual ~VerifyStructure() {}
+  virtual ~VerifyStructure() { }
 };
 
 /**
@@ -307,7 +314,7 @@ class Networked {
   // It is obrigatory to construct a Networked object with its
   // initializer type; this supports an orthogonal interface.
   Networked() = delete;
-  Networked(const Init &) {}
+  Networked(const Init &) { }
 
   virtual void applyDelta(const Delta &) = 0;
   virtual Init captureInitializer() const = 0;
