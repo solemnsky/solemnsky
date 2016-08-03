@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Any non-player entity in the game.
+ * Customizable representation of any non-player entity in the game.
  */
 #pragma once
 #include "engine/multimedia.hpp"
@@ -26,11 +26,11 @@
 namespace sky {
 
 /**
- * All the data that defines an entity.
+ * All the settings and state that defines an entity.
  */
-struct EntityData {
-  EntityData(const optional<MovementLaws> movement,
-             const FillStyle &fill, const sf::Vector2f &pos, const sf::Vector2f &vel);
+struct EntityState {
+  EntityState(const optional<MovementLaws> movement,
+              const FillStyle &fill, const sf::Vector2f &pos, const sf::Vector2f &vel);
 
   // Constants.
   const optional<MovementLaws> movement; // The body is fixed if this does not exist.
@@ -38,6 +38,7 @@ struct EntityData {
 
   // Variables.
   PhysicalState physical;
+  Time lifetime;
 
   // Cereal serialization.
   template<typename Archive>
@@ -48,10 +49,10 @@ struct EntityData {
 };
 
 /**
- * The network initialized for Entity is just EntityData.
+ * The network initialized for Entity is just EntityState.
  * This alias makes this decision more explicit.
  */
-using EntityInit = EntityData;
+using EntityInit = EntityState;
 
 /**
  * Delta for Entity.
@@ -69,19 +70,17 @@ struct EntityDelta {
 };
 
 /**
- * Something a player can create.
+ * Some non-player entity.
  */
 class Entity: public Networked<EntityInit, EntityDelta> {
   friend class Participation;
  private:
-  // Settings.
-  optional<MovementLaws> movement; // If this doesn't exist, it's fixed.
+  // Data.
+  EntityState data;
 
-  // State.
+  // Physics.
   Physics &physics;
   b2Body *const body;
-  PhysicalState physical;
-  float lifetime;
 
   // Delta collection state, for Participation.
   bool newlyAlive;
@@ -106,9 +105,8 @@ class Entity: public Networked<EntityInit, EntityDelta> {
   EntityDelta collectDelta();
 
   // User API.
-  const PhysicalState &getPhysical() const;
-  float getLifetime() const;
-  void destroy();
+  const EntityState &data
+  getState() const;
 
   // Destroyable flag, for simulation on server.
   bool destroyable;

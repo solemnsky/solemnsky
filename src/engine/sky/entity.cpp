@@ -21,13 +21,16 @@
 namespace sky {
 
 /**
- * EntityData == EntityInit.
+ * EntityState == EntityInit.
  */
-EntityData::EntityData(const optional<MovementLaws> movement,
-                       const FillStyle &fill,
-                       const sf::Vector2f &pos,
-                       const sf::Vector2f &vel) :
-    movement(movement), fill(fill), physical(pos, vel, Angle(0), 0) { }
+EntityState::EntityState(const optional<MovementLaws> movement,
+                         const FillStyle &fill,
+                         const sf::Vector2f &pos,
+                         const sf::Vector2f &vel) :
+    movement(movement),
+    fill(fill),
+    physical(pos, vel, Angle(0), 0),
+    lifetime(0) { }
 
 /**
  * EntityDelta.
@@ -38,15 +41,15 @@ EntityData::EntityData(const optional<MovementLaws> movement,
  */
 
 void Entity::writeToBody() {
-  physical.writeToBody(physics, body);
+  data..physical.writeToBody(physics, body);
 }
 
 void Entity::readFromBody() {
-  physical.readFromBody(physics, body);
+  data.physical.readFromBody(physics, body);
 }
 
 void Entity::tick(const TimeDiff delta) {
-  lifetime += delta;
+  data.lifetime += delta;
 }
 
 Entity::Entity(Player &player,
@@ -58,18 +61,15 @@ Entity::Entity(Player &player,
                             BodyTag::EntityTag(*this, player))),
     physical(initializer.physical),
     lifetime(0),
-    destroyable(false),
     newlyAlive(true),
 
-    player(player) {
+    player(player), destroyable(false) {
   physical.hardWriteToBody(physics, body);
   body->SetGravityScale(0);
 }
 
 EntityInit Entity::captureInitializer() const {
-  EntityInit init;
-  init.physical = physical;
-  return init;
+  return data;
 }
 
 void Entity::applyDelta(const EntityDelta &delta) {
