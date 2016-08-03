@@ -83,7 +83,6 @@ class Sky: public PhysicsListener,
   // State.
   Physics physics;
   std::map<PID, Participation> participations;
-  SkySettings settings;
 
   // GameHandler.
   SkyListener *listener;
@@ -125,9 +124,9 @@ class Sky: public PhysicsListener,
   SkyDelta collectDelta();
 
   // User API.
+  SkySettings settings;
   const Map &getMap() const;
   Participation &getParticipation(const Player &player) const;
-  const SkySettings &getSettings() const;
   void changeSettings(const SkySettingsDelta &delta);
 
 };

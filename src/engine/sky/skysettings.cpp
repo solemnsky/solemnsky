@@ -42,18 +42,6 @@ bool SkySettingsDelta::verifyStructure() const {
   return true;
 }
 
-SkySettingsDelta SkySettingsDelta::ChangeGravity(const float gravity) {
-  SkySettingsDelta delta;
-  delta.gravity = gravity;
-  return delta;
-}
-
-SkySettingsDelta SkySettingsDelta::ChangeView(const float view) {
-  SkySettingsDelta delta;
-  delta.viewScale = view;
-  return delta;
-}
-
 /**
  * SkySettings.
  */

@@ -21,17 +21,17 @@ class SkyTest: public testing::Test {
  * SkySettings are correctly copied and transmitted over the network.
  */
 TEST_F(SkyTest, SettingsTest) {
-  sky.changeSettings(sky::SkySettingsDelta::ChangeGravity(-1));
+  sky.settings.gravity = -1;
 
   sky::Arena remoteArena(arena.captureInitializer());
   sky::Sky remoteSky(remoteArena, nullMap, sky.captureInitializer());
 
-  ASSERT_EQ(remoteSky.getSettings().gravity, -1);
+  ASSERT_EQ(remoteSky.settings.gravity, -1);
 
-  sky.changeSettings(sky::SkySettingsDelta::ChangeView(2));
+  sky.settings.viewScale = 2;
   remoteSky.applyDelta(sky.collectDelta());
 
-  ASSERT_EQ(remoteSky.getSettings().viewScale, 2);
+  ASSERT_EQ(remoteSky.settings.viewScale, 2);
 
 }
 

@@ -136,8 +136,8 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
     Networked(initializer),
     map(map),
     physics(map, *this),
-    settings(initializer.settings),
-    listener(listener) {
+    listener(listener),
+    settings(initializer.settings) {
   arena.forPlayers([&](Player &player) {
     const auto iter = initializer.participations.find(player.pid);
     registerPlayerWith(
