@@ -58,8 +58,6 @@ Entity::Entity(const EntityInit &initializer,
     physics(physics),
     body(physics.createBody(physics.rectShape({10, 10}),
                             BodyTag::EntityTag(*this))),
-    newlyAlive(true),
-
     destroyable(false) {
   state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(0);

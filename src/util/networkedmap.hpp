@@ -84,7 +84,6 @@ class NetMap {
 
   // Put something in and tell us where it ended up.
   // TODO: Substitute this viscerally nauseating linear search for something more clever iff this becomes a bottleneck.
-  template<typename... Args>
   std::pair<PID, Data &> putData(const Init &init, Args... args) {
     data.emplace(std::piecewise_construct,
                  std::forward_as_tuple(smallestUnused(data)),
@@ -121,8 +120,23 @@ class NetMap {
     return init;
   }
 
-  NetMapDelta<Delta> collectDelta() {
-    NetMapDelta<Delta> delta;
+  NetMapDelta<Init, Delta> collectDelta() {
+    NetMapDelta<Init, Delta> delta;
+
+    // Initializers for uninitialized components.
+    for (const auto &datum: data) {
+      if (!datum.second.first) {
+        delta.first.emplace(datum.first, datum.second.second.captureInitializer());
+        datum.second.first = true;
+        // This sure reads like plain English.
+      }
+    }
+
+    // Deltas for all.
+    for (const auto &datum: data) {
+      delta.second.emplace(datum.first, datum.second.second.collectDelta());
+    }
+
     return delta;
   }
 
