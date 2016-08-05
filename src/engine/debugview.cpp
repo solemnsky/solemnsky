@@ -76,8 +76,6 @@ void DebugView::printSkyReport(Printer &p) const {
       if (auto player = arena.getPlayer(playerID.get())) {
         const auto &participation = sky->getParticipation(*player);
         p.printLn("isSpawned(): " + printBool(participation.isSpawned()));
-        p.printLn("props.size(): "
-                      + std::to_string(participation.props.size()));
       } else {
         p.setColor(255, 0, 0);
         p.printLn("ERROR: PID not associated with Player in Arena!");

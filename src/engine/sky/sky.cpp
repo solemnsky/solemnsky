@@ -168,7 +168,9 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
   });
 
   for (const auto &entity : initializer.entities)
-    entities.emplace(entity.first, entity.second);
+    entities.emplace(std::piecewise_construct,
+                     std::forward_as_tuple(entity.first),
+                     std::forward_as_tuple(entity.second, physics));
   for (const auto &explosion: initializer.explosions)
     explosions.emplace(explosion.first, explosion.second);
 
@@ -176,9 +178,10 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
   appLog("Instantiated Sky.", LogOrigin::Engine);
 }
 
-template<typename Data, typename Init, typename Delta>
-void syncNetworkedMap(std::map<PID, Data> &map, std::map<PID, Init> &inits,
-                      std::map<PID, Delta> &deltas, Physics &physics) {
+// Update a map of entities or explosions with inits and deltas from a SkyDelta.
+template<typename Data, typename Init, typename Delta, typename... Additional>
+void syncNetworkedMap(std::map<PID, Data> &map, const std::map<PID, Init> &inits,
+                      const std::map<PID, Delta> &deltas, Additional... additional) {
   auto iter = map.begin();
   while (iter != map.end()) {
     if (deltas.find(iter->first) == deltas.end()) {
@@ -187,11 +190,11 @@ void syncNetworkedMap(std::map<PID, Data> &map, std::map<PID, Init> &inits,
       map.erase(toErase);
     } else ++iter;
   }
-//  for (const auto &init : inits) {
-//    map.emplace(std::piecewise_construct,
-//                std::forward_as_tuple(init.first),
-//                std::forward_as_tuple(physics, init.second));
-//  }
+  for (const auto &init : inits) {
+    map.emplace(std::piecewise_construct,
+                std::forward_as_tuple(init.first),
+                std::forward_as_tuple(init.second, additional...));
+  }
 };
 
 void Sky::applyDelta(const SkyDelta &delta) {
@@ -209,7 +212,7 @@ void Sky::applyDelta(const SkyDelta &delta) {
   syncNetworkedMap(entities, delta.newEntities, delta.entities, physics);
 
   // Explosions.
-  syncNetworkedMap(explosions, delta.newExplosions, delta.explosions, physics);
+  syncNetworkedMap(explosions, delta.newExplosions, delta.explosions);
 
 }
 

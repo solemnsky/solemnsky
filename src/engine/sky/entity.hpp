@@ -91,8 +91,7 @@ class Entity: public Networked<EntityInit, EntityDelta> {
 
  public:
   Entity() = delete;
-  Entity(Physics &physics,
-         const EntityInit &initializer);
+  Entity(const EntityInit &initializer, Physics &physics);
 
   // Networked API.
   EntityInit captureInitializer() const override final;

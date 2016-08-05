@@ -51,8 +51,8 @@ void Entity::postPhysics(const TimeDiff delta) {
     movement->tick(delta, state.physical);
 }
 
-Entity::Entity(Physics &physics,
-               const EntityInit &initializer) :
+Entity::Entity(const EntityInit &initializer,
+               Physics &physics) :
     Networked(initializer),
     state(initializer),
     physics(physics),
