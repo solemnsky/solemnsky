@@ -311,8 +311,8 @@ class VerifyStructure {
 template<typename Init, typename Delta>
 class Networked {
  public:
-  // It is obrigatory to construct a Networked object with its
-  // initializer type; this supports an orthogonal interface.
+  // It is obligatory to construct a Networked object with its
+  // initializer type; this guarantees an orthogonal interface.
   Networked() = delete;
   Networked(const Init &) { }
 

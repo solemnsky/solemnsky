@@ -158,6 +158,8 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
     map(map),
     settings(initializer.settings),
     physics(map, *this),
+    entities(initializer.entities, physics),
+    explosions(initializer.explosions),
     listener(listener) {
   arena.forPlayers([&](Player &player) {
     const auto iter = initializer.participations.find(player.pid);
@@ -167,35 +169,9 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
         ParticipationInit{} : iter->second);
   });
 
-  for (const auto &entity : initializer.entities)
-    entities.emplace(std::piecewise_construct,
-                     std::forward_as_tuple(entity.first),
-                     std::forward_as_tuple(entity.second, physics));
-  for (const auto &explosion: initializer.explosions)
-    explosions.emplace(explosion.first, explosion.second);
-
   syncSettings();
   appLog("Instantiated Sky.", LogOrigin::Engine);
 }
-
-// Update a map of entities or explosions with inits and deltas from a SkyDelta.
-template<typename Data, typename Init, typename Delta, typename... Additional>
-void syncNetworkedMap(std::map<PID, Data> &map, const std::map<PID, Init> &inits,
-                      const std::map<PID, Delta> &deltas, Additional... additional) {
-  auto iter = map.begin();
-  while (iter != map.end()) {
-    if (deltas.find(iter->first) == deltas.end()) {
-      const auto toErase = iter;
-      ++iter;
-      map.erase(toErase);
-    } else ++iter;
-  }
-  for (const auto &init : inits) {
-    map.emplace(std::piecewise_construct,
-                std::forward_as_tuple(init.first),
-                std::forward_as_tuple(init.second, additional...));
-  }
-};
 
 void Sky::applyDelta(const SkyDelta &delta) {
   // Participations.
@@ -205,14 +181,9 @@ void Sky::applyDelta(const SkyDelta &delta) {
     }
   }
 
-  // Settings.
   settings.applyDelta(delta.settings.get());
-
-  // Entities.
-  syncNetworkedMap(entities, delta.newEntities, delta.entities, physics);
-
-  // Explosions.
-  syncNetworkedMap(explosions, delta.newExplosions, delta.explosions);
+  entities.applyDelta(delta.entities, physics);
+  explosions.applyDelta(delta.explosions);
 
 }
 
@@ -221,12 +192,8 @@ SkyInit Sky::captureInitializer() const {
   for (const auto &participation : participations)
     initializer.participations.emplace(
         participation.first, participation.second.captureInitializer());
-  for (const auto &entity : entities)
-    initializer.entities.emplace(
-        entity.first, entity.second.captureInitializer());
-  for (const auto &explosion: explosions)
-    initializer.explosions.emplace(
-        explosion.first, explosion.second.captureInitializer());
+  initializer.entities = entities.captureInitializer();
+  initializer.explosions = explosions.captureInitializer();
 
   initializer.settings = settings.captureInitializer();
   return initializer;
@@ -239,17 +206,8 @@ SkyDelta Sky::collectDelta() {
         participation.first, participation.second.collectDelta());
   }
 
-  for (auto &entity: entities) {
-    if (entity.second.newlyAlive) {
-      delta.newEntities.emplace(entity.first, entity.second.captureInitializer());
-    } else {
-      delta.entities.emplace(entity.first, entity.second.collectDelta());
-    }
-  }
-
-  for (auto &explosion: explosions) {
-    delta.explosions.emplace(explosion.first, explosion.second.collectDelta());
-  }
+  delta.entities = entities.collectDelta();
+  delta.explosions = entities.collectDelta();
 
   delta.settings = settings.collectDelta();
   return delta;
@@ -273,13 +231,11 @@ void Sky::changeSettings(const SkySettingsDelta &delta) {
 }
 
 void Sky::spawnEntity(const EntityInit &init) {
-  entities.emplace(std::piecewise_construct,
-                   std::forward_as_tuple(smallestUnused(entities)),
-                   std::forward_as_tuple(init, physics));
+  entities.putData(init, physics);
 }
 
 void Sky::spawnExplosion(const ExplosionInit &init) {
-  explosions.emplace(smallestUnused(explosions), std::forward_as_tuple(init));
+  explosions.putData(init);
 }
 
 }

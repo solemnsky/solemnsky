@@ -82,9 +82,6 @@ class Entity: public Networked<EntityInit, EntityDelta> {
   Physics &physics;
   b2Body *const body;
 
-  // Delta collection state, for Participation.
-  bool newlyAlive;
-
   // Sky API.
   void prePhysics();
   void postPhysics(const TimeDiff delta);

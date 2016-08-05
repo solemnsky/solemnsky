@@ -26,6 +26,7 @@
 #include "skysettings.hpp"
 #include "engine/arena.hpp"
 #include "skylistener.hpp"
+#include "util/networkedmap.hpp"
 
 namespace sky {
 
@@ -44,8 +45,9 @@ struct SkyInit: public VerifyStructure {
 
   SkySettingsInit settings;
   std::map<PID, ParticipationInit> participations;
-  std::map<PID, EntityInit> entities;
-  std::map<PID, ExplosionInit> explosions;
+
+  NetMapInit<EntityInit> entities;
+  NetMapInit<ExplosionInit> explosions;
 
 };
 
@@ -65,10 +67,9 @@ struct SkyDelta: public VerifyStructure {
   optional<SkySettingsDelta> settings;
 
   std::map<PID, ParticipationDelta> participations;
-  std::map<PID, EntityInit> newEntities;
-  std::map<PID, ExplosionInit> newExplosions;
-  std::map<PID, EntityDelta> entities;
-  std::map<PID, ExplosionDelta> explosions;
+
+  NetMapDelta<EntityInit, EntityDelta> entities;
+  NetMapDelta<ExplosionInit, ExplosionDelta> explosions;
 
   // Transform to respect client authority.
   SkyDelta respectAuthority(const Player &player) const;
@@ -90,6 +91,9 @@ class Sky: public PhysicsListener,
   // State.
   SkySettings settings;
   Physics physics;
+
+  NetMap<Entity, EntityInit, EntityDelta, Physics&> entities;
+  NetMap<Explosion, ExplosionInit, ExplosionDelta> explosions;
 
   // GameHandler.
   SkyListener *listener;
@@ -125,12 +129,8 @@ class Sky: public PhysicsListener,
       const SkyInit &, SkyListener *) = delete; // Map can't be temp
   Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *listener = nullptr);
 
-  // State tables. These three PID allocations are completely independent.
-  // While participations are linked to the Arena Players, entities and explosions have PIDs
-  // merely for networking purposes.
+  // Player participations in the sky.
   std::map<PID, Participation> participations;
-  std::map<PID, Entity> entities;
-  std::map<PID, Explosion> explosions;
 
   // Networked impl.
   void applyDelta(const SkyDelta &delta) override final;

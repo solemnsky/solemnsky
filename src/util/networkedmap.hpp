@@ -38,8 +38,11 @@ using NetMapDelta = std::pair<std::map<PID, Init> &, std::map<PID, Delta> &>;
  * A PID-indexed map of thingies that we want to synchronize over the network while mutating both the collection
  * and the thingy-states in themselves.
  */
-template<typename Data, typename Init, typename Delta>
-struct NetMap: public Networked<NetMapInit<Init>, NetMapDelta<Init, Delta>> {
+template<typename Data, // underlying data ("thingy")
+    typename Init, // initializer type for data
+    typename Delta, // delta type for data
+    typename... Args> // argument to supply to the Data ctor along with Init
+class NetMap {
  private:
   // Also defined in util/methods.hpp, redefined here because including that header here would
   // likely affect compile times. In a *reasonable* language we could abstract away this template.
@@ -53,31 +56,74 @@ struct NetMap: public Networked<NetMapInit<Init>, NetMapDelta<Init, Delta>> {
     return i;
   }
 
+  std::map<PID, std::pair<bool, Data>> data; // Track whether we've sent initializers. 'false' means we haven't.
+
  public:
-  NetMap(const Init &init) : Networked(init) {
-
+  NetMap(const NetMapInit<Init> &init, Args... args) {
+    for (const auto &x : init) {
+      data.emplace(std::piecewise_construct,
+                   std::forward_as_tuple(x.first),
+                   std::forward_as_tuple(x.second, args...));
+    }
   }
-
-  std::map<PID, Data> data;
 
   // Get one of them; alternatively, give us a fast and ergonomic way to segfault.
   Data *getData(const PID pid) {
     auto x = data.find(pid);
-    if (x != data.end()) return &x->second;
+    if (x != data.end()) return &x->second.second;
     return nullptr;
+  }
+
+  // Iterate over the data. C++ has a terrible way of dealing with iterators and we only ever need forward
+  // iteration that runs to completion in our usages.
+  void forData(std::function<void(Data &)> f) {
+    for (auto &datum: data) {
+      f(datum.second);
+    }
   }
 
   // Put something in and tell us where it ended up.
   // TODO: Substitute this viscerally nauseating linear search for something more clever iff this becomes a bottleneck.
   template<typename... Args>
-  std::pair<PID, Data &> putData(Args... args) {
+  std::pair<PID, Data &> putData(const Init &init, Args... args) {
     data.emplace(std::piecewise_construct,
-                 std::forward_as_tuple(smallestUnused(data), args...));
+                 std::forward_as_tuple(smallestUnused(data)),
+                 std::forward_as_tuple(init, args...));
   }
 
-  // Networked impl:
+  // Networked impl + Args... .
 
+  void applyDelta(const NetMapDelta<Init, Delta> &delta, Args... args) {
+    const auto &inits = delta.first; // Thingy inits.
+    const auto &deltas = delta.second; // Thingy deltas.
 
+    auto iter = data.begin();
+    while (iter != data.end()) {
+      if (deltas.find(iter->first) == deltas.end()) {
+        const auto toErase = iter;
+        ++iter;
+        data.erase(toErase);
+      } else ++iter;
+    }
+    for (const auto &init : inits) {
+      data.emplace(std::piecewise_construct,
+                   std::forward_as_tuple(init.first),
+                   std::forward_as_tuple(init.second, args...));
+    }
+  }
 
+  NetMapInit<Init> captureInitializer() const {
+    NetMapInit<Init> init;
+    for (const auto &spanishInquisition: data)
+      init.emplace(
+          spanishInquisition.first, spanishInquisition.second.second.captureInitializer());
+    // You weren't expecting that for sure.
+    return init;
+  }
+
+  NetMapDelta<Delta> collectDelta() {
+    NetMapDelta<Delta> delta;
+    return delta;
+  }
 
 };
