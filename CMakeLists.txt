@@ -113,6 +113,8 @@ add_library(solemnsky STATIC
         src/util/methods.cpp
         src/util/methods.hpp
 
+        src/util/networkedmap.hpp
+
         src/util/printer.cpp
         src/util/printer.hpp
 

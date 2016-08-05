@@ -272,4 +272,14 @@ void Sky::changeSettings(const SkySettingsDelta &delta) {
   syncSettings();
 }
 
+void Sky::spawnEntity(const EntityInit &init) {
+  entities.emplace(std::piecewise_construct,
+                   std::forward_as_tuple(smallestUnused(entities)),
+                   std::forward_as_tuple(init, physics));
+}
+
+void Sky::spawnExplosion(const ExplosionInit &init) {
+  explosions.emplace(smallestUnused(explosions), std::forward_as_tuple(init));
+}
+
 }

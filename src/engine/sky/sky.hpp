@@ -144,6 +144,9 @@ class Sky: public PhysicsListener,
   const SkySettings &getSettings() const;
   void changeSettings(const SkySettingsDelta &delta);
 
+  void spawnEntity(const EntityInit &init);
+  void spawnExplosion(const ExplosionInit &init);
+
 };
 
 }
