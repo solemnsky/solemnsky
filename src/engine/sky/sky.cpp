@@ -229,6 +229,13 @@ void Sky::changeSettings(const SkySettingsDelta &delta) {
   syncSettings();
 }
 
+
+NetMapData<Entity> Sky::getEntities() {
+  return entities.getData();
+}
+NetMapData<Explosion> Sky::getExplosions() {
+  return explosions.getData();
+}
 void Sky::spawnEntity(const EntityInit &init) {
   entities.put(init, physics);
 }
