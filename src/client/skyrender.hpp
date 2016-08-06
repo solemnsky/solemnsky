@@ -73,7 +73,6 @@ class SkyRender
   void renderBars(ui::Frame &f,
                   std::vector<std::pair<float, const sf::Color &>> bars,
                   sf::FloatRect area);
-  void renderProps(ui::Frame &f, const Participation &participation);
   void renderPlaneGraphics(ui::Frame &f, const PlaneGraphics &graphics);
   void renderMap(ui::Frame &f);
 
