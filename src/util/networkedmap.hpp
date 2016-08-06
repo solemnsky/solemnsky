@@ -32,7 +32,7 @@ using NetMapInit = std::map<PID, Init>;
  * Delta type for NetworkedMap.
  */
 template<typename Init, typename Delta>
-using NetMapDelta = std::pair<std::map<PID, Init> &, std::map<PID, Delta> &>;
+using NetMapDelta = std::pair<std::map<PID, Init>, std::map<PID, Delta>>;
 
 /**
  * A PID-indexed map of thingies that we want to synchronize over the network while mutating both the collection
@@ -63,7 +63,7 @@ class NetMap {
     for (const auto &x : init) {
       data.emplace(std::piecewise_construct,
                    std::forward_as_tuple(x.first),
-                   std::forward_as_tuple(x.second, args...));
+                   std::forward_as_tuple(false, std::forward_as_tuple(x.second, args...)));
     }
   }
 
@@ -124,7 +124,7 @@ class NetMap {
     NetMapDelta<Init, Delta> delta;
 
     // Initializers for uninitialized components.
-    for (const auto &datum: data) {
+    for (auto &datum: data) {
       if (!datum.second.first) {
         delta.first.emplace(datum.first, datum.second.second.captureInitializer());
         datum.second.first = true;
