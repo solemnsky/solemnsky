@@ -36,8 +36,8 @@ void PlaneGraphics::tick(const float delta) {
   if (auto &plane = participation.plane) {
     // potentially switch orientation
     bool newOrientation = Angle(plane->getState().physical.rot + 90) > 180;
-    const MovementLaws rotMovement = participation.getControls().rotMovement();
-    if (rotMovement == MovementLaws::None) orientation = newOrientation;
+    const Movement rotMovement = participation.getControls().rotMovement();
+    if (rotMovement == Movement::None) orientation = newOrientation;
 
     // flipping (when orientation changes)
     approach(flipState, (const float) (orientation ? 1 : 0),
@@ -102,24 +102,8 @@ std::pair<float, const sf::Color &> mkBar(float x, const sf::Color &c) {
   return std::pair<float, const sf::Color &>(x, c);
 }
 
-void SkyRender::renderProps(ui::Frame &f,
-                            const Participation &participation) {
-  for (const auto &prop : participation.props) {
-    f.withTransform(
-        sf::Transform()
-            .translate(prop.second.getPhysical().pos)
-            .rotate(prop.second.getPhysical().rot), [&]() {
-          f.drawRect(sf::Vector2f(-5, -5),
-                     sf::Vector2f(5, 5),
-                     sf::Color::White);
-        });
-  }
-}
-
 void SkyRender::renderPlaneGraphics(ui::Frame &f,
                                     const PlaneGraphics &graphics) {
-  renderProps(f, graphics.participation);
-
   if (auto &plane = graphics.participation.plane) {
     auto &state = plane->getState();
     auto &tuning = plane->getTuning();
