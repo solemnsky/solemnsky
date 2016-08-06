@@ -81,27 +81,26 @@ void Sky::onTick(const TimeDiff delta) {
   if (arena.serverResponsible()) {
     // Remove destroyable entities.
     // Only necessary if we're the server, client have no business doing this.
-    auto entity = entities.begin();
-    while (entity != entities.end()) {
-      if (entity->second.destroyable) {
-        const auto toErase = entity;
-        ++entity;
-        entities.erase(toErase);
-      } else ++entity;
+    std::vector<PID> removable;
+    entities.forData([&removable](Entity &e, const PID pid) {
+      if (e.destroyable) removable.push_back(pid);
+    });
+    for (const PID pid: removable) {
+      entities.remove(pid);
     }
   }
 
   // Synchronize state with box2d.
   for (auto &participation: participations) participation.second.prePhysics();
-  for (auto &entity: entities) entity.second.prePhysics();
-  for (auto &explosion: explosions) explosion.second.prePhysics();
+  entities.forData([](Entity &e, const PID) { e.prePhysics(); });
+  explosions.forData([](Explosion &e, const PID) { e.prePhysics(); });
 
   physics.tick(delta);
 
   // Tick everything.
   for (auto &participation: participations) participation.second.postPhysics(delta);
-  for (auto &entity: entities) entity.second.postPhysics(delta);
-  for (auto &explosion: explosions) explosion.second.postPhysics(delta);
+  entities.forData([delta](Entity &e, const PID) { e.postPhysics(delta); });
+  explosions.forData([delta](Explosion &e, const PID) { e.postPhysics(delta); });
 }
 
 void Sky::onAction(Player &player, const Action action, const bool state) {
@@ -231,11 +230,11 @@ void Sky::changeSettings(const SkySettingsDelta &delta) {
 }
 
 void Sky::spawnEntity(const EntityInit &init) {
-  entities.putData(init, physics);
+  entities.put(init, physics);
 }
 
 void Sky::spawnExplosion(const ExplosionInit &init) {
-  explosions.putData(init);
+  explosions.put(init);
 }
 
 }

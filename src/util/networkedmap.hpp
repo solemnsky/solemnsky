@@ -56,7 +56,8 @@ class NetMap {
     return i;
   }
 
-  std::map<PID, std::pair<bool, Data>> data; // Track whether we've sent initializers. 'false' means we haven't.
+  std::map<PID, std::pair<bool, Data>> data;
+  // the bool tracks whether we've sent initializers. 'false' means we haven't.
 
  public:
   NetMap(const NetMapInit<Init> &init, Args... args) {
@@ -67,27 +68,35 @@ class NetMap {
     }
   }
 
-  // Get one of them; alternatively, give us a fast and ergonomic way to segfault.
-  Data *getData(const PID pid) {
+  /**
+   * Operations on data.
+   */
+
+  Data *get(const PID pid) {
     auto x = data.find(pid);
     if (x != data.end()) return &x->second.second;
     return nullptr;
   }
 
-  // Iterate over the data. C++ has a terrible way of dealing with iterators and we only ever need forward
-  // iteration that runs to completion in our usages.
-  void forData(std::function<void(Data &)> f) {
-    for (auto &datum: data) {
-      f(datum.second);
-    }
+  void remove(const PID pid) {
+    auto x = data.find(pid);
+    if (x != data.end()) data.erase(x);
   }
 
   // Put something in and tell us where it ended up.
   // TODO: Substitute this viscerally nauseating linear search for something more clever iff this becomes a bottleneck.
-  std::pair<PID, Data &> putData(const Init &init, Args... args) {
+  std::pair<PID, Data &> put(const Init &init, Args... args) {
     data.emplace(std::piecewise_construct,
                  std::forward_as_tuple(smallestUnused(data)),
                  std::forward_as_tuple(init, args...));
+  }
+
+  // Iterate over the data. C++ has a terrible way of dealing with iterators and we only ever need forward
+  // iteration that runs to completion in our usages.
+ void forData(std::function<void(Data &, const PID)> f) {
+    for (auto &datum: data) {
+      f(datum.second.second, datum.first);
+    }
   }
 
   // Networked impl + Args... .
