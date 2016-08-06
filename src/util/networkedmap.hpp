@@ -34,6 +34,9 @@ using NetMapInit = std::map<PID, Init>;
 template<typename Init, typename Delta>
 using NetMapDelta = std::pair<std::map<PID, Init>, std::map<PID, Delta>>;
 
+template<typename Data>
+struct NetMapData;
+
 /**
  * A PID-indexed map of entities that we want to synchronize over the protocol.
  */
@@ -95,11 +98,11 @@ class NetMap {
                      std::forward_as_tuple(init, args...)));
   }
 
-  // Iterate over the data. We only ever need forward iteration that runs to completion in our usages, and I
-  // tend to shy away from whatever excuse C++ has for iterator adaptors.
+  struct NetMapData<Data> getData();
+
   void forData(std::function<void(Data &, const PID)> f) {
-    for (auto &datum: data) {
-      f(datum.second.second, datum.first);
+    for (auto &data: data) {
+      f(data.second.second, data.second.first);
     }
   }
 
@@ -160,4 +163,50 @@ class NetMap {
     return delta;
   }
 
+};
+
+template<typename Data>
+struct NetMapIterator {
+  using MapType = std::map<PID, std::pair<bool, Data>>;
+  MapType &map;
+  typename MapType::iterator it;
+
+  NetMapIterator(MapType &map, typename MapType::iterator it) :
+      map(map), it(it) { }
+
+  NetMapIterator &operator++() {
+    ++it;
+    return *this;
+  }
+
+  bool operator==(const NetMapIterator &rhs) const { return it == rhs.it; }
+  bool operator!=(const NetMapIterator &rhs) const { return it != rhs; }
+  std::pair<PID, Data> &operator*() const { return (*it).second; }
+
+};
+
+/**
+ * Iterator handle to the data of a NetMap.
+ */
+template<typename Data>
+struct NetMapData {
+ private:
+  using MapType = std::map<PID, std::pair<bool, Data>>;
+  MapType &map;
+
+ public:
+  NetMapData(MapType &map) : map(map) { }
+
+  auto begin() { return NetMapIterator<Data>(map, map.begin()); }
+  auto end() { return NetMapIterator<Data>(map, map.end()); }
+
+  size_t size() {
+    return map.size();
+  }
+
+};
+
+template<typename Data, typename Init, typename Delta, typename... Args>
+NetMapData<Data> NetMap<Data, Init, Delta, Args...>::getData() {
+  return NetMapData<Data>(data);
 };

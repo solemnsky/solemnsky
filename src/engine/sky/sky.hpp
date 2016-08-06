@@ -137,13 +137,16 @@ class Sky: public PhysicsListener,
   SkyInit captureInitializer() const override final;
   SkyDelta collectDelta();
 
-  // User API.
+  // User API: reading state.
   const Map &getMap() const;
   Participation &getParticipation(const Player &player) const;
-
   const SkySettings &getSettings() const;
   void changeSettings(const SkySettingsDelta &delta);
 
+  NetMapData<Entity> getEntities();
+  NetMapData<Explosion> getExplosions();
+
+  // User API: mutating state, server-only.
   void spawnEntity(const EntityInit &init);
   void spawnExplosion(const ExplosionInit &init);
 

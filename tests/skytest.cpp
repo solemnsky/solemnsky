@@ -125,6 +125,21 @@ TEST_F(SkyTest, AuthorityTest) {
  * Entities can be created and synchronized over the network.
  */
 TEST_F(SkyTest, EntityTest) {
+  // We create an entity locally.
+  ASSERT_EQ(sky.getEntities().size(), 0);
+  sky.spawnEntity(sky::EntityState({}, {}, sf::Vector2f(200, 200), sf::Vector2f(0, 0)));
+  ASSERT_EQ(sky.getEntities().size(), 1);
+
+  // The entity is copied through the initialization protocol.
+  sky::Arena remoteArena{arena.captureInitializer()};
+  sky::Sky remoteSky{remoteArena, nullMap, sky.captureInitializer()};
+  ASSERT_EQ(remoteSky.getEntities().size(), 1);
+
+  // We can spawn more entities, and they are synchronized through the delta protocol.
+  sky.spawnEntity(sky::EntityState({}, {}, sf::Vector2f(200, 200), sf::Vector2f(0, 0)));
+  remoteSky.applyDelta(sky.collectDelta());
+  ASSERT_EQ(sky.getEntities().size(), 2);
+  ASSERT_EQ(remoteSky.getEntities().size(), 2);
 
 }
 

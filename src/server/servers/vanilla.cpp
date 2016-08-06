@@ -22,12 +22,6 @@ void VanillaServer::tickGame(const TimeDiff delta, sky::Sky &sky) {
     auto &participation = sky.getParticipation(player);
     if (participation.isSpawned()) {
       sky::Plane &plane = participation.plane.get();
-      for (auto &prop : participation.props) {
-        if (prop.second.getLifetime() > 1) {
-          prop.second.destroy();
-        }
-      }
-
       if (plane.getState().health == 0) {
         participation.suicide();
       }
@@ -35,12 +29,12 @@ void VanillaServer::tickGame(const TimeDiff delta, sky::Sky &sky) {
       if (participation.getControls().getState<sky::Action::Primary>()) {
         if (plane.getState().primaryCooldown) {
           if (plane.requestDiscreteEnergy(0.3)) {
-            auto &physical = plane.getState().physical;
-            const auto dir = VecMath::fromAngle(physical.rot);
-            participation.spawnProp(
-                sky::EntityInit(
-                    physical.pos + (plane.getTuning().hitbox.x / 2.0f) * dir,
-                    500.0f * dir));
+//            auto &physical = plane.getState().physical;
+//            const auto dir = VecMath::fromAngle(physical.rot);
+//            participation.spawnProp(
+//                sky::EntityInit(
+//                    physical.pos + (plane.getTuning().hitbox.x / 2.0f) * dir,
+//                    500.0f * dir));
             plane.resetPrimary();
           }
         }
