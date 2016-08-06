@@ -29,12 +29,13 @@ namespace sky {
  * All the settings and state that defines an entity.
  */
 struct EntityState {
+  EntityState() = default;
   EntityState(const optional<MovementLaws> movement,
               const FillStyle &fill, const sf::Vector2f &pos, const sf::Vector2f &vel);
 
   // Constants.
-  const optional<MovementLaws> movement; // The body is fixed if this does not exist.
-  const FillStyle fill;
+  optional<MovementLaws> movement; // The body is fixed if this does not exist.
+  FillStyle fill;
 
   // Variables.
   PhysicalState physical;

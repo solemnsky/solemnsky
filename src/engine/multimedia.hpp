@@ -12,15 +12,17 @@ namespace sky {
  * an environment visual component.
  */
 struct VisualEntity {
+  VisualEntity() = default;
   VisualEntity(const bool isDefault, const PID index);
 
+  bool isDefault; // If it's in the default resources table -- otherwise, it's in the Visuals component.
+  PID index;
+
+  // Cereal serialization.
   template<typename Archive>
   void serialize(Archive &ar) {
     ar(isDefault, index);
   }
-
-  bool isDefault; // If it's in the default resources table -- otherwise, it's in the Visuals component.
-  PID index;
 
 };
 
@@ -31,10 +33,8 @@ struct VisualEntity {
  * TODO: more features.
  */
 struct FillStyle {
- private:
-  FillStyle() = default;
+  FillStyle() = default; // By default there is no fill whatsoever.
 
- public:
   optional<sf::Color> fillColor;
   optional<VisualEntity> fillEntity;
   float textureAlpha; // The alpha to render the entity with.

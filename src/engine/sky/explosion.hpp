@@ -27,9 +27,7 @@ struct ExplosionInit {
   ExplosionInit();
 
   template<typename Archive>
-  void serialize(Archive &ar) {
-    ar();
-  }
+  void serialize(Archive &ar) { }
 };
 
 // Explosions do not change over their lifetime.
