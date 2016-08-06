@@ -26,6 +26,7 @@
 #include <numeric>
 #include <SFML/System.hpp>
 #include <boost/optional.hpp>
+#include <SFML/Graphics.hpp>
 
 /**
  * This is pretty useful.
@@ -77,6 +78,15 @@ template<typename Archive>
 void serialize(Archive &ar, sf::Vector2i &x) {
   ar(cereal::make_nvp("x", x.x), cereal::make_nvp("y", x.y));
 }
+
+template<typename Archive>
+void serialize(Archive &ar, sf::Color &x) {
+  ar(cereal::make_nvp("r", x.r),
+     cereal::make_nvp("g", x.g),
+     cereal::make_nvp("b", x.b),
+     cereal::make_nvp("a", x.a));
+}
+
 }
 
 #include <cereal/types/string.hpp>

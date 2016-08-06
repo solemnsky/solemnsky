@@ -206,7 +206,7 @@ SkyDelta Sky::collectDelta() {
   }
 
   delta.entities = entities.collectDelta();
-  delta.explosions = entities.collectDelta();
+  delta.explosions = explosions.collectDelta();
 
   delta.settings = settings.collectDelta();
   return delta;

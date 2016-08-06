@@ -23,7 +23,7 @@
 #pragma once
 
 /**
- * Initializer type for NetworkedMap. I enjoy what one might call 'explicit' types.
+ * Initializer type for NetworkedMap.
  */
 template<typename Init>
 using NetMapInit = std::map<PID, Init>;
@@ -35,13 +35,12 @@ template<typename Init, typename Delta>
 using NetMapDelta = std::pair<std::map<PID, Init>, std::map<PID, Delta>>;
 
 /**
- * A PID-indexed map of thingies that we want to synchronize over the network while mutating both the collection
- * and the thingy-states in themselves.
+ * A PID-indexed map of entities that we want to synchronize over the protocol.
  */
-template<typename Data, // underlying data ("thingy")
-    typename Init, // initializer type for data
-    typename Delta, // delta type for data
-    typename... Args> // argument to supply to the Data ctor along with Init
+template<typename Data, // underlying entity type
+    typename Init, // initializer type
+    typename Delta, // delta type
+    typename... Args> // arguments to supply to the Data ctor along with Init
 class NetMap {
  private:
   // Also defined in util/methods.hpp, redefined here because including that header here would
@@ -57,14 +56,17 @@ class NetMap {
   }
 
   std::map<PID, std::pair<bool, Data>> data;
-  // the bool tracks whether we've sent initializers. 'false' means we haven't.
+  // The bool tracks whether we've sent initializers through the delta collection yet. 'false' means we haven't.
 
  public:
   NetMap(const NetMapInit<Init> &init, Args... args) {
     for (const auto &x : init) {
       data.emplace(std::piecewise_construct,
                    std::forward_as_tuple(x.first),
-                   std::forward_as_tuple(false, std::forward_as_tuple(x.second, args...)));
+                   std::forward_as_tuple(
+                       std::piecewise_construct,
+                       std::forward_as_tuple(false),
+                       std::forward_as_tuple(x.second, args...)));
     }
   }
 
@@ -83,17 +85,19 @@ class NetMap {
     if (x != data.end()) data.erase(x);
   }
 
-  // Put something in and tell us where it ended up.
-  // TODO: Substitute this viscerally nauseating linear search for something more clever iff this becomes a bottleneck.
-  std::pair<PID, Data &> put(const Init &init, Args... args) {
+  // TODO: Substitute the nauseating linear search for something more efficient iff this becomes a bottleneck.
+  void put(const Init &init, Args... args) {
     data.emplace(std::piecewise_construct,
                  std::forward_as_tuple(smallestUnused(data)),
-                 std::forward_as_tuple(init, args...));
+                 std::forward_as_tuple(
+                     std::piecewise_construct,
+                     std::forward_as_tuple(false),
+                     std::forward_as_tuple(init, args...)));
   }
 
-  // Iterate over the data. C++ has a terrible way of dealing with iterators and we only ever need forward
-  // iteration that runs to completion in our usages.
- void forData(std::function<void(Data &, const PID)> f) {
+  // Iterate over the data. We only ever need forward iteration that runs to completion in our usages, and I
+  // tend to shy away from whatever excuse C++ has for iterator adaptors.
+  void forData(std::function<void(Data &, const PID)> f) {
     for (auto &datum: data) {
       f(datum.second.second, datum.first);
     }
@@ -102,21 +106,28 @@ class NetMap {
   // Networked impl + Args... .
 
   void applyDelta(const NetMapDelta<Init, Delta> &delta, Args... args) {
-    const auto &inits = delta.first; // Thingy inits.
-    const auto &deltas = delta.second; // Thingy deltas.
+    const auto &inits = delta.first;
+    const auto &deltas = delta.second;
 
     auto iter = data.begin();
     while (iter != data.end()) {
-      if (deltas.find(iter->first) == deltas.end()) {
+      const auto entityDelta = deltas.find(iter->first);
+      if (entityDelta == deltas.end()) {
         const auto toErase = iter;
-        ++iter;
         data.erase(toErase);
-      } else ++iter;
+      } else {
+        iter->second.second.applyDelta(entityDelta->second);
+      }
+      ++iter;
     }
+
     for (const auto &init : inits) {
       data.emplace(std::piecewise_construct,
                    std::forward_as_tuple(init.first),
-                   std::forward_as_tuple(init.second, args...));
+                   std::forward_as_tuple(
+                       std::piecewise_construct,
+                       std::forward_as_tuple(false),
+                       std::forward_as_tuple(init.second, args...)));
     }
   }
 
@@ -142,7 +153,7 @@ class NetMap {
     }
 
     // Deltas for all.
-    for (const auto &datum: data) {
+    for (auto &datum: data) {
       delta.second.emplace(datum.first, datum.second.second.collectDelta());
     }
 
