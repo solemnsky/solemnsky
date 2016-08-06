@@ -122,27 +122,9 @@ TEST_F(SkyTest, AuthorityTest) {
 }
 
 /**
- * Props can be spawned by Participations, and are Networked correctly
+ * Entities can be created and synchronized over the network.
  */
-TEST_F(SkyTest, PropTest) {
-  arena.connectPlayer("nameless plane");
-  auto &player = *arena.getPlayer(0);
-  auto &participation = sky.getParticipation(player);
-
-  sky.getParticipation(player).spawnProp(sky::PropInit());
-  ASSERT_EQ(participation.props.size(), size_t(1));
-
-  sky::Arena remoteArena{arena.captureInitializer()};
-  sky::Sky remoteSky{remoteArena, nullMap, sky.captureInitializer()};
-  auto &remotePlayer = *remoteArena.getPlayer(0);
-  auto &remoteParticipation = remoteSky.getParticipation(remotePlayer);
-
-  ASSERT_EQ(remoteParticipation.props.size(), size_t(1));
-
-  participation.spawnProp(sky::PropInit());
-  remoteSky.applyDelta(sky.collectDelta());
-
-  ASSERT_EQ(remoteParticipation.props.size(), size_t(2));
+TEST_F(SkyTest, EntityTest) {
 
 }
 

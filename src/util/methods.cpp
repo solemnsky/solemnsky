@@ -81,6 +81,9 @@ PID smallestUnused(std::vector<PID> &vec) {
   return v;
 }
 
+/**
+ * enum_error, because C++ doesn't provide guarantees about enum ranges.
+ */
 enum_error::enum_error() :
     std::logic_error(
         "An enum is outside its identified value space. Perhaps "
@@ -90,6 +93,10 @@ enum_error::enum_error() :
 bool imply(const bool x, const bool y) {
   return y or !x;
 }
+
+/**
+ * Platform agnostic system stuff.
+ */
 
 int getProcessID() {
 #if defined(__linux) || defined(__APPLE__)

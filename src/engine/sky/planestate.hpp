@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Basic state types for Plane.
+ * Data associated with a single plan, in tuning values and game state.
  */
 #pragma once
 #include <bitset>
@@ -25,11 +25,6 @@
 #include "engine/types.hpp"
 
 namespace sky {
-
-void forSkyActions(std::function<void(const Action)> fn);
-
-std::string showAction(const Action action);
-optional<Action> readAction(const std::string &string);
 
 /**
  * The POD static state of a Plane.

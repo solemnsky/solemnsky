@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * An explosion in a Sky. Its effects are only simulated on the client of a participating plane.
+ * An explosion in a Sky. Its effects are only simulated on the client of an affected plane.
  */
 #pragma once
 #include "physics.hpp"
@@ -27,19 +27,19 @@ struct ExplosionInit {
   ExplosionInit();
 
   template<typename Archive>
-  void serialize(Archive &ar) {
-    ar();
-  }
+  void serialize(Archive &ar) { }
 };
 
-struct ExplosionDelta {
-  template<typename Archive>
-  void serialize(Archive &ar) {
-    ar();
-  }
-};
+// Explosions do not change over their lifetime.
+using ExplosionDelta = Nothing;
 
 struct Explosion: public Networked<ExplosionInit, ExplosionDelta> {
+  friend class Sky;
+ private:
+  // Sky API.
+  void prePhysics();
+  void postPhysics(const TimeDiff delta);
+
  public:
   Explosion(const ExplosionInit &init);
 

@@ -218,24 +218,16 @@ void Plane::damage(const float amount) {
  * ParticipationInit.
  */
 
-ParticipationInit::ParticipationInit() :
-    spawn(),
-    controls(),
-    props() { }
-
 ParticipationInit::ParticipationInit(
     const PlaneControls &controls,
     const PlaneTuning &tuning,
     const PlaneState &state) :
     spawn(std::pair<PlaneTuning, PlaneState>(tuning, state)),
-    controls(controls),
-    props() { }
+    controls(controls) { }
 
 ParticipationInit::ParticipationInit(
     const PlaneControls &controls) :
-    spawn(),
-    controls(controls),
-    props() { }
+    controls(controls) { }
 
 /**
  * ParticipationDelta.
@@ -248,7 +240,7 @@ bool ParticipationDelta::verifyStructure() const {
 ParticipationDelta ParticipationDelta::respectClientAuthority() const {
   ParticipationDelta delta{*this};
   if (state) {
-    delta.serverState.emplace(state.get());
+    delta.serverState = state;
     delta.state.reset();
   }
   delta.controls.reset();
@@ -272,26 +264,11 @@ void Participation::doAction(const Action action, bool actionState) {
 }
 
 void Participation::prePhysics() {
-  auto iter = props.begin();
-  while (iter != props.end()) {
-    if (iter->second.destroyable) {
-      const auto toErase = iter;
-      ++iter;
-      props.erase(toErase);
-    } else ++iter;
-  }
-
   if (plane) plane->prePhysics();
-  for (auto &prop : props) prop.second.writeToBody();
 }
 
 void Participation::postPhysics(const float delta) {
   if (plane) plane->postPhysics(delta);
-
-  for (auto &prop : props) {
-    prop.second.readFromBody();
-    prop.second.tick(delta);
-  }
 }
 
 void Participation::spawn(const PlaneTuning &tuning,
@@ -315,11 +292,6 @@ Participation::Participation(Player &player,
     spawnWithState(initializer.spawn->first, initializer.spawn->second);
   controls = initializer.controls;
   lastControls = initializer.controls;
-  for (const auto &prop : initializer.props) {
-    props.emplace(std::piecewise_construct,
-                  std::forward_as_tuple(prop.first),
-                  std::forward_as_tuple(player, physics, prop.second));
-  }
 }
 
 void Participation::applyDelta(const ParticipationDelta &delta) {
@@ -336,23 +308,6 @@ void Participation::applyDelta(const ParticipationDelta &delta) {
     } else plane.reset();
   }
 
-  // Apply prop deltas / erasure.
-  auto iter = props.begin();
-  while (iter != props.end()) {
-    if (delta.propDeltas.find(iter->first) == delta.propDeltas.end()) {
-      const auto toErase = iter;
-      ++iter;
-      props.erase(toErase);
-    } else ++iter;
-  }
-
-  // Create new props.
-  for (const auto &init : delta.propInits) {
-    props.emplace(std::piecewise_construct,
-                  std::forward_as_tuple(init.first),
-                  std::forward_as_tuple(player, physics, init.second));
-  }
-
   // Modify controls.
   if (delta.controls) {
     controls = *delta.controls;
@@ -363,9 +318,6 @@ ParticipationInit Participation::captureInitializer() const {
   ParticipationInit init{controls};
   if (plane) {
     init.spawn.emplace(plane->tuning, plane->state);
-  }
-  for (const auto &prop : props) {
-    init.props.emplace(prop.first, prop.second.captureInitializer());
   }
   return init;
 }
@@ -383,15 +335,6 @@ ParticipationDelta Participation::collectDelta() {
     }
   }
 
-  for (auto &prop : props) {
-    if (prop.second.newlyAlive) {
-      delta.propInits.emplace(prop.first, prop.second.captureInitializer());
-      prop.second.newlyAlive = false;
-    } else {
-      delta.propDeltas.emplace(prop.first, prop.second.collectDelta());
-    }
-  }
-
   delta.controls = controls;
 
   return delta;
@@ -403,16 +346,6 @@ const PlaneControls &Participation::getControls() const {
 
 bool Participation::isSpawned() const {
   return bool(plane);
-}
-
-void Participation::spawnProp(const PropInit &init) {
-  props.emplace(std::piecewise_construct,
-                std::forward_as_tuple(smallestUnused(props)),
-                std::forward_as_tuple(player, physics, init));
-}
-
-void Participation::spawnExplosion(const ExplosionInit &init) {
-  explosions.emplace(smallestUnused(explosions), init);
 }
 
 void Participation::suicide() {

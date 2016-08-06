@@ -26,11 +26,11 @@
 #include <numeric>
 #include <SFML/System.hpp>
 #include <boost/optional.hpp>
+#include <SFML/Graphics.hpp>
 
 /**
- * Small comforts.
+ * This is pretty useful.
  */
-struct Nothing {};
 using boost::optional;
 
 /**
@@ -78,12 +78,29 @@ template<typename Archive>
 void serialize(Archive &ar, sf::Vector2i &x) {
   ar(cereal::make_nvp("x", x.x), cereal::make_nvp("y", x.y));
 }
+
+template<typename Archive>
+void serialize(Archive &ar, sf::Color &x) {
+  ar(cereal::make_nvp("r", x.r),
+     cereal::make_nvp("g", x.g),
+     cereal::make_nvp("b", x.b),
+     cereal::make_nvp("a", x.a));
+}
+
 }
 
 #include <cereal/types/string.hpp>
 #include <cereal/types/vector.hpp>
 #include <cereal/types/map.hpp>
 #include <cereal/types/utility.hpp>
+
+/**
+ * The unit type, with exactly one value.
+ */
+struct Nothing {
+  template<typename Archive>
+  void serialize(Archive &ar) { }
+};
 
 /**
  * Useful functions.
@@ -146,7 +163,7 @@ class RollingSampler {
  public:
   RollingSampler() = delete;
   RollingSampler(const unsigned int maxMemory) :
-      maxMemory(maxMemory) {}
+      maxMemory(maxMemory) { }
 
   void push(const Data value) {
     if (data.size() >= maxMemory) data.erase(data.begin());
@@ -272,7 +289,7 @@ struct Angle {
  private:
   Cyclic value;
  public:
-  inline Angle() : Angle(0) {}
+  inline Angle() : Angle(0) { }
   Angle(const float x);
   Angle(const sf::Vector2f &);
 
@@ -295,7 +312,7 @@ struct Angle {
 class VerifyStructure {
  public:
   virtual bool verifyStructure() const = 0;
-  virtual ~VerifyStructure() {}
+  virtual ~VerifyStructure() { }
 };
 
 /**
@@ -304,10 +321,10 @@ class VerifyStructure {
 template<typename Init, typename Delta>
 class Networked {
  public:
-  // It is obrigatory to construct a Networked object with its
-  // initializer type; this supports an orthogonal interface.
+  // It is obligatory to construct a Networked object with its
+  // initializer type; this guarantees an orthogonal interface.
   Networked() = delete;
-  Networked(const Init &) {}
+  Networked(const Init &) { }
 
   virtual void applyDelta(const Delta &) = 0;
   virtual Init captureInitializer() const = 0;

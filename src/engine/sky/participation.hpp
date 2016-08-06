@@ -22,7 +22,7 @@
 #include <Box2D/Box2D.h>
 #include <forward_list>
 #include "util/types.hpp"
-#include "prop.hpp"
+#include "entity.hpp"
 #include "physics.hpp"
 #include "planestate.hpp"
 #include "explosion.hpp"
@@ -88,7 +88,7 @@ class Plane {
  * Initializer for Participation's Networked impl.
  */
 struct ParticipationInit {
-  ParticipationInit();
+  ParticipationInit() = default;
   ParticipationInit(const PlaneControls &controls,
                     const PlaneTuning &tuning,
                     const PlaneState &state);
@@ -96,12 +96,11 @@ struct ParticipationInit {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(spawn, controls, props);
+    ar(spawn, controls);
   }
 
   optional<std::pair<PlaneTuning, PlaneState>> spawn;
   PlaneControls controls;
-  std::map<PID, PropInit> props;
 
 };
 
@@ -114,7 +113,6 @@ struct ParticipationDelta: public VerifyStructure {
   template<typename Archive>
   void serialize(Archive &ar) {
     ar(spawn, planeAlive, state, serverState, controls);
-    ar(propInits, propDeltas);
   }
 
   bool verifyStructure() const;
@@ -124,9 +122,6 @@ struct ParticipationDelta: public VerifyStructure {
   optional<PlaneState> state; // if client doesn't have authority
   optional<PlaneStateServer> serverState; // if client has authority
   optional<PlaneControls> controls; // client authority
-
-  std::map<PID, PropInit> propInits;
-  std::map<PID, PropDelta> propDeltas;
 
   ParticipationDelta respectClientAuthority() const;
 
@@ -188,8 +183,6 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   // State.
   class Player &player;
   optional<Plane> plane;
-  std::map<PID, Prop> props;
-  std::map<PID, Explosion> explosions;
 
   // Networked impl (for Sky).
   void applyDelta(const ParticipationDelta &delta) override;
@@ -201,8 +194,6 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   bool isSpawned() const;
 
   // User API, serverside.
-  void spawnProp(const PropInit &init);
-  void spawnExplosion(const ExplosionInit &init);
   void suicide();
 
   // ParticipationInput.

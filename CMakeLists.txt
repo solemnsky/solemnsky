@@ -50,6 +50,9 @@ add_library(solemnsky STATIC
         src/engine/sky/explosion.cpp
         src/engine/sky/explosion.hpp
 
+        src/engine/sky/movement.cpp
+        src/engine/sky/movement.hpp
+
         src/engine/sky/participation.cpp
         src/engine/sky/participation.hpp
 
@@ -59,8 +62,8 @@ add_library(solemnsky STATIC
         src/engine/sky/planestate.cpp
         src/engine/sky/planestate.hpp
 
-        src/engine/sky/prop.cpp
-        src/engine/sky/prop.hpp
+        src/engine/sky/entity.cpp
+        src/engine/sky/entity.hpp
 
         src/engine/sky/sky.cpp
         src/engine/sky/sky.hpp
@@ -86,6 +89,9 @@ add_library(solemnsky STATIC
         src/engine/flowcontrol.cpp
         src/engine/flowcontrol.hpp
 
+        src/engine/multimedia.cpp
+        src/engine/multimedia.hpp
+
         src/engine/player.cpp
         src/engine/player.hpp
 
@@ -106,6 +112,8 @@ add_library(solemnsky STATIC
 
         src/util/methods.cpp
         src/util/methods.hpp
+
+        src/util/networkedmap.hpp
 
         src/util/printer.cpp
         src/util/printer.hpp

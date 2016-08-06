@@ -36,8 +36,8 @@ void PlaneGraphics::tick(const float delta) {
   if (auto &plane = participation.plane) {
     // potentially switch orientation
     bool newOrientation = Angle(plane->getState().physical.rot + 90) > 180;
-    const Movement rotMovement = participation.getControls().rotMovement();
-    if (rotMovement == Movement::None) orientation = newOrientation;
+    const MovementLaws rotMovement = participation.getControls().rotMovement();
+    if (rotMovement == MovementLaws::None) orientation = newOrientation;
 
     // flipping (when orientation changes)
     approach(flipState, (const float) (orientation ? 1 : 0),

@@ -53,7 +53,7 @@ struct SkySettingsDelta : public VerifyStructure {
   // VerifyStructure impl.
   bool verifyStructure() const override final;
 
-  // Custom ctors.
+  // Constructors.
   static SkySettingsDelta ChangeGravity(const float gravity);
   static SkySettingsDelta ChangeView(const float view);
 
@@ -64,6 +64,7 @@ struct SkySettings : Networked<SkySettingsInit, SkySettingsDelta> {
   SkySettingsInit lastSettings;
 
  public:
+  SkySettings() = delete;
   SkySettings(const SkySettingsInit &settings);
 
   // Values.

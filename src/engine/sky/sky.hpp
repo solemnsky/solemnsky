@@ -26,6 +26,7 @@
 #include "skysettings.hpp"
 #include "engine/arena.hpp"
 #include "skylistener.hpp"
+#include "util/networkedmap.hpp"
 
 namespace sky {
 
@@ -37,13 +38,16 @@ struct SkyInit: public VerifyStructure {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(settings, participations);
+    ar(settings, participations, entities, explosions);
   }
 
   bool verifyStructure() const;
 
   SkySettingsInit settings;
   std::map<PID, ParticipationInit> participations;
+
+  NetMapInit<EntityInit> entities;
+  NetMapInit<ExplosionInit> explosions;
 
 };
 
@@ -55,13 +59,17 @@ struct SkyDelta: public VerifyStructure {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(settings, participations);
+    ar(settings, participations, entities, explosions);
   }
 
   bool verifyStructure() const;
 
   optional<SkySettingsDelta> settings;
+
   std::map<PID, ParticipationDelta> participations;
+
+  NetMapDelta<EntityInit, EntityDelta> entities;
+  NetMapDelta<ExplosionInit, ExplosionDelta> explosions;
 
   // Transform to respect client authority.
   SkyDelta respectAuthority(const Player &player) const;
@@ -81,9 +89,11 @@ class Sky: public PhysicsListener,
   const Map &map;
 
   // State.
-  Physics physics;
-  std::map<PID, Participation> participations;
   SkySettings settings;
+  Physics physics;
+
+  NetMap<Entity, EntityInit, EntityDelta, Physics&> entities;
+  NetMap<Explosion, ExplosionInit, ExplosionDelta> explosions;
 
   // GameHandler.
   SkyListener *listener;
@@ -119,6 +129,9 @@ class Sky: public PhysicsListener,
       const SkyInit &, SkyListener *) = delete; // Map can't be temp
   Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *listener = nullptr);
 
+  // Player participations in the sky.
+  std::map<PID, Participation> participations;
+
   // Networked impl.
   void applyDelta(const SkyDelta &delta) override final;
   SkyInit captureInitializer() const override final;
@@ -127,8 +140,12 @@ class Sky: public PhysicsListener,
   // User API.
   const Map &getMap() const;
   Participation &getParticipation(const Player &player) const;
+
   const SkySettings &getSettings() const;
   void changeSettings(const SkySettingsDelta &delta);
+
+  void spawnEntity(const EntityInit &init);
+  void spawnExplosion(const ExplosionInit &init);
 
 };
 

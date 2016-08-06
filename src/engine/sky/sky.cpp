@@ -78,9 +78,29 @@ void Sky::unregisterPlayer(Player &player) {
 }
 
 void Sky::onTick(const TimeDiff delta) {
-  for (auto &p: participations) p.second.prePhysics();
+  if (arena.serverResponsible()) {
+    // Remove destroyable entities.
+    // Only necessary if we're the server, client have no business doing this.
+    std::vector<PID> removable;
+    entities.forData([&removable](Entity &e, const PID pid) {
+      if (e.destroyable) removable.push_back(pid);
+    });
+    for (const PID pid: removable) {
+      entities.remove(pid);
+    }
+  }
+
+  // Synchronize state with box2d.
+  for (auto &participation: participations) participation.second.prePhysics();
+  entities.forData([](Entity &e, const PID) { e.prePhysics(); });
+  explosions.forData([](Explosion &e, const PID) { e.prePhysics(); });
+
   physics.tick(delta);
-  for (auto &p: participations) p.second.postPhysics(delta);
+
+  // Tick everything.
+  for (auto &participation: participations) participation.second.postPhysics(delta);
+  entities.forData([delta](Entity &e, const PID) { e.postPhysics(delta); });
+  explosions.forData([delta](Explosion &e, const PID) { e.postPhysics(delta); });
 }
 
 void Sky::onAction(Player &player, const Action action, const bool state) {
@@ -135,8 +155,10 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
     Subsystem(arena),
     Networked(initializer),
     map(map),
-    physics(map, *this),
     settings(initializer.settings),
+    physics(map, *this),
+    entities(initializer.entities, physics),
+    explosions(initializer.explosions),
     listener(listener) {
   arena.forPlayers([&](Player &player) {
     const auto iter = initializer.participations.find(player.pid);
@@ -151,12 +173,17 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
 }
 
 void Sky::applyDelta(const SkyDelta &delta) {
+  // Participations.
   for (const auto &participation: delta.participations) {
     if (const Player *player = arena.getPlayer(participation.first)) {
       getPlayerData(*player).applyDelta(participation.second);
     }
   }
+
   settings.applyDelta(delta.settings.get());
+  entities.applyDelta(delta.entities, physics);
+  explosions.applyDelta(delta.explosions);
+
 }
 
 SkyInit Sky::captureInitializer() const {
@@ -164,6 +191,9 @@ SkyInit Sky::captureInitializer() const {
   for (const auto &participation : participations)
     initializer.participations.emplace(
         participation.first, participation.second.captureInitializer());
+  initializer.entities = entities.captureInitializer();
+  initializer.explosions = explosions.captureInitializer();
+
   initializer.settings = settings.captureInitializer();
   return initializer;
 }
@@ -174,6 +204,10 @@ SkyDelta Sky::collectDelta() {
     delta.participations.emplace(
         participation.first, participation.second.collectDelta());
   }
+
+  delta.entities = entities.collectDelta();
+  delta.explosions = explosions.collectDelta();
+
   delta.settings = settings.collectDelta();
   return delta;
 }
@@ -193,6 +227,14 @@ const SkySettings &Sky::getSettings() const {
 void Sky::changeSettings(const SkySettingsDelta &delta) {
   settings.applyDelta(delta);
   syncSettings();
+}
+
+void Sky::spawnEntity(const EntityInit &init) {
+  entities.put(init, physics);
+}
+
+void Sky::spawnExplosion(const ExplosionInit &init) {
+  explosions.put(init);
 }
 
 }

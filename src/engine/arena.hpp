@@ -236,10 +236,14 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   friend class Player;
   friend class SubsystemCaller;
  private:
-  // Utilities.
+  // PID and nickname allocation.
   PID allocPid() const;
   std::string allocNickname(const std::string &cleanReq,
                             const optional<PID> ignorePid = {}) const;
+
+  // Placement on the network.
+  const optional<PID> playerOwnership; // We're owned by a player with a certain PID.
+  bool sandboxed; // We're in an offline sandbox.
 
   // Event logging.
   void logEvent(const ArenaEvent &event) const;
@@ -260,11 +264,20 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
 
  public:
   Arena() = delete;
-  Arena(const ArenaInit &initializer, const optional<PID> = {});
+  Arena(const ArenaInit &initializer, const optional<PID> playerOwnership = {}, const bool sandboxed = false);
 
-  // Where this particular arena is on the network.
-  const optional<PID> playerOwnership;
-  inline bool serverOwnership() { return !playerOwnership; }
+  // Is this arena responsible for doing server-side things?
+  // (Example responsibilities: entity deletion, entity and explosion delta collection.)
+  inline bool serverResponsible() {
+    return !playerOwnership or sandboxed;
+  }
+  // Is this arena responsible for acting as the client for a certain player?
+  // (Example responsibilities: simulation the effect of explosions on this player,
+  // Participation delta collection of client-side authority.)
+  inline bool playerResponsible(const PID pid) {
+    if (playerOwnership) return playerOwnership.get() == pid;
+    return sandboxed;
+  }
 
   // Attachments.
   SubsystemCaller subsystemCaller;

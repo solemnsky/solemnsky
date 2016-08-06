@@ -23,7 +23,7 @@ namespace sky {
  * ExplosionInit.
  */
 
-ExplosionInit::ExplosionInit() {}
+ExplosionInit::ExplosionInit() { }
 
 /**
  * ExplosionDelta.
@@ -32,6 +32,14 @@ ExplosionInit::ExplosionInit() {}
 /**
  * Explosion.
  */
+
+void Explosion::prePhysics() {
+
+}
+
+void Explosion::postPhysics(const TimeDiff delta) {
+
+}
 
 Explosion::Explosion(const ExplosionInit &init) :
     Networked(init) { }

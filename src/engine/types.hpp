@@ -47,20 +47,10 @@ enum class Action {
 };
 
 /**
- * Reference to a graphics entity, either from the default resources or from
- * an environment  visual component.
+ * Helpers for Action.
  */
-struct VisualEntity {
-  VisualEntity(const bool isDefault, const PID index);
-
-  template<typename Archive>
-  void serialize(Archive &ar) {
-    ar(isDefault, index);
-  }
-
-  bool isDefault; // If it's in the default resources table -- otherwise, it's in the Visuals component.
-  PID index;
-
-};
+void forSkyActions(std::function<void(const Action)> fn);
+std::string showAction(const Action action);
+optional<Action> readAction(const std::string &string);
 
 }

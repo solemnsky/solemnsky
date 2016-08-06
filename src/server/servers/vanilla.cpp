@@ -38,7 +38,7 @@ void VanillaServer::tickGame(const TimeDiff delta, sky::Sky &sky) {
             auto &physical = plane.getState().physical;
             const auto dir = VecMath::fromAngle(physical.rot);
             participation.spawnProp(
-                sky::PropInit(
+                sky::EntityInit(
                     physical.pos + (plane.getTuning().hitbox.x / 2.0f) * dir,
                     500.0f * dir));
             plane.resetPrimary();
