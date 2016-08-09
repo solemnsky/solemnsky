@@ -141,6 +141,16 @@ TEST_F(SkyTest, EntityTest) {
   ASSERT_EQ(sky.getEntities().size(), 2);
   ASSERT_EQ(remoteSky.getEntities().size(), 2);
 
+  // We can mark entities for deletion, and they are deleted on the next tick.
+  auto &entity = *sky.getEntities().begin();
+  entity.destroy();
+  arena.tick(20);
+  ASSERT_EQ(sky.getEntities().size(), 1);
+
+  // The deletions are also transmitted over SkyDeltas.
+  remoteSky.applyDelta(sky.collectDelta());
+  ASSERT_EQ(remoteSky.getEntities().size(), 1);
+
 }
 
 /**

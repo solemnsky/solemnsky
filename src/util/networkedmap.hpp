@@ -181,7 +181,7 @@ struct NetMapIterator {
 
   bool operator==(const NetMapIterator &rhs) const { return it == rhs.it; }
   bool operator!=(const NetMapIterator &rhs) const { return it != rhs; }
-  std::pair<PID, Data> &operator*() const { return (*it).second; }
+  Data &operator*() const { return it->second.second; }
 
 };
 
@@ -197,8 +197,8 @@ struct NetMapData {
  public:
   NetMapData(MapType &map) : map(map) { }
 
-  auto begin() { return NetMapIterator<Data>(map, map.begin()); }
-  auto end() { return NetMapIterator<Data>(map, map.end()); }
+  NetMapIterator<Data> begin() { return NetMapIterator<Data>(map, map.begin()); }
+  NetMapIterator<Data> end() { return NetMapIterator<Data>(map, map.end()); }
 
   size_t size() {
     return map.size();
