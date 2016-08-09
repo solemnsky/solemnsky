@@ -29,9 +29,9 @@ TEST_F(SkyTest, SettingsTest) {
   ASSERT_EQ(remoteSky.getSettings().gravity, -1);
 
   sky.changeSettings(sky::SkySettingsDelta::ChangeView(2));
-  remoteSky.applyDelta(sky.collectDelta());
-
+  remoteSky.applyDelta(*sky.collectDelta());
   ASSERT_EQ(remoteSky.getSettings().viewScale, 2);
+  ASSERT_FALSE(bool(sky.collectDelta()));
 
 }
 
@@ -99,7 +99,9 @@ TEST_F(SkyTest, AuthorityTest) {
 
     player.spawn({}, {200, 200}, 0);
     auto delta = sky.collectDelta();
-    remoteSky.applyDelta(delta.respectAuthority(player));
+    ASSERT_TRUE(bool(delta));
+    remoteSky.applyDelta(delta->respectAuthority(player));
+    ASSERT_FALSE(bool(sky.collectDelta()));
 
     ASSERT_EQ(remoteParticip.isSpawned(), true);
   }
@@ -114,7 +116,9 @@ TEST_F(SkyTest, AuthorityTest) {
     input.planeState.emplace(stateInput);
 
     auto delta = sky.collectDelta();
-    remoteSky.applyDelta(delta.respectAuthority(player));
+    ASSERT_TRUE(bool(delta));
+    remoteSky.applyDelta(delta->respectAuthority(player));
+    ASSERT_FALSE(bool(sky.collectDelta()));
 
     ASSERT_EQ(remoteParticip.plane->getState().physical.pos.x, 200);
   }
@@ -136,10 +140,15 @@ TEST_F(SkyTest, EntityTest) {
   ASSERT_EQ(remoteSky.getEntities().size(), 1);
 
   // We can spawn more entities, and they are synchronized through the delta protocol.
-  sky.spawnEntity(sky::EntityState({}, {}, sf::Vector2f(200, 200), sf::Vector2f(0, 0)));
-  remoteSky.applyDelta(sky.collectDelta());
-  ASSERT_EQ(sky.getEntities().size(), 2);
-  ASSERT_EQ(remoteSky.getEntities().size(), 2);
+  {
+    sky.spawnEntity(sky::EntityState({}, {}, sf::Vector2f(200, 200), sf::Vector2f(0, 0)));
+    const auto delta = sky.collectDelta();
+    ASSERT_TRUE(bool(delta));
+    remoteSky.applyDelta(delta.get());
+    ASSERT_EQ(sky.getEntities().size(), 2);
+    ASSERT_EQ(remoteSky.getEntities().size(), 2);
+    ASSERT_FALSE(sky.collectDelta());
+  }
 
   // We can mark entities for deletion, and they are deleted on the next tick.
   auto &entity = *sky.getEntities().begin();
@@ -148,8 +157,13 @@ TEST_F(SkyTest, EntityTest) {
   ASSERT_EQ(sky.getEntities().size(), 1);
 
   // The deletions are also transmitted over SkyDeltas.
-  remoteSky.applyDelta(sky.collectDelta());
-  ASSERT_EQ(remoteSky.getEntities().size(), 1);
+  {
+    const auto delta = sky.collectDelta();
+    ASSERT_TRUE(bool(delta));
+    remoteSky.applyDelta(delta.get());
+    ASSERT_EQ(remoteSky.getEntities().size(), 1);
+    ASSERT_FALSE(sky.collectDelta());
+  }
 
 }
 

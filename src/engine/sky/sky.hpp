@@ -44,7 +44,7 @@ struct SkyInit: public VerifyStructure {
 
   bool verifyStructure() const;
 
-  SkySettingsInit settings;
+  SkySettingsData settings;
   std::map<PID, ParticipationInit> participations;
 
   // Components.
@@ -94,7 +94,6 @@ class Sky: public PhysicsListener,
   const Map &map;
 
   // State.
-  SkySettings settings;
   Physics physics;
 
   ComponentSet<Entity> entities;
@@ -138,7 +137,10 @@ class Sky: public PhysicsListener,
   // Player participations in the sky.
   std::map<PID, Participation> participations;
 
-  // Networked impl.
+  // Settings.
+  SkySettings settings;
+
+  // AutoNetworked impl.
   void applyDelta(const SkyDelta &delta) override final;
   SkyInit captureInitializer() const override final;
   optional<SkyDelta> collectDelta() override final;
@@ -146,7 +148,6 @@ class Sky: public PhysicsListener,
   // User API: reading state.
   const Map &getMap() const;
   Participation &getParticipation(const Player &player) const;
-  const SkySettings &getSettings() const;
   void changeSettings(const SkySettingsDelta &delta);
 
   Components<Entity> getEntities();

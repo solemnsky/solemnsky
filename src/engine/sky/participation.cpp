@@ -281,7 +281,7 @@ void Participation::spawn(const PlaneTuning &tuning,
 Participation::Participation(Player &player,
                              Physics &physics,
                              const ParticipationInit &initializer) :
-    Networked(initializer),
+    AutoNetworked(initializer),
     physics(physics),
     controls(),
     newlyAlive(false),
@@ -322,10 +322,10 @@ ParticipationInit Participation::captureInitializer() const {
   return init;
 }
 
-ParticipationDelta Participation::collectDelta() {
+optional<ParticipationDelta> Participation::collectDelta() {
   ParticipationDelta delta;
+  bool useful{false};
 
-  delta.planeAlive = bool(plane);
   if (plane) {
     if (newlyAlive) {
       delta.spawn.emplace(plane->tuning, plane->state);
@@ -333,11 +333,22 @@ ParticipationDelta Participation::collectDelta() {
     } else {
       delta.state.emplace(plane->state);
     }
+    useful = true;
+  } else {
+    if (newlyDead) {
+      useful = true;
+      newlyDead = false;
+    }
   }
 
-  delta.controls = controls;
+  if (controls != lastControls) {
+    delta.controls = controls;
+    lastControls = controls;
+    useful = true;
+  }
 
-  return delta;
+  if (useful) return delta;
+  return {};
 }
 
 const PlaneControls &Participation::getControls() const {
@@ -349,6 +360,7 @@ bool Participation::isSpawned() const {
 }
 
 void Participation::suicide() {
+  newlyDead = true;
   plane.reset();
 }
 

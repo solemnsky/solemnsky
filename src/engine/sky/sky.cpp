@@ -148,19 +148,19 @@ bool Sky::enableContact(const BodyTag &body1, const BodyTag &body2) {
 }
 
 void Sky::syncSettings() {
-  physics.setGravity(settings.gravity);
+  physics.setGravity(settings.getGravity());
 }
 
 Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *listener) :
     Subsystem(arena),
     AutoNetworked(initializer),
     map(map),
-    settings(initializer.settings),
     physics(map, *this),
     entities(initializer.entities, physics),
     explosions(initializer.explosions, physics),
     homeBases(initializer.homeBases, physics),
-    listener(listener) {
+    listener(listener),
+    settings(initializer.settings) {
   arena.forPlayers([&](Player &player) {
     const auto iter = initializer.participations.find(player.pid);
     registerPlayerWith(
@@ -207,18 +207,26 @@ SkyInit Sky::captureInitializer() const {
 
 optional<SkyDelta> Sky::collectDelta() {
   SkyDelta delta;
+  bool useful{false};
+
   for (auto &participation : participations) {
-    delta.participations.emplace(
-        participation.first, participation.second.collectDelta());
+    const auto pDelta = participation.second.collectDelta();
+    if (pDelta) {
+      delta.participations.emplace(
+          participation.first, pDelta);
+      useful = true;
+    }
   }
 
   delta.settings = settings.collectDelta();
 
   delta.entities = entities.collectDelta();
   delta.explosions = explosions.collectDelta();
-  delta.homeBases = explosions.collectDelta();
+  delta.homeBases = homeBases.collectDelta();
+  useful &= delta.settings or delta.entities or delta.explosions or delta.homeBases;
 
-  return delta;
+  if (useful) return delta;
+  return {};
 }
 
 const Map &Sky::getMap() const {
@@ -229,15 +237,10 @@ Participation &Sky::getParticipation(const Player &player) const {
   return getPlayerData(player);
 }
 
-const SkySettings &Sky::getSettings() const {
-  return settings;
-}
-
 void Sky::changeSettings(const SkySettingsDelta &delta) {
   settings.applyDelta(delta);
   syncSettings();
 }
-
 
 Components<Entity> Sky::getEntities() {
   return entities.getData();

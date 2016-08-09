@@ -44,6 +44,7 @@ class Networked {
 
   virtual void applyDelta(const Delta &) = 0;
   virtual Init captureInitializer() const = 0;
+
 };
 
 /**
@@ -57,4 +58,3 @@ class AutoNetworked: public Networked<Init, Delta> {
   virtual optional<Delta> collectDelta() = 0;
 
 };
-

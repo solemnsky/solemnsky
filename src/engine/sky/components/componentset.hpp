@@ -50,9 +50,6 @@ class ComponentSet:
     public AutoNetworked<ComponentSetInit<Data>,
                          ComponentSetDelta<Data>> {
  private:
-  using InitType = typename Data::InitType;
-  using DeltaType = typename Data::DeltaType;
-
   // References used to initialize components.
   Physics &physics;
 
@@ -75,7 +72,7 @@ class ComponentSet:
   ComponentSet() = delete;
   ComponentSet(
       const ComponentSetInit<Data> &init, Physics &physics) :
-      AutoNetworked<InitType, DeltaType>(init),
+      AutoNetworked<ComponentSetInit<Data>, ComponentSetDelta<Data>>(init),
       physics(physics) {
     for (const auto &x : init) {
       data.emplace(std::piecewise_construct,
@@ -102,7 +99,7 @@ class ComponentSet:
     if (x != data.end()) data.erase(x);
   }
 
-  void put(const InitType &init) {
+  void put(const typename Data::InitType &init) {
     data.emplace(std::piecewise_construct,
                  std::forward_as_tuple(smallestUnused(data)),
                  std::forward_as_tuple(

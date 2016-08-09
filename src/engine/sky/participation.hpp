@@ -147,7 +147,7 @@ struct ParticipationInput {
 /**
  * A Player's participation in an active game.
  */
-class Participation: public Networked<ParticipationInit, ParticipationDelta> {
+class Participation: public AutoNetworked<ParticipationInit, ParticipationDelta> {
   friend class Sky;
   friend class SkyHandle;
  private:
@@ -158,7 +158,7 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   PlaneControls controls;
 
   // Delta collection state.
-  bool newlyAlive;
+  bool newlyAlive, newlyDead;
   PlaneControls lastControls;
 
   // Helpers.
@@ -185,15 +185,15 @@ class Participation: public Networked<ParticipationInit, ParticipationDelta> {
   optional<Plane> plane;
 
   // Networked impl (for Sky).
-  void applyDelta(const ParticipationDelta &delta) override;
-  ParticipationInit captureInitializer() const override;
-  ParticipationDelta collectDelta();
+  void applyDelta(const ParticipationDelta &delta) override final;
+  ParticipationInit captureInitializer() const override final;
+  optional<ParticipationDelta> collectDelta() override final;
 
   // User API.
   const PlaneControls &getControls() const;
   bool isSpawned() const;
 
-  // User API, serverside.
+  // User API, server-side.
   void suicide();
 
   // ParticipationInput.
