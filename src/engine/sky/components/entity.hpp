@@ -72,7 +72,6 @@ struct EntityDelta {
 class Entity: public Component<EntityState, EntityDelta> {
   friend class Sky;
  private:
-  EntityState state;
   b2Body *const body;
 
   // Destroy flag, used on server-side.
@@ -85,7 +84,7 @@ class Entity: public Component<EntityState, EntityDelta> {
 
  public:
   Entity() = delete;
-  Entity(const EntityState &data, Physics &physics);
+  Entity(const EntityState &state, Physics &physics);
 
   // Networked impl.
   EntityState captureInitializer() const override final;

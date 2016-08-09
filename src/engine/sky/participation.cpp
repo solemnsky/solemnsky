@@ -285,6 +285,7 @@ Participation::Participation(Player &player,
     physics(physics),
     controls(),
     newlyAlive(false),
+    newlyDead(false),
     lastControls(),
 
     player(player) {

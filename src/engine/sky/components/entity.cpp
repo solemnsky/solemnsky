@@ -51,9 +51,8 @@ void Entity::postPhysics(const TimeDiff delta) {
     movement->tick(delta, state.physical);
 }
 
-Entity::Entity(const EntityState &data, Physics &physics) :
-    Component(data, physics),
-    state(data),
+Entity::Entity(const EntityState &state, Physics &physics) :
+    Component(state, physics),
     body(physics.createBody(physics.rectShape({10, 10}),
                             BodyTag::EntityTag(*this))),
     destroyable(false) {
