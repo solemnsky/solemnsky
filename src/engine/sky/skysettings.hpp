@@ -62,10 +62,8 @@ struct SkySettingsDelta: public VerifyStructure {
 
 struct SkySettings: public AutoNetworked<SkySettingsData, SkySettingsDelta> {
  private:
-  SkySettingsData lastSettings;
-
-  // Data.
   SkySettingsData data;
+  bool modified;
 
  public:
   SkySettings() = delete;

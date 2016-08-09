@@ -283,16 +283,13 @@ Participation::Participation(Player &player,
                              const ParticipationInit &initializer) :
     AutoNetworked(initializer),
     physics(physics),
-    controls(),
+    controls(initializer.controls),
     newlyAlive(false),
     newlyDead(false),
-    lastControls(),
-
+    lastControls(initializer.controls),
     player(player) {
   if (initializer.spawn)
     spawnWithState(initializer.spawn->first, initializer.spawn->second);
-  controls = initializer.controls;
-  lastControls = initializer.controls;
 }
 
 void Participation::applyDelta(const ParticipationDelta &delta) {

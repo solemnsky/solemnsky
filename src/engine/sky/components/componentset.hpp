@@ -155,7 +155,7 @@ class ComponentSet:
 
   optional<ComponentSetDelta<Data>> collectDelta() {
     ComponentSetDelta<Data> delta;
-    bool useful;
+    bool useful{false};
 
     // Initializers for uninitialized components.
     for (auto &datum: data) {

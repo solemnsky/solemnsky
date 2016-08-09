@@ -24,7 +24,7 @@ namespace sky {
  */
 
 SkySettingsData::SkySettingsData() :
-    viewScale(1), gravity(1) {}
+    viewScale(1), gravity(1) { }
 
 bool SkySettingsData::verifyStructure() const {
   return (viewScale > 0);
@@ -35,7 +35,7 @@ bool SkySettingsData::verifyStructure() const {
  */
 
 SkySettingsDelta::SkySettingsDelta() :
-    viewScale(), gravity() {}
+    viewScale(), gravity() { }
 
 bool SkySettingsDelta::verifyStructure() const {
   if (viewScale) return (*viewScale > 0);
@@ -60,8 +60,8 @@ SkySettingsDelta SkySettingsDelta::ChangeView(const float view) {
 
 SkySettings::SkySettings(const SkySettingsData &data) :
     AutoNetworked(data),
-    lastSettings(data),
-    data(data) {}
+    data(data),
+    modified(false) { }
 
 float SkySettings::getViewscale() const {
   return data.viewScale;
@@ -74,6 +74,7 @@ float SkySettings::getGravity() const {
 void SkySettings::applyDelta(const SkySettingsDelta &delta) {
   if (delta.gravity) data.gravity = delta.gravity.get();
   if (delta.viewScale) data.viewScale = delta.viewScale.get();
+  modified = true;
 }
 
 SkySettingsData SkySettings::captureInitializer() const {
@@ -81,22 +82,14 @@ SkySettingsData SkySettings::captureInitializer() const {
 }
 
 optional<SkySettingsDelta> SkySettings::collectDelta() {
-  SkySettingsDelta delta;
-  bool useful{false};
-
-  if (lastSettings.viewScale != data.viewScale) {
-    useful = true;
+  if (modified) {
+    SkySettingsDelta delta;
     delta.viewScale.emplace(data.viewScale);
-  }
-
-  if (lastSettings.gravity != data.gravity) {
-    useful = true;
     delta.gravity.emplace(data.gravity);
+    modified = false;
+    return delta;
   }
 
-  lastSettings = data;
-
-  if (useful) return delta;
   return {};
 }
 
