@@ -209,4 +209,4 @@ struct NetMapData {
 template<typename Data, typename Init, typename Delta, typename... Args>
 NetMapData<Data> NetMap<Data, Init, Delta, Args...>::getData() {
   return NetMapData<Data>(data);
-};
+}
