@@ -45,14 +45,14 @@ struct PlaneTuning {
 
   sf::Vector2f hitbox; // x axis parallel with flight direction
   float maxHealth,
-        throttleSpeed; // how quickly the throttle is modified
+      throttleSpeed; // how quickly the throttle is modified
 
   struct Energy {
     Energy();
     // energy mechanics
     float thrustDrain, // rate of energy used by the afterburner
-          recharge,  // rate of energy replenished
-          laserGun; // amount of energy used by the laser gun
+        recharge,  // rate of energy replenished
+        laserGun; // amount of energy used by the laser gun
     // weapon mechanics
     float primaryRecharge;
 
@@ -194,27 +194,21 @@ struct PlaneState {
 struct PlaneControls {
   friend bool operator==(const PlaneControls &x, const PlaneControls &y);
  private:
-  std::bitset<size_t(Action::MAX)> controls;
+  SwitchSet<Action> controls;
 
  public:
   PlaneControls();
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    bool x;
-    for (size_t i = 0; i < size_t(Action::MAX); ++i) {
-      x = controls[i];
-      ar(x);
-      controls[i] = x;
-      // hahahah
-    }
+    ar(controls);
   }
 
   void doAction(const Action action, const bool actionState);
   bool getState(const Action action) const;
 
   template<Action action>
-  bool getState() const { return controls[size_t(action)]; }
+  bool getState() const { return controls.get<action>(); }
 
   Movement rotMovement() const;
 };

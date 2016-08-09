@@ -25,6 +25,7 @@
 #include <istream>
 #include <cereal/cereal.hpp>
 #include "util/types.hpp"
+#include "engine/types.hpp"
 
 namespace sky {
 

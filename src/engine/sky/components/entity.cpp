@@ -51,11 +51,9 @@ void Entity::postPhysics(const TimeDiff delta) {
     movement->tick(delta, state.physical);
 }
 
-Entity::Entity(const EntityInit &initializer,
-               Physics &physics) :
-    Networked(initializer),
-    state(initializer),
-    physics(physics),
+Entity::Entity(const EntityState &data, Physics &physics) :
+    Component(data, physics),
+    state(data),
     body(physics.createBody(physics.rectShape({10, 10}),
                             BodyTag::EntityTag(*this))),
     destroyable(false) {
@@ -63,7 +61,7 @@ Entity::Entity(const EntityInit &initializer,
   body->SetGravityScale(0);
 }
 
-EntityInit Entity::captureInitializer() const {
+EntityState Entity::captureInitializer() const {
   return state;
 }
 
@@ -71,7 +69,7 @@ void Entity::applyDelta(const EntityDelta &delta) {
   state.physical = delta.physical;
 }
 
-EntityDelta Entity::collectDelta() {
+optional<EntityDelta> Entity::collectDelta() {
   EntityDelta delta;
   delta.physical = state.physical;
   return delta;
@@ -83,6 +81,10 @@ const EntityState &Entity::getState() const {
 
 void Entity::destroy() {
   destroyable = true;
+}
+
+bool Entity::isDestroyable() const {
+  return destroyable;
 }
 
 }

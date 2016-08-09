@@ -19,14 +19,15 @@
  * Physical game state of an Arena. Attaches to a Map.
  */
 #pragma once
-#include <map>
-#include <memory>
 #include "physics.hpp"
 #include "participation.hpp"
 #include "skysettings.hpp"
 #include "engine/arena.hpp"
 #include "skylistener.hpp"
-#include "util/networkedmap.hpp"
+#include "engine/sky/components/componentset.hpp"
+#include "components/entity.hpp"
+#include "components/explosion.hpp"
+#include "components/homebase.hpp"
 
 namespace sky {
 
@@ -43,11 +44,13 @@ struct SkyInit: public VerifyStructure {
 
   bool verifyStructure() const;
 
-  SkySettingsInit settings;
+  SkySettingsData settings;
   std::map<PID, ParticipationInit> participations;
 
-  NetMapInit<EntityInit> entities;
-  NetMapInit<ExplosionInit> explosions;
+  // Components.
+  ComponentSetInit<Entity> entities;
+  ComponentSetInit<Explosion> explosions;
+  ComponentSetInit<HomeBase> homeBases;
 
 };
 
@@ -68,8 +71,10 @@ struct SkyDelta: public VerifyStructure {
 
   std::map<PID, ParticipationDelta> participations;
 
-  NetMapDelta<EntityInit, EntityDelta> entities;
-  NetMapDelta<ExplosionInit, ExplosionDelta> explosions;
+  // Components.
+  optional<ComponentSetDelta<Entity>> entities;
+  optional<ComponentSetDelta<Explosion>> explosions;
+  optional<ComponentSetDelta<HomeBase>> homeBases;
 
   // Transform to respect client authority.
   SkyDelta respectAuthority(const Player &player) const;
@@ -81,7 +86,7 @@ struct SkyDelta: public VerifyStructure {
  */
 class Sky: public PhysicsListener,
            public Subsystem<Participation>,
-           public Networked<SkyInit, SkyDelta> {
+           public AutoNetworked<SkyInit, SkyDelta> {
   friend class SkyHandle;
   friend class Participation;
  private:
@@ -89,11 +94,11 @@ class Sky: public PhysicsListener,
   const Map &map;
 
   // State.
-  SkySettings settings;
   Physics physics;
 
-  NetMap<Entity, EntityInit, EntityDelta, Physics&> entities;
-  NetMap<Explosion, ExplosionInit, ExplosionDelta> explosions;
+  ComponentSet<Entity> entities;
+  ComponentSet<Explosion> explosions;
+  ComponentSet<HomeBase> homeBases;
 
   // GameHandler.
   SkyListener *listener;
@@ -132,23 +137,25 @@ class Sky: public PhysicsListener,
   // Player participations in the sky.
   std::map<PID, Participation> participations;
 
-  // Networked impl.
+  // Settings.
+  SkySettings settings;
+
+  // AutoNetworked impl.
   void applyDelta(const SkyDelta &delta) override final;
   SkyInit captureInitializer() const override final;
-  SkyDelta collectDelta();
+  optional<SkyDelta> collectDelta() override final;
 
   // User API: reading state.
   const Map &getMap() const;
   Participation &getParticipation(const Player &player) const;
-  const SkySettings &getSettings() const;
   void changeSettings(const SkySettingsDelta &delta);
 
-  NetMapData<Entity> getEntities();
-  NetMapData<Explosion> getExplosions();
+  Components<Entity> getEntities();
+  Components<Explosion> getExplosions();
 
   // User API: mutating state, server-only.
-  void spawnEntity(const EntityInit &init);
-  void spawnExplosion(const ExplosionInit &init);
+  void spawnEntity(const EntityState &state);
+  void spawnExplosion(const ExplosionState &state);
 
 };
 

@@ -20,8 +20,10 @@
  */
 #pragma once
 #include "engine/multimedia.hpp"
-#include "physics.hpp"
-#include "movement.hpp"
+#include "util/networked.hpp"
+#include "engine/sky/physics.hpp"
+#include "engine/sky/movement.hpp"
+#include "component.hpp"
 
 namespace sky {
 
@@ -50,12 +52,6 @@ struct EntityState {
 };
 
 /**
- * The network initialized for Entity is just EntityState.
- * This alias makes this decision more explicit.
- */
-using EntityInit = EntityState;
-
-/**
  * Delta for Entity.
  */
 struct EntityDelta {
@@ -73,35 +69,33 @@ struct EntityDelta {
 /**
  * Some non-player entity.
  */
-class Entity: public Networked<EntityInit, EntityDelta> {
+class Entity: public Component<EntityState, EntityDelta> {
   friend class Sky;
  private:
-  // Data.
   EntityState state;
-
-  // Physics.
-  Physics &physics;
   b2Body *const body;
 
-  // Sky API.
-  void prePhysics();
-  void postPhysics(const TimeDiff delta);
+  // Destroy flag, used on server-side.
+  bool destroyable;
+
+ protected:
+  // Component impl.
+  void prePhysics() override final;
+  void postPhysics(const TimeDiff delta) override final;
 
  public:
   Entity() = delete;
-  Entity(const EntityInit &initializer, Physics &physics);
+  Entity(const EntityState &data, Physics &physics);
 
-  // Networked API.
-  EntityInit captureInitializer() const override final;
+  // Networked impl.
+  EntityState captureInitializer() const override final;
   void applyDelta(const EntityDelta &delta) override final;
-  EntityDelta collectDelta();
+  optional<EntityDelta> collectDelta() override final;
 
   // User API.
   const EntityState &getState() const;
   void destroy();
-
-  // Destroyable flag, for simulation on server.
-  bool destroyable;
+  bool isDestroyable() const;
 
 };
 

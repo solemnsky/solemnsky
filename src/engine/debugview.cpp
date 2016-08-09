@@ -28,7 +28,7 @@ DebugView::DebugView(Arena &arena,
                      const optional<PID> &player) :
     Subsystem(arena),
     skyHandle(skyHandle),
-    playerID(player) {}
+    playerID(player) { }
 
 void DebugView::printArenaReport(Printer &p) const {
   p.printTitle("Arena");
@@ -65,10 +65,10 @@ void DebugView::printSkyReport(Printer &p) const {
                 + printBool(bool(skyHandle.getEnvironment())));
   if (const auto sky = skyHandle.getSky()) {
     p.printLn("environment.url: " + skyHandle.getEnvironment()->url);
-    p.printLn("sky.getSettings().gravity: "
-                  + printFloat(sky->getSettings().gravity));
-    p.printLn("sky.getSettings().viewScale: "
-                  + printFloat(sky->getSettings().viewScale));
+    p.printLn("sky.settings.getGravity(): "
+                  + printFloat(sky->settings.getGravity()));
+    p.printLn("sky.settings.getViewScale(): "
+                  + printFloat(sky->settings.getViewscale()));
 
     p.breakLine();
     if (playerID) {

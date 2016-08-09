@@ -301,6 +301,9 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   Time getUptime() const;
   int getTeamCount() const;
 
+  // Server API.
+  Team autojoinTeam() const;
+
   // Ticking / polling.
   void tick(const TimeDiff delta);
   void poll(const TimeDiff delta);

@@ -20,13 +20,13 @@
 namespace sky {
 
 /**
- * SkySettingsInit.
+ * SkySettingsData.
  */
 
-SkySettingsInit::SkySettingsInit() :
+SkySettingsData::SkySettingsData() :
     viewScale(1), gravity(1) {}
 
-bool SkySettingsInit::verifyStructure() const {
+bool SkySettingsData::verifyStructure() const {
   return (viewScale > 0);
 }
 
@@ -58,30 +58,46 @@ SkySettingsDelta SkySettingsDelta::ChangeView(const float view) {
  * SkySettings.
  */
 
-SkySettings::SkySettings(const SkySettingsInit &settings) :
-    Networked(settings),
-    lastSettings(settings),
-    viewScale(settings.viewScale),
-    gravity(settings.gravity) {}
+SkySettings::SkySettings(const SkySettingsData &data) :
+    AutoNetworked(data),
+    lastSettings(data),
+    data(data) {}
+
+float SkySettings::getViewscale() const {
+  return data.viewScale;
+}
+
+float SkySettings::getGravity() const {
+  return data.gravity;
+}
 
 void SkySettings::applyDelta(const SkySettingsDelta &delta) {
-  if (delta.gravity) gravity = delta.gravity.get();
-  if (delta.viewScale) viewScale = delta.viewScale.get();
+  if (delta.gravity) data.gravity = delta.gravity.get();
+  if (delta.viewScale) data.viewScale = delta.viewScale.get();
 }
 
-SkySettingsInit SkySettings::captureInitializer() const {
-  SkySettingsInit init;
-  init.viewScale = viewScale;
-  init.gravity = gravity;
-  return init;
+SkySettingsData SkySettings::captureInitializer() const {
+  return data;
 }
 
-SkySettingsDelta SkySettings::collectDelta() {
+optional<SkySettingsDelta> SkySettings::collectDelta() {
   SkySettingsDelta delta;
-  if (lastSettings.viewScale != viewScale) delta.viewScale.emplace(viewScale);
-  if (lastSettings.gravity != gravity) delta.gravity.emplace(gravity);
-  lastSettings = captureInitializer();
-  return delta;
+  bool useful{false};
+
+  if (lastSettings.viewScale != data.viewScale) {
+    useful = true;
+    delta.viewScale.emplace(data.viewScale);
+  }
+
+  if (lastSettings.gravity != data.gravity) {
+    useful = true;
+    delta.gravity.emplace(data.gravity);
+  }
+
+  lastSettings = data;
+
+  if (useful) return delta;
+  return {};
 }
 
 }

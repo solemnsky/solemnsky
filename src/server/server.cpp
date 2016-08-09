@@ -255,22 +255,24 @@ void ServerExec::tick(const TimeDiff delta) {
     shared.sendToClients(sky::ServerPacket::DeltaSkyHandle(handleDelta.get()));
   }
 
-  // Sky update and initialization scheduling.
+  // Sky update scheduling.
   if (const auto sky = shared.skyHandle.getSky()) {
-    if (skyDeltaTimer.cool(delta)) {
-      auto skyDelta = sky->collectDelta();
 
-      for (auto peer : host.getPeers()) {
-        if (sky::Player *player = shared.playerFromPeer(peer)) {
-          if (!player->isLoadingEnv())
-            shared.sendToClient(
-                peer, sky::ServerPacket::DeltaSky(
-                skyDelta.respectAuthority(*player),
-                shared.arena.getUptime()));
+    if (skyDeltaTimer.cool(delta)) {
+      if (const auto skyDelta = sky->collectDelta()) {
+        for (auto peer : host.getPeers()) {
+          if (sky::Player *player = shared.playerFromPeer(peer)) {
+            if (!player->isLoadingEnv())
+              shared.sendToClient(
+                  peer, sky::ServerPacket::DeltaSky(
+                  skyDelta->respectAuthority(*player),
+                  shared.arena.getUptime()));
+          }
         }
+        skyDeltaTimer.reset();
       }
-      skyDeltaTimer.reset();
     }
+
   }
 
   // Scoreboard update scheduling.

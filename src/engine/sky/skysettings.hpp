@@ -20,11 +20,12 @@
  */
 #pragma once
 #include "util/types.hpp"
+#include "util/networked.hpp"
 
 namespace sky {
 
-struct SkySettingsInit : public VerifyStructure {
-  SkySettingsInit(); // constructs with sensible defaults
+struct SkySettingsData: public VerifyStructure {
+  SkySettingsData(); // constructs with sensible defaults
   // (Integrated into the Map format.)
 
   template<typename Archive>
@@ -40,7 +41,7 @@ struct SkySettingsInit : public VerifyStructure {
 
 };
 
-struct SkySettingsDelta : public VerifyStructure {
+struct SkySettingsDelta: public VerifyStructure {
   SkySettingsDelta();
 
   template<typename Archive>
@@ -59,22 +60,25 @@ struct SkySettingsDelta : public VerifyStructure {
 
 };
 
-struct SkySettings : Networked<SkySettingsInit, SkySettingsDelta> {
+struct SkySettings: public AutoNetworked<SkySettingsData, SkySettingsDelta> {
  private:
-  SkySettingsInit lastSettings;
+  SkySettingsData lastSettings;
+
+  // Data.
+  SkySettingsData data;
 
  public:
   SkySettings() = delete;
-  SkySettings(const SkySettingsInit &settings);
+  SkySettings(const SkySettingsData &data);
 
-  // Values.
-  float viewScale, // 1 for normal.
-      gravity; // 1 for normal, -1 for inverse.
+  // User API.
+  float getViewscale() const;
+  float getGravity() const;
 
   // Networked impl.
-  void applyDelta(const SkySettingsDelta &delta) override;
-  SkySettingsInit captureInitializer() const override;
-  SkySettingsDelta collectDelta();
+  void applyDelta(const SkySettingsDelta &delta) override final;
+  SkySettingsData captureInitializer() const override final;
+  optional<SkySettingsDelta> collectDelta() override final;
 
 };
 

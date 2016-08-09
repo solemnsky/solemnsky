@@ -179,3 +179,12 @@ inline optional<float> readFloat(const std::string &string) {
 inline optional<double> readDouble(const std::string &string) {
   return readString<double>(string);
 }
+
+/**
+ * fmap, the functor application of type ((a -> b) -> f a -> f b)
+ * specialized for optional<>
+ */
+template<typename X>
+void fmapOptional(std::function<void(const X &)> f, optional<X> v) {
+  if (v) f(*v);
+}

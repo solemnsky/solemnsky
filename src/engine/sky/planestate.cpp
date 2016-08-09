@@ -173,14 +173,14 @@ void PlaneState::applyServer(const PlaneStateServer &server) {
  * PlaneControls.
  */
 
-PlaneControls::PlaneControls() : controls(0) { }
+PlaneControls::PlaneControls() { }
 
 void PlaneControls::doAction(const Action action, const bool actionState) {
-  controls[size_t(action)] = actionState;
+  controls.set(action, actionState);
 }
 
 bool PlaneControls::getState(const Action action) const {
-  return controls[size_t(action)];
+  return controls.get(action);
 }
 
 Movement PlaneControls::rotMovement() const {

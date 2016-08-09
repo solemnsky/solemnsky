@@ -16,36 +16,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Small templated std::map wrapper to manage the various maps in the engine that need to propogate
- * the Networked synchronization properties of their elements.
+ * Derivation of AutoNetworked<> for collections of components. Held in Sky.
  */
-#include "util/types.hpp"
 #pragma once
+#include "util/types.hpp"
+#include "util/networked.hpp"
+#include "component.hpp"
+
+namespace sky {
 
 /**
  * Initializer type for NetworkedMap.
  */
-template<typename Init>
-using NetMapInit = std::map<PID, Init>;
+template<typename Data>
+using ComponentSetInit = std::map<PID, typename Data::InitType>;
 
 /**
  * Delta type for NetworkedMap.
  */
-template<typename Init, typename Delta>
-using NetMapDelta = std::pair<std::map<PID, Init>, std::map<PID, Delta>>;
+template<typename Data>
+using ComponentSetDelta = std::pair<
+    std::map<PID, typename Data::InitType>,
+    std::map<PID, optional<typename Data::DeltaType>>>;
 
 template<typename Data>
-struct NetMapData;
+struct Components;
 
 /**
- * A PID-indexed map of entities that we want to synchronize over the protocol.
+ * Set of components, with automatic network derivation.
  */
-template<typename Data, // underlying entity type
-    typename Init, // initializer type
-    typename Delta, // delta type
-    typename... Args> // arguments to supply to the Data ctor along with Init
-class NetMap {
+template<typename Data>
+class ComponentSet:
+    public AutoNetworked<ComponentSetInit<Data>,
+                         ComponentSetDelta<Data>> {
  private:
+  // References used to initialize components.
+  Physics &physics;
+
   // Also defined in util/methods.hpp, redefined here because including that header here would
   // likely affect compile times. In a *reasonable* language we could abstract away this template.
   template<typename T>
@@ -62,14 +69,18 @@ class NetMap {
   // The bool tracks whether we've sent initializers through the delta collection yet. 'false' means we haven't.
 
  public:
-  NetMap(const NetMapInit<Init> &init, Args... args) {
+  ComponentSet() = delete;
+  ComponentSet(
+      const ComponentSetInit<Data> &init, Physics &physics) :
+      AutoNetworked<ComponentSetInit<Data>, ComponentSetDelta<Data>>(init),
+      physics(physics) {
     for (const auto &x : init) {
       data.emplace(std::piecewise_construct,
                    std::forward_as_tuple(x.first),
                    std::forward_as_tuple(
                        std::piecewise_construct,
                        std::forward_as_tuple(false),
-                       std::forward_as_tuple(x.second, args...)));
+                       std::forward_as_tuple(x.second, physics)));
     }
   }
 
@@ -88,17 +99,16 @@ class NetMap {
     if (x != data.end()) data.erase(x);
   }
 
-  // TODO: Substitute the nauseating linear search for something more efficient iff this becomes a bottleneck.
-  void put(const Init &init, Args... args) {
+  void put(const typename Data::InitType &init) {
     data.emplace(std::piecewise_construct,
                  std::forward_as_tuple(smallestUnused(data)),
                  std::forward_as_tuple(
                      std::piecewise_construct,
                      std::forward_as_tuple(false),
-                     std::forward_as_tuple(init, args...)));
+                     std::forward_as_tuple(init, physics)));
   }
 
-  struct NetMapData<Data> getData();
+  struct Components<Data> getData();
 
   void forData(std::function<void(Data &, const PID)> f) {
     for (auto &data: data) {
@@ -108,7 +118,7 @@ class NetMap {
 
   // Networked impl + Args... .
 
-  void applyDelta(const NetMapDelta<Init, Delta> &delta, Args... args) {
+  void applyDelta(const ComponentSetDelta<Data> &delta) {
     const auto &inits = delta.first;
     const auto &deltas = delta.second;
 
@@ -119,7 +129,7 @@ class NetMap {
         const auto toErase = iter;
         data.erase(toErase);
       } else {
-        iter->second.second.applyDelta(entityDelta->second);
+        if (entityDelta->second) iter->second.second.applyDelta(entityDelta->second.get());
       }
       ++iter;
     }
@@ -130,12 +140,12 @@ class NetMap {
                    std::forward_as_tuple(
                        std::piecewise_construct,
                        std::forward_as_tuple(false),
-                       std::forward_as_tuple(init.second, args...)));
+                       std::forward_as_tuple(init.second, physics)));
     }
   }
 
-  NetMapInit<Init> captureInitializer() const {
-    NetMapInit<Init> init;
+  ComponentSetInit<Data> captureInitializer() const {
+    ComponentSetInit<Data> init;
     for (const auto &spanishInquisition: data)
       init.emplace(
           spanishInquisition.first, spanishInquisition.second.second.captureInitializer());
@@ -143,12 +153,14 @@ class NetMap {
     return init;
   }
 
-  NetMapDelta<Init, Delta> collectDelta() {
-    NetMapDelta<Init, Delta> delta;
+  optional<ComponentSetDelta<Data>> collectDelta() {
+    ComponentSetDelta<Data> delta;
+    bool useful;
 
     // Initializers for uninitialized components.
     for (auto &datum: data) {
       if (!datum.second.first) {
+        useful = true;
         delta.first.emplace(datum.first, datum.second.second.captureInitializer());
         datum.second.first = true;
         // This sure reads like plain English.
@@ -157,48 +169,51 @@ class NetMap {
 
     // Deltas for all.
     for (auto &datum: data) {
-      delta.second.emplace(datum.first, datum.second.second.collectDelta());
+      const auto elemDelta = datum.second.second.collectDelta();
+      useful |= bool(elemDelta);
+      delta.second.emplace(datum.first, elemDelta);
     }
 
-    return delta;
+    if (useful) return delta;
+    else return {};
   }
 
 };
 
 template<typename Data>
-struct NetMapIterator {
+struct ComponentIterator {
   using MapType = std::map<PID, std::pair<bool, Data>>;
   MapType &map;
   typename MapType::iterator it;
 
-  NetMapIterator(MapType &map, typename MapType::iterator it) :
+  ComponentIterator(MapType &map, typename MapType::iterator it) :
       map(map), it(it) { }
 
-  NetMapIterator &operator++() {
+  ComponentIterator &operator++() {
     ++it;
     return *this;
   }
 
-  bool operator==(const NetMapIterator &rhs) const { return it == rhs.it; }
-  bool operator!=(const NetMapIterator &rhs) const { return it != rhs; }
-  std::pair<PID, Data> &operator*() const { return (*it).second; }
+  bool operator==(const ComponentIterator &rhs) const { return it == rhs.it; }
+  bool operator!=(const ComponentIterator &rhs) const { return it != rhs; }
+  Data &operator*() const { return it->second.second; }
 
 };
 
 /**
- * Iterator handle to the data of a NetMap.
+ * Iterator handle to the data of a ComponentSet.
  */
 template<typename Data>
-struct NetMapData {
+struct Components {
  private:
   using MapType = std::map<PID, std::pair<bool, Data>>;
   MapType &map;
 
  public:
-  NetMapData(MapType &map) : map(map) { }
+  Components(MapType &map) : map(map) { }
 
-  auto begin() { return NetMapIterator<Data>(map, map.begin()); }
-  auto end() { return NetMapIterator<Data>(map, map.end()); }
+  ComponentIterator<Data> begin() { return ComponentIterator<Data>(map, map.begin()); }
+  ComponentIterator<Data> end() { return ComponentIterator<Data>(map, map.end()); }
 
   size_t size() {
     return map.size();
@@ -206,7 +221,9 @@ struct NetMapData {
 
 };
 
-template<typename Data, typename Init, typename Delta, typename... Args>
-NetMapData<Data> NetMap<Data, Init, Delta, Args...>::getData() {
-  return NetMapData<Data>(data);
+template<typename Data>
+Components<Data> ComponentSet<Data>::getData() {
+  return Components<Data>(data);
+}
+
 }

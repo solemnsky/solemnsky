@@ -220,7 +220,7 @@ void SkyRender::onChangeSettings(const ui::SettingsDelta &settings) {
 void SkyRender::render(ui::Frame &f, const sf::Vector2f &pos) {
   const auto &map = sky.getMap();
   const auto &dims = map.getDimensions();
-  const auto &viewScale = sky.getSettings().viewScale;
+  const auto &viewScale = sky.settings.getViewscale();
 
   f.withTransform(
       sf::Transform()

@@ -27,6 +27,7 @@
 #include <SFML/System.hpp>
 #include <boost/optional.hpp>
 #include <SFML/Graphics.hpp>
+#include <bitset>
 
 /**
  * This is pretty useful.
@@ -316,42 +317,63 @@ class VerifyStructure {
 };
 
 /**
- * The concept of a type that can be synced over the network.
- */
-template<typename Init, typename Delta>
-class Networked {
- public:
-  // It is obligatory to construct a Networked object with its
-  // initializer type; this guarantees an orthogonal interface.
-  Networked() = delete;
-  Networked(const Init &) { }
-
-  virtual void applyDelta(const Delta &) = 0;
-  virtual Init captureInitializer() const = 0;
-};
-
-/**
  * Types and type synonyms for the game.
  */
 typedef unsigned int PID; // ID type for various things in the game
 typedef unsigned short Port; // network port
 
-namespace sky {
+/**
+ * Set of properties indexed by an enum.
+ */
+template<typename Enum>
+struct SwitchSet {
+ private:
+  std::bitset<size_t(Enum::MAX)> bitset;
 
-enum class Team {
-  Spectator,
-  Red,
-  Blue
+ public:
+  SwitchSet() = default;
+
+  SwitchSet(const Enum key) {
+    bitset[size_t(key)] = true;
+  }
+
+  SwitchSet operator&&(const SwitchSet &teamSet) {
+    bitset &= teamSet.bitset;
+    return *this;
+  }
+
+  SwitchSet(std::initializer_list<Enum> keys) {
+    for (const auto key : keys) bitset[size_t(key)] = true;
+  }
+
+  void set(const Enum key, const bool value) {
+    bitset.set(size_t(key), value);
+  }
+
+  bool get(const Enum key) const {
+    return bitset[size_t(key)];
+  }
+
+  template<Enum key>
+  bool get() const {
+    return bitset[size_t(key)];
+  }
+
+  bool operator==(const SwitchSet &set) const {
+    return bitset == set.bitset;
+  }
+
+  // Cereal serialization.
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    bool x;
+    for (size_t i = 0; i < size_t(Enum::MAX); ++i) {
+      x = bitset[i];
+      ar(x);
+      bitset[i] = x;
+      // Heh.
+    }
+  }
+
 };
 
-enum class ArenaMode {
-  Lobby, // lobby, to make teams
-  Game, // playing sandbox
-  Scoring // viewing sandbox results
-};
-
-}
-
-namespace std {
-std::string to_string(const sky::Team team);
-}
