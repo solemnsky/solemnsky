@@ -16,38 +16,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * An explosion in a Sky. Its effects are only simulated on the client of an affected plane.
+ * A zone that planes can land on to rest / replenish health activate mechanics.
  */
 #pragma once
-#include "physics.hpp"
+#include "engine/sky/physics.hpp"
 
 namespace sky {
 
-struct ExplosionInit {
-  ExplosionInit();
+/**
+ * Data describing a HomeBase.
+ */
+struct HomeBaseState {
+
+};
+
+// The network initializer is just HomeBaseState.
+using HomeBaseInit = HomeBaseState;
+
+/**
+ * Delta type for HomeBase.
+ */
+
+struct HomBaseDelta {
+  optional<bool> exists;
 
   template<typename Archive>
   void serialize(Archive &ar) { }
+
 };
 
-// Explosions do not change over their lifetime.
-using ExplosionDelta = Nothing;
-
-struct Explosion: public Networked<ExplosionInit, ExplosionDelta> {
-  friend class Sky;
+class HomeBase: Networked<HomeBaseInit, HomeBaseDelta> {
  private:
-  // Sky API.
-  void prePhysics();
-  void postPhysics(const TimeDiff delta);
 
  public:
-  Explosion(const ExplosionInit &init);
-
-  // Networked impl.
-  ExplosionInit captureInitializer() const override final;
-  void applyDelta(const ExplosionDelta &delta) override final;
-  ExplosionDelta collectDelta();
 
 };
 
 }
+

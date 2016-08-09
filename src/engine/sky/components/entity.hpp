@@ -20,8 +20,9 @@
  */
 #pragma once
 #include "engine/multimedia.hpp"
-#include "physics.hpp"
-#include "movement.hpp"
+#include "util/networked/networked.hpp"
+#include "engine/sky/physics.hpp"
+#include "engine/sky/movement.hpp"
 
 namespace sky {
 
@@ -73,7 +74,7 @@ struct EntityDelta {
 /**
  * Some non-player entity.
  */
-class Entity: public Networked<EntityInit, EntityDelta> {
+class Entity: public AutoNetworked<EntityInit, EntityDelta> {
   friend class Sky;
  private:
   // Data.
@@ -94,7 +95,7 @@ class Entity: public Networked<EntityInit, EntityDelta> {
   // Networked API.
   EntityInit captureInitializer() const override final;
   void applyDelta(const EntityDelta &delta) override final;
-  EntityDelta collectDelta();
+  optional<EntityDelta> collectDelta();
 
   // User API.
   const EntityState &getState() const;

@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Small templated std::map wrapper to manage the various maps in the engine that need to propogate
- * the Networked synchronization properties of their elements.
+ * Derivation of AutoNetworked<>
  */
 #include "util/types.hpp"
+#include "networked.hpp"
 #pragma once
 
 /**
@@ -32,7 +32,7 @@ using NetMapInit = std::map<PID, Init>;
  * Delta type for NetworkedMap.
  */
 template<typename Init, typename Delta>
-using NetMapDelta = std::pair<std::map<PID, Init>, std::map<PID, Delta>>;
+using NetMapDelta = std::pair<std::map<PID, Init>, std::map<PID, optional<Delta>>>;
 
 template<typename Data>
 struct NetMapData;
@@ -44,7 +44,7 @@ template<typename Data, // underlying entity type
     typename Init, // initializer type
     typename Delta, // delta type
     typename... Args> // arguments to supply to the Data ctor along with Init
-class NetMap {
+class NetMap: public AutoNetworked<NetMapInit<Init>, NetMapDelta<Init, Delta>> {
  private:
   // Also defined in util/methods.hpp, redefined here because including that header here would
   // likely affect compile times. In a *reasonable* language we could abstract away this template.
@@ -62,7 +62,10 @@ class NetMap {
   // The bool tracks whether we've sent initializers through the delta collection yet. 'false' means we haven't.
 
  public:
-  NetMap(const NetMapInit<Init> &init, Args... args) {
+  NetMap(const NetMapInit<Init> &init, Args... args,
+         typename std::enable_if<!std::is_base_of<
+             AutoNetworked<Init, Delta>, Data>::value>::type * = 0) :
+      AutoNetworked(init) {
     for (const auto &x : init) {
       data.emplace(std::piecewise_construct,
                    std::forward_as_tuple(x.first),
@@ -143,12 +146,14 @@ class NetMap {
     return init;
   }
 
-  NetMapDelta<Init, Delta> collectDelta() {
+  optional<NetMapDelta<Init, Delta>> collectDelta() {
     NetMapDelta<Init, Delta> delta;
+    bool necessary;
 
     // Initializers for uninitialized components.
     for (auto &datum: data) {
       if (!datum.second.first) {
+        necessary = true;
         delta.first.emplace(datum.first, datum.second.second.captureInitializer());
         datum.second.first = true;
         // This sure reads like plain English.
@@ -157,10 +162,13 @@ class NetMap {
 
     // Deltas for all.
     for (auto &datum: data) {
-      delta.second.emplace(datum.first, datum.second.second.collectDelta());
+      const auto elemDelta = datum.second.second.collectDelta();
+      necessary |= bool(elemDelta);
+      delta.second.emplace(datum.first, elemDelta);
     }
 
-    return delta;
+    if (necessary) return delta;
+    else return {};
   }
 
 };

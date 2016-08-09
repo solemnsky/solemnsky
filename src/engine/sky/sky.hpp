@@ -26,7 +26,7 @@
 #include "skysettings.hpp"
 #include "engine/arena.hpp"
 #include "skylistener.hpp"
-#include "util/networkedmap.hpp"
+#include "util/networked/networkedmap.hpp"
 
 namespace sky {
 

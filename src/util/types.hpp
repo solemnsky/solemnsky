@@ -316,21 +316,6 @@ class VerifyStructure {
 };
 
 /**
- * The concept of a type that can be synced over the network.
- */
-template<typename Init, typename Delta>
-class Networked {
- public:
-  // It is obligatory to construct a Networked object with its
-  // initializer type; this guarantees an orthogonal interface.
-  Networked() = delete;
-  Networked(const Init &) { }
-
-  virtual void applyDelta(const Delta &) = 0;
-  virtual Init captureInitializer() const = 0;
-};
-
-/**
  * Types and type synonyms for the game.
  */
 typedef unsigned int PID; // ID type for various things in the game
