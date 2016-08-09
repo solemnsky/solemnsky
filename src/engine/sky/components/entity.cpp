@@ -62,7 +62,7 @@ Entity::Entity(const EntityState &data, Physics &physics) :
 }
 
 EntityState Entity::captureInitializer() const {
-  return data;
+  return state;
 }
 
 void Entity::applyDelta(const EntityDelta &delta) {
@@ -72,7 +72,7 @@ void Entity::applyDelta(const EntityDelta &delta) {
 optional<EntityDelta> Entity::collectDelta() {
   EntityDelta delta;
   delta.physical = state.physical;
-  return {delta};
+  return delta;
 }
 
 const EntityState &Entity::getState() const {
@@ -81,6 +81,10 @@ const EntityState &Entity::getState() const {
 
 void Entity::destroy() {
   destroyable = true;
+}
+
+bool Entity::isDestroyable() const {
+  return destroyable;
 }
 
 }

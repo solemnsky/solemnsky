@@ -49,7 +49,7 @@ add_library(solemnsky STATIC
 
         src/engine/sky/components/component.hpp
 
-        src/engine/sky/components/componentmap.hpp
+        src/engine/sky/components/componentset.hpp
 
         src/engine/sky/components/entity.cpp
         src/engine/sky/components/entity.hpp

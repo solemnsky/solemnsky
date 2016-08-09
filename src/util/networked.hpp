@@ -33,6 +33,10 @@
 template<typename Init, typename Delta>
 class Networked {
  public:
+  // Dependant types for simplifying templates.
+  using InitType = Init;
+  using DeltaType = Delta;
+
   // It is obligatory to construct a Networked object with its
   // initializer type; this guarantees an orthogonal interface.
   Networked() = delete;
@@ -48,7 +52,7 @@ class Networked {
 template<typename Init, typename Delta>
 class AutoNetworked: public Networked<Init, Delta> {
  public:
-  AutoNetworked(const Init &init) : Networked(init) { }
+  AutoNetworked(const Init &init) : Networked<Init, Delta>(init) { }
 
   virtual optional<Delta> collectDelta() = 0;
 

@@ -19,7 +19,7 @@
  * A zone that planes can land on to rest / replenish health activate mechanics.
  */
 #pragma once
-#include "engine/sky/physics.hpp"
+#include "component.hpp"
 
 namespace sky {
 
@@ -30,14 +30,11 @@ struct HomeBaseState {
 
 };
 
-// The network initializer is just HomeBaseState.
-using HomeBaseInit = HomeBaseState;
-
 /**
  * Delta type for HomeBase.
  */
 
-struct HomBaseDelta {
+struct HomeBaseDelta {
   optional<bool> exists;
 
   template<typename Archive>
@@ -45,10 +42,19 @@ struct HomBaseDelta {
 
 };
 
-class HomeBase: Networked<HomeBaseInit, HomeBaseDelta> {
+class HomeBase: public Component<HomeBaseState, HomeBaseDelta> {
+  friend class Sky;
  private:
+  // Component impl.
+
+ protected:
+  void prePhysics() override final;
+  void postPhysics(const TimeDiff delta) override final;
 
  public:
+  HomeBase(const HomeBaseState &state, Physics &physics);
+
+  // AutoNetworked impl.
 
 };
 

@@ -20,14 +20,10 @@
 namespace sky {
 
 /**
- * ExplosionInit.
+ * ExplosionState.
  */
 
-ExplosionInit::ExplosionInit() { }
-
-/**
- * ExplosionDelta.
- */
+ExplosionState::ExplosionState() { }
 
 /**
  * Explosion.
@@ -41,19 +37,19 @@ void Explosion::postPhysics(const TimeDiff delta) {
 
 }
 
-Explosion::Explosion(const ExplosionInit &init) :
-    Networked(init) { }
+Explosion::Explosion(const ExplosionState &state, Physics &physics) :
+    Component(state, physics) { }
 
-ExplosionInit Explosion::captureInitializer() const {
-  return sky::ExplosionInit();
+ExplosionState Explosion::captureInitializer() const {
+  return ExplosionState();
 }
 
 void Explosion::applyDelta(const ExplosionDelta &delta) {
 
 }
 
-ExplosionDelta Explosion::collectDelta() {
-  return sky::ExplosionDelta();
+optional<ExplosionDelta> Explosion::collectDelta() {
+  return Nothing();
 }
 
 }

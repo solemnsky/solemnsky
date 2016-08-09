@@ -20,10 +20,11 @@
  */
 #pragma once
 #include "util/types.hpp"
+#include "util/networked.hpp"
 
 namespace sky {
 
-struct SkySettingsInit : public VerifyStructure {
+struct SkySettingsInit: public VerifyStructure {
   SkySettingsInit(); // constructs with sensible defaults
   // (Integrated into the Map format.)
 
@@ -40,7 +41,7 @@ struct SkySettingsInit : public VerifyStructure {
 
 };
 
-struct SkySettingsDelta : public VerifyStructure {
+struct SkySettingsDelta: public VerifyStructure {
   SkySettingsDelta();
 
   template<typename Archive>
@@ -59,7 +60,7 @@ struct SkySettingsDelta : public VerifyStructure {
 
 };
 
-struct SkySettings : Networked<SkySettingsInit, SkySettingsDelta> {
+struct SkySettings: public Networked<SkySettingsInit, SkySettingsDelta> {
  private:
   SkySettingsInit lastSettings;
 

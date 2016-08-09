@@ -20,33 +20,39 @@
  */
 #pragma once
 #include "engine/sky/physics.hpp"
+#include "component.hpp"
 
 namespace sky {
 
-struct ExplosionInit {
-  ExplosionInit();
+/**
+ * Explosion state data.
+ */
+struct ExplosionState {
+  ExplosionState();
 
   template<typename Archive>
   void serialize(Archive &ar) { }
 };
 
-// Explosions do not change over their lifetime.
+/**
+ * Explosion delta type.
+ */
 using ExplosionDelta = Nothing;
 
-struct Explosion: public Networked<ExplosionInit, ExplosionDelta> {
+struct Explosion: public Component<ExplosionState, ExplosionDelta> {
   friend class Sky;
  private:
   // Sky API.
-  void prePhysics();
-  void postPhysics(const TimeDiff delta);
+  void prePhysics() override final;
+  void postPhysics(const TimeDiff delta) override final;
 
  public:
-  Explosion(const ExplosionInit &init);
+  Explosion(const ExplosionState &init, Physics &physics);
 
   // Networked impl.
-  ExplosionInit captureInitializer() const override final;
+  ExplosionState captureInitializer() const override final;
   void applyDelta(const ExplosionDelta &delta) override final;
-  ExplosionDelta collectDelta();
+  optional<ExplosionDelta> collectDelta() override final;
 
 };
 

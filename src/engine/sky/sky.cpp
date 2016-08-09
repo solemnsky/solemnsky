@@ -153,12 +153,13 @@ void Sky::syncSettings() {
 
 Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *listener) :
     Subsystem(arena),
-    Networked(initializer),
+    AutoNetworked(initializer),
     map(map),
     settings(initializer.settings),
     physics(map, *this),
     entities(initializer.entities, physics),
-    explosions(initializer.explosions),
+    explosions(initializer.explosions, physics),
+    homeBases(initializer.homeBases, physics),
     listener(listener) {
   arena.forPlayers([&](Player &player) {
     const auto iter = initializer.participations.find(player.pid);
@@ -181,8 +182,11 @@ void Sky::applyDelta(const SkyDelta &delta) {
   }
 
   settings.applyDelta(delta.settings.get());
-  entities.applyDelta(delta.entities, physics);
-  explosions.applyDelta(delta.explosions);
+
+  // Components.
+  if (delta.entities) entities.applyDelta(delta.entities.get());
+  if (delta.explosions) explosions.applyDelta(delta.explosions.get());
+  if (delta.homeBases) homeBases.applyDelta(delta.homeBases.get());
 
 }
 
@@ -191,14 +195,17 @@ SkyInit Sky::captureInitializer() const {
   for (const auto &participation : participations)
     initializer.participations.emplace(
         participation.first, participation.second.captureInitializer());
-  initializer.entities = entities.captureInitializer();
-  initializer.explosions = explosions.captureInitializer();
 
   initializer.settings = settings.captureInitializer();
+
+  initializer.entities = entities.captureInitializer();
+  initializer.explosions = explosions.captureInitializer();
+  initializer.homeBases = homeBases.captureInitializer();
+
   return initializer;
 }
 
-SkyDelta Sky::collectDelta() {
+optional<SkyDelta> Sky::collectDelta() {
   SkyDelta delta;
   for (auto &participation : participations) {
     delta.participations.emplace(
@@ -207,6 +214,7 @@ SkyDelta Sky::collectDelta() {
 
   delta.entities = entities.collectDelta();
   delta.explosions = explosions.collectDelta();
+  delta.homeBases = explosions.collectDelta();
 
   delta.settings = settings.collectDelta();
   return delta;
@@ -230,17 +238,19 @@ void Sky::changeSettings(const SkySettingsDelta &delta) {
 }
 
 
-NetMapData<Entity> Sky::getEntities() {
+Components<Entity> Sky::getEntities() {
   return entities.getData();
 }
-NetMapData<Explosion> Sky::getExplosions() {
+
+Components<Explosion> Sky::getExplosions() {
   return explosions.getData();
 }
-void Sky::spawnEntity(const EntityInit &init) {
-  entities.put(init, physics);
+
+void Sky::spawnEntity(const EntityState &init) {
+  entities.put(init);
 }
 
-void Sky::spawnExplosion(const ExplosionInit &init) {
+void Sky::spawnExplosion(const EntityState &init) {
   explosions.put(init);
 }
 

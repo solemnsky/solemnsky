@@ -22,6 +22,7 @@
 #include "util/types.hpp"
 #include "types.hpp"
 #include "sky/planestate.hpp"
+#include "util/networked.hpp"
 
 namespace sky {
 

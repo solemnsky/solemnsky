@@ -70,12 +70,16 @@ struct EntityDelta {
  * Some non-player entity.
  */
 class Entity: public Component<EntityState, EntityDelta> {
+  friend class Sky;
  private:
   EntityState state;
   b2Body *const body;
 
+  // Destroy flag, used on server-side.
+  bool destroyable;
+
  protected:
-  // Sky API.
+  // Component impl.
   void prePhysics() override final;
   void postPhysics(const TimeDiff delta) override final;
 
@@ -83,7 +87,7 @@ class Entity: public Component<EntityState, EntityDelta> {
   Entity() = delete;
   Entity(const EntityState &data, Physics &physics);
 
-  // Networked API.
+  // Networked impl.
   EntityState captureInitializer() const override final;
   void applyDelta(const EntityDelta &delta) override final;
   optional<EntityDelta> collectDelta() override final;
@@ -91,9 +95,7 @@ class Entity: public Component<EntityState, EntityDelta> {
   // User API.
   const EntityState &getState() const;
   void destroy();
-
-  // Destroyable flag, for simulation on server.
-  bool destroyable;
+  bool isDestroyable() const;
 
 };
 

@@ -23,13 +23,21 @@
 #include "util/networked.hpp"
 #include "engine/sky/physics.hpp"
 
+/**
+ * NOTE
+ * Components in themselves operate with very little logic. Some basic logic related to components is implemented
+ * in the simulation of Participation / Sky (landing on bases for example), and primitive aspects like movement and
+ * box2d management are rendered in the Components themselves. All further mechanics are implemented through
+ * SkyListener.
+ */
+
 namespace sky {
 
-template<typename Data, typename Delta>
-class Component: public AutoNetworked<Data, Delta> {
+template<typename State, typename Delta>
+class Component: public AutoNetworked<State, Delta> {
   friend class Sky;
  protected:
-  Data data;
+  State state;
   Physics &physics;
 
   // Callbacks from Sky.
@@ -37,8 +45,8 @@ class Component: public AutoNetworked<Data, Delta> {
   virtual void postPhysics(const TimeDiff delta) = 0;
 
  public:
-  Component(const Data &data, Physics &physics) :
-      AutoNetworked(data), data(data), physics(physics) { }
+  Component(const State &data, Physics &physics) :
+      AutoNetworked<State, Delta>(data), state(data), physics(physics) { }
 
 };
 
