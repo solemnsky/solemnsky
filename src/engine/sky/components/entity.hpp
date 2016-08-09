@@ -20,9 +20,10 @@
  */
 #pragma once
 #include "engine/multimedia.hpp"
-#include "util/networked/networked.hpp"
+#include "util/networked.hpp"
 #include "engine/sky/physics.hpp"
 #include "engine/sky/movement.hpp"
+#include "component.hpp"
 
 namespace sky {
 
@@ -51,12 +52,6 @@ struct EntityState {
 };
 
 /**
- * The network initialized for Entity is just EntityState.
- * This alias makes this decision more explicit.
- */
-using EntityInit = EntityState;
-
-/**
  * Delta for Entity.
  */
 struct EntityDelta {
@@ -74,28 +69,24 @@ struct EntityDelta {
 /**
  * Some non-player entity.
  */
-class Entity: public AutoNetworked<EntityInit, EntityDelta> {
-  friend class Sky;
+class Entity: public Component<EntityState, EntityDelta> {
  private:
-  // Data.
   EntityState state;
-
-  // Physics.
-  Physics &physics;
   b2Body *const body;
 
+ protected:
   // Sky API.
-  void prePhysics();
-  void postPhysics(const TimeDiff delta);
+  void prePhysics() override final;
+  void postPhysics(const TimeDiff delta) override final;
 
  public:
   Entity() = delete;
-  Entity(const EntityInit &initializer, Physics &physics);
+  Entity(const EntityState &data, Physics &physics);
 
   // Networked API.
-  EntityInit captureInitializer() const override final;
+  EntityState captureInitializer() const override final;
   void applyDelta(const EntityDelta &delta) override final;
-  optional<EntityDelta> collectDelta();
+  optional<EntityDelta> collectDelta() override final;
 
   // User API.
   const EntityState &getState() const;

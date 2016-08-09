@@ -19,7 +19,7 @@
  * Derivation of AutoNetworked<>
  */
 #include "util/types.hpp"
-#include "networked.hpp"
+#include "util/networked.hpp"
 #pragma once
 
 /**
@@ -64,8 +64,7 @@ class NetMap: public AutoNetworked<NetMapInit<Init>, NetMapDelta<Init, Delta>> {
  public:
   NetMap(const NetMapInit<Init> &init, Args... args,
          typename std::enable_if<!std::is_base_of<
-             AutoNetworked<Init, Delta>, Data>::value>::type * = 0) :
-      AutoNetworked(init) {
+             AutoNetworked<Init, Delta>, Data>::value>::type * = 0) {
     for (const auto &x : init) {
       data.emplace(std::piecewise_construct,
                    std::forward_as_tuple(x.first),

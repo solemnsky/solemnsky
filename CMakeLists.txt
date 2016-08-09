@@ -47,8 +47,18 @@ add_library(solemnsky STATIC
         src/engine/environment/visuals.cpp
         src/engine/environment/visuals.hpp
 
+        src/engine/sky/components/component.hpp
+
+        src/engine/sky/components/componentmap.hpp
+
+        src/engine/sky/components/entity.cpp
+        src/engine/sky/components/entity.hpp
+
         src/engine/sky/components/explosion.cpp
         src/engine/sky/components/explosion.hpp
+
+        src/engine/sky/components/homebase.cpp
+        src/engine/sky/components/homebase.hpp
 
         src/engine/sky/movement.cpp
         src/engine/sky/movement.hpp
@@ -61,9 +71,6 @@ add_library(solemnsky STATIC
 
         src/engine/sky/planestate.cpp
         src/engine/sky/planestate.hpp
-
-        src/engine/sky/components/entity.cpp
-        src/engine/sky/components/entity.hpp
 
         src/engine/sky/sky.cpp
         src/engine/sky/sky.hpp
@@ -113,7 +120,7 @@ add_library(solemnsky STATIC
         src/util/methods.cpp
         src/util/methods.hpp
 
-        src/util/networked/networkedmap.hpp
+        src/util/networked.hpp
 
         src/util/printer.cpp
         src/util/printer.hpp
@@ -128,7 +135,7 @@ add_library(solemnsky STATIC
 
         thirdparty/polypartition/polypartition.cpp
         thirdparty/polypartition/polypartition.hpp
-        src/engine/sky/components/homebase.cpp src/engine/sky/components/homebase.hpp src/util/networked/networked.hpp)
+        )
 target_link_libraries(solemnsky
         enet
         sfml-system
