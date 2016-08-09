@@ -20,6 +20,7 @@
  */
 #pragma once
 #include "util/types.hpp"
+#include <bitset>
 
 namespace sky {
 
@@ -53,4 +54,28 @@ void forSkyActions(std::function<void(const Action)> fn);
 std::string showAction(const Action action);
 optional<Action> readAction(const std::string &string);
 
+/**
+ * A team. Every player is on exactly one of them.
+ */
+enum class Team {
+  Spectator,
+  Red,
+  Blue,
+  MAX
+};
+
+/**
+ * A mode that the Arena can be in.
+ */
+enum class ArenaMode {
+  Lobby, // lobby, to make teams
+  Game, // playing sandbox
+  Scoring // viewing sandbox results
+};
+
 }
+
+namespace std {
+std::string to_string(const sky::Team team);
+}
+

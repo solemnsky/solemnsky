@@ -153,8 +153,8 @@ class Sky: public PhysicsListener,
   Components<Explosion> getExplosions();
 
   // User API: mutating state, server-only.
-  void spawnEntity(const EntityState &init);
-  void spawnExplosion(const ExplosionState &init);
+  void spawnEntity(const EntityState &state);
+  void spawnExplosion(const ExplosionState &state);
 
 };
 

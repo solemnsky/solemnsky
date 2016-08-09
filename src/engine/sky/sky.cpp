@@ -212,11 +212,12 @@ optional<SkyDelta> Sky::collectDelta() {
         participation.first, participation.second.collectDelta());
   }
 
+  delta.settings = settings.collectDelta();
+
   delta.entities = entities.collectDelta();
   delta.explosions = explosions.collectDelta();
   delta.homeBases = explosions.collectDelta();
 
-  delta.settings = settings.collectDelta();
   return delta;
 }
 
@@ -246,12 +247,12 @@ Components<Explosion> Sky::getExplosions() {
   return explosions.getData();
 }
 
-void Sky::spawnEntity(const EntityState &init) {
-  entities.put(init);
+void Sky::spawnEntity(const EntityState &state) {
+  entities.put(state);
 }
 
-void Sky::spawnExplosion(const EntityState &init) {
-  explosions.put(init);
+void Sky::spawnExplosion(const ExplosionState &state) {
+  explosions.put(state);
 }
 
 }

@@ -47,7 +47,6 @@ struct Components;
  */
 template<typename Data>
 class ComponentSet:
-    std::enable_if<true>,
     public AutoNetworked<ComponentSetInit<Data>,
                          ComponentSetDelta<Data>> {
  private:
@@ -133,7 +132,7 @@ class ComponentSet:
         const auto toErase = iter;
         data.erase(toErase);
       } else {
-        iter->second.second.applyDelta(entityDelta->second);
+        if (entityDelta->second) iter->second.second.applyDelta(entityDelta->second.get());
       }
       ++iter;
     }

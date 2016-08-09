@@ -27,4 +27,19 @@ void HomeBase::postPhysics(const TimeDiff delta) {
 
 }
 
+HomeBase::HomeBase(const HomeBaseState &state, Physics &physics) :
+    Component(state, physics) { }
+
+void HomeBase::applyDelta(const HomeBaseDelta &delta) {
+
+}
+
+HomeBaseState HomeBase::captureInitializer() const {
+  return state;
+}
+
+optional<HomeBaseDelta> HomeBase::collectDelta() {
+  return {};
+}
+
 }

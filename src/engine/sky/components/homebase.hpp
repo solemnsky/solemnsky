@@ -20,13 +20,24 @@
  */
 #pragma once
 #include "component.hpp"
+#include "engine/types.hpp"
 
 namespace sky {
 
-/**
+/*
  * Data describing a HomeBase.
  */
 struct HomeBaseState {
+  sf::Vector2f dimensions;
+  sf::Vector2f pos;
+  Angle rot;
+  float damage;
+  SwitchSet<Team> friendly;
+
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(dimensions, pos, rot, damage, friendly);
+  }
 
 };
 
@@ -44,10 +55,8 @@ struct HomeBaseDelta {
 
 class HomeBase: public Component<HomeBaseState, HomeBaseDelta> {
   friend class Sky;
- private:
-  // Component impl.
-
  protected:
+  // Component impl.
   void prePhysics() override final;
   void postPhysics(const TimeDiff delta) override final;
 
@@ -55,7 +64,11 @@ class HomeBase: public Component<HomeBaseState, HomeBaseDelta> {
   HomeBase(const HomeBaseState &state, Physics &physics);
 
   // AutoNetworked impl.
+  void applyDelta(const HomeBaseDelta &delta) override final;
+  HomeBaseState captureInitializer() const override final;
 
+
+  virtual optional<HomeBaseDelta> collectDelta() override;
 };
 
 }
