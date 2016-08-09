@@ -299,13 +299,12 @@ void Participation::applyDelta(const ParticipationDelta &delta) {
   if (delta.spawn) {
     spawnWithState(delta.spawn->first, delta.spawn->second);
   } else {
-    if (delta.planeAlive) {
-      if (plane) {
-        if (delta.state) plane->state = delta.state.get();
-        else if (delta.serverState)
-          plane->state.applyServer(delta.serverState.get());
-      }
-    } else plane.reset();
+    if (plane) {
+      if (delta.state) plane->state = delta.state.get();
+      else if (delta.serverState)
+        plane->state.applyServer(delta.serverState.get());
+      else plane.reset();
+    }
   }
 
   // Modify controls.

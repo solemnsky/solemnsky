@@ -112,13 +112,12 @@ struct ParticipationDelta: public VerifyStructure {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(spawn, planeAlive, state, serverState, controls);
+    ar(spawn, state, serverState, controls);
   }
 
   bool verifyStructure() const;
 
   optional<std::pair<PlaneTuning, PlaneState>> spawn;
-  bool planeAlive;
   optional<PlaneState> state; // if client doesn't have authority
   optional<PlaneStateServer> serverState; // if client has authority
   optional<PlaneControls> controls; // client authority

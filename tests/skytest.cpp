@@ -26,11 +26,13 @@ TEST_F(SkyTest, SettingsTest) {
   sky::Arena remoteArena(arena.captureInitializer());
   sky::Sky remoteSky(remoteArena, nullMap, sky.captureInitializer());
 
-  ASSERT_EQ(remoteSky.getSettings().gravity, -1);
+  ASSERT_EQ(remoteSky.settings.getGravity(), -1);
 
   sky.changeSettings(sky::SkySettingsDelta::ChangeView(2));
-  remoteSky.applyDelta(*sky.collectDelta());
-  ASSERT_EQ(remoteSky.getSettings().viewScale, 2);
+  const auto delta = sky.collectDelta();
+  ASSERT_TRUE(bool(delta));
+  remoteSky.applyDelta(*delta);
+  ASSERT_EQ(remoteSky.settings.getViewscale(), 2);
   ASSERT_FALSE(bool(sky.collectDelta()));
 
 }
@@ -97,12 +99,15 @@ TEST_F(SkyTest, AuthorityTest) {
   {
     ASSERT_EQ(remoteParticip.isSpawned(), false);
 
+    // Spawn the player.
     player.spawn({}, {200, 200}, 0);
+
+    // Transmit a delta, respecting the player's authority.
     auto delta = sky.collectDelta();
     ASSERT_TRUE(bool(delta));
     remoteSky.applyDelta(delta->respectAuthority(player));
-    ASSERT_FALSE(bool(sky.collectDelta()));
 
+    // The player is spawned on the remote sky.
     ASSERT_EQ(remoteParticip.isSpawned(), true);
   }
 
@@ -110,16 +115,22 @@ TEST_F(SkyTest, AuthorityTest) {
   {
     ASSERT_EQ(remoteParticip.plane->getState().physical.pos.x, 200);
 
+    // Modify the local Participation through a ParticipationInput.
+    // Normally these are used to send Participation state from the client to the server.
     sky::ParticipationInput input;
     sky::PlaneStateClient stateInput(participation.plane->getState());
     stateInput.physical = sky::PhysicalState({300, 300}, {}, 50, 0);
     input.planeState.emplace(stateInput);
+    sky.getParticipation(player).applyInput(input);
 
+    // Transmit a delta, respecting the player's authority.
     auto delta = sky.collectDelta();
     ASSERT_TRUE(bool(delta));
     remoteSky.applyDelta(delta->respectAuthority(player));
-    ASSERT_FALSE(bool(sky.collectDelta()));
 
+    // Nothing has changed, because the player has authority over the Participation state
+    // captured in ParticipationInput.
+    ASSERT_TRUE(bool(remoteParticip.plane));
     ASSERT_EQ(remoteParticip.plane->getState().physical.pos.x, 200);
   }
 
@@ -129,6 +140,8 @@ TEST_F(SkyTest, AuthorityTest) {
  * Entities can be created and synchronized over the network.
  */
 TEST_F(SkyTest, EntityTest) {
+  ASSERT_FALSE(sky.collectDelta());
+
   // We create an entity locally.
   ASSERT_EQ(sky.getEntities().size(), 0);
   sky.spawnEntity(sky::EntityState({}, {}, sf::Vector2f(200, 200), sf::Vector2f(0, 0)));
@@ -147,7 +160,6 @@ TEST_F(SkyTest, EntityTest) {
     remoteSky.applyDelta(delta.get());
     ASSERT_EQ(sky.getEntities().size(), 2);
     ASSERT_EQ(remoteSky.getEntities().size(), 2);
-    ASSERT_FALSE(sky.collectDelta());
   }
 
   // We can mark entities for deletion, and they are deleted on the next tick.
@@ -162,7 +174,6 @@ TEST_F(SkyTest, EntityTest) {
     ASSERT_TRUE(bool(delta));
     remoteSky.applyDelta(delta.get());
     ASSERT_EQ(remoteSky.getEntities().size(), 1);
-    ASSERT_FALSE(sky.collectDelta());
   }
 
 }

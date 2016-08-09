@@ -394,6 +394,34 @@ int Arena::getTeamCount() const {
   return teamCount;
 }
 
+Team Arena::autojoinTeam() const {
+  // TODO: Come back here when we have more than two teams.
+  int reds = 0;
+  int blues = 0;
+  forPlayers([&reds, &blues](const sky::Player &player) {
+    switch (player.getTeam()) {
+      case sky::Team::Red:
+        reds++;
+        return;
+      case sky::Team::Blue:
+        blues++;
+        return;
+      case sky::Team::Spectator:
+        return;
+      default:
+        return;
+    }
+  });
+
+  if (reds < blues) {
+    return sky::Team::Red;
+  } else if (blues > reds) {
+    return sky::Team::Blue;
+  } else {
+    return static_cast<sky::Team>((std::rand() % getTeamCount()) + 1);
+  }
+}
+
 ArenaDelta Arena::connectPlayer(const std::string &requestedNick) {
   Player &player = joinPlayer(
       PlayerInitializer(allocPid(), allocNickname(requestedNick)));

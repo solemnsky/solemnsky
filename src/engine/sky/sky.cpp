@@ -181,7 +181,7 @@ void Sky::applyDelta(const SkyDelta &delta) {
     }
   }
 
-  settings.applyDelta(delta.settings.get());
+  if (delta.settings) settings.applyDelta(delta.settings.get());
 
   // Components.
   if (delta.entities) entities.applyDelta(delta.entities.get());
@@ -213,17 +213,16 @@ optional<SkyDelta> Sky::collectDelta() {
     const auto pDelta = participation.second.collectDelta();
     if (pDelta) {
       delta.participations.emplace(
-          participation.first, pDelta);
+          participation.first, *pDelta);
       useful = true;
     }
   }
 
   delta.settings = settings.collectDelta();
-
   delta.entities = entities.collectDelta();
   delta.explosions = explosions.collectDelta();
   delta.homeBases = homeBases.collectDelta();
-  useful &= delta.settings or delta.entities or delta.explosions or delta.homeBases;
+  useful |= delta.settings or delta.entities or delta.explosions or delta.homeBases;
 
   if (useful) return delta;
   return {};

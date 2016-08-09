@@ -155,12 +155,12 @@ class ComponentSet:
 
   optional<ComponentSetDelta<Data>> collectDelta() {
     ComponentSetDelta<Data> delta;
-    bool necessary;
+    bool useful;
 
     // Initializers for uninitialized components.
     for (auto &datum: data) {
       if (!datum.second.first) {
-        necessary = true;
+        useful = true;
         delta.first.emplace(datum.first, datum.second.second.captureInitializer());
         datum.second.first = true;
         // This sure reads like plain English.
@@ -170,11 +170,11 @@ class ComponentSet:
     // Deltas for all.
     for (auto &datum: data) {
       const auto elemDelta = datum.second.second.collectDelta();
-      necessary |= bool(elemDelta);
+      useful |= bool(elemDelta);
       delta.second.emplace(datum.first, elemDelta);
     }
 
-    if (necessary) return delta;
+    if (useful) return delta;
     else return {};
   }
 
