@@ -131,7 +131,10 @@ void MultiplayerGame::handleClientAction(const ui::ClientAction action,
                                          const bool state) {
   switch (action) {
     case ui::ClientAction::Spawn: {
-      if (state) core.transmit(sky::ClientPacket::ReqSpawn());
+      if (state) {
+        if (!participation.isSpawned())
+          core.transmit(sky::ClientPacket::ReqSpawn());
+      }
       break;
     }
     case ui::ClientAction::Scoreboard: {

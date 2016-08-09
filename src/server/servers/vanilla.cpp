@@ -119,7 +119,7 @@ void VanillaServer::onPacket(ENetPeer *const client,
   }
 
   if (packet.type == sky::ClientPacket::Type::ReqSpawn) {
-    if (shared.skyHandle.getSky()) {
+    if (const auto sky = shared.skyHandle.getSky()) {
       if (player.getTeam() == sky::Team::Spectator) {
         //Spectator trying to join a game, just assign them a team
         sky::PlayerDelta delta{player};
@@ -128,9 +128,10 @@ void VanillaServer::onPacket(ENetPeer *const client,
       }
 
       //Spawn them
-      auto sp = shared.skyHandle.getSky()
-          ->getMap().pickSpawnPoint(player.getTeam());
-      player.spawn({}, sp.pos, sp.angle);
+      if (!sky->getParticipation(player).isSpawned()) {
+        auto sp = sky->getMap().pickSpawnPoint(player.getTeam());
+        player.spawn({}, sp.pos, sp.angle);
+      }
     }
   }
 }
