@@ -16,14 +16,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Visual component associated with an environment (for clientside).
+ * The role of a particular engine in the multiplayer system.
  */
 #pragma once
+#include "util/types.hpp"
 
 namespace sky {
 
-class Visuals {
+/**
+ * This holds the particular responsibilities we expect out of an instance of the engine.
+ * Client and server engines don't have the same responsibilities, and can disable methods /
+ * modify the usage of state / run methods on construction appropriately.
+ */
+struct Role {
+ private:
+  optional<PID> isClient;
+  bool isServer;
+  bool isSandbox;
+
+ public:
+  Role(const optional<PID> isClient,
+       const bool isSandbox);
+
+  inline bool client() {
+    return isSandbox or isClient;
+  }
+
+  inline bool client(const PID pid) {
+    return isSandbox or (isClient and isClient.get() == pid);
+  }
+
+
+  inline bool server() {
+    return isServer or isSandbox;
+  }
 
 };
 
 }
+

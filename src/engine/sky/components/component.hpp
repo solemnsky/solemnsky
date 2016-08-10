@@ -21,7 +21,7 @@
 #pragma once
 #include "util/types.hpp"
 #include "util/networked.hpp"
-#include "engine/sky/physics.hpp"
+#include "engine/sky/physics/physics.hpp"
 
 /**
  * NOTE
@@ -35,7 +35,8 @@ namespace sky {
 
 template<typename State, typename Delta>
 class Component: public AutoNetworked<State, Delta> {
-  friend class Sky;
+  template<typename Data>
+  friend class ComponentSet;
  protected:
   State state;
   Physics &physics;
@@ -44,9 +45,21 @@ class Component: public AutoNetworked<State, Delta> {
   virtual void prePhysics() = 0;
   virtual void postPhysics(const TimeDiff delta) = 0;
 
+  // ComponentSet destroyable.
+  bool destroyable;
+
  public:
   Component(const State &data, Physics &physics) :
-      AutoNetworked<State, Delta>(data), state(data), physics(physics) { }
+      AutoNetworked<State, Delta>(data),
+      state(data),
+      physics(physics),
+      destroyable(false) { }
+  virtual ~Component() { }
+
+  // Mark this component for removal on the next cleanup cycle.
+  inline void destroy() {
+    destroyable = true;
+  }
 
 };
 

@@ -19,7 +19,7 @@
  * An explosion in a Sky. Its effects are only simulated on the client of an affected plane.
  */
 #pragma once
-#include "engine/sky/physics.hpp"
+#include "engine/sky/physics/physics.hpp"
 #include "component.hpp"
 
 namespace sky {

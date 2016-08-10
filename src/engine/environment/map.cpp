@@ -29,39 +29,18 @@ namespace sky {
  */
 
 sky::SpawnPoint::SpawnPoint(const sf::Vector2f &pos, const Angle &angle, const Team team) :
-    pos(pos), angle(angle), team(team) {}
+    pos(pos), angle(angle), team(team) { }
 
-SpawnPoint::SpawnPoint() : pos(), angle(0), team(sky::Team::Spectator) {}
+SpawnPoint::SpawnPoint() : pos(), angle(0), team(sky::Team::Spectator) { }
 
 /**
 * MapObstacle.
 */
 
-MapObstacle::MapObstacle() :
-    pos(), localVertices(), decomposed(), damage(0) {}
-
 MapObstacle::MapObstacle(const sf::Vector2f &pos,
                          const std::vector<sf::Vector2f> &localVertices,
                          const float damage) :
-    pos(pos), localVertices(localVertices), decomposed(), damage(damage) {
-  decompose();
-}
-
-void MapObstacle::decompose() {
-  decomposed.clear();
-
-  std::vector<sf::Vector2f> verts(localVertices);
-  pp::Poly poly(verts);
-  poly.SetOrientation(TPPL_CCW);
-  std::list<pp::Poly> tmp;
-
-  pp::Partition part;
-  part.ConvexPartition_HM(&poly, &tmp);
-
-  for (auto p : tmp) {
-    decomposed.push_back(p.GetPoints());
-  }
-}
+    pos(pos), localVertices(localVertices), damage(damage) { }
 
 /**
  * MapItem.
@@ -85,15 +64,11 @@ Map::Map(std::istream &stream) :
     loadSuccess = false;
     return;
   }
-
-  for (auto &o : obstacles) {
-    o.decompose();
-  }
 }
 
 Map::Map() :
     dimensions(1600, 900),
-    loadSuccess(true) {}
+    loadSuccess(true) { }
 
 const sf::Vector2f &Map::getDimensions() const {
   return dimensions;

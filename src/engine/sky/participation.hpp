@@ -23,9 +23,10 @@
 #include <forward_list>
 #include "util/types.hpp"
 #include "engine/sky/components/entity.hpp"
-#include "physics.hpp"
+#include "engine/sky/physics/physics.hpp"
 #include "planestate.hpp"
 #include "engine/sky/components/explosion.hpp"
+#include "engine/role.hpp"
 
 namespace sky {
 
@@ -152,6 +153,7 @@ class Participation: public AutoNetworked<ParticipationInit, ParticipationDelta>
  private:
   // Parameters.
   Physics &physics;
+  Role &role;
 
   // Game state.
   PlaneControls controls;
@@ -177,6 +179,7 @@ class Participation: public AutoNetworked<ParticipationInit, ParticipationDelta>
   Participation() = delete;
   Participation(class Player &player,
                 Physics &physics,
+                Role &role,
                 const ParticipationInit &initializer);
 
   // State.

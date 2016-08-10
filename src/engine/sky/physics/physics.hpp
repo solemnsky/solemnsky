@@ -22,6 +22,7 @@
 #include <Box2D/Box2D.h>
 #include "util/types.hpp"
 #include "engine/environment/map.hpp"
+#include "shape.hpp"
 
 namespace sky {
 
@@ -63,14 +64,14 @@ class PhysicsListener {
   virtual void onBeginContact(const BodyTag &body1, const BodyTag &body2) = 0;
   virtual void onEndContact(const BodyTag &body1, const BodyTag &body2) = 0;
   virtual bool enableContact(const BodyTag &body1, const BodyTag &body2) = 0;
-  virtual ~PhysicsListener() {}
+  virtual ~PhysicsListener() { }
 
 };
 
 /**
  * Listens to the b2World and dispatches to PhysicsListener.
  */
-class PhysicsDispatcher : public b2ContactListener {
+class PhysicsDispatcher: public b2ContactListener {
  private:
   PhysicsListener &listener;
 
@@ -81,6 +82,7 @@ class PhysicsDispatcher : public b2ContactListener {
   virtual void BeginContact(b2Contact *contact) override;
   virtual void EndContact(b2Contact *contact) override;
   virtual void PreSolve(b2Contact *contact, const b2Manifold *oldManifold) override;
+
 };
 
 /**
@@ -89,15 +91,22 @@ class PhysicsDispatcher : public b2ContactListener {
 class Physics {
  private:
   const struct Settings {
-    Settings() {}
+    Settings();
 
-    int velocityIterations = 8, positionIterations = 3; // simulation parameters
-    float distanceScale = 100; // box2d uses meters, not px
-    float gravity = 150; // reasonable default for gravity
+    int velocityIterations, positionIterations; // Simulation parameters.
+    float distanceScale, // game units / box2d meters
+        gravity, // reasonable default for gravity
+        fixtureDensity; // density of all created fixture
   } settings;
 
   b2World world;
   PhysicsDispatcher converter;
+
+  // Turing shapes into fixtures for use in the box2d engine.
+  void createFixture(const Shape &shape, b2Body &body);
+  void circleFixture(const float radius, b2Body &body);
+  void polygonFixture(const std::vector<sf::Vector2f> &vertices, b2Body &body);
+  void rectFixture(const sf::Vector2f &dimensions, b2Body &body);
 
  public:
   Physics() = delete;
@@ -116,7 +125,7 @@ class Physics {
   float toPhysDistance(const float x) const;
 
   // Managing bodies.
-  b2Body *createBody(const b2Shape &shape,
+  b2Body *createBody(const Shape &shape,
                      const BodyTag &tag, bool isStatic = false);
   void deleteBody(b2Body *const body);
 

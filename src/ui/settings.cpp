@@ -130,7 +130,8 @@ ActionBindings::findClientActions(const sf::Event &event) const {
 Settings::Settings(const std::string &filepath) :
     fullscreen(false),
     resolution(1600, 900),
-    enableDebug(false) {
+    enableDebug(false),
+    nickname("nameless plane") {
   appLog("Loading client settings from " + inQuotes(filepath), LogOrigin::Client);
 
   std::ifstream file(filepath);
@@ -169,7 +170,7 @@ void Settings::writeToFile(const std::string &filepath) const {
  * SettingsDelta.
  */
 
-SettingsDelta::SettingsDelta() {}
+SettingsDelta::SettingsDelta() { }
 
 SettingsDelta::SettingsDelta(const Settings &oldSettings,
                              const Settings &newSettings) {

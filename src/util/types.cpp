@@ -36,47 +36,6 @@ std::string TimeStats::print() const {
       + printTimeDiff(min) + "->"
       + printTimeDiff(max);
 }
-
-/**
- * Cooldown.
- */
-
-void Cooldown::reset() { cooldown = period; }
-
-void Cooldown::prime() { cooldown = 0; }
-
-bool Cooldown::cool(const float delta) {
-  cooldown = std::max(0.0f, cooldown - delta);
-  return cooldown == 0;
-}
-
-Cooldown::Cooldown(const float period) :
-    cooldown(period), period(period) { }
-
-/**
- * Clamped.
- */
-
-Clamped::Clamped() : value(0) { }
-
-Clamped::Clamped(const float value) :
-    value(clamp(0.0f, 1.0f, value)) { }
-
-Clamped &Clamped::operator=(const float x) {
-  operator=(Clamped(x));
-  return *this;
-}
-
-Clamped &Clamped::operator+=(const float x) {
-  value = clamp(0.0f, 1.0f, value + x);
-  return *this;
-}
-
-Clamped &Clamped::operator-=(const float x) {
-  value = clamp(0.0f, 1.0f, value - x);
-  return *this;
-}
-
 /**
  * MovementLaws.
  */

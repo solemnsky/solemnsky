@@ -15,15 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * Visual component associated with an environment (for clientside).
- */
-#pragma once
+#include "role.hpp"
 
 namespace sky {
 
-class Visuals {
+/**
+ * EngineRole.
+ */
 
-};
+Role::Role(const optional<PID> isClient,
+           const bool isSandbox) :
+    isClient(isClient),
+    isServer(!isClient),
+    isSandbox(isSandbox) { }
 
 }

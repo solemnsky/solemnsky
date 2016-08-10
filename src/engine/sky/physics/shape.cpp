@@ -15,15 +15,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * Visual component associated with an environment (for clientside).
- */
-#pragma once
+#include "shape.hpp"
+#include "util/methods.hpp"
 
 namespace sky {
 
-class Visuals {
+/**
+ * Shape.
+ */
 
-};
+Shape::Shape(const Shape::Type type) :
+    type(type) { }
+
+Shape sky::Shape::Circle(const float radius) {
+  sky::Shape shape(Type::Circle);
+  shape.radius = radius;
+  return shape;
+}
+
+Shape sky::Shape::Polygon(const std::vector<sf::Vector2f> &vertices) {
+  sky::Shape shape(Type::Polygon);
+  shape.vertices = vertices;
+  return shape;
+}
+
+Shape sky::Shape::Rectangle(const sf::Vector2f &dimensions) {
+  sky::Shape shape(Type::Rectangle);
+  shape.dimensions = dimensions;
+  return shape;
+}
 
 }
+

@@ -30,6 +30,17 @@
 #include <bitset>
 
 /**
+ * The concept of a type that can verify some invariant that could be
+ * violated when it's transmitted over the network.
+ * TODO: issue #29
+ */
+class VerifyStructure {
+ public:
+  virtual bool verifyStructure() const = 0;
+  virtual ~VerifyStructure() { }
+};
+
+/**
  * This is pretty useful.
  */
 using boost::optional;
@@ -202,7 +213,7 @@ struct TimeStats {
 /****
  * Float-augmentation types.
  * Below we have a series of types that build a wrapper around a float,
- * constricting the way in which it can be used.
+ * restriction the way in which it can be used.
  */
 
 /**
@@ -212,19 +223,46 @@ struct TimeStats {
  * (Ideally it should be value templated).
  */
 struct Cooldown {
-  float cooldown;
-  float period;
+ private:
+  float value;
 
-  Cooldown(const float period);
-  bool cool(const float delta);
-  void reset();
-  void prime();
+ public:
+  Cooldown() = default;
+  explicit Cooldown(const float value) :
+      value(value) { }
 
-  inline operator bool() const { return cooldown == 0; }
+  inline void reset() {
+    value = 1;
+  }
+
+  inline void prime() {
+    value = 0;
+  }
+
+  inline bool cool(const float delta) {
+    value = std::max(0.0f, value - delta);
+    return value == 0;
+  }
+
+  inline operator bool() const {
+    return value == 0;
+  }
+
+  inline operator float() const {
+    return value;
+  }
+
+  bool operator==(const Cooldown &x) {
+    return x.value == value;
+  }
+
+  bool operator!=(const Cooldown &x) {
+    return x.value != value;
+  }
 
   template<typename Archive>
   void serialize(Archive ar) {
-    ar(cooldown);
+    ar(value);
   }
 };
 
@@ -236,16 +274,41 @@ struct Clamped {
   float value;
 
  public:
-  Clamped();
-  Clamped(const float value);
-  Clamped &operator=(const float x);
-  Clamped &operator+=(const float x);
-  Clamped &operator-=(const float x);
+  Clamped() : value(0) { }
+
+  explicit Clamped(const float value) :
+      value(clamp(0.0f, 1.0f, value)) { }
+
+  inline Clamped &operator=(const float x) {
+    operator=(Clamped(x));
+    return *this;
+  }
+
+  inline Clamped &operator+=(const float x) {
+    value = clamp(0.0f, 1.0f, value + x);
+    return *this;
+  }
+
+  inline Clamped &operator-=(const float x) {
+    value = clamp(0.0f, 1.0f, value - x);
+    return *this;
+  }
+
+  inline operator float() const {
+    return value;
+  }
+
+  bool operator==(const Clamped &x) {
+    return x.value == value;
+  }
+
+  bool operator!=(const Clamped &x) {
+    return x.value != value;
+  }
 
   template<typename Archive>
   void serialize(Archive &ar) { ar(value); }
 
-  inline operator float() const { return value; }
 };
 
 /**
@@ -307,16 +370,6 @@ struct Angle {
 };
 
 /**
- * The concept of a type that can verify some invariant that could be
- * violated when it's transmitted over the network.
- */
-class VerifyStructure {
- public:
-  virtual bool verifyStructure() const = 0;
-  virtual ~VerifyStructure() { }
-};
-
-/**
  * Types and type synonyms for the game.
  */
 typedef unsigned int PID; // ID type for various things in the game
@@ -331,7 +384,8 @@ struct SwitchSet {
   std::bitset<size_t(Enum::MAX)> bitset;
 
  public:
-  SwitchSet() = default;
+  SwitchSet(const bool init = false) :
+      bitset(size_t(init)) { }
 
   SwitchSet(const Enum key) {
     bitset[size_t(key)] = true;

@@ -169,7 +169,10 @@ ArenaInit::ArenaInit(
     const EnvironmentURL &environment,
     const ArenaMode mode,
     const int teamCount) :
-    name(name), environment(environment), mode(mode), teamCount(teamCount) { }
+    name(name),
+    environment(environment),
+    mode(mode),
+    teamCount(teamCount) { }
 
 PID Arena::allocPid() const {
   return smallestUnused(players);
@@ -265,16 +268,15 @@ void Arena::applyPlayerDelta(const PID pid, const PlayerDelta &playerDelta) {
   }
 }
 
-Arena::Arena(const ArenaInit &initializer, const optional<PID> playerOwnership, const bool sandboxed) :
+Arena::Arena(const ArenaInit &initializer, const optional<PID> isClient, const bool isSandbox) :
     Networked(initializer),
-    playerOwnership(playerOwnership),
-    sandboxed(sandboxed),
     name(initializer.name),
     motd(initializer.motd),
     nextEnv(initializer.environment),
     mode(initializer.mode),
     uptime(0),
     teamCount(initializer.teamCount),
+    role(isClient, isSandbox),
     subsystemCaller(*this) {
   for (auto const &player : initializer.players) {
     players.emplace(std::piecewise_construct,

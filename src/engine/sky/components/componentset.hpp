@@ -46,6 +46,7 @@ struct Components;
  * Set of components, with automatic network derivation.
  */
 template<typename Data>
+// cppcheck-suppress syntaxError
 class ComponentSet:
     public AutoNetworked<ComponentSetInit<Data>,
                          ComponentSetDelta<Data>> {
@@ -67,6 +68,12 @@ class ComponentSet:
 
   std::map<PID, std::pair<bool, Data>> data;
   // The bool tracks whether we've sent initializers through the delta collection yet. 'false' means we haven't.
+
+  // This is private. Removal should be accomplished through the destroy() flag.
+  void remove(const PID pid) {
+    auto x = data.find(pid);
+    if (x != data.end()) data.erase(x);
+  }
 
  public:
   ComponentSet() = delete;
@@ -94,11 +101,6 @@ class ComponentSet:
     return nullptr;
   }
 
-  void remove(const PID pid) {
-    auto x = data.find(pid);
-    if (x != data.end()) data.erase(x);
-  }
-
   void put(const typename Data::InitType &init) {
     data.emplace(std::piecewise_construct,
                  std::forward_as_tuple(smallestUnused(data)),
@@ -113,6 +115,19 @@ class ComponentSet:
   void forData(std::function<void(Data &, const PID)> f) {
     for (auto &data: data) {
       f(data.second.second, data.second.first);
+    }
+  }
+
+  /**
+   * Destruction. Remove components destroyable flags set through the base destroy() method.
+   */
+  void applyDestruction() {
+    std::vector<PID> removable;
+    forData([&removable](Data &e, const PID pid) {
+      if (e.destroyable) removable.push_back(pid);
+    });
+    for (const PID pid: removable) {
+      remove(pid);
     }
   }
 

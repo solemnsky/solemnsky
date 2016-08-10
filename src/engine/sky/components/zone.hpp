@@ -16,41 +16,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Customizable representation of any non-player entity in the game.
+ * Some zone in the sky. A pickup, checkpoint, etc.
  */
 #pragma once
 #include "engine/multimedia.hpp"
 #include "util/networked.hpp"
 #include "engine/sky/physics/physics.hpp"
-#include "engine/sky/physics/movement.hpp"
 #include "component.hpp"
+#include "engine/sky/physics/shape.hpp"
 
 namespace sky {
 
 /**
  * All the settings and state that defines an entity.
  */
-struct EntityState {
-  EntityState() = default;
-  EntityState(const optional<MovementLaws> movement,
-              const FillStyle &fill,
-              const Shape &shape,
-              const sf::Vector2f &pos,
-              const sf::Vector2f &vel);
+struct ZoneState {
+  ZoneState() = default;
+  ZoneState(const FillStyle &fill,
+            const Shape &shape,
+            const Clamped cooldown,
+            const float cooldownRate,
+            const sf::Vector2f &pos);
 
-  // Constants.
-  optional<MovementLaws> movement; // The body is fixed if this does not exist.
   FillStyle fill;
   Shape shape;
-
-  // Variables.
-  PhysicalState physical;
-  Time lifetime;
+  Cooldown cooldown;
+  float cooldownRate;
+  sf::Vector2f pos;
 
   // Cereal serialization.
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(movement, fill, shape, physical, lifetime);
+    ar(fill, cooldown, cooldownRate, pos, shape);
   }
 
 };
@@ -58,25 +55,25 @@ struct EntityState {
 /**
  * Delta for Entity.
  */
-struct EntityDelta {
-  EntityDelta() = default;
+struct ZoneDelta {
+  ZoneDelta() = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(physical);
+    ar(cooldown);
   }
 
-  PhysicalState physical;
+  optional<Cooldown> cooldown;
 
 };
 
 /**
  * Some non-player entity.
  */
-class Entity: public Component<EntityState, EntityDelta> {
+class Zone: public Component<ZoneState, ZoneDelta> {
   friend class Sky;
  private:
-  b2Body *const body;
+  ZoneState lastState;
 
  protected:
   // Component impl.
@@ -84,16 +81,13 @@ class Entity: public Component<EntityState, EntityDelta> {
   void postPhysics(const TimeDiff delta) override final;
 
  public:
-  Entity() = delete;
-  Entity(const EntityState &state, Physics &physics);
+  Zone() = delete;
+  Zone(const ZoneState &state, Physics &physics);
 
   // Networked impl.
-  EntityState captureInitializer() const override final;
-  void applyDelta(const EntityDelta &delta) override final;
-  optional<EntityDelta> collectDelta() override final;
-
-  // User API.
-  const EntityState &getState() const;
+  ZoneState captureInitializer() const override final;
+  void applyDelta(const ZoneDelta &delta) override final;
+  optional<ZoneDelta> collectDelta() override final;
 
 };
 

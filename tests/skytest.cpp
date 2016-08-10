@@ -11,7 +11,7 @@ class SkyTest: public testing::Test {
   sky::Sky sky;
 
   SkyTest() :
-      arena(sky::ArenaInit("special arena", "NULL", sky::ArenaMode::Lobby)),
+      arena(sky::ArenaInit("special arena", "NULL", sky::ArenaMode::Lobby), {}, true),
       nullMap(),
       sky(arena, nullMap, sky::SkyInit(), nullptr) { }
 
@@ -38,6 +38,48 @@ TEST_F(SkyTest, SettingsTest) {
 }
 
 /**
+ * Spawns and kills are transmitted over the network.
+ */
+TEST_F(SkyTest, SpawnTest) {
+  // Join and spawn a player.
+  arena.connectPlayer("nameless plane");
+  auto &player = *arena.getPlayer(0);
+  player.spawn({}, {}, 0);
+
+  // Make a client arena for this player.
+  sky::Arena remoteArena(arena.captureInitializer(), 0, true);
+  sky::Sky remoteSky(remoteArena, nullMap, sky.captureInitializer());
+  sky::Participation &remoteParticip =
+      remoteSky.getParticipation(*remoteArena.getPlayer(0));
+
+  // The player is spawned on the client.
+  ASSERT_TRUE(remoteParticip.isSpawned());
+
+  {
+    player.doAction(sky::Action::Suicide, true);
+    const auto delta = sky.collectDelta();
+    ASSERT_TRUE(delta);
+    remoteSky.applyDelta(*delta);
+    ASSERT_FALSE(sky.collectDelta());
+  }
+
+  // The player is no longer spawned on the client.
+  ASSERT_FALSE(remoteParticip.isSpawned());
+
+  // We spawn them again.
+  {
+    player.spawn({}, {}, 0);
+    const auto delta = sky.collectDelta();
+    ASSERT_TRUE(delta);
+    remoteSky.applyDelta(*delta);
+  }
+
+  // The player is once again spawned on the client.
+  ASSERT_TRUE(remoteParticip.isSpawned());
+
+}
+
+/**
  * ParticipationInput allows players limited authority over a remote game state.
  */
 TEST_F(SkyTest, InputTest) {
@@ -49,6 +91,7 @@ TEST_F(SkyTest, InputTest) {
 
   // We can modify position and control state.
   {
+    // We construct a ParticipationInput.
     sky::ParticipationInput input;
     sky::PlaneStateClient stateInput;
     stateInput.physical = sky::PhysicalState({300, 300}, {}, 50, 0);
@@ -58,8 +101,10 @@ TEST_F(SkyTest, InputTest) {
     controls.doAction(sky::Action::Left, true);
     input.controls = controls;
 
+    // Now apply the input to a participation.
     participation.applyInput(input);
 
+    // The results are visible.
     ASSERT_EQ(participation.plane->getState().physical.pos.x, 300);
     ASSERT_EQ(participation.plane->getState().physical.rot, 50);
     ASSERT_EQ(participation.getControls().getState<sky::Action::Left>(), true);
@@ -67,16 +112,21 @@ TEST_F(SkyTest, InputTest) {
 
   // We can collect inputs from Participations.
   {
-    sky::Arena remoteArena(arena.captureInitializer());
+    // We construct a remote Sky responsible for the client with PID 0.
+    sky::Arena remoteArena(arena.captureInitializer(), 0);
     sky::Sky remoteSky(remoteArena, nullMap, sky.captureInitializer());
     sky::Player &remotePlayer = *remoteArena.getPlayer(0);
+
+    // Execute an action on the remote sky.
     remotePlayer.doAction(sky::Action::Right, true);
 
+    // Collect the input.
     optional<sky::ParticipationInput> input =
         remoteSky.getParticipation(remotePlayer).collectInput();
     ASSERT_EQ(bool(input), true);
-    participation.applyInput(input.get());
 
+    // Apply the input to our original participation and see the results.
+    participation.applyInput(input.get());
     ASSERT_EQ(participation.getControls().getState<sky::Action::Right>(), true);
   }
 
@@ -90,7 +140,8 @@ TEST_F(SkyTest, AuthorityTest) {
   auto &player = *arena.getPlayer(0);
   auto &participation = sky.getParticipation(player);
 
-  sky::Arena remoteArena{arena.captureInitializer()};
+  // Create a remote sky to function as a client.
+  sky::Arena remoteArena{arena.captureInitializer(), 0};
   sky::Sky remoteSky{remoteArena, nullMap, sky.captureInitializer()};
   auto &remotePlayer = *remoteArena.getPlayer(0);
   auto &remoteParticip = remoteSky.getParticipation(remotePlayer);
@@ -99,10 +150,10 @@ TEST_F(SkyTest, AuthorityTest) {
   {
     ASSERT_EQ(remoteParticip.isSpawned(), false);
 
-    // Spawn the player.
+    // Spawn the player on the server.
     player.spawn({}, {200, 200}, 0);
 
-    // Transmit a delta, respecting the player's authority.
+    // Transmit a delta to the remote, respecting the player's authority.
     auto delta = sky.collectDelta();
     ASSERT_TRUE(bool(delta));
     remoteSky.applyDelta(delta->respectAuthority(player));
@@ -113,9 +164,10 @@ TEST_F(SkyTest, AuthorityTest) {
 
   // Position state is of the client's authority.
   {
+    // Check a value on the client.
     ASSERT_EQ(remoteParticip.plane->getState().physical.pos.x, 200);
 
-    // Modify the local Participation through a ParticipationInput.
+    // Modify the server-side Participation through a ParticipationInput.
     // Normally these are used to send Participation state from the client to the server.
     sky::ParticipationInput input;
     sky::PlaneStateClient stateInput(participation.plane->getState());
@@ -123,13 +175,12 @@ TEST_F(SkyTest, AuthorityTest) {
     input.planeState.emplace(stateInput);
     sky.getParticipation(player).applyInput(input);
 
-    // Transmit a delta, respecting the player's authority.
+    // Transmit a delta to the client, respecting his authority.
     auto delta = sky.collectDelta();
     ASSERT_TRUE(bool(delta));
     remoteSky.applyDelta(delta->respectAuthority(player));
 
-    // Nothing has changed, because the player has authority over the Participation state
-    // captured in ParticipationInput.
+    // Nothing has changed, on the client.
     ASSERT_TRUE(bool(remoteParticip.plane));
     ASSERT_EQ(remoteParticip.plane->getState().physical.pos.x, 200);
   }
@@ -140,21 +191,26 @@ TEST_F(SkyTest, AuthorityTest) {
  * Entities can be created and synchronized over the network.
  */
 TEST_F(SkyTest, EntityTest) {
+  // If there are any components (home bases) spawned on the map, this would not be null.
   ASSERT_FALSE(sky.collectDelta());
 
   // We create an entity locally.
   ASSERT_EQ(sky.getEntities().size(), 0);
-  sky.spawnEntity(sky::EntityState({}, {}, sf::Vector2f(200, 200), sf::Vector2f(0, 0)));
+  sky.spawnEntity(sky::EntityState(
+      {}, {}, sky::Shape::Circle(1),
+      sf::Vector2f(200, 200), sf::Vector2f(0, 0)));
   ASSERT_EQ(sky.getEntities().size(), 1);
 
-  // The entity is copied through the initialization protocol.
-  sky::Arena remoteArena{arena.captureInitializer()};
+  // The entity is copied to a client through the initialization protocol.
+  sky::Arena remoteArena{arena.captureInitializer(), 0};
   sky::Sky remoteSky{remoteArena, nullMap, sky.captureInitializer()};
   ASSERT_EQ(remoteSky.getEntities().size(), 1);
 
   // We can spawn more entities, and they are synchronized through the delta protocol.
   {
-    sky.spawnEntity(sky::EntityState({}, {}, sf::Vector2f(200, 200), sf::Vector2f(0, 0)));
+    sky.spawnEntity(sky::EntityState(
+        {}, {}, sky::Shape::Circle(1),
+        sf::Vector2f(200, 200), sf::Vector2f(0, 0)));
     const auto delta = sky.collectDelta();
     ASSERT_TRUE(bool(delta));
     remoteSky.applyDelta(delta.get());

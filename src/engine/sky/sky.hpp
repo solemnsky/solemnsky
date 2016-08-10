@@ -19,15 +19,12 @@
  * Physical game state of an Arena. Attaches to a Map.
  */
 #pragma once
-#include "physics.hpp"
+#include "engine/sky/physics/physics.hpp"
 #include "participation.hpp"
 #include "skysettings.hpp"
 #include "engine/arena.hpp"
 #include "skylistener.hpp"
-#include "engine/sky/components/componentset.hpp"
-#include "components/entity.hpp"
-#include "components/explosion.hpp"
-#include "components/homebase.hpp"
+#include "components/allcomponents.hpp"
 
 namespace sky {
 
@@ -46,11 +43,7 @@ struct SkyInit: public VerifyStructure {
 
   SkySettingsData settings;
   std::map<PID, ParticipationInit> participations;
-
-  // Components.
-  ComponentSetInit<Entity> entities;
-  ComponentSetInit<Explosion> explosions;
-  ComponentSetInit<HomeBase> homeBases;
+  COMPONENT_INITS
 
 };
 
@@ -71,10 +64,7 @@ struct SkyDelta: public VerifyStructure {
 
   std::map<PID, ParticipationDelta> participations;
 
-  // Components.
-  optional<ComponentSetDelta<Entity>> entities;
-  optional<ComponentSetDelta<Explosion>> explosions;
-  optional<ComponentSetDelta<HomeBase>> homeBases;
+  COMPONENT_DELTAS
 
   // Transform to respect client authority.
   SkyDelta respectAuthority(const Player &player) const;
@@ -96,9 +86,8 @@ class Sky: public PhysicsListener,
   // State.
   Physics physics;
 
-  ComponentSet<Entity> entities;
-  ComponentSet<Explosion> explosions;
-  ComponentSet<HomeBase> homeBases;
+  // Components.
+  COMPONENT_SETS
 
   // GameHandler.
   SkyListener *listener;
@@ -126,8 +115,12 @@ class Sky: public PhysicsListener,
   bool enableContact(const BodyTag &body1,
                      const BodyTag &body2) override final;
 
+ private:
   // Syncing settings to potential state.
   void syncSettings();
+
+  // Loading components from map at game start (server-side only).
+  void spawnMapComponents();
 
  public:
   Sky(Arena &arena, Map &&map,
@@ -152,9 +145,11 @@ class Sky: public PhysicsListener,
 
   Components<Entity> getEntities();
   Components<Explosion> getExplosions();
+  Components<HomeBase> getHomesBases();
+  Components<Zone> getZones();
 
-  // User API: mutating state, server-only.
-  void spawnEntity(const EntityState &state);
+  // User API: server-side.
+  void spawnEntity(const EntityState &state); // Spawn some entity
   void spawnExplosion(const ExplosionState &state);
 
 };

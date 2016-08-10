@@ -25,6 +25,7 @@
 #include "util/types.hpp"
 #include "util/methods.hpp"
 #include "player.hpp"
+#include "role.hpp"
 
 namespace sky {
 
@@ -102,7 +103,8 @@ class Subsystem: public SubsystemListener {
   }
 
  public:
-  class Arena &arena;
+  Arena &arena;
+  Role &role;
 
   Subsystem() = delete;
   Subsystem(Arena &arena);
@@ -264,20 +266,9 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
 
  public:
   Arena() = delete;
-  Arena(const ArenaInit &initializer, const optional<PID> playerOwnership = {}, const bool sandboxed = false);
+  Arena(const ArenaInit &initializer, const optional<PID> isClient = {}, const bool isSandbox = false);
 
-  // Is this arena responsible for doing server-side things?
-  // (Example responsibilities: entity deletion, entity and explosion delta collection.)
-  inline bool serverResponsible() {
-    return !playerOwnership or sandboxed;
-  }
-  // Is this arena responsible for acting as the client for a certain player?
-  // (Example responsibilities: simulation the effect of explosions on this player,
-  // Participation delta collection of client-side authority.)
-  inline bool playerResponsible(const PID pid) {
-    if (playerOwnership) return playerOwnership.get() == pid;
-    return sandboxed;
-  }
+  Role role;
 
   // Attachments.
   SubsystemCaller subsystemCaller;
@@ -319,7 +310,8 @@ template<typename PlayerData>
 Subsystem<PlayerData>::Subsystem(Arena &arena) :
     caller(arena.subsystemCaller),
     id(PID(smallestUnused(arena.subsystems))),
-    arena(arena) {
+    arena(arena),
+    role(arena.role) {
   arena.subsystems[id] = (SubsystemListener *) this;
 }
 

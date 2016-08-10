@@ -16,25 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "entity.hpp"
-#include "engine/player.hpp"
 
 namespace sky {
 
 /**
- * EntityState == EntityInit.
+ * EntityState.
  */
 EntityState::EntityState(const optional<MovementLaws> movement,
                          const FillStyle &fill,
+                         const Shape &shape,
                          const sf::Vector2f &pos,
                          const sf::Vector2f &vel) :
     movement(movement),
     fill(fill),
+    shape(shape),
     physical(pos, vel, Angle(0), 0),
     lifetime(0) { }
-
-/**
- * EntityDelta.
- */
 
 /**
  * Entity.
@@ -53,9 +50,7 @@ void Entity::postPhysics(const TimeDiff delta) {
 
 Entity::Entity(const EntityState &state, Physics &physics) :
     Component(state, physics),
-    body(physics.createBody(physics.rectShape({10, 10}),
-                            BodyTag::EntityTag(*this))),
-    destroyable(false) {
+    body(physics.createBody(state.shape, BodyTag::EntityTag(*this))) {
   state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(0);
 }
@@ -76,14 +71,6 @@ optional<EntityDelta> Entity::collectDelta() {
 
 const EntityState &Entity::getState() const {
   return state;
-}
-
-void Entity::destroy() {
-  destroyable = true;
-}
-
-bool Entity::isDestroyable() const {
-  return destroyable;
 }
 
 }

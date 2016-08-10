@@ -24,9 +24,12 @@
 
 namespace sky {
 
+/**
+ * The basic data contained in the settings.
+ * This struct is integrated into the Map format.
+ */
 struct SkySettingsData: public VerifyStructure {
   SkySettingsData(); // constructs with sensible defaults
-  // (Integrated into the Map format.)
 
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -41,6 +44,9 @@ struct SkySettingsData: public VerifyStructure {
 
 };
 
+/**
+ * Network delta type for Settings.
+ */
 struct SkySettingsDelta: public VerifyStructure {
   SkySettingsDelta();
 
@@ -60,10 +66,12 @@ struct SkySettingsDelta: public VerifyStructure {
 
 };
 
+/**
+ * Networked container and interface for the settings. Held by Sky, accessible globally.
+ */
 struct SkySettings: public AutoNetworked<SkySettingsData, SkySettingsDelta> {
  private:
-  SkySettingsData data;
-  bool modified;
+  SkySettingsData data, lastData;
 
  public:
   SkySettings() = delete;

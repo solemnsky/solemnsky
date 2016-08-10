@@ -54,17 +54,15 @@ struct SpawnPoint {
  * A shape that things can collide with.
  */
 struct MapObstacle {
-  MapObstacle();
+  MapObstacle() = default; // serializtion only
+
   MapObstacle(const sf::Vector2f &pos,
               const std::vector<sf::Vector2f> &localVertices,
               const float damage);
 
   sf::Vector2f pos;
   std::vector<sf::Vector2f> localVertices;
-  std::vector<std::vector<sf::Vector2f>> decomposed;
   float damage;
-
-  void decompose();
 
   template<typename Archive>
   void serialize(Archive &ar) {

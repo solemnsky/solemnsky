@@ -18,6 +18,7 @@
 #include "util/printer.hpp"
 #include "physics.hpp"
 #include "util/methods.hpp"
+#include <polypartition.hpp>
 
 namespace sky {
 
@@ -78,8 +79,75 @@ void PhysicsDispatcher::PreSolve(b2Contact *contact, const b2Manifold *oldManifo
 }
 
 /**
+ * Physics::Settings.
+ */
+
+Physics::Settings::Settings() :
+    velocityIterations(8),
+    positionIterations(3),
+    distanceScale(100),
+    gravity(150),
+    fixtureDensity(10) { }
+
+/**
  * Physics.
  */
+
+void Physics::createFixture(const Shape &shape, b2Body &body) {
+  switch (shape.type) {
+    case Shape::Type::Circle: {
+      circleFixture(shape.radius.get(), body);
+      break;
+    }
+    case Shape::Type::Rectangle: {
+      rectFixture(shape.dimensions.get(), body);
+      break;
+    }
+    case Shape::Type::Polygon: {
+      polygonFixture(shape.vertices, body);
+      break;
+    }
+    default:
+      throw enum_error();
+  }
+}
+
+void Physics::circleFixture(const float radius, b2Body &body) {
+  b2CircleShape shape;
+  shape.m_radius = radius;
+  body.CreateFixture(&shape, settings.fixtureDensity);
+}
+
+void Physics::polygonFixture(const std::vector<sf::Vector2f> &vertices, b2Body &body) {
+  // I love great APIs!
+  std::vector<sf::Vector2f> verts(vertices);
+  pp::Poly poly(verts);
+  poly.SetOrientation(TPPL_CCW);
+  std::list<pp::Poly> decomposed;
+
+  pp::Partition part;
+  part.ConvexPartition_HM(&poly, &decomposed);
+
+  for (const auto &piece : decomposed) {
+    b2PolygonShape shape;
+    b2Vec2 *points = new b2Vec2[piece.GetNumPoints()];
+    size_t i = 0;
+    for (const auto &vertex : piece.GetPoints()) {
+      points[i] = toPhysVec(vertex);
+      ++i;
+    }
+    shape.Set(points, (int32) piece.GetNumPoints());
+    delete[] points;
+    body.CreateFixture(&shape, settings.fixtureDensity);
+  }
+}
+
+void Physics::rectFixture(const sf::Vector2f &dimensions, b2Body &body) {
+  b2PolygonShape shape;
+  const auto bdims = toPhysVec(dims);
+  shape.SetAsBox(bdims.x / 2.0f, bdims.y / 2.0f);
+  body.CreateFixture(&shape, settings.fixtureDensity);
+}
 
 Physics::Physics(const Map &map, PhysicsListener &listener) :
     world({0, Settings().gravity / Settings().distanceScale}),
@@ -87,23 +155,23 @@ Physics::Physics(const Map &map, PhysicsListener &listener) :
     dims(map.getDimensions()) {
   // world boundaries
   b2Body *body;
-  body = createBody(rectShape({dims.x, 1}), BodyTag::BoundaryTag(), true);
+  body = createBody(Shape::Rectangle({dims.x, 1}), BodyTag::BoundaryTag(), true);
   body->SetTransform(toPhysVec({dims.x / 2, dims.y}), 0);
-  body = createBody(rectShape({dims.x, 1}), BodyTag::BoundaryTag(), true);
+  body = createBody(Shape::Rectangle({dims.x, 1}), BodyTag::BoundaryTag(), true);
   body->SetTransform(toPhysVec({dims.x / 2, 0}), 0);
-  body = createBody(rectShape({1, dims.y}), BodyTag::BoundaryTag(), true);
+  body = createBody(Shape::Rectangle({1, dims.y}), BodyTag::BoundaryTag(), true);
   body->SetTransform(toPhysVec({dims.x, dims.y / 2}), 0);
-  body = createBody(rectShape({1, dims.y}), BodyTag::BoundaryTag(), true);
+  body = createBody(Shape::Rectangle({1, dims.y}), BodyTag::BoundaryTag(), true);
   body->SetTransform(toPhysVec({0, dims.y / 2}), 0);
 
-  // obstacles
+  // Create obstacles from map.
   for (const auto &obstacle : map.getObstacles()) {
-    body = createBody(chainLoopShape(obstacle.localVertices),
+    body = createBody(Shape::Polygon(obstacle.localVertices),
                       BodyTag::ObstacleTag(obstacle), true);
     body->SetTransform(toPhysVec(obstacle.pos), 0);
   }
 
-  // listener
+  // Set listener pipeline.
   world.SetContactListener(&converter);
 
   appLog("Instantiated Physics.", LogOrigin::Engine);
@@ -141,7 +209,7 @@ float Physics::toPhysDistance(const float x) const {
   return x / settings.distanceScale;
 }
 
-b2Body *Physics::createBody(const b2Shape &shape,
+b2Body *Physics::createBody(const Shape &shape,
                             const BodyTag &tag, bool isStatic) {
   b2BodyDef def;
   def.fixedRotation = false;
@@ -149,7 +217,7 @@ b2Body *Physics::createBody(const b2Shape &shape,
 
   b2Body *body = world.CreateBody(&def);
   body->SetUserData(new BodyTag(tag));
-  body->CreateFixture(&shape, 10.0f);
+  createFixture(shape, *body);
   return body;
 }
 
@@ -158,42 +226,6 @@ void Physics::deleteBody(b2Body *const body) {
     delete (BodyTag *) body->GetUserData();
     world.DestroyBody(body);
   }
-}
-
-b2PolygonShape Physics::rectShape(const sf::Vector2f &dims) {
-  b2PolygonShape shape;
-  const auto bdims = toPhysVec(dims);
-  shape.SetAsBox(bdims.x / 2.0f, bdims.y / 2.0f);
-  return shape;
-}
-
-b2PolygonShape Physics::polygonShape(
-    const std::vector<sf::Vector2f> &verticies) {
-  b2PolygonShape shape;
-  b2Vec2 *points = new b2Vec2[verticies.size()];
-  size_t i = 0;
-  for (const auto &vertex : verticies) {
-    points[i] = toPhysVec(vertex);
-    ++i;
-  }
-  shape.Set(points, (int32) verticies.size());
-  delete[] points;
-  return shape;
-}
-
-b2ChainShape Physics::chainLoopShape(
-    const std::vector<sf::Vector2f> &verticies) {
-  b2ChainShape shape;
-  b2Vec2 *points = new b2Vec2[verticies.size() + 1];
-  points[0] = toPhysVec(verticies[verticies.size() - 1]);
-  size_t i = 1;
-  for (const auto &vertex : verticies) {
-    points[i] = toPhysVec(vertex);
-    ++i;
-  }
-  shape.CreateChain(points, (int32) (verticies.size() + 1));
-  delete[] points;
-  return shape;
 }
 
 void Physics::approachRotVel(b2Body *body, float rotvel) const {
