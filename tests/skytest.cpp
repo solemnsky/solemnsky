@@ -154,7 +154,9 @@ TEST_F(SkyTest, EntityTest) {
 
   // We create an entity locally.
   ASSERT_EQ(sky.getEntities().size(), 0);
-  sky.spawnEntity(sky::EntityState({}, {}, sf::Vector2f(200, 200), sf::Vector2f(0, 0)));
+  sky.spawnEntity(sky::EntityState(
+      {}, {}, sky::Shape::Circle(1),
+      sf::Vector2f(200, 200), sf::Vector2f(0, 0)));
   ASSERT_EQ(sky.getEntities().size(), 1);
 
   // The entity is copied to a client through the initialization protocol.
@@ -164,7 +166,9 @@ TEST_F(SkyTest, EntityTest) {
 
   // We can spawn more entities, and they are synchronized through the delta protocol.
   {
-    sky.spawnEntity(sky::EntityState({}, {}, sf::Vector2f(200, 200), sf::Vector2f(0, 0)));
+    sky.spawnEntity(sky::EntityState(
+        {}, {}, sky::Shape::Circle(1),
+        sf::Vector2f(200, 200), sf::Vector2f(0, 0)));
     const auto delta = sky.collectDelta();
     ASSERT_TRUE(bool(delta));
     remoteSky.applyDelta(delta.get());

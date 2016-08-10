@@ -81,6 +81,7 @@ void Sky::onTick(const TimeDiff delta) {
   if (role.server()) {
     // Remove destroyable entities.
     // Only necessary if we're the server, client have no business doing this.
+    entities.applyDestruction();
   }
 
   // Synchronize state with box2d.
