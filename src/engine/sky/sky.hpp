@@ -125,9 +125,12 @@ class Sky: public PhysicsListener,
                     const BodyTag &body2) override final;
   bool enableContact(const BodyTag &body1,
                      const BodyTag &body2) override final;
-
+ private:
   // Syncing settings to potential state.
   void syncSettings();
+
+  // Loading components from map at game start (server-side only).
+  void spawnMapComponents();
 
  public:
   Sky(Arena &arena, Map &&map,

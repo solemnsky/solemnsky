@@ -151,6 +151,11 @@ void Sky::syncSettings() {
   physics.setGravity(settings.getGravity());
 }
 
+void Sky::spawnMapComponents() {
+  // TODO.
+  // homeBases.put(HomeBaseState(sf::Vector2f(500, 100), sf::Vector2f(300, 300), 0, 0, SwitchSet<Team>(true)));
+}
+
 Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *listener) :
     Subsystem(arena),
     AutoNetworked(initializer),
@@ -174,7 +179,7 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
 
   if (role.server()) {
     // If we're the server, we need to spawn some components defined by the map.
-    homeBases.put(HomeBaseState(sf::Vector2f(500, 100), sf::Vector2f(300, 300), 0, 0, SwitchSet<Team>(true)));
+    spawnMapComponents();
   }
 }
 
