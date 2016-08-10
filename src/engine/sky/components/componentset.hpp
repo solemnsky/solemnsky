@@ -122,7 +122,7 @@ class ComponentSet:
    */
   void applyDestruction() {
     std::vector<PID> removable;
-    forData([&removable](Entity &e, const PID pid) {
+    forData([&removable](Data &e, const PID pid) {
       if (e.destroyable) removable.push_back(pid);
     });
     for (const PID pid: removable) {

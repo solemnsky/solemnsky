@@ -82,12 +82,17 @@ void Sky::onTick(const TimeDiff delta) {
     // Remove destroyable entities.
     // Only necessary if we're the server, client have no business doing this.
     entities.applyDestruction();
+    explosions.applyDestruction();
+    homeBases.applyDestruction();
+    zones.applyDestruction();
   }
 
   // Synchronize state with box2d.
   for (auto &participation: participations) participation.second.prePhysics();
   entities.forData([](Entity &e, const PID) { e.prePhysics(); });
   explosions.forData([](Explosion &e, const PID) { e.prePhysics(); });
+  homeBases.forData([](HomeBase &e, const PID) { e.prePhysics(); });
+  zones.forData([](Zone &e, const PID) { e.prePhysics(); });
 
   physics.tick(delta);
 
@@ -95,6 +100,8 @@ void Sky::onTick(const TimeDiff delta) {
   for (auto &participation: participations) participation.second.postPhysics(delta);
   entities.forData([delta](Entity &e, const PID) { e.postPhysics(delta); });
   explosions.forData([delta](Explosion &e, const PID) { e.postPhysics(delta); });
+  homeBases.forData([delta](HomeBase &e, const PID) { e.postPhysics(delta); });
+  zones.forData([delta](Zone &e, const PID) { e.postPhysics(delta); });
 }
 
 void Sky::onAction(Player &player, const Action action, const bool state) {
@@ -159,6 +166,7 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
     explosions(initializer.explosions, physics),
     homeBases(initializer.homeBases, physics),
     zones(initializer.zones, physics),
+
     listener(listener),
     settings(initializer.settings) {
   arena.forPlayers([&](Player &player) {
@@ -192,6 +200,7 @@ void Sky::applyDelta(const SkyDelta &delta) {
   if (delta.entities) entities.applyDelta(delta.entities.get());
   if (delta.explosions) explosions.applyDelta(delta.explosions.get());
   if (delta.homeBases) homeBases.applyDelta(delta.homeBases.get());
+  if (delta.zones) zones.applyDelta(delta.zones.get());
 
 }
 
@@ -206,6 +215,7 @@ SkyInit Sky::captureInitializer() const {
   initializer.entities = entities.captureInitializer();
   initializer.explosions = explosions.captureInitializer();
   initializer.homeBases = homeBases.captureInitializer();
+  initializer.zones = zones.captureInitializer();
 
   return initializer;
 
@@ -230,6 +240,7 @@ optional<SkyDelta> Sky::collectDelta() {
   delta.entities = entities.collectDelta();
   delta.explosions = explosions.collectDelta();
   delta.homeBases = homeBases.collectDelta();
+  delta.zones = zones.collectDelta();
   useful |= delta.settings or delta.entities or delta.explosions or delta.homeBases;
 
   if (useful) return delta;
@@ -256,6 +267,14 @@ Components<Entity> Sky::getEntities() {
 
 Components<Explosion> Sky::getExplosions() {
   return explosions.getData();
+}
+
+Components<HomeBase> Sky::getHomesBases() {
+  return homeBases.getData();
+}
+
+Components<Zone> Sky::getZones() {
+  return zones.getData();
 }
 
 void Sky::spawnEntity(const EntityState &state) {

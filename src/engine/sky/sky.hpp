@@ -114,6 +114,7 @@ class Sky: public PhysicsListener,
                     const BodyTag &body2) override final;
   bool enableContact(const BodyTag &body1,
                      const BodyTag &body2) override final;
+
  private:
   // Syncing settings to potential state.
   void syncSettings();
@@ -144,6 +145,8 @@ class Sky: public PhysicsListener,
 
   Components<Entity> getEntities();
   Components<Explosion> getExplosions();
+  Components<HomeBase> getHomesBases();
+  Components<Zone> getZones();
 
   // User API: server-side.
   void spawnEntity(const EntityState &state); // Spawn some entity
