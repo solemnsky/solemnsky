@@ -23,7 +23,7 @@
 #include <forward_list>
 #include "util/types.hpp"
 #include "engine/sky/components/entity.hpp"
-#include "physics.hpp"
+#include "engine/sky/physics/physics.hpp"
 #include "planestate.hpp"
 #include "engine/sky/components/explosion.hpp"
 #include "engine/role.hpp"

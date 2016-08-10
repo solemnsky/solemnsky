@@ -19,16 +19,12 @@
  * Physical game state of an Arena. Attaches to a Map.
  */
 #pragma once
-#include "physics.hpp"
+#include "engine/sky/physics/physics.hpp"
 #include "participation.hpp"
 #include "skysettings.hpp"
 #include "engine/arena.hpp"
 #include "skylistener.hpp"
-#include "engine/sky/components/componentset.hpp"
-#include "components/entity.hpp"
-#include "components/explosion.hpp"
-#include "components/homebase.hpp"
-#include "components/zone.hpp"
+#include "components/allcomponents.hpp"
 
 namespace sky {
 
@@ -47,12 +43,7 @@ struct SkyInit: public VerifyStructure {
 
   SkySettingsData settings;
   std::map<PID, ParticipationInit> participations;
-
-  // Components.
-  ComponentSetInit<Entity> entities;
-  ComponentSetInit<Explosion> explosions;
-  ComponentSetInit<HomeBase> homeBases;
-  ComponentSetInit<Zone> zones;
+  COMPONENT_INITS
 
 };
 
@@ -73,11 +64,7 @@ struct SkyDelta: public VerifyStructure {
 
   std::map<PID, ParticipationDelta> participations;
 
-  // Components.
-  optional<ComponentSetDelta<Entity>> entities;
-  optional<ComponentSetDelta<Explosion>> explosions;
-  optional<ComponentSetDelta<HomeBase>> homeBases;
-  optional<ComponentSetDelta<Zone>> zones;
+  COMPONENT_DELTAS
 
   // Transform to respect client authority.
   SkyDelta respectAuthority(const Player &player) const;
@@ -99,10 +86,8 @@ class Sky: public PhysicsListener,
   // State.
   Physics physics;
 
-  ComponentSet<Entity> entities;
-  ComponentSet<Explosion> explosions;
-  ComponentSet<HomeBase> homeBases;
-  ComponentSet<Zone> zones;
+  // Components.
+  COMPONENT_SETS
 
   // GameHandler.
   SkyListener *listener;

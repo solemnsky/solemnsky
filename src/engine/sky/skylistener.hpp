@@ -25,7 +25,7 @@ namespace sky {
 
 class SkyListener {
  protected:
-  // Callbacks.
+  // Callbacks go here.
 
 };
 

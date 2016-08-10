@@ -21,7 +21,7 @@
 #pragma once
 #include <bitset>
 #include "util/types.hpp"
-#include "physics.hpp"
+#include "engine/sky/physics/physics.hpp"
 #include "engine/types.hpp"
 
 namespace sky {

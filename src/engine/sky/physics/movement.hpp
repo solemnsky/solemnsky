@@ -20,7 +20,7 @@
  */
 #pragma once
 #include "util/methods.hpp"
-#include "physics.hpp"
+#include "engine/sky/physics/physics.hpp"
 
 namespace sky {
 

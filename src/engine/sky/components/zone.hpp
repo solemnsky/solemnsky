@@ -21,9 +21,9 @@
 #pragma once
 #include "engine/multimedia.hpp"
 #include "util/networked.hpp"
-#include "engine/sky/physics.hpp"
+#include "engine/sky/physics/physics.hpp"
 #include "component.hpp"
-#include "engine/sky/shape.hpp"
+#include "engine/sky/physics/shape.hpp"
 
 namespace sky {
 

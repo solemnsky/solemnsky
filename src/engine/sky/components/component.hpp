@@ -21,7 +21,7 @@
 #pragma once
 #include "util/types.hpp"
 #include "util/networked.hpp"
-#include "engine/sky/physics.hpp"
+#include "engine/sky/physics/physics.hpp"
 
 /**
  * NOTE
