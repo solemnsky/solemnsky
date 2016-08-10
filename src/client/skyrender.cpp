@@ -30,7 +30,7 @@ PlaneGraphics::PlaneGraphics(const Player &player, const Participation &plane) :
     player(player),
     orientation(false),
     flipState(0),
-    rollState(0) {}
+    rollState(0) { }
 
 void PlaneGraphics::tick(const float delta) {
   if (auto &plane = participation.plane) {
@@ -56,7 +56,7 @@ Angle PlaneGraphics::roll() const {
   return flipComponent + style.skyRender.rollAmount * rollState;
 }
 
-void PlaneGraphics::kill() {}
+void PlaneGraphics::kill() { }
 
 void PlaneGraphics::spawn() {
   orientation =
@@ -116,22 +116,22 @@ void SkyRender::renderPlaneGraphics(ui::Frame &f,
             .translate(state.physical.pos)
             .rotate(state.physical.rot), [&]() {
 
-          f.withTransform(sf::Transform().scale(scaleFactor, scaleFactor), [&]() {
-            // Plane graphics, scaled down so the plane's length is 200 px from this perspective.
-            f.withAlpha(state.afterburner, [&]() {
-              f.drawRect(style.skyRender.afterburnArea,
-                         sf::Color::Red);
-            });
-            planeSheet.drawIndexAtRoll(
-                f, sf::Vector2f(200, 200), graphics.roll());
-          });
-
-          if (enableDebug) {
-            // Debug graphics.
-            const auto halfHitbox = 0.5f * tuning.hitbox;
-            f.drawRect(-halfHitbox, halfHitbox, sf::Color(255, 255, 255, 100));
-          }
+      f.withTransform(sf::Transform().scale(scaleFactor, scaleFactor), [&]() {
+        // Plane graphics, scaled down so the plane's length is 200 px from this perspective.
+        f.withAlpha(state.afterburner, [&]() {
+          f.drawRect(style.skyRender.afterburnArea,
+                     sf::Color::Red);
         });
+        planeSheet.drawIndexAtRoll(
+            f, sf::Vector2f(200, 200), graphics.roll());
+      });
+
+      if (enableDebug) {
+        // Debug graphics.
+        const auto halfHitbox = 0.5f * tuning.hitbox;
+        f.drawRect(-halfHitbox, halfHitbox, sf::Color(255, 255, 255, 100));
+      }
+    });
 
     f.withTransform(sf::Transform().translate(state.physical.pos), [&]() {
       const float airspeedStall = tuning.flight.threshold /
@@ -171,9 +171,6 @@ void SkyRender::renderMap(ui::Frame &f) {
 
   for (const auto &obstacle : map.getObstacles()) {
     f.withTransform(sf::Transform().translate(obstacle.pos), [&]() {
-      for (auto poly : obstacle.decomposed) {
-        f.drawPolyOutline(poly, sf::Color(200, 200, 200));
-      }
       f.drawPolyOutline(obstacle.localVertices, sf::Color::White);
     });
   }
@@ -201,8 +198,7 @@ void SkyRender::registerPlayer(Player &player) {
           std::piecewise_construct,
           std::forward_as_tuple(player.pid),
           std::forward_as_tuple(
-              player,
-              sky.getParticipation(player))).first->second);
+              player, sky.getParticipation(player))).first->second);
 }
 
 void SkyRender::unregisterPlayer(Player &player) {
