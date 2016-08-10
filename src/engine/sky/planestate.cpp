@@ -115,7 +115,7 @@ PlaneStateClient::PlaneStateClient(const PlaneState &state) :
 PlaneStateServer::PlaneStateServer(const PlaneState &state) :
     energy(state.energy),
     health(state.health),
-    primaryCooldown(state.primaryCooldown.cooldown) { }
+    primaryCooldown(state.primaryCooldown) { }
 
 /**
  * PlaneState.

@@ -33,16 +33,16 @@ namespace sky {
 struct ZoneState {
   ZoneState() = default;
   ZoneState(const FillStyle &fill,
+            const Shape &shape,
             const Clamped cooldown,
             const float cooldownRate,
-            const sf::Vector2f &pos,
-            const float radius);
+            const sf::Vector2f &pos);
 
   FillStyle fill;
+  Shape shape;
   Cooldown cooldown;
   float cooldownRate;
   sf::Vector2f pos;
-  Shape shape;
 
   // Cereal serialization.
   template<typename Archive>
@@ -88,7 +88,6 @@ class Zone: public Component<ZoneState, ZoneDelta> {
   ZoneState captureInitializer() const override final;
   void applyDelta(const ZoneDelta &delta) override final;
   optional<ZoneDelta> collectDelta() override final;
-
 
 };
 

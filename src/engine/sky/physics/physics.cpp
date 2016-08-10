@@ -83,7 +83,7 @@ void PhysicsDispatcher::PreSolve(b2Contact *contact, const b2Manifold *oldManifo
  */
 
 Physics::Settings::Settings() :
-    velocityiterations(8),
+    velocityIterations(8),
     positionIterations(3),
     distanceScale(100),
     gravity(150),
@@ -92,39 +92,6 @@ Physics::Settings::Settings() :
 /**
  * Physics.
  */
-
-b2PolygonShape Physics::rectShape(const sf::Vector2f &dims) {
-}
-
-b2PolygonShape Physics::polygonShape(
-    const std::vector<sf::Vector2f> &verticies) {
-  b2PolygonShape shape;
-  b2Vec2 *points = new b2Vec2[verticies.size()];
-  size_t i = 0;
-  for (const auto &vertex : verticies) {
-    points[i] = toPhysVec(vertex);
-    ++i;
-  }
-  shape.Set(points, (int32) verticies.size());
-  delete[] points;
-  return shape;
-}
-
-b2ChainShape Physics::chainLoopShape(
-    const std::vector<sf::Vector2f> &verticies) {
-  b2ChainShape shape;
-  b2Vec2 *points = new b2Vec2[verticies.size() + 1];
-  points[0] = toPhysVec(verticies[verticies.size() - 1]);
-  size_t i = 1;
-  for (const auto &vertex : verticies) {
-    points[i] = toPhysVec(vertex);
-    ++i;
-  }
-  shape.CreateChain(points, (int32) (verticies.size() + 1));
-  delete[] points;
-  return shape;
-}
-
 
 void Physics::createFixture(const Shape &shape, b2Body &body) {
   switch (shape.type) {

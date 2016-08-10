@@ -42,7 +42,6 @@ MapObstacle::MapObstacle(const sf::Vector2f &pos,
                          const float damage) :
     pos(pos), localVertices(localVertices), damage(damage) { }
 
-
 /**
  * MapItem.
  */
@@ -64,10 +63,6 @@ Map::Map(std::istream &stream) :
     appLog("Failed to parse map!", LogOrigin::Engine);
     loadSuccess = false;
     return;
-  }
-
-  for (auto &o : obstacles) {
-    o.decompose();
   }
 }
 

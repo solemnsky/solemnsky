@@ -24,12 +24,14 @@ namespace sky {
  * ZoneState.
  */
 
-sky::ZoneState::ZoneState(
+ZoneState::ZoneState(
     const FillStyle &fill,
+    const Shape &shape,
     const Clamped cooldown,
     const float cooldownRate,
     const sf::Vector2f &pos) :
     fill(fill),
+    shape(shape),
     cooldown(cooldown),
     cooldownRate(cooldownRate),
     pos(pos) { }

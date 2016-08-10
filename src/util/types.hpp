@@ -213,7 +213,7 @@ struct TimeStats {
 /****
  * Float-augmentation types.
  * Below we have a series of types that build a wrapper around a float,
- * constricting the way in which it can be used.
+ * restriction the way in which it can be used.
  */
 
 /**
@@ -222,16 +222,27 @@ struct TimeStats {
  * regulate its usage. Therefore, it isn't synced over the network.
  * (Ideally it should be value templated).
  */
-struct Cooldown: public VerifyStructure {
+struct Cooldown {
  private:
   float value;
 
  public:
-  Cooldown();
+  Cooldown() = default;
+  explicit Cooldown(const float value) :
+      value(value) { }
 
-  bool cool(const float delta);
-  void reset();
-  void prime();
+  inline void reset() {
+    value = 1;
+  }
+
+  inline void prime() {
+    value = 0;
+  }
+
+  inline bool cool(const float delta) {
+    value = std::max(0.0f, value - delta);
+    return value == 0;
+  }
 
   inline operator bool() const {
     return value == 0;
@@ -241,8 +252,13 @@ struct Cooldown: public VerifyStructure {
     return value;
   }
 
-  // VerifyStructure impl.
-  bool verifyStructure() const override final;
+  bool operator==(const Cooldown &x) {
+    return x.value == value;
+  }
+
+  bool operator!=(const Cooldown &x) {
+    return x.value != value;
+  }
 
   template<typename Archive>
   void serialize(Archive ar) {
@@ -253,23 +269,42 @@ struct Cooldown: public VerifyStructure {
 /**
  * Float in the [0, 1] range.
  */
-struct Clamped: public VerifyStructure {
+struct Clamped {
  private:
   float value;
 
  public:
-  Clamped();
-  Clamped(const float value);
-  Clamped &operator=(const float x);
-  Clamped &operator+=(const float x);
-  Clamped &operator-=(const float x);
+  Clamped() : value(0) { }
+
+  explicit Clamped(const float value) :
+      value(clamp(0.0f, 1.0f, value)) { }
+
+  inline Clamped &operator=(const float x) {
+    operator=(Clamped(x));
+    return *this;
+  }
+
+  inline Clamped &operator+=(const float x) {
+    value = clamp(0.0f, 1.0f, value + x);
+    return *this;
+  }
+
+  inline Clamped &operator-=(const float x) {
+    value = clamp(0.0f, 1.0f, value - x);
+    return *this;
+  }
 
   inline operator float() const {
     return value;
   }
 
-  // VerifyStructure impl.
-  bool verifyStructure() const override final;
+  bool operator==(const Clamped &x) {
+    return x.value == value;
+  }
+
+  bool operator!=(const Clamped &x) {
+    return x.value != value;
+  }
 
   template<typename Archive>
   void serialize(Archive &ar) { ar(value); }

@@ -157,7 +157,7 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
     entities(initializer.entities, physics),
     explosions(initializer.explosions, physics),
     homeBases(initializer.homeBases, physics),
-    zone(initializer.zones, physics),
+    zones(initializer.zones, physics),
     listener(listener),
     settings(initializer.settings) {
   arena.forPlayers([&](Player &player) {

@@ -24,7 +24,7 @@ namespace sky {
  * MovementLaws.
  */
 
-b2Body *MovementLaws::createBody(Physics &physics, const b2Shape &shape, const BodyTag &tag) const {
+b2Body *MovementLaws::createBody(Physics &physics, const Shape &shape, const BodyTag &tag) const {
   auto *body = physics.createBody(shape, tag, false);
 
   // Set additional physics options.

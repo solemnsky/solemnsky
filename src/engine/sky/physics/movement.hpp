@@ -42,7 +42,7 @@ struct MovementLaws {
   Clamped drag;
 
   // Applying to physics.
-  b2Body *createBody(Physics &physics, const b2Shape &shape, const BodyTag &tag) const;
+  b2Body *createBody(Physics &physics, const Shape &shape, const BodyTag &tag) const;
   void tick(const TimeDiff delta, PhysicalState &state) const;
 
   // Cereal serialization.

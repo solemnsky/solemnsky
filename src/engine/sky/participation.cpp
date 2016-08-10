@@ -175,7 +175,7 @@ Plane::Plane(Player &player,
 
     tuning(tuning),
     state(state),
-    body(physics.createBody(physics.rectShape(tuning.hitbox),
+    body(physics.createBody(Shape::Rectangle(tuning.hitbox),
                             BodyTag::PlaneTag(*this, player))),
     player(player) {
   state.physical.hardWriteToBody(physics, body);
