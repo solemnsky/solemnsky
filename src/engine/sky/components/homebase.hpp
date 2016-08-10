@@ -34,6 +34,13 @@ struct HomeBaseState {
   float damage;
   SwitchSet<Team> friendly;
 
+  HomeBaseState() = default; // For serialization.
+  HomeBaseState(const sf::Vector2f &dimensions,
+                const sf::Vector2f &pos,
+                const Angle rot,
+                const float damage,
+                const SwitchSet<Team> friendly);
+
   template<typename Archive>
   void serialize(Archive &ar) {
     ar(dimensions, pos, rot, damage, friendly);

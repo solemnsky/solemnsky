@@ -280,9 +280,11 @@ void Participation::spawn(const PlaneTuning &tuning,
 
 Participation::Participation(Player &player,
                              Physics &physics,
+                             Role &role,
                              const ParticipationInit &initializer) :
     AutoNetworked(initializer),
     physics(physics),
+    role(role),
     controls(initializer.controls),
     newlyAlive(false),
     newlyDead(false),
@@ -293,6 +295,8 @@ Participation::Participation(Player &player,
 }
 
 void Participation::applyDelta(const ParticipationDelta &delta) {
+  assert(role.client());
+
   // Apply plane spawn / state.
   if (delta.spawn) {
     spawnWithState(delta.spawn->first, delta.spawn->second);
@@ -312,6 +316,8 @@ void Participation::applyDelta(const ParticipationDelta &delta) {
 }
 
 ParticipationInit Participation::captureInitializer() const {
+  assert(role.server());
+
   ParticipationInit init{controls};
   if (plane) {
     init.spawn.emplace(plane->tuning, plane->state);
@@ -320,6 +326,8 @@ ParticipationInit Participation::captureInitializer() const {
 }
 
 optional<ParticipationDelta> Participation::collectDelta() {
+  assert(role.server());
+
   ParticipationDelta delta;
   bool useful{false};
 
@@ -357,11 +365,14 @@ bool Participation::isSpawned() const {
 }
 
 void Participation::suicide() {
+  assert(role.server());
   newlyDead = true;
   plane.reset();
 }
 
 void Participation::applyInput(const ParticipationInput &input) {
+  assert(role.server());
+
   if (input.controls) {
     controls = input.controls.get();
   }
@@ -373,6 +384,8 @@ void Participation::applyInput(const ParticipationInput &input) {
 }
 
 optional<ParticipationInput> Participation::collectInput() {
+  assert(role.client(player.pid));
+
   bool useful{false};
   ParticipationInput input;
   if (lastControls != controls) {

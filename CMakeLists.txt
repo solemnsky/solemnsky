@@ -105,6 +105,9 @@ add_library(solemnsky STATIC
         src/engine/protocol.cpp
         src/engine/protocol.hpp
 
+        src/engine/role.cpp
+        src/engine/role.hpp
+
         src/engine/scoreboard.cpp
         src/engine/scoreboard.hpp
 
@@ -135,7 +138,7 @@ add_library(solemnsky STATIC
 
         thirdparty/polypartition/polypartition.cpp
         thirdparty/polypartition/polypartition.hpp
-        )
+        src/engine/sky/role.cpp src/engine/sky/role.hpp)
 target_link_libraries(solemnsky
         enet
         sfml-system

@@ -19,6 +19,25 @@
 
 namespace sky {
 
+/**
+ * HomeBaseState.
+ */
+
+HomeBaseState::HomeBaseState(const sf::Vector2f &dimensions,
+                             const sf::Vector2f &pos,
+                             const Angle rot,
+                             const float damage,
+                             const SwitchSet<Team> friendly) :
+    dimensions(dimensions),
+    pos(pos),
+    rot(rot),
+    damage(damage),
+    friendly(friendly) { }
+
+/**
+ * HomeBase.
+ */
+
 void HomeBase::prePhysics() {
 
 }

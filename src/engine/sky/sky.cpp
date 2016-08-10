@@ -171,6 +171,11 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
 
   syncSettings();
   appLog("Instantiated Sky.", LogOrigin::Engine);
+
+  if (arena.serverResponsible()) {
+    // If we're the server, we need to spawn some components defined by the map.
+    homeBases.put(HomeBaseState());
+  }
 }
 
 void Sky::applyDelta(const SkyDelta &delta) {
@@ -203,9 +208,12 @@ SkyInit Sky::captureInitializer() const {
   initializer.homeBases = homeBases.captureInitializer();
 
   return initializer;
+
 }
 
 optional<SkyDelta> Sky::collectDelta() {
+  assert(arena.serverResponsible());
+
   SkyDelta delta;
   bool useful{false};
 
@@ -237,6 +245,7 @@ Participation &Sky::getParticipation(const Player &player) const {
 }
 
 void Sky::changeSettings(const SkySettingsDelta &delta) {
+  assert(arena.serverResponsible());
   settings.applyDelta(delta);
   syncSettings();
 }
@@ -250,10 +259,12 @@ Components<Explosion> Sky::getExplosions() {
 }
 
 void Sky::spawnEntity(const EntityState &state) {
+  assert(arena.serverResponsible());
   entities.put(state);
 }
 
 void Sky::spawnExplosion(const ExplosionState &state) {
+  assert(arena.serverResponsible());
   explosions.put(state);
 }
 
