@@ -30,6 +30,17 @@
 #include <bitset>
 
 /**
+ * The concept of a type that can verify some invariant that could be
+ * violated when it's transmitted over the network.
+ * TODO: issue #29
+ */
+class VerifyStructure {
+ public:
+  virtual bool verifyStructure() const = 0;
+  virtual ~VerifyStructure() { }
+};
+
+/**
  * This is pretty useful.
  */
 using boost::optional;
@@ -321,16 +332,6 @@ struct Angle {
   sf::Vector2f toVector();
 
   inline operator float() const { return value; }
-};
-
-/**
- * The concept of a type that can verify some invariant that could be
- * violated when it's transmitted over the network.
- */
-class VerifyStructure {
- public:
-  virtual bool verifyStructure() const = 0;
-  virtual ~VerifyStructure() { }
 };
 
 /**
