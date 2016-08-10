@@ -60,6 +60,9 @@ add_library(solemnsky STATIC
         src/engine/sky/components/homebase.cpp
         src/engine/sky/components/homebase.hpp
 
+        src/engine/sky/components/zone.cpp
+        src/engine/sky/components/zone.hpp
+
         src/engine/sky/movement.cpp
         src/engine/sky/movement.hpp
 
@@ -138,7 +141,7 @@ add_library(solemnsky STATIC
 
         thirdparty/polypartition/polypartition.cpp
         thirdparty/polypartition/polypartition.hpp
-        )
+        src/engine/sky/shape.cpp src/engine/sky/shape.hpp)
 target_link_libraries(solemnsky
         enet
         sfml-system

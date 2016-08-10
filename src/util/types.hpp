@@ -212,19 +212,21 @@ struct TimeStats {
  * (Ideally it should be value templated).
  */
 struct Cooldown {
-  float cooldown;
-  float period;
+ private:
+  float value;
 
-  Cooldown(const float period);
+ public:
+  Cooldown();
+
   bool cool(const float delta);
   void reset();
   void prime();
 
-  inline operator bool() const { return cooldown == 0; }
+  inline operator bool() const { return value == 0; }
 
   template<typename Archive>
   void serialize(Archive ar) {
-    ar(cooldown);
+    ar(value);
   }
 };
 

@@ -41,17 +41,17 @@ std::string TimeStats::print() const {
  * Cooldown.
  */
 
-void Cooldown::reset() { cooldown = period; }
+void Cooldown::reset() { value = 1; }
 
-void Cooldown::prime() { cooldown = 0; }
+void Cooldown::prime() { value = 0; }
 
 bool Cooldown::cool(const float delta) {
-  cooldown = std::max(0.0f, cooldown - delta);
-  return cooldown == 0;
+  value = std::max(0.0f, value - delta);
+  return value == 0;
 }
 
 Cooldown::Cooldown(const float period) :
-    cooldown(period), period(period) { }
+    value(1) { }
 
 /**
  * Clamped.
