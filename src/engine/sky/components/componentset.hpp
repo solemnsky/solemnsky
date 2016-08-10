@@ -46,6 +46,7 @@ struct Components;
  * Set of components, with automatic network derivation.
  */
 template<typename Data>
+// cppcheck-suppress syntaxError
 class ComponentSet:
     public AutoNetworked<ComponentSetInit<Data>,
                          ComponentSetDelta<Data>> {

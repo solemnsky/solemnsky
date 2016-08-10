@@ -50,7 +50,7 @@ struct Shape {
 
   // Helpful constructors.
   static Shape Circle(const float radius);
-  static Shape Polygon(const std::vector<sf::Vector2f> vertices);
+  static Shape Polygon(const std::vector<sf::Vector2f> &vertices);
   static Shape Rectangle(const sf::Vector2f &dimensions);
 
   // Cereal serialization.
