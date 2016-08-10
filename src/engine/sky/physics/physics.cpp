@@ -147,23 +147,32 @@ void Physics::createFixture(const Shape &shape, b2Body &body) {
 
 void Physics::circleFixture(const float radius, b2Body &body) {
   b2CircleShape shape;
+  shape.m_radius = radius;
+  body.CreateFixture(&shape, settings.fixtureDensity);
 }
 
 void Physics::polygonFixture(const std::vector<sf::Vector2f> &vertices, b2Body &body) {
   // I love great APIs!
-  std::vector<std::vector<sf::Vector2f>> decomposed;
   std::vector<sf::Vector2f> verts(vertices);
   pp::Poly poly(verts);
   poly.SetOrientation(TPPL_CCW);
-  std::list<pp::Poly> tmp;
+  std::list<pp::Poly> decomposed;
 
   pp::Partition part;
-  part.ConvexPartition_HM(&poly, &tmp);
+  part.ConvexPartition_HM(&poly, &decomposed);
 
-  for (auto p : tmp) {
-    decomposed.push_back(p.GetPoints());
+  for (const auto &piece : decomposed) {
+    b2PolygonShape shape;
+    b2Vec2 *points = new b2Vec2[piece.GetNumPoints()];
+    size_t i = 0;
+    for (const auto &vertex : piece.GetPoints()) {
+      points[i] = toPhysVec(vertex);
+      ++i;
+    }
+    shape.Set(points, (int32) piece.GetNumPoints());
+    delete[] points;
+    body.CreateFixture(&shape, settings.fixtureDensity);
   }
-
 }
 
 void Physics::rectFixture(const sf::Vector2f &dimensions, b2Body &body) {
@@ -190,7 +199,7 @@ Physics::Physics(const Map &map, PhysicsListener &listener) :
 
   // Create obstacles from map.
   for (const auto &obstacle : map.getObstacles()) {
-    body = createBody(chainLoopShape(obstacle.localVertices),
+    body = createBody(Shape::Polygon(obstacle.localVertices),
                       BodyTag::ObstacleTag(obstacle), true);
     body->SetTransform(toPhysVec(obstacle.pos), 0);
   }
