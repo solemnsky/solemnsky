@@ -73,8 +73,7 @@ struct ZoneDelta {
 class Zone: public Component<ZoneState, ZoneDelta> {
   friend class Sky;
  private:
-  // Destroy flag, used on server-side.
-  bool destroyable;
+  ZoneState lastState;
 
  protected:
   // Component impl.
@@ -82,18 +81,14 @@ class Zone: public Component<ZoneState, ZoneDelta> {
   void postPhysics(const TimeDiff delta) override final;
 
  public:
-  Entity() = delete;
-  Entity(const EntityState &state, Physics &physics);
+  Zone() = delete;
+  Zone(const ZoneState &state, Physics &physics);
 
   // Networked impl.
-  EntityState captureInitializer() const override final;
-  void applyDelta(const EntityDelta &delta) override final;
-  optional<EntityDelta> collectDelta() override final;
+  ZoneState captureInitializer() const override final;
+  void applyDelta(const ZoneDelta &delta) override final;
+  optional<ZoneDelta> collectDelta() override final;
 
-  // User API.
-  const EntityState &getState() const;
-  void destroy();
-  bool isDestroyable() const;
 
 };
 

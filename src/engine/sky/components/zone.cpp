@@ -15,75 +15,61 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "zone.hpp"
 #include "entity.hpp"
-#include "engine/player.hpp"
 
 namespace sky {
 
 /**
- * EntityState == EntityInit.
+ * ZoneState.
  */
-EntityState::EntityState(const optional<MovementLaws> movement,
-                         const FillStyle &fill,
-                         const sf::Vector2f &pos,
-                         const sf::Vector2f &vel) :
-    movement(movement),
+
+sky::ZoneState::ZoneState(
+    const FillStyle &fill,
+    const Clamped cooldown,
+    const float cooldownRate,
+    const sf::Vector2f &pos) :
     fill(fill),
-    physical(pos, vel, Angle(0), 0),
-    lifetime(0) { }
+    cooldown(cooldown),
+    cooldownRate(cooldownRate),
+    pos(pos) { }
 
 /**
- * EntityDelta.
+ * Zone.
  */
 
-/**
- * Entity.
- */
+void Zone::prePhysics() {
 
-void Entity::prePhysics() {
-  state.physical.writeToBody(physics, body);
 }
 
-void Entity::postPhysics(const TimeDiff delta) {
-  state.physical.readFromBody(physics, body);
-  state.lifetime += delta;
-  if (const auto &movement = state.movement)
-    movement->tick(delta, state.physical);
+void Zone::postPhysics(const TimeDiff delta) {
+
 }
 
-Entity::Entity(const EntityState &state, Physics &physics) :
-    Component(state, physics),
-    body(physics.createBody(physics.rectShape({10, 10}),
-                            BodyTag::EntityTag(*this))),
-    destroyable(false) {
-  state.physical.hardWriteToBody(physics, body);
-  body->SetGravityScale(0);
+Zone::Zone(const ZoneState &state, Physics &physics) :
+    Component(state, physics) {
+  // TODO: initialize some sort of box2d area for entrance checking?
 }
 
-EntityState Entity::captureInitializer() const {
+ZoneState Zone::captureInitializer() const {
   return state;
 }
 
-void Entity::applyDelta(const EntityDelta &delta) {
-  state.physical = delta.physical;
+void Zone::applyDelta(const ZoneDelta &delta) {
+  if (delta.cooldown) {
+    state.cooldown = delta.cooldown.get();
+  }
 }
 
-optional<EntityDelta> Entity::collectDelta() {
-  EntityDelta delta;
-  delta.physical = state.physical;
-  return delta;
-}
+optional<ZoneDelta> Zone::collectDelta() {
+  ZoneDelta delta;
+  if (lastState.cooldown != state.cooldown) {
+    delta.cooldown = state.cooldown;
+    lastState = state;
+    return delta;
+  }
 
-const EntityState &Entity::getState() const {
-  return state;
-}
-
-void Entity::destroy() {
-  destroyable = true;
-}
-
-bool Entity::isDestroyable() const {
-  return destroyable;
+  return {};
 }
 
 }

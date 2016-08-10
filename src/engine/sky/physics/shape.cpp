@@ -24,19 +24,26 @@ namespace sky {
  * Shape.
  */
 
-
 Shape::Shape(const Shape::Type type) :
     type(type) { }
 
-bool Shape::verifyStructure() const {
-  switch (type) {
-    case Type::Circle:
-      return verifyRequiredOptionals(radius);
-    case Type::Rectangle:
-      return verifyRequiredOptionals(dimensions);
-    case Type::Polygon:
-      return verifyRequiredOptionals(vertices);
-  }
-
-  return false;
+Shape sky::Shape::Circle(const float radius) {
+  sky::Shape shape(Type::Circle);
+  shape.radius = radius;
+  return shape;
 }
+
+Shape sky::Shape::Rectangle(const sf::Vector2f dimensions) {
+  sky::Shape shape(Type::Rectangle);
+  shape.dimensions = dimensions;
+  return shape;
+}
+
+Shape sky::Shape::Polygon(const std::vector<sf::Vector2f> vertices) {
+  sky::Shape shape(Type::Polygon);
+  shape.vertices = vertices;
+  return shape;
+}
+
+}
+

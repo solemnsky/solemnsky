@@ -28,7 +28,7 @@ namespace sky {
  * broken down into contex polygons via polypartition and turned into a box2d fixture for
  * various applications in the physics engine.
  */
-struct Shape: public VerifyStructure {
+struct Shape {
  private:
   enum class Type {
     Circle,
@@ -36,21 +36,16 @@ struct Shape: public VerifyStructure {
     Polygon
   } type;
 
-  // Circle.
-  optional<float> radius;
-
-  // Rectangle.
-  optional<sf::Vector2f> dimensions;
-
-  // Polygon.
-  std::vector<sf::Vector2f> vertices;
+  optional<float> radius; // Circle.
+  optional<sf::Vector2f> dimensions; // Rectangle.
+  std::vector<sf::Vector2f> vertices; // Polygon.
 
   Shape(const Type type);
 
  public:
-  Shape() = delete;
+  Shape() = default; // for serialization only please
 
-  static Shape Circle()
+  static Shape Circle(const float radius);
   static Shape Rectangle(const sf::Vector2f dimensions);
   static Shape Polygon(const std::vector<sf::Vector2f> vertices);
 
@@ -73,9 +68,6 @@ struct Shape: public VerifyStructure {
       }
     }
   }
-
-  // VerifyStructure impl.
-  virtual bool verifyStructure() const;
 
 };
 

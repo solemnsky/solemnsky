@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Visual customization associated with an environment (for clientside).
+ * Visual component associated with an environment (for clientside).
  */
 #pragma once
 
