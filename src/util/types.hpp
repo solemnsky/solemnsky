@@ -211,7 +211,7 @@ struct TimeStats {
  * regulate its usage. Therefore, it isn't synced over the network.
  * (Ideally it should be value templated).
  */
-struct Cooldown {
+struct Cooldown: public VerifyStructure {
  private:
   float value;
 
@@ -222,7 +222,16 @@ struct Cooldown {
   void reset();
   void prime();
 
-  inline operator bool() const { return value == 0; }
+  inline operator bool() const {
+    return value == 0;
+  }
+
+  inline operator float() const {
+    return value;
+  }
+
+  // VerifyStructure impl.
+  bool verifyStructure() const override final;
 
   template<typename Archive>
   void serialize(Archive ar) {
@@ -233,7 +242,7 @@ struct Cooldown {
 /**
  * Float in the [0, 1] range.
  */
-struct Clamped {
+struct Clamped: public VerifyStructure {
  private:
   float value;
 
@@ -244,10 +253,16 @@ struct Clamped {
   Clamped &operator+=(const float x);
   Clamped &operator-=(const float x);
 
+  inline operator float() const {
+    return value;
+  }
+
+  // VerifyStructure impl.
+  bool verifyStructure() const override final;
+
   template<typename Archive>
   void serialize(Archive &ar) { ar(value); }
 
-  inline operator float() const { return value; }
 };
 
 /**

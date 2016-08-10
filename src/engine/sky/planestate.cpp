@@ -126,8 +126,7 @@ PlaneState::PlaneState() :
     afterburner(0),
     throttle(1),
     energy(1),
-    health(1),
-    primaryCooldown(1) { }
+    health(1) { }
 
 PlaneState::PlaneState(const PlaneTuning &tuning,
                        const sf::Vector2f &pos,
@@ -143,8 +142,7 @@ PlaneState::PlaneState(const PlaneTuning &tuning,
     leftoverVel(0, 0),
 
     energy(1),
-    health(1),
-    primaryCooldown(1) { }
+    health(1) { }
 
 float PlaneState::forwardVelocity() const {
   return velocity() *
@@ -166,7 +164,7 @@ void PlaneState::applyClient(const PlaneStateClient &client) {
 void PlaneState::applyServer(const PlaneStateServer &server) {
   energy = server.energy;
   health = server.health;
-  primaryCooldown.cooldown = server.primaryCooldown;
+  primaryCooldown = server.primaryCooldown;
 }
 
 /**

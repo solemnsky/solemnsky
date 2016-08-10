@@ -41,17 +41,26 @@ std::string TimeStats::print() const {
  * Cooldown.
  */
 
-void Cooldown::reset() { value = 1; }
+Cooldown::Cooldown() :
+    value(1) { }
 
-void Cooldown::prime() { value = 0; }
+void Cooldown::reset() {
+  value = 1;
+}
+
+void Cooldown::prime() {
+  value = 0;
+}
 
 bool Cooldown::cool(const float delta) {
   value = std::max(0.0f, value - delta);
   return value == 0;
 }
 
-Cooldown::Cooldown(const float period) :
-    value(1) { }
+
+bool Cooldown::verifyStructure() const {
+  return value >= 0 and value <= 1;
+}
 
 /**
  * Clamped.
@@ -75,6 +84,10 @@ Clamped &Clamped::operator+=(const float x) {
 Clamped &Clamped::operator-=(const float x) {
   value = clamp(0.0f, 1.0f, value - x);
   return *this;
+}
+
+bool Clamped::verifyStructure() const {
+  return value >= 0 and value <= 1;
 }
 
 /**

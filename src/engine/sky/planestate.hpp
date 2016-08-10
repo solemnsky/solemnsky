@@ -149,7 +149,7 @@ struct PlaneStateServer {
   }
 
   Clamped energy, health;
-  Clamped primaryCooldown;
+  Cooldown primaryCooldown;
 
 };
 
