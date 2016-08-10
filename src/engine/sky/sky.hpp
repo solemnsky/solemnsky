@@ -28,6 +28,7 @@
 #include "components/entity.hpp"
 #include "components/explosion.hpp"
 #include "components/homebase.hpp"
+#include "components/zone.hpp"
 
 namespace sky {
 
@@ -51,6 +52,7 @@ struct SkyInit: public VerifyStructure {
   ComponentSetInit<Entity> entities;
   ComponentSetInit<Explosion> explosions;
   ComponentSetInit<HomeBase> homeBases;
+  ComponentSetInit<Zone> zones;
 
 };
 
@@ -75,6 +77,7 @@ struct SkyDelta: public VerifyStructure {
   optional<ComponentSetDelta<Entity>> entities;
   optional<ComponentSetDelta<Explosion>> explosions;
   optional<ComponentSetDelta<HomeBase>> homeBases;
+  optional<ComponentSetDelta<Zone>> zones;
 
   // Transform to respect client authority.
   SkyDelta respectAuthority(const Player &player) const;
@@ -99,6 +102,7 @@ class Sky: public PhysicsListener,
   ComponentSet<Entity> entities;
   ComponentSet<Explosion> explosions;
   ComponentSet<HomeBase> homeBases;
+  ComponentSet<Zone> zones;
 
   // GameHandler.
   SkyListener *listener;

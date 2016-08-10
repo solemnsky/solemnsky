@@ -55,26 +55,24 @@ struct ZoneState {
 /**
  * Delta for Entity.
  */
-struct EntityDelta {
-  EntityDelta() = default;
+struct ZoneDelta {
+  ZoneDelta() = default;
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(physical);
+    ar(cooldown);
   }
 
-  PhysicalState physical;
+  optional<Cooldown> cooldown;
 
 };
 
 /**
  * Some non-player entity.
  */
-class Entity: public Component<EntityState, EntityDelta> {
+class Zone: public Component<ZoneState, ZoneDelta> {
   friend class Sky;
  private:
-  b2Body *const body;
-
   // Destroy flag, used on server-side.
   bool destroyable;
 

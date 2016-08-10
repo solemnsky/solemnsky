@@ -81,13 +81,6 @@ void Sky::onTick(const TimeDiff delta) {
   if (role.server()) {
     // Remove destroyable entities.
     // Only necessary if we're the server, client have no business doing this.
-    std::vector<PID> removable;
-    entities.forData([&removable](Entity &e, const PID pid) {
-      if (e.destroyable) removable.push_back(pid);
-    });
-    for (const PID pid: removable) {
-      entities.remove(pid);
-    }
   }
 
   // Synchronize state with box2d.
@@ -164,6 +157,7 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
     entities(initializer.entities, physics),
     explosions(initializer.explosions, physics),
     homeBases(initializer.homeBases, physics),
+    zone(initializer.zones, physics),
     listener(listener),
     settings(initializer.settings) {
   arena.forPlayers([&](Player &player) {

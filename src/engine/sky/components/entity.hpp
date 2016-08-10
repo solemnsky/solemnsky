@@ -74,9 +74,6 @@ class Entity: public Component<EntityState, EntityDelta> {
  private:
   b2Body *const body;
 
-  // Destroy flag, used on server-side.
-  bool destroyable;
-
  protected:
   // Component impl.
   void prePhysics() override final;
@@ -93,8 +90,6 @@ class Entity: public Component<EntityState, EntityDelta> {
 
   // User API.
   const EntityState &getState() const;
-  void destroy();
-  bool isDestroyable() const;
 
 };
 
