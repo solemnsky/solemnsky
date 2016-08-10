@@ -221,7 +221,7 @@ SkyInit Sky::captureInitializer() const {
 
 }
 
-optional<SkyDelta> Sky::collectDelta() {
+optional <SkyDelta> Sky::collectDelta() {
   assert(role.server());
 
   SkyDelta delta;
@@ -241,7 +241,8 @@ optional<SkyDelta> Sky::collectDelta() {
   delta.explosions = explosions.collectDelta();
   delta.homeBases = homeBases.collectDelta();
   delta.zones = zones.collectDelta();
-  useful |= delta.settings or delta.entities or delta.explosions or delta.homeBases;
+  useful |= delta.settings or delta.entities or delta.explosions
+      or delta.homeBases or delta.zones;
 
   if (useful) return delta;
   return {};
@@ -261,19 +262,19 @@ void Sky::changeSettings(const SkySettingsDelta &delta) {
   syncSettings();
 }
 
-Components<Entity> Sky::getEntities() {
+Components <Entity> Sky::getEntities() {
   return entities.getData();
 }
 
-Components<Explosion> Sky::getExplosions() {
+Components <Explosion> Sky::getExplosions() {
   return explosions.getData();
 }
 
-Components<HomeBase> Sky::getHomesBases() {
+Components <HomeBase> Sky::getHomesBases() {
   return homeBases.getData();
 }
 
-Components<Zone> Sky::getZones() {
+Components <Zone> Sky::getZones() {
   return zones.getData();
 }
 

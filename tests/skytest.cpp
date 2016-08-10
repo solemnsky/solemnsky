@@ -38,6 +38,48 @@ TEST_F(SkyTest, SettingsTest) {
 }
 
 /**
+ * Spawns and kills are transmitted over the network.
+ */
+TEST_F(SkyTest, SpawnTest) {
+  // Join and spawn a player.
+  arena.connectPlayer("nameless plane");
+  auto &player = *arena.getPlayer(0);
+  player.spawn({}, {}, 0);
+
+  // Make a client arena for this player.
+  sky::Arena remoteArena(arena.captureInitializer(), 0, true);
+  sky::Sky remoteSky(remoteArena, nullMap, sky.captureInitializer());
+  sky::Participation &remoteParticip =
+      remoteSky.getParticipation(*remoteArena.getPlayer(0));
+
+  // The player is spawned on the client.
+  ASSERT_TRUE(remoteParticip.isSpawned());
+
+  {
+    player.doAction(sky::Action::Suicide, true);
+    const auto delta = sky.collectDelta();
+    ASSERT_TRUE(delta);
+    remoteSky.applyDelta(*delta);
+    ASSERT_FALSE(sky.collectDelta());
+  }
+
+  // The player is no longer spawned on the client.
+  ASSERT_FALSE(remoteParticip.isSpawned());
+
+  // We spawn them again.
+  {
+    player.spawn({}, {}, 0);
+    const auto delta = sky.collectDelta();
+    ASSERT_TRUE(delta);
+    remoteSky.applyDelta(*delta);
+  }
+
+  // The player is once again spawned on the client.
+  ASSERT_TRUE(remoteParticip.isSpawned());
+
+}
+
+/**
  * ParticipationInput allows players limited authority over a remote game state.
  */
 TEST_F(SkyTest, InputTest) {

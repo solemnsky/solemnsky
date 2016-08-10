@@ -258,7 +258,7 @@ void Participation::spawnWithState(const PlaneTuning &tuning,
 
 void Participation::doAction(const Action action, bool actionState) {
   controls.doAction(action, actionState);
-  if (action == Action::Suicide && actionState) {
+  if (action == Action::Suicide && actionState && role.server()) {
     plane.reset();
   }
 }
