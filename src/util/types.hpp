@@ -331,7 +331,8 @@ struct SwitchSet {
   std::bitset<size_t(Enum::MAX)> bitset;
 
  public:
-  SwitchSet() = default;
+  SwitchSet(const bool init = false) :
+      bitset(size_t(init)) { }
 
   SwitchSet(const Enum key) {
     bitset[size_t(key)] = true;

@@ -30,20 +30,25 @@ namespace sky {
  */
 struct Role {
  private:
-  bool isServer;
   optional<PID> isClient;
+  bool isServer;
   bool isSandbox;
 
  public:
   Role(const optional<PID> isClient,
        const bool isSandbox);
 
-  inline bool server() {
-    return isServer or isSandbox;
+  inline bool client() {
+    return isSandbox or isClient;
   }
 
   inline bool client(const PID pid) {
     return isSandbox or (isClient and isClient.get() == pid);
+  }
+
+
+  inline bool server() {
+    return isServer or isSandbox;
   }
 
 };

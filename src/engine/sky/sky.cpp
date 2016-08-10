@@ -65,7 +65,7 @@ void Sky::registerPlayerWith(Player &player,
   participations.emplace(
       std::piecewise_construct,
       std::forward_as_tuple(player.pid),
-      std::forward_as_tuple(player, physics, initializer));
+      std::forward_as_tuple(player, physics, role, initializer));
   setPlayerData(player, participations.find(player.pid)->second);
 }
 
@@ -78,7 +78,7 @@ void Sky::unregisterPlayer(Player &player) {
 }
 
 void Sky::onTick(const TimeDiff delta) {
-  if (arena.serverResponsible()) {
+  if (role.server()) {
     // Remove destroyable entities.
     // Only necessary if we're the server, client have no business doing this.
     std::vector<PID> removable;
@@ -172,9 +172,9 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
   syncSettings();
   appLog("Instantiated Sky.", LogOrigin::Engine);
 
-  if (arena.serverResponsible()) {
+  if (role.server()) {
     // If we're the server, we need to spawn some components defined by the map.
-    homeBases.put(HomeBaseState());
+    homeBases.put(HomeBaseState(sf::Vector2f(500, 100), sf::Vector2f(300, 300), 0, 0, SwitchSet<Team>(true)));
   }
 }
 
@@ -212,7 +212,7 @@ SkyInit Sky::captureInitializer() const {
 }
 
 optional<SkyDelta> Sky::collectDelta() {
-  assert(arena.serverResponsible());
+  assert(role.server());
 
   SkyDelta delta;
   bool useful{false};
@@ -245,7 +245,7 @@ Participation &Sky::getParticipation(const Player &player) const {
 }
 
 void Sky::changeSettings(const SkySettingsDelta &delta) {
-  assert(arena.serverResponsible());
+  assert(role.server());
   settings.applyDelta(delta);
   syncSettings();
 }
@@ -259,12 +259,12 @@ Components<Explosion> Sky::getExplosions() {
 }
 
 void Sky::spawnEntity(const EntityState &state) {
-  assert(arena.serverResponsible());
+  assert(role.server());
   entities.put(state);
 }
 
 void Sky::spawnExplosion(const ExplosionState &state) {
-  assert(arena.serverResponsible());
+  assert(role.server());
   explosions.put(state);
 }
 

@@ -169,7 +169,10 @@ ArenaInit::ArenaInit(
     const EnvironmentURL &environment,
     const ArenaMode mode,
     const int teamCount) :
-    name(name), environment(environment), mode(mode), teamCount(teamCount) { }
+    name(name),
+    environment(environment),
+    mode(mode),
+    teamCount(teamCount) { }
 
 PID Arena::allocPid() const {
   return smallestUnused(players);

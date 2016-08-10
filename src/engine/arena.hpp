@@ -103,7 +103,8 @@ class Subsystem: public SubsystemListener {
   }
 
  public:
-  class Arena &arena;
+  Arena &arena;
+  Role &role;
 
   Subsystem() = delete;
   Subsystem(Arena &arena);
@@ -309,7 +310,8 @@ template<typename PlayerData>
 Subsystem<PlayerData>::Subsystem(Arena &arena) :
     caller(arena.subsystemCaller),
     id(PID(smallestUnused(arena.subsystems))),
-    arena(arena) {
+    arena(arena),
+    role(arena.role) {
   arena.subsystems[id] = (SubsystemListener *) this;
 }
 

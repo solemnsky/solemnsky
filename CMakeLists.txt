@@ -138,7 +138,7 @@ add_library(solemnsky STATIC
 
         thirdparty/polypartition/polypartition.cpp
         thirdparty/polypartition/polypartition.hpp
-        src/engine/sky/role.cpp src/engine/sky/role.hpp)
+        )
 target_link_libraries(solemnsky
         enet
         sfml-system

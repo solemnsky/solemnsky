@@ -11,7 +11,7 @@ class SkyTest: public testing::Test {
   sky::Sky sky;
 
   SkyTest() :
-      arena(sky::ArenaInit("special arena", "NULL", sky::ArenaMode::Lobby)),
+      arena(sky::ArenaInit("special arena", "NULL", sky::ArenaMode::Lobby), {}, true),
       nullMap(),
       sky(arena, nullMap, sky::SkyInit(), nullptr) { }
 
@@ -49,6 +49,7 @@ TEST_F(SkyTest, InputTest) {
 
   // We can modify position and control state.
   {
+    // We construct a ParticipationInput.
     sky::ParticipationInput input;
     sky::PlaneStateClient stateInput;
     stateInput.physical = sky::PhysicalState({300, 300}, {}, 50, 0);
@@ -58,8 +59,10 @@ TEST_F(SkyTest, InputTest) {
     controls.doAction(sky::Action::Left, true);
     input.controls = controls;
 
+    // Now apply the input to a participation.
     participation.applyInput(input);
 
+    // The results are visible.
     ASSERT_EQ(participation.plane->getState().physical.pos.x, 300);
     ASSERT_EQ(participation.plane->getState().physical.rot, 50);
     ASSERT_EQ(participation.getControls().getState<sky::Action::Left>(), true);
@@ -67,16 +70,21 @@ TEST_F(SkyTest, InputTest) {
 
   // We can collect inputs from Participations.
   {
-    sky::Arena remoteArena(arena.captureInitializer());
+    // We construct a remote Sky responsible for the client with PID 0.
+    sky::Arena remoteArena(arena.captureInitializer(), 0);
     sky::Sky remoteSky(remoteArena, nullMap, sky.captureInitializer());
     sky::Player &remotePlayer = *remoteArena.getPlayer(0);
+
+    // Execute an action on the remote sky.
     remotePlayer.doAction(sky::Action::Right, true);
 
+    // Collect the input.
     optional<sky::ParticipationInput> input =
         remoteSky.getParticipation(remotePlayer).collectInput();
     ASSERT_EQ(bool(input), true);
-    participation.applyInput(input.get());
 
+    // Apply the input to our original participation and see the results.
+    participation.applyInput(input.get());
     ASSERT_EQ(participation.getControls().getState<sky::Action::Right>(), true);
   }
 
