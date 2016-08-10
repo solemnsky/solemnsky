@@ -48,19 +48,6 @@ MapObstacle::MapObstacle(const sf::Vector2f &pos,
 }
 
 void MapObstacle::decompose() {
-  decomposed.clear();
-
-  std::vector<sf::Vector2f> verts(localVertices);
-  pp::Poly poly(verts);
-  poly.SetOrientation(TPPL_CCW);
-  std::list<pp::Poly> tmp;
-
-  pp::Partition part;
-  part.ConvexPartition_HM(&poly, &tmp);
-
-  for (auto p : tmp) {
-    decomposed.push_back(p.GetPoints());
-  }
 }
 
 /**

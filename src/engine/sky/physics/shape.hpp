@@ -29,25 +29,29 @@ namespace sky {
  * various applications in the physics engine.
  */
 struct Shape {
- private:
+ public :
+  // State.
+
   enum class Type {
     Circle,
-    Rectangle,
-    Polygon
+    Polygon,
+    Rectangle
   } type;
 
   optional<float> radius; // Circle.
-  optional<sf::Vector2f> dimensions; // Rectangle.
   std::vector<sf::Vector2f> vertices; // Polygon.
+  optional<sf::Vector2f> dimensions; // Rectangle.
 
+ private:
   Shape(const Type type);
 
  public:
   Shape() = default; // for serialization only please
 
+  // Helpful constructors.
   static Shape Circle(const float radius);
-  static Shape Rectangle(const sf::Vector2f dimensions);
   static Shape Polygon(const std::vector<sf::Vector2f> vertices);
+  static Shape Rectangle(const sf::Vector2f &dimensions);
 
   // Cereal serialization.
   template<typename Archive>
@@ -58,12 +62,12 @@ struct Shape {
         ar(radius);
         break;
       }
-      case Type::Rectangle: {
-        ar(dimensions);
-        break;
-      }
       case Type::Polygon: {
         ar(vertices);
+        break;
+      }
+      case Type::Rectangle: {
+        ar(dimensions);
         break;
       }
     }

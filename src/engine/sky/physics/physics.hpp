@@ -91,15 +91,22 @@ class PhysicsDispatcher: public b2ContactListener {
 class Physics {
  private:
   const struct Settings {
-    Settings() { }
+    Settings();
 
-    int velocityIterations = 8, positionIterations = 3; // simulation parameters
-    float distanceScale = 100; // box2d uses meters, not px
-    float gravity = 150; // reasonable default for gravity
+    int velocityIterations, positionIterations; // Simulation parameters.
+    float distanceScale, // game units / box2d meters
+        gravity, // reasonable default for gravity
+        fixtureDensity; // density of all created fixture
   } settings;
 
   b2World world;
   PhysicsDispatcher converter;
+
+  // Turing shapes into fixtures for use in the box2d engine.
+  void createFixture(const Shape &shape, b2Body &body);
+  void circleFixture(const float radius, b2Body &body);
+  void polygonFixture(const std::vector<sf::Vector2f> &vertices, b2Body &body);
+  void rectFixture(const sf::Vector2f &dimensions, b2Body &body);
 
  public:
   Physics() = delete;

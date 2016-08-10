@@ -33,11 +33,15 @@ namespace sky {
 struct EntityState {
   EntityState() = default;
   EntityState(const optional<MovementLaws> movement,
-              const FillStyle &fill, const sf::Vector2f &pos, const sf::Vector2f &vel);
+              const FillStyle &fill,
+              const Shape &shape,
+              const sf::Vector2f &pos,
+              const sf::Vector2f &vel);
 
   // Constants.
   optional<MovementLaws> movement; // The body is fixed if this does not exist.
   FillStyle fill;
+  Shape shape;
 
   // Variables.
   PhysicalState physical;
@@ -46,7 +50,7 @@ struct EntityState {
   // Cereal serialization.
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(movement, fill, physical);
+    ar(movement, fill, shape, physical, lifetime);
   }
 
 };

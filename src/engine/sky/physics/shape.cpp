@@ -33,15 +33,15 @@ Shape sky::Shape::Circle(const float radius) {
   return shape;
 }
 
-Shape sky::Shape::Rectangle(const sf::Vector2f dimensions) {
-  sky::Shape shape(Type::Rectangle);
-  shape.dimensions = dimensions;
-  return shape;
-}
-
 Shape sky::Shape::Polygon(const std::vector<sf::Vector2f> vertices) {
   sky::Shape shape(Type::Polygon);
   shape.vertices = vertices;
+  return shape;
+}
+
+Shape sky::Shape::Rectangle(const sf::Vector2f &dimensions) {
+  sky::Shape shape(Type::Rectangle);
+  shape.dimensions = dimensions;
   return shape;
 }
 

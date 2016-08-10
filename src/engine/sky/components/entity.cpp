@@ -24,10 +24,12 @@ namespace sky {
  */
 EntityState::EntityState(const optional<MovementLaws> movement,
                          const FillStyle &fill,
+                         const Shape &shape,
                          const sf::Vector2f &pos,
                          const sf::Vector2f &vel) :
     movement(movement),
     fill(fill),
+    shape(shape),
     physical(pos, vel, Angle(0), 0),
     lifetime(0) { }
 
@@ -48,8 +50,7 @@ void Entity::postPhysics(const TimeDiff delta) {
 
 Entity::Entity(const EntityState &state, Physics &physics) :
     Component(state, physics),
-    body(physics.createBody(physics.rectShape({10, 10}),
-                            BodyTag::EntityTag(*this))) {
+    body(physics.createBody(state.shape, BodyTag::EntityTag(*this))) {
   state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(0);
 }
