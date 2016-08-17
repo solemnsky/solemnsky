@@ -108,13 +108,6 @@ void Sky::onAction(Player &player, const Action action, const bool state) {
   getPlayerData(player).doAction(action, state);
 }
 
-void Sky::onSpawn(Player &player,
-                  const PlaneTuning &tuning,
-                  const sf::Vector2f &pos,
-                  const float rot) {
-  getPlayerData(player).spawn(tuning, pos, rot);
-}
-
 void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
   if (body1.type == BodyTag::Type::PlaneTag)
     body1.plane->onBeginContact(body2);

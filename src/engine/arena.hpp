@@ -62,8 +62,8 @@ class SubsystemListener {
                        const PlayerDelta &delta);
   virtual void onAction(Player &player,
                         const Action action, const bool state);
-  virtual void onSpawn(Player &player, const PlaneTuning &tuning,
-                       const sf::Vector2f &pos, const float rot);
+  virtual void onSpawn(Player &player);
+  virtual void onKill(Player &player);
 
   virtual void onStartGame();
   virtual void onEndGame();
@@ -79,6 +79,9 @@ class SubsystemCaller {
 
  public:
   SubsystemCaller(Arena &arena);
+
+  void doSpawn(Player &player);
+  void doKill(Player &player);
 
   void doStartGame();
   void doEndGame();

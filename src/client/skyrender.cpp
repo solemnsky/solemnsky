@@ -56,13 +56,15 @@ Angle PlaneGraphics::roll() const {
   return flipComponent + style.skyRender.rollAmount * rollState;
 }
 
-void PlaneGraphics::kill() { }
-
-void PlaneGraphics::spawn() {
+void PlaneGraphics::onSpawn() {
   orientation =
       Angle(participation.plane->getState().physical.rot + 90) > 180;
   flipState = 0;
   rollState = 0;
+}
+
+void PlaneGraphics::onKill() {
+
 }
 
 /**
@@ -207,6 +209,15 @@ void SkyRender::unregisterPlayer(Player &player) {
 
 void SkyRender::onTick(const float delta) {
   for (auto &pair : graphics) pair.second.tick(delta);
+}
+
+
+void SkyRender::onSpawn(Player &player) {
+  getPlayerData(player).onSpawn();
+}
+
+void SkyRender::onKill(Player &player) {
+  getPlayerData(player).onKill();
 }
 
 void SkyRender::onChangeSettings(const ui::SettingsDelta &settings) {

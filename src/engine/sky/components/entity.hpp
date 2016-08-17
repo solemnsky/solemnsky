@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Customizable representation of any non-player entity in the game.
+ * Customizable representation of some free-moving object in the game.
  */
 #pragma once
 #include "engine/multimedia.hpp"
@@ -28,7 +28,7 @@
 namespace sky {
 
 /**
- * All the settings and state that defines an entity.
+ * All the settings and state that define an entity.
  */
 struct EntityState {
   EntityState() = default;

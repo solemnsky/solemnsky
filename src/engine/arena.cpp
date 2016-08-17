@@ -140,6 +140,16 @@ void SubsystemListener::onEndGame() { }
 SubsystemCaller::SubsystemCaller(Arena &arena) :
     arena(arena) { }
 
+void SubsystemCaller::doSpawn(Player &player) {
+  for (const auto &pair : arena.subsystems)
+    pair.second->onSpawn(player);
+}
+
+void SubsystemCaller::doEndGame(Player &player) {
+  for (const auto &pair : arena.subsystems)
+    pair.second->onKill(player);
+}
+
 void SubsystemCaller::doStartGame() {
   for (const auto &pair : arena.subsystems)
     pair.second->onStartGame();
