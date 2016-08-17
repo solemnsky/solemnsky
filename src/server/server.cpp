@@ -258,7 +258,7 @@ void ServerExec::tick(const TimeDiff delta) {
   // Sky update scheduling.
   if (const auto sky = shared.skyHandle.getSky()) {
 
-    if (skyDeltaTimer.cool(delta)) {
+    if (skyDeltaSchedule.tick(delta)) {
       if (const auto skyDelta = sky->collectDelta()) {
         for (auto peer : host.getPeers()) {
           if (sky::Player *player = shared.playerFromPeer(peer)) {
@@ -269,32 +269,32 @@ void ServerExec::tick(const TimeDiff delta) {
                   shared.arena.getUptime()));
           }
         }
-        skyDeltaTimer.reset();
+        skyDeltaSchedule.reset();
       }
     }
 
   }
 
   // Scoreboard update scheduling.
-  if (scoreDeltaTimer.cool(delta)) {
+  if (scoreDeltaSchedule.tick(delta)) {
     if (const auto scoreDelta = shared.scoreboard.collectDelta()) {
       shared.sendToClients(
           sky::ServerPacket::DeltaScore(scoreDelta.get()));
     }
-    scoreDeltaTimer.reset();
+    scoreDeltaSchedule.reset();
   }
 
   // Ping scheduling.
-  if (pingTimer.cool(delta)) {
+  if (pingSchedule.tick(delta)) {
     shared.sendToClients(sky::ServerPacket::Ping(
         shared.arena.getUptime()));
-    pingTimer.reset();
+    pingSchedule.reset();
   }
 
   // Player latency update scheduling.
-  if (latencyUpdateTimer.cool(delta)) {
+  if (latencyUpdateSchedule.tick(delta)) {
     shared.registerArenaDelta(latencyTracker.makeUpdate());
-    latencyUpdateTimer.reset();
+    latencyUpdateSchedule.reset();
   }
 }
 
@@ -307,10 +307,10 @@ ServerExec::ServerExec(
     host(tg::HostType::Server, port),
     shared(host, telegraph, arenaInit),
 
-    skyDeltaTimer(0.03),
-    scoreDeltaTimer(0.5),
-    pingTimer(1),
-    latencyUpdateTimer(2),
+    skyDeltaSchedule(1.0f / 25.0f),
+    scoreDeltaSchedule(0.5f),
+    pingSchedule(1),
+    latencyUpdateSchedule(2),
 
     server(mkServer(shared)),
 

@@ -128,7 +128,7 @@ class MultiplayerCore: public ClientComponent {
   void onEndGame();
 
   // Transmission timers.
-  Cooldown participationInputTimer;
+  Scheduler participationUpdateSchedule;
 
   // Packet processing submethod.
   void processPacket(const sky::ServerPacket &packet);

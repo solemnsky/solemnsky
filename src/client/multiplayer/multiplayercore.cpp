@@ -218,7 +218,7 @@ MultiplayerCore::MultiplayerCore(
     disconnecting(false),
     disconnected(false),
 
-    participationInputTimer(0.03),
+    participationUpdateSchedule(1.0f / 25.0f),
 
     messageInteraction(shared.references),
     enginePrinter(messageInteraction),
@@ -294,11 +294,11 @@ void MultiplayerCore::tick(const float delta) {
 
     // Sending scheduled participation inputs.
     if (const auto &sky = conn->skyHandle.getSky()) {
-      if (participationInputTimer.cool(delta)) {
+      if (participationUpdateSchedule.tick(delta)) {
         const auto input = sky->getParticipation(conn->player).collectInput();
         if (input) {
           transmit(sky::ClientPacket::ReqInput(input.get()));
-          participationInputTimer.reset();
+          participationUpdateSchedule.reset();
         }
       }
     }

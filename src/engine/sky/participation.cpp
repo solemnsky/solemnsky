@@ -72,7 +72,9 @@ void Participation::doAction(const Action action, bool actionState) {
 }
 
 void Participation::prePhysics() {
-  if (controls.getState<Action::Suicide>()) suicide();
+  if (role.server()) {
+    if (controls.getState<Action::Suicide>()) suicide();
+  }
   if (plane) plane->prePhysics();
 }
 

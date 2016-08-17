@@ -129,10 +129,10 @@ class ServerExec {
   ServerShared shared;
 
   // Packet scheduling.
-  Cooldown skyDeltaTimer,
-      scoreDeltaTimer,
-      pingTimer,
-      latencyUpdateTimer;
+  Scheduler skyDeltaSchedule,
+      scoreDeltaSchedule,
+      pingSchedule,
+      latencyUpdateSchedule;
 
   // Attached server.
   std::unique_ptr<ServerListener> server;

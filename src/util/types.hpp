@@ -217,17 +217,15 @@ struct TimeStats {
  */
 
 /**
- * Floats that are used for a 'cooldown' effect.
- * The 'period' value isn't really part of the state; it's only there to help
- * regulate its usage. Therefore, it isn't synced over the network.
- * (Ideally it should be value templated).
+ * Floats that are used to represent a cooldown, always inside the range [0, 1].
  */
 struct Cooldown {
  private:
   float value;
 
  public:
-  Cooldown() = default;
+  Cooldown() : value(1) { }
+
   explicit Cooldown(const float value) :
       value(value) { }
 
@@ -264,6 +262,39 @@ struct Cooldown {
   void serialize(Archive ar) {
     ar(value);
   }
+};
+
+/**
+ * Like a cooldown, but with a variable value range. Whereas Cooldown is used in game state that needs to be
+ * synchronized, Scheduler is used to schedule (potentially recurring) actions in the application.
+ */
+struct Scheduler {
+ private:
+  Time value, interval;
+
+ public:
+  Scheduler() = delete;
+
+  explicit Scheduler(const Time interval) :
+      value(interval), interval(interval) { }
+
+  inline bool tick(const TimeDiff delta) {
+    value = std::max(0.0, value - Time(delta));
+    return value == 0;
+  }
+
+  inline operator bool() const {
+    return value == 0;
+  }
+
+  inline void reset() {
+    value = interval;
+  }
+
+  inline void prime() {
+    value = 0;
+  }
+
 };
 
 /**
