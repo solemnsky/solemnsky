@@ -144,7 +144,7 @@ void Physics::polygonFixture(const std::vector<sf::Vector2f> &vertices, b2Body &
 
 void Physics::rectFixture(const sf::Vector2f &dimensions, b2Body &body) {
   b2PolygonShape shape;
-  const auto bdims = toPhysVec(dims);
+  const auto bdims = toPhysVec(dimensions);
   shape.SetAsBox(bdims.x / 2.0f, bdims.y / 2.0f);
   body.CreateFixture(&shape, settings.fixtureDensity);
 }
@@ -170,7 +170,7 @@ Physics::Physics(const Map &map, PhysicsListener &listener) :
   // Create obstacles from map.
   for (const auto &obstacle : map.getObstacles()) {
     body = createBody(Shape::Polygon(obstacle.localVertices),
-                      BodyTag::ObstacleTag(obstacle), true);
+                      BodyTag::ObstacleTag(obstacle), false, true);
     body->SetTransform(toPhysVec(obstacle.pos), 0);
   }
 
