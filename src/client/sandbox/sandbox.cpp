@@ -149,7 +149,7 @@ Sandbox::Sandbox(ClientShared &state) :
     Game(state, "sandbox"),
     arena(sky::ArenaInit("sandbox", "ball_funnelpark"), {}, true),
     skyHandle(arena, sky::SkyHandleInit()),
-    debugView(arena, skyHandle),
+    debugView(arena, skyHandle, 0),
     logger(arena, *this),
     messageInteraction(references),
     enginePrinter(messageInteraction),

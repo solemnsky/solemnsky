@@ -25,7 +25,7 @@ namespace sky {
 
 DebugView::DebugView(Arena &arena,
                      const SkyHandle &skyHandle,
-                     const optional<PID> &player) :
+                     const optional<PID> player) :
     Subsystem(arena),
     skyHandle(skyHandle),
     playerID(player) { }
@@ -63,6 +63,7 @@ void DebugView::printSkyReport(Printer &p) const {
   p.printLn("bool(getSky()): " + printBool(bool(skyHandle.getSky())));
   p.printLn("bool(getEnvironment()): "
                 + printBool(bool(skyHandle.getEnvironment())));
+
   if (const auto sky = skyHandle.getSky()) {
     p.printLn("environment.url: " + skyHandle.getEnvironment()->url);
     p.printLn("sky.settings.getGravity(): "
@@ -75,7 +76,14 @@ void DebugView::printSkyReport(Printer &p) const {
       p.printTitle("Participation");
       if (auto player = arena.getPlayer(playerID.get())) {
         const auto &participation = sky->getParticipation(*player);
-        p.printLn("isSpawned(): " + printBool(participation.isSpawned()));
+        const bool spawned = participation.isSpawned();
+
+        p.printLn("isSpawned(): " + printBool(spawned));
+        if (spawned) {
+          const auto &plane = participation.plane.get();
+          p.printLn("plane.getState().physical.pos: " +
+                    printVector(plane.getState().physical.pos));
+        }
       } else {
         p.setColor(255, 0, 0);
         p.printLn("ERROR: PID not associated with Player in Arena!");
@@ -83,7 +91,6 @@ void DebugView::printSkyReport(Printer &p) const {
       }
     }
   }
-
 }
 
 }
