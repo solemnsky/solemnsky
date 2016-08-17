@@ -56,8 +56,7 @@ TEST_F(SkyTest, SpawnTest) {
   ASSERT_TRUE(remoteParticip.isSpawned());
 
   {
-    player.doAction(sky::Action::Suicide, true);
-    arena.tick(0.1f); // The suicide is simulated here.
+    sky.getParticipation(player).suicide();
     const auto delta = sky.collectDelta();
     ASSERT_TRUE(delta);
     remoteSky.applyDelta(*delta);

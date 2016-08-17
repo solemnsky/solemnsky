@@ -66,10 +66,12 @@ ParticipationDelta ParticipationDelta::respectClientAuthority() const {
 void Participation::effectSpawn(const PlaneTuning &tuning,
                                 const PlaneState &state) {
   plane.emplace(player, physics, controls, tuning, state);
+  caller.doSpawn(player);
 }
 
-void Participation::doAction(const Action action, bool actionState) {
-  controls.doAction(action, actionState);
+void Participation::effectKill() {
+  plane.reset();
+  caller.doKill(player);
 }
 
 void Participation::prePhysics() {
@@ -112,7 +114,7 @@ void Participation::applyDelta(const ParticipationDelta &delta) {
       if (delta.state) plane->state = delta.state.get();
       else if (delta.serverState)
         plane->state.applyServer(delta.serverState.get());
-      else plane.reset();
+      else effectKill();
     }
   }
 
@@ -171,11 +173,15 @@ bool Participation::isSpawned() const {
   return bool(plane);
 }
 
+void Participation::doAction(const Action action, bool actionState) {
+  controls.doAction(action, actionState);
+}
+
 void Participation::suicide() {
   assert(role.server());
   if (plane) {
     newlyDead = true;
-    plane.reset();
+    effectKill();
   }
 }
 

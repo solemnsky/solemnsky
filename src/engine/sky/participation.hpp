@@ -111,9 +111,9 @@ class Participation: public AutoNetworked<ParticipationInit, ParticipationDelta>
   // Helpers.
   void effectSpawn(const PlaneTuning &tuning,
                    const PlaneState &state);
+  void effectKill();
 
   // Sky API.
-  void doAction(const Action action, bool actionState);
   void prePhysics();
   void postPhysics(const float delta);
 
@@ -137,6 +137,9 @@ class Participation: public AutoNetworked<ParticipationInit, ParticipationDelta>
   // User API.
   const PlaneControls &getControls() const;
   bool isSpawned() const;
+
+  // User API, client-side.
+  void doAction(const Action action, bool actionState);
 
   // User API, server-side.
   void suicide();

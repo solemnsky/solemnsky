@@ -104,10 +104,6 @@ void Sky::onTick(const TimeDiff delta) {
   zones.forData([delta](Zone &e, const PID) { e.postPhysics(delta); });
 }
 
-void Sky::onAction(Player &player, const Action action, const bool state) {
-  getPlayerData(player).doAction(action, state);
-}
-
 void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
   if (body1.type == BodyTag::Type::PlaneTag)
     body1.plane->onBeginContact(body2);

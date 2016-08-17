@@ -99,9 +99,6 @@ class Sky: public PhysicsListener,
   void registerPlayer(Player &player) override final;
   void unregisterPlayer(Player &player) override final;
   void onTick(const TimeDiff delta) override final;
-  void onAction(Player &player,
-                const Action action,
-                const bool state) override final;
 
   // PhysicsListener impl.
   void onBeginContact(const BodyTag &body1,

@@ -124,10 +124,9 @@ void SubsystemListener::onMapChange() { }
 
 void SubsystemListener::onDelta(Player &, const PlayerDelta &) { }
 
-void SubsystemListener::onAction(Player &, const Action, const bool) { }
+void SubsystemListener::onSpawn(Player &) { }
 
-void SubsystemListener::onSpawn(Player &, const PlaneTuning &,
-                                const sf::Vector2f &, const float) { }
+void SubsystemListener::onKill(Player &) { }
 
 void SubsystemListener::onStartGame() { }
 
@@ -145,7 +144,7 @@ void SubsystemCaller::doSpawn(Player &player) {
     pair.second->onSpawn(player);
 }
 
-void SubsystemCaller::doEndGame(Player &player) {
+void SubsystemCaller::doKill(Player &player) {
   for (const auto &pair : arena.subsystems)
     pair.second->onKill(player);
 }

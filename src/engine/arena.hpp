@@ -60,8 +60,6 @@ class SubsystemListener {
   virtual void onMapChange();
   virtual void onDelta(Player &player,
                        const PlayerDelta &delta);
-  virtual void onAction(Player &player,
-                        const Action action, const bool state);
   virtual void onSpawn(Player &player);
   virtual void onKill(Player &player);
 
