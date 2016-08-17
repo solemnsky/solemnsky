@@ -24,7 +24,6 @@
 #include "util/types.hpp"
 #include "engine/sky/components/entity.hpp"
 #include "engine/sky/physics/physics.hpp"
-#include "planestate.hpp"
 #include "engine/sky/components/explosion.hpp"
 #include "engine/role.hpp"
 #include "plane.hpp"

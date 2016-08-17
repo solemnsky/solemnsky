@@ -141,12 +141,11 @@ class ComponentSet:
     while (iter != data.end()) {
       const auto entityDelta = deltas.find(iter->first);
       if (entityDelta == deltas.end()) {
-        const auto toErase = iter;
-        data.erase(toErase);
+        data.erase(iter++);
       } else {
+        ++iter;
         if (entityDelta->second) iter->second.second.applyDelta(entityDelta->second.get());
       }
-      ++iter;
     }
 
     for (const auto &init : inits) {

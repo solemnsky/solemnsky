@@ -19,6 +19,8 @@
  * The Plane class, subcomponent of Participation.
  */
 #pragma once
+#include "physics/physics.hpp"
+#include "planestate.hpp"
 
 namespace sky {
 

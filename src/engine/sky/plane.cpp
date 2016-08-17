@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "plane.hpp"
+#include "util/methods.hpp"
+#include "engine/player.hpp"
 namespace sky {
 
 /**
@@ -113,7 +115,6 @@ void Plane::tickFlight(const TimeDiff delta) {
       approach(state.airspeed, targetThrottle,
                tuning.flight.throttleEffect * throttleEffectFactor * delta);
     }
-
 
     float targetSpeed = state.airspeed * tuning.flight.airspeedFactor;
 

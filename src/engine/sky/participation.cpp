@@ -175,8 +175,10 @@ bool Participation::isSpawned() const {
 
 void Participation::suicide() {
   assert(role.server());
-  newlyDead = true;
-  plane.reset();
+  if (plane) {
+    newlyDead = true;
+    plane.reset();
+  }
 }
 
 void Participation::applyInput(const ParticipationInput &input) {
