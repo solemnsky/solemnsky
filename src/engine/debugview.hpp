@@ -39,7 +39,7 @@ class DebugView : public Subsystem<Nothing> {
   DebugView() = delete;
   DebugView(Arena &arena,
             const SkyHandle &skyHandle,
-            const optional<PID> &player = {});
+            const optional<PID> player = {});
 
   // User API.
   void printArenaReport(Printer &p) const;

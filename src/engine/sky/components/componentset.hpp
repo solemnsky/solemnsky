@@ -141,13 +141,11 @@ class ComponentSet:
     while (iter != data.end()) {
       const auto entityDelta = deltas.find(iter->first);
       if (entityDelta == deltas.end()) {
-        const auto toErase = iter;
-        data.erase(toErase);
-      } else {
-        if (entityDelta->second) iter->second.second.applyDelta(entityDelta->second.get());
-      }
+        iter->second.second.destroy();
+      } 
       ++iter;
     }
+    applyDestruction();
 
     for (const auto &init : inits) {
       data.emplace(std::piecewise_construct,

@@ -213,6 +213,7 @@ void appLogValue(const T &x) {
  * Things helpful for printing / logging.
  */
 std::string printFloat(const float x);
+std::string printVector(const sf::Vector2f &vector);
 std::string printBool(const bool x);
 std::string inQuotes(const std::string &str);
 std::string printTime(const Time delta);

@@ -84,18 +84,21 @@ void Environment::loadVisuals(const fs::path &path) {
 void Environment::loadNullMap() {
   appLog(describeComponentLoadingNull(Component::Map), LogOrigin::Engine);
   map.emplace();
+  sf::sleep(sf::milliseconds(20));
   appLog(describeComponentDone(Component::Map), LogOrigin::Engine);
 }
 
 void Environment::loadNullMechanics() {
   appLog(describeComponentLoadingNull(Component::Mechanics), LogOrigin::Engine);
   mechanics.emplace();
+  sf::sleep(sf::milliseconds(20));
   appLog(describeComponentDone(Component::Mechanics), LogOrigin::Engine);
 }
 
 void Environment::loadNullVisuals() {
   appLog(describeComponentLoadingNull(Component::Visuals), LogOrigin::Engine);
   visuals.emplace();
+  sf::sleep(sf::milliseconds(20));
   appLog(describeComponentDone(Component::Visuals), LogOrigin::Engine);
 }
 

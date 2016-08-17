@@ -47,8 +47,8 @@ add_library(solemnsky STATIC
         src/engine/environment/visuals.cpp
         src/engine/environment/visuals.hpp
 
+        src/engine/sky/components/allcomponents.hpp
         src/engine/sky/components/component.hpp
-
         src/engine/sky/components/componentset.hpp
 
         src/engine/sky/components/entity.cpp
@@ -66,11 +66,17 @@ add_library(solemnsky STATIC
         src/engine/sky/physics/movement.cpp
         src/engine/sky/physics/movement.hpp
 
+        src/engine/sky/physics/physics.cpp
+        src/engine/sky/physics/physics.hpp
+
+        src/engine/sky/physics/shape.cpp
+        src/engine/sky/physics/shape.hpp
+
         src/engine/sky/participation.cpp
         src/engine/sky/participation.hpp
 
-        src/engine/sky/physics/physics.cpp
-        src/engine/sky/physics/physics.hpp
+        src/engine/sky/plane.cpp
+        src/engine/sky/plane.hpp
 
         src/engine/sky/planestate.cpp
         src/engine/sky/planestate.hpp
@@ -141,7 +147,7 @@ add_library(solemnsky STATIC
 
         thirdparty/polypartition/polypartition.cpp
         thirdparty/polypartition/polypartition.hpp
-        src/engine/sky/physics/shape.cpp src/engine/sky/physics/shape.hpp src/engine/sky/components/allcomponents.hpp)
+        )
 target_link_libraries(solemnsky
         enet
         sfml-system

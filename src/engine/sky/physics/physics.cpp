@@ -144,7 +144,7 @@ void Physics::polygonFixture(const std::vector<sf::Vector2f> &vertices, b2Body &
 
 void Physics::rectFixture(const sf::Vector2f &dimensions, b2Body &body) {
   b2PolygonShape shape;
-  const auto bdims = toPhysVec(dims);
+  const auto bdims = toPhysVec(dimensions);
   shape.SetAsBox(bdims.x / 2.0f, bdims.y / 2.0f);
   body.CreateFixture(&shape, settings.fixtureDensity);
 }
@@ -155,19 +155,22 @@ Physics::Physics(const Map &map, PhysicsListener &listener) :
     dims(map.getDimensions()) {
   // world boundaries
   b2Body *body;
-  body = createBody(Shape::Rectangle({dims.x, 1}), BodyTag::BoundaryTag(), true);
-  body->SetTransform(toPhysVec({dims.x / 2, dims.y}), 0);
-  body = createBody(Shape::Rectangle({dims.x, 1}), BodyTag::BoundaryTag(), true);
-  body->SetTransform(toPhysVec({dims.x / 2, 0}), 0);
-  body = createBody(Shape::Rectangle({1, dims.y}), BodyTag::BoundaryTag(), true);
-  body->SetTransform(toPhysVec({dims.x, dims.y / 2}), 0);
-  body = createBody(Shape::Rectangle({1, dims.y}), BodyTag::BoundaryTag(), true);
-  body->SetTransform(toPhysVec({0, dims.y / 2}), 0);
+#define PAIR std::pair<sf::Vector2f, b2Vec2>
+  for (const PAIR &vec :
+      {PAIR({dims.x, 1}, toPhysVec({dims.x / 2, dims.y})),
+       PAIR({dims.x, 1}, toPhysVec({dims.x / 2, 0})),
+       PAIR({1, dims.y}, toPhysVec({dims.x, dims.y / 2})),
+       PAIR({1, dims.y}, toPhysVec({0, dims.y / 2}))
+      }) {
+    body = createBody(Shape::Rectangle(vec.first), BodyTag::BoundaryTag(), false, true);
+    body->SetTransform(vec.second, 0);
+  }
+#undef PAIR
 
   // Create obstacles from map.
   for (const auto &obstacle : map.getObstacles()) {
     body = createBody(Shape::Polygon(obstacle.localVertices),
-                      BodyTag::ObstacleTag(obstacle), true);
+                      BodyTag::ObstacleTag(obstacle), false, true);
     body->SetTransform(toPhysVec(obstacle.pos), 0);
   }
 
@@ -210,9 +213,12 @@ float Physics::toPhysDistance(const float x) const {
 }
 
 b2Body *Physics::createBody(const Shape &shape,
-                            const BodyTag &tag, bool isStatic) {
+                            const BodyTag &tag,
+                            bool isBullet,
+                            bool isStatic) {
   b2BodyDef def;
   def.fixedRotation = false;
+  def.bullet = isBullet;
   def.type = isStatic ? b2_staticBody : b2_dynamicBody;
 
   b2Body *body = world.CreateBody(&def);

@@ -213,6 +213,10 @@ std::string printFloat(const float x) {
   return str.str();
 }
 
+std::string printVector(const sf::Vector2f &vector) {
+  return "(" + printFloat(vector.x) + ", " + printFloat(vector.y) + ")";
+}
+
 std::string printBool(const bool x) {
   return x ? "true" : "false";
 }
