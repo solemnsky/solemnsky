@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * A player's participation in a Sky.
+ * A player's Participation in the Sky.
  */
 #pragma once
 #include <Box2D/Box2D.h>
@@ -27,63 +27,9 @@
 #include "planestate.hpp"
 #include "engine/sky/components/explosion.hpp"
 #include "engine/role.hpp"
+#include "plane.hpp"
 
 namespace sky {
-
-/**
- * The plane element that can be associated with a Participation.
- * This is essentially a piece of Participations's implementation.
- */
-class Plane {
-  friend class Sky;
-  friend class Participation;
- private:
-  // Parameters.
-  Physics &physics;
-  const PlaneControls &controls;
-
-  // State.
-  const PlaneTuning tuning;
-  PlaneState state;
-  b2Body *const body;
-
-  // Subroutines.
-  void switchStall();
-  void tickFlight(const TimeDiff delta);
-  void tickWeapons(const TimeDiff delta);
-  void writeToBody();
-  void readFromBody();
-
-  // Sky API.
-  void prePhysics();
-  void postPhysics(const TimeDiff delta);
-  void onBeginContact(const BodyTag &body);
-  void onEndContact(const BodyTag &body);
-
- public:
-  Plane() = delete;
-  Plane(class Player &, const PID player, Physics &, PlaneControls &&, const PlaneTuning &,
-        const PlaneState &) = delete; // `controls` must not be a temp
-  Plane(class Player &player,
-        Physics &physics,
-        const PlaneControls &controls,
-        const PlaneTuning &tuning,
-        const PlaneState &state);
-  ~Plane();
-
-  // Associated player.
-  class Player &player;
-
-  // User API.
-  const PlaneTuning &getTuning() const;
-  const PlaneState &getState() const;
-
-  bool requestDiscreteEnergy(const float reqEnergy);
-  float requestEnergy(const float reqEnergy);
-  void resetPrimary();
-  void damage(const float amount);
-
-};
 
 /**
  * Initializer for Participation's Networked impl.
