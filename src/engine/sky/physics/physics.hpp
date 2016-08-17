@@ -126,13 +126,10 @@ class Physics {
 
   // Managing bodies.
   b2Body *createBody(const Shape &shape,
-                     const BodyTag &tag, bool isStatic = false);
+                     const BodyTag &tag,
+                     bool isBullet = false,
+                     bool isStatic = false);
   void deleteBody(b2Body *const body);
-
-  // Constructing shapes.
-  b2PolygonShape rectShape(const sf::Vector2f &dims);
-  b2PolygonShape polygonShape(const std::vector<sf::Vector2f> &verticies);
-  b2ChainShape chainLoopShape(const std::vector<sf::Vector2f> &verticies);
 
   // Impulses.
   void approachRotVel(b2Body *body, float rotvel) const;

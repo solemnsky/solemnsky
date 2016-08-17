@@ -176,7 +176,7 @@ Plane::Plane(Player &player,
     tuning(tuning),
     state(state),
     body(physics.createBody(Shape::Rectangle(tuning.hitbox),
-                            BodyTag::PlaneTag(*this, player))),
+                            BodyTag::PlaneTag(*this, player), true)),
     player(player) {
   state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(state.stalled ? 1 : 0);
