@@ -67,11 +67,8 @@ Control::Control(const AppRefs &references) :
     settings(references.settings),
     quitting(false) { }
 
-bool Control::poll() {
-  for (auto child : children) {
-    while (!child->poll()) { };
-  }
-  return true;
+void Control::poll() {
+  for (auto child : children) child->poll();
 }
 
 void Control::tick(const TimeDiff delta) {

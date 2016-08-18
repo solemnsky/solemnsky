@@ -24,6 +24,11 @@
 PlayerInputManager::PlayerInputManager(sky::Player &player, ServerShared &shared) :
     player(player), shared(shared), arena(shared.arena), inputControl({}) { }
 
+void PlayerInputManager::cacheInput(const Time timestamp,
+                                    const sky::ParticipationInput &input) {
+  inputControl.push(timestamp, input);
+}
+
 void PlayerInputManager::poll() {
   while (const auto &input = inputControl.pull(arena.getUptime())) {
     if (const auto sky = shared.skyHandle.getSky()) {
@@ -42,7 +47,17 @@ void SkyInputManager::unregisterPlayer(sky::Player &player) {
   inputManagers.erase(inputManagers.find(player.pid));
 }
 
-void SkyInputManager::onTick()
+void SkyInputManager::onPoll() {
+  for (auto &manager : inputManagers) {
+    manager.second.poll();
+  }
+}
 
 SkyInputManager::SkyInputManager(ServerShared &shared) :
     Subsystem(shared.arena), shared(shared) { }
+
+void SkyInputManager::cacheInput(
+    sky::Player &player, const Time timestamp,
+    const sky::ParticipationInput &input) {
+  getPlayerData(player).cacheInput(timestamp, input);
+}

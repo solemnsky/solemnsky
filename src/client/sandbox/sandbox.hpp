@@ -118,6 +118,7 @@ class Sandbox: public Game {
   virtual void printDebugRight(Printer &p) override final;
 
   // Control impl.
+  void poll() override final;
   void tick(const TimeDiff delta) override final;
   void render(ui::Frame &f) override final;
   bool handle(const sf::Event &event) override final;

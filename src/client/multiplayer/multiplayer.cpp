@@ -111,8 +111,8 @@ void Multiplayer::printDebugRight(Printer &p) {
   }
 }
 
-bool Multiplayer::poll() {
-  return core.poll();
+void Multiplayer::poll() {
+  core.poll();
 }
 
 void Multiplayer::tick(const TimeDiff delta) {

@@ -444,13 +444,13 @@ std::string Arena::allocNewNickname(const Player &player,
   return allocNickname(requestedNick, player.pid);
 }
 
+void Arena::poll() {
+  for (auto s : subsystems) s.second->onPoll();
+}
+
 void Arena::tick(const TimeDiff delta) {
   uptime += Time(delta);
   for (auto s : subsystems) s.second->onTick(delta);
-}
-
-void Arena::poll(const TimeDiff delta) {
-  for (auto s : subsystems) s.second->onPoll(delta);
 }
 
 }

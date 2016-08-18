@@ -39,7 +39,7 @@ class MultiplayerGameHandle : public MultiplayerView {
   // We have to pass all the callbacks through!
 
   // Control impl.
-  bool poll() override final;
+  void poll() override final;
   void tick(const TimeDiff delta) override final;
   void render(ui::Frame &f) override final;
   void reset() override final;

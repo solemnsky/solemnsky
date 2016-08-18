@@ -71,7 +71,7 @@ class Client: public ui::Control {
   Client(const ui::AppRefs &references);
 
   // Control impl.
-  bool poll() override final;
+  void poll() override final;
   void tick(TimeDiff delta) override final;
   void render(ui::Frame &f) override final;
   bool handle(const sf::Event &event) override final;

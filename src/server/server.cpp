@@ -168,7 +168,10 @@ void ServerExec::tick(const TimeDiff delta) {
   }
 
   // Tick game state and network host.
+  shared.arena.poll();
   shared.arena.tick(delta);
+  // (On the server tick and poll are called in the same form.)
+
   host.tick(delta);
 
   // SkyHandle updating.

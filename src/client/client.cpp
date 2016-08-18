@@ -204,11 +204,9 @@ Client::Client(const ui::AppRefs &references) :
                &homePage, &listingPage, &settingsPage});
 }
 
-bool Client::poll() {
-  if (game) {
-    while (!game->poll()) { };
-  }
-  return ui::Control::poll();
+void Client::poll() {
+  if (game) game->poll();
+  ui::Control::poll();
 }
 
 void Client::tick(const float delta) {

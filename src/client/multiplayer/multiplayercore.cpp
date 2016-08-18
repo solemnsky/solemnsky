@@ -67,8 +67,8 @@ ArenaConnection::ArenaConnection(
     skyHandle(arena, skyHandleInit),
     scoreboard(arena, scoreboardInit),
     player(*arena.getPlayer(pid)),
-    skyDeltaControl(sky::FlowControlSettings()),
-    debugView(arena, skyHandle, pid) { }
+    debugView(arena, skyHandle, pid),
+    skyDeltaControl(sky::FlowControlSettings()) { }
 
 sky::Sky *ArenaConnection::getSky() {
   return skyHandle.getSky();
@@ -274,8 +274,8 @@ void MultiplayerCore::disconnect() {
   }
 }
 
-bool MultiplayerCore::poll() {
-  if (disconnected) return true;
+void MultiplayerCore::poll() {
+  if (disconnected) return;
 
   if (server && !askedConnection) {
     // we have a link but haven't sent an arena connection request
@@ -285,7 +285,6 @@ bool MultiplayerCore::poll() {
   }
 
   while (!pollNetwork()) { }
-  return true;
 }
 
 void MultiplayerCore::tick(const float delta) {
@@ -298,7 +297,7 @@ void MultiplayerCore::tick(const float delta) {
       if (participationUpdateSchedule.tick(delta)) {
         const auto input = sky->getParticipation(conn->player).collectInput();
         if (input) {
-          transmit(sky::ClientPacket::ReqInput(input.get()));
+          transmit(sky::ClientPacket::ReqInput(input.get(), conn->arena.getUptime()));
           participationUpdateSchedule.reset();
         }
       }

@@ -166,7 +166,7 @@ class MultiplayerCore: public ClientComponent {
   // User API.
   void transmit(const sky::ClientPacket &packet);
   void disconnect();
-  bool poll();
+  void poll();
   void tick(const TimeDiff delta);
 
   void chat(const std::string &message);

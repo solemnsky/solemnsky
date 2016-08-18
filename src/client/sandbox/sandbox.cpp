@@ -183,6 +183,10 @@ void Sandbox::doExit() {
   quitting = true;
 }
 
+void Sandbox::poll() {
+  arena.poll();
+}
+
 void Sandbox::tick(const TimeDiff delta) {
   if (!skyHandle.getSky()) {
     if (auto environment = skyHandle.getEnvironment()) {
@@ -234,20 +238,23 @@ bool Sandbox::handle(const sf::Event &event) {
     if (messageInteraction.handleClientAction(action.first, action.second)) return true;
 
     if (auto sky = skyHandle.getSky()) {
-      const auto &participation = sky->getParticipation(*player);
+      auto &participation = sky->getParticipation(*player);
 
       if (action.first == ui::ClientAction::Spawn
           and action.second
           and !participation.isSpawned()) {
         const auto spawnPoint = sky->getMap().pickSpawnPoint(sky::Team::Spectator);
-        player->spawn(spawnTuning, spawnPoint.pos, spawnPoint.angle);
+        participation.spawn(spawnTuning, spawnPoint.pos, spawnPoint.angle);
         return true;
       }
     }
   }
 
   for (const auto &action : settings.bindings.findSkyActions(event)) {
-    player->doAction(action.first, action.second);
+    if (auto sky = skyHandle.getSky()) {
+      auto &participation = sky->getParticipation(*player);
+      participation.doAction(action.first, action.second);
+    }
   }
 
   return false;

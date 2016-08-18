@@ -51,7 +51,7 @@ class SubsystemListener {
   virtual void unregisterPlayer(Player &player);
 
   // General callbacks.
-  virtual void onPoll(const TimeDiff delta);
+  virtual void onPoll();
   virtual void onTick(const TimeDiff delta);
 
   virtual void onJoin(Player &player);
@@ -300,8 +300,8 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   Team autojoinTeam() const;
 
   // Ticking / polling.
+  void poll();
   void tick(const TimeDiff delta);
-  void poll(const TimeDiff delta);
 
   // Server-specific API.
   ArenaDelta connectPlayer(const std::string &requestedNick);

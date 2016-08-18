@@ -37,6 +37,7 @@ class PlayerInputManager {
  public:
   PlayerInputManager(sky::Player &player, ServerShared &shared);
 
+  void cacheInput(const Time timestamp, const sky::ParticipationInput &input);
   void poll();
 
 };
@@ -50,11 +51,12 @@ class SkyInputManager: public sky::Subsystem<PlayerInputManager> {
   // Subsystem impl.
   virtual void registerPlayer(sky::Player &player) override final;
   virtual void unregisterPlayer(sky::Player &player) override final;
-  virtual void onTick(const TimeDiff delta) override final;
+  virtual void onPoll() override final;
 
  public:
   SkyInputManager(ServerShared &shared);
 
-  void cacheInput()
+  void cacheInput(sky::Player &player, const Time timestamp,
+                  const sky::ParticipationInput &input);
 
 };
