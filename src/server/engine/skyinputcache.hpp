@@ -16,23 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Server-side subsystem managing the application of requested player inputs, controlling
- * each input stream with a separate FlowControl.
+ * Server-side subsystem to manage the timely application of inputs from clients.
  */
 #pragma once
 #include "server/servershared.hpp"
 #include "engine/flowcontrol.hpp"
+
+namespace sky {
 
 /**
  * Manager for the ParticipationInput stream produced by one player.
  */
 class PlayerInputManager {
  private:
-  sky::Player &player;
+  Player &player;
   ServerShared &shared;
-  sky::Arena &arena;
+  Arena &arena;
 
-  sky::FlowControl<sky::ParticipationInput> inputControl;
+  FlowControl<sky::ParticipationInput> inputControl;
 
  public:
   PlayerInputManager(sky::Player &player, ServerShared &shared);
@@ -42,21 +43,23 @@ class PlayerInputManager {
 
 };
 
-class SkyInputManager: public sky::Subsystem<PlayerInputManager> {
+class SkyInputManager: public Subsystem<PlayerInputManager> {
  private:
   ServerShared &shared;
   std::map<PID, PlayerInputManager> inputManagers;
 
  protected:
   // Subsystem impl.
-  virtual void registerPlayer(sky::Player &player) override final;
-  virtual void unregisterPlayer(sky::Player &player) override final;
+  virtual void registerPlayer(Player &player) override final;
+  virtual void unregisterPlayer(Player &player) override final;
   virtual void onPoll() override final;
 
  public:
   SkyInputManager(ServerShared &shared);
 
-  void cacheInput(sky::Player &player, const Time timestamp,
-                  const sky::ParticipationInput &input);
+  void receiveInput(sky::Player &player, const Time timestamp,
+                    const sky::ParticipationInput &input);
 
 };
+
+}

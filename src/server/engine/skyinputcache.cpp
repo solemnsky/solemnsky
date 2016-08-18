@@ -17,6 +17,7 @@
  */
 #include "skyinputcache.hpp"
 
+namespace sky {
 
 /**
  * PlayerInputManager.
@@ -58,8 +59,10 @@ void SkyInputManager::onPoll() {
 SkyInputManager::SkyInputManager(ServerShared &shared) :
     Subsystem(shared.arena), shared(shared) { }
 
-void SkyInputManager::cacheInput(
+void SkyInputManager::receiveInput(
     sky::Player &player, const Time timestamp,
     const sky::ParticipationInput &input) {
   getPlayerData(player).cacheInput(timestamp, input);
+}
+
 }
