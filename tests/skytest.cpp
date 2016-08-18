@@ -47,7 +47,7 @@ TEST_F(SkyTest, SpawnTest) {
   sky.getParticipation(player).spawn({}, {}, 0);
 
   // Make a client arena for this player.
-  sky::Arena remoteArena(arena.captureInitializer(), 0, true);
+  sky::Arena remoteArena(arena.captureInitializer(), PID(0), true);
   sky::Sky remoteSky(remoteArena, nullMap, sky.captureInitializer());
   sky::Participation &remoteParticip =
       remoteSky.getParticipation(*remoteArena.getPlayer(0));
@@ -113,7 +113,7 @@ TEST_F(SkyTest, InputTest) {
   // We can collect inputs from Participations.
   {
     // We construct a remote Sky responsible for the client with PID 0.
-    sky::Arena remoteArena(arena.captureInitializer(), 0);
+    sky::Arena remoteArena(arena.captureInitializer(), PID(0));
     sky::Sky remoteSky(remoteArena, nullMap, sky.captureInitializer());
     sky::Player &remotePlayer = *remoteArena.getPlayer(0);
 
@@ -141,7 +141,7 @@ TEST_F(SkyTest, AuthorityTest) {
   auto &participation = sky.getParticipation(player);
 
   // Create a remote sky to function as a client.
-  sky::Arena remoteArena{arena.captureInitializer(), 0};
+  sky::Arena remoteArena{arena.captureInitializer(), PID(0)};
   sky::Sky remoteSky{remoteArena, nullMap, sky.captureInitializer()};
   auto &remotePlayer = *remoteArena.getPlayer(0);
   auto &remoteParticip = remoteSky.getParticipation(remotePlayer);
@@ -202,7 +202,7 @@ TEST_F(SkyTest, EntityTest) {
   ASSERT_EQ(sky.getEntities().size(), 1);
 
   // The entity is copied to a client through the initialization protocol.
-  sky::Arena remoteArena{arena.captureInitializer(), 0};
+  sky::Arena remoteArena{arena.captureInitializer(), PID(0)};
   sky::Sky remoteSky{remoteArena, nullMap, sky.captureInitializer()};
   ASSERT_EQ(remoteSky.getEntities().size(), 1);
 
