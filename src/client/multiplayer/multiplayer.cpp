@@ -176,4 +176,8 @@ void Multiplayer::signalClear() {
   if (view) view->signalClear();
 }
 
+std::string Multiplayer::getQuittingReason() const {
+  return core.getDisconnectReason();
+}
+
 

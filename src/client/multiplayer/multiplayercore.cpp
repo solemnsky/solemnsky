@@ -78,6 +78,11 @@ sky::Sky *ArenaConnection::getSky() {
  * MultiplayerCore.
  */
 
+void MultiplayerCore::effectDisconnection(const std::string &disconnectReason) {
+  disconnected = true;
+  this->disconnectReason = disconnectReason;
+}
+
 void MultiplayerCore::onStartGame() {
 
 }
@@ -181,7 +186,7 @@ bool MultiplayerCore::pollNetwork() {
   if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
     server = nullptr;
     appLog("Disconnected from server!", LogOrigin::Client);
-    disconnected = true;
+    effectDisconnection("Disconnected through protocol.");
     return true;
   }
 
@@ -211,7 +216,7 @@ MultiplayerCore::MultiplayerCore(
     observer(listener),
     askedConnection(false),
     askedSky(false),
-    disconnectTimeout(1),
+    disconnectTimer(1),
 
     host(tg::HostType::Client),
     server(nullptr),
@@ -268,9 +273,9 @@ void MultiplayerCore::disconnect() {
   if (server) {
     host.disconnect(server);
     disconnecting = true;
-    disconnectTimeout.reset();
+    disconnectTimer.reset();
   } else {
-    disconnected = true;
+    effectDisconnection("Aborted connection to server.");
   }
 }
 
@@ -325,9 +330,9 @@ void MultiplayerCore::tick(const float delta) {
   }
 
   if (disconnecting) {
-    if (disconnectTimeout.cool(delta)) {
+    if (disconnectTimer.tick(delta)) {
       appLog("Disconnected from unresponsive server!", LogOrigin::Client);
-      disconnected = true;
+      effectDisconnection("Disconnected from unresponsive server.");
     }
   }
 }
@@ -353,6 +358,10 @@ void MultiplayerCore::handleChatInput(const std::string &input) {
 
 void MultiplayerCore::requestTeamChange(const sky::Team team) {
   if (conn) transmit(sky::ClientPacket::ReqTeam(team));
+}
+
+std::string MultiplayerCore::getDisconnectReason() const {
+  return disconnectReason;
 }
 
 /**

@@ -111,7 +111,11 @@ ENetPeer *Host::connect(const std::string &address, const Port port) {
   ENetAddress eaddress;
   enet_address_set_host(&eaddress, address.c_str());
   eaddress.port = port;
+
+  // Set a fairly short timeout period on the peer.
   ENetPeer *peer = enet_host_connect(host, &eaddress, 1, 0);
+  enet_peer_timeout(peer, 0, 2000, 4000);
+
   return peer;
 }
 
@@ -161,10 +165,10 @@ std::string printAddress(const ENetAddress &addr) {
   convenient.addr = addr;
 
   return std::to_string(int(convenient.ch[0])) + "."
-       + std::to_string(int(convenient.ch[1])) + "."
-       + std::to_string(int(convenient.ch[2])) + "."
-       + std::to_string(int(convenient.ch[3])) + ":"
-       + std::to_string(int(addr.port));
+      + std::to_string(int(convenient.ch[1])) + "."
+      + std::to_string(int(convenient.ch[2])) + "."
+      + std::to_string(int(convenient.ch[3])) + ":"
+      + std::to_string(int(addr.port));
 }
 
 }

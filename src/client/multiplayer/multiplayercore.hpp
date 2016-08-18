@@ -117,7 +117,11 @@ class MultiplayerCore: public ClientComponent {
   optional<MultiplayerSubsystem> proxySubsystem;
   bool askedConnection;
   bool askedSky;
-  Cooldown disconnectTimeout;
+  Scheduler disconnectTimer;
+
+  // Reason for disconnection.
+  std::string disconnectReason;
+  void effectDisconnection(const std::string &disconnectReason);
 
   tg::Telegraph<sky::ServerPacket> telegraph;
   tg::Host host;
@@ -171,6 +175,9 @@ class MultiplayerCore: public ClientComponent {
   void rcon(const std::string &command);
   void handleChatInput(const std::string &input);
   void requestTeamChange(const sky::Team team);
+
+  std::string getDisconnectReason() const;
+
 };
 
 /**
