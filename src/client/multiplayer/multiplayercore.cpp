@@ -67,8 +67,8 @@ ArenaConnection::ArenaConnection(
     skyHandle(arena, skyHandleInit),
     scoreboard(arena, scoreboardInit),
     player(*arena.getPlayer(pid)),
-    debugView(arena, skyHandle, pid),
-    skyDeltaControl(sky::FlowControlSettings()) { }
+    skyDeltaCache(arena, skyHandle),
+    debugView(arena, skyHandle, pid) { }
 
 sky::Sky *ArenaConnection::getSky() {
   return skyHandle.getSky();
@@ -135,7 +135,7 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
 
     case ServerPacket::Type::DeltaSky: {
       if (const auto sky = conn->skyHandle.getSky()) {
-        sky->applyDelta(packet.skyDelta.get());
+        conn->skyDeltaCache.receive(packet.timestamp.get(), packet.skyDelta.get());
       } else {
         appLog("Received sky delta packet before sky was initialized! "
                    "This should NEVER happen!", LogOrigin::Error);
@@ -285,6 +285,10 @@ void MultiplayerCore::poll() {
   }
 
   while (!pollNetwork()) { }
+
+  if (conn) {
+    conn->arena.poll();
+  }
 }
 
 void MultiplayerCore::tick(const float delta) {

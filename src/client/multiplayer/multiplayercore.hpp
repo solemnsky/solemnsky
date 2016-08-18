@@ -28,6 +28,7 @@
 #include "client/elements/elements.hpp"
 #include "client/elements/clientui.hpp"
 #include "engine/flowcontrol.hpp"
+#include "client/engine/skydeltacache.hpp"
 
 /**
  * ArenaLogger proxy for MultiplayerCore, to intercept arena events for
@@ -79,8 +80,7 @@ struct ArenaConnection {
   sky::SkyHandle skyHandle;
   sky::Scoreboard scoreboard;
   sky::Player &player;
-  SkyDeltaManager deltaManager;
-
+  sky::SkyDeltaCache skyDeltaCache;
   sky::DebugView debugView;
 
   // Handy accessors.
