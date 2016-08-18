@@ -28,10 +28,20 @@ namespace sky {
  * State of a FlowControl, governing what messages to pull.
  */
 struct FlowControlSettings {
-  FlowControlSettings(); // agnostic defaults
+  FlowControlSettings(); // null defaults
 
-  optional<Time> windowEntry;
-  TimeDiff windowSize;
+  optional<Time> windowEntry; // Pull when localtime is ahead of timestamp by this amount.
+  optional<TimeDiff> windowSize; // Discard messages that have passed this allowance period.
+
+  // ---------------------- remote time
+  // message ^
+  //         -------------- localtime - timestamp (+ offset)
+  //            reception ^
+  // ---------------------- local time
+
+  // This caches messages so that all receptions have (localtime - timestamp (+ offset) >= windowEntry
+  // (+ offset)) and do not exceed this value + windowSize.
+
 
 };
 
@@ -79,7 +89,7 @@ class FlowControl {
   }
 
   void reset() {
-    if (!messages.empty()) messages = {};
+    if (!messages.empty()) messages = std::queue<std::pair<Time, Message>>();
   }
 
 };

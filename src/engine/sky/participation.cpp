@@ -174,6 +174,7 @@ bool Participation::isSpawned() const {
 }
 
 void Participation::doAction(const Action action, bool actionState) {
+  assert(role.client());
   controls.doAction(action, actionState);
 }
 

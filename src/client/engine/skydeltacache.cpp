@@ -23,7 +23,7 @@ namespace sky {
 SkyDeltaCache::SkyDeltaCache(Arena &arena, SkyHandle &skyHandle) :
     Subsystem(arena), skyHandle(skyHandle), deltaControl({}) { }
 
-void SkyDeltaCache::receiveDelta(const Time timestamp, const SkyDelta &delta) {
+void SkyDeltaCache::receive(const Time timestamp, const SkyDelta &delta) {
   deltaControl.push(timestamp, delta);
 }
 

@@ -77,8 +77,8 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::ReqInput: {
-        inputManager.cacheInput(*player, packet.timestamp.get(),
-                                packet.participationInput.get());
+        inputManager.receive(*player, packet.timestamp.get(),
+                             packet.participationInput.get());
         break;
       }
 

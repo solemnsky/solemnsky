@@ -134,11 +134,11 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
     }
 
     case ServerPacket::Type::DeltaSky: {
-      if (const auto sky = conn->skyHandle.getSky()) {
+      if (conn->skyHandle.getSky()) {
         conn->skyDeltaCache.receive(packet.timestamp.get(), packet.skyDelta.get());
       } else {
         appLog("Received sky delta packet before sky was initialized! "
-                   "This should NEVER happen!", LogOrigin::Error);
+                   "The server is at fault and is likely broken.", LogOrigin::Error);
       }
       break;
     }

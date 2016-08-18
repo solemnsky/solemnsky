@@ -57,8 +57,8 @@ class SkyInputManager: public Subsystem<PlayerInputManager> {
  public:
   SkyInputManager(ServerShared &shared);
 
-  void receiveInput(sky::Player &player, const Time timestamp,
-                    const sky::ParticipationInput &input);
+  void receive(sky::Player &player, const Time timestamp,
+               const sky::ParticipationInput &input);
 
 };
 

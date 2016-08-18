@@ -37,11 +37,8 @@ class SkyDeltaCache: public Subsystem<Nothing> {
  public:
   SkyDeltaCache(Arena &arena, SkyHandle &skyHandle);
 
-  void receiveDelta(const Time timestamp, const SkyDelta &delta);
+  void receive(const Time timestamp, const SkyDelta &delta);
 
 };
 
 }
-
-}
-

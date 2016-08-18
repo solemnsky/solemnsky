@@ -59,7 +59,7 @@ void SkyInputManager::onPoll() {
 SkyInputManager::SkyInputManager(ServerShared &shared) :
     Subsystem(shared.arena), shared(shared) { }
 
-void SkyInputManager::receiveInput(
+void SkyInputManager::receive(
     sky::Player &player, const Time timestamp,
     const sky::ParticipationInput &input) {
   getPlayerData(player).cacheInput(timestamp, input);

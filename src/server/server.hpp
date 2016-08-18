@@ -82,7 +82,7 @@ class ServerExec {
   tg::Host host;
   tg::Telegraph<sky::ClientPacket> telegraph;
   ServerShared shared;
-  SkyInputManager inputManager;
+  sky::SkyInputManager inputManager;
 
   // Packet scheduling.
   Scheduler skyDeltaSchedule,

@@ -23,18 +23,22 @@ namespace sky {
 /**
  * FlowControlSettings.
  */
-FlowControlSettings::FlowControlSettings() :
-    windowSize(0.1) { }
+FlowControlSettings::FlowControlSettings() { }
 
 namespace detail {
 
 bool pullMessage(const FlowControlSettings &settings,
                  const Time localtime,
                  const Time timestamp) {
-  if (settings.windowEntry)
-    return inRange<Time>(
-        (localtime - timestamp) - *settings.windowEntry,
-        0, settings.windowSize);
+  if (settings.windowEntry) {
+    if (settings.windowSize) {
+      return localtime - timestamp > *settings.windowEntry;
+    } else {
+      return inRange<Time>(
+          (localtime - timestamp) - *settings.windowEntry,
+          0, *settings.windowSize);
+    }
+  }
   return true;
 }
 
