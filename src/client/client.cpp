@@ -130,7 +130,7 @@ void Client::renderUI(ui::Frame &f) {
           style.menu.closeButtonOffset - sf::Vector2f(10, 0),
           [&](ui::TextFrame &tf) {
             tf.setColor(style.menu.statusFontColor);
-            tf.print(quittingReason);
+            tf.print("(" + quittingReason + ")");
           }, style.menu.gameDescText, resources.defaultFont);
     }
   }

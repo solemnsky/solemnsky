@@ -291,3 +291,9 @@ void Sandbox::printDebugLeft(Printer &p) {
 void Sandbox::printDebugRight(Printer &p) {
   debugView.printSkyReport(p);
 }
+
+std::string Sandbox::getQuittingReason() const {
+  return "Exited sandbox.";
+}
+
+

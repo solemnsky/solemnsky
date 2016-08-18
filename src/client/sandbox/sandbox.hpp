@@ -125,4 +125,8 @@ class Sandbox: public Game {
   void reset() override final;
   void signalRead() override final;
   void signalClear() override final;
+
+  // Game impl.
+  std::string getQuittingReason() const override final;
+
 };
