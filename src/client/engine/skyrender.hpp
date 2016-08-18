@@ -21,7 +21,7 @@
 #pragma once
 #include <list>
 #include <SFML/Graphics.hpp>
-#include "elements/elements.hpp"
+#include "client/elements/elements.hpp"
 #include "ui/resources.hpp"
 #include "ui/control.hpp"
 #include "ui/sheet.hpp"
@@ -42,8 +42,10 @@ struct PlaneGraphics {
   Angle roll() const;
 
   void tick(const float delta);
-  void kill();
-  void spawn();
+
+  void onSpawn();
+  void onKill();
+
 };
 
 /**
@@ -81,6 +83,9 @@ class SkyRender
   void registerPlayer(Player &player) override final;
   void unregisterPlayer(Player &player) override final;
   void onTick(const float delta) override final;
+
+  void onSpawn(Player &player) override final;
+  void onKill(Player &player) override final;
 
  public:
   SkyRender(ClientShared &shared,

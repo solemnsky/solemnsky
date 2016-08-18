@@ -148,11 +148,11 @@ void Plane::postPhysics(const TimeDiff delta) {
 }
 
 void Plane::onBeginContact(const BodyTag &body) {
-  if (body.type == BodyTag::Type::PropTag) {
-    if (*body.player != player) {
-      state.health = 0;
-    }
-  }
+//  if (body.type == BodyTag::Type::PropTag) {
+//    if (*body.player != player) {
+//      state.health = 0;
+//    }
+//  }
 }
 
 void Plane::onEndContact(const BodyTag &body) {
@@ -170,7 +170,7 @@ Plane::Plane(Player &player,
     tuning(tuning),
     state(state),
     body(physics.createBody(Shape::Rectangle(tuning.hitbox),
-                            BodyTag::PlaneTag(*this, player), true)),
+                            BodyTag::PlaneTag(*this), true)),
     player(player) {
   state.physical.hardWriteToBody(physics, body);
   body->SetGravityScale(state.stalled ? 1 : 0);

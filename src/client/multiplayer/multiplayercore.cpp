@@ -67,6 +67,7 @@ ArenaConnection::ArenaConnection(
     skyHandle(arena, skyHandleInit),
     scoreboard(arena, scoreboardInit),
     player(*arena.getPlayer(pid)),
+    skyDeltaCache(arena, skyHandle),
     debugView(arena, skyHandle, pid) { }
 
 sky::Sky *ArenaConnection::getSky() {
@@ -76,6 +77,11 @@ sky::Sky *ArenaConnection::getSky() {
 /**
  * MultiplayerCore.
  */
+
+void MultiplayerCore::effectDisconnection(const std::string &disconnectReason) {
+  disconnected = true;
+  this->disconnectReason = disconnectReason;
+}
 
 void MultiplayerCore::onStartGame() {
 
@@ -133,11 +139,11 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
     }
 
     case ServerPacket::Type::DeltaSky: {
-      if (const auto sky = conn->skyHandle.getSky()) {
-        sky->applyDelta(packet.skyDelta.get());
+      if (conn->skyHandle.getSky()) {
+        conn->skyDeltaCache.receive(packet.timestamp.get(), packet.skyDelta.get());
       } else {
         appLog("Received sky delta packet before sky was initialized! "
-                   "This should NEVER happen!", LogOrigin::Error);
+                   "The server is at fault and is likely broken.", LogOrigin::Error);
       }
       break;
     }
@@ -180,7 +186,11 @@ bool MultiplayerCore::pollNetwork() {
   if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
     server = nullptr;
     appLog("Disconnected from server!", LogOrigin::Client);
-    disconnected = true;
+    if (disconnecting) {
+      effectDisconnection("Requested disconnection.");
+    } else {
+      effectDisconnection("Forced disconnection by server!");
+    }
     return true;
   }
 
@@ -210,7 +220,7 @@ MultiplayerCore::MultiplayerCore(
     observer(listener),
     askedConnection(false),
     askedSky(false),
-    disconnectTimeout(1),
+    disconnectTimer(1),
 
     host(tg::HostType::Client),
     server(nullptr),
@@ -267,14 +277,14 @@ void MultiplayerCore::disconnect() {
   if (server) {
     host.disconnect(server);
     disconnecting = true;
-    disconnectTimeout.reset();
+    disconnectTimer.reset();
   } else {
-    disconnected = true;
+    effectDisconnection("Aborted connection to server.");
   }
 }
 
-bool MultiplayerCore::poll() {
-  if (disconnected) return true;
+void MultiplayerCore::poll() {
+  if (disconnected) return;
 
   if (server && !askedConnection) {
     // we have a link but haven't sent an arena connection request
@@ -284,7 +294,10 @@ bool MultiplayerCore::poll() {
   }
 
   while (!pollNetwork()) { }
-  return true;
+
+  if (conn) {
+    conn->arena.poll();
+  }
 }
 
 void MultiplayerCore::tick(const float delta) {
@@ -297,7 +310,7 @@ void MultiplayerCore::tick(const float delta) {
       if (participationUpdateSchedule.tick(delta)) {
         const auto input = sky->getParticipation(conn->player).collectInput();
         if (input) {
-          transmit(sky::ClientPacket::ReqInput(input.get()));
+          transmit(sky::ClientPacket::ReqInput(input.get(), conn->arena.getUptime()));
           participationUpdateSchedule.reset();
         }
       }
@@ -321,9 +334,9 @@ void MultiplayerCore::tick(const float delta) {
   }
 
   if (disconnecting) {
-    if (disconnectTimeout.cool(delta)) {
+    if (disconnectTimer.tick(delta)) {
       appLog("Disconnected from unresponsive server!", LogOrigin::Client);
-      disconnected = true;
+      effectDisconnection("Disconnected from unresponsive server.");
     }
   }
 }
@@ -349,6 +362,10 @@ void MultiplayerCore::handleChatInput(const std::string &input) {
 
 void MultiplayerCore::requestTeamChange(const sky::Team team) {
   if (conn) transmit(sky::ClientPacket::ReqTeam(team));
+}
+
+std::string MultiplayerCore::getDisconnectReason() const {
+  return disconnectReason;
 }
 
 /**

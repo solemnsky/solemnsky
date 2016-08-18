@@ -66,3 +66,7 @@ void Game::printDebugLeft(Printer &p) {
 void Game::printDebugRight(Printer &p) {
   p.printLn("undefined!");
 }
+
+std::string Game::getQuittingReason() const {
+  return "";
+}

@@ -163,13 +163,19 @@ add_executable(solemnsky_server
         src/server/servers/vanilla.cpp
         src/server/servers/vanilla.hpp
 
-        src/server/latencytracker.cpp
-        src/server/latencytracker.hpp
+        src/server/engine/latencytracker.cpp
+        src/server/engine/latencytracker.hpp
+
+        src/server/engine/skyinputcache.cpp
+        src/server/engine/skyinputcache.hpp
 
         src/server/main.cpp
 
         src/server/server.cpp
         src/server/server.hpp
+
+        src/server/servershared.cpp
+        src/server/servershared.hpp
         )
 target_link_libraries(solemnsky_server
         solemnsky
@@ -189,6 +195,12 @@ add_executable(solemnsky_client
 
         src/client/elements/style.cpp
         src/client/elements/style.hpp
+
+        src/client/engine/skydeltacache.cpp
+        src/client/engine/skydeltacache.hpp
+
+        src/client/engine/skyrender.cpp
+        src/client/engine/skyrender.hpp
 
         src/client/multiplayer/multiplayer.cpp
         src/client/multiplayer/multiplayer.hpp
@@ -224,9 +236,6 @@ add_executable(solemnsky_client
         src/client/settingspage.hpp
 
         src/client/main.cpp
-
-        src/client/skyrender.cpp
-        src/client/skyrender.hpp
 
         src/ui/widgets/button.cpp
         src/ui/widgets/button.hpp

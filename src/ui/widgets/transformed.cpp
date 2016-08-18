@@ -23,8 +23,8 @@ namespace ui {
 TransformedBase::TransformedBase(Control &ctrl, const sf::Transform &transform) :
     Control(ctrl.references), ctrl(ctrl), transform(transform) {}
 
-bool TransformedBase::poll() {
-  return ctrl.poll();
+void TransformedBase::poll() {
+  ctrl.poll();
 }
 
 void TransformedBase::tick(const TimeDiff delta) {

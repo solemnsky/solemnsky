@@ -38,7 +38,7 @@ class TransformedBase : public Control {
   TransformedBase(Control &ctrl, const sf::Transform &transform);
 
   // Control impl.
-  virtual bool poll() override;
+  virtual void poll() override;
   virtual void tick(const TimeDiff delta) override;
   virtual void render(Frame &f) override;
   virtual bool handle(const sf::Event &event) override;

@@ -21,7 +21,7 @@
 #pragma once
 #include "client/elements/elements.hpp"
 #include "engine/sky/sky.hpp"
-#include "client/skyrender.hpp"
+#include "client/engine/skyrender.hpp"
 #include "engine/debugview.hpp"
 #include "ui/widgets.hpp"
 #include "client/elements/clientui.hpp"
@@ -118,10 +118,15 @@ class Sandbox: public Game {
   virtual void printDebugRight(Printer &p) override final;
 
   // Control impl.
+  void poll() override final;
   void tick(const TimeDiff delta) override final;
   void render(ui::Frame &f) override final;
   bool handle(const sf::Event &event) override final;
   void reset() override final;
   void signalRead() override final;
   void signalClear() override final;
+
+  // Game impl.
+  std::string getQuittingReason() const override final;
+
 };

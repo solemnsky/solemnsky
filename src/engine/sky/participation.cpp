@@ -22,6 +22,7 @@
 #include "participation.hpp"
 #include "util/printer.hpp"
 #include "util/methods.hpp"
+#include "engine/arena.hpp"
 
 namespace sky {
 
@@ -62,13 +63,15 @@ ParticipationDelta ParticipationDelta::respectClientAuthority() const {
  * Participation.
  */
 
-void Participation::spawnWithState(const PlaneTuning &tuning,
-                                   const PlaneState &state) {
+void Participation::effectSpawn(const PlaneTuning &tuning,
+                                const PlaneState &state) {
   plane.emplace(player, physics, controls, tuning, state);
+  caller.doSpawn(player);
 }
 
-void Participation::doAction(const Action action, bool actionState) {
-  controls.doAction(action, actionState);
+void Participation::effectKill() {
+  plane.reset();
+  caller.doKill(player);
 }
 
 void Participation::prePhysics() {
@@ -82,27 +85,22 @@ void Participation::postPhysics(const float delta) {
   if (plane) plane->postPhysics(delta);
 }
 
-void Participation::spawn(const PlaneTuning &tuning,
-                          const sf::Vector2f &pos,
-                          const float rot) {
-  spawnWithState(tuning, PlaneState(tuning, pos, rot));
-  newlyAlive = true;
-}
-
 Participation::Participation(Player &player,
                              Physics &physics,
                              Role &role,
+                             SubsystemCaller &caller,
                              const ParticipationInit &initializer) :
     AutoNetworked(initializer),
     physics(physics),
     role(role),
+    caller(caller),
     controls(initializer.controls),
     newlyAlive(false),
     newlyDead(false),
     lastControls(initializer.controls),
     player(player) {
   if (initializer.spawn)
-    spawnWithState(initializer.spawn->first, initializer.spawn->second);
+    effectSpawn(initializer.spawn->first, initializer.spawn->second);
 }
 
 void Participation::applyDelta(const ParticipationDelta &delta) {
@@ -110,13 +108,13 @@ void Participation::applyDelta(const ParticipationDelta &delta) {
 
   // Apply plane spawn / state.
   if (delta.spawn) {
-    spawnWithState(delta.spawn->first, delta.spawn->second);
+    effectSpawn(delta.spawn->first, delta.spawn->second);
   } else {
     if (plane) {
       if (delta.state) plane->state = delta.state.get();
       else if (delta.serverState)
         plane->state.applyServer(delta.serverState.get());
-      else plane.reset();
+      else effectKill();
     }
   }
 
@@ -175,13 +173,27 @@ bool Participation::isSpawned() const {
   return bool(plane);
 }
 
+void Participation::doAction(const Action action, bool actionState) {
+  assert(role.client());
+  controls.doAction(action, actionState);
+}
+
 void Participation::suicide() {
   assert(role.server());
   if (plane) {
     newlyDead = true;
-    plane.reset();
+    effectKill();
   }
 }
+
+void Participation::spawn(const PlaneTuning &tuning,
+                          const sf::Vector2f &pos,
+                          const float rot) {
+  assert(role.server());
+  effectSpawn(tuning, PlaneState(tuning, pos, rot));
+  newlyAlive = true;
+}
+
 
 void Participation::applyInput(const ParticipationInput &input) {
   assert(role.server());

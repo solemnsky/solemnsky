@@ -54,11 +54,12 @@ SplashScreen::SplashScreen(
   loader.loadAllThreaded();
 }
 
-bool SplashScreen::poll() {
-  if (loader.getErrorStatus()) return true;
+void SplashScreen::poll() {
+  if (loader.getErrorStatus()) return;
 
   if (control) quitting = control->quitting;
-  return Control::poll();
+
+  Control::poll();
 }
 
 void SplashScreen::tick(const TimeDiff delta) {

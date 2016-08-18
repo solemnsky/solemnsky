@@ -28,11 +28,11 @@ namespace ui {
 
 Profiler::Profiler(const unsigned int size) :
     cycleTime(size), logicTime(size),
-    renderTime(size), primCount(size) {}
+    renderTime(size), primCount(size) { }
 
 ProfilerSnapshot::ProfilerSnapshot(const Profiler &profiler) :
     cycleTime(profiler.cycleTime), logicTime(profiler.logicTime),
-    renderTime(profiler.renderTime) {}
+    renderTime(profiler.renderTime) { }
 
 /**
  * AppState.
@@ -47,7 +47,7 @@ AppRefs::AppRefs(Settings &settings,
     resources(resources),
     uptime(time),
     window(window),
-    profiler(profiler) {}
+    profiler(profiler) { }
 
 double AppRefs::timeSince(const Time event) const {
   return uptime - event;
@@ -65,13 +65,10 @@ Control::Control(const AppRefs &references) :
     references(references),
     resources(references.resources),
     settings(references.settings),
-    quitting(false) {}
+    quitting(false) { }
 
-bool Control::poll() {
-  for (auto child : children) {
-    while (!child->poll()) {};
-  }
-  return true;
+void Control::poll() {
+  for (auto child : children) child->poll();
 }
 
 void Control::tick(const TimeDiff delta) {
@@ -110,7 +107,8 @@ void ControlExec::tick() {
 
   profileClock.restart();
   rollingTickTime += cycleDelta;
-  while (!ctrl->poll()) {}
+  ctrl->poll();
+
   while (rollingTickTime > tickStep) {
     ctrl->tick(tickStep);
     rollingTickTime -= tickStep;

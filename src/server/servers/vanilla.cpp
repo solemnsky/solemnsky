@@ -128,9 +128,10 @@ void VanillaServer::onPacket(ENetPeer *const client,
       }
 
       //Spawn them
-      if (!sky->getParticipation(player).isSpawned()) {
+      auto &particip = sky->getParticipation(player);
+      if (!particip.isSpawned()) {
         auto sp = sky->getMap().pickSpawnPoint(player.getTeam());
-        player.spawn({}, sp.pos, sp.angle);
+        particip.spawn({}, sp.pos, sp.angle);
       }
     }
   }

@@ -66,7 +66,7 @@ struct ClientPacket : public VerifyStructure {
         break;
       }
       case Type::ReqInput: {
-        ar(participationInput);
+        ar(participationInput, timestamp);
         break;
       };
       case Type::ReqTeam: {
@@ -91,7 +91,7 @@ struct ClientPacket : public VerifyStructure {
   ClientPacket(const Type type);
 
   Type type;
-  optional<Time> pingTime, pongTime;
+  optional<Time> pingTime, pongTime, timestamp;
   optional<std::string> stringData;
   optional<PlayerDelta> playerDelta;
   optional<Team> team;
@@ -104,7 +104,7 @@ struct ClientPacket : public VerifyStructure {
   static ClientPacket ReqJoin(const std::string &nickname);
   static ClientPacket ReqSky();
   static ClientPacket ReqPlayerDelta(const PlayerDelta &playerDelta);
-  static ClientPacket ReqInput(const ParticipationInput &input);
+  static ClientPacket ReqInput(const ParticipationInput &input, const Time timestamp);
   static ClientPacket ReqTeam(const Team team);
   static ClientPacket ReqSpawn();
   static ClientPacket Chat(const std::string &message);

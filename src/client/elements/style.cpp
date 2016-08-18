@@ -108,7 +108,9 @@ Style::Menu::Menu(const Style::Base &base) :
     gameDescText(base.normalText),
 
     menuInGameFade(0.7),
-    menuNormalFade(0.9) {
+    menuNormalFade(0.9),
+
+    quitDescriptionFade(5) {
   highButtonStyle.fontSize = 50;
   highButtonStyle.dimensions.y = 70;
 

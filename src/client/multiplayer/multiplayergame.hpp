@@ -30,7 +30,7 @@ class MultiplayerGame: public MultiplayerView {
  private:
   bool scoreboardFocused;
   sky::SkyRender skyRender;
-  const sky::Participation &participation;
+  sky::Participation &participation;
 
   // Helper subroutines.
   void printScores(ui::TextFrame &tf, const sky::Team team);

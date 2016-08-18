@@ -99,6 +99,7 @@ class Participation: public AutoNetworked<ParticipationInit, ParticipationDelta>
   // Parameters.
   Physics &physics;
   Role &role;
+  class SubsystemCaller &caller;
 
   // Game state.
   PlaneControls controls;
@@ -108,23 +109,20 @@ class Participation: public AutoNetworked<ParticipationInit, ParticipationDelta>
   PlaneControls lastControls;
 
   // Helpers.
-  void spawnWithState(const PlaneTuning &tuning,
-                      const PlaneState &state);
+  void effectSpawn(const PlaneTuning &tuning,
+                   const PlaneState &state);
+  void effectKill();
 
   // Sky API.
-  void doAction(const Action action, bool actionState);
   void prePhysics();
   void postPhysics(const float delta);
-
-  void spawn(const PlaneTuning &tuning,
-             const sf::Vector2f &pos,
-             const float rot);
 
  public:
   Participation() = delete;
   Participation(class Player &player,
                 Physics &physics,
                 Role &role,
+                class SubsystemCaller &caller,
                 const ParticipationInit &initializer);
 
   // State.
@@ -140,8 +138,13 @@ class Participation: public AutoNetworked<ParticipationInit, ParticipationDelta>
   const PlaneControls &getControls() const;
   bool isSpawned() const;
 
+  // User API, client-side.
+  void doAction(const Action action, bool actionState);
+
   // User API, server-side.
   void suicide();
+  void spawn(const PlaneTuning &tuning,
+             const sf::Vector2f &pos, const float rot);
 
   // ParticipationInput.
   void applyInput(const ParticipationInput &input);

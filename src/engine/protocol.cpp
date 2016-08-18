@@ -24,8 +24,8 @@ namespace sky {
  * ClientPacket.
  */
 
-ClientPacket::ClientPacket() : ClientPacket(Type()) {}
-ClientPacket::ClientPacket(const Type type) : type(type) {}
+ClientPacket::ClientPacket() : ClientPacket(Type()) { }
+ClientPacket::ClientPacket(const Type type) : type(type) { }
 
 bool ClientPacket::verifyStructure() const {
   switch (type) {
@@ -38,7 +38,7 @@ bool ClientPacket::verifyStructure() const {
     case Type::ReqPlayerDelta:
       return verifyRequiredOptionals(playerDelta);
     case Type::ReqInput:
-      return verifyRequiredOptionals(participationInput);
+      return verifyRequiredOptionals(participationInput, timestamp);
     case Type::ReqTeam:
       return verifyRequiredOptionals(team);
     case Type::ReqSpawn:
@@ -75,9 +75,11 @@ ClientPacket ClientPacket::ReqPlayerDelta(const PlayerDelta &playerDelta) {
   return packet;
 }
 
-ClientPacket ClientPacket::ReqInput(const ParticipationInput &input) {
+ClientPacket ClientPacket::ReqInput(const ParticipationInput &input,
+                                    const Time timestamp) {
   ClientPacket packet(Type::ReqInput);
   packet.participationInput = input;
+  packet.timestamp = timestamp;
   return packet;
 }
 
@@ -107,9 +109,9 @@ ClientPacket ClientPacket::RCon(const std::string &command) {
  * ServerPacket.
  */
 
-ServerPacket::ServerPacket() : ServerPacket(Type()) {}
+ServerPacket::ServerPacket() : ServerPacket(Type()) { }
 
-ServerPacket::ServerPacket(const Type type) : type(type) {}
+ServerPacket::ServerPacket(const Type type) : type(type) { }
 
 bool ServerPacket::verifyStructure() const {
   switch (type) {

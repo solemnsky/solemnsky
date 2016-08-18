@@ -16,86 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "server.hpp"
-#include "util/printer.hpp"
-
-/**
- * ServerShared.
- */
-
-ServerShared::ServerShared(
-    tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph,
-    const sky::ArenaInit &arenaInit) :
-    arena(arenaInit), // initialize engine state
-    skyHandle(arena, {}),
-    scoreboard(arena, {}),
-
-    host(host),
-    telegraph(telegraph) { }
-
-sky::Player *ServerShared::playerFromPeer(ENetPeer *peer) const {
-  if (peer->data) return (sky::Player *) peer->data;
-  else return nullptr;
-}
-
-void ServerShared::registerArenaDelta(const sky::ArenaDelta &arenaDelta) {
-  arena.applyDelta(arenaDelta);
-  sendToClients(sky::ServerPacket::DeltaArena(arenaDelta));
-}
-
-void ServerShared::registerGameStart() {
-  skyHandle.start();
-  registerArenaDelta(sky::ArenaDelta::ResetEnvLoad());
-}
-
-void ServerShared::registerGameEnd() {
-  skyHandle.stop();
-}
-
-void ServerShared::sendToClients(const sky::ServerPacket &packet) {
-  telegraph.transmit(
-      host,
-      [&](
-          std::function<void(ENetPeer *const)> transmit) {
-        for (auto const peer : host.getPeers()) { transmit(peer); }
-      }, packet);
-}
-
-void ServerShared::sendToClientsExcept(const PID pid,
-                                       const sky::ServerPacket &packet) {
-  telegraph.transmit(
-      host,
-      [&](
-          std::function<void(ENetPeer *const)> transmit) {
-        for (auto const peer : host.getPeers()) {
-          if (sky::Player *player = playerFromPeer(peer)) {
-            if (player->pid != pid) transmit(peer);
-          }
-        }
-      }, packet);
-}
-
-void ServerShared::sendToClient(ENetPeer *const client,
-                                const sky::ServerPacket &packet) {
-  telegraph.transmit(host, client, packet);
-}
-
-void ServerShared::rconResponse(ENetPeer *const client,
-                                const std::string &response) {
-  sendToClient(client, sky::ServerPacket::RCon(response));
-  logEvent(ServerEvent::RConOut(response));
-}
-
-void ServerShared::logEvent(const ServerEvent &event) {
-  StringPrinter p;
-  event.print(p);
-  appLog(p.getString(), LogOrigin::Server);
-}
-
-void ServerShared::logArenaEvent(const sky::ArenaEvent &event) {
-  StringPrinter p;
-  event.print(p);
-  appLog(p.getString(), LogOrigin::Engine);
-}
 
 /**
  * ServerLogger.
@@ -132,6 +52,7 @@ void ServerExec::processPacket(ENetPeer *client,
         }
         break;
       }
+
       case ClientPacket::Type::Pong: {
         latencyTracker.registerPong(*player,
                                     packet.pingTime.get(),
@@ -156,10 +77,8 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::ReqInput: {
-        if (const auto sky = shared.skyHandle.getSky()) {
-          sky->getParticipation(*player).applyInput(
-              packet.participationInput.get());
-        }
+        inputManager.receive(*player, packet.timestamp.get(),
+                             packet.participationInput.get());
         break;
       }
 
@@ -246,8 +165,11 @@ void ServerExec::tick(const TimeDiff delta) {
     }
   }
 
-  // Tick game state and network host.
+  // Tick engine / subsystems forward.
+  shared.arena.poll();
   shared.arena.tick(delta);
+  // On the server there is no difference in the form that poll() and tick() are called.
+
   host.tick(delta);
 
   // SkyHandle updating.
@@ -306,6 +228,7 @@ ServerExec::ServerExec(
 
     host(tg::HostType::Server, port),
     shared(host, telegraph, arenaInit),
+    inputManager(shared),
 
     skyDeltaSchedule(1.0f / 25.0f),
     scoreDeltaSchedule(0.5f),

@@ -106,16 +106,6 @@ Time Player::getClockOffset() const {
   return clockOffset;
 }
 
-void Player::doAction(const Action action, const bool state) {
-  for (auto s : arena.subsystems) s.second->onAction(*this, action, state);
-}
-
-void Player::spawn(const PlaneTuning &tuning,
-                   const sf::Vector2f &pos,
-                   const float rot) {
-  for (auto s : arena.subsystems) s.second->onSpawn(*this, tuning, pos, rot);
-}
-
 bool operator==(const Player &x, const Player &y) {
   return x.pid == y.pid;
 }

@@ -112,10 +112,6 @@ class Player: public Networked<PlayerInitializer, PlayerDelta> {
   TimeDiff getLatency() const;
   Time getClockOffset() const;
 
-  void doAction(const Action action, const bool state);
-  void spawn(const PlaneTuning &tuning,
-             const sf::Vector2f &pos, const float rot);
-
 };
 
 /**

@@ -124,7 +124,7 @@ void MultiplayerGame::signalClear() {
 }
 
 void MultiplayerGame::handleSkyAction(const sky::Action action, const bool state) {
-  conn.player.doAction(action, state);
+  participation.doAction(action, state);
 }
 
 void MultiplayerGame::handleClientAction(const ui::ClientAction action,

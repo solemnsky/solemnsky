@@ -118,6 +118,7 @@ struct Style {
     // by escaping from the game (this opacity factor dissipates when a page
     // is focused)
     float menuNormalFade; // normal opacity of the menu UI
+    float quitDescriptionFade; // time it takes for the game quit description to fade out
 
     Menu(const Base &base);
   } menu;

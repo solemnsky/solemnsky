@@ -124,6 +124,15 @@ void Client::renderUI(ui::Frame &f) {
           tf.print(game->name);
         }, style.menu.gameDescText, resources.defaultFont);
     closeButton.render(f);
+  } else {
+    if (!quitDisplayTimer) {
+      f.drawText(
+          style.menu.closeButtonOffset - sf::Vector2f(10, 0),
+          [&](ui::TextFrame &tf) {
+            tf.setColor(style.menu.statusFontColor);
+            tf.print("(" + quittingReason + ")");
+          }, style.menu.gameDescText, resources.defaultFont);
+    }
   }
 
   f.withAlpha(
@@ -198,25 +207,27 @@ Client::Client(const ui::AppRefs &references) :
     listingPage(std::make_unique<ListingPage>(shared), sf::Transform()),
     settingsPage(std::make_unique<SettingsPage>(shared), sf::Transform()),
     tryingToQuit(false),
+    quitDisplayTimer(style.menu.quitDescriptionFade),
 
-    profilerCooldown(1) {
+    profileScheduler(1) {
+  quitDisplayTimer.prime();
   areChildren({&quitButton, &aboutButton, &closeButton, &backButton,
                &homePage, &listingPage, &settingsPage});
 }
 
-bool Client::poll() {
-  if (game) {
-    while (!game->poll()) { };
-  }
-  return ui::Control::poll();
+void Client::poll() {
+  if (game) game->poll();
+  ui::Control::poll();
 }
 
 void Client::tick(const float delta) {
   ui::Control::tick(delta);
 
-  if (profilerCooldown.cool(delta)) {
+  quitDisplayTimer.tick(delta);
+
+  if (profileScheduler.tick(delta)) {
     profilerSnap = ui::ProfilerSnapshot(references.profiler);
-    profilerCooldown.reset();
+    profileScheduler.reset();
   }
 
   uiState.pageFocusFactor += style.menu.pageFocusAnimSpeed
@@ -231,6 +242,8 @@ void Client::tick(const float delta) {
         quitting = true;
         return;
       }
+      quittingReason = game->getQuittingReason();
+      quitDisplayTimer.reset();
       game.reset();
       blurGame();
     }

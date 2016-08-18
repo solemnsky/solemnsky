@@ -45,14 +45,18 @@ class Client: public ui::Control {
   ClientUiState uiState;
   ClientShared shared; // interface reference
 
-  // Misc ui.
+  // Pages.
   ui::Transformed<HomePage> homePage;
   ui::Transformed<ListingPage> listingPage;
   ui::Transformed<SettingsPage> settingsPage;
   bool tryingToQuit; // trying to exit, waiting on the game to close
 
+  // Reason that we quitted the game.
+  std::string quittingReason;
+  Scheduler quitDisplayTimer;
+
   // Performance profiling.
-  Cooldown profilerCooldown;
+  Scheduler profileScheduler;
   ui::ProfilerSnapshot profilerSnap;
 
   // Internal helpers.
@@ -71,7 +75,7 @@ class Client: public ui::Control {
   Client(const ui::AppRefs &references);
 
   // Control impl.
-  bool poll() override final;
+  void poll() override final;
   void tick(TimeDiff delta) override final;
   void render(ui::Frame &f) override final;
   bool handle(const sf::Event &event) override final;

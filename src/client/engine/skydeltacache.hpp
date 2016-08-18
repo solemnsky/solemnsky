@@ -16,21 +16,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Interface used on server-side to push callbacks into the Sky game logic.
+ * Clientside subsystem to manage the timely application of SkyDeltas from the server.
  */
 #pragma once
 #include "engine/arena.hpp"
-#include "plane.hpp"
-#include "physics/physics.hpp"
+#include "engine/sky/skyhandle.hpp"
+#include "engine/flowcontrol.hpp"
 
 namespace sky {
 
-class SkyListener {
+class SkyDeltaCache: public Subsystem<Nothing> {
+ private:
+  SkyHandle &skyHandle;
+  FlowControl<SkyDelta> deltaControl;
+
  protected:
-  virtual void onCollide(Plane &plane, const BodyTag &body);
-  virtual void onEndCollide(Plane &plane, const BodyTag &body);
+  // Subsystem impl.
+  virtual void onPoll() override final;
+
+ public:
+  SkyDeltaCache(Arena &arena, SkyHandle &skyHandle);
+
+  void receive(const Time timestamp, const SkyDelta &delta);
 
 };
 
 }
-

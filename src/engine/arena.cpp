@@ -110,7 +110,7 @@ void SubsystemListener::registerPlayer(Player &) { }
 
 void SubsystemListener::unregisterPlayer(Player &) { }
 
-void SubsystemListener::onPoll(const TimeDiff) { }
+void SubsystemListener::onPoll() { }
 
 void SubsystemListener::onTick(const TimeDiff) { }
 
@@ -124,10 +124,9 @@ void SubsystemListener::onMapChange() { }
 
 void SubsystemListener::onDelta(Player &, const PlayerDelta &) { }
 
-void SubsystemListener::onAction(Player &, const Action, const bool) { }
+void SubsystemListener::onSpawn(Player &) { }
 
-void SubsystemListener::onSpawn(Player &, const PlaneTuning &,
-                                const sf::Vector2f &, const float) { }
+void SubsystemListener::onKill(Player &) { }
 
 void SubsystemListener::onStartGame() { }
 
@@ -139,6 +138,16 @@ void SubsystemListener::onEndGame() { }
 
 SubsystemCaller::SubsystemCaller(Arena &arena) :
     arena(arena) { }
+
+void SubsystemCaller::doSpawn(Player &player) {
+  for (const auto &pair : arena.subsystems)
+    pair.second->onSpawn(player);
+}
+
+void SubsystemCaller::doKill(Player &player) {
+  for (const auto &pair : arena.subsystems)
+    pair.second->onKill(player);
+}
 
 void SubsystemCaller::doStartGame() {
   for (const auto &pair : arena.subsystems)
@@ -435,13 +444,13 @@ std::string Arena::allocNewNickname(const Player &player,
   return allocNickname(requestedNick, player.pid);
 }
 
+void Arena::poll() {
+  for (auto s : subsystems) s.second->onPoll();
+}
+
 void Arena::tick(const TimeDiff delta) {
   uptime += Time(delta);
   for (auto s : subsystems) s.second->onTick(delta);
-}
-
-void Arena::poll(const TimeDiff delta) {
-  for (auto s : subsystems) s.second->onPoll(delta);
 }
 
 }

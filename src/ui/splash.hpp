@@ -55,7 +55,7 @@ class SplashScreen : public Control {
                std::function<std::unique_ptr<Control>(const AppRefs &)> mkApp);
 
   // Control impl.
-  bool poll() override final;
+  void poll() override final;
   void tick(const TimeDiff delta) override final;
   void render(Frame &f) override final;
   bool handle(const sf::Event &event) override final;

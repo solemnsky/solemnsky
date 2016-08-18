@@ -88,7 +88,7 @@ class Control {
 
  public:
   Control(const AppRefs &references);
-  virtual ~Control() {}
+  virtual ~Control() { }
 
   // Ref to reference struct, and aliases.
   const AppRefs &references;
@@ -99,8 +99,8 @@ class Control {
   bool quitting;
 
   // Callbacks.
-  virtual bool poll();
-  virtual void tick(const TimeDiff delta);
+  virtual void poll(); // Called once every update cycle.
+  virtual void tick(const TimeDiff delta); // Called in regular intervals.
   virtual void render(Frame &f);
   virtual bool handle(const sf::Event &event);
   virtual void reset();

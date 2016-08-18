@@ -24,7 +24,7 @@
 /**
  * Top-level multiplayer client.
  */
-class Multiplayer : public Game, public ConnectionObserver {
+class Multiplayer: public Game, public ConnectionObserver {
  private:
   // Arena connection state / protocol implementation.
   MultiplayerCore core;
@@ -56,12 +56,15 @@ class Multiplayer : public Game, public ConnectionObserver {
   void printDebugRight(Printer &p) override final;
 
   // Control impl.
-  bool poll() override;
+  void poll() override;
   void tick(const TimeDiff delta) override;
   void render(ui::Frame &f) override;
   bool handle(const sf::Event &event) override;
   void reset() override;
   void signalRead() override;
   void signalClear() override;
+
+  // Quitting reason.
+  std::string getQuittingReason() const override final;
 
 };

@@ -29,11 +29,11 @@ MultiplayerGameHandle::MultiplayerGameHandle(
   assert(conn.skyHandle.getEnvironment());
 }
 
-bool MultiplayerGameHandle::poll() {
+void MultiplayerGameHandle::poll() {
   if (gameView) {
-    return gameView->poll();
+    gameView->poll();
   } else {
-    return splash.poll();
+    splash.poll();
   }
 }
 

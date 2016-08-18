@@ -65,7 +65,7 @@ void Sky::registerPlayerWith(Player &player,
   participations.emplace(
       std::piecewise_construct,
       std::forward_as_tuple(player.pid),
-      std::forward_as_tuple(player, physics, role, initializer));
+      std::forward_as_tuple(player, physics, role, caller, initializer));
   setPlayerData(player, participations.find(player.pid)->second);
 }
 
@@ -104,21 +104,10 @@ void Sky::onTick(const TimeDiff delta) {
   zones.forData([delta](Zone &e, const PID) { e.postPhysics(delta); });
 }
 
-void Sky::onAction(Player &player, const Action action, const bool state) {
-  getPlayerData(player).doAction(action, state);
-}
-
-void Sky::onSpawn(Player &player,
-                  const PlaneTuning &tuning,
-                  const sf::Vector2f &pos,
-                  const float rot) {
-  getPlayerData(player).spawn(tuning, pos, rot);
-}
-
 void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
-  if (body1.type == BodyTag::Type::PlaneTag)
+  if (body1.type == BodyTag::Type::Plane)
     body1.plane->onBeginContact(body2);
-  if (body2.type == BodyTag::Type::PlaneTag)
+  if (body2.type == BodyTag::Type::Plane)
     body2.plane->onBeginContact(body1);
 
 //  for (auto s : arena.subsystems) {
@@ -128,9 +117,9 @@ void Sky::onBeginContact(const BodyTag &body1, const BodyTag &body2) {
 }
 
 void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
-  if (body1.type == BodyTag::Type::PlaneTag)
+  if (body1.type == BodyTag::Type::Plane)
     body1.plane->onEndContact(body2);
-  if (body2.type == BodyTag::Type::PlaneTag)
+  if (body2.type == BodyTag::Type::Plane)
     body2.plane->onEndContact(body1);
 
 //  for (auto s : arena.subsystems) {
@@ -140,6 +129,8 @@ void Sky::onEndContact(const BodyTag &body1, const BodyTag &body2) {
 }
 
 bool Sky::enableContact(const BodyTag &body1, const BodyTag &body2) {
+  return !(body1.type == BodyTag::Type::Plane &&
+      body2.type == BodyTag::Type::Plane);
 //  for (auto s : arena.subsystems) {
 //    if (s.second != this)
 //      if (!s.second->enableContact(body1, body2))
@@ -221,7 +212,7 @@ SkyInit Sky::captureInitializer() const {
 
 }
 
-optional <SkyDelta> Sky::collectDelta() {
+optional<SkyDelta> Sky::collectDelta() {
   assert(role.server());
 
   SkyDelta delta;
@@ -262,19 +253,19 @@ void Sky::changeSettings(const SkySettingsDelta &delta) {
   syncSettings();
 }
 
-Components <Entity> Sky::getEntities() {
+Components<Entity> Sky::getEntities() {
   return entities.getData();
 }
 
-Components <Explosion> Sky::getExplosions() {
+Components<Explosion> Sky::getExplosions() {
   return explosions.getData();
 }
 
-Components <HomeBase> Sky::getHomesBases() {
+Components<HomeBase> Sky::getHomesBases() {
   return homeBases.getData();
 }
 
-Components <Zone> Sky::getZones() {
+Components<Zone> Sky::getZones() {
   return zones.getData();
 }
 

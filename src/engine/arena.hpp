@@ -50,21 +50,22 @@ class SubsystemListener {
   virtual void registerPlayer(Player &player);
   virtual void unregisterPlayer(Player &player);
 
-  // Callbacks.
-  virtual void onPoll(const TimeDiff delta);
+  // General callbacks.
+  virtual void onPoll();
   virtual void onTick(const TimeDiff delta);
 
   virtual void onJoin(Player &player);
   virtual void onQuit(Player &player);
+
   virtual void onMode(const ArenaMode newMode);
   virtual void onMapChange();
+
   virtual void onDelta(Player &player,
                        const PlayerDelta &delta);
-  virtual void onAction(Player &player,
-                        const Action action, const bool state);
-  virtual void onSpawn(Player &player, const PlaneTuning &tuning,
-                       const sf::Vector2f &pos, const float rot);
-
+  
+  // Game callbacks.
+  virtual void onSpawn(Player &player);
+  virtual void onKill(Player &player);
   virtual void onStartGame();
   virtual void onEndGame();
 
@@ -79,6 +80,9 @@ class SubsystemCaller {
 
  public:
   SubsystemCaller(Arena &arena);
+
+  void doSpawn(Player &player);
+  void doKill(Player &player);
 
   void doStartGame();
   void doEndGame();
@@ -296,8 +300,8 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   Team autojoinTeam() const;
 
   // Ticking / polling.
+  void poll();
   void tick(const TimeDiff delta);
-  void poll(const TimeDiff delta);
 
   // Server-specific API.
   ArenaDelta connectPlayer(const std::string &requestedNick);

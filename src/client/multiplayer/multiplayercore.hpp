@@ -20,13 +20,15 @@
  */
 #pragma once
 #include "ui/control.hpp"
-#include "client/skyrender.hpp"
+#include "client/engine/skyrender.hpp"
 #include "util/telegraph.hpp"
 #include "engine/event.hpp"
 #include "engine/protocol.hpp"
 #include "engine/debugview.hpp"
 #include "client/elements/elements.hpp"
 #include "client/elements/clientui.hpp"
+#include "engine/flowcontrol.hpp"
+#include "client/engine/skydeltacache.hpp"
 
 /**
  * ArenaLogger proxy for MultiplayerCore, to intercept arena events for
@@ -78,7 +80,7 @@ struct ArenaConnection {
   sky::SkyHandle skyHandle;
   sky::Scoreboard scoreboard;
   sky::Player &player;
-
+  sky::SkyDeltaCache skyDeltaCache;
   sky::DebugView debugView;
 
   // Handy accessors.
@@ -115,7 +117,11 @@ class MultiplayerCore: public ClientComponent {
   optional<MultiplayerSubsystem> proxySubsystem;
   bool askedConnection;
   bool askedSky;
-  Cooldown disconnectTimeout;
+  Scheduler disconnectTimer;
+
+  // Reason for disconnection.
+  std::string disconnectReason;
+  void effectDisconnection(const std::string &disconnectReason);
 
   tg::Telegraph<sky::ServerPacket> telegraph;
   tg::Host host;
@@ -162,13 +168,16 @@ class MultiplayerCore: public ClientComponent {
   // User API.
   void transmit(const sky::ClientPacket &packet);
   void disconnect();
-  bool poll();
+  void poll();
   void tick(const TimeDiff delta);
 
   void chat(const std::string &message);
   void rcon(const std::string &command);
   void handleChatInput(const std::string &input);
   void requestTeamChange(const sky::Team team);
+
+  std::string getDisconnectReason() const;
+
 };
 
 /**

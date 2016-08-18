@@ -30,24 +30,36 @@ BodyTag::BodyTag(const BodyTag::Type type, Player *player) :
     type(type), plane(nullptr), player(player) { }
 
 BodyTag BodyTag::BoundaryTag() {
-  return BodyTag(Type::BoundaryTag);
+  return BodyTag(Type::Boundary);
 }
 
 BodyTag BodyTag::ObstacleTag(const MapObstacle &obstacle) {
-  BodyTag tag(Type::ObstacleTag);
+  BodyTag tag(Type::Obstacle);
   tag.obstacle = &obstacle;
   return tag;
 }
 
-BodyTag BodyTag::PlaneTag(Plane &plane, Player &player) {
-  BodyTag tag(Type::PlaneTag, &player);
+BodyTag BodyTag::PlaneTag(Plane &plane) {
+  BodyTag tag(Type::Plane);
   tag.plane = &plane;
   return tag;
 }
 
 BodyTag BodyTag::EntityTag(Entity &entity) {
-  BodyTag tag(Type::PropTag);
+  BodyTag tag(Type::Entity);
   tag.entity = &entity;
+  return tag;
+}
+
+BodyTag BodyTag::HomeBaseTag(HomeBase &homeBase) {
+  BodyTag tag(Type::HomeBase);
+  tag.homeBase = &homeBase;
+  return tag;
+}
+
+BodyTag BodyTag::ZoneTag(Zone &zone) {
+  BodyTag tag(Type::Zone);
+  tag.zone = &zone;
   return tag;
 }
 

@@ -15,22 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * Interface used on server-side to push callbacks into the Sky game logic.
- */
-#pragma once
-#include "engine/arena.hpp"
-#include "plane.hpp"
-#include "physics/physics.hpp"
+#include "skydeltacache.hpp"
 
 namespace sky {
 
-class SkyListener {
- protected:
-  virtual void onCollide(Plane &plane, const BodyTag &body);
-  virtual void onEndCollide(Plane &plane, const BodyTag &body);
 
-};
+SkyDeltaCache::SkyDeltaCache(Arena &arena, SkyHandle &skyHandle) :
+    Subsystem(arena), skyHandle(skyHandle), deltaControl({}) { }
 
+void SkyDeltaCache::receive(const Time timestamp, const SkyDelta &delta) {
+  deltaControl.push(timestamp, delta);
 }
 
+void SkyDeltaCache::onPoll() {
+  if (auto sky = skyHandle.getSky()) {
+    while (const auto delta = deltaControl.pull(arena.getUptime())) {
+      sky->applyDelta(delta.get());
+    }
+  } else {
+    deltaControl.reset();
+  }
+}
+
+}
