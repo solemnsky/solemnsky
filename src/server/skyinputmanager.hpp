@@ -21,6 +21,7 @@
  */
 #pragma once
 #include "servershared.hpp"
+#include "engine/flowcontrol.hpp"
 
 /**
  * Manager for the ParticipationInput stream produced by one player.
@@ -28,9 +29,15 @@
 class PlayerInputManager {
  private:
   sky::Player &player;
+  ServerShared &shared;
+  sky::Arena &arena;
+
+  sky::FlowControl<sky::ParticipationInput> inputControl;
 
  public:
   PlayerInputManager(sky::Player &player, ServerShared &shared);
+
+  void poll();
 
 };
 
@@ -41,11 +48,13 @@ class SkyInputManager: public sky::Subsystem<PlayerInputManager> {
 
  protected:
   // Subsystem impl.
-
   virtual void registerPlayer(sky::Player &player) override final;
   virtual void unregisterPlayer(sky::Player &player) override final;
+  virtual void onTick(const TimeDiff delta) override final;
 
  public:
   SkyInputManager(ServerShared &shared);
+
+  void cacheInput()
 
 };

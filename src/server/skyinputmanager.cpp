@@ -18,8 +18,19 @@
 #include "skyinputmanager.hpp"
 
 
+/**
+ * PlayerInputManager.
+ */
 PlayerInputManager::PlayerInputManager(sky::Player &player, ServerShared &shared) :
-    player(player) { }
+    player(player), shared(shared), arena(shared.arena), inputControl({}) { }
+
+void PlayerInputManager::poll() {
+  while (const auto &input = inputControl.pull(arena.getUptime())) {
+    if (const auto sky = shared.skyHandle.getSky()) {
+      sky->getParticipation(player).applyInput(*input);
+    }
+  }
+}
 
 void SkyInputManager::registerPlayer(sky::Player &player) {
   inputManagers.emplace(std::piecewise_construct,
@@ -31,5 +42,7 @@ void SkyInputManager::unregisterPlayer(sky::Player &player) {
   inputManagers.erase(inputManagers.find(player.pid));
 }
 
+void SkyInputManager::onTick()
+
 SkyInputManager::SkyInputManager(ServerShared &shared) :
-    shared(shared) { }
+    Subsystem(shared.arena), shared(shared) { }
