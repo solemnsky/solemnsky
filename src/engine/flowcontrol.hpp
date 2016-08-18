@@ -29,6 +29,8 @@ namespace sky {
  */
 struct FlowControlSettings {
   FlowControlSettings(); // null defaults
+  FlowControlSettings(const optional<Time> windowEntry,
+                      const optional<Time> windowSize);
 
   optional<Time> windowEntry; // Pull when localtime is ahead of timestamp by this amount.
   optional<TimeDiff> windowSize; // Discard messages that have passed this allowance period.

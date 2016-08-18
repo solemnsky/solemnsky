@@ -25,6 +25,11 @@ namespace sky {
  */
 FlowControlSettings::FlowControlSettings() { }
 
+FlowControlSettings::FlowControlSettings(const optional<Time> windowEntry,
+                                         const optional<Time> windowSize) :
+  windowEntry(windowEntry),
+  windowSize(windowSize) { }
+
 namespace detail {
 
 bool pullMessage(const FlowControlSettings &settings,
@@ -32,11 +37,11 @@ bool pullMessage(const FlowControlSettings &settings,
                  const Time timestamp) {
   if (settings.windowEntry) {
     if (settings.windowSize) {
-      return localtime - timestamp > *settings.windowEntry;
-    } else {
       return inRange<Time>(
-          (localtime - timestamp) - *settings.windowEntry,
-          0, *settings.windowSize);
+                           (localtime - timestamp) - *settings.windowEntry,
+                           0, *settings.windowSize);
+    } else {
+      return localtime - timestamp > *settings.windowEntry;
     }
   }
   return true;

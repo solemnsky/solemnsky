@@ -30,7 +30,7 @@ TEST_F(FlowTest, BasicTest) {
   // Set the window entry to 10, so we only start releasing messages
   // when their timestamp is 10 seconds older than localtime.
   // The window is 1 second wide.
-  control.settings.windowEntry.emplace(10);
+  control.settings.windowEntry = 10;
   control.settings.windowSize = 1;
 
   {
