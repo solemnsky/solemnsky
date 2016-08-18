@@ -15,29 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "flowcontrol.hpp"
-#include "util/methods.hpp"
+#include "skyinputmanager.hpp"
 
-namespace sky {
 
-/**
- * FlowControlSettings.
- */
-FlowControlSettings::FlowControlSettings() :
-    windowSize(0.1) { }
+PlayerInputManager::PlayerInputManager(sky::Player &player, ServerShared &shared) :
+    player(player) { }
 
-namespace detail {
-
-bool pullMessage(const FlowControlSettings &settings,
-                 const Time localtime,
-                 const Time timestamp) {
-  if (settings.windowEntry)
-    return inRange<Time>(
-        (localtime - timestamp) - *settings.windowEntry,
-        0, settings.windowSize);
-  return true;
+void SkyInputManager::registerPlayer(sky::Player &player) {
+  inputManagers.emplace(std::piecewise_construct,
+                        std::forward_as_tuple(player.pid),
+                        std::forward_as_tuple(player, shared));
 }
 
+void SkyInputManager::unregisterPlayer(sky::Player &player) {
+  inputManagers.erase(inputManagers.find(player.pid));
 }
 
-}
+SkyInputManager::SkyInputManager(ServerShared &shared) :
+    shared(shared) { }

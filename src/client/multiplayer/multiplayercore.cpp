@@ -67,6 +67,7 @@ ArenaConnection::ArenaConnection(
     skyHandle(arena, skyHandleInit),
     scoreboard(arena, scoreboardInit),
     player(*arena.getPlayer(pid)),
+    skyDeltaControl(sky::FlowControlSettings()),
     debugView(arena, skyHandle, pid) { }
 
 sky::Sky *ArenaConnection::getSky() {

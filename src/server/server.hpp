@@ -19,52 +19,7 @@
  * Common abstraction for our multiplayer servers.
  */
 #pragma once
-#include <iostream>
-#include "engine/arena.hpp"
-#include "util/telegraph.hpp"
-#include "latencytracker.hpp"
-#include "engine/protocol.hpp"
-#include "engine/event.hpp"
-
-/**
- * Shared object for the server, holding engine state and network
- * / logging methods.
- */
-struct ServerShared {
- public:
-  ServerShared(tg::Host &host, tg::Telegraph<sky::ClientPacket> &telegraph,
-               const sky::ArenaInit &arenaInit);
-
-  // Engine state.
-  sky::Arena arena;
-  sky::SkyHandle skyHandle;
-  sky::Scoreboard scoreboard;
-
-  // Network state.
-  tg::Host &host;
-  tg::Telegraph<sky::ClientPacket> &telegraph;
-  sky::Player *playerFromPeer(ENetPeer *peer) const;
-
-  // Centralized state modification / synchronization.
-  void registerArenaDelta(const sky::ArenaDelta &arenaDelta);
-  void registerGameStart();
-  void registerGameEnd();
-
-  // Transmission.
-  void sendToClients(const sky::ServerPacket &packet);
-  void sendToLoadedClients(const sky::ServerPacket &packet);
-  void sendToClientsExcept(const PID pid,
-                           const sky::ServerPacket &packet);
-  void sendToClient(ENetPeer *const client,
-                    const sky::ServerPacket &packet);
-
-  void rconResponse(ENetPeer *const client, const std::string &response);
-
-  // Logging.
-  void logEvent(const ServerEvent &event);
-  void logArenaEvent(const sky::ArenaEvent &event);
-
-};
+#include "servershared.hpp"
 
 /**
  * Type-erasure for Server, representing the uniform API.
@@ -99,7 +54,7 @@ class Server: public ServerListener, public sky::Subsystem<PlayerData> {
 };
 
 /**
- * Subsystem that just logs arena events through the onEvent callback.
+ * ArenaLogger to log Arena events to console.
  */
 class ServerLogger: public sky::ArenaLogger {
  private:
@@ -114,8 +69,7 @@ class ServerLogger: public sky::ArenaLogger {
 };
 
 /**
- * State and logic associated with the execution of a Server.
- * We manage the basics here.
+ * Basic executor for a server. Implements the server-side multiplayer protocol.
  */
 class ServerExec {
   friend struct ServerShared;
@@ -134,17 +88,16 @@ class ServerExec {
       pingSchedule,
       latencyUpdateSchedule;
 
-  // Attached server.
+  // Server, to which all more complex logic is delegated.
   std::unique_ptr<ServerListener> server;
 
   // Subsystems.
   ServerLogger logger;
   LatencyTracker latencyTracker;
 
-  // Server loop subroutines.
+  // Application loop subroutines.
   void processPacket(ENetPeer *client, const sky::ClientPacket &packet);
-  // (returns true when the queue has been exhausted)
-  bool poll();
+  bool poll(); // (returns true when the queue has been exhausted)
   void tick(const TimeDiff delta);
 
  public:

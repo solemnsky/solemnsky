@@ -170,6 +170,12 @@ add_executable(solemnsky_server
 
         src/server/server.cpp
         src/server/server.hpp
+
+        src/server/servershared.cpp
+        src/server/servershared.hpp
+
+        src/server/skyinputmanager.cpp
+        src/server/skyinputmanager.hpp
         )
 target_link_libraries(solemnsky_server
         solemnsky
