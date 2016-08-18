@@ -186,7 +186,11 @@ bool MultiplayerCore::pollNetwork() {
   if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
     server = nullptr;
     appLog("Disconnected from server!", LogOrigin::Client);
-    effectDisconnection("Disconnected through protocol.");
+    if (disconnecting) {
+      effectDisconnection("Requested disconnection.");
+    } else {
+      effectDisconnection("Forced disconnection by server!");
+    }
     return true;
   }
 

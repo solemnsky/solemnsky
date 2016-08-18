@@ -114,7 +114,7 @@ ENetPeer *Host::connect(const std::string &address, const Port port) {
 
   // Set a fairly short timeout period on the peer.
   ENetPeer *peer = enet_host_connect(host, &eaddress, 1, 0);
-  enet_peer_timeout(peer, 0, 2000, 4000);
+  enet_peer_timeout(peer, 0, 2000, 2000);
 
   return peer;
 }

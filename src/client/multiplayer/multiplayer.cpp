@@ -49,11 +49,13 @@ Multiplayer::Multiplayer(ClientShared &shared,
     core(shared, *this, serverHostname, serverPort),
     view(nullptr),
     hudFont(resources.getFont(ui::FontID::Default)) {
+  status = "connecting...";
   areChildComponents({&core});
 }
 
 void Multiplayer::onConnect() {
   loadView(core.conn->arena.getMode());
+  status = "connected";
 }
 
 void Multiplayer::onLoadMode(const sky::ArenaMode mode) {
@@ -63,12 +65,14 @@ void Multiplayer::onLoadMode(const sky::ArenaMode mode) {
 void Multiplayer::onStartGame() {
   if (core.conn->arena.getMode() == sky::ArenaMode::Game) {
     loadView(sky::ArenaMode::Game);
+    status = "in game";
   }
 }
 
 void Multiplayer::onEndGame() {
   if (core.conn->arena.getMode() == sky::ArenaMode::Game)
     loadView(sky::ArenaMode::Lobby);
+  status = "connected";
 }
 
 void Multiplayer::onChangeSettings(const ui::SettingsDelta &settings) {
