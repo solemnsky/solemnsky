@@ -44,6 +44,7 @@ void SkyInputManager::registerPlayer(sky::Player &player) {
   inputManagers.emplace(std::piecewise_construct,
                         std::forward_as_tuple(player.pid),
                         std::forward_as_tuple(player, shared));
+  setPlayerData(player, inputManagers.at(player.pid));
 }
 
 void SkyInputManager::unregisterPlayer(sky::Player &player) {
