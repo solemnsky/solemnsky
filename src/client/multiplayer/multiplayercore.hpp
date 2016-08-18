@@ -20,7 +20,7 @@
  */
 #pragma once
 #include "ui/control.hpp"
-#include "client/skyrender.hpp"
+#include "client/engine/skyrender.hpp"
 #include "util/telegraph.hpp"
 #include "engine/event.hpp"
 #include "engine/protocol.hpp"
@@ -79,11 +79,9 @@ struct ArenaConnection {
   sky::SkyHandle skyHandle;
   sky::Scoreboard scoreboard;
   sky::Player &player;
+  SkyDeltaManager deltaManager;
 
   sky::DebugView debugView;
-
-  // Flow control for incoming SkyDeltas.
-  sky::FlowControl<sky::SkyDelta> skyDeltaControl;
 
   // Handy accessors.
   sky::Sky *getSky();

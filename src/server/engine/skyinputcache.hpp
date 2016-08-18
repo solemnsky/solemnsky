@@ -20,7 +20,7 @@
  * each input stream with a separate FlowControl.
  */
 #pragma once
-#include "servershared.hpp"
+#include "server/servershared.hpp"
 #include "engine/flowcontrol.hpp"
 
 /**

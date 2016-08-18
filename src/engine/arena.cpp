@@ -110,7 +110,7 @@ void SubsystemListener::registerPlayer(Player &) { }
 
 void SubsystemListener::unregisterPlayer(Player &) { }
 
-void SubsystemListener::onPoll(const TimeDiff) { }
+void SubsystemListener::onPoll() { }
 
 void SubsystemListener::onTick(const TimeDiff) { }
 

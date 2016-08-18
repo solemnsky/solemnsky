@@ -21,7 +21,7 @@
 #pragma once
 #include "multiplayercore.hpp"
 #include "multiplayergame.hpp"
-#include "client/skyrender.hpp"
+#include "client/engine/skyrender.hpp"
 #include "ui/widgets.hpp"
 
 /**

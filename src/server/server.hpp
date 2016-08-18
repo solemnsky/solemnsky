@@ -20,6 +20,7 @@
  */
 #pragma once
 #include "servershared.hpp"
+#include "server/engine/skyinputcache.hpp"
 
 /**
  * Type-erasure for Server, representing the uniform API.
@@ -81,6 +82,7 @@ class ServerExec {
   tg::Host host;
   tg::Telegraph<sky::ClientPacket> telegraph;
   ServerShared shared;
+  SkyInputManager inputManager;
 
   // Packet scheduling.
   Scheduler skyDeltaSchedule,

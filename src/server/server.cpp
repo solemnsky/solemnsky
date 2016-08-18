@@ -77,10 +77,8 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::ReqInput: {
-        if (const auto sky = shared.skyHandle.getSky()) {
-          sky->getParticipation(*player).applyInput(
-              packet.participationInput.get());
-        }
+        inputManager.cacheInput(*player, packet.timestamp.get(),
+                                packet.participationInput.get());
         break;
       }
 
@@ -167,10 +165,10 @@ void ServerExec::tick(const TimeDiff delta) {
     }
   }
 
-  // Tick game state and network host.
+  // Tick engine / subsystems forward.
   shared.arena.poll();
   shared.arena.tick(delta);
-  // (On the server tick and poll are called in the same form.)
+  // On the server there is no difference in the form that poll() and tick() are called.
 
   host.tick(delta);
 
@@ -230,6 +228,7 @@ ServerExec::ServerExec(
 
     host(tg::HostType::Server, port),
     shared(host, telegraph, arenaInit),
+    inputManager(shared),
 
     skyDeltaSchedule(1.0f / 25.0f),
     scoreDeltaSchedule(0.5f),

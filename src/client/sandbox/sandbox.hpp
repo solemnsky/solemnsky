@@ -21,7 +21,7 @@
 #pragma once
 #include "client/elements/elements.hpp"
 #include "engine/sky/sky.hpp"
-#include "client/skyrender.hpp"
+#include "client/engine/skyrender.hpp"
 #include "engine/debugview.hpp"
 #include "ui/widgets.hpp"
 #include "client/elements/clientui.hpp"

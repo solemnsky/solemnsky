@@ -21,7 +21,7 @@
 #pragma once
 #include "engine/arena.hpp"
 #include "util/telegraph.hpp"
-#include "latencytracker.hpp"
+#include "server/engine/latencytracker.hpp"
 #include "engine/protocol.hpp"
 #include "engine/event.hpp"
 

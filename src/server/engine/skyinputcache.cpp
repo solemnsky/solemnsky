@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "skyinputmanager.hpp"
+#include "skyinputcache.hpp"
 
 
 /**
@@ -30,10 +30,12 @@ void PlayerInputManager::cacheInput(const Time timestamp,
 }
 
 void PlayerInputManager::poll() {
-  while (const auto &input = inputControl.pull(arena.getUptime())) {
-    if (const auto sky = shared.skyHandle.getSky()) {
+  if (const auto sky = shared.skyHandle.getSky()) {
+    while (const auto &input = inputControl.pull(arena.getUptime())) {
       sky->getParticipation(player).applyInput(*input);
     }
+  } else {
+    inputControl.reset();
   }
 }
 

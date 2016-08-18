@@ -78,6 +78,10 @@ class FlowControl {
     return {};
   }
 
+  void reset() {
+    if (!messages.empty()) messages = {};
+  }
+
 };
 
 }

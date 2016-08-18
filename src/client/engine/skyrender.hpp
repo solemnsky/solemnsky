@@ -21,7 +21,7 @@
 #pragma once
 #include <list>
 #include <SFML/Graphics.hpp>
-#include "elements/elements.hpp"
+#include "client/elements/elements.hpp"
 #include "ui/resources.hpp"
 #include "ui/control.hpp"
 #include "ui/sheet.hpp"
