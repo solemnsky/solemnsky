@@ -4,14 +4,14 @@
 /**
  * Our SkyHandle subsystem operates and networks correctly.
  */
-class SkyHandleTest : public testing::Test {
+class SkyHandleTest: public testing::Test {
  public:
   sky::Arena arena;
   sky::SkyHandle skyHandle;
 
   SkyHandleTest() :
       arena(sky::ArenaInit("arena", "NULL")),
-      skyHandle(arena, sky::SkyHandleInit()) {}
+      skyHandle(arena, sky::SkyHandleInit()) { }
 
 };
 
@@ -39,17 +39,14 @@ TEST_F(SkyHandleTest, AllocTest) {
     // A player joins after the sky is instantiated.
     arena.connectPlayer("nameless plane");
 
-    // The sky is connected to the arena.
-    sky::Player &player0 = *arena.getPlayer(0);
-    sky::Player &player1 = *arena.getPlayer(1);
-    ASSERT_EQ(sky.getParticipation(player0).isSpawned(), false);
-    ASSERT_EQ(sky.getParticipation(player1).isSpawned(), false);
+    // The sky is now connected to the arena.
+    auto &player0 = *arena.getPlayer(0),
+        &player1 = *arena.getPlayer(1);
+    auto &particip0 = sky.getParticipation(player0),
+        &particip1 = sky.getParticipation(player1);
 
-    // Signals pass to the sky.
-    player0.spawn({}, {300, 300}, 0);
-    ASSERT_EQ(sky.getParticipation(player0).isSpawned(), true);
-    ASSERT_EQ(sky.getParticipation(player0).plane->getState().physical.pos.x,
-              300);
+    ASSERT_FALSE(particip0.isSpawned());
+    ASSERT_FALSE(particip1.isSpawned());
   }
 }
 

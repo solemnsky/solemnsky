@@ -31,7 +31,7 @@ namespace sky {
  */
 struct BodyTag {
   enum class Type {
-    BoundaryTag, ObstacleTag, PlaneTag, PropTag
+    Boundary, Obstacle, Plane, Entity, HomeBase, Zone
   };
 
   const Type type;
@@ -44,14 +44,18 @@ struct BodyTag {
     const struct MapObstacle *obstacle;
     class Plane *plane;
     class Entity *entity;
+    class HomeBase *homeBase;
+    class Zone *zone;
   };
 
   class Player *player;
 
   static BodyTag BoundaryTag();
   static BodyTag ObstacleTag(const struct MapObstacle &obstacle);
-  static BodyTag PlaneTag(Plane &plane, Player &player);
+  static BodyTag PlaneTag(Plane &plane);
   static BodyTag EntityTag(Entity &entity);
+  static BodyTag HomeBaseTag(HomeBase &homeBase);
+  static BodyTag ZoneTag(Zone &zone);
 
 };
 
@@ -61,10 +65,14 @@ struct BodyTag {
 class PhysicsListener {
  protected:
   friend class PhysicsDispatcher;
+  virtual ~PhysicsListener() { }
+
+  // Listen to contacts beginning and ending. Bodies cannot be destroyed inside these callbacks.
   virtual void onBeginContact(const BodyTag &body1, const BodyTag &body2) = 0;
   virtual void onEndContact(const BodyTag &body1, const BodyTag &body2) = 0;
+
+  // Decide whether a contact should occur. This should be constant over sky::Role.
   virtual bool enableContact(const BodyTag &body1, const BodyTag &body2) = 0;
-  virtual ~PhysicsListener() { }
 
 };
 

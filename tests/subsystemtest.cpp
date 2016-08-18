@@ -8,7 +8,7 @@
  */
 class SubsystemTest: public testing::Test {
  public:
-  SubsystemTest() : arena(sky::ArenaInit("my arena", "NULL")) {}
+  SubsystemTest() : arena(sky::ArenaInit("my arena", "NULL")) { }
   sky::Arena arena;
 };
 
@@ -26,14 +26,8 @@ class LifeSubsystem: public sky::Subsystem<bool> {
     lives.erase(player.pid);
   }
 
-  void onSpawn(sky::Player &player, const sky::PlaneTuning &,
-               const sf::Vector2f &, const float) override {
+  void onSpawn(sky::Player &player) override {
     getPlayerData(player) = true;
-  }
-
-  void onAction(sky::Player &player, const sky::Action action,
-                const bool state) override {
-    if (action == sky::Action::Suicide) getPlayerData(player) = false;
   }
 
  public:
@@ -46,6 +40,12 @@ class LifeSubsystem: public sky::Subsystem<bool> {
   bool getLifeData(const sky::Player &player) const {
     return getPlayerData(player);
   }
+
+  // Make a spawn happen.
+  void doSpawn(sky::Player &player) {
+    caller.doSpawn(player);
+  }
+
 };
 
 class CounterSubsystem: public sky::Subsystem<float> {
@@ -88,17 +88,15 @@ class CounterSubsystem: public sky::Subsystem<float> {
  * Subsystems can be dynamically attached.
  */
 TEST_F(SubsystemTest, DynamicTest) {
-  {
-    LifeSubsystem lifeSubsystem(arena);
-    arena.connectPlayer("somebody");
-    EXPECT_EQ(lifeSubsystem.getLifeData(*arena.getPlayer(0)), false);
-  }
+  LifeSubsystem lifeSubsystem1(arena);
+  arena.connectPlayer("somebody");
+  auto &player = *arena.getPlayer(0);
+  EXPECT_EQ(lifeSubsystem1.getLifeData(player), false);
 
-  {
-    LifeSubsystem lifeSubsystem(arena);
-    arena.getPlayer(0)->spawn({}, {}, {});
-    EXPECT_EQ(lifeSubsystem.getLifeData(*arena.getPlayer(0)), true);
-  }
+  LifeSubsystem lifeSubsystem2(arena);
+  lifeSubsystem2.doSpawn(*arena.getPlayer(0));
+  EXPECT_EQ(lifeSubsystem2.getLifeData(player), true);
+  EXPECT_EQ(lifeSubsystem1.getLifeData(player), true);
 }
 
 /**
@@ -114,12 +112,10 @@ TEST_F(SubsystemTest, LifeCounter) {
   EXPECT_EQ(counterSubsystem.getTimeData(player1), 0);
   arena.tick(0.5);
   EXPECT_EQ(counterSubsystem.getTimeData(player1), 0);
-  player1.spawn({}, {300, 300}, 0);
+  lifeSubsystem.doSpawn(player1);
   EXPECT_EQ(lifeSubsystem.getLifeData(player1), true);
   arena.tick(0.5);
   EXPECT_EQ(counterSubsystem.getTimeData(player1), 0.5);
-  player1.doAction(sky::Action::Suicide, true);
-  EXPECT_EQ(lifeSubsystem.getLifeData(player1), false);
 }
 
 

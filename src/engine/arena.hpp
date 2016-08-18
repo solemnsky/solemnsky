@@ -50,19 +50,22 @@ class SubsystemListener {
   virtual void registerPlayer(Player &player);
   virtual void unregisterPlayer(Player &player);
 
-  // Callbacks.
+  // General callbacks.
   virtual void onPoll(const TimeDiff delta);
   virtual void onTick(const TimeDiff delta);
 
   virtual void onJoin(Player &player);
   virtual void onQuit(Player &player);
+
   virtual void onMode(const ArenaMode newMode);
   virtual void onMapChange();
+
   virtual void onDelta(Player &player,
                        const PlayerDelta &delta);
+  
+  // Game callbacks.
   virtual void onSpawn(Player &player);
   virtual void onKill(Player &player);
-
   virtual void onStartGame();
   virtual void onEndGame();
 

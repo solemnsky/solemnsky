@@ -44,7 +44,7 @@ TEST_F(SkyTest, SpawnTest) {
   // Join and spawn a player.
   arena.connectPlayer("nameless plane");
   auto &player = *arena.getPlayer(0);
-  player.spawn({}, {}, 0);
+  sky.getParticipation(player).spawn({}, {}, 0);
 
   // Make a client arena for this player.
   sky::Arena remoteArena(arena.captureInitializer(), 0, true);
@@ -68,7 +68,7 @@ TEST_F(SkyTest, SpawnTest) {
 
   // We spawn them again.
   {
-    player.spawn({}, {}, 0);
+    sky.getParticipation(player).spawn({}, {}, 0);
     const auto delta = sky.collectDelta();
     ASSERT_TRUE(delta);
     remoteSky.applyDelta(*delta);
@@ -87,7 +87,7 @@ TEST_F(SkyTest, InputTest) {
   auto &player = *arena.getPlayer(0);
   auto &participation = sky.getParticipation(player);
 
-  player.spawn({}, {200, 200}, 0);
+  participation.spawn({}, {200, 200}, 0);
 
   // We can modify position and control state.
   {
@@ -118,7 +118,7 @@ TEST_F(SkyTest, InputTest) {
     sky::Player &remotePlayer = *remoteArena.getPlayer(0);
 
     // Execute an action on the remote sky.
-    remotePlayer.doAction(sky::Action::Right, true);
+    remoteSky.getParticipation(remotePlayer).doAction(sky::Action::Right, true);
 
     // Collect the input.
     optional<sky::ParticipationInput> input =
@@ -151,7 +151,7 @@ TEST_F(SkyTest, AuthorityTest) {
     ASSERT_EQ(remoteParticip.isSpawned(), false);
 
     // Spawn the player on the server.
-    player.spawn({}, {200, 200}, 0);
+    participation.spawn({}, {200, 200}, 0);
 
     // Transmit a delta to the remote, respecting the player's authority.
     auto delta = sky.collectDelta();

@@ -18,14 +18,17 @@
 /**
  * Interface used on server-side to push callbacks into the Sky game logic.
  */
-#include "engine/arena.hpp"
 #pragma once
+#include "engine/arena.hpp"
+#include "plane.hpp"
+#include "physics/physics.hpp"
 
 namespace sky {
 
 class SkyListener {
  protected:
-  // Callbacks go here.
+  virtual void onCollide(Plane &plane, const BodyTag &body);
+  virtual void onEndCollide(Plane &plane, const BodyTag &body);
 
 };
 
