@@ -23,13 +23,13 @@ addons:
       - libboost-dev
       - libboost-filesystem-dev
       - libx11-dev
-      - libxrandr-dev
-      - libxrender-dev
       - libx11-xcb-dev
       - libxcb-image0-dev
+      - libxcb-randr0-dev
       - flac
       - libvorbis-dev
       - libfreetype6-dev          
+      - libudev-dev
     sources: ['kalakris-cmake', 'llvm-toolchain-precise', 'ubuntu-toolchain-r-test']
     
 before_install:
