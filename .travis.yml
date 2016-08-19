@@ -20,8 +20,8 @@ addons:
       - g++-5
       - cppcheck
 
-      - libboost-dev
-      - libboost-filesystem-dev
+      - libboost1.60-dev
+      - libboost-filesystem1.60-dev
       - libx11-dev
       - libx11-xcb-dev
       - libxcb-image0-dev
