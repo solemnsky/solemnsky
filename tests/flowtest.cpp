@@ -6,38 +6,26 @@
  */
 class FlowTest: public testing::Test {
  public:
-  FlowTest() : control({}) { }
+  FlowTest() : control() { }
 
-  sky::FlowControl<std::string> control;
+  sky::FlowControl<size_t> control;
 
 };
 
+// Pseudorandom offset values for the simulation.
+static std::vector<Time> offsets = {
+  
+};
+
 /**
- * Verify some basic properties.
+ * We simulate a connection and verify some statistical properties about the results.
  */
-TEST_F(FlowTest, BasicTest) {
-  // We get a timestamped message "hello" with timestamp of 0.
+TEST_F(FlowTest, Simulation) {
 
-  // By default, everything passes through.
-  {
-    control.push(0, "hello");
-    const auto msg = control.pull(10);
-    ASSERT_TRUE(bool(msg));
-    ASSERT_EQ(*msg, "hello");
-    ASSERT_FALSE(bool(control.pull(10)));
-  }
-
-  // Set the window entry to 10, so we only start releasing messages
-  // when their timestamp is 10 seconds older than localtime.
-  // The window is 1 second wide.
-  control.settings.windowEntry = 10;
-  control.settings.windowSize = 1;
-
-  {
-    control.push(10, "hello");
-    ASSERT_FALSE(bool(control.pull(10)));
-    ASSERT_FALSE(bool(control.pull(22)));
-    ASSERT_TRUE(bool(control.pull(20.5)));
-    ASSERT_FALSE(bool(control.pull(20.5)));
+  size_t i = 0;
+  for (auto offset : offsets) {
+    const Time localtime = i * 15;
+    control.registerMessage(localtime, localtime + offsets[offset], i);
+    // etc
   }
 }

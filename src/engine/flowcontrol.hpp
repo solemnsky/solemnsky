@@ -33,7 +33,7 @@ class FlowState {
   void registerArrival(const Time offset);
   bool release(const Time offset);
 
-}
+};
 
 /**
  * FlowControl class, templated on the Message type. Push messages in chronological order and pull them.
@@ -45,9 +45,7 @@ template<typename Message>
 class FlowControl {
  private:
   std::queue<std::pair<Time, Message>> messages;
-  FlowState flowState; 
-
-  bool pullMessage()
+  FlowState flowState;
 
  public:
   FlowControl(const FlowControlSettings &settings) :
@@ -67,10 +65,11 @@ class FlowControl {
   optional<Message> pull(const Time localtime) {
     if (!messages.empty()) {
       const Time difference = localtime - messages.front().first;
-      if (flowState.release(difference) {
+      if (flowState.release(difference)) {
         return {msg};
-      } 
+      }
     }
+
     return {};
   }
 
