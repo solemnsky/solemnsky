@@ -35,7 +35,7 @@ addons:
       - libopenal-dev
       - libsndfile1-dev
       - p7zip 
-    sources: ['kalakris-cmake', 'llvm-toolchain-precise', 'ubuntu-toolchain-r-test']
+    sources: ['kalakris-cmake', 'llvm-toolchain-precise', 'boost-latest', 'ubuntu-toolchain-r-test']
     
 before_install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
