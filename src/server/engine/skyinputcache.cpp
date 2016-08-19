@@ -27,7 +27,7 @@ PlayerInputManager::PlayerInputManager(sky::Player &player, ServerShared &shared
 
 void PlayerInputManager::cacheInput(const Time timestamp,
                                     const sky::ParticipationInput &input) {
-  inputControl.push(timestamp, input);
+  inputControl.registerMessage(arena.getUptime(), timestamp, input);
 }
 
 void PlayerInputManager::poll() {

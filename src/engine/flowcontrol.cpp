@@ -21,30 +21,15 @@
 namespace sky {
 
 /**
- * FlowControlSettings.
+ * FlowState.
  */
-FlowControlSettings::FlowControlSettings() { }
 
-FlowControlSettings::FlowControlSettings(const optional<Time> windowEntry,
-                                         const optional<Time> windowSize) :
-  windowEntry(windowEntry),
-  windowSize(windowSize) { }
-
-namespace detail {
-
-bool pullMessage(const FlowControlSettings &settings,
-                 const Time difference) {
-  if (settings.windowEntry) {
-    if (settings.windowSize) {
-      return inRange<Time>(
-        difference - *settings.windowEntry, 0, *settings.windowSize);
-    } else {
-      return difference > *settings.windowEntry;
-    }
-  }
-  return true;
+void FlowState::registerArrival(const Time offset) {
+  
 }
 
+bool FlowState::release(const Time offset) {
+  return true;
 }
 
 }

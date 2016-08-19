@@ -26,36 +26,14 @@
 namespace sky {
 
 /**
- * State of a FlowControl, governing what messages to pull.
+ * Manages statistics of a flow, resulting in a decision procedure for releasing messages from the cache.
  */
-struct FlowControlSettings {
-  FlowControlSettings(); // null defaults
-  FlowControlSettings(const optional<Time> windowEntry,
-                      const optional<Time> windowSize);
-
-  optional<Time> windowEntry; // Pull when localtime is ahead of timestamp by this amount.
-  optional<TimeDiff> windowSize; // Discard messages that have passed this allowance period.
-
-  // ---------------------- remote time
-  // message ^
-  //         -------------- localtime - timestamp (+ offset)
-  //            reception ^
-  // ---------------------- local time
-
-  // This caches messages so that all receptions have (localtime - timestamp (+ offset) >= windowEntry
-  // (+ offset)) and do not exceed this value + windowSize.
-
+class FlowState {
+ public:
+  void registerArrival(const Time offset);
+  bool release(const Time offset);
 
 };
-
-namespace detail {
-
-// Decide whether to pull a message given the flow settings and a
-// localtime / timestamp pair.
-bool pullMessage(const FlowControlSettings &settings,
-                 const Time difference); // difference = localtime - timestamp
-
-}
 
 /**
  * FlowControl class, templated on the Message type. Push messages in chronological order and pull them.
@@ -67,42 +45,37 @@ template<typename Message>
 class FlowControl {
  private:
   std::queue<std::pair<Time, Message>> messages;
-  RollingSampler<Time> actualDifference;
+  FlowState flowState;
 
  public:
-  FlowControl(const FlowControlSettings &settings) :
-    actualDifference(20), settings(settings) { }
-
-  FlowControlSettings settings;
+  FlowControl() = default;
 
   // A message with a timestamp arrives.
-  void push(const Time timestamp, const Message &message) {
+  void registerMessage(const Time localtime, const Time timestamp, const Message &message) {
+    flowState.registerArrival(localtime - timestamp);
     messages.push({timestamp, message});
+  }
+
+  void registerArrival(const Time localtime, const Time timestamp) {
+    flowState.registerArrival();
   }
 
   // Potentially pull a message, given the current localtime.
   optional<Message> pull(const Time localtime) {
     if (!messages.empty()) {
       const Time difference = localtime - messages.front().first;
-      if (detail::pullMessage(settings, difference)) {
-        // Record the actual difference.
-        actualDifference.push(difference);
-        appLog(printTime(difference));
-
-        const Message msg = messages.front().second;
+      if (flowState.release(difference)) {
+        const auto msg = messages.front().second;
         messages.pop();
         return {msg};
       }
     }
+
     return {};
   }
 
   void reset() {
     if (!messages.empty()) messages = std::queue<std::pair<Time, Message>>();
-  }
-
-  Time meanDifference() const {
-    return actualDifference.mean<Time>();
   }
 
 };
