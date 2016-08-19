@@ -15,8 +15,8 @@ compiler:
 
 addons:
   apt:
-    packages: ['cmake', 'libboost-dev', 'libboost-filesystem-dev']
-    sources: ['kalakris-cmake']
+    packages: ['cmake', 'libboost-dev', 'libboost-filesystem-dev', 'clang-3.7', 'gcc-5', 'g++-5', 'x11']
+    sources: ['kalakris-cmake', 'llvm-toolchain-precise', 'ubuntu-toolchain-r-test']
     
 before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then echo "linux stuff"; fi
