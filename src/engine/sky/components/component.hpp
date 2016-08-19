@@ -35,8 +35,6 @@ namespace sky {
 
 template<typename State, typename Delta>
 class Component: public AutoNetworked<State, Delta> {
-  template<typename Data>
-  friend class ComponentSet;
  protected:
   State state;
   Physics &physics;
@@ -59,6 +57,10 @@ class Component: public AutoNetworked<State, Delta> {
   // Mark this component for removal on the next cleanup cycle.
   inline void destroy() {
     destroyable = true;
+  }
+
+  inline bool isDestroyable() {
+    return destroyable;
   }
 
 };

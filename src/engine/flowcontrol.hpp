@@ -102,7 +102,7 @@ class FlowControl {
   }
 
   Time meanDifference() const {
-    return actualDifference.mean();
+    return actualDifference.mean<Time>();
   }
 
 };
