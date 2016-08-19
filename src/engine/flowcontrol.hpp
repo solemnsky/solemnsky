@@ -29,7 +29,12 @@ namespace sky {
  * Manages statistics of a flow, resulting in a decision procedure for releasing messages from the cache.
  */
 class FlowState {
+ private:
+  RollingSampler<Time> offsets;
+
  public:
+  FlowState();
+
   void registerArrival(const Time offset);
   bool release(const Time offset);
 

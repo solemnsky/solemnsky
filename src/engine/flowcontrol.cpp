@@ -24,12 +24,20 @@ namespace sky {
  * FlowState.
  */
 
+FlowState::FlowState() :
+  offsets(100) {}
+
 void FlowState::registerArrival(const Time offset) {
-  
+  offsets.push(offset);
+  appLog("Packet arrived with offset time of " + printTime(offset), LogOrigin::Engine);
 }
 
 bool FlowState::release(const Time offset) {
-  return true;
+  bool result = offset > offsets.max();
+  if (result) {
+    appLog("Packet released with offset time of " + printTime(offset), LogOrigin::Engine);
+  }
+  return result;
 }
 
 }
