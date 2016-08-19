@@ -40,4 +40,11 @@ in
       name = "solemnsky";
       src = ./.;
     };
+
+  default-gcc =
+    stdenv.mkDerivation {
+      buildInputs = deps;
+      name = "solemnsky";
+      src = ./.;
+    };
 }
