@@ -33,15 +33,13 @@ FlowControlSettings::FlowControlSettings(const optional<Time> windowEntry,
 namespace detail {
 
 bool pullMessage(const FlowControlSettings &settings,
-                 const Time localtime,
-                 const Time timestamp) {
+                 const Time difference) {
   if (settings.windowEntry) {
     if (settings.windowSize) {
       return inRange<Time>(
-                           (localtime - timestamp) - *settings.windowEntry,
-                           0, *settings.windowSize);
+        difference - *settings.windowEntry, 0, *settings.windowSize);
     } else {
-      return localtime - timestamp > *settings.windowEntry;
+      return difference > *settings.windowEntry;
     }
   }
   return true;
@@ -50,3 +48,4 @@ bool pullMessage(const FlowControlSettings &settings,
 }
 
 }
+

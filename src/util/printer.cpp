@@ -227,13 +227,14 @@ std::string inQuotes(const std::string &str) {
 
 std::string printTime(const Time delta) {
   std::stringstream str;
-  str << boost::format("%.1f") % delta << "s";
+  str << boost::format("%i") % (std::round(delta))  << "s:";
+  str << boost::format("%i") % (int(1000 * (delta - int(delta))))  << "ms";
   return str.str();
 }
 
 std::string printTimeDiff(const TimeDiff delta) {
   std::stringstream str;
-  str << boost::format("%.2f") % (delta * 1000) << "ms";
+  str << boost::format("%.5f") % (delta * 1000) << "ms";
   return str.str();
 }
 

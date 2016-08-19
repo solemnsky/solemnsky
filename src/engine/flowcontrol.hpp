@@ -21,6 +21,7 @@
 #pragma once
 #include <queue>
 #include "util/types.hpp"
+#include "util/printer.hpp"
 
 namespace sky {
 
@@ -52,7 +53,7 @@ namespace detail {
 // Decide whether to pull a message given the flow settings and a
 // localtime / timestamp pair.
 bool pullMessage(const FlowControlSettings &settings,
-                 const Time localtime, const Time timestamp);
+                 const Time difference); // difference = localtime - timestamp
 
 }
 
@@ -66,10 +67,11 @@ template<typename Message>
 class FlowControl {
  private:
   std::queue<std::pair<Time, Message>> messages;
+  RollingSampler<Time> actualDifference;
 
  public:
   FlowControl(const FlowControlSettings &settings) :
-      settings(settings) { }
+    actualDifference(20), settings(settings) { }
 
   FlowControlSettings settings;
 
@@ -81,7 +83,12 @@ class FlowControl {
   // Potentially pull a message, given the current localtime.
   optional<Message> pull(const Time localtime) {
     if (!messages.empty()) {
-      if (detail::pullMessage(settings, localtime, messages.front().first)) {
+      const Time difference = localtime - messages.front().first;
+      if (detail::pullMessage(settings, difference)) {
+        // Record the actual difference.
+        actualDifference.push(difference);
+        appLog(printTime(difference));
+
         const Message msg = messages.front().second;
         messages.pop();
         return {msg};
@@ -92,6 +99,10 @@ class FlowControl {
 
   void reset() {
     if (!messages.empty()) messages = std::queue<std::pair<Time, Message>>();
+  }
+
+  Time meanDifference() const {
+    return actualDifference.mean();
   }
 
 };
