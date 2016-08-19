@@ -87,7 +87,7 @@ class FlowControl {
       if (detail::pullMessage(settings, difference)) {
         // Record the actual difference.
         actualDifference.push(difference);
-        appLog(printFloat(difference));
+        appLog(printTime(difference));
 
         const Message msg = messages.front().second;
         messages.pop();
