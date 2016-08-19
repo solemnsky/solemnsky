@@ -374,7 +374,7 @@ void Client::beginGame(std::unique_ptr<Game> &&game) {
   if (this->game) exitGame();
   else {
     this->game = std::move(game);
-    appLog("** Started " + game->name + ". **");
+    appLog("** Started " + this->game->name + ". **");
     focusGame();
   }
 }

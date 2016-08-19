@@ -45,7 +45,7 @@ void Multiplayer::loadView(const sky::ArenaMode arenaMode) {
 Multiplayer::Multiplayer(ClientShared &shared,
                          const std::string &serverHostname,
                          const unsigned short serverPort) :
-    Game(shared, "multiplayer"),
+    Game(shared, "multiplayer client"),
     core(shared, *this, serverHostname, serverPort),
     view(nullptr),
     hudFont(resources.getFont(ui::FontID::Default)) {
