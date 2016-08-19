@@ -43,7 +43,7 @@ in
 
   default-gcc =
     stdenv.mkDerivation {
-      buildInputs = deps;
+      buildInputs = deps ++ [gcc6];
       name = "solemnsky";
       src = ./.;
     };
