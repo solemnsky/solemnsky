@@ -66,7 +66,8 @@ class FlowControl {
 
  public:
   FlowControl() :
-    waitingTime(20) {}
+    waitingTime(50),
+    offsets(50) {}
 
   // A message with a timestamp arrives.
   void registerMessage(const Time localtime, const Time timestamp, const Message &message) {
@@ -85,7 +86,7 @@ class FlowControl {
       if (flowState.release(difference)) {
         const auto msg = messages.front();
         waitingTime.push(localtime - msg.arrivalTime);
-        offsets.push(localtime - msg.timestam);
+        offsets.push(localtime - msg.timestamp);
         messages.pop();
         return {msg.message};
       }
@@ -104,3 +105,4 @@ class FlowControl {
 };
 
 }
+

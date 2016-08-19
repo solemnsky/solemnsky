@@ -286,8 +286,8 @@ Arena::Arena(const ArenaInit &initializer, const optional<PID> isClient, const b
     nextEnv(initializer.environment),
     mode(initializer.mode),
     uptime(0),
-    debugTimer(2),
     teamCount(initializer.teamCount),
+    debugTimer(2),
     role(isClient, isSandbox),
     subsystemCaller(*this) {
   for (auto const &player : initializer.players) {

@@ -37,8 +37,10 @@ void SkyDeltaCache::onPoll() {
 }
 
 void SkyDeltaCache::onDebugRefresh() {
-  stats.emplace(deltaControl.waitingTime.mean(),
-                TimeDiff(deltaControl.offsets.max() - deltaControl.offsets.min()));
+  stats.emplace();
+  stats->averageWait = deltaControl.waitingTime.mean<Time>();
+  stats->actualJitter =
+    TimeDiff(deltaControl.offsets.max() - deltaControl.offsets.min());
 }
 
 void SkyDeltaCache::printDebug(Printer &p) {
