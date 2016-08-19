@@ -26,10 +26,15 @@ addons:
       - libx11-xcb-dev
       - libxcb-image0-dev
       - libxcb-randr0-dev
+      - libudev-dev
+
       - flac
       - libvorbis-dev
       - libfreetype6-dev          
-      - libudev-dev
+      - libjpeg-dev
+      - libopenal-dev
+      - libsndfile1-dev
+      - p7zip 
     sources: ['kalakris-cmake', 'llvm-toolchain-precise', 'ubuntu-toolchain-r-test']
     
 before_install:
