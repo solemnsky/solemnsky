@@ -12,12 +12,15 @@ os:
 compiler:
   - gcc
   - clang
+
+addons:
+  apt:
+    packages: ['cmake', 'libboost-dev', 'libboost-filesystem-dev']
+    sources: ['kalakris-cmake']
     
 before_install:
-  - echo $LANG
-  - echo $CC
-  - echo $TRAVIS_OS_NAME
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install cmake boost; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then echo "linux stuff"; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then echo "osx stuff"; fi
 
 before_script:
   - mkdir -p dist/debug
