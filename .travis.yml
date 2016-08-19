@@ -3,6 +3,7 @@
 # 
 
 dist: trusty
+language: cpp  
 
 os:
   - linux
@@ -16,6 +17,7 @@ before_install:
   - echo $LANG
   - echo $CC
   - echo $TRAVIS_OS_NAME
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install cmake boost; fi
 
 before_script:
   - mkdir -p dist/debug
