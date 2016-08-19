@@ -25,7 +25,7 @@
 
 namespace sky {
 
-/** 
+/**
  * Manages statistics of a flow, resulting in a decision procedure for releasing messages from the cache.
  */
 class FlowState {
@@ -48,10 +48,7 @@ class FlowControl {
   FlowState flowState;
 
  public:
-  FlowControl(const FlowControlSettings &settings) :
-    actualDifference(20), settings(settings) { }
-
-  FlowControlSettings settings;
+  FlowControl() = default;
 
   // A message with a timestamp arrives.
   void registerMessage(const Time localtime, const Time timestamp, const Message &message) {
@@ -59,13 +56,17 @@ class FlowControl {
     messages.push({timestamp, message});
   }
 
-  void registerArrival(const Time localtime, const Time timestamp);
+  void registerArrival(const Time localtime, const Time timestamp) {
+    flowState.registerArrival();
+  }
 
   // Potentially pull a message, given the current localtime.
   optional<Message> pull(const Time localtime) {
     if (!messages.empty()) {
       const Time difference = localtime - messages.front().first;
       if (flowState.release(difference)) {
+        const auto msg = messages.front().second;
+        messages.pop();
         return {msg};
       }
     }
