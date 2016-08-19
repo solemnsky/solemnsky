@@ -24,7 +24,7 @@ SkyDeltaCache::SkyDeltaCache(Arena &arena, SkyHandle &skyHandle) :
     Subsystem(arena), skyHandle(skyHandle), deltaControl({}) { }
 
 void SkyDeltaCache::receive(const Time timestamp, const SkyDelta &delta) {
-  deltaControl.push(timestamp, delta);
+  deltaControl.registerMessage(arena.getUptime(), timestamp, delta);
 }
 
 void SkyDeltaCache::onPoll() {

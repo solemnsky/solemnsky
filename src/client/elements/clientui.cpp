@@ -86,7 +86,7 @@ EnginePrinter::EnginePrinter(MessageInteraction &messageInteraction) :
  */
 
 ClientPrinter::ClientPrinter(MessageInteraction &messageInteraction) :
-    consolePrinter(LogOrigin::App) {
+    consolePrinter(LogOrigin::Client) {
   areChildPrinters({&consolePrinter, &messageInteraction.messageLog});
 }
 
@@ -99,7 +99,7 @@ void printConsolePrefix(Printer &p) {
 }
 
 GameConsolePrinter::GameConsolePrinter(MessageInteraction &messageInteraction) :
-    consolePrinterBase(LogOrigin::App),
+    consolePrinterBase(LogOrigin::Client),
     consolePrinter(consolePrinterBase, printConsolePrefix) {
   areChildPrinters({&consolePrinter, &messageInteraction.messageLog});
 }

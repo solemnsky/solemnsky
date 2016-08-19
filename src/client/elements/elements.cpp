@@ -57,7 +57,13 @@ Game::Game(ClientShared &shared,
            const std::string &name) :
     ClientComponent(shared),
     ui::Control(shared.references),
-    name(name) {}
+    name(name) {
+  appLog("** Started " + name + ". **", LogOrigin::Client);
+}
+
+Game::~Game() {
+  appLog("** Exited " + name + ". **", LogOrigin::Client);
+}
 
 void Game::printDebugLeft(Printer &p) {
   p.printLn("undefined!");

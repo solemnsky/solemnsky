@@ -69,7 +69,7 @@ class Page: public ClientComponent, public ui::Control {
 class Game: public ClientComponent, public ui::Control {
  public:
   Game(ClientShared &shared, const std::string &name);
-  virtual ~Game() { }
+  virtual ~Game();
 
   // Interface API.
   virtual void onBlur() { }
