@@ -13,7 +13,17 @@ compiler:
 
 addons:
   apt:
-    packages: ['cmake', 'libboost-dev', 'libboost-filesystem-dev', 'clang-3.7', 'gcc-5', 'g++-5', 'libx11-dev', 'cppcheck']
+    packages: 
+      - cmake 
+      - clang-3.7 
+      - gcc-5 
+      - g++-5
+      - cppcheck
+
+      - libboost-dev
+      - libboost-filesystem-dev
+      - libx11-dev
+      - libx11-xcb-dev
     sources: ['kalakris-cmake', 'llvm-toolchain-precise', 'ubuntu-toolchain-r-test']
     
 before_install:
