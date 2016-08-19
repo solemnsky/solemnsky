@@ -1,54 +1,15 @@
-#
-# Run cppcheck, build everything with debug features enabled, run tests.
-# 
+# Builds through nix, tests, runs cppcheck.
 
+sudo: required
 dist: trusty
-language: cpp  
 
-os: linux
+install: 
+  - bash <(curl -sS https://nixos.org/nix/install)
+  - source $HOME/.nix-profile/etc/profile.d/nix.sh
+  - nix-env -iA nixpkgs.p7zip nixpkgs.cppcheck
+  - nix-build . -A deps
 
-compiler:
-  - gcc
-  - clang
+script:
+  - nix-build . -A default && (mkdir -p dist/release/ ; cd dist/release/ ; ../../result/bin/solemnsky_tests && (cd ../../ ; ./cppcheck.sh &> check-results ; if [ -s check-results ]; then (cat check-results ; exit 1); else exit 0; fi))
 
-addons:
-  apt:
-    packages: 
-      - cmake 
-      - clang-3.7 
-      - gcc-5 
-      - g++-5
-      - cppcheck
-
-      - libboost1.60-dev
-      - libboost-filesystem1.60-dev
-      - libx11-dev
-      - libx11-xcb-dev
-      - libxcb-image0-dev
-      - libxcb-randr0-dev
-      - libudev-dev
-
-      - flac
-      - libvorbis-dev
-      - libfreetype6-dev          
-      - libjpeg-dev
-      - libopenal-dev
-      - libsndfile1-dev
-      - p7zip 
-    sources: ['kalakris-cmake', 'llvm-toolchain-precise', 'boost-latest', 'ubuntu-toolchain-r-test']
-    
-before_install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
-  - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.7" CC="clang++-3.7"; fi
-
-before_script:
-  - mkdir -p dist/debug
-  - cd dist/debug
-  - cmake -DCMAKE_BUILD_TYPE=Release ../..
-  - cd ../..
-
-script: 
-  - ./cppcheck.sh &> check-results ; if [ -s check-results ]; then (cat check-results ; exit 1); else exit 0; fi
-  - cd dist/debug ; make solemnsky_{tests,client,server}
-  - ./tests/solemnsky_tests
 
