@@ -24,6 +24,10 @@ addons:
       - libboost-filesystem-dev
       - libx11-dev
       - libx11-xcb-dev
+      - libxcb-image-dev
+      - flac
+      - libvorbis-dev
+      - libfreetype6-dev          
     sources: ['kalakris-cmake', 'llvm-toolchain-precise', 'ubuntu-toolchain-r-test']
     
 before_install:
