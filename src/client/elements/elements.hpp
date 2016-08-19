@@ -69,7 +69,7 @@ class Page: public ClientComponent, public ui::Control {
 class Game: public ClientComponent, public ui::Control {
  public:
   Game(ClientShared &shared, const std::string &name);
-  virtual ~Game() { }
+  virtual ~Game();
 
   // Interface API.
   virtual void onBlur() { }
@@ -82,7 +82,7 @@ class Game: public ClientComponent, public ui::Control {
   virtual void printDebugRight(Printer &p);
   virtual std::string getQuittingReason() const; // describe briefly why a quit occured
 
-  std::string name; // identifier of the type of game being played
+  const std::string name; // identifier of the type of game being played
   std::string status; // brief status of the game
 
 };

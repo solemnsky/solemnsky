@@ -59,6 +59,8 @@ Game::Game(ClientShared &shared,
     ui::Control(shared.references),
     name(name) {}
 
+Game::~Game() {}
+
 void Game::printDebugLeft(Printer &p) {
   p.printLn("undefined!");
 }

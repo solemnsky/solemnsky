@@ -252,8 +252,8 @@ ServerExec::ServerExec(
 void ServerExec::run() {
   sf::Clock clock;
   while (running) {
-    tick(clock.restart().asSeconds());
     while (!poll()) { }
+    tick(clock.restart().asSeconds());
 
     sf::sleep(sf::milliseconds(16));
   }

@@ -19,12 +19,11 @@
 
 namespace sky {
 
-
 SkyDeltaCache::SkyDeltaCache(Arena &arena, SkyHandle &skyHandle) :
-    Subsystem(arena), skyHandle(skyHandle), deltaControl({}) { }
+    Subsystem(arena), skyHandle(skyHandle) {}
 
 void SkyDeltaCache::receive(const Time timestamp, const SkyDelta &delta) {
-  deltaControl.push(timestamp, delta);
+  deltaControl.registerMessage(arena.getUptime(), timestamp, delta);
 }
 
 void SkyDeltaCache::onPoll() {
@@ -34,6 +33,23 @@ void SkyDeltaCache::onPoll() {
     }
   } else {
     deltaControl.reset();
+  }
+}
+
+void SkyDeltaCache::onDebugRefresh() {
+  stats.emplace();
+  stats->averageWait = deltaControl.waitingTime.mean<Time>();
+  stats->actualJitter =
+    TimeDiff(deltaControl.offsets.max() - deltaControl.offsets.min());
+}
+
+void SkyDeltaCache::printDebug(Printer &p) {
+  p.printTitle("SkyDeltaCache");
+  if (stats) {
+    p.printLn("average time lost in cache: " + printTimeDiff(stats->averageWait));
+    p.printLn("actual offset jitter" + printTimeDiff(stats->actualJitter));
+  } else {
+    p.printLn("no stats collected yet...");
   }
 }
 

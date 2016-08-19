@@ -293,7 +293,7 @@ void Sandbox::printDebugRight(Printer &p) {
 }
 
 std::string Sandbox::getQuittingReason() const {
-  return "Exited sandbox.";
+  return "Closed cleanly.";
 }
 
 

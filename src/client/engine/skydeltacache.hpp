@@ -22,6 +22,7 @@
 #include "engine/arena.hpp"
 #include "engine/sky/skyhandle.hpp"
 #include "engine/flowcontrol.hpp"
+#include "util/printer.hpp"
 
 namespace sky {
 
@@ -30,14 +31,22 @@ class SkyDeltaCache: public Subsystem<Nothing> {
   SkyHandle &skyHandle;
   FlowControl<SkyDelta> deltaControl;
 
+  struct Stats {
+    TimeDiff averageWait, actualJitter;
+  };
+  optional<Stats> stats;
+
  protected:
   // Subsystem impl.
   virtual void onPoll() override final;
+  virtual void onDebugRefresh() override final;
 
  public:
   SkyDeltaCache(Arena &arena, SkyHandle &skyHandle);
 
   void receive(const Time timestamp, const SkyDelta &delta);
+
+  void printDebug(Printer &p);
 
 };
 

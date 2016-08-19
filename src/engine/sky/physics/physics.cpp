@@ -138,7 +138,7 @@ void Physics::polygonFixture(const std::vector<sf::Vector2f> &vertices, b2Body &
   std::list<pp::Poly> decomposed;
 
   pp::Partition part;
-  part.ConvexPartition_HM(&poly, &decomposed);
+  part.Triangulate_EC(&poly, &decomposed);
 
   for (const auto &piece : decomposed) {
     b2PolygonShape shape;

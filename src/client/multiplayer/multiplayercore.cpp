@@ -118,7 +118,14 @@ void MultiplayerCore::processPacket(const sky::ServerPacket &packet) {
   // we're in the arena, conn is instantiated
   switch (packet.type) {
     case ServerPacket::Type::InitSky: {
-      conn->skyHandle.instantiateSky(packet.skyInit.get());
+      auto &skyHandle = conn->skyHandle;
+      if (skyHandle.getEnvironment() and
+          skyHandle.getEnvironment()->getVisuals())
+        skyHandle.instantiateSky(packet.skyInit.get());
+      else {
+        appLog("InitSky packet received before we have loaded! "
+                  "The server is at fault and likely broken.", LogOrigin::Error);
+      }
       break;
     }
 
@@ -189,7 +196,7 @@ bool MultiplayerCore::pollNetwork() {
     if (disconnecting) {
       effectDisconnection("Requested disconnection.");
     } else {
-      effectDisconnection("Forced disconnection by server!");
+      effectDisconnection("Connection lost!");
     }
     return true;
   }
@@ -318,7 +325,7 @@ void MultiplayerCore::tick(const float delta) {
 
     if (const auto &env = conn->skyHandle.getEnvironment()) {
       if (!conn->skyHandle.getSky()) {
-        // Asking for sky.
+        // We want to ask for the Sky.
         if (env->getMap() and env->getVisuals() and !askedSky) {
           transmit(sky::ClientPacket::ReqSky());
           askedSky = true;

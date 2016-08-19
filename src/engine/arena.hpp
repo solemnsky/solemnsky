@@ -51,19 +51,20 @@ class SubsystemListener {
   virtual void unregisterPlayer(Player &player);
 
   // General callbacks.
-  virtual void onPoll();
-  virtual void onTick(const TimeDiff delta);
+  virtual void onPoll(); // poll for network things
+  virtual void onTick(const TimeDiff delta); // tick state
+  virtual void onDebugRefresh(); // update debug displays
 
-  virtual void onJoin(Player &player);
-  virtual void onQuit(Player &player);
+  virtual void onJoin(Player &player); // player enters the arena
+  virtual void onQuit(Player &player); // player leaves the arena
 
-  virtual void onMode(const ArenaMode newMode);
+  virtual void onMode(const ArenaMode newMode); // arena changes to a new mode
   virtual void onMapChange();
 
   virtual void onDelta(Player &player,
                        const PlayerDelta &delta);
-  
-  // Game callbacks.
+
+  // Game callbacks. These are created by subsystems through the SubsystemCaller interface.
   virtual void onSpawn(Player &player);
   virtual void onKill(Player &player);
   virtual void onStartGame();
@@ -262,6 +263,7 @@ class Arena: public Networked<ArenaInit, ArenaDelta> {
   ArenaMode mode;
   Time uptime;
   int teamCount;
+  Scheduler debugTimer;
 
   // Managing players.
   Player &joinPlayer(const PlayerInitializer &initializer);
