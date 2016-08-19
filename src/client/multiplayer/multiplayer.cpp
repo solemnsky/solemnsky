@@ -110,6 +110,7 @@ void Multiplayer::printDebugLeft(Printer &p) {
 void Multiplayer::printDebugRight(Printer &p) {
   if (core.conn) {
     core.conn->debugView.printSkyReport(p);
+    core.conn->skyDeltaCache.printDebug(p);
   } else {
     p.printLn("not connected...");
   }

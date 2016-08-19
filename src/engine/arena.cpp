@@ -114,6 +114,8 @@ void SubsystemListener::onPoll() { }
 
 void SubsystemListener::onTick(const TimeDiff) { }
 
+void SubsystemListener::onDebugRefresh() { }
+
 void SubsystemListener::onJoin(Player &) { }
 
 void SubsystemListener::onQuit(Player &) { }
@@ -284,6 +286,7 @@ Arena::Arena(const ArenaInit &initializer, const optional<PID> isClient, const b
     nextEnv(initializer.environment),
     mode(initializer.mode),
     uptime(0),
+    debugTimer(2),
     teamCount(initializer.teamCount),
     role(isClient, isSandbox),
     subsystemCaller(*this) {
@@ -450,6 +453,10 @@ void Arena::poll() {
 
 void Arena::tick(const TimeDiff delta) {
   uptime += Time(delta);
+  if (debugTimer.tick(delta)) {
+    for (auto s : subsystems) s.second->onDebugRefresh();
+    debugTimer.reset();
+  }
   for (auto s : subsystems) s.second->onTick(delta);
 }
 

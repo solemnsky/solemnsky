@@ -29,15 +29,10 @@ FlowState::FlowState() :
 
 void FlowState::registerArrival(const Time offset) {
   offsets.push(offset);
-  appLog("Packet arrived with offset time of " + printTime(offset), LogOrigin::Engine);
 }
 
 bool FlowState::release(const Time offset) {
-  bool result = offset > offsets.max();
-  if (result) {
-    appLog("Packet released with offset time of " + printTime(offset), LogOrigin::Engine);
-  }
-  return result;
+  return offset > offsets.max();
 }
 
 }

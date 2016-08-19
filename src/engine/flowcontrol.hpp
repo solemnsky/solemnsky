@@ -41,6 +41,18 @@ class FlowState {
 };
 
 /**
+ * A message, along with the localtime it arrived and a timestamp from upstream.
+ */
+template<typename Message>
+struct TimedMessage {
+  TimedMessage(const Message &message, const Time arrivalTime, const Time timestamp) :
+    message(message), arrivalTime(arrivalTime), timestamp(timestamp) {}
+
+  Message message;
+  Time arrivalTime, timestamp;
+};
+
+/**
  * FlowControl class, templated on the Message type. Push messages in chronological order and pull them.
  *
  * Very simply, the objective is to make the `pull` method return messages
@@ -49,30 +61,33 @@ class FlowState {
 template<typename Message>
 class FlowControl {
  private:
-  std::queue<std::pair<Time, Message>> messages;
+  std::queue<TimedMessage<Message>> messages;
   FlowState flowState;
 
  public:
-  FlowControl() = default;
+  FlowControl() :
+    waitingTime(20) {}
 
   // A message with a timestamp arrives.
   void registerMessage(const Time localtime, const Time timestamp, const Message &message) {
     flowState.registerArrival(localtime - timestamp);
-    messages.push({timestamp, message});
+    messages.push(TimedMessage<Message>(message, localtime, timestamp));
   }
 
   void registerArrival(const Time localtime, const Time timestamp) {
-    flowState.registerArrival();
+    flowState.registerArrival(localtime - timestamp);
   }
 
   // Potentially pull a message, given the current localtime.
   optional<Message> pull(const Time localtime) {
     if (!messages.empty()) {
-      const Time difference = localtime - messages.front().first;
+      const Time difference = localtime - messages.front().timestamp;
       if (flowState.release(difference)) {
-        const auto msg = messages.front().second;
+        const auto msg = messages.front();
+        waitingTime.push(localtime - msg.arrivalTime);
+        offsets.push(localtime - msg.timestam);
         messages.pop();
-        return {msg};
+        return {msg.message};
       }
     }
 
@@ -80,8 +95,11 @@ class FlowControl {
   }
 
   void reset() {
-    if (!messages.empty()) messages = std::queue<std::pair<Time, Message>>();
+    if (!messages.empty()) messages = std::queue<TimedMessage<Message>>();
   }
+
+  RollingSampler<TimeDiff> waitingTime;
+  RollingSampler<Time> offsets;
 
 };
 

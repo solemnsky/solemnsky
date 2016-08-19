@@ -243,7 +243,7 @@ void Client::tick(const float delta) {
         return;
       }
       quittingReason = game->getQuittingReason();
-      appLog("** Exited " + game->name + " (" + quittingReason + "). **");
+      appLog("** Exited " + game->name + ". (" + quittingReason + ") **", LogOrigin::Client);
       quitDisplayTimer.reset();
       game.reset();
       blurGame();
@@ -374,7 +374,7 @@ void Client::beginGame(std::unique_ptr<Game> &&game) {
   if (this->game) exitGame();
   else {
     this->game = std::move(game);
-    appLog("** Started " + this->game->name + ". **");
+    appLog("** Started " + this->game->name + ". **", LogOrigin::Client);
     focusGame();
   }
 }

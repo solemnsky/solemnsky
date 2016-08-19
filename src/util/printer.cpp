@@ -234,7 +234,7 @@ std::string printTime(const Time delta) {
 
 std::string printTimeDiff(const TimeDiff delta) {
   std::stringstream str;
-  str << boost::format("%.5f") % (delta * 1000) << "ms";
+  str << boost::format("%.1f") % (delta * 1000) << "ms";
   return str.str();
 }
 
