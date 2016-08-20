@@ -69,7 +69,7 @@ class Printer {
   void printTitle(const std::string &title) {
     setColor(0, 0, 255);
     printLn("** " + title + " **");
-    setColor(255, 255, 255);
+    setColor(0, 0, 0);
   }
 
 };

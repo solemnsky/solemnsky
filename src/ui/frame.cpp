@@ -154,7 +154,7 @@ void Frame::drawPoly(const std::vector<sf::Vector2f> &vertices,
 void Frame::drawPolyOutline(const std::vector<sf::Vector2f> &vertices,
                             const sf::Color &color) {
   primCount++;
-  std::vector<sf::Vertex> shape(vertices.size()+1);
+  std::vector<sf::Vertex> shape(vertices.size() + 1);
   sf::Color col = alphaScaleColor(color);
   size_t i = 0;
   for (const auto &vertex : vertices) {

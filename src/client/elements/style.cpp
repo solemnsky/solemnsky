@@ -25,11 +25,11 @@ Style::Base::Base() :
     smallFontSize(25),
     normalFontSize(30),
     titleFontSize(50),
-    debugFontSize(20),
+    debugFontSize(18),
 
     centeredText(normalFontSize, {}, ui::HorizontalAlign::Center, ui::VerticalAlign::Top),
     normalText(normalFontSize, {}, ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
-    debugText(smallFontSize, {}, ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
+    debugText(debugFontSize, {}, ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
     debugRightText(debugFontSize, {}, ui::HorizontalAlign::Right, ui::VerticalAlign::Top),
 
     dark(1, 14, 32),
@@ -55,8 +55,9 @@ Style::Base::Base() :
                     normalFontSize, heatRate),
     normalCheckbox(normalButton),
 
-    debugMargin(300),
-    debugBackground(0, 0, 0) {
+    debugMargin(380),
+    debugHeight(400),
+    debugBackground(255, 255, 255, 140) {
   normalCheckbox.dimensions = {50, 50};
 }
 

@@ -54,7 +54,7 @@ struct Style {
     ui::Checkbox::Style normalCheckbox;
 
     // Debug.
-    float debugMargin;
+    float debugMargin, debugHeight;
     sf::Color debugBackground;
 
     Base();

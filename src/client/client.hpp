@@ -65,6 +65,8 @@ private:
   Page &referencePage(const PageType type);
 
   // Render subroutines.
+  void drawDebugLeft(Printer &p);
+  void drawDebugRight(Printer &p);
   void renderPage(ui::Frame &f, const PageType type,
                   const sf::Vector2f &offset, const std::string &name,
                   ui::TransformedBase &page);

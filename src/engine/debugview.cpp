@@ -57,7 +57,7 @@ void DebugView::printArenaReport(Printer &p) const {
     } else {
       p.setColor(255, 0, 0);
       p.printLn("ERROR: PID not associated with Player in Arena!");
-      p.setColor(255, 255, 255);
+      p.setColor(0, 0, 0);
     }
   }
 }
@@ -91,7 +91,7 @@ void DebugView::printSkyReport(Printer &p) const {
       } else {
         p.setColor(255, 0, 0);
         p.printLn("ERROR: PID not associated with Player in Arena!");
-        p.setColor(255, 255, 255);
+        p.setColor(0, 0, 0);
       }
     }
   }
