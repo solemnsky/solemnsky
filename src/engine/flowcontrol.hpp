@@ -26,6 +26,21 @@
 namespace sky {
 
 /**
+ * Statistics about the operation of a FlowControl.
+ */
+struct FlowStats {
+  FlowStats(const TimeDiff averageWait, const TimeDiff totalJitter) :
+    averageWait(averageWait), totalJitter(totalJitter) { }
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(averageWait, totalJitter);
+  }
+
+  TimeDiff averageWait, totalJitter;
+
+};
+
+/**
  * Manages statistics of a flow, resulting in a decision procedure for releasing messages from the cache.
  */
 class FlowState {
@@ -45,8 +60,10 @@ class FlowState {
  */
 template<typename Message>
 struct TimedMessage {
-  TimedMessage(const Message &message, const Time arrivalTime, const Time timestamp) :
-    message(message), arrivalTime(arrivalTime), timestamp(timestamp) {}
+  TimedMessage(const Message &message,
+               const Time arrivalTime,
+               const Time timestamp) :
+    message(message), arrivalTime(arrivalTime), timestamp(timestamp) { }
 
   Message message;
   Time arrivalTime, timestamp;
@@ -64,17 +81,19 @@ class FlowControl {
   std::queue<TimedMessage<Message>> messages;
   FlowState flowState;
 
+  RollingSampler<TimeDiff> waitingTime;
+  RollingSampler<Time> offsets;
+
  public:
   FlowControl() :
     waitingTime(50),
-    offsets(50) {}
+    offsets(50) { }
 
   // A message with a timestamp arrives.
   void registerMessage(const Time localtime, const Time timestamp, const Message &message) {
     flowState.registerArrival(localtime - timestamp);
     messages.push(TimedMessage<Message>(message, localtime, timestamp));
   }
-
   void registerArrival(const Time localtime, const Time timestamp) {
     flowState.registerArrival(localtime - timestamp);
   }
@@ -84,23 +103,33 @@ class FlowControl {
     if (!messages.empty()) {
       const Time difference = localtime - messages.front().timestamp;
       if (flowState.release(difference)) {
-        const auto msg = messages.front();
+        const Message msg = messages.front();
         waitingTime.push(localtime - msg.arrivalTime);
         offsets.push(localtime - msg.timestamp);
         messages.pop();
-        return {msg.message};
+        return
+        {
+          msg.message
+        };
       }
     }
 
-    return {};
+    return
+    {
+    };
   }
 
+  // Reset the flow, discarding all messages.
   void reset() {
-    if (!messages.empty()) messages = std::queue<TimedMessage<Message>>();
+    if (!messages.empty()) messages = std::queue<TimedMessage < Message >> ();
   }
 
-  RollingSampler<TimeDiff> waitingTime;
-  RollingSampler<Time> offsets;
+  // Capture rolling statistics.
+  FlowStats getStats() const {
+    return FlowStats(waitingTime.mean<TimeDiff>(),
+                     TimeDiff(offsets.max() - offsets.min()));
+  }
+
 
 };
 

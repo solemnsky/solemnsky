@@ -23,6 +23,7 @@
 #include "types.hpp"
 #include "sky/planestate.hpp"
 #include "util/networked.hpp"
+#include "flowcontrol.hpp"
 
 namespace sky {
 
@@ -35,7 +36,7 @@ struct PlayerInitializer {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(nickname, pid, admin, loadingEnv, team);
+    ar(nickname, pid, admin, loadingEnv, team, flowStats);
   }
 
   PID pid;
@@ -43,6 +44,7 @@ struct PlayerInitializer {
   bool admin, loadingEnv;
   Team team;
   optional<std::pair<TimeDiff, Time>> latencyStats;
+  optional<FlowStats> flowStats;
 
 };
 
@@ -55,13 +57,14 @@ struct PlayerDelta {
 
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(nickname, admin, loadingEnv, team, latencyStats);
+    ar(nickname, admin, loadingEnv, team, latencyStats, flowStats);
   }
 
   optional<std::string> nickname;
   bool admin, loadingEnv;
   optional<Team> team;
   optional<std::pair<TimeDiff, Time>> latencyStats;
+  optional<optional<FlowStats>> flowStats;
 
 };
 
@@ -83,10 +86,11 @@ class Player: public Networked<PlayerInitializer, PlayerDelta> {
   // Subsystem state.
   std::map<PID, void *> data;
 
-  // Timing stats.
+  // Connection statistics.
   bool latencyInitialized;
   TimeDiff latency;
   Time clockOffset;
+  optional<FlowStats> flowStats;
 
  public:
   Player() = delete;

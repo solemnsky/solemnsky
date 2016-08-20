@@ -33,7 +33,7 @@ PlayerDelta::PlayerDelta(const Player &player) :
  */
 
 PlayerInitializer::PlayerInitializer(
-    const PID pid, const std::string &nickname) :
+                                     const PID pid, const std::string &nickname) :
     pid(pid), nickname(nickname), admin(false),
     loadingEnv(true), team(sky::Team::Spectator) { }
 
@@ -63,6 +63,9 @@ void Player::applyDelta(const PlayerDelta &delta) {
     clockOffset = delta.latencyStats->second;
     latencyInitialized = true;
   }
+  if (delta.flowStats) {
+    flowStats = delta.flowStats;
+  }
 }
 
 PlayerInitializer Player::captureInitializer() const {
@@ -75,6 +78,7 @@ PlayerInitializer Player::captureInitializer() const {
   if (latencyInitialized) {
     initializer.latencyStats.emplace(latency, clockOffset);
   }
+  initializer.flowStats = flowStats;
   return initializer;
 }
 

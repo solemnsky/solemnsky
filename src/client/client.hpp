@@ -31,14 +31,14 @@
  * neatly modularized; see client/elements/elements.h. This is simply the glue
  * that brings everything together.
  */
-class Client: public ui::Control {
+class Client : public ui::Control {
   friend struct ClientShared;
- private:
+private:
   // Buttons.
   ui::Button backButton, // for exiting menus, lower right
-      closeButton, // for closing the current sandbox, lower left
-      quitButton, // quitting solemnsky
-      aboutButton; // for seeing the about screen
+  closeButton, // for closing the current sandbox, lower left
+  quitButton, // quitting solemnsky
+  aboutButton; // for seeing the about screen
 
   // State.
   std::unique_ptr<class Game> game;
@@ -60,7 +60,7 @@ class Client: public ui::Control {
   ui::ProfilerSnapshot profilerSnap;
 
   // Internal helpers.
-  void forAllPages(std::function<void(Page &)> f);
+  void forAllPages(std::function<void(Page &) > f);
   ui::TransformedBase &referencePageBase(const PageType type);
   Page &referencePage(const PageType type);
 
@@ -71,7 +71,7 @@ class Client: public ui::Control {
   void renderUI(ui::Frame &f);
   void renderGame(ui::Frame &f);
 
- public:
+public:
   Client(const ui::AppRefs &references);
 
   // Control impl.
@@ -92,7 +92,7 @@ class Client: public ui::Control {
   void focusPage(const PageType page);
   void blurPage();
 
-  // Changing settings, propogating the delta everywhere.
+  // Changing settings, propagating the delta everywhere.
   void changeSettings(const ui::SettingsDelta &settingsDelta);
 
 };
