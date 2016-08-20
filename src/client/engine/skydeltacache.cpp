@@ -43,8 +43,8 @@ void SkyDeltaCache::onDebugRefresh() {
 void SkyDeltaCache::printDebug(Printer &p) {
   p.printTitle("SkyDeltaCache");
   if (stats) {
-    p.printLn("average time lost in cache: " + printTimeDiff(stats->averageWait));
-    p.printLn("actual offset jitter" + printTimeDiff(stats->totalJitter));
+    p.printLn("stats.averageWait: " + printTimeDiff(stats->averageWait));
+    p.printLn("stats.totalJitter: " + printTimeDiff(stats->totalJitter));
   } else {
     p.printLn("no stats collected yet...");
   }

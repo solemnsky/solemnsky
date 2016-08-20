@@ -95,13 +95,6 @@ void Multiplayer::doExit() {
 void Multiplayer::printDebugLeft(Printer &p) {
   if (core.conn) {
     core.conn->debugView.printArenaReport(p);
-
-    p.breakLine();
-    p.printTitle("Networking");
-    p.printLn("inbound bandwidth (kB/s): "
-                  + printKbps(core.getHost().incomingBandwidth()));
-    p.printLn("outbound bandwidth (kB/s): "
-                  + printKbps(core.getHost().outgoingBandwidth()));
   } else {
     p.printLn("not connected...");
   }
@@ -110,6 +103,12 @@ void Multiplayer::printDebugLeft(Printer &p) {
 void Multiplayer::printDebugRight(Printer &p) {
   if (core.conn) {
     core.conn->debugView.printSkyReport(p);
+    p.breakLine();
+    p.printTitle("Networking");
+    p.printLn("inbound bandwidth (kB/s): "
+                  + printKbps(core.getHost().incomingBandwidth()));
+    p.printLn("outbound bandwidth (kB/s): "
+                  + printKbps(core.getHost().outgoingBandwidth()));
     p.breakLine();
     core.conn->skyDeltaCache.printDebug(p);
   } else {

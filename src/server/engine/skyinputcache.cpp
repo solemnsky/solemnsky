@@ -20,17 +20,17 @@
 namespace sky {
 
 /**
- * PlayerInputManager.
+ * PlayerInputCache.
  */
-PlayerInputManager::PlayerInputManager(sky::Player &player, ServerShared &shared) :
+PlayerInputCache::PlayerInputCache(sky::Player &player, ServerShared &shared) :
     player(player), shared(shared), arena(shared.arena), inputControl({}) { }
 
-void PlayerInputManager::cacheInput(const Time timestamp,
-                                    const sky::ParticipationInput &input) {
+void PlayerInputCache::cacheInput(const Time timestamp,
+                                  const sky::ParticipationInput &input) {
   inputControl.registerMessage(arena.getUptime(), timestamp, input);
 }
 
-void PlayerInputManager::poll() {
+void PlayerInputCache::poll() {
   if (const auto sky = shared.skyHandle.getSky()) {
     while (const auto &input = inputControl.pull(arena.getUptime())) {
       sky->getParticipation(player).applyInput(*input);
@@ -40,27 +40,27 @@ void PlayerInputManager::poll() {
   }
 }
 
-void SkyInputManager::registerPlayer(sky::Player &player) {
+void SkyInputCache::registerPlayer(sky::Player &player) {
   inputManagers.emplace(std::piecewise_construct,
                         std::forward_as_tuple(player.pid),
                         std::forward_as_tuple(player, shared));
   setPlayerData(player, inputManagers.at(player.pid));
 }
 
-void SkyInputManager::unregisterPlayer(sky::Player &player) {
+void SkyInputCache::unregisterPlayer(sky::Player &player) {
   inputManagers.erase(inputManagers.find(player.pid));
 }
 
-void SkyInputManager::onPoll() {
+void SkyInputCache::onPoll() {
   for (auto &manager : inputManagers) {
     manager.second.poll();
   }
 }
 
-SkyInputManager::SkyInputManager(ServerShared &shared) :
+SkyInputCache::SkyInputCache(ServerShared &shared) :
     Subsystem(shared.arena), shared(shared) { }
 
-void SkyInputManager::receive(
+void SkyInputCache::receive(
     sky::Player &player, const Time timestamp,
     const sky::ParticipationInput &input) {
   getPlayerData(player).cacheInput(timestamp, input);

@@ -21,18 +21,18 @@
 #include "client/sandbox/sandbox.hpp"
 
 HomePage::HomePage(ClientShared &clientState) :
-  Page(clientState),
-  sandboxButton(references, style.base.normalButton,
-                style.home.tutorialButtonPos,
-                "SANDBOX"),
-  localhostButton(references, style.base.normalButton,
-                  style.home.localhostButtonPos,
-                  "LOCAL"),
-  remoteButton(references, style.base.normalButton,
-               style.home.remoteButtonPos,
-               "REMOTE"),
-  serverEntry(references, style.base.normalTextEntry,
-              style.home.serverEntryPos, "server address", true) {
+    Page(clientState),
+    sandboxButton(references, style.base.normalButton,
+                  style.home.tutorialButtonPos,
+                  "SANDBOX"),
+    localhostButton(references, style.base.normalButton,
+                    style.home.localhostButtonPos,
+                    "LOCAL"),
+    remoteButton(references, style.base.normalButton,
+                 style.home.remoteButtonPos,
+                 "REMOTE"),
+    serverEntry(references, style.base.normalTextEntry,
+                style.home.serverEntryPos, "server address", true) {
   areChildren({&sandboxButton, &localhostButton, &remoteButton, &serverEntry});
 
   //Initial value
@@ -43,11 +43,9 @@ void HomePage::tick(float delta) {
   ui::Control::tick(delta);
 }
 
-void HomePage::onChangeSettings(const ui::SettingsDelta &settings) {
- }
+void HomePage::onChangeSettings(const ui::SettingsDelta &settings) { }
 
-void HomePage::onBlur() {
- }
+void HomePage::onBlur() { }
 
 void HomePage::render(ui::Frame &f) {
   drawBackground(f);

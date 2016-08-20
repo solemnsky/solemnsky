@@ -77,8 +77,8 @@ void ServerExec::processPacket(ENetPeer *client,
       }
 
       case ClientPacket::Type::ReqInput: {
-        inputManager.receive(*player, packet.timestamp.get(),
-                             packet.participationInput.get());
+        inputCache.receive(*player, packet.timestamp.get(),
+                           packet.participationInput.get());
         break;
       }
 
@@ -215,7 +215,7 @@ void ServerExec::tick(const TimeDiff delta) {
 
   // Player latency update scheduling.
   if (latencyUpdateSchedule.tick(delta)) {
-    shared.registerArenaDelta(latencyTracker.makeUpdate());
+    shared.registerArenaDelta(latencyTracker.makeUpdate(inputCache));
     latencyUpdateSchedule.reset();
   }
 }
@@ -228,7 +228,7 @@ ServerExec::ServerExec(
 
     host(tg::HostType::Server, port),
     shared(host, telegraph, arenaInit),
-    inputManager(shared),
+    inputCache(shared),
 
     skyDeltaSchedule(1.0f / 25.0f),
     scoreDeltaSchedule(0.5f),

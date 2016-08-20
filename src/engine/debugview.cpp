@@ -35,7 +35,7 @@ void DebugView::printArenaReport(Printer &p) const {
   p.printLn("getName(): " + arena.getName());
   p.printLn("getNextEnv(): " + arena.getNextEnv());
   p.printLn("getPlayers().size(): "
-                + std::to_string(arena.getPlayers().size()));
+            + std::to_string(arena.getPlayers().size()));
   p.printLn("getUptime(): " + printTime(arena.getUptime()));
 
   if (playerID) {
@@ -44,12 +44,16 @@ void DebugView::printArenaReport(Printer &p) const {
 
     p.printLn("PID: " + std::to_string(playerID.get()));
     if (auto player = arena.getPlayer(playerID.get())) {
-      p.printLn("latencyIsCalculated(): "
-                    + printBool(player->latencyIsCalculated()));
-      if (player->latencyIsCalculated()) {
-        p.printLn("getLatency(): " + printTimeDiff(player->getLatency()));
-        p.printLn("getClockOffset(): " + printTime(player->getClockOffset()));
+      if (const auto stats = player->getConnectionStats()) {
+        p.printLn("stats.latency: " + printTimeDiff(stats->latency));
+        p.printLn("stats.offset: " + printTime(stats->offset));
+        p.printLn("stats.flow.averageWait: " + printTimeDiff(stats->flow.averageWait));
+        p.printLn("stats.flow.totalJitter: " + printTimeDiff(stats->flow.totalJitter));
+      } else {
+        p.printLn("(Connection statistics not initialized.)");
       }
+      p.printLn("player->getTeam(): " +  std::to_string(player->getTeam()));
+      p.printLn("player->getNickname(): " + inQuotes(player->getNickname()));
     } else {
       p.setColor(255, 0, 0);
       p.printLn("ERROR: PID not associated with Player in Arena!");
@@ -62,14 +66,14 @@ void DebugView::printSkyReport(Printer &p) const {
   p.printTitle("SkyHandle");
   p.printLn("bool(getSky()): " + printBool(bool(skyHandle.getSky())));
   p.printLn("bool(getEnvironment()): "
-                + printBool(bool(skyHandle.getEnvironment())));
+            + printBool(bool(skyHandle.getEnvironment())));
 
   if (const auto sky = skyHandle.getSky()) {
     p.printLn("environment.url: " + skyHandle.getEnvironment()->url);
     p.printLn("sky.settings.getGravity(): "
-                  + printFloat(sky->settings.getGravity()));
+              + printFloat(sky->settings.getGravity()));
     p.printLn("sky.settings.getViewScale(): "
-                  + printFloat(sky->settings.getViewscale()));
+              + printFloat(sky->settings.getViewscale()));
 
     p.breakLine();
     if (playerID) {

@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "latencytracker.hpp"
+#include "skyinputcache.hpp"
+
+namespace sky {
 
 /**
  * PlayerLatency.
@@ -67,15 +70,21 @@ void LatencyTracker::registerPong(const sky::Player &player,
   getPlayerData(player).registerPong(arena.getUptime(), pingTime, pongTime);
 }
 
-sky::ArenaDelta LatencyTracker::makeUpdate() {
+ArenaDelta LatencyTracker::makeUpdate(SkyInputCache &cache) const {
   std::map<PID, sky::PlayerDelta> deltas;
   arena.forPlayers([&](sky::Player &player) {
     sky::PlayerDelta playerDelta{player};
-    auto &latency = getPlayerData(player);
-    playerDelta.latencyStats.emplace(latency.getLatency(),
-                                     latency.getOffset());
+    auto &playerData = getPlayerData(player);
+
+	sky::PlayerConnectionStats stats;
+    stats.latency = playerData.getLatency();
+    stats.offset = playerData.getOffset();
+    stats.flow = cache.getPlayerStats(player);
+
+    playerDelta.connectionStats = stats;
     deltas.emplace(player.pid, playerDelta);
   });
   return sky::ArenaDelta::Delta(deltas);
 }
 
+}
