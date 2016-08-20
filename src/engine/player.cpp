@@ -64,7 +64,7 @@ void Player::applyDelta(const PlayerDelta &delta) {
     latencyInitialized = true;
   }
   if (delta.flowStats) {
-    flowStats = delta.flowStats;
+    flowStats = delta.flowStats.get();
   }
 }
 

@@ -29,8 +29,11 @@ namespace sky {
  * Statistics about the operation of a FlowControl.
  */
 struct FlowStats {
+  FlowStats() = default;
   FlowStats(const TimeDiff averageWait, const TimeDiff totalJitter) :
-    averageWait(averageWait), totalJitter(totalJitter) { }
+      averageWait(averageWait), totalJitter(totalJitter) { }
+ 
+  // Cereal serialization.
   template<typename Archive>
   void serialize(Archive &ar) {
     ar(averageWait, totalJitter);
@@ -63,7 +66,7 @@ struct TimedMessage {
   TimedMessage(const Message &message,
                const Time arrivalTime,
                const Time timestamp) :
-    message(message), arrivalTime(arrivalTime), timestamp(timestamp) { }
+      message(message), arrivalTime(arrivalTime), timestamp(timestamp) { }
 
   Message message;
   Time arrivalTime, timestamp;
@@ -86,8 +89,8 @@ class FlowControl {
 
  public:
   FlowControl() :
-    waitingTime(50),
-    offsets(50) { }
+      waitingTime(50),
+      offsets(50) { }
 
   // A message with a timestamp arrives.
   void registerMessage(const Time localtime, const Time timestamp, const Message &message) {
@@ -103,7 +106,7 @@ class FlowControl {
     if (!messages.empty()) {
       const Time difference = localtime - messages.front().timestamp;
       if (flowState.release(difference)) {
-        const Message msg = messages.front();
+        const auto msg = messages.front();
         waitingTime.push(localtime - msg.arrivalTime);
         offsets.push(localtime - msg.timestamp);
         messages.pop();
