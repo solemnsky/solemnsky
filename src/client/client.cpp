@@ -154,6 +154,7 @@ void Client::renderGame(ui::Frame &f) {
   game->render(f);
 
   if (settings.enableDebug) {
+    float debugHeight;
     f.withAlpha(style.base.debugOpacity, [&]() {
       f.drawText(
           {20, 20},
@@ -169,7 +170,9 @@ void Client::renderGame(ui::Frame &f) {
             tf.printLn("GAME INFO:");
             tf.setColor(sf::Color::White);
             game->printDebugLeft(tf);
+            debugHeight = tf.drawOffset.y;
           }, style.base.debugText, resources.defaultFont);
+      f.drawRect({0, 0}, {style.base.debugMargin, debugHeight}, style.base.debugBackground);
       f.drawText(
           {1580, 20},
           [&](ui::TextFrame &tf) {
@@ -178,7 +181,9 @@ void Client::renderGame(ui::Frame &f) {
             tf.setColor(255, 255, 255);
             tf.setColor(sf::Color::White);
             game->printDebugRight(tf);
+            debugHeight = tf.drawOffset.y;
           }, style.base.debugRightText, resources.defaultFont);
+      f.drawRect({1600, 0}, {1600 - style.base.debugMargin, debugHeight}, style.base.debugBackground);
     });
   }
 }
