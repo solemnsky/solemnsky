@@ -30,16 +30,20 @@ namespace sky {
  */
 struct FlowStats {
   FlowStats() = default;
-  FlowStats(const TimeDiff averageWait, const TimeDiff totalJitter) :
-      averageWait(averageWait), totalJitter(totalJitter) { }
+  FlowStats(const TimeDiff averageWait,
+            const TimeDiff inputJitter,
+            const TimeDiff outputJitter) :
+      averageWait(averageWait),
+      inputJitter(inputJitter),
+      outputJitter(outputJitter) { }
 
   // Cereal serialization.
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(averageWait, totalJitter);
+    ar(averageWait, inputJitter, outputJitter);
   }
 
-  TimeDiff averageWait, totalJitter;
+  TimeDiff averageWait, inputJitter, outputJitter;
 
 };
 
@@ -86,20 +90,24 @@ class FlowControl {
   FlowState flowState;
 
   RollingSampler<TimeDiff> waitingTime;
-  RollingSampler<Time> offsets;
+  RollingSampler<Time> inputOffsets;
+  RollingSampler<Time> outputOffsets;
 
  public:
   FlowControl() :
       waitingTime(50),
-      offsets(50) { }
+      inputOffsets(50),
+      outputOffsets(50) { }
 
   // A message with a timestamp arrives.
   void registerMessage(const Time localtime, const Time timestamp, const Message &message) {
     flowState.registerArrival(localtime - timestamp);
     messages.push(TimedMessage<Message>(message, localtime, timestamp));
+    inputOffsets.push(localtime - timestamp);
   }
   void registerArrival(const Time localtime, const Time timestamp) {
     flowState.registerArrival(localtime - timestamp);
+    inputOffsets.push(localtime - timestamp);
   }
 
   // Potentially pull a message, given the current localtime.
@@ -109,7 +117,7 @@ class FlowControl {
       if (flowState.release(difference)) {
         const auto msg = messages.front();
         waitingTime.push(TimeDiff(localtime - msg.arrivalTime));
-        offsets.push(localtime - msg.timestamp);
+        outputOffsets.push(localtime - msg.timestamp);
         messages.pop();
         return {msg.message};
       }
@@ -120,13 +128,14 @@ class FlowControl {
 
   // Reset the flow, discarding all messages.
   void reset() {
-    if (!messages.empty()) messages = std::queue<TimedMessage<Message>> ();
+    if (!messages.empty()) messages = std::queue<TimedMessage<Message>>();
   }
 
   // Capture rolling statistics.
   FlowStats getStats() const {
     return FlowStats(waitingTime.mean<TimeDiff>(),
-                     TimeDiff(offsets.max() - offsets.min()));
+                     TimeDiff(inputOffsets.max() - inputOffsets.min()),
+                     TimeDiff(outputOffsets.max() - outputOffsets.min()));
   }
 
 };

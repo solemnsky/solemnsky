@@ -56,7 +56,7 @@ Style::Base::Base() :
     normalCheckbox(normalButton),
 
     debugMargin(380),
-    debugHeight(400),
+    debugHeight(430),
     debugBackground(255, 255, 255, 140) {
   normalCheckbox.dimensions = {50, 50};
 }

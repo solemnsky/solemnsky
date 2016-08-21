@@ -48,7 +48,8 @@ void DebugView::printArenaReport(Printer &p) const {
         p.printLn("stats.latency: " + printTimeDiff(stats->latency));
         p.printLn("stats.offset: " + printTime(stats->offset));
         p.printLn("stats.flow.averageWait: " + printTimeDiff(stats->flow.averageWait));
-        p.printLn("stats.flow.totalJitter: " + printTimeDiff(stats->flow.totalJitter));
+        p.printLn("stats.flow.inputJitter: " + printTimeDiff(stats->flow.inputJitter));
+        p.printLn("stats.flow.outputJitter: " + printTimeDiff(stats->flow.outputJitter));
       } else {
         p.printLn("(Connection statistics not initialized.)");
       }

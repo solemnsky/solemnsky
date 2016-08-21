@@ -25,7 +25,7 @@ namespace sky {
  */
 
 FlowState::FlowState() :
-  offsets(100) {}
+  offsets(500) {}
 
 void FlowState::registerArrival(const Time offset) {
   offsets.push(offset);

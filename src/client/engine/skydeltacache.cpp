@@ -44,7 +44,8 @@ void SkyDeltaCache::printDebug(Printer &p) {
   p.printTitle("SkyDeltaCache");
   if (stats) {
     p.printLn("stats.averageWait: " + printTimeDiff(stats->averageWait));
-    p.printLn("stats.totalJitter: " + printTimeDiff(stats->totalJitter));
+    p.printLn("stats.inputJitter: " + printTimeDiff(stats->inputJitter));
+    p.printLn("stats.outputJitter: " + printTimeDiff(stats->outputJitter));
   } else {
     p.printLn("no stats collected yet...");
   }
