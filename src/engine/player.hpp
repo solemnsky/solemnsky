@@ -32,7 +32,7 @@ struct PlayerConnectionStats {
   PlayerConnectionStats(
       const TimeDiff latency,
       const Time offset,
-      const FlowStats flow) :
+      const FlowStats &flow) :
       latency(latency), offset(offset), flow(flow) { }
 
   // Cereal serialization.

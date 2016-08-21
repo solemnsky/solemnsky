@@ -120,7 +120,7 @@ class FlowControl {
 
   // Reset the flow, discarding all messages.
   void reset() {
-    if (!messages.empty()) messages = std::queue<TimedMessage<Message >>();
+    if (!messages.empty()) messages = std::queue<TimedMessage<Message>> ();
   }
 
   // Capture rolling statistics.

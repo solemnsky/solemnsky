@@ -29,6 +29,11 @@ FlowState::FlowState() :
 
 void FlowState::registerArrival(const Time offset) {
   offsets.push(offset);
+  if (window) {
+    approach<Time>(*window, offsets.max(), 0.005);
+  } else {
+    window = offsets.max();
+  }
 }
 
 bool FlowState::release(const Time offset) {

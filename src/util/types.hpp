@@ -170,16 +170,20 @@ template<typename Data>
 class RollingSampler {
  private:
   std::vector<Data> data;
-  const unsigned int maxMemory;
+  const size_t maxMemory;
 
  public:
   RollingSampler() = delete;
-  RollingSampler(const unsigned int maxMemory) :
+  RollingSampler(const size_t maxMemory) :
       maxMemory(maxMemory) { }
 
   void push(const Data value) {
     if (data.size() >= maxMemory) data.erase(data.begin());
     data.push_back(value);
+  }
+
+  size_t size() const {
+    return data.size();
   }
 
   template<typename Result>
