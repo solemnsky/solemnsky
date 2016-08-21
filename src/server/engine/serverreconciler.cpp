@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "skyinputcache.hpp"
+#include "serverreconciler.hpp"
 
 namespace sky {
 
@@ -33,34 +33,34 @@ void PlayerInputCache::cacheInput(const Time timestamp,
 void PlayerInputCache::poll() {
   if (const auto sky = shared.skyHandle.getSky()) {
     while (const auto &input = inputControl.pull(arena.getUptime())) {
-      sky->getParticipation(player).applyInput(*input);
+      sky->getParticipation(player).reconcileInput(*input, 0);
     }
   } else {
     inputControl.reset();
   }
 }
 
-void SkyInputCache::registerPlayer(sky::Player &player) {
+void ServerReconciler::registerPlayer(sky::Player &player) {
   inputManagers.emplace(std::piecewise_construct,
                         std::forward_as_tuple(player.pid),
                         std::forward_as_tuple(player, shared));
   setPlayerData(player, inputManagers.at(player.pid));
 }
 
-void SkyInputCache::unregisterPlayer(sky::Player &player) {
+void ServerReconciler::unregisterPlayer(sky::Player &player) {
   inputManagers.erase(inputManagers.find(player.pid));
 }
 
-void SkyInputCache::onPoll() {
+void ServerReconciler::onPoll() {
   for (auto &manager : inputManagers) {
     manager.second.poll();
   }
 }
 
-SkyInputCache::SkyInputCache(ServerShared &shared) :
+ServerReconciler::ServerReconciler(ServerShared &shared) :
     Subsystem(shared.arena), shared(shared) { }
 
-void SkyInputCache::receive(
+void ServerReconciler::receive(
     sky::Player &player, const Time timestamp,
     const sky::ParticipationInput &input) {
   getPlayerData(player).cacheInput(timestamp, input);

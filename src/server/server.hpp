@@ -20,7 +20,7 @@
  */
 #pragma once
 #include "servershared.hpp"
-#include "server/engine/skyinputcache.hpp"
+#include "server/engine/serverreconciler.hpp"
 
 /**
  * Type-erasure for Server, representing the uniform API.
@@ -82,7 +82,7 @@ class ServerExec {
   tg::Host host;
   tg::Telegraph<sky::ClientPacket> telegraph;
   ServerShared shared;
-  sky::SkyInputCache inputCache;
+  sky::ServerReconciler inputCache;
 
   // Packet scheduling.
   Scheduler skyDeltaSchedule,

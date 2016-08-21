@@ -18,8 +18,9 @@
 /**
  * Base interfaces for our gamestate-synchronizing infrastructure.
  */
-#include "util/types.hpp"
 #pragma once
+#include "util/types.hpp"
+#include <queue>
 
 /**
  * A type that can be synchronized over the network.
@@ -55,6 +56,44 @@ class AutoNetworked: public Networked<Init, Delta> {
  public:
   AutoNetworked(const Init &init) : Networked<Init, Delta>(init) { }
 
+  virtual optional<Delta> collectDelta() = 0;
+
+};
+
+template <typename Delta>
+struct Keyframe {
+  Time timestamp;;
+  Delta delta;
+
+};
+
+/**
+ * A type that is synchronized over the network with interpolation to provide smooth simulation.
+ */
+template<typename Init, typename Delta>
+class SmoothNetworked {
+  // please contact me if you have a better name
+ protected:
+  std::queue<Keyframe<Delta>> keyframes;
+
+  inline void addKeyframe(const Time timestamp, const Delta &delta) {
+    keyframes.push({timestamp, delta});
+  }
+
+  // Remove keyframes with timestamps older than the localtime.
+  inline void cleanKeyframes(const Time localtime) {
+    while (!keyframes.empty() && keyframes.front().timestamp < localtime) {
+      keyframes.pop();
+    }
+  }
+
+ public:
+  SmoothNetworked() = delete;
+  SmoothNetworked(const Init &init) { }
+
+  virtual void reconcileDelta(const Delta &delta, const TimeDiff delay);
+
+  virtual Init captureInitializer() const = 0;
   virtual optional<Delta> collectDelta() = 0;
 
 };

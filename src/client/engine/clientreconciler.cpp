@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "skydeltacache.hpp"
+#include "clientreconciler.hpp"
 
 namespace sky {
 
@@ -23,17 +23,9 @@ SkyDeltaCache::SkyDeltaCache(Arena &arena, SkyHandle &skyHandle) :
     Subsystem(arena), skyHandle(skyHandle) {}
 
 void SkyDeltaCache::receive(const Time timestamp, const SkyDelta &delta) {
-  deltaControl.registerMessage(arena.getUptime(), timestamp, delta);
 }
 
 void SkyDeltaCache::onPoll() {
-  if (auto sky = skyHandle.getSky()) {
-    while (const auto delta = deltaControl.pull(arena.getUptime())) {
-      sky->applyDelta(delta.get());
-    }
-  } else {
-    deltaControl.reset();
-  }
 }
 
 void SkyDeltaCache::onDebugRefresh() {

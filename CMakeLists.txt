@@ -166,8 +166,8 @@ add_executable(solemnsky_server
         src/server/engine/latencytracker.cpp
         src/server/engine/latencytracker.hpp
 
-        src/server/engine/skyinputcache.cpp
-        src/server/engine/skyinputcache.hpp
+        src/server/engine/serverreconciler.cpp
+        src/server/engine/serverreconciler.hpp
 
         src/server/main.cpp
 
@@ -196,8 +196,8 @@ add_executable(solemnsky_client
         src/client/elements/style.cpp
         src/client/elements/style.hpp
 
-        src/client/engine/skydeltacache.cpp
-        src/client/engine/skydeltacache.hpp
+        src/client/engine/clientreconciler.cpp
+        src/client/engine/clientreconciler.hpp
 
         src/client/engine/skyrender.cpp
         src/client/engine/skyrender.hpp

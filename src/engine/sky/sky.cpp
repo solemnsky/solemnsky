@@ -177,7 +177,7 @@ Sky::Sky(Arena &arena, const Map &map, const SkyInit &initializer, SkyListener *
   }
 }
 
-void Sky::applyDelta(const SkyDelta &delta) {
+void Sky::reconcileDelta(const SkyDelta &delta, const TimeDiff delay) {
   // Participations.
   for (const auto &participation: delta.participations) {
     if (const Player *player = arena.getPlayer(participation.first)) {

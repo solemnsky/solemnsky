@@ -147,7 +147,7 @@ class Participation: public AutoNetworked<ParticipationInit, ParticipationDelta>
              const sf::Vector2f &pos, const float rot);
 
   // ParticipationInput.
-  void applyInput(const ParticipationInput &input);
+  void reconcileInput(const ParticipationInput &input, const TimeDiff delay);
   optional<ParticipationInput> collectInput();
 
 };

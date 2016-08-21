@@ -89,7 +89,7 @@ class Entity: public Component<EntityState, EntityDelta> {
 
   // Networked impl.
   EntityState captureInitializer() const override final;
-  void applyDelta(const EntityDelta &delta) override final;
+  void applyDelta(const EntityDelta &delta, const TimeDiff delay) override final;
   optional<EntityDelta> collectDelta() override final;
 
   // User API.

@@ -33,23 +33,23 @@ class PlayerInputCache {
   ServerShared &shared;
   Arena &arena;
 
-  FlowControl<sky::ParticipationInput> inputControl;
+  FlowControl flow;
 
  public:
   PlayerInputCache(sky::Player &player, ServerShared &shared);
 
-  // SkyInputCache impl.
+  // ServerReconciler impl.
   void cacheInput(const Time timestamp, const sky::ParticipationInput &input);
   void poll();
 
   // Stat collection.
   inline FlowStats getStats() const {
-    return inputControl.getStats();
+    flow.getStats();
   }
 
 };
 
-class SkyInputCache: public Subsystem<PlayerInputCache> {
+class ServerReconciler: public Subsystem<PlayerInputCache> {
  private:
   ServerShared &shared;
   std::map<PID, PlayerInputCache> inputManagers;
@@ -61,7 +61,7 @@ class SkyInputCache: public Subsystem<PlayerInputCache> {
   virtual void onPoll() override final;
 
  public:
-  SkyInputCache(ServerShared &shared);
+  ServerReconciler(ServerShared &shared);
 
   void receive(sky::Player &player, const Time timestamp,
                const sky::ParticipationInput &input);

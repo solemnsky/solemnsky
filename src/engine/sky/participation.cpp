@@ -195,7 +195,7 @@ void Participation::spawn(const PlaneTuning &tuning,
 }
 
 
-void Participation::applyInput(const ParticipationInput &input) {
+void Participation::reconcileInput(const ParticipationInput &input, const TimeDiff delay) {
   assert(role.server());
 
   if (input.controls) {

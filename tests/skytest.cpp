@@ -102,7 +102,7 @@ TEST_F(SkyTest, InputTest) {
     input.controls = controls;
 
     // Now apply the input to a participation.
-    participation.applyInput(input);
+    participation.reconcileInput(input, 0);
 
     // The results are visible.
     ASSERT_EQ(participation.plane->getState().physical.pos.x, 300);
@@ -126,7 +126,7 @@ TEST_F(SkyTest, InputTest) {
     ASSERT_EQ(bool(input), true);
 
     // Apply the input to our original participation and see the results.
-    participation.applyInput(input.get());
+    participation.reconcileInput(input.get(), 0);
     ASSERT_EQ(participation.getControls().getState<sky::Action::Right>(), true);
   }
 
@@ -173,7 +173,7 @@ TEST_F(SkyTest, AuthorityTest) {
     sky::PlaneStateClient stateInput(participation.plane->getState());
     stateInput.physical = sky::PhysicalState({300, 300}, {}, 50, 0);
     input.planeState.emplace(stateInput);
-    sky.getParticipation(player).applyInput(input);
+    sky.getParticipation(player).reconcileInput(input, 0);
 
     // Transmit a delta to the client, respecting his authority.
     auto delta = sky.collectDelta();

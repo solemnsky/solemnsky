@@ -28,7 +28,7 @@
 #include "client/elements/elements.hpp"
 #include "client/elements/clientui.hpp"
 #include "engine/flowcontrol.hpp"
-#include "client/engine/skydeltacache.hpp"
+#include "client/engine/clientreconciler.hpp"
 
 /**
  * ArenaLogger proxy for MultiplayerCore, to intercept arena events for

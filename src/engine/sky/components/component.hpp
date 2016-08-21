@@ -34,7 +34,7 @@
 namespace sky {
 
 template<typename State, typename Delta>
-class Component: public AutoNetworked<State, Delta> {
+class Component: public SmoothNetworked<State, Delta> {
  protected:
   State state;
   Physics &physics;
@@ -48,7 +48,7 @@ class Component: public AutoNetworked<State, Delta> {
 
  public:
   Component(const State &data, Physics &physics) :
-      AutoNetworked<State, Delta>(data),
+      SmoothNetworked<State, Delta>(data),
       state(data),
       physics(physics),
       destroyable(false) { }

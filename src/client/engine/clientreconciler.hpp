@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Clientside subsystem to manage the timely application of SkyDeltas from the server.
+ * Manages the reconciliation of sky update packets.
  */
 #pragma once
 #include "engine/arena.hpp"

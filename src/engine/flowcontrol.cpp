@@ -17,27 +17,41 @@
  */
 #include "flowcontrol.hpp"
 #include "util/methods.hpp"
+#include "util/printer.hpp"
 
 namespace sky {
 
 /**
- * FlowState.
+ * FlowStats.
  */
 
-FlowState::FlowState() :
-  offsets(500) {}
+FlowStats::FlowStats(const TimeDiff inputJitter,
+                     const TimeDiff maxDelay,
+                     const TimeDiff minDelay) :
+    inputJitter(inputJitter),
+    maxDelay(maxDelay),
+    minDelay(minDelay) { }
 
-void FlowState::registerArrival(const Time offset) {
-  offsets.push(offset);
-  if (window) {
-    approach<Time>(*window, offsets.max(), 0.005);
-  } else {
-    window = offsets.max();
-  }
+void FlowStats::printDebug(Printer &p) const {
+  p.printLn("flow.inputJitter: " + printTimeDiff(inputJitter));
+  p.printLn("flow.maxDelay: " + printTimeDiff(maxDelay));
+  p.printLn("flow.minDelay: " + printTimeDiff(minDelay));
 }
 
-bool FlowState::release(const Time offset) {
-  return !window or (window and offset > *window);
+/**
+ * FlowControl.
+ */
+
+FlowControl::FlowControl() :
+    offsets(50) { }
+
+TimeDiff FlowControl::determineDelay(const Time localtime, const Time timestamp) {
+  offsets.push(localtime - timestamp);
+  return 0.02f;
+}
+
+FlowStats FlowControl::getStats() const {
+  return FlowStats(offsets.max() - offsets.min(), 0.02f, 0.02f);
 }
 
 }

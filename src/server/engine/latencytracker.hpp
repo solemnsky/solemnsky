@@ -60,7 +60,7 @@ class LatencyTracker : public Subsystem<PlayerLatency> {
                     const Time pongTime);
 
   // Make an arena update with the latency information
-  // and the flow information from a SkyInputCache.
+  // and the flow information from a ServerReconciler.
   ArenaDelta makeUpdate(class SkyInputCache &cache) const;
 
 };

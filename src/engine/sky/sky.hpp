@@ -76,7 +76,7 @@ struct SkyDelta: public VerifyStructure {
  */
 class Sky: public PhysicsListener,
            public Subsystem<Participation>,
-           public AutoNetworked<SkyInit, SkyDelta> {
+           public SmoothNetworked<SkyInit, SkyDelta> {
   friend class SkyHandle;
   friend class Participation;
  private:
@@ -126,8 +126,8 @@ class Sky: public PhysicsListener,
   // Settings.
   SkySettings settings;
 
-  // AutoNetworked impl.
-  void applyDelta(const SkyDelta &delta) override final;
+  // SmoothNetworked impl.
+  void reconcileDelta(const SkyDelta &delta, const TimeDiff delay) override final;
   SkyInit captureInitializer() const override final;
   optional<SkyDelta> collectDelta() override final;
 

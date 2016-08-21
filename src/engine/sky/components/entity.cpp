@@ -59,7 +59,7 @@ EntityState Entity::captureInitializer() const {
   return state;
 }
 
-void Entity::applyDelta(const EntityDelta &delta) {
+void Entity::applyDelta(const EntityDelta &delta, const TimeDiff delay) {
   state.physical = delta.physical;
 }
 
