@@ -32,7 +32,7 @@ void FlowState::registerArrival(const Time offset) {
 }
 
 bool FlowState::release(const Time offset) {
-  return offset > offsets.max();
+  return !window or (window and offset > *window);
 }
 
 }

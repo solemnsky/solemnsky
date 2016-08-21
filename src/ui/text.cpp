@@ -53,11 +53,15 @@ TextFormat::TextFormat(
     const int size,
     const float maxWidth,
     const HorizontalAlign horizontal,
-    const VerticalAlign vertical) :
+    const VerticalAlign vertical,
+    const optional<sf::Color> &outlineColor,
+    const float outlineThickness) :
     size(size),
     maxWidth(maxWidth),
     horizontal(horizontal),
-    vertical(vertical) { }
+    vertical(vertical),
+    outlineColor(outlineColor),
+    outlineThickness(outlineThickness) { }
 
 /**
  * TextFrame.
@@ -101,6 +105,10 @@ sf::Vector2f TextFrame::drawBlock(const sf::Vector2f &pos,
   text.setPosition(drawPos);
 
   text.setFillColor(parent.alphaScaleColor(color));
+  if (format.outlineColor) {
+    text.setOutlineColor(parent.alphaScaleColor(format.outlineColor.get()));
+    text.setOutlineThickness(format.outlineThickness);
+  }
   parent.window.draw(text, parent.transformStack.top());
   return {bounds.width, float(format.size)};
 }

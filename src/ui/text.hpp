@@ -54,13 +54,19 @@ enum class VerticalAlign {
 struct TextFormat {
   TextFormat() = delete;
   TextFormat(const int size,
-             const float maxWidth,
-             const HorizontalAlign horizontal, const VerticalAlign vertical);
+               const float maxWidth,
+               const HorizontalAlign horizontal,
+               const VerticalAlign vertical,
+               const optional<sf::Color> &outlineColor = {},
+               const float outlineThickness = 2);
 
   int size;
   float maxWidth; // values of 0 mean there is no limit
   HorizontalAlign horizontal;
   VerticalAlign vertical;
+
+  optional<sf::Color> outlineColor;
+  float outlineThickness;
 
 };
 

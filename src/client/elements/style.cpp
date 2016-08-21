@@ -38,8 +38,8 @@ Style::Base::Base() :
     accentDark(56, 90, 137),
     accentLight(106, 135, 176),
 
-    freeTextColor(dark),
-    textColor(255, 255, 255), // not blue
+    freeTextColor(255, 255, 255),
+    textColor(255, 255, 255),
     textAreaForeground(0, 0, 0),
     textAreaBackground(255, 255, 255),
 
@@ -67,9 +67,8 @@ Style::Splash::Splash(const Base &base) :
     barPaddingTop(50),
     transition(1.5),
     barColor(sf::Color::White),
-    titleFormat(base.titleFontSize, {},
-                ui::HorizontalAlign::Center,
-                ui::VerticalAlign::Middle) { }
+    titleFormat(base.titleFontSize, {}, ui::HorizontalAlign::Center,
+                ui::VerticalAlign::Middle, sf::Color::Black, 2) { }
 
 Style::Menu::Menu(const Style::Base &base) :
     unfocusedPageScale(500.0f / 1600.0f),
@@ -91,12 +90,12 @@ Style::Menu::Menu(const Style::Base &base) :
 
     pageBgColor(base.background),
     pageUnderlayColor(255, 255, 255, 15),
-    statusFontColor(base.dark),
-    gameOverlayColor(255, 255, 255, 150),
+    statusFontColor(base.freeTextColor),
+    gameOverlayColor(0, 0, 0, 150),
 
     descSize(base.normalFontSize),
 
-    pageDescMargin(-10),
+    pageDescMargin(0),
 
     pageFocusAnimSpeed(4),
     gameFocusAnimSpeed(6),
@@ -112,7 +111,7 @@ Style::Menu::Menu(const Style::Base &base) :
     menuDescText(base.normalText),
     gameDescText(base.normalText),
 
-    menuInGameFade(0.7),
+    menuInGameFade(1),
     menuNormalFade(0.9),
 
     quitDescriptionFade(5) {
@@ -126,6 +125,10 @@ Style::Menu::Menu(const Style::Base &base) :
   menuDescText.vertical = ui::VerticalAlign::Bottom;
 
   gameDescText.horizontal = ui::HorizontalAlign::Right;
+  gameDescText.outlineColor = sf::Color::Black;
+  gameDescText.outlineThickness = 2;
+  menuDescText.outlineColor = sf::Color::Black;
+  menuDescText.outlineThickness = 2;
 }
 
 Style::Home::Home(const Style::Base &) :

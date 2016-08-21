@@ -32,7 +32,7 @@ struct FlowStats {
   FlowStats() = default;
   FlowStats(const TimeDiff averageWait, const TimeDiff totalJitter) :
       averageWait(averageWait), totalJitter(totalJitter) { }
- 
+
   // Cereal serialization.
   template<typename Archive>
   void serialize(Archive &ar) {
@@ -49,6 +49,7 @@ struct FlowStats {
 class FlowState {
  private:
   RollingSampler<Time> offsets;
+  optional<Time> window;
 
  public:
   FlowState();
@@ -107,24 +108,19 @@ class FlowControl {
       const Time difference = localtime - messages.front().timestamp;
       if (flowState.release(difference)) {
         const auto msg = messages.front();
-        waitingTime.push(localtime - msg.arrivalTime);
+        waitingTime.push(TimeDiff(localtime - msg.arrivalTime));
         offsets.push(localtime - msg.timestamp);
         messages.pop();
-        return
-        {
-          msg.message
-        };
+        return {msg.message};
       }
     }
 
-    return
-    {
-    };
+    return {};
   }
 
   // Reset the flow, discarding all messages.
   void reset() {
-    if (!messages.empty()) messages = std::queue<TimedMessage < Message >> ();
+    if (!messages.empty()) messages = std::queue<TimedMessage<Message >>();
   }
 
   // Capture rolling statistics.
@@ -132,7 +128,6 @@ class FlowControl {
     return FlowStats(waitingTime.mean<TimeDiff>(),
                      TimeDiff(offsets.max() - offsets.min()));
   }
-
 
 };
 

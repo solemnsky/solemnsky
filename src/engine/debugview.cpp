@@ -85,7 +85,7 @@ void DebugView::printSkyReport(Printer &p) const {
         p.printLn("isSpawned(): " + printBool(spawned));
         if (spawned) {
           const auto &plane = participation.plane.get();
-          p.printLn("plane.getState().physical.pos: " +
+          p.printLn("state.physical.pos: " +
                     printVector(plane.getState().physical.pos));
         }
       } else {
