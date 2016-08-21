@@ -34,8 +34,8 @@ void MultiplayerGame::printScores(ui::TextFrame &tf, const sky::Team team) {
       tf.print(player.getNickname() + " ");
 
       tf.setColor(style.base.textColor);
-      if (player.latencyIsCalculated()) {
-        tf.print("ping{" + printTimeDiff(player.getLatency()) + "}");
+      if (const auto stats = player.getConnectionStats()) {
+        tf.print("ping{" + printTimeDiff(stats->latency) + "}");
       } else {
         tf.print("ping{unknown}");
       }

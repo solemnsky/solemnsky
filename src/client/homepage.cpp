@@ -43,13 +43,9 @@ void HomePage::tick(float delta) {
   ui::Control::tick(delta);
 }
 
-void HomePage::onChangeSettings(const ui::SettingsDelta &settings) {
+void HomePage::onChangeSettings(const ui::SettingsDelta &settings) { }
 
-}
-
-void HomePage::onBlur() {
-
-}
+void HomePage::onBlur() { }
 
 void HomePage::render(ui::Frame &f) {
   drawBackground(f);
@@ -72,11 +68,11 @@ void HomePage::signalRead() {
 
   if (localhostButton.clickSignal)
     shared.beginGame(
-        std::make_unique<Multiplayer>(shared, "localhost", 4242));
+                     std::make_unique<Multiplayer>(shared, "localhost", 4242));
 
   if (remoteButton.clickSignal)
     shared.beginGame(
-        std::make_unique<Multiplayer>(shared, serverEntry.contents, 4242));
+                     std::make_unique<Multiplayer>(shared, serverEntry.contents, 4242));
 }
 
 void HomePage::signalClear() {

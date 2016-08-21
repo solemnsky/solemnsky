@@ -58,9 +58,7 @@ TextEntry::TextEntry(const AppRefs &references,
 // wrap-around, making their behaviour erratic when the tick interval
 // approaches the cooldown interval
 
-    textFormat(style
-                   .fontSize, 0,
-               ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
+    textFormat(style.fontSize, 0, ui::HorizontalAlign::Left, ui::VerticalAlign::Top),
     descriptionFormat(textFormat),
 
     persistent(persistent),

@@ -55,6 +55,29 @@ Page &Client::referencePage(const PageType type) {
   throw enum_error();
 }
 
+void Client::drawDebugLeft(Printer &p) {
+  p.setColor(255, 0, 0);
+  p.printLn("PERFORMANCE STATS:");
+  p.setColor(0, 0, 0);
+  p.printLn("cycle:" + profilerSnap.cycleTime.print());
+  p.printLn("logic:" + profilerSnap.logicTime.print());
+  p.printLn("render:" + profilerSnap.renderTime.print());
+  p.breakLine();
+  p.setColor(255, 0, 0);
+  p.printLn("GAME INFO:");
+  p.setColor(0, 0, 0);
+  game->printDebugLeft(p);
+  p.breakLine();
+}
+
+void Client::drawDebugRight(Printer &p) {
+  p.setColor(255, 0, 0);
+  p.printLn("MORE GAME INFO:");
+  p.setColor(0, 0, 0);
+  game->printDebugRight(p);
+  p.breakLine();
+}
+
 void Client::renderPage(ui::Frame &f, const PageType type,
                         const sf::Vector2f &offset, const std::string &name,
                         ui::TransformedBase &page) {
@@ -155,30 +178,14 @@ void Client::renderGame(ui::Frame &f) {
 
   if (settings.enableDebug) {
     f.withAlpha(style.base.debugOpacity, [&]() {
+      f.drawRect({0, 0}, {style.base.debugMargin, style.base.debugHeight}, style.base.debugBackground);
       f.drawText(
-          {20, 20},
-          [&](ui::TextFrame &tf) {
-            tf.setColor(sf::Color::Red);
-            tf.printLn("PERFORMANCE STATS:");
-            tf.setColor(sf::Color::White);
-            tf.printLn("cycle:" + profilerSnap.cycleTime.print());
-            tf.printLn("logic:" + profilerSnap.logicTime.print());
-            tf.printLn("render:" + profilerSnap.renderTime.print());
-            tf.setColor(sf::Color::Red);
-            tf.breakLine();
-            tf.printLn("GAME INFO:");
-            tf.setColor(sf::Color::White);
-            game->printDebugLeft(tf);
-          }, style.base.debugText, resources.defaultFont);
+          {20, 20}, [&](ui::TextFrame &tf) { drawDebugLeft(tf); },
+          style.base.debugText, resources.defaultFont);
+      f.drawRect({1600, 0}, {1600 - style.base.debugMargin, style.base.debugHeight}, style.base.debugBackground);
       f.drawText(
-          {1580, 20},
-          [&](ui::TextFrame &tf) {
-            tf.setColor(255, 0, 0);
-            tf.printLn("MORE GAME INFO:");
-            tf.setColor(255, 255, 255);
-            tf.setColor(sf::Color::White);
-            game->printDebugRight(tf);
-          }, style.base.debugRightText, resources.defaultFont);
+          {1580, 20}, [&](ui::TextFrame &tf) { drawDebugRight(tf); },
+          style.base.debugRightText, resources.defaultFont);
     });
   }
 }

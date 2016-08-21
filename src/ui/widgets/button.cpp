@@ -52,8 +52,7 @@ Button::Button(const AppRefs &references,
     inPreClick(false),
     active(true),
 
-    textFormat(style.fontSize, style.dimensions.x,
-               HorizontalAlign::Center, VerticalAlign::Middle),
+    textFormat(style.fontSize, style.dimensions.x, HorizontalAlign::Center, VerticalAlign::Middle),
     descriptionFormat(textFormat),
 
     pos(pos),

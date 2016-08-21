@@ -44,11 +44,7 @@ Player::Player(Arena &arena, const PlayerInitializer &initializer) :
     team(initializer.team),
     loadingEnv(initializer.loadingEnv),
 
-    latencyInitialized(bool(initializer.latencyStats)),
-    latency(initializer.latencyStats
-            ? initializer.latencyStats->first : 0),
-    clockOffset(initializer.latencyStats
-                ? initializer.latencyStats->second : 0),
+    connectionStats(initializer.connectionStats),
 
     arena(arena),
     pid(initializer.pid) { }
@@ -58,10 +54,8 @@ void Player::applyDelta(const PlayerDelta &delta) {
   admin = delta.admin;
   loadingEnv = delta.loadingEnv;
   if (delta.team) team = delta.team.get();
-  if (delta.latencyStats) {
-    latency = delta.latencyStats->first;
-    clockOffset = delta.latencyStats->second;
-    latencyInitialized = true;
+  if (delta.connectionStats) {
+    connectionStats = delta.connectionStats.get();
   }
 }
 
@@ -72,9 +66,7 @@ PlayerInitializer Player::captureInitializer() const {
   initializer.admin = admin;
   initializer.loadingEnv = loadingEnv;
   initializer.team = team;
-  if (latencyInitialized) {
-    initializer.latencyStats.emplace(latency, clockOffset);
-  }
+  initializer.connectionStats = connectionStats;
   return initializer;
 }
 
@@ -94,16 +86,8 @@ bool Player::isLoadingEnv() const {
   return loadingEnv;
 }
 
-bool Player::latencyIsCalculated() const {
-  return latencyInitialized;
-}
-
-TimeDiff Player::getLatency() const {
-  return latency;
-}
-
-Time Player::getClockOffset() const {
-  return clockOffset;
+PlayerConnectionStats const *Player::getConnectionStats() const {
+  return connectionStats.get_ptr();
 }
 
 bool operator==(const Player &x, const Player &y) {

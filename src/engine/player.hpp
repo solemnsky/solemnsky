@@ -23,8 +23,28 @@
 #include "types.hpp"
 #include "sky/planestate.hpp"
 #include "util/networked.hpp"
+#include "flowcontrol.hpp"
 
 namespace sky {
+
+struct PlayerConnectionStats {
+  PlayerConnectionStats() = default;
+  PlayerConnectionStats(
+      const TimeDiff latency,
+      const Time offset,
+      const FlowStats &flow) :
+      latency(latency), offset(offset), flow(flow) { }
+
+  // Cereal serialization.
+  template<typename Archive>
+  void serialize(Archive &ar) {
+    ar(latency, offset, flow);
+  }
+
+  TimeDiff latency;
+  Time offset;
+  FlowStats flow;
+};
 
 /**
  * Initializer type for Player's Networked implementation.
@@ -33,16 +53,17 @@ struct PlayerInitializer {
   PlayerInitializer() = default; // packing
   PlayerInitializer(const PID pid, const std::string &nickname);
 
+  // Cereal serialization.
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(nickname, pid, admin, loadingEnv, team);
+    ar(nickname, pid, admin, loadingEnv, team, connectionStats);
   }
 
   PID pid;
   std::string nickname;
   bool admin, loadingEnv;
   Team team;
-  optional<std::pair<TimeDiff, Time>> latencyStats;
+  optional<PlayerConnectionStats> connectionStats;
 
 };
 
@@ -52,16 +73,16 @@ struct PlayerInitializer {
 struct PlayerDelta {
   PlayerDelta() = default; // packing, do not use
   PlayerDelta(const class Player &player);
-
   template<typename Archive>
   void serialize(Archive &ar) {
-    ar(nickname, admin, loadingEnv, team, latencyStats);
+    ar(nickname, admin, loadingEnv, team, latencyStats, connectionStats);
   }
 
   optional<std::string> nickname;
   bool admin, loadingEnv;
   optional<Team> team;
   optional<std::pair<TimeDiff, Time>> latencyStats;
+  optional<PlayerConnectionStats> connectionStats;
 
 };
 
@@ -83,10 +104,9 @@ class Player: public Networked<PlayerInitializer, PlayerDelta> {
   // Subsystem state.
   std::map<PID, void *> data;
 
-  // Timing stats.
-  bool latencyInitialized;
-  TimeDiff latency;
-  Time clockOffset;
+  // Connection statistics.
+  // This is initializer once and never deinitialized.
+  optional<PlayerConnectionStats> connectionStats;
 
  public:
   Player() = delete;
@@ -108,9 +128,7 @@ class Player: public Networked<PlayerInitializer, PlayerDelta> {
   // (This only has meaning when we're in a game.)
   bool isLoadingEnv() const;
 
-  bool latencyIsCalculated() const;
-  TimeDiff getLatency() const;
-  Time getClockOffset() const;
+  PlayerConnectionStats const *getConnectionStats() const;
 
 };
 

@@ -30,7 +30,7 @@ struct Style {
     sf::Vector2f screenSize; // Hard-coded screen dimensions.
 
     // Font consistency.
-    int smallFontSize, normalFontSize, titleFontSize;
+    int smallFontSize, normalFontSize, titleFontSize, debugFontSize;
     ui::TextFormat centeredText, normalText, debugText, debugRightText;
 
     // Color consistency.
@@ -52,6 +52,10 @@ struct Style {
     ui::Button::Style normalButton;
     ui::TextEntry::Style normalTextEntry;
     ui::Checkbox::Style normalCheckbox;
+
+    // Debug.
+    float debugMargin, debugHeight;
+    sf::Color debugBackground;
 
     Base();
   } base;

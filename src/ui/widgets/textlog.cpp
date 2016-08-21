@@ -84,8 +84,7 @@ TextLog::TextLog(const AppRefs &references, const Style &style,
     Control(references),
     style(style), pos(pos),
     startingNewLine(true),
-    textFormat(style.fontSize, 0, ui::HorizontalAlign::Left,
-               ui::VerticalAlign::Bottom),
+    textFormat(style.fontSize, 0, ui::HorizontalAlign::Left, ui::VerticalAlign::Bottom),
     collapsed(false) { }
 
 void TextLog::tick(TimeDiff) { }

@@ -22,6 +22,8 @@
 #include "engine/arena.hpp"
 #include "util/types.hpp"
 
+namespace sky {
+
 /**
  * Latency data for a player.
  */
@@ -42,21 +44,25 @@ struct PlayerLatency {
 
 };
 
-class LatencyTracker: public sky::Subsystem<PlayerLatency> {
+class LatencyTracker : public Subsystem<PlayerLatency> {
  private:
   std::map<PID, PlayerLatency> latencies;
 
  protected:
-  void registerPlayer(sky::Player &player) override final;
-  void unregisterPlayer(sky::Player &player) override final;
+  void registerPlayer(Player &player) override final;
+  void unregisterPlayer(Player &player) override final;
 
  public:
-  LatencyTracker(sky::Arena &arena);
+  LatencyTracker(Arena &arena);
 
-  void registerPong(const sky::Player &player,
+  void registerPong(const Player &player,
                     const Time pingTime,
                     const Time pongTime);
 
-  sky::ArenaDelta makeUpdate();
+  // Make an arena update with the latency information
+  // and the flow information from a SkyInputCache.
+  ArenaDelta makeUpdate(class SkyInputCache &cache) const;
 
 };
+
+}

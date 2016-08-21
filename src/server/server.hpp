@@ -82,7 +82,7 @@ class ServerExec {
   tg::Host host;
   tg::Telegraph<sky::ClientPacket> telegraph;
   ServerShared shared;
-  sky::SkyInputManager inputManager;
+  sky::SkyInputCache inputCache;
 
   // Packet scheduling.
   Scheduler skyDeltaSchedule,
@@ -95,7 +95,7 @@ class ServerExec {
 
   // Subsystems.
   ServerLogger logger;
-  LatencyTracker latencyTracker;
+  sky::LatencyTracker latencyTracker;
 
   // Application loop subroutines.
   void processPacket(ENetPeer *client, const sky::ClientPacket &packet);

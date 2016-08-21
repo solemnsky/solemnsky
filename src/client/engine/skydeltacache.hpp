@@ -31,10 +31,7 @@ class SkyDeltaCache: public Subsystem<Nothing> {
   SkyHandle &skyHandle;
   FlowControl<SkyDelta> deltaControl;
 
-  struct Stats {
-    TimeDiff averageWait, actualJitter;
-  };
-  optional<Stats> stats;
+  optional<FlowStats> stats;
 
  protected:
   // Subsystem impl.

@@ -27,7 +27,7 @@ namespace sky {
 /**
  * Manager for the ParticipationInput stream produced by one player.
  */
-class PlayerInputManager {
+class PlayerInputCache {
  private:
   Player &player;
   ServerShared &shared;
@@ -36,17 +36,23 @@ class PlayerInputManager {
   FlowControl<sky::ParticipationInput> inputControl;
 
  public:
-  PlayerInputManager(sky::Player &player, ServerShared &shared);
+  PlayerInputCache(sky::Player &player, ServerShared &shared);
 
+  // SkyInputCache impl.
   void cacheInput(const Time timestamp, const sky::ParticipationInput &input);
   void poll();
 
+  // Stat collection.
+  inline FlowStats getStats() const {
+    return inputControl.getStats();
+  }
+
 };
 
-class SkyInputManager: public Subsystem<PlayerInputManager> {
+class SkyInputCache: public Subsystem<PlayerInputCache> {
  private:
   ServerShared &shared;
-  std::map<PID, PlayerInputManager> inputManagers;
+  std::map<PID, PlayerInputCache> inputManagers;
 
  protected:
   // Subsystem impl.
@@ -55,10 +61,13 @@ class SkyInputManager: public Subsystem<PlayerInputManager> {
   virtual void onPoll() override final;
 
  public:
-  SkyInputManager(ServerShared &shared);
+  SkyInputCache(ServerShared &shared);
 
   void receive(sky::Player &player, const Time timestamp,
                const sky::ParticipationInput &input);
+  inline const FlowStats getPlayerStats(const Player &player) const {
+    return getPlayerData(player).getStats();
+  }
 
 };
 

@@ -37,17 +37,14 @@ void SkyDeltaCache::onPoll() {
 }
 
 void SkyDeltaCache::onDebugRefresh() {
-  stats.emplace();
-  stats->averageWait = deltaControl.waitingTime.mean<Time>();
-  stats->actualJitter =
-    TimeDiff(deltaControl.offsets.max() - deltaControl.offsets.min());
+  stats.emplace(deltaControl.getStats());
 }
 
 void SkyDeltaCache::printDebug(Printer &p) {
   p.printTitle("SkyDeltaCache");
   if (stats) {
-    p.printLn("average time lost in cache: " + printTimeDiff(stats->averageWait));
-    p.printLn("actual offset jitter" + printTimeDiff(stats->actualJitter));
+    p.printLn("stats.averageWait: " + printTimeDiff(stats->averageWait));
+    p.printLn("stats.totalJitter: " + printTimeDiff(stats->totalJitter));
   } else {
     p.printLn("no stats collected yet...");
   }
