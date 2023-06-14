@@ -18,9 +18,13 @@
 #include "filepath.hpp"
 
 fs::path getTopPath(const std::string &path) {
-  fs::path top = fs::system_complete("../../");
-  top += fs::path(path);
-  return top;
+  const char* envPath = std::getenv("SOLEMNSKY_RESOURCES");
+  if (!envPath) {
+    fs::path top = fs::system_complete("../../"); // back when I was testing from ./build/release/..
+    top += fs::path(path);
+    return top;
+  }
+  return fs::path(envPath) / fs::path(path);
 }
 
 fs::path getMediaPath(const std::string &path) {
@@ -28,7 +32,7 @@ fs::path getMediaPath(const std::string &path) {
 }
 
 fs::path getEnvironmentPath(const std::string &path) {
-  return getTopPath("environments/export/" + path);
+  return getTopPath("environments/" + path);
 }
 
 fs::path getTestPath(const std::string &path) {

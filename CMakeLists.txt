@@ -13,10 +13,10 @@ endif ()
 # thirdparty submodules that need to be built
 add_subdirectory("thirdparty/Box2D/Box2D")
 add_subdirectory("thirdparty/enet")
-add_subdirectory("thirdparty/SFML")
 
 # we also depend on boost and ibarchive from the host system
 find_package(Boost REQUIRED filesystem system)
+find_package(SFML COMPONENTS system window graphics audio REQUIRED)
 
 # project includes
 include_directories(src/)
@@ -26,7 +26,6 @@ include_directories(SYSTEM
         thirdparty/Box2D/Box2D/
         thirdparty/enet/include/
         thirdparty/cereal/
-        thirdparty/SFML/include/
         thirdparty/polypartition/
         thirdparty/mingw-std-threads/
         thirdparty/spdlog/include/
@@ -311,7 +310,7 @@ source_group("thirdparty"          REGULAR_EXPRESSION thirdparty/.*)
 ###### installation
 install(TARGETS solemnsky_client solemnsky_server
         RUNTIME DESTINATION bin)
-install(DIRECTORY media DESTINATION share/solemnsky)
-set(CPACK_GENERATOR "ZIP")
-include(CPack)
+# install(DIRECTORY media DESTINATION share/solemnsky)
+# set(CPACK_GENERATOR "ZIP")
+# include(CPack)
 

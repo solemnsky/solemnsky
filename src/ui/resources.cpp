@@ -155,7 +155,7 @@ void ResourceLoader::loadAllBlocking() {
 
   appLog("** Loading fonts. **", LogOrigin::App);
 
-  for (const auto font : detail::fontMetadata) {
+  for (const auto &font : detail::fontMetadata) {
     appLog("Loading font: " + font.second.url
                + " (" + font.second.name + ").",
            LogOrigin::App);
@@ -169,7 +169,7 @@ void ResourceLoader::loadAllBlocking() {
 
   appLog("** Loading textures. **", LogOrigin::App);
 
-  for (const auto texture : detail::textureMetadata) {
+  for (const auto &texture : detail::textureMetadata) {
     appLog("Loading texture: " + texture.second.url
                + " (" + texture.second.name + ")",
            LogOrigin::App);
@@ -236,7 +236,7 @@ float ResourceLoader::getProgress() const {
 
 void ResourceLoader::printNewLogs(Printer &p) {
   logMutex.lock();
-  for (const auto msg : workerLog) {
+  for (const auto &msg : workerLog) {
     p.printLn(msg);
   }
   workerLog.clear();

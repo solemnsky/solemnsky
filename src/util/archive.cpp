@@ -32,7 +32,7 @@ Directory::Directory(const std::string &name,
     directories(directories) {}
 
 optional<fs::path> Directory::getTopFile(const std::string &filename) const {
-  for (const auto file : files) {
+  for (const auto &file : files) {
     if (getFilename(file) == filename)
       return file;
   }
@@ -91,8 +91,13 @@ void Archive::load() {
     return;
   }
 
-  fs::path workingDir(".unzip-tmp/" + std::to_string(getProcessID()) + "/"
-                          + this->archivePath.filename().string());
+  const char* tmpDir = std::getenv("TMPDIR");
+  if (!tmpDir) {
+      tmpDir = ".";
+  }
+
+  fs::path workingDir(std::string(tmpDir) + "/.unzip-tmp/" + std::to_string(getProcessID()) + "/"
+                        + this->archivePath.filename().string());
   fs::remove_all(workingDir);
   fs::create_directories(workingDir);
 
@@ -100,6 +105,7 @@ void Archive::load() {
   chdir(workingDir.string().c_str());
   runSystemQuiet("7z x " + inQuotes(archivePath.string()));
   chdir("../../../");
+  // appLog(workingDir.string());
 
   if (const auto opened = Directory::open(workingDir))
     this->result.emplace(*opened);

@@ -205,7 +205,10 @@ ControlExec::ControlExec() :
     // are not permitted by The Standard). It was necessary. Only you and I shall
     // ever know of it; it stays a secret between us, yes?
 
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wnull-dereference"
     appState(settings, *((AppResources *) nullptr), uptime, window, profiler) {
+    #pragma clang diagnostic pop
   window.setVerticalSyncEnabled(true);
   window.setKeyRepeatEnabled(false);
   appLog("Initialized SFML!", LogOrigin::App);

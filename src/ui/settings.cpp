@@ -82,14 +82,14 @@ ActionBindings::ActionBindings() {
 
 optional<InputAction> ActionBindings::lookupBinding(
     const sky::Action action) const {
-  for (const auto pair : skyBindings)
+  for (const auto &pair : skyBindings)
     if (pair.second == action) return {pair.first};
   return {};
 }
 
 optional<InputAction> ActionBindings::lookupClientBinding(
     const ClientAction action) const {
-  for (const auto pair : clientBindings)
+  for (const auto &pair : clientBindings)
     if (pair.second == action) return {pair.first};
   return {};
 }
