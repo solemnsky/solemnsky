@@ -90,11 +90,16 @@
           };
     in {
       packages = genAttrs supportedSystems (system: with nixpkgs.legacyPackages.${system}; rec {
-        default = solemnsky {inherit system;};
+        everything = solemnsky {inherit system;};
 
         tests = runCommand "solemnsky-tests" {} ''
-          ${default}/bin/solemnsky_tests
+          ${everything}/bin/solemnsky_tests
           echo PASS > $out
+        '';
+
+        default = runCommand "solemnsky_client" {} ''
+          mkdir -p $out/bin
+          cp ${everything}/bin/solemnsky_client $out/bin
         '';
       });
     };

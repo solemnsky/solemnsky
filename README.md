@@ -1,5 +1,7 @@
 *Development is currently in arbitrarily extended hiatus. :(*
 
+*…But! This project builds on aarch64-apple-darwin through nix. Just run `nix run github:solemnsky/solemnsky` to get started.*
+
 Travis CI says: [![Build Status](https://travis-ci.org/solemnsky/solemnsky.svg?branch=master)](https://travis-ci.org/solemnsky/solemnsky)
 
 # solemnsky
